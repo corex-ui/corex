@@ -1,0 +1,44 @@
+{
+  "font": {
+    "ui": {
+      "default": {
+        "value": [
+          "system-ui",
+          "sans-serif"
+        ],
+        "type": "fontFamily"
+      }
+    },
+    "code": {
+      "value": [
+        "ui-monospace",
+        "monospace"
+      ],
+      "type": "fontFamily"
+    }
+  },
+  "font-weight": {
+    "ui": {
+      "sm": {
+        "value": 200,
+        "type": "fontWeights"
+      },
+      "default": {
+        "value": "{font-weight.ui.md}",
+        "type": "fontWeights"
+      },
+      "md": {
+        "value": 400,
+        "type": "fontWeights"
+      },
+      "lg": {
+        "value": 600,
+        "type": "fontWeights"
+      },
+      "xl": {
+        "value": 800,
+        "type": "fontWeights"
+      }
+    }
+  }
+}

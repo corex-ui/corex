@@ -1,0 +1,15 @@
+@import "../main.css";
+
+@layer components {
+  .icon {
+    @apply ui-icon;
+  }
+}
+
+@utility icon--* {
+  font-size: --value(--text-ui-*, [length]);
+  line-height: --value(--text-ui-* --line-height, [length]);
+  height: --value(--spacing-ui-*, [length]);
+  width: --value(--spacing-ui-*, [length]);
+  color: --value(--color-ui-*, [color]);
+}

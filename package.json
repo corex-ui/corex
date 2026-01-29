@@ -1,0 +1,70 @@
+{
+  "name": "corex",
+  "version": "1.8.3",
+  "description": "The official JavaScript client for the corex web framework.",
+  "license": "MIT",
+  "module": "./priv/static/corex.mjs",
+  "main": "./priv/static/corex.cjs.js",
+  "unpkg": "./priv/static/corex.min.js",
+  "jsdelivr": "./priv/static/corex.min.js",
+  "exports": {
+    ".": {
+      "import": "./priv/static/corex.mjs",
+      "require": "./priv/static/corex.cjs.js"
+    },
+    "./design": {
+      "default": "./priv/design/main.css"
+    },
+    "./design/tokens.css": {
+      "default": "./priv/design/tokens.css"
+    },
+    "./design/tokens/semantic/*.css": {
+      "default": "./priv/design/tokens/semantic/*.css"
+    },
+    "./design/utilities.css": {
+      "default": "./priv/design/utilities.css"
+    },
+    "./design/themes/*.css": {
+      "default": "./priv/design/tokens/themes/*.css"
+    },
+    "./design/components.css": {
+      "default": "./priv/design/components.css"
+    },
+    "./design/components/*.css": {
+      "default": "./priv/design/components/*.css"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/corex-ui/corex.git"
+  },
+  "files": [
+    "README.md",
+    "package.json",
+    "priv/static/*",
+    "assets/*"
+  ],
+  "scripts": {
+    "lint": "eslint assets",
+    "lint:fix": "eslint assets --fix",
+    "format": "prettier --write \"assets/**/*.{ts,js,json,css}\"",
+    "format:check": "prettier --check \"assets/**/*.{ts,js,json,css}\"",
+    "check": "npm run format:check && npm run lint"
+  },
+  "devDependencies": {
+    "@corex-ui/design": "^1.0.0",
+    "@eslint/js": "^9.39.2",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "@zag-js/accordion": "^1.33.0",
+    "@zag-js/switch": "^1.33.0",
+    "@zag-js/toast": "^1.33.0",
+    "@zag-js/types": "^1.33.0",
+    "@zag-js/vanilla": "^1.33.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "phoenix_live_view": "^1.1.19",
+    "prettier": "^3.3.3"
+  }
+}

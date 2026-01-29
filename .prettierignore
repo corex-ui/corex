@@ -1,0 +1,4 @@
+priv/
+node_modules/
+*.min.js
+*.cjs.js
