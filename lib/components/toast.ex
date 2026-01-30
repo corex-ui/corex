@@ -1,9 +1,7 @@
 defmodule Corex.Toast do
   @moduledoc """
-  Provides Toast UI components that integrate with Zag.js via Phoenix LiveView hooks.
+  Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
 
-  Toast is used to give feedback to users after an action has taken place.
-  Toasts can be created programmatically and support multiple types (info, success, error, loading).
   """
 
   use Phoenix.Component

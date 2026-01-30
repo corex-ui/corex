@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Corex.Design do
       mix corex.design
       mix corex.design assets/design
       mix corex.design --force
-      mix corex.design --no-designex
+      mix corex.design --designex
   """
 
   @default_target "assets/corex"
@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Corex.Design do
 
     target = List.first(paths) || @default_target
     force = Keyword.get(opts, :force, false)
-    designex = Keyword.get(opts, :designex, true)
+    designex = Keyword.get(opts, :designex, false)
 
     validate_source!()
     validate_target!(target, force)

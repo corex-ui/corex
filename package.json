@@ -1,7 +1,7 @@
 {
   "name": "corex",
-  "version": "1.8.3",
-  "description": "The official JavaScript client for the corex web framework.",
+  "version": "0.1.0-alpha.5",
+  "description": "The official JavaScript client for the Corex Phoenix Hooks.",
   "license": "MIT",
   "module": "./priv/static/corex.mjs",
   "main": "./priv/static/corex.cjs.js",
@@ -11,27 +11,6 @@
     ".": {
       "import": "./priv/static/corex.mjs",
       "require": "./priv/static/corex.cjs.js"
-    },
-    "./design": {
-      "default": "./priv/design/main.css"
-    },
-    "./design/tokens.css": {
-      "default": "./priv/design/tokens.css"
-    },
-    "./design/tokens/semantic/*.css": {
-      "default": "./priv/design/tokens/semantic/*.css"
-    },
-    "./design/utilities.css": {
-      "default": "./priv/design/utilities.css"
-    },
-    "./design/themes/*.css": {
-      "default": "./priv/design/tokens/themes/*.css"
-    },
-    "./design/components.css": {
-      "default": "./priv/design/components.css"
-    },
-    "./design/components/*.css": {
-      "default": "./priv/design/components/*.css"
     }
   },
   "repository": {
@@ -41,8 +20,9 @@
   "files": [
     "README.md",
     "package.json",
-    "priv/static/*",
-    "assets/*"
+    "priv/static/**",
+    "priv/design/**",
+    "assets/**"
   ],
   "scripts": {
     "lint": "eslint assets",

@@ -25,6 +25,35 @@ defmodule Corex.Accordion do
   </.accordion>
   ```
 
+  ## Expended usage
+
+  ```heex
+  <.accordion id="my-accordion" value={["duis"]} on_value_change="accordion_changed">
+  <:item :let={item} value="lorem" disabled>
+    <.accordion_trigger item={item}>
+      Lorem ipsum dolor sit amet
+      <:indicator>
+       <.icon name="hero-chevron-right" class="icon" />
+      </:indicator>
+    </.accordion_trigger>
+    <.accordion_content item={item}">
+      Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
+    </.accordion_content>
+  </:item>
+  <:item :let={item} value="duis">
+    <.accordion_trigger item={item}>
+      Duis dictum gravida odio ac pharetra?
+      <:indicator>
+       <.icon name="hero-chevron-right" class="icon" />
+      </:indicator>
+    </.accordion_trigger>
+    <.accordion_content item={item}>
+      Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
+    </.accordion_content>
+  </:item>
+  </.accordion>
+  ```
+
   ## Controlled Mode
 
   ```heex
