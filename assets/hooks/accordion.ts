@@ -15,7 +15,6 @@ type AccordionHookState = {
 
 const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    this.wasFocused = null; // Initialize here
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const props: Props = {

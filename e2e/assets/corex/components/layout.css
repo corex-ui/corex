@@ -1,0 +1,175 @@
+@import "../main.css";
+@import "./scrollbar.css";
+
+@layer components {
+  .layout {
+    @apply scrollbar;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: var(--color-root--text);
+    background: var(--color-root);
+  }
+
+  .layout__header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: var(--spacing-ui-lg);
+    background: var(--color-layer);
+    color: var(--color-layer--text);
+    border-bottom: 1px solid var(--color-layer--border);
+    display: flex;
+    align-items: center;
+  }
+
+  .layout__header__content,
+  .layout__footer__content,
+  .layout__side__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-inline: auto;
+    width: 100%;
+    padding-inline: var(--spacing-ui-padding);
+    padding-block: var(--spacing-ui-padding-sm);
+  }
+
+  .layout__footer {
+    background: var(--color-layer);
+    color: var(--color-layer--text);
+    border-bottom: 1px solid var(--color-layer--border);
+    display: flex;
+    align-items: center;
+    min-height: var(--spacing-ui-lg);
+  }
+
+  .layout__wrapper {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    justify-content: center;
+    margin-inline: auto;
+    background-color: var(--color-root);
+    position: relative;
+  }
+
+  .layout__side,
+  .layout__aside {
+    @apply scrollbar scrollbar--sm;
+
+    position: sticky;
+    top: calc(var(--spacing-ui-lg));
+    align-self: flex-start;
+    background: var(--color-layer);
+    color: var(--color-layer--text);
+    min-width: var(--container-micro);
+    max-width: var(--container-ui);
+    width: auto;
+    height: calc(100vh - var(--spacing-ui-lg));
+    overflow-y: auto;
+  }
+
+  .layout__aside-mobile {
+    background: var(--color-layer);
+    color: var(--color-layer--text);
+    width: 100%;
+  }
+
+  .layout__main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    margin-inline: auto;
+    position: relative;
+  }
+
+  .layout__main__wrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .layout__content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    justify-content: flex-start;
+    align-items: center;
+    padding: var(--spacing-ui-padding);
+    gap: var(--spacing-ui-gap);
+  }
+
+  .layout__article {
+    width: 100%;
+    max-width: var(--breakpoint-lg);
+    padding: var(--spacing-ui-padding);
+    color: var(--color-layer--text);
+    border-radius: var(--radius-ui);
+  }
+
+  .layout .layout__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-ui-gap);
+  }
+
+  .layout .layout__side,
+  .layout .layout__aside {
+    display: none;
+  }
+
+  @media (min-width: theme("breakpoint.md")) {
+    .layout .layout__side {
+      display: flex;
+    }
+  }
+
+  @media (min-width: theme("breakpoint.lg")) {
+    .layout .layout__aside {
+      display: flex;
+    }
+  }
+
+  .layout .layout__aside-mobile {
+    display: flex;
+  }
+
+  @media (min-width: theme("breakpoint.lg")) {
+    .layout .layout__aside-mobile {
+      display: none;
+    }
+  }
+
+  .layout .layout__side__mobile {
+    display: flex;
+  }
+
+  @media (min-width: theme("breakpoint.md")) {
+    .layout .layout__side__mobile {
+      display: none;
+    }
+  }
+
+  .layout--boxed {
+    .layout__header__content,
+    .layout__footer__content,
+    .layout__wrapper {
+      max-width: var(--breakpoint-xl);
+    }
+
+    .layout__article {
+      max-width: var(--breakpoint-lg);
+    }
+  }
+}

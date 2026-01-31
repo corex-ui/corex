@@ -1,0 +1,116 @@
+@import "../main.css";
+
+@layer components {
+  .accordion [data-scope="accordion"][data-part="root"] {
+    @apply ui-root;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item"] h3 {
+    margin: 0;
+    padding: 0;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-trigger"] {
+    @apply ui-item;
+
+    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-ui--border);
+  }
+
+  .accordion [data-scope="accordion"][data-part="item"] {
+    gap: var(--spacing-ui-gap);
+    display: flex;
+    flex-direction: column;
+  }
+ 
+  .accordion [data-scope="accordion"][data-part="item-text"] {
+
+    width: 100%;
+  }
+
+  .accordion
+    [data-scope="accordion"][data-part="item"][data-state="closed"]
+    [data-scope="accordion"][data-part="item-indicator"][data-open],
+  .accordion
+    [data-scope="accordion"][data-part="item"][data-state="open"]
+    [data-scope="accordion"][data-part="item-indicator"][data-closed] {
+    display: none;
+    transform: none;
+  }
+
+  .accordion
+    [data-scope="accordion"][data-part="item"][data-state="open"]
+    [data-scope="accordion"][data-part="item-indicator"][data-open],
+  .accordion
+    [data-scope="accordion"][data-part="item"][data-state="closed"]
+    [data-scope="accordion"][data-part="item-indicator"][data-closed] {
+    transform: none;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-content"] {
+    @apply ui-content;
+
+    border: 1px solid var(--color-root--border);
+    padding: var(--spacing-ui-padding);
+
+    & p {
+      margin-block: 0;
+    }
+  }
+}
+
+@utility accordion--* {
+  [data-scope="accordion"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="accordion"][data-part="item"] {
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="accordion"][data-part="item"][data-disabled]
+    [data-scope="accordion"][data-part="item-trigger"] {
+    color: --value(--color-ui-* --muted, [color]);
+  }
+
+  [data-scope="accordion"][data-part="item-trigger"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+
+  [data-scope="accordion"][data-part="item-trigger"][data-disabled] {
+    background-color: --alpha(--value(--color-ui-*, [color]) / 60%);
+    color: --value(--color-ui-* --muted, [color]);
+  }
+
+  [data-scope="accordion"][data-part="item-trigger"][data-selected],
+  [data-scope="accordion"][data-part="item-trigger"][data-in-range],
+  [data-scope="accordion"][data-part="item-trigger"][data-highlighted],
+  [data-scope="accordion"][data-part="item-trigger"][data-state="checked"],
+  [data-scope="accordion"][data-part="item-trigger"][data-state="on"],
+  [data-scope="accordion"][data-part="item-trigger"][data-state="open"],
+  [data-scope="accordion"][data-part="item-trigger"]:hover,
+  [data-scope="accordion"][data-part="item-trigger"]:active {
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="accordion"][data-part="item-trigger"][data-highlighted]:not(
+      :hover
+    ) {
+    outline: 2px solid --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="accordion"][data-part="item-content"] {
+    padding: --value(--spacing-ui-padding-*, [length]);
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="accordion"][data-part="item-content"] > p {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+}

@@ -15,7 +15,7 @@ defmodule Corex.Accordion.Connect do
         if assigns.controlled do
           nil
         else
-          if Enum.join(validate_value!(assigns.value), ",") != "", do: "", else: nil
+          Enum.join(validate_value!(assigns.value), ",")
         end,
       "data-value" =>
         if assigns.controlled do

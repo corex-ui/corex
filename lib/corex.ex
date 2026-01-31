@@ -10,7 +10,10 @@ defmodule Corex do
          accordion_content: 1,
          accordion_skeleton: 1
        ]},
+       combobox: {Corex.Combobox, [combobox: 1]},
+
     switch: {Corex.Switch, [switch: 1]},
+    toggle_group: {Corex.ToggleGroup, [toggle_group: 1]},
     toast: {Corex.Toast, [toast_group: 1]}
   }
 

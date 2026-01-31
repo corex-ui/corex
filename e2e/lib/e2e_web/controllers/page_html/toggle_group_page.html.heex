@@ -1,0 +1,37 @@
+<Layouts.app flash={@flash}>
+  <h1>Toggle Group</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["a"])}
+      class="button button--sm"
+    >
+      Toggle Item 1
+    </button>
+    <button
+      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["a", "b"])}
+      class="button button--sm"
+    >
+      Toggle Item 1 and 2
+    </button>
+    <button
+      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", [])}
+      class="button button--sm"
+    >
+      Toggle no items
+    </button>
+  </div>
+  <.toggle_group id="my-toggle-group" class="toggle-group">
+    <:item value="a">
+      A
+    </:item>
+
+    <:item value="b">
+      B
+    </:item>
+    <:item value="c">
+      C
+    </:item>
+  </.toggle_group>
+</Layouts.app>

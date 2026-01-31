@@ -202,6 +202,7 @@ defmodule Corex.Switch do
     assigns =
       assigns
       |> assign_new(:id, fn -> "switch-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
 
     ~H"""
     <div

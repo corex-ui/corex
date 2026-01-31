@@ -1,0 +1,67 @@
+@import "../main.css";
+
+@layer components {
+  [data-scope="signature-pad"][data-part="root"] {
+    @apply ui-root;
+
+    width: var(--container-mini);
+    gap: var(--spacing-mini-gap);
+  }
+
+  [data-scope="signature-pad"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  [data-scope="signature-pad"][data-part="control"] {
+    position: relative;
+    width: 100%;
+    height: calc(var(--container-mini) * 0.7);
+    background-color: var(--color-ui);
+    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-ui--border);
+  }
+
+  [data-scope="signature-pad"][data-part="guide"] {
+    position: absolute;
+    bottom: var(--spacing-mini-gap);
+    left: var(--spacing-mini-gap);
+    right: var(--spacing-mini-gap);
+    border-bottom: 2px dashed var(--color-gray-800);
+  }
+
+  [data-scope="signature-pad"][data-part="segment"] {
+    background-color: var(--color-gray-100);
+    border-radius: var(--radius-ui);
+  }
+
+  [data-scope="signature-pad"][data-part="clear-trigger"] {
+    @apply ui-trigger ui-trigger--sm ui-trigger--circle;
+
+    position: absolute;
+    top: var(--spacing-mini-gap);
+    right: var(--spacing-mini-gap);
+  }
+
+  .signature-pad [data-part="preview"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: var(--container-mini);
+    padding: var(--spacing-mini-padding);
+    gap: var(--spacing-mini-gap);
+    background-color: var(--color-layer);
+
+    & img {
+      width: 100%;
+      height: var(--container-micro);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      padding: var(--spacing-mini-padding);
+      border: 1px solid var(--color-ui--border);
+      border-radius: var(--radius-ui);
+      background-color: var(--color-root);
+    }
+  }
+}

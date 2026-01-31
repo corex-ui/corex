@@ -162,17 +162,18 @@ In your `app.css` add the following:
 
 ### Extended
 
-This assume the import of `.icon` from `Core Components`
+This example assumes the import of `.icon` from `Core Components`
+
 ```heex
-  <.accordion id="my-accordion" value={["duis"]} on_value_change="accordion_changed">
+<.accordion id="my-accordion" value={["duis"]} on_value_change="accordion_changed"  class="accordion">
   <:item :let={item} value="lorem" disabled>
     <.accordion_trigger item={item}>
       Lorem ipsum dolor sit amet
       <:indicator>
-       <.icon name="hero-chevron-right" class="icon" />
+        <.icon name="hero-chevron-right" class="icon" />
       </:indicator>
     </.accordion_trigger>
-    <.accordion_content item={item}">
+    <.accordion_content item={item}>
       Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
     </.accordion_content>
   </:item>
@@ -180,14 +181,22 @@ This assume the import of `.icon` from `Core Components`
     <.accordion_trigger item={item}>
       Duis dictum gravida odio ac pharetra?
       <:indicator>
-       <.icon name="hero-chevron-right" class="icon" />
+        <.icon name="hero-chevron-right" class="icon" />
       </:indicator>
     </.accordion_trigger>
     <.accordion_content item={item}>
       Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
     </.accordion_content>
   </:item>
-  </.accordion>
+    <:item :let={item} value="donec">
+    <.accordion_trigger item={item}>
+      Donec condimentum ex mi
+    </.accordion_trigger>
+    <.accordion_content item={item}>
+      Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.
+    </.accordion_content>
+  </:item>
+</.accordion>
   ```
 
 ### Controlled
@@ -206,7 +215,7 @@ defmodule MyAppWeb.AccordionLive do
 
   def render(assigns) do
     ~H"""
-      <.accordion value={@value} on_value_change="on_value_change">
+      <.accordion value={@value} on_value_change="on_value_change" class="accordion">
         <:item :let={item} value="lorem">
           <.accordion_trigger item={item}>
             Lorem ipsum dolor sit amet

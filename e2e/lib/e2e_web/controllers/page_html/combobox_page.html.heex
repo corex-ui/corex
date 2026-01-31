@@ -1,0 +1,46 @@
+<Layouts.app flash={@flash}>
+  <h1>Accordion</h1>
+  <h2>Controller View</h2>
+
+  <.combobox
+    class="combobox"
+    collection={[
+      %{label: "France", code: "fra"},
+      %{label: "Belgium", code: "bel"},
+      %{label: "Germany", code: "deu"},
+      %{label: "Netherlands", code: "nld"},
+      %{label: "Switzerland", code: "che"},
+      %{label: "Austria", code: "aut"}
+    ]}
+  >
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+  </.combobox>
+
+  <.combobox
+    class="combobox"
+    collection={[
+      %{label: "France", code: "fra"},
+      %{label: "Belgium", code: "bel"},
+      %{label: "Germany", code: "deu"},
+      %{label: "Netherlands", code: "nld"},
+      %{label: "Switzerland", code: "che"},
+      %{label: "Austria", code: "aut"}
+    ]}
+  >
+    <:item :let={item}>
+      <Flagpack.flag name={String.to_atom(item.code)} />
+      {item.label}
+    </:item>
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+    <:clear_trigger>
+      <.icon name="hero-backspace" />
+    </:clear_trigger>
+    <:item_indicator>
+      <.icon name="hero-check" />
+    </:item_indicator>
+  </.combobox>
+</Layouts.app>

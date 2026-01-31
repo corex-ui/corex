@@ -81,7 +81,8 @@ defmodule Corex.MixProject do
       Components: [
         Corex.Accordion,
         Corex.Switch,
-        Corex.Toast
+        Corex.Toast,
+        Corex.ToggleGroup
       ]
     ]
   end

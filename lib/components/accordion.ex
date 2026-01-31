@@ -1,11 +1,13 @@
 defmodule Corex.Accordion do
-  @moduledoc """
+  @moduledoc ~S'''
   Phoenix implementation of [Zag.js Accordion](https://zagjs.com/components/react/accordion).
 
-  ## Basic Usage
+  <!-- tabs-open -->
+
+  ### Minimal
 
   ```heex
-  <.accordion>
+  <.accordion class="accordion">
   <:item :let={item}>
     <.accordion_trigger item={item}>
       Lorem ipsum dolor sit amet
@@ -22,13 +24,23 @@ defmodule Corex.Accordion do
       Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
     </.accordion_content>
   </:item>
+  <:item :let={item}>
+    <.accordion_trigger item={item}>
+      Donec condimentum ex mi
+    </.accordion_trigger>
+    <.accordion_content item={item}>
+      Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.
+    </.accordion_content>
+  </:item>
   </.accordion>
   ```
 
-  ## Expended usage
+  ### Extended
+
+  This example assumes the import of `.icon` from `Core Components`
 
   ```heex
-  <.accordion id="my-accordion" value={["duis"]} on_value_change="accordion_changed">
+  <.accordion id="my-accordion" value={["duis"]} on_value_change="accordion_changed" class="accordion">
   <:item :let={item} value="lorem" disabled>
     <.accordion_trigger item={item}>
       Lorem ipsum dolor sit amet
@@ -54,44 +66,61 @@ defmodule Corex.Accordion do
   </.accordion>
   ```
 
-  ## Controlled Mode
-
-  ```heex
-  <.accordion controlled value={@accordion_value} on_value_change="accordion_changed">
-  <:item :let={item}>
-    <.accordion_trigger item={item}>
-      Lorem ipsum dolor sit amet
-    </.accordion_trigger>
-    <.accordion_content item={item}>
-      Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-    </.accordion_content>
-  </:item>
-  <:item :let={item}>
-    <.accordion_trigger item={item}>
-      Duis dictum gravida odio ac pharetra?
-    </.accordion_trigger>
-    <.accordion_content item={item}>
-      Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-    </.accordion_content>
-  </:item>
-  </.accordion>
-  ```
+  ### Controlled
 
   ```elixir
-  def handle_event("accordion_changed", %{"value" => values}, socket) do
-    {:noreply, assign(socket, :accordion_value, values)}
+  defmodule MyAppWeb.AccordionLive do
+  use MyAppWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :value, ["lorem"])}
   end
+
+  def handle_event("on_value_change", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :value, value)}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.accordion value={@value} on_value_change="on_value_change" class="accordion">
+      <:item :let={item} value="lorem">
+        <.accordion_trigger item={item}>
+          Lorem ipsum dolor sit amet
+        </.accordion_trigger>
+        <.accordion_content item={item}>
+          Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
+        </.accordion_content>
+      </:item>
+      <:item :let={item} value="duis">
+        <.accordion_trigger item={item}>
+          Duis dictum gravida odio ac pharetra?
+        </.accordion_trigger>
+        <.accordion_content item={item}>
+          Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
+        </.accordion_content>
+      </:item>
+    </.accordion>
+  """
+  end
+  end
+
   ```
+  <!-- tabs-close -->
 
   ## Programmatic Control
 
+  ***Client-side***
+
   ```heex
-  # Client-side
   <button phx-click={Corex.Accordion.set_value("my-accordion", ["item-1"])}>
     Open Item 1
   </button>
 
-  # Server-side
+  ```
+
+    ***Server-side***
+
+    ```elixir
   def handle_event("open_item", _, socket) do
     {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["item-1"])}
   end
@@ -105,7 +134,7 @@ defmodule Corex.Accordion do
   - `[data-scope="accordion"][data-part="item-trigger"]` - Trigger button
   - `[data-scope="accordion"][data-part="item-content"]` - Content area
   - `[data-scope="accordion"][data-part="item-indicator"]` - Optional indicator
-  """
+  '''
 
   @doc type: :component
   use Phoenix.Component
@@ -175,36 +204,36 @@ defmodule Corex.Accordion do
     ~H"""
     <div id={@id} phx-hook="Accordion" {@rest}
     {Connect.props(%Props{
-      id: assigns.id,
-      controlled: assigns.controlled,
-      value: assigns.value,
-      collapsible: assigns.collapsible,
-      disabled: assigns.disabled,
-      multiple: assigns.multiple,
-      orientation: assigns.orientation,
-      dir: assigns.dir,
-      on_value_change: assigns.on_value_change,
-      on_value_change_client: assigns.on_value_change_client
+      id: @id,
+      controlled: @controlled,
+      value: @value,
+      collapsible: @collapsible,
+      disabled: @disabled,
+      multiple: @multiple,
+      orientation: @orientation,
+      dir: @dir,
+      on_value_change: @on_value_change,
+      on_value_change_client: @on_value_change_client
     })}>
-      <div {Connect.root(%Root{id: assigns.id, orientation: assigns.orientation, dir: assigns.dir, changed: if(assigns.__changed__, do: true, else: false)})}>
+      <div {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
         <div :for={{item_entry, index} <- Enum.with_index(@item)}
         {Connect.item(%Item{
-          id: assigns.id,
-          changed: if(assigns.__changed__, do: true, else: false),
+          id: @id,
+          changed: if(@__changed__, do: true, else: false),
           value: Map.get(item_entry, :value, "item-#{index}"),
           disabled: Map.get(item_entry, :disabled, false),
-          values: assigns.value, orientation: assigns.orientation,
-          dir: assigns.dir,
-          disabled_root: assigns.disabled})}>
+          values: @value, orientation: @orientation,
+          dir: @dir,
+          disabled_root: @disabled})}>
         <%= render_slot(item_entry, %Item{
-          id: assigns.id,
-          changed: if(assigns.__changed__, do: true, else: false),
+          id: @id,
+          changed: if(@__changed__, do: true, else: false),
           value: Map.get(item_entry, :value, "item-#{index}"),
           disabled: Map.get(item_entry, :disabled, false),
-          values: assigns.value,
-          orientation: assigns.orientation,
-          dir: assigns.dir,
-          disabled_root: assigns.disabled})
+          values: @value,
+          orientation: @orientation,
+          dir: @dir,
+          disabled_root: @disabled})
           %>
         </div>
       </div>
@@ -223,11 +252,11 @@ defmodule Corex.Accordion do
   def accordion_trigger(assigns) do
     ~H"""
     <h3>
-      <button {Connect.trigger(assigns.item)}>
+      <button {Connect.trigger(@item)}>
       <span data-scope="accordion" data-part="item-text">
       {render_slot(@inner_block)}
       </span>
-        <span :if={@indicator} {Connect.indicator(assigns.item)}>
+        <span :if={@indicator} {Connect.indicator(@item)}>
           {render_slot(@indicator)}
         </span>
       </button>
@@ -245,7 +274,7 @@ defmodule Corex.Accordion do
 
   def accordion_content(assigns) do
     ~H"""
-    <div {Connect.content(assigns.item)} >
+    <div {Connect.content(@item)} >
       {render_slot(@inner_block)}
     </div>
     """
