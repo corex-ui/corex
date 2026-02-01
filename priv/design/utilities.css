@@ -1,7 +1,7 @@
 @utility ui-root {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  width: auto;
   max-width: var(--container-ui);
   gap: var(--spacing-ui-gap);
 
@@ -11,9 +11,7 @@
 
   &[data-orientation="horizontal"] {
     flex-flow: row nowrap;
-    height: auto;
-    width: auto;
-    max-width: none;
+    width: fit-content;
   }
 }
 
@@ -121,11 +119,9 @@
   display: inline-block;
   align-items: center;
   justify-content: center;
-  height: 0.9em;
-  width: 0.9em;
+  height: 0.9em !important;
+  width: 0.9em !important;
   color: currentcolor;
-  font-size: inherit;
-  max-width: fit-content;
 
   [dir="rtl"] & {
     transform: scaleX(-1);
@@ -135,8 +131,8 @@
 @utility ui-icon--* {
   font-size: --value(--text-ui-*, [length]);
   line-height: --value(--text-ui-* --line-height, [length]);
-  height: --value(--spacing-ui-*, [length]);
-  width: --value(--spacing-ui-*, [length]);
+  height: --value(--spacing-ui-*, [length])!important;
+  width: --value(--spacing-ui-*, [length])!important;
 }
 
 @utility ui-content {
@@ -151,14 +147,13 @@
 
 @utility ui-label {
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  align-items: start;
+  justify-content: start;
   text-align: start;
   width: auto;
   font-size: var(--text-ui);
   line-height: var(--text-ui--line-height);
   font-weight: var(--font-weight-ui);
-  padding-inline: var(--spacing-ui-padding);
   gap: var(--spacing-ui-gap);
   color: var(--color-ui--text);
 }
@@ -296,6 +291,8 @@
   }
 
   & [data-part="item-text"] {
+    display: flex;
+    gap: var(--spacing-ui-gap);
     width: 100%;
     text-align: start;
   }
@@ -362,4 +359,18 @@
   &:hover {
     color: var(--color-layer--brand);
   }
+  
+}
+@utility ui-error {
+  display: inline-flex;
+  align-items: center;
+  justify-content: start;
+  text-align: start;
+  width: auto;
+  font-size: var(--text-ui-sm);
+  line-height: var(--text-ui-sm--line-height);
+  font-weight: var(--font-weight-ui);
+  padding-inline: var(--spacing-ui-padding-sm);
+  gap: var(--spacing-ui-gap-sm);
+  color: var(--color-root--alert);
 }

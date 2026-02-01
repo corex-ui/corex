@@ -3,13 +3,15 @@
 @layer components {
   .icon {
     @apply ui-icon;
+    font-size: 1rem; 
+
   }
 }
 
 @utility icon--* {
   font-size: --value(--text-ui-*, [length]);
   line-height: --value(--text-ui-* --line-height, [length]);
-  height: --value(--spacing-ui-*, [length]);
-  width: --value(--spacing-ui-*, [length]);
+  height: --value(--spacing-ui-*, [length])!important;
+  width: --value(--spacing-ui-*, [length])!important;
   color: --value(--color-ui-*, [color]);
 }
