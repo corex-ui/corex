@@ -82,6 +82,10 @@
   .combobox [data-scope="combobox"][data-part="item"] {
     @apply ui-item;
   }
+
+  .combobox [data-scope="combobox"][data-part="error"] {
+    @apply ui-error;
+  }
 }
 
 @utility combobox--* {

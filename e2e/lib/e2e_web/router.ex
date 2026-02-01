@@ -29,6 +29,13 @@ defmodule E2eWeb.Router do
     live "/playground/accordion", AccordionPlayLive
     live "/live/combobox", ComboboxLive
     live "/live/switch", SwitchLive
+
+    live "/admins", AdminLive.Index, :index
+    live "/admins/new", AdminLive.Form, :new
+    live "/admins/:id", AdminLive.Show, :show
+    live "/admins/:id/edit", AdminLive.Form, :edit
+
+    resources "/users", UserController
   end
 
   # Other scopes may use custom stacks.
