@@ -1,4 +1,5 @@
 defmodule E2eWeb.Router do
+  import LiveCapture.Router
   use E2eWeb, :router
 
   pipeline :browser do
@@ -29,6 +30,8 @@ defmodule E2eWeb.Router do
     live "/playground/accordion", AccordionPlayLive
     live "/live/combobox", ComboboxLive
     live "/live/switch", SwitchLive
+
+    live_capture "/captures", E2eWeb.LiveCapture
   end
 
   # Other scopes may use custom stacks.
