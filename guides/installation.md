@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.7"}
+    {:corex, "~> 0.1.0-alpha.6"}
   ]
 end
 ```
@@ -54,8 +54,8 @@ Configure Gettext backend and Jason Library in your `config/config.exs`:
 
 ```elixir
 config :corex,
-  gettext_backend: MyAppWeb.Gettext,
-  json_library: Jason
+  gettext_backend: MyAppWeb.Gettext
+  json_library: Jason,
 
 ```
 
