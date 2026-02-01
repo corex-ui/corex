@@ -1,5 +1,6 @@
 
 # Corex
+
 Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
 
 Corex bridges the gap between Phoenix and modern JavaScript UI patterns by leveraging Zag.js: a collection of framework-agnostic UI component state machines. This approach gives you:
@@ -11,16 +12,20 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 - **No Node.js required** - Install directly from Hex and connect the Phoenix hooks
 
 
-> #### Alpha stage {: .neutral}
+> ***Alpha stage ***
 > Corex is actively being developed and is currently in alpha stage. 
 > It's not recommended for production use at this time. 
 > You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 
 
+## Documentation
+
+Hex Doc is available at [http://hexdocs.pm/corex](http://hexdocs.pm/corex)
+
+
+## Installation
+
 This guide will walk you through installing and configuring Corex in your Phoenix application.
-
-
-## Phoenix App
 
 If you don't already have a [Phoenix app up and running](https://hexdocs.pm/phoenix/up_and_running.html) you can run
 
@@ -252,5 +257,10 @@ defmodule MyAppWeb.AccordionLive do
     """
   end
 end
-
 ```
+
+Full Hex Documentation is available at [http://hexdocs.pm/corex](http://hexdocs.pm/corex)
+
+## License
+
+[MIT](./LICENSE) © [Netoum.com](https://netoum.com)

@@ -102,8 +102,7 @@ Add `use Corex` into your `MyAppWeb` `html_helpers`
 
 ```
 
-By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates.
-You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions
+By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates. You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions
 
 ```elixir
 use Corex, only: [:accordion], prefix: "ui"
@@ -112,7 +111,8 @@ This will only import Accordion component and you can use as
 ```heex
 <.ui_accordion>
 ...
-</.ui_accordion>
+<.ui_accordion>
+
 ```
 
 
