@@ -15,13 +15,14 @@ type AccordionHookState = {
 
 const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    this.wasFocused = null; // Initialize here
+
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const props: Props = {
       id: el.id,
-      defaultValue: getStringList(el, "defaultValue"),
-      value: getStringList(el, "value"),
+      ...(getBoolean(el, "controlled")
+        ? { value: getStringList(el, "value") }
+        : { defaultValue: getStringList(el, "defaultValue") }),
       collapsible: getBoolean(el, "collapsible"),
       disabled: getBoolean(el, "disabled"),
       multiple: getBoolean(el, "multiple"),
@@ -32,7 +33,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             value: details.value,
-            accordion_id: el.id,
+            id: el.id,
           });
         }
 
@@ -43,7 +44,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
               bubbles: true,
               detail: {
                 value: details.value,
-                accordion_id: el.id,
+                id: el.id,
               },
             })
           );
@@ -93,8 +94,9 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & AccordionHookState) {
     this.accordion?.updateProps({
-      defaultValue: getStringList(this.el, "defaultValue"),
-      value: getStringList(this.el, "value"),
+      ...(getBoolean(this.el, "controlled")
+        ? { value: getStringList(this.el, "value") }
+        : { defaultValue: getStringList(this.el, "defaultValue") }),
       collapsible: getBoolean(this.el, "collapsible"),
       disabled: getBoolean(this.el, "disabled"),
       multiple: getBoolean(this.el, "multiple"),

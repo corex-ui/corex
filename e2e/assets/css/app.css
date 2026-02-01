@@ -1,0 +1,32 @@
+@import "tailwindcss" source(none);
+@source "../css";
+@source "../js";
+@source "../../lib/e2e_web";
+
+@import "../corex/main.css";
+@import "../corex/tokens/themes/neo/light.css";
+@import "../corex/components/typo.css";
+@import "../corex/components/accordion.css";
+@import "../corex/components/layout.css";
+@import "../corex/components/combobox.css";
+
+@import "../corex/components/icon.css";
+@import "../corex/components/link.css";
+@import "../corex/components/scrollbar.css";
+@import "../corex/components/switch.css";
+@import "../corex/components/toggle-group.css";
+
+@import "../corex/components/toast.css";
+@import "../corex/components/button.css";
+
+
+@plugin "../vendor/heroicons";
+
+@custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+@custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+@custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+
+@custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
+
+[data-phx-session], [data-phx-teleported-src] { display: contents }
+

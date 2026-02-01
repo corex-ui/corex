@@ -1,16 +1,16 @@
 // ../node_modules/.pnpm/@zag-js+anatomy@1.33.0/node_modules/@zag-js/anatomy/dist/index.mjs
-var createAnatomy = (name, parts4 = []) => ({
+var createAnatomy = (name, parts6 = []) => ({
   parts: (...values) => {
-    if (isEmpty(parts4)) {
+    if (isEmpty(parts6)) {
       return createAnatomy(name, values);
     }
     throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
   },
-  extendWith: (...values) => createAnatomy(name, [...parts4, ...values]),
-  omit: (...values) => createAnatomy(name, parts4.filter((part) => !values.includes(part))),
-  rename: (newName) => createAnatomy(newName, parts4),
-  keys: () => parts4,
-  build: () => [...new Set(parts4)].reduce(
+  extendWith: (...values) => createAnatomy(name, [...parts6, ...values]),
+  omit: (...values) => createAnatomy(name, parts6.filter((part) => !values.includes(part))),
+  rename: (newName) => createAnatomy(newName, parts6),
+  keys: () => parts6,
+  build: () => [...new Set(parts6)].reduce(
     (prev, part) => Object.assign(prev, {
       [part]: {
         selector: [
@@ -89,9 +89,9 @@ function getPlatform() {
   return agent?.platform ?? navigator.platform;
 }
 function getUserAgent() {
-  const ua2 = navigator.userAgentData;
-  if (ua2 && Array.isArray(ua2.brands)) {
-    return ua2.brands.map(({ brand, version }) => `${brand}/${version}`).join(" ");
+  const ua22 = navigator.userAgentData;
+  if (ua22 && Array.isArray(ua22.brands)) {
+    return ua22.brands.map(({ brand, version }) => `${brand}/${version}`).join(" ");
   }
   return navigator.userAgent;
 }
@@ -446,23 +446,23 @@ function compact(obj) {
   }
   return filtered;
 }
-function splitProps(props3, keys) {
+function splitProps(props5, keys) {
   const rest = {};
   const result = {};
   const keySet = new Set(keys);
-  const ownKeys = Reflect.ownKeys(props3);
+  const ownKeys = Reflect.ownKeys(props5);
   for (const key of ownKeys) {
     if (keySet.has(key)) {
-      result[key] = props3[key];
+      result[key] = props5[key];
     } else {
-      rest[key] = props3[key];
+      rest[key] = props5[key];
     }
   }
   return [result, rest];
 }
 var createSplitProps = (keys) => {
-  return function split(props3) {
-    return splitProps(props3, keys);
+  return function split(props5) {
+    return splitProps(props5, keys);
   };
 };
 var currentTime = () => performance.now();
@@ -539,10 +539,10 @@ function warn(...a) {
     console.warn(m);
   }
 }
-function ensureProps(props3, keys, scope) {
+function ensureProps(props5, keys, scope) {
   let missingKeys = [];
   for (const key of keys) {
-    if (props3[key] == null) missingKeys.push(key);
+    if (props5[key] == null) missingKeys.push(key);
   }
   if (missingKeys.length > 0)
     throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
@@ -551,14 +551,14 @@ function ensureProps(props3, keys, scope) {
 // ../node_modules/.pnpm/@zag-js+core@1.33.0/node_modules/@zag-js/core/dist/index.mjs
 function createGuards() {
   return {
-    and: (...guards2) => {
+    and: (...guards3) => {
       return function andGuard(params) {
-        return guards2.every((str) => params.guard(str));
+        return guards3.every((str) => params.guard(str));
       };
     },
-    or: (...guards2) => {
+    or: (...guards3) => {
       return function orGuard(params) {
-        return guards2.some((str) => params.guard(str));
+        return guards3.some((str) => params.guard(str));
       };
     },
     not: (guard) => {
@@ -578,8 +578,8 @@ function setup() {
       return createMachine(config);
     },
     choose: (transitions) => {
-      return function chooseFn({ choose }) {
-        return choose(transitions)?.actions;
+      return function chooseFn({ choose: choose2 }) {
+        return choose2(transitions)?.actions;
       };
     }
   };
@@ -591,15 +591,15 @@ var MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
   return MachineStatus2;
 })(MachineStatus || {});
 var INIT_STATE = "__init__";
-function createScope(props3) {
-  const getRootNode = () => props3.getRootNode?.() ?? document;
-  const getDoc = () => getDocument(getRootNode());
+function createScope(props5) {
+  const getRootNode2 = () => props5.getRootNode?.() ?? document;
+  const getDoc = () => getDocument(getRootNode2());
   const getWin = () => getDoc().defaultView ?? window;
-  const getActiveElementFn = () => getActiveElement(getRootNode());
-  const getById = (id) => getRootNode().getElementById(id);
+  const getActiveElementFn = () => getActiveElement(getRootNode2());
+  const getById = (id) => getRootNode2().getElementById(id);
   return {
-    ...props3,
-    getRootNode,
+    ...props5,
+    getRootNode: getRootNode2,
     getDoc,
     getWin,
     getActiveElement: getActiveElementFn,
@@ -613,14 +613,14 @@ function createNormalizer(fn) {
   return new Proxy({}, {
     get(_target, key) {
       if (key === "style")
-        return (props3) => {
-          return fn({ style: props3 }).style;
+        return (props5) => {
+          return fn({ style: props5 }).style;
         };
       return fn;
     }
   });
 }
-var createProps = () => (props3) => Array.from(new Set(props3));
+var createProps = () => (props5) => Array.from(new Set(props5));
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.33.0/node_modules/@zag-js/accordion/dist/index.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -744,7 +744,7 @@ function connect(service, normalize) {
         onKeyDown(event) {
           if (event.defaultPrevented) return;
           if (itemState.disabled) return;
-          const keyMap2 = {
+          const keyMap3 = {
             ArrowDown() {
               if (computed("isHorizontal")) return;
               send({ type: "GOTO.NEXT", value: value2 });
@@ -772,7 +772,7 @@ function connect(service, normalize) {
             dir: prop("dir"),
             orientation: prop("orientation")
           });
-          const exec = keyMap2[key];
+          const exec = keyMap3[key];
           if (exec) {
             exec(event);
             event.preventDefault();
@@ -1028,8 +1028,8 @@ var buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => 
       throw new Error("prop listener already exists");
     }
     if (listeners.size) {
-      const remove2 = propProxyState[3](createPropListener(prop));
-      propProxyStates.set(prop, [propProxyState, remove2]);
+      const remove3 = propProxyState[3](createPropListener(prop));
+      propProxyStates.set(prop, [propProxyState, remove3]);
     } else {
       propProxyStates.set(prop, [propProxyState]);
     }
@@ -1048,16 +1048,16 @@ var buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => 
         if (isDev() && prevRemove) {
           throw new Error("remove already exists");
         }
-        const remove2 = propProxyState[3](createPropListener(prop));
-        propProxyStates.set(prop, [propProxyState, remove2]);
+        const remove3 = propProxyState[3](createPropListener(prop));
+        propProxyStates.set(prop, [propProxyState, remove3]);
       });
     }
     const removeListener = () => {
       listeners.delete(listener);
       if (listeners.size === 0) {
-        propProxyStates.forEach(([propProxyState, remove2], prop) => {
-          if (remove2) {
-            remove2();
+        propProxyStates.forEach(([propProxyState, remove3], prop) => {
+          if (remove3) {
+            remove3();
             propProxyStates.set(prop, [propProxyState]);
           }
         });
@@ -1194,13 +1194,13 @@ var toStyleString = (style) => {
   for (let key in style) {
     const value = style[key];
     if (value === null || value === void 0) continue;
-    if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match) => `-${match.toLowerCase()}`);
+    if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match3) => `-${match3.toLowerCase()}`);
     string += `${key}:${value};`;
   }
   return string;
 };
-var normalizeProps = createNormalizer((props3) => {
-  return Object.entries(props3).reduce((acc, [key, value]) => {
+var normalizeProps = createNormalizer((props5) => {
+  return Object.entries(props5).reduce((acc, [key, value]) => {
     if (value === void 0) return acc;
     if (key in propMap) {
       key = propMap[key];
@@ -1253,7 +1253,7 @@ function spreadProps(node, attrs, machineId) {
   };
   const onEvents = (attr) => attr.startsWith("on");
   const others = (attr) => !attr.startsWith("on");
-  const setup2 = (attr) => addEvt(attr.substring(2), attrs[attr]);
+  const setup3 = (attr) => addEvt(attr.substring(2), attrs[attr]);
   const teardown = (attr) => remEvt(attr.substring(2), attrs[attr]);
   const apply = (attrName) => {
     const value = attrs[attrName];
@@ -1296,7 +1296,7 @@ function spreadProps(node, attrs, machineId) {
   oldEvents.forEach((evt) => {
     remEvt(evt.substring(2), oldAttrs[evt]);
   });
-  attrKeys.filter(onEvents).forEach(setup2);
+  attrKeys.filter(onEvents).forEach(setup3);
   attrKeys.filter(others).forEach(apply);
   machineMap.set(scopeKey, attrs);
   return function cleanup() {
@@ -1310,36 +1310,36 @@ function spreadProps(node, attrs, machineId) {
     }
   };
 }
-function bindable(props3) {
-  const initial = props3().value ?? props3().defaultValue;
-  if (props3().debug) {
-    console.log(`[bindable > ${props3().debug}] initial`, initial);
+function bindable(props5) {
+  const initial = props5().value ?? props5().defaultValue;
+  if (props5().debug) {
+    console.log(`[bindable > ${props5().debug}] initial`, initial);
   }
-  const eq = props3().isEqual ?? Object.is;
+  const eq = props5().isEqual ?? Object.is;
   const store = proxy({ value: initial });
-  const controlled = () => props3().value !== void 0;
+  const controlled = () => props5().value !== void 0;
   return {
     initial,
     ref: store,
     get() {
-      return controlled() ? props3().value : store.value;
+      return controlled() ? props5().value : store.value;
     },
     set(nextValue) {
       const prev = store.value;
       const next = isFunction(nextValue) ? nextValue(prev) : nextValue;
-      if (props3().debug) {
-        console.log(`[bindable > ${props3().debug}] setValue`, { next, prev });
+      if (props5().debug) {
+        console.log(`[bindable > ${props5().debug}] setValue`, { next, prev });
       }
       if (!controlled()) store.value = next;
       if (!eq(next, prev)) {
-        props3().onChange?.(next, prev);
+        props5().onChange?.(next, prev);
       }
     },
     invoke(nextValue, prevValue) {
-      props3().onChange?.(nextValue, prevValue);
+      props5().onChange?.(nextValue, prevValue);
     },
     hash(value) {
-      return props3().hash?.(value) ?? String(value);
+      return props5().hash?.(value) ?? String(value);
     }
   };
 }
@@ -1385,8 +1385,8 @@ function mergeMachineProps(prev, next) {
   return result;
 }
 var VanillaMachine = class {
-  constructor(machine4, userProps = {}) {
-    this.machine = machine4;
+  constructor(machine6, userProps = {}) {
+    this.machine = machine6;
     __publicField3(this, "scope");
     __publicField3(this, "context");
     __publicField3(this, "prop");
@@ -1527,15 +1527,15 @@ var VanillaMachine = class {
       choose: this.choose
     }));
     this.userPropsRef = { current: userProps };
-    const { id, ids, getRootNode } = runIfFn(userProps);
-    this.scope = createScope({ id, ids, getRootNode });
+    const { id, ids, getRootNode: getRootNode2 } = runIfFn(userProps);
+    this.scope = createScope({ id, ids, getRootNode: getRootNode2 });
     const prop = (key) => {
       const __props = runIfFn(this.userPropsRef.current);
-      const props3 = machine4.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
-      return props3[key];
+      const props5 = machine6.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
+      return props5[key];
     };
     this.prop = prop;
-    const context = machine4.context?.({
+    const context = machine6.context?.({
       prop,
       bindable,
       scope: this.scope,
@@ -1576,7 +1576,7 @@ var VanillaMachine = class {
     };
     this.context = ctx;
     const computed = (key) => {
-      return machine4.computed?.[key]({
+      return machine6.computed?.[key]({
         context: ctx,
         event: this.getEvent(),
         prop,
@@ -1586,10 +1586,10 @@ var VanillaMachine = class {
       }) ?? {};
     };
     this.computed = computed;
-    const refs = createRefs(machine4.refs?.({ prop, context: ctx }) ?? {});
+    const refs = createRefs(machine6.refs?.({ prop, context: ctx }) ?? {});
     this.refs = refs;
     const state = bindable(() => ({
-      defaultValue: machine4.initialState({ prop }),
+      defaultValue: machine6.initialState({ prop }),
       onChange: (nextState, prevState) => {
         if (prevState) {
           const exitEffects = this.effects.get(prevState);
@@ -1603,8 +1603,8 @@ var VanillaMachine = class {
         const cleanup = this.effect(this.getStateConfig(nextState)?.effects);
         if (cleanup) this.effects.set(nextState, cleanup);
         if (prevState === INIT_STATE) {
-          this.action(machine4.entry);
-          const cleanup2 = this.effect(machine4.effects);
+          this.action(machine6.entry);
+          const cleanup2 = this.effect(machine6.effects);
           if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
         }
         this.action(this.getStateConfig(nextState)?.entry);
@@ -1660,10 +1660,10 @@ var Component = class {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine;
   api;
-  constructor(el, props3) {
+  constructor(el, props5) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
-    this.machine = this.initMachine(props3);
+    this.machine = this.initMachine(props5);
     this.api = this.initApi();
   }
   init = () => {
@@ -1677,11 +1677,11 @@ var Component = class {
   destroy = () => {
     this.machine.stop();
   };
-  spreadProps = (el, props3) => {
-    spreadProps(el, props3);
+  spreadProps = (el, props5) => {
+    spreadProps(el, props5);
   };
-  updateProps = (props3) => {
-    this.machine.updateProps(props3);
+  updateProps = (props5) => {
+    this.machine.updateProps(props5);
   };
 };
 
@@ -1709,7 +1709,8 @@ var getNumber = (element, attrName, validValues) => {
   return parsed;
 };
 var getBoolean = (element, attrName) => {
-  return element.hasAttribute(`data-${attrName}`);
+  const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
+  return element.hasAttribute(`data-${dashName}`);
 };
 var generateId = (element, fallbackId = "element") => {
   if (element?.id) return element.id;
@@ -1719,8 +1720,8 @@ var generateId = (element, fallbackId = "element") => {
 // components/accordion.ts
 var Accordion = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props3) {
-    return new VanillaMachine(machine, props3);
+  initMachine(props5) {
+    return new VanillaMachine(machine, props5);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -1754,13 +1755,11 @@ var Accordion = class extends Component {
 // hooks/accordion.ts
 var AccordionHook = {
   mounted() {
-    this.wasFocused = null;
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const props3 = {
+    const props5 = {
       id: el.id,
-      defaultValue: getStringList(el, "defaultValue"),
-      value: getStringList(el, "value"),
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       collapsible: getBoolean(el, "collapsible"),
       disabled: getBoolean(el, "disabled"),
       multiple: getBoolean(el, "multiple"),
@@ -1771,7 +1770,7 @@ var AccordionHook = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             value: details.value,
-            accordion_id: el.id
+            id: el.id
           });
         }
         const eventNameClient = getString(el, "onValueChangeClient");
@@ -1781,14 +1780,14 @@ var AccordionHook = {
               bubbles: true,
               detail: {
                 value: details.value,
-                accordion_id: el.id
+                id: el.id
               }
             })
           );
         }
       }
     };
-    const accordion = new Accordion(el, props3);
+    const accordion = new Accordion(el, props5);
     accordion.init();
     this.accordion = accordion;
     this.onSetValue = (event) => {
@@ -1824,8 +1823,7 @@ var AccordionHook = {
   },
   updated() {
     this.accordion?.updateProps({
-      defaultValue: getStringList(this.el, "defaultValue"),
-      value: getStringList(this.el, "value"),
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
       collapsible: getBoolean(this.el, "collapsible"),
       disabled: getBoolean(this.el, "disabled"),
       multiple: getBoolean(this.el, "multiple"),
@@ -2044,20 +2042,20 @@ function getGroupPlacementStyle(service, placement) {
   if (isLefty) alignItems = "flex-start";
   styles.alignItems = alignItems;
   if (computedPlacement.includes("top")) {
-    const offset = computedOffset.top;
-    styles.top = `max(env(safe-area-inset-top, 0px), ${offset})`;
+    const offset3 = computedOffset.top;
+    styles.top = `max(env(safe-area-inset-top, 0px), ${offset3})`;
   }
   if (computedPlacement.includes("bottom")) {
-    const offset = computedOffset.bottom;
-    styles.bottom = `max(env(safe-area-inset-bottom, 0px), ${offset})`;
+    const offset3 = computedOffset.bottom;
+    styles.bottom = `max(env(safe-area-inset-bottom, 0px), ${offset3})`;
   }
   if (!computedPlacement.includes("left")) {
-    const offset = computedOffset.right;
-    styles.insetInlineEnd = `calc(env(safe-area-inset-right, 0px) + ${offset})`;
+    const offset3 = computedOffset.right;
+    styles.insetInlineEnd = `calc(env(safe-area-inset-right, 0px) + ${offset3})`;
   }
   if (!computedPlacement.includes("right")) {
-    const offset = computedOffset.left;
-    styles.insetInlineStart = `calc(env(safe-area-inset-left, 0px) + ${offset})`;
+    const offset3 = computedOffset.left;
+    styles.insetInlineStart = `calc(env(safe-area-inset-left, 0px) + ${offset3})`;
   }
   return styles;
 }
@@ -2076,7 +2074,7 @@ function getPlacementStyle(service, visible) {
   const stacked = prop("stacked");
   const type = prop("type");
   const duration = type === "loading" ? Number.MAX_SAFE_INTEGER : remainingTime;
-  const offset = computed("heightIndex") * gap + computed("heightBefore");
+  const offset3 = computed("heightIndex") * gap + computed("heightBefore");
   const styles = {
     position: "absolute",
     pointerEvents: "auto",
@@ -2084,7 +2082,7 @@ function getPlacementStyle(service, visible) {
     "--remove-delay": `${prop("removeDelay")}ms`,
     "--duration": `${duration}ms`,
     "--initial-height": `${height}px`,
-    "--offset": `${offset}px`,
+    "--offset": `${offset3}px`,
     "--index": prop("index"),
     "--z-index": computed("zIndex"),
     "--lift-amount": "calc(var(--lift) * var(--gap))",
@@ -2233,12 +2231,12 @@ function groupConnect(service, normalize) {
 var { guards, createMachine: createMachine2 } = setup();
 var { and: and2 } = guards;
 var groupMachine = createMachine2({
-  props({ props: props3 }) {
+  props({ props: props5 }) {
     return {
       dir: "ltr",
       id: uuid(),
-      ...props3,
-      store: props3.store
+      ...props5,
+      store: props5.store
     };
   },
   initialState({ prop }) {
@@ -2592,12 +2590,12 @@ function connect2(service, normalize) {
 }
 var { not: not2 } = createGuards();
 var machine2 = createMachine({
-  props({ props: props3 }) {
-    ensureProps(props3, ["id", "type", "parent", "removeDelay"], "toast");
+  props({ props: props5 }) {
+    ensureProps(props5, ["id", "type", "parent", "removeDelay"], "toast");
     return {
       closable: true,
-      ...props3,
-      duration: getToastDuration(props3.duration, props3.type)
+      ...props5,
+      duration: getToastDuration(props5.duration, props5.type)
     };
   },
   initialState({ prop }) {
@@ -2840,8 +2838,8 @@ function setHeight(parent, item) {
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
 };
-function createToastStore(props3 = {}) {
-  const attrs = withDefaults(props3, {
+function createToastStore(props5 = {}) {
+  const attrs = withDefaults(props5, {
     placement: "bottom",
     overlap: false,
     max: 24,
@@ -2907,7 +2905,7 @@ function createToastStore(props3 = {}) {
     }
     return id;
   };
-  const remove2 = (id) => {
+  const remove3 = (id) => {
     dismissedToasts.add(id);
     if (!id) {
       toasts.forEach((toast) => {
@@ -2976,7 +2974,7 @@ function createToastStore(props3 = {}) {
       }
     }).finally(() => {
       if (removable) {
-        remove2(id);
+        remove3(id);
       }
       options.finally?.();
     });
@@ -3035,7 +3033,7 @@ function createToastStore(props3 = {}) {
     subscribe: subscribe2,
     create,
     update,
-    remove: remove2,
+    remove: remove3,
     dismiss,
     error,
     success,
@@ -3066,8 +3064,8 @@ var toastGroups = /* @__PURE__ */ new Map();
 var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
   parts;
-  constructor(el, props3) {
-    super(el, props3);
+  constructor(el, props5) {
+    super(el, props5);
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
     this.el.innerHTML = `
@@ -3096,8 +3094,8 @@ var ToastItem = class extends Component {
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props3) {
-    return new VanillaMachine(machine2, props3);
+  initMachine(props5) {
+    return new VanillaMachine(machine2, props5);
   }
   initApi() {
     return connect2(this.machine.service, normalizeProps);
@@ -3125,9 +3123,9 @@ var ToastGroup = class extends Component {
   toastComponents = /* @__PURE__ */ new Map();
   groupEl;
   store;
-  constructor(el, props3) {
-    super(el, props3);
-    this.store = props3.store;
+  constructor(el, props5) {
+    super(el, props5);
+    this.store = props5.store;
     this.groupEl = el.querySelector('[data-part="group"]') ?? (() => {
       const g = document.createElement("div");
       g.setAttribute("data-scope", "toast");
@@ -3137,8 +3135,8 @@ var ToastGroup = class extends Component {
     })();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props3) {
-    return new VanillaMachine(group.machine, props3);
+  initMachine(props5) {
+    return new VanillaMachine(group.machine, props5);
   }
   initApi() {
     return group.connect(this.machine.service, normalizeProps);
@@ -3245,7 +3243,7 @@ var ToastHook = {
       "bottom-end"
     ]) || "bottom-end";
     const overlap = getBoolean(el, "overlap");
-    const max2 = getNumber(el, "max");
+    const max4 = getNumber(el, "max");
     const gap = getNumber(el, "gap");
     const offsets = getString(el, "offset");
     const pauseOnPageIdle = getBoolean(el, "pause-on-page-idle");
@@ -3261,7 +3259,7 @@ var ToastHook = {
       id: groupId,
       placement,
       overlap,
-      max: max2,
+      max: max4,
       gap,
       offsets: parsedOffsets,
       pauseOnPageIdle
@@ -3365,6 +3363,1079 @@ var ToastHook = {
     if (anyThis._toastConnect) {
       window.removeEventListener("phx:connect", anyThis._toastConnect);
     }
+  }
+};
+
+// ../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs
+var createAnatomy2 = (name, parts6 = []) => ({
+  parts: (...values) => {
+    if (isEmpty2(parts6)) {
+      return createAnatomy2(name, values);
+    }
+    throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
+  },
+  extendWith: (...values) => createAnatomy2(name, [...parts6, ...values]),
+  omit: (...values) => createAnatomy2(name, parts6.filter((part) => !values.includes(part))),
+  rename: (newName) => createAnatomy2(newName, parts6),
+  keys: () => parts6,
+  build: () => [...new Set(parts6)].reduce(
+    (prev, part) => Object.assign(prev, {
+      [part]: {
+        selector: [
+          `&[data-scope="${toKebabCase2(name)}"][data-part="${toKebabCase2(part)}"]`,
+          `& [data-scope="${toKebabCase2(name)}"][data-part="${toKebabCase2(part)}"]`
+        ].join(", "),
+        attrs: { "data-scope": toKebabCase2(name), "data-part": toKebabCase2(part) }
+      }
+    }),
+    {}
+  )
+});
+var toKebabCase2 = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
+var isEmpty2 = (v) => v.length === 0;
+
+// ../node_modules/.pnpm/@zag-js+dom-query@1.33.1/node_modules/@zag-js/dom-query/dist/index.mjs
+var __defProp4 = Object.defineProperty;
+var __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
+function setCaretToEnd(input) {
+  if (!input) return;
+  try {
+    if (input.ownerDocument.activeElement !== input) return;
+    const len = input.value.length;
+    input.setSelectionRange(len, len);
+  } catch {
+  }
+}
+var noop2 = () => void 0;
+var isObject3 = (v) => typeof v === "object" && v !== null;
+var dataAttr2 = (guard) => guard ? "" : void 0;
+var ariaAttr = (guard) => guard ? "true" : void 0;
+var ELEMENT_NODE2 = 1;
+var DOCUMENT_NODE2 = 9;
+var DOCUMENT_FRAGMENT_NODE2 = 11;
+var isHTMLElement2 = (el) => isObject3(el) && el.nodeType === ELEMENT_NODE2 && typeof el.nodeName === "string";
+var isDocument2 = (el) => isObject3(el) && el.nodeType === DOCUMENT_NODE2;
+var isWindow2 = (el) => isObject3(el) && el === el.window;
+var getNodeName = (node) => {
+  if (isHTMLElement2(node)) return node.localName || "";
+  return "#document";
+};
+function isRootElement(node) {
+  return ["html", "body", "#document"].includes(getNodeName(node));
+}
+var isNode2 = (el) => isObject3(el) && el.nodeType !== void 0;
+var isShadowRoot2 = (el) => isNode2(el) && el.nodeType === DOCUMENT_FRAGMENT_NODE2 && "host" in el;
+var isAnchorElement = (el) => !!el?.matches("a[href]");
+var isElementVisible = (el) => {
+  if (!isHTMLElement2(el)) return false;
+  return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+};
+function contains2(parent, child) {
+  if (!parent || !child) return false;
+  if (!isHTMLElement2(parent) || !isHTMLElement2(child)) return false;
+  const rootNode = child.getRootNode?.();
+  if (parent === child) return true;
+  if (parent.contains(child)) return true;
+  if (rootNode && isShadowRoot2(rootNode)) {
+    let next = child;
+    while (next) {
+      if (parent === next) return true;
+      next = next.parentNode || next.host;
+    }
+  }
+  return false;
+}
+function getDocument2(el) {
+  if (isDocument2(el)) return el;
+  if (isWindow2(el)) return el.document;
+  return el?.ownerDocument ?? document;
+}
+function getDocumentElement(el) {
+  return getDocument2(el).documentElement;
+}
+function getWindow2(el) {
+  if (isShadowRoot2(el)) return getWindow2(el.host);
+  if (isDocument2(el)) return el.defaultView ?? window;
+  if (isHTMLElement2(el)) return el.ownerDocument?.defaultView ?? window;
+  return window;
+}
+function getParentNode(node) {
+  if (getNodeName(node) === "html") return node;
+  const result = node.assignedSlot || node.parentNode || isShadowRoot2(node) && node.host || getDocumentElement(node);
+  return isShadowRoot2(result) ? result.host : result;
+}
+function getRootNode(node) {
+  let result;
+  try {
+    result = node.getRootNode({ composed: true });
+    if (isDocument2(result) || isShadowRoot2(result)) return result;
+  } catch {
+  }
+  return node.ownerDocument ?? document;
+}
+var styleCache = /* @__PURE__ */ new WeakMap();
+function getComputedStyle2(el) {
+  if (!styleCache.has(el)) {
+    styleCache.set(el, getWindow2(el).getComputedStyle(el));
+  }
+  return styleCache.get(el);
+}
+var INTERACTIVE_CONTAINER_ROLE = /* @__PURE__ */ new Set(["menu", "listbox", "dialog", "grid", "tree", "region"]);
+var isInteractiveContainerRole = (role) => INTERACTIVE_CONTAINER_ROLE.has(role);
+var getAriaControls = (element) => element.getAttribute("aria-controls")?.split(" ") || [];
+function isControlledElement(container, element) {
+  const visitedIds = /* @__PURE__ */ new Set();
+  const rootNode = getRootNode(container);
+  const checkElement = (searchRoot) => {
+    const controllingElements = searchRoot.querySelectorAll("[aria-controls]");
+    for (const controller of controllingElements) {
+      if (controller.getAttribute("aria-expanded") !== "true") continue;
+      const controlledIds = getAriaControls(controller);
+      for (const id of controlledIds) {
+        if (!id || visitedIds.has(id)) continue;
+        visitedIds.add(id);
+        const controlledElement = rootNode.getElementById(id);
+        if (controlledElement) {
+          const role = controlledElement.getAttribute("role");
+          const modal = controlledElement.getAttribute("aria-modal") === "true";
+          if (role && isInteractiveContainerRole(role) && !modal) {
+            if (controlledElement === element || controlledElement.contains(element)) {
+              return true;
+            }
+            if (checkElement(controlledElement)) {
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  };
+  return checkElement(container);
+}
+var isDom2 = () => typeof document !== "undefined";
+function getPlatform2() {
+  const agent = navigator.userAgentData;
+  return agent?.platform ?? navigator.platform;
+}
+function getUserAgent2() {
+  const ua22 = navigator.userAgentData;
+  if (ua22 && Array.isArray(ua22.brands)) {
+    return ua22.brands.map(({ brand, version }) => `${brand}/${version}`).join(" ");
+  }
+  return navigator.userAgent;
+}
+var pt2 = (v) => isDom2() && v.test(getPlatform2());
+var ua2 = (v) => isDom2() && v.test(getUserAgent2());
+var vn2 = (v) => isDom2() && v.test(navigator.vendor);
+var isTouchDevice = () => isDom2() && !!navigator.maxTouchPoints;
+var isIPhone2 = () => pt2(/^iPhone/i);
+var isIPad2 = () => pt2(/^iPad/i) || isMac2() && navigator.maxTouchPoints > 1;
+var isIos2 = () => isIPhone2() || isIPad2();
+var isApple2 = () => isMac2() || isIos2();
+var isMac2 = () => pt2(/^Mac/i);
+var isSafari2 = () => isApple2() && vn2(/apple/i);
+var isFirefox = () => ua2(/Firefox/i);
+function getComposedPath2(event) {
+  return event.composedPath?.() ?? event.nativeEvent?.composedPath?.();
+}
+function getEventTarget2(event) {
+  const composedPath = getComposedPath2(event);
+  return composedPath?.[0] ?? event.target;
+}
+function isOpeningInNewTab(event) {
+  const element = event.currentTarget;
+  if (!element) return false;
+  const validElement = element.matches("a[href], button[type='submit'], input[type='submit']");
+  if (!validElement) return false;
+  const isMiddleClick = event.button === 1;
+  const isModKeyClick = isCtrlOrMetaKey(event);
+  return isMiddleClick || isModKeyClick;
+}
+function isDownloadingEvent(event) {
+  const element = event.currentTarget;
+  if (!element) return false;
+  const localName = element.localName;
+  if (!event.altKey) return false;
+  if (localName === "a") return true;
+  if (localName === "button" && element.type === "submit") return true;
+  if (localName === "input" && element.type === "submit") return true;
+  return false;
+}
+function isComposingEvent(event) {
+  return getNativeEvent(event).isComposing || event.keyCode === 229;
+}
+function isCtrlOrMetaKey(e) {
+  if (isMac2()) return e.metaKey;
+  return e.ctrlKey;
+}
+var isLeftClick = (e) => e.button === 0;
+var isContextMenuEvent = (e) => {
+  return e.button === 2 || isMac2() && e.ctrlKey && e.button === 0;
+};
+var keyMap2 = {
+  Up: "ArrowUp",
+  Down: "ArrowDown",
+  Esc: "Escape",
+  " ": "Space",
+  ",": "Comma",
+  Left: "ArrowLeft",
+  Right: "ArrowRight"
+};
+var rtlKeyMap2 = {
+  ArrowLeft: "ArrowRight",
+  ArrowRight: "ArrowLeft"
+};
+function getEventKey2(event, options = {}) {
+  const { dir = "ltr", orientation = "horizontal" } = options;
+  let key = event.key;
+  key = keyMap2[key] ?? key;
+  const isRtl = dir === "rtl" && orientation === "horizontal";
+  if (isRtl && key in rtlKeyMap2) key = rtlKeyMap2[key];
+  return key;
+}
+function getNativeEvent(event) {
+  return event.nativeEvent ?? event;
+}
+var addDomEvent2 = (target, eventName, handler, options) => {
+  const node = typeof target === "function" ? target() : target;
+  node?.addEventListener(eventName, handler, options);
+  return () => {
+    node?.removeEventListener(eventName, handler, options);
+  };
+};
+var focusableSelector = "input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], button:not([disabled]), [tabindex], iframe, object, embed, area[href], audio[controls], video[controls], [contenteditable]:not([contenteditable='false']), details > summary:first-of-type";
+function isFocusable(element) {
+  if (!isHTMLElement2(element) || element.closest("[inert]")) return false;
+  return element.matches(focusableSelector) && isElementVisible(element);
+}
+var AnimationFrame2 = class _AnimationFrame2 {
+  constructor() {
+    __publicField4(this, "id", null);
+    __publicField4(this, "fn_cleanup");
+    __publicField4(this, "cleanup", () => {
+      this.cancel();
+    });
+  }
+  static create() {
+    return new _AnimationFrame2();
+  }
+  request(fn) {
+    this.cancel();
+    this.id = globalThis.requestAnimationFrame(() => {
+      this.id = null;
+      this.fn_cleanup = fn?.();
+    });
+  }
+  cancel() {
+    if (this.id !== null) {
+      globalThis.cancelAnimationFrame(this.id);
+      this.id = null;
+    }
+    this.fn_cleanup?.();
+    this.fn_cleanup = void 0;
+  }
+  isActive() {
+    return this.id !== null;
+  }
+};
+function raf2(fn) {
+  const frame = AnimationFrame2.create();
+  frame.request(fn);
+  return frame.cleanup;
+}
+function nextTick(fn) {
+  const set = /* @__PURE__ */ new Set();
+  function raf22(fn2) {
+    const id = globalThis.requestAnimationFrame(fn2);
+    set.add(() => globalThis.cancelAnimationFrame(id));
+  }
+  raf22(() => raf22(fn));
+  return function cleanup() {
+    set.forEach((fn2) => fn2());
+  };
+}
+function queueBeforeEvent(el, type, cb) {
+  const cancelTimer = raf2(() => {
+    el.removeEventListener(type, exec, true);
+    cb();
+  });
+  const exec = () => {
+    cancelTimer();
+    cb();
+  };
+  el.addEventListener(type, exec, { once: true, capture: true });
+  return cancelTimer;
+}
+function observeAttributesImpl(node, options) {
+  if (!node) return;
+  const { attributes, callback: fn } = options;
+  const win = node.ownerDocument.defaultView || window;
+  const obs = new win.MutationObserver((changes) => {
+    for (const change of changes) {
+      if (change.type === "attributes" && change.attributeName && attributes.includes(change.attributeName)) {
+        fn(change);
+      }
+    }
+  });
+  obs.observe(node, { attributes: true, attributeFilter: attributes });
+  return () => obs.disconnect();
+}
+function observeAttributes(nodeOrFn, options) {
+  const { defer } = options;
+  const func = defer ? raf2 : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const node = typeof nodeOrFn === "function" ? nodeOrFn() : nodeOrFn;
+      cleanups.push(observeAttributesImpl(node, options));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
+}
+function clickIfLink(el) {
+  const click = () => {
+    const win = getWindow2(el);
+    el.dispatchEvent(new win.MouseEvent("click"));
+  };
+  if (isFirefox()) {
+    queueBeforeEvent(el, "keyup", click);
+  } else {
+    queueMicrotask(click);
+  }
+}
+function getNearestOverflowAncestor(el) {
+  const parentNode = getParentNode(el);
+  if (isRootElement(parentNode)) return getDocument2(parentNode).body;
+  if (isHTMLElement2(parentNode) && isOverflowElement(parentNode)) return parentNode;
+  return getNearestOverflowAncestor(parentNode);
+}
+var OVERFLOW_RE = /auto|scroll|overlay|hidden|clip/;
+var nonOverflowValues = /* @__PURE__ */ new Set(["inline", "contents"]);
+function isOverflowElement(el) {
+  const win = getWindow2(el);
+  const { overflow, overflowX, overflowY, display } = win.getComputedStyle(el);
+  return OVERFLOW_RE.test(overflow + overflowY + overflowX) && !nonOverflowValues.has(display);
+}
+function isScrollable(el) {
+  return el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth;
+}
+function scrollIntoView(el, options) {
+  const { rootEl, ...scrollOptions } = options || {};
+  if (!el || !rootEl) return;
+  if (!isOverflowElement(rootEl) || !isScrollable(rootEl)) return;
+  el.scrollIntoView(scrollOptions);
+}
+function queryAll2(root, selector) {
+  return Array.from(root?.querySelectorAll(selector) ?? []);
+}
+function query(root, selector) {
+  return root?.querySelector(selector) ?? null;
+}
+var defaultItemToId2 = (v) => v.id;
+function itemById2(v, id, itemToId = defaultItemToId2) {
+  return v.find((item) => itemToId(item) === id);
+}
+function indexOfId2(v, id, itemToId = defaultItemToId2) {
+  const item = itemById2(v, id, itemToId);
+  return item ? v.indexOf(item) : -1;
+}
+function nextById2(v, id, loop = true) {
+  let idx = indexOfId2(v, id);
+  idx = loop ? (idx + 1) % v.length : Math.min(idx + 1, v.length - 1);
+  return v[idx];
+}
+function prevById2(v, id, loop = true) {
+  let idx = indexOfId2(v, id);
+  if (idx === -1) return loop ? v[v.length - 1] : null;
+  idx = loop ? (idx - 1 + v.length) % v.length : Math.max(0, idx - 1);
+  return v[idx];
+}
+function setStyle2(el, style) {
+  if (!el) return noop2;
+  const prev = Object.keys(style).reduce((acc, key) => {
+    acc[key] = el.style.getPropertyValue(key);
+    return acc;
+  }, {});
+  if (isEqual2(prev, style)) return noop2;
+  Object.assign(el.style, style);
+  return () => {
+    Object.assign(el.style, prev);
+    if (el.style.length === 0) {
+      el.removeAttribute("style");
+    }
+  };
+}
+function isEqual2(a, b) {
+  return Object.keys(a).every((key) => a[key] === b[key]);
+}
+function waitForPromise(promise, controller, timeout) {
+  const { signal } = controller;
+  const wrappedPromise = new Promise((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      reject(new Error(`Timeout of ${timeout}ms exceeded`));
+    }, timeout);
+    signal.addEventListener("abort", () => {
+      clearTimeout(timeoutId);
+      reject(new Error("Promise aborted"));
+    });
+    promise.then((result) => {
+      if (!signal.aborted) {
+        clearTimeout(timeoutId);
+        resolve(result);
+      }
+    }).catch((error) => {
+      if (!signal.aborted) {
+        clearTimeout(timeoutId);
+        reject(error);
+      }
+    });
+  });
+  const abort = () => controller.abort();
+  return [wrappedPromise, abort];
+}
+function waitForElement2(target, options) {
+  const { timeout, rootNode } = options;
+  const win = getWindow2(rootNode);
+  const doc = getDocument2(rootNode);
+  const controller = new win.AbortController();
+  return waitForPromise(
+    new Promise((resolve) => {
+      const el = target();
+      if (el) {
+        resolve(el);
+        return;
+      }
+      const observer = new win.MutationObserver(() => {
+        const el2 = target();
+        if (el2 && el2.isConnected) {
+          observer.disconnect();
+          resolve(el2);
+        }
+      });
+      observer.observe(doc.body, {
+        childList: true,
+        subtree: true
+      });
+    }),
+    controller,
+    timeout
+  );
+}
+
+// ../node_modules/.pnpm/@zag-js+utils@1.33.1/node_modules/@zag-js/utils/dist/index.mjs
+var first2 = (v) => v[0];
+var last2 = (v) => v[v.length - 1];
+var has = (v, t) => v.indexOf(t) !== -1;
+var add2 = (v, ...items) => v.concat(items);
+var remove2 = (v, ...items) => v.filter((t) => !items.includes(t));
+var addOrRemove = (v, item) => has(v, item) ? remove2(v, item) : add2(v, item);
+var isArrayLike2 = (value) => value?.constructor.name === "Array";
+var isArrayEqual2 = (a, b) => {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (!isEqual3(a[i], b[i])) return false;
+  }
+  return true;
+};
+var isEqual3 = (a, b) => {
+  if (Object.is(a, b)) return true;
+  if (a == null && b != null || a != null && b == null) return false;
+  if (typeof a?.isEqual === "function" && typeof b?.isEqual === "function") {
+    return a.isEqual(b);
+  }
+  if (typeof a === "function" && typeof b === "function") {
+    return a.toString() === b.toString();
+  }
+  if (isArrayLike2(a) && isArrayLike2(b)) {
+    return isArrayEqual2(Array.from(a), Array.from(b));
+  }
+  if (!(typeof a === "object") || !(typeof b === "object")) return false;
+  const keys = Object.keys(b ?? /* @__PURE__ */ Object.create(null));
+  const length = keys.length;
+  for (let i = 0; i < length; i++) {
+    const hasKey = Reflect.has(a, keys[i]);
+    if (!hasKey) return false;
+  }
+  for (let i = 0; i < length; i++) {
+    const key = keys[i];
+    if (!isEqual3(a[key], b[key])) return false;
+  }
+  return true;
+};
+var isArray = (v) => Array.isArray(v);
+var isBoolean = (v) => v === true || v === false;
+var isObjectLike2 = (v) => v != null && typeof v === "object";
+var isObject4 = (v) => isObjectLike2(v) && !isArray(v);
+var isFunction2 = (v) => typeof v === "function";
+var isNull = (v) => v == null;
+var hasProp2 = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+var baseGetTag2 = (v) => Object.prototype.toString.call(v);
+var fnToString2 = Function.prototype.toString;
+var objectCtorString2 = fnToString2.call(Object);
+var isPlainObject2 = (v) => {
+  if (!isObjectLike2(v) || baseGetTag2(v) != "[object Object]" || isFrameworkElement2(v)) return false;
+  const proto = Object.getPrototypeOf(v);
+  if (proto === null) return true;
+  const Ctor = hasProp2(proto, "constructor") && proto.constructor;
+  return typeof Ctor == "function" && Ctor instanceof Ctor && fnToString2.call(Ctor) == objectCtorString2;
+};
+var isReactElement3 = (x) => typeof x === "object" && x !== null && "$$typeof" in x && "props" in x;
+var isVueElement3 = (x) => typeof x === "object" && x !== null && "__v_isVNode" in x;
+var isFrameworkElement2 = (x) => isReactElement3(x) || isVueElement3(x);
+var noop3 = () => {
+};
+var callAll = (...fns) => (...a) => {
+  fns.forEach(function(fn) {
+    fn?.(...a);
+  });
+};
+function match(key, record, ...args) {
+  if (key in record) {
+    const fn = record[key];
+    return isFunction2(fn) ? fn(...args) : fn;
+  }
+  const error = new Error(`No matching key: ${JSON.stringify(key)} in ${JSON.stringify(Object.keys(record))}`);
+  Error.captureStackTrace?.(error, match);
+  throw error;
+}
+var { floor: floor2, abs: abs2, round: round2, min: min2, max: max2, pow: pow2, sign: sign2 } = Math;
+function compact2(obj) {
+  if (!isPlainObject2(obj) || obj === void 0) return obj;
+  const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
+  const filtered = {};
+  for (const key of keys) {
+    const value = obj[key];
+    if (value !== void 0) {
+      filtered[key] = compact2(value);
+    }
+  }
+  return filtered;
+}
+function splitProps3(props5, keys) {
+  const rest = {};
+  const result = {};
+  const keySet = new Set(keys);
+  const ownKeys = Reflect.ownKeys(props5);
+  for (const key of ownKeys) {
+    if (keySet.has(key)) {
+      result[key] = props5[key];
+    } else {
+      rest[key] = props5[key];
+    }
+  }
+  return [result, rest];
+}
+var createSplitProps2 = (keys) => {
+  return function split(props5) {
+    return splitProps3(props5, keys);
+  };
+};
+var _tick2;
+_tick2 = /* @__PURE__ */ new WeakMap();
+function warn2(...a) {
+  const m = a.length === 1 ? a[0] : a[1];
+  const c = a.length === 2 ? a[0] : true;
+  if (c && true) {
+    console.warn(m);
+  }
+}
+function ensure(c, m) {
+  if (c == null) throw new Error(m());
+}
+function ensureProps2(props5, keys, scope) {
+  let missingKeys = [];
+  for (const key of keys) {
+    if (props5[key] == null) missingKeys.push(key);
+  }
+  if (missingKeys.length > 0)
+    throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
+}
+
+// ../node_modules/.pnpm/@zag-js+core@1.33.1/node_modules/@zag-js/core/dist/index.mjs
+function createGuards2() {
+  return {
+    and: (...guards3) => {
+      return function andGuard(params) {
+        return guards3.every((str) => params.guard(str));
+      };
+    },
+    or: (...guards3) => {
+      return function orGuard(params) {
+        return guards3.some((str) => params.guard(str));
+      };
+    },
+    not: (guard) => {
+      return function notGuard(params) {
+        return !params.guard(guard);
+      };
+    }
+  };
+}
+function createMachine3(config) {
+  return config;
+}
+function setup2() {
+  return {
+    guards: createGuards2(),
+    createMachine: (config) => {
+      return createMachine3(config);
+    },
+    choose: (transitions) => {
+      return function chooseFn({ choose: choose2 }) {
+        return choose2(transitions)?.actions;
+      };
+    }
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+types@1.33.1/node_modules/@zag-js/types/dist/index.mjs
+var createProps2 = () => (props5) => Array.from(new Set(props5));
+
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.33.1/node_modules/@zag-js/toggle-group/dist/index.mjs
+var anatomy3 = createAnatomy2("toggle-group").parts("root", "item");
+var parts3 = anatomy3.build();
+var getRootId3 = (ctx) => ctx.ids?.root ?? `toggle-group:${ctx.id}`;
+var getItemId2 = (ctx, value) => ctx.ids?.item?.(value) ?? `toggle-group:${ctx.id}:${value}`;
+var getRootEl3 = (ctx) => ctx.getById(getRootId3(ctx));
+var getElements = (ctx) => {
+  const ownerId = CSS.escape(getRootId3(ctx));
+  const selector = `[data-ownedby='${ownerId}']:not([data-disabled])`;
+  return queryAll2(getRootEl3(ctx), selector);
+};
+var getFirstEl = (ctx) => first2(getElements(ctx));
+var getLastEl = (ctx) => last2(getElements(ctx));
+var getNextEl = (ctx, id, loopFocus) => nextById2(getElements(ctx), id, loopFocus);
+var getPrevEl = (ctx, id, loopFocus) => prevById2(getElements(ctx), id, loopFocus);
+function connect3(service, normalize) {
+  const { context, send, prop, scope } = service;
+  const value = context.get("value");
+  const disabled = prop("disabled");
+  const isSingle = !prop("multiple");
+  const rovingFocus = prop("rovingFocus");
+  const isHorizontal = prop("orientation") === "horizontal";
+  function getItemState(props22) {
+    const id = getItemId2(scope, props22.value);
+    return {
+      id,
+      disabled: Boolean(props22.disabled || disabled),
+      pressed: !!value.includes(props22.value),
+      focused: context.get("focusedId") === id
+    };
+  }
+  return {
+    value,
+    setValue(value2) {
+      send({ type: "VALUE.SET", value: value2 });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts3.root.attrs,
+        id: getRootId3(scope),
+        dir: prop("dir"),
+        role: isSingle ? "radiogroup" : "group",
+        tabIndex: context.get("isTabbingBackward") ? -1 : 0,
+        "data-disabled": dataAttr2(disabled),
+        "data-orientation": prop("orientation"),
+        "data-focus": dataAttr2(context.get("focusedId") != null),
+        style: { outline: "none" },
+        onMouseDown() {
+          if (disabled) return;
+          send({ type: "ROOT.MOUSE_DOWN" });
+        },
+        onFocus(event) {
+          if (disabled) return;
+          if (event.currentTarget !== getEventTarget2(event)) return;
+          if (context.get("isClickFocus")) return;
+          if (context.get("isTabbingBackward")) return;
+          send({ type: "ROOT.FOCUS" });
+        },
+        onBlur(event) {
+          const target = event.relatedTarget;
+          if (contains2(event.currentTarget, target)) return;
+          if (disabled) return;
+          send({ type: "ROOT.BLUR" });
+        }
+      });
+    },
+    getItemState,
+    getItemProps(props22) {
+      const itemState = getItemState(props22);
+      const rovingTabIndex = itemState.focused ? 0 : -1;
+      return normalize.button({
+        ...parts3.item.attrs,
+        id: itemState.id,
+        type: "button",
+        "data-ownedby": getRootId3(scope),
+        "data-focus": dataAttr2(itemState.focused),
+        disabled: itemState.disabled,
+        tabIndex: rovingFocus ? rovingTabIndex : void 0,
+        // radio
+        role: isSingle ? "radio" : void 0,
+        "aria-checked": isSingle ? itemState.pressed : void 0,
+        "aria-pressed": isSingle ? void 0 : itemState.pressed,
+        //
+        "data-disabled": dataAttr2(itemState.disabled),
+        "data-orientation": prop("orientation"),
+        dir: prop("dir"),
+        "data-state": itemState.pressed ? "on" : "off",
+        onFocus() {
+          if (itemState.disabled) return;
+          send({ type: "TOGGLE.FOCUS", id: itemState.id });
+        },
+        onClick(event) {
+          if (itemState.disabled) return;
+          send({ type: "TOGGLE.CLICK", id: itemState.id, value: props22.value });
+          if (isSafari2()) {
+            event.currentTarget.focus({ preventScroll: true });
+          }
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (!contains2(event.currentTarget, getEventTarget2(event))) return;
+          if (itemState.disabled) return;
+          const keyMap3 = {
+            Tab(event2) {
+              const isShiftTab = event2.shiftKey;
+              send({ type: "TOGGLE.SHIFT_TAB", isShiftTab });
+            },
+            ArrowLeft() {
+              if (!rovingFocus || !isHorizontal) return;
+              send({ type: "TOGGLE.FOCUS_PREV" });
+            },
+            ArrowRight() {
+              if (!rovingFocus || !isHorizontal) return;
+              send({ type: "TOGGLE.FOCUS_NEXT" });
+            },
+            ArrowUp() {
+              if (!rovingFocus || isHorizontal) return;
+              send({ type: "TOGGLE.FOCUS_PREV" });
+            },
+            ArrowDown() {
+              if (!rovingFocus || isHorizontal) return;
+              send({ type: "TOGGLE.FOCUS_NEXT" });
+            },
+            Home() {
+              if (!rovingFocus) return;
+              send({ type: "TOGGLE.FOCUS_FIRST" });
+            },
+            End() {
+              if (!rovingFocus) return;
+              send({ type: "TOGGLE.FOCUS_LAST" });
+            }
+          };
+          const exec = keyMap3[getEventKey2(event)];
+          if (exec) {
+            exec(event);
+            if (event.key !== "Tab") event.preventDefault();
+          }
+        }
+      });
+    }
+  };
+}
+var { not: not3, and: and3 } = createGuards2();
+var machine3 = createMachine3({
+  props({ props: props22 }) {
+    return {
+      defaultValue: [],
+      orientation: "horizontal",
+      rovingFocus: true,
+      loopFocus: true,
+      deselectable: true,
+      ...props22
+    };
+  },
+  initialState() {
+    return "idle";
+  },
+  context({ prop, bindable: bindable2 }) {
+    return {
+      value: bindable2(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        onChange(value) {
+          prop("onValueChange")?.({ value });
+        }
+      })),
+      focusedId: bindable2(() => ({
+        defaultValue: null
+      })),
+      isTabbingBackward: bindable2(() => ({
+        defaultValue: false
+      })),
+      isClickFocus: bindable2(() => ({
+        defaultValue: false
+      })),
+      isWithinToolbar: bindable2(() => ({
+        defaultValue: false
+      }))
+    };
+  },
+  computed: {
+    currentLoopFocus: ({ context, prop }) => prop("loopFocus") && !context.get("isWithinToolbar")
+  },
+  entry: ["checkIfWithinToolbar"],
+  on: {
+    "VALUE.SET": {
+      actions: ["setValue"]
+    },
+    "TOGGLE.CLICK": {
+      actions: ["setValue"]
+    },
+    "ROOT.MOUSE_DOWN": {
+      actions: ["setClickFocus"]
+    }
+  },
+  states: {
+    idle: {
+      on: {
+        "ROOT.FOCUS": {
+          target: "focused",
+          guard: not3(and3("isClickFocus", "isTabbingBackward")),
+          actions: ["focusFirstToggle", "clearClickFocus"]
+        },
+        "TOGGLE.FOCUS": {
+          target: "focused",
+          actions: ["setFocusedId"]
+        }
+      }
+    },
+    focused: {
+      on: {
+        "ROOT.BLUR": {
+          target: "idle",
+          actions: ["clearIsTabbingBackward", "clearFocusedId", "clearClickFocus"]
+        },
+        "TOGGLE.FOCUS": {
+          actions: ["setFocusedId"]
+        },
+        "TOGGLE.FOCUS_NEXT": {
+          actions: ["focusNextToggle"]
+        },
+        "TOGGLE.FOCUS_PREV": {
+          actions: ["focusPrevToggle"]
+        },
+        "TOGGLE.FOCUS_FIRST": {
+          actions: ["focusFirstToggle"]
+        },
+        "TOGGLE.FOCUS_LAST": {
+          actions: ["focusLastToggle"]
+        },
+        "TOGGLE.SHIFT_TAB": [
+          {
+            guard: not3("isFirstToggleFocused"),
+            target: "idle",
+            actions: ["setIsTabbingBackward"]
+          },
+          {
+            actions: ["setIsTabbingBackward"]
+          }
+        ]
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      isClickFocus: ({ context }) => context.get("isClickFocus"),
+      isTabbingBackward: ({ context }) => context.get("isTabbingBackward"),
+      isFirstToggleFocused: ({ context, scope }) => context.get("focusedId") === getFirstEl(scope)?.id
+    },
+    actions: {
+      setIsTabbingBackward({ context }) {
+        context.set("isTabbingBackward", true);
+      },
+      clearIsTabbingBackward({ context }) {
+        context.set("isTabbingBackward", false);
+      },
+      setClickFocus({ context }) {
+        context.set("isClickFocus", true);
+      },
+      clearClickFocus({ context }) {
+        context.set("isClickFocus", false);
+      },
+      checkIfWithinToolbar({ context, scope }) {
+        const closestToolbar = getRootEl3(scope)?.closest("[role=toolbar]");
+        context.set("isWithinToolbar", !!closestToolbar);
+      },
+      setFocusedId({ context, event }) {
+        context.set("focusedId", event.id);
+      },
+      clearFocusedId({ context }) {
+        context.set("focusedId", null);
+      },
+      setValue({ context, event, prop }) {
+        ensureProps2(event, ["value"]);
+        let next = context.get("value");
+        if (isArray(event.value)) {
+          next = event.value;
+        } else if (prop("multiple")) {
+          next = addOrRemove(next, event.value);
+        } else {
+          const isSelected = isEqual3(next, [event.value]);
+          next = isSelected && prop("deselectable") ? [] : [event.value];
+        }
+        context.set("value", next);
+      },
+      focusNextToggle({ context, scope, prop }) {
+        raf2(() => {
+          const focusedId = context.get("focusedId");
+          if (!focusedId) return;
+          getNextEl(scope, focusedId, prop("loopFocus"))?.focus({ preventScroll: true });
+        });
+      },
+      focusPrevToggle({ context, scope, prop }) {
+        raf2(() => {
+          const focusedId = context.get("focusedId");
+          if (!focusedId) return;
+          getPrevEl(scope, focusedId, prop("loopFocus"))?.focus({ preventScroll: true });
+        });
+      },
+      focusFirstToggle({ scope }) {
+        raf2(() => {
+          getFirstEl(scope)?.focus({ preventScroll: true });
+        });
+      },
+      focusLastToggle({ scope }) {
+        raf2(() => {
+          getLastEl(scope)?.focus({ preventScroll: true });
+        });
+      }
+    }
+  }
+});
+var props2 = createProps2()([
+  "dir",
+  "disabled",
+  "getRootNode",
+  "id",
+  "ids",
+  "loopFocus",
+  "multiple",
+  "onValueChange",
+  "orientation",
+  "rovingFocus",
+  "value",
+  "defaultValue",
+  "deselectable"
+]);
+var splitProps4 = createSplitProps2(props2);
+var itemProps2 = createProps2()(["value", "disabled"]);
+var splitItemProps2 = createSplitProps2(itemProps2);
+
+// components/toggle-group.ts
+var ToggleGroup = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props5) {
+    return new VanillaMachine(machine3, props5);
+  }
+  initApi() {
+    return connect3(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const items = this.el.querySelectorAll('[data-part="item"]');
+    for (let i = 0; i < items.length; i++) {
+      const itemEl = items[i];
+      const value = getString(itemEl, "value");
+      if (!value) continue;
+      const disabled = getBoolean(itemEl, "disabled");
+      this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
+    }
+  }
+};
+
+// hooks/toggle-group.ts
+var ToggleGroupHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const props5 = {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      defaultValue: getStringList(el, "defaultValue"),
+      deselectable: getBoolean(el, "deselectable"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      rovingFocus: getBoolean(el, "rovingFocus"),
+      disabled: getBoolean(el, "disabled"),
+      multiple: getBoolean(el, "multiple"),
+      orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onValueChange: (details) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.value,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                value: details.value,
+                id: el.id
+              }
+            })
+          );
+        }
+      }
+    };
+    const toggleGroup = new ToggleGroup(el, props5);
+    toggleGroup.init();
+    this.toggleGroup = toggleGroup;
+    this.onSetValue = (event) => {
+      const { value } = event.detail;
+      toggleGroup.api.setValue(value);
+    };
+    el.addEventListener("phx:toggle-group:set-value", this.onSetValue);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent(
+        "toggle-group_set_value",
+        (payload) => {
+          const targetId = payload.id;
+          if (targetId && targetId !== el.id) return;
+          toggleGroup.api.setValue(payload.value);
+        }
+      )
+    );
+    this.handlers.push(
+      this.handleEvent("toggle-group:value", () => {
+        this.pushEvent("toggle-group:value_response", {
+          value: toggleGroup.api.value
+        });
+      })
+    );
+  },
+  updated() {
+    this.toggleGroup?.updateProps({
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+      deselectable: getBoolean(this.el, "deselectable"),
+      loopFocus: getBoolean(this.el, "loopFocus"),
+      rovingFocus: getBoolean(this.el, "rovingFocus"),
+      disabled: getBoolean(this.el, "disabled"),
+      multiple: getBoolean(this.el, "multiple"),
+      orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+  },
+  destroyed() {
+    if (this.onSetValue) {
+      this.el.removeEventListener("phx:toggle-group:set-value", this.onSetValue);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.toggleGroup?.destroy();
   }
 };
 
@@ -3505,8 +4576,8 @@ var tearDownWindowFocusTracking = (root, loadListener) => {
 function isFocusVisible() {
   return currentModality === "keyboard";
 }
-function trackFocusVisible(props3 = {}) {
-  const { isTextInput, autoFocus, onChange, root } = props3;
+function trackFocusVisible(props5 = {}) {
+  const { isTextInput, autoFocus, onChange, root } = props5;
   setupGlobalFocusEvents(root);
   onChange?.({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
   const handler = (modality, e) => {
@@ -3520,16 +4591,16 @@ function trackFocusVisible(props3 = {}) {
 }
 
 // ../node_modules/.pnpm/@zag-js+switch@1.33.0/node_modules/@zag-js/switch/dist/index.mjs
-var anatomy3 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-var parts3 = anatomy3.build();
-var getRootId3 = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
+var anatomy4 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+var parts4 = anatomy4.build();
+var getRootId4 = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
 var getControlId = (ctx) => ctx.ids?.control ?? `switch:${ctx.id}:control`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`;
-var getRootEl3 = (ctx) => ctx.getById(getRootId3(ctx));
+var getRootEl4 = (ctx) => ctx.getById(getRootId4(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
-function connect3(service, normalize) {
+function connect4(service, normalize) {
   const { context, send, prop, scope } = service;
   const disabled = !!prop("disabled");
   const readOnly = !!prop("readOnly");
@@ -3561,10 +4632,10 @@ function connect3(service, normalize) {
     },
     getRootProps() {
       return normalize.label({
-        ...parts3.root.attrs,
+        ...parts4.root.attrs,
         ...dataAttrs,
         dir: prop("dir"),
-        id: getRootId3(scope),
+        id: getRootId4(scope),
         htmlFor: getHiddenInputId(scope),
         onPointerMove() {
           if (disabled) return;
@@ -3588,7 +4659,7 @@ function connect3(service, normalize) {
     },
     getLabelProps() {
       return normalize.element({
-        ...parts3.label.attrs,
+        ...parts4.label.attrs,
         ...dataAttrs,
         dir: prop("dir"),
         id: getLabelId(scope)
@@ -3596,7 +4667,7 @@ function connect3(service, normalize) {
     },
     getThumbProps() {
       return normalize.element({
-        ...parts3.thumb.attrs,
+        ...parts4.thumb.attrs,
         ...dataAttrs,
         dir: prop("dir"),
         id: getThumbId(scope),
@@ -3605,7 +4676,7 @@ function connect3(service, normalize) {
     },
     getControlProps() {
       return normalize.element({
-        ...parts3.control.attrs,
+        ...parts4.control.attrs,
         ...dataAttrs,
         dir: prop("dir"),
         id: getControlId(scope),
@@ -3644,8 +4715,8 @@ function connect3(service, normalize) {
     }
   };
 }
-var { not: not3 } = createGuards();
-var machine3 = createMachine({
+var { not: not4 } = createGuards();
+var machine4 = createMachine({
   props({ props: props22 }) {
     return {
       defaultChecked: false,
@@ -3698,7 +4769,7 @@ var machine3 = createMachine({
   on: {
     "CHECKED.TOGGLE": [
       {
-        guard: not3("isTrusted"),
+        guard: not4("isTrusted"),
         actions: ["toggleChecked", "dispatchChangeEvent"]
       },
       {
@@ -3707,7 +4778,7 @@ var machine3 = createMachine({
     ],
     "CHECKED.SET": [
       {
-        guard: not3("isTrusted"),
+        guard: not4("isTrusted"),
         actions: ["setChecked", "dispatchChangeEvent"]
       },
       {
@@ -3729,7 +4800,7 @@ var machine3 = createMachine({
       trackPressEvent({ computed, scope, context }) {
         if (computed("isDisabled")) return;
         return trackPress({
-          pointerNode: getRootEl3(scope),
+          pointerNode: getRootEl4(scope),
           keyboardNode: getHiddenInputEl(scope),
           isValidKey: (event) => event.key === " ",
           onPress: () => context.set("active", false),
@@ -3784,7 +4855,7 @@ var machine3 = createMachine({
     }
   }
 });
-var props2 = createProps()([
+var props3 = createProps()([
   "checked",
   "defaultChecked",
   "dir",
@@ -3801,16 +4872,16 @@ var props2 = createProps()([
   "required",
   "value"
 ]);
-var splitProps3 = createSplitProps(props2);
+var splitProps5 = createSplitProps(props3);
 
 // components/switch.ts
 var Switch = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props3) {
-    return new VanillaMachine(machine3, props3);
+  initMachine(props5) {
+    return new VanillaMachine(machine4, props5);
   }
   initApi() {
-    return connect3(this.machine.service, normalizeProps);
+    return connect4(this.machine.service, normalizeProps);
   }
   render() {
     const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
@@ -3841,7 +4912,8 @@ var SwitchHook = {
     const pushEvent = this.pushEvent.bind(this);
     const zagSwitch = new Switch(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "default-checked") },
+      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
+      defaultChecked: getBoolean(el, "defaultChecked"),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -3856,7 +4928,7 @@ var SwitchHook = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             checked: details.checked,
-            switch_id: el.id
+            id: el.id
           });
         }
         const eventNameClient = getString(el, "onCheckedChangeClient");
@@ -3866,7 +4938,7 @@ var SwitchHook = {
               bubbles: true,
               detail: {
                 value: details,
-                switch_id: el.id
+                id: el.id
               }
             })
           );
@@ -3883,14 +4955,14 @@ var SwitchHook = {
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("switch_set_checked", (payload) => {
-        const targetId = payload.switch_id;
+        const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
         zagSwitch.api.setChecked(payload.value);
       })
     );
     this.handlers.push(
       this.handleEvent("switch_toggle_checked", (payload) => {
-        const targetId = payload.switch_id;
+        const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
         zagSwitch.api.toggleChecked();
       })
@@ -3917,28 +4989,19 @@ var SwitchHook = {
       })
     );
   },
-  beforeUpdate() {
-    this.wasFocused = this.zagSwitch?.api.focused || false;
-  },
   updated() {
     this.zagSwitch?.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "default-checked") },
+      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") },
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       value: getString(this.el, "value"),
       dir: getString(this.el, "dir", ["ltr", "rtl"]),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "read-only"),
+      readOnly: getBoolean(this.el, "readOnly"),
       label: getString(this.el, "label")
     });
-    if (getBoolean(this.el, "controlled")) {
-      if (this.wasFocused) {
-        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
-        hiddenInput?.focus();
-      }
-    }
   },
   destroyed() {
     if (this.onSetChecked) {
@@ -3953,8 +5016,4582 @@ var SwitchHook = {
   }
 };
 
+// ../node_modules/.pnpm/@zag-js+collection@1.33.1/node_modules/@zag-js/collection/dist/index.mjs
+var __defProp5 = Object.defineProperty;
+var __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
+var fallback = {
+  itemToValue(item) {
+    if (typeof item === "string") return item;
+    if (isObject4(item) && hasProp2(item, "value")) return item.value;
+    return "";
+  },
+  itemToString(item) {
+    if (typeof item === "string") return item;
+    if (isObject4(item) && hasProp2(item, "label")) return item.label;
+    return fallback.itemToValue(item);
+  },
+  isItemDisabled(item) {
+    if (isObject4(item) && hasProp2(item, "disabled")) return !!item.disabled;
+    return false;
+  }
+};
+var ListCollection = class _ListCollection {
+  constructor(options) {
+    this.options = options;
+    __publicField5(this, "items");
+    __publicField5(this, "indexMap", null);
+    __publicField5(this, "copy", (items) => {
+      return new _ListCollection({ ...this.options, items: items ?? [...this.items] });
+    });
+    __publicField5(this, "isEqual", (other) => {
+      return isEqual3(this.items, other.items);
+    });
+    __publicField5(this, "setItems", (items) => {
+      return this.copy(items);
+    });
+    __publicField5(this, "getValues", (items = this.items) => {
+      const values = [];
+      for (const item of items) {
+        const value = this.getItemValue(item);
+        if (value != null) values.push(value);
+      }
+      return values;
+    });
+    __publicField5(this, "find", (value) => {
+      if (value == null) return null;
+      const index = this.indexOf(value);
+      return index !== -1 ? this.at(index) : null;
+    });
+    __publicField5(this, "findMany", (values) => {
+      const result = [];
+      for (const value of values) {
+        const item = this.find(value);
+        if (item != null) result.push(item);
+      }
+      return result;
+    });
+    __publicField5(this, "at", (index) => {
+      if (!this.options.groupBy && !this.options.groupSort) {
+        return this.items[index] ?? null;
+      }
+      let idx = 0;
+      const groups = this.group();
+      for (const [, items] of groups) {
+        for (const item of items) {
+          if (idx === index) return item;
+          idx++;
+        }
+      }
+      return null;
+    });
+    __publicField5(this, "sortFn", (valueA, valueB) => {
+      const indexA = this.indexOf(valueA);
+      const indexB = this.indexOf(valueB);
+      return (indexA ?? 0) - (indexB ?? 0);
+    });
+    __publicField5(this, "sort", (values) => {
+      return [...values].sort(this.sortFn.bind(this));
+    });
+    __publicField5(this, "getItemValue", (item) => {
+      if (item == null) return null;
+      return this.options.itemToValue?.(item) ?? fallback.itemToValue(item);
+    });
+    __publicField5(this, "getItemDisabled", (item) => {
+      if (item == null) return false;
+      return this.options.isItemDisabled?.(item) ?? fallback.isItemDisabled(item);
+    });
+    __publicField5(this, "stringifyItem", (item) => {
+      if (item == null) return null;
+      return this.options.itemToString?.(item) ?? fallback.itemToString(item);
+    });
+    __publicField5(this, "stringify", (value) => {
+      if (value == null) return null;
+      return this.stringifyItem(this.find(value));
+    });
+    __publicField5(this, "stringifyItems", (items, separator = ", ") => {
+      const strs = [];
+      for (const item of items) {
+        const str = this.stringifyItem(item);
+        if (str != null) strs.push(str);
+      }
+      return strs.join(separator);
+    });
+    __publicField5(this, "stringifyMany", (value, separator) => {
+      return this.stringifyItems(this.findMany(value), separator);
+    });
+    __publicField5(this, "has", (value) => {
+      return this.indexOf(value) !== -1;
+    });
+    __publicField5(this, "hasItem", (item) => {
+      if (item == null) return false;
+      return this.has(this.getItemValue(item));
+    });
+    __publicField5(this, "group", () => {
+      const { groupBy, groupSort } = this.options;
+      if (!groupBy) return [["", [...this.items]]];
+      const groups = /* @__PURE__ */ new Map();
+      this.items.forEach((item, index) => {
+        const groupKey = groupBy(item, index);
+        if (!groups.has(groupKey)) {
+          groups.set(groupKey, []);
+        }
+        groups.get(groupKey).push(item);
+      });
+      let entries = Array.from(groups.entries());
+      if (groupSort) {
+        entries.sort(([a], [b]) => {
+          if (typeof groupSort === "function") return groupSort(a, b);
+          if (Array.isArray(groupSort)) {
+            const indexA = groupSort.indexOf(a);
+            const indexB = groupSort.indexOf(b);
+            if (indexA === -1) return 1;
+            if (indexB === -1) return -1;
+            return indexA - indexB;
+          }
+          if (groupSort === "asc") return a.localeCompare(b);
+          if (groupSort === "desc") return b.localeCompare(a);
+          return 0;
+        });
+      }
+      return entries;
+    });
+    __publicField5(this, "getNextValue", (value, step = 1, clamp2 = false) => {
+      let index = this.indexOf(value);
+      if (index === -1) return null;
+      index = clamp2 ? Math.min(index + step, this.size - 1) : index + step;
+      while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
+      return this.getItemValue(this.at(index));
+    });
+    __publicField5(this, "getPreviousValue", (value, step = 1, clamp2 = false) => {
+      let index = this.indexOf(value);
+      if (index === -1) return null;
+      index = clamp2 ? Math.max(index - step, 0) : index - step;
+      while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
+      return this.getItemValue(this.at(index));
+    });
+    __publicField5(this, "indexOf", (value) => {
+      if (value == null) return -1;
+      if (!this.options.groupBy && !this.options.groupSort) {
+        return this.items.findIndex((item) => this.getItemValue(item) === value);
+      }
+      if (!this.indexMap) {
+        this.indexMap = /* @__PURE__ */ new Map();
+        let idx = 0;
+        const groups = this.group();
+        for (const [, items] of groups) {
+          for (const item of items) {
+            const itemValue = this.getItemValue(item);
+            if (itemValue != null) {
+              this.indexMap.set(itemValue, idx);
+            }
+            idx++;
+          }
+        }
+      }
+      return this.indexMap.get(value) ?? -1;
+    });
+    __publicField5(this, "getByText", (text, current) => {
+      const currentIndex = current != null ? this.indexOf(current) : -1;
+      const isSingleKey = text.length === 1;
+      for (let i = 0; i < this.items.length; i++) {
+        const item = this.items[(currentIndex + i + 1) % this.items.length];
+        if (isSingleKey && this.getItemValue(item) === current) continue;
+        if (this.getItemDisabled(item)) continue;
+        if (match2(this.stringifyItem(item), text)) return item;
+      }
+      return void 0;
+    });
+    __publicField5(this, "search", (queryString, options2) => {
+      const { state, currentValue, timeout = 350 } = options2;
+      const search = state.keysSoFar + queryString;
+      const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+      const query2 = isRepeated ? search[0] : search;
+      const item = this.getByText(query2, currentValue);
+      const value = this.getItemValue(item);
+      function cleanup() {
+        clearTimeout(state.timer);
+        state.timer = -1;
+      }
+      function update(value2) {
+        state.keysSoFar = value2;
+        cleanup();
+        if (value2 !== "") {
+          state.timer = +setTimeout(() => {
+            update("");
+            cleanup();
+          }, timeout);
+        }
+      }
+      update(search);
+      return value;
+    });
+    __publicField5(this, "update", (value, item) => {
+      let index = this.indexOf(value);
+      if (index === -1) return this;
+      return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
+    });
+    __publicField5(this, "upsert", (value, item, mode = "append") => {
+      let index = this.indexOf(value);
+      if (index === -1) {
+        const fn = mode === "append" ? this.append : this.prepend;
+        return fn(item);
+      }
+      return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
+    });
+    __publicField5(this, "insert", (index, ...items) => {
+      return this.copy(insert(this.items, index, ...items));
+    });
+    __publicField5(this, "insertBefore", (value, ...items) => {
+      let toIndex = this.indexOf(value);
+      if (toIndex === -1) {
+        if (this.items.length === 0) toIndex = 0;
+        else return this;
+      }
+      return this.copy(insert(this.items, toIndex, ...items));
+    });
+    __publicField5(this, "insertAfter", (value, ...items) => {
+      let toIndex = this.indexOf(value);
+      if (toIndex === -1) {
+        if (this.items.length === 0) toIndex = 0;
+        else return this;
+      }
+      return this.copy(insert(this.items, toIndex + 1, ...items));
+    });
+    __publicField5(this, "prepend", (...items) => {
+      return this.copy(insert(this.items, 0, ...items));
+    });
+    __publicField5(this, "append", (...items) => {
+      return this.copy(insert(this.items, this.items.length, ...items));
+    });
+    __publicField5(this, "filter", (fn) => {
+      const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
+      return this.copy(filteredItems);
+    });
+    __publicField5(this, "remove", (...itemsOrValues) => {
+      const values = itemsOrValues.map(
+        (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
+      );
+      return this.copy(
+        this.items.filter((item) => {
+          const value = this.getItemValue(item);
+          if (value == null) return false;
+          return !values.includes(value);
+        })
+      );
+    });
+    __publicField5(this, "move", (value, toIndex) => {
+      const fromIndex = this.indexOf(value);
+      if (fromIndex === -1) return this;
+      return this.copy(move(this.items, [fromIndex], toIndex));
+    });
+    __publicField5(this, "moveBefore", (value, ...values) => {
+      let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
+      if (toIndex === -1) return this;
+      let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a, b) => a - b);
+      return this.copy(move(this.items, indices, toIndex));
+    });
+    __publicField5(this, "moveAfter", (value, ...values) => {
+      let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
+      if (toIndex === -1) return this;
+      let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a, b) => a - b);
+      return this.copy(move(this.items, indices, toIndex + 1));
+    });
+    __publicField5(this, "reorder", (fromIndex, toIndex) => {
+      return this.copy(move(this.items, [fromIndex], toIndex));
+    });
+    __publicField5(this, "compareValue", (a, b) => {
+      const indexA = this.indexOf(a);
+      const indexB = this.indexOf(b);
+      if (indexA < indexB) return -1;
+      if (indexA > indexB) return 1;
+      return 0;
+    });
+    __publicField5(this, "range", (from, to) => {
+      let keys = [];
+      let key = from;
+      while (key != null) {
+        let item = this.find(key);
+        if (item) keys.push(key);
+        if (key === to) return keys;
+        key = this.getNextValue(key);
+      }
+      return [];
+    });
+    __publicField5(this, "getValueRange", (from, to) => {
+      if (from && to) {
+        if (this.compareValue(from, to) <= 0) {
+          return this.range(from, to);
+        }
+        return this.range(to, from);
+      }
+      return [];
+    });
+    __publicField5(this, "toString", () => {
+      let result = "";
+      for (const item of this.items) {
+        const value = this.getItemValue(item);
+        const label = this.stringifyItem(item);
+        const disabled = this.getItemDisabled(item);
+        const itemString = [value, label, disabled].filter(Boolean).join(":");
+        result += itemString + ",";
+      }
+      return result;
+    });
+    __publicField5(this, "toJSON", () => {
+      return {
+        size: this.size,
+        first: this.firstValue,
+        last: this.lastValue
+      };
+    });
+    this.items = [...options.items];
+  }
+  /**
+   * Returns the number of items in the collection
+   */
+  get size() {
+    return this.items.length;
+  }
+  /**
+   * Returns the first value in the collection
+   */
+  get firstValue() {
+    let index = 0;
+    while (this.getItemDisabled(this.at(index))) index++;
+    return this.getItemValue(this.at(index));
+  }
+  /**
+   * Returns the last value in the collection
+   */
+  get lastValue() {
+    let index = this.size - 1;
+    while (this.getItemDisabled(this.at(index))) index--;
+    return this.getItemValue(this.at(index));
+  }
+  *[Symbol.iterator]() {
+    yield* this.items;
+  }
+};
+var match2 = (label, query2) => {
+  return !!label?.toLowerCase().startsWith(query2.toLowerCase());
+};
+function insert(items, index, ...values) {
+  return [...items.slice(0, index), ...values, ...items.slice(index)];
+}
+function move(items, indices, toIndex) {
+  indices = [...indices].sort((a, b) => a - b);
+  const itemsToMove = indices.map((i) => items[i]);
+  for (let i = indices.length - 1; i >= 0; i--) {
+    items = [...items.slice(0, indices[i]), ...items.slice(indices[i] + 1)];
+  }
+  toIndex = Math.max(0, toIndex - indices.filter((i) => i < toIndex).length);
+  return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
+}
+
+// ../node_modules/.pnpm/@floating-ui+utils@0.2.10/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
+var sides = ["top", "right", "bottom", "left"];
+var min3 = Math.min;
+var max3 = Math.max;
+var round3 = Math.round;
+var floor3 = Math.floor;
+var createCoords = (v) => ({
+  x: v,
+  y: v
+});
+var oppositeSideMap = {
+  left: "right",
+  right: "left",
+  bottom: "top",
+  top: "bottom"
+};
+var oppositeAlignmentMap = {
+  start: "end",
+  end: "start"
+};
+function clamp(start, value, end) {
+  return max3(start, min3(value, end));
+}
+function evaluate(value, param) {
+  return typeof value === "function" ? value(param) : value;
+}
+function getSide(placement) {
+  return placement.split("-")[0];
+}
+function getAlignment(placement) {
+  return placement.split("-")[1];
+}
+function getOppositeAxis(axis) {
+  return axis === "x" ? "y" : "x";
+}
+function getAxisLength(axis) {
+  return axis === "y" ? "height" : "width";
+}
+var yAxisSides = /* @__PURE__ */ new Set(["top", "bottom"]);
+function getSideAxis(placement) {
+  return yAxisSides.has(getSide(placement)) ? "y" : "x";
+}
+function getAlignmentAxis(placement) {
+  return getOppositeAxis(getSideAxis(placement));
+}
+function getAlignmentSides(placement, rects, rtl) {
+  if (rtl === void 0) {
+    rtl = false;
+  }
+  const alignment = getAlignment(placement);
+  const alignmentAxis = getAlignmentAxis(placement);
+  const length = getAxisLength(alignmentAxis);
+  let mainAlignmentSide = alignmentAxis === "x" ? alignment === (rtl ? "end" : "start") ? "right" : "left" : alignment === "start" ? "bottom" : "top";
+  if (rects.reference[length] > rects.floating[length]) {
+    mainAlignmentSide = getOppositePlacement(mainAlignmentSide);
+  }
+  return [mainAlignmentSide, getOppositePlacement(mainAlignmentSide)];
+}
+function getExpandedPlacements(placement) {
+  const oppositePlacement = getOppositePlacement(placement);
+  return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
+}
+function getOppositeAlignmentPlacement(placement) {
+  return placement.replace(/start|end/g, (alignment) => oppositeAlignmentMap[alignment]);
+}
+var lrPlacement = ["left", "right"];
+var rlPlacement = ["right", "left"];
+var tbPlacement = ["top", "bottom"];
+var btPlacement = ["bottom", "top"];
+function getSideList(side, isStart, rtl) {
+  switch (side) {
+    case "top":
+    case "bottom":
+      if (rtl) return isStart ? rlPlacement : lrPlacement;
+      return isStart ? lrPlacement : rlPlacement;
+    case "left":
+    case "right":
+      return isStart ? tbPlacement : btPlacement;
+    default:
+      return [];
+  }
+}
+function getOppositeAxisPlacements(placement, flipAlignment, direction, rtl) {
+  const alignment = getAlignment(placement);
+  let list = getSideList(getSide(placement), direction === "start", rtl);
+  if (alignment) {
+    list = list.map((side) => side + "-" + alignment);
+    if (flipAlignment) {
+      list = list.concat(list.map(getOppositeAlignmentPlacement));
+    }
+  }
+  return list;
+}
+function getOppositePlacement(placement) {
+  return placement.replace(/left|right|bottom|top/g, (side) => oppositeSideMap[side]);
+}
+function expandPaddingObject(padding) {
+  return {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    ...padding
+  };
+}
+function getPaddingObject(padding) {
+  return typeof padding !== "number" ? expandPaddingObject(padding) : {
+    top: padding,
+    right: padding,
+    bottom: padding,
+    left: padding
+  };
+}
+function rectToClientRect(rect) {
+  const {
+    x,
+    y,
+    width,
+    height
+  } = rect;
+  return {
+    width,
+    height,
+    top: y,
+    left: x,
+    right: x + width,
+    bottom: y + height,
+    x,
+    y
+  };
+}
+
+// ../node_modules/.pnpm/@floating-ui+core@1.7.4/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
+function computeCoordsFromPlacement(_ref, placement, rtl) {
+  let {
+    reference,
+    floating
+  } = _ref;
+  const sideAxis = getSideAxis(placement);
+  const alignmentAxis = getAlignmentAxis(placement);
+  const alignLength = getAxisLength(alignmentAxis);
+  const side = getSide(placement);
+  const isVertical = sideAxis === "y";
+  const commonX = reference.x + reference.width / 2 - floating.width / 2;
+  const commonY = reference.y + reference.height / 2 - floating.height / 2;
+  const commonAlign = reference[alignLength] / 2 - floating[alignLength] / 2;
+  let coords;
+  switch (side) {
+    case "top":
+      coords = {
+        x: commonX,
+        y: reference.y - floating.height
+      };
+      break;
+    case "bottom":
+      coords = {
+        x: commonX,
+        y: reference.y + reference.height
+      };
+      break;
+    case "right":
+      coords = {
+        x: reference.x + reference.width,
+        y: commonY
+      };
+      break;
+    case "left":
+      coords = {
+        x: reference.x - floating.width,
+        y: commonY
+      };
+      break;
+    default:
+      coords = {
+        x: reference.x,
+        y: reference.y
+      };
+  }
+  switch (getAlignment(placement)) {
+    case "start":
+      coords[alignmentAxis] -= commonAlign * (rtl && isVertical ? -1 : 1);
+      break;
+    case "end":
+      coords[alignmentAxis] += commonAlign * (rtl && isVertical ? -1 : 1);
+      break;
+  }
+  return coords;
+}
+async function detectOverflow(state, options) {
+  var _await$platform$isEle;
+  if (options === void 0) {
+    options = {};
+  }
+  const {
+    x,
+    y,
+    platform: platform2,
+    rects,
+    elements,
+    strategy
+  } = state;
+  const {
+    boundary = "clippingAncestors",
+    rootBoundary = "viewport",
+    elementContext = "floating",
+    altBoundary = false,
+    padding = 0
+  } = evaluate(options, state);
+  const paddingObject = getPaddingObject(padding);
+  const altContext = elementContext === "floating" ? "reference" : "floating";
+  const element = elements[altBoundary ? altContext : elementContext];
+  const clippingClientRect = rectToClientRect(await platform2.getClippingRect({
+    element: ((_await$platform$isEle = await (platform2.isElement == null ? void 0 : platform2.isElement(element))) != null ? _await$platform$isEle : true) ? element : element.contextElement || await (platform2.getDocumentElement == null ? void 0 : platform2.getDocumentElement(elements.floating)),
+    boundary,
+    rootBoundary,
+    strategy
+  }));
+  const rect = elementContext === "floating" ? {
+    x,
+    y,
+    width: rects.floating.width,
+    height: rects.floating.height
+  } : rects.reference;
+  const offsetParent = await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(elements.floating));
+  const offsetScale = await (platform2.isElement == null ? void 0 : platform2.isElement(offsetParent)) ? await (platform2.getScale == null ? void 0 : platform2.getScale(offsetParent)) || {
+    x: 1,
+    y: 1
+  } : {
+    x: 1,
+    y: 1
+  };
+  const elementClientRect = rectToClientRect(platform2.convertOffsetParentRelativeRectToViewportRelativeRect ? await platform2.convertOffsetParentRelativeRectToViewportRelativeRect({
+    elements,
+    rect,
+    offsetParent,
+    strategy
+  }) : rect);
+  return {
+    top: (clippingClientRect.top - elementClientRect.top + paddingObject.top) / offsetScale.y,
+    bottom: (elementClientRect.bottom - clippingClientRect.bottom + paddingObject.bottom) / offsetScale.y,
+    left: (clippingClientRect.left - elementClientRect.left + paddingObject.left) / offsetScale.x,
+    right: (elementClientRect.right - clippingClientRect.right + paddingObject.right) / offsetScale.x
+  };
+}
+var computePosition = async (reference, floating, config) => {
+  const {
+    placement = "bottom",
+    strategy = "absolute",
+    middleware = [],
+    platform: platform2
+  } = config;
+  const validMiddleware = middleware.filter(Boolean);
+  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(floating));
+  let rects = await platform2.getElementRects({
+    reference,
+    floating,
+    strategy
+  });
+  let {
+    x,
+    y
+  } = computeCoordsFromPlacement(rects, placement, rtl);
+  let statefulPlacement = placement;
+  let middlewareData = {};
+  let resetCount = 0;
+  for (let i = 0; i < validMiddleware.length; i++) {
+    var _platform$detectOverf;
+    const {
+      name,
+      fn
+    } = validMiddleware[i];
+    const {
+      x: nextX,
+      y: nextY,
+      data,
+      reset
+    } = await fn({
+      x,
+      y,
+      initialPlacement: placement,
+      placement: statefulPlacement,
+      strategy,
+      middlewareData,
+      rects,
+      platform: {
+        ...platform2,
+        detectOverflow: (_platform$detectOverf = platform2.detectOverflow) != null ? _platform$detectOverf : detectOverflow
+      },
+      elements: {
+        reference,
+        floating
+      }
+    });
+    x = nextX != null ? nextX : x;
+    y = nextY != null ? nextY : y;
+    middlewareData = {
+      ...middlewareData,
+      [name]: {
+        ...middlewareData[name],
+        ...data
+      }
+    };
+    if (reset && resetCount <= 50) {
+      resetCount++;
+      if (typeof reset === "object") {
+        if (reset.placement) {
+          statefulPlacement = reset.placement;
+        }
+        if (reset.rects) {
+          rects = reset.rects === true ? await platform2.getElementRects({
+            reference,
+            floating,
+            strategy
+          }) : reset.rects;
+        }
+        ({
+          x,
+          y
+        } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
+      }
+      i = -1;
+    }
+  }
+  return {
+    x,
+    y,
+    placement: statefulPlacement,
+    strategy,
+    middlewareData
+  };
+};
+var arrow = (options) => ({
+  name: "arrow",
+  options,
+  async fn(state) {
+    const {
+      x,
+      y,
+      placement,
+      rects,
+      platform: platform2,
+      elements,
+      middlewareData
+    } = state;
+    const {
+      element,
+      padding = 0
+    } = evaluate(options, state) || {};
+    if (element == null) {
+      return {};
+    }
+    const paddingObject = getPaddingObject(padding);
+    const coords = {
+      x,
+      y
+    };
+    const axis = getAlignmentAxis(placement);
+    const length = getAxisLength(axis);
+    const arrowDimensions = await platform2.getDimensions(element);
+    const isYAxis = axis === "y";
+    const minProp = isYAxis ? "top" : "left";
+    const maxProp = isYAxis ? "bottom" : "right";
+    const clientProp = isYAxis ? "clientHeight" : "clientWidth";
+    const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
+    const startDiff = coords[axis] - rects.reference[axis];
+    const arrowOffsetParent = await (platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(element));
+    let clientSize = arrowOffsetParent ? arrowOffsetParent[clientProp] : 0;
+    if (!clientSize || !await (platform2.isElement == null ? void 0 : platform2.isElement(arrowOffsetParent))) {
+      clientSize = elements.floating[clientProp] || rects.floating[length];
+    }
+    const centerToReference = endDiff / 2 - startDiff / 2;
+    const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
+    const minPadding = min3(paddingObject[minProp], largestPossiblePadding);
+    const maxPadding = min3(paddingObject[maxProp], largestPossiblePadding);
+    const min$1 = minPadding;
+    const max4 = clientSize - arrowDimensions[length] - maxPadding;
+    const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
+    const offset3 = clamp(min$1, center, max4);
+    const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
+    const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max4 : 0;
+    return {
+      [axis]: coords[axis] + alignmentOffset,
+      data: {
+        [axis]: offset3,
+        centerOffset: center - offset3 - alignmentOffset,
+        ...shouldAddOffset && {
+          alignmentOffset
+        }
+      },
+      reset: shouldAddOffset
+    };
+  }
+});
+var flip = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "flip",
+    options,
+    async fn(state) {
+      var _middlewareData$arrow, _middlewareData$flip;
+      const {
+        placement,
+        middlewareData,
+        rects,
+        initialPlacement,
+        platform: platform2,
+        elements
+      } = state;
+      const {
+        mainAxis: checkMainAxis = true,
+        crossAxis: checkCrossAxis = true,
+        fallbackPlacements: specifiedFallbackPlacements,
+        fallbackStrategy = "bestFit",
+        fallbackAxisSideDirection = "none",
+        flipAlignment = true,
+        ...detectOverflowOptions
+      } = evaluate(options, state);
+      if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+        return {};
+      }
+      const side = getSide(placement);
+      const initialSideAxis = getSideAxis(initialPlacement);
+      const isBasePlacement = getSide(initialPlacement) === initialPlacement;
+      const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
+      const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
+      const hasFallbackAxisSideDirection = fallbackAxisSideDirection !== "none";
+      if (!specifiedFallbackPlacements && hasFallbackAxisSideDirection) {
+        fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
+      }
+      const placements2 = [initialPlacement, ...fallbackPlacements];
+      const overflow = await platform2.detectOverflow(state, detectOverflowOptions);
+      const overflows = [];
+      let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
+      if (checkMainAxis) {
+        overflows.push(overflow[side]);
+      }
+      if (checkCrossAxis) {
+        const sides2 = getAlignmentSides(placement, rects, rtl);
+        overflows.push(overflow[sides2[0]], overflow[sides2[1]]);
+      }
+      overflowsData = [...overflowsData, {
+        placement,
+        overflows
+      }];
+      if (!overflows.every((side2) => side2 <= 0)) {
+        var _middlewareData$flip2, _overflowsData$filter;
+        const nextIndex2 = (((_middlewareData$flip2 = middlewareData.flip) == null ? void 0 : _middlewareData$flip2.index) || 0) + 1;
+        const nextPlacement = placements2[nextIndex2];
+        if (nextPlacement) {
+          const ignoreCrossAxisOverflow = checkCrossAxis === "alignment" ? initialSideAxis !== getSideAxis(nextPlacement) : false;
+          if (!ignoreCrossAxisOverflow || // We leave the current main axis only if every placement on that axis
+          // overflows the main axis.
+          overflowsData.every((d) => getSideAxis(d.placement) === initialSideAxis ? d.overflows[0] > 0 : true)) {
+            return {
+              data: {
+                index: nextIndex2,
+                overflows: overflowsData
+              },
+              reset: {
+                placement: nextPlacement
+              }
+            };
+          }
+        }
+        let resetPlacement = (_overflowsData$filter = overflowsData.filter((d) => d.overflows[0] <= 0).sort((a, b) => a.overflows[1] - b.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
+        if (!resetPlacement) {
+          switch (fallbackStrategy) {
+            case "bestFit": {
+              var _overflowsData$filter2;
+              const placement2 = (_overflowsData$filter2 = overflowsData.filter((d) => {
+                if (hasFallbackAxisSideDirection) {
+                  const currentSideAxis = getSideAxis(d.placement);
+                  return currentSideAxis === initialSideAxis || // Create a bias to the `y` side axis due to horizontal
+                  // reading directions favoring greater width.
+                  currentSideAxis === "y";
+                }
+                return true;
+              }).map((d) => [d.placement, d.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a, b) => a[1] - b[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
+              if (placement2) {
+                resetPlacement = placement2;
+              }
+              break;
+            }
+            case "initialPlacement":
+              resetPlacement = initialPlacement;
+              break;
+          }
+        }
+        if (placement !== resetPlacement) {
+          return {
+            reset: {
+              placement: resetPlacement
+            }
+          };
+        }
+      }
+      return {};
+    }
+  };
+};
+function getSideOffsets(overflow, rect) {
+  return {
+    top: overflow.top - rect.height,
+    right: overflow.right - rect.width,
+    bottom: overflow.bottom - rect.height,
+    left: overflow.left - rect.width
+  };
+}
+function isAnySideFullyClipped(overflow) {
+  return sides.some((side) => overflow[side] >= 0);
+}
+var hide = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "hide",
+    options,
+    async fn(state) {
+      const {
+        rects,
+        platform: platform2
+      } = state;
+      const {
+        strategy = "referenceHidden",
+        ...detectOverflowOptions
+      } = evaluate(options, state);
+      switch (strategy) {
+        case "referenceHidden": {
+          const overflow = await platform2.detectOverflow(state, {
+            ...detectOverflowOptions,
+            elementContext: "reference"
+          });
+          const offsets = getSideOffsets(overflow, rects.reference);
+          return {
+            data: {
+              referenceHiddenOffsets: offsets,
+              referenceHidden: isAnySideFullyClipped(offsets)
+            }
+          };
+        }
+        case "escaped": {
+          const overflow = await platform2.detectOverflow(state, {
+            ...detectOverflowOptions,
+            altBoundary: true
+          });
+          const offsets = getSideOffsets(overflow, rects.floating);
+          return {
+            data: {
+              escapedOffsets: offsets,
+              escaped: isAnySideFullyClipped(offsets)
+            }
+          };
+        }
+        default: {
+          return {};
+        }
+      }
+    }
+  };
+};
+var originSides = /* @__PURE__ */ new Set(["left", "top"]);
+async function convertValueToCoords(state, options) {
+  const {
+    placement,
+    platform: platform2,
+    elements
+  } = state;
+  const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
+  const side = getSide(placement);
+  const alignment = getAlignment(placement);
+  const isVertical = getSideAxis(placement) === "y";
+  const mainAxisMulti = originSides.has(side) ? -1 : 1;
+  const crossAxisMulti = rtl && isVertical ? -1 : 1;
+  const rawValue = evaluate(options, state);
+  let {
+    mainAxis,
+    crossAxis,
+    alignmentAxis
+  } = typeof rawValue === "number" ? {
+    mainAxis: rawValue,
+    crossAxis: 0,
+    alignmentAxis: null
+  } : {
+    mainAxis: rawValue.mainAxis || 0,
+    crossAxis: rawValue.crossAxis || 0,
+    alignmentAxis: rawValue.alignmentAxis
+  };
+  if (alignment && typeof alignmentAxis === "number") {
+    crossAxis = alignment === "end" ? alignmentAxis * -1 : alignmentAxis;
+  }
+  return isVertical ? {
+    x: crossAxis * crossAxisMulti,
+    y: mainAxis * mainAxisMulti
+  } : {
+    x: mainAxis * mainAxisMulti,
+    y: crossAxis * crossAxisMulti
+  };
+}
+var offset = function(options) {
+  if (options === void 0) {
+    options = 0;
+  }
+  return {
+    name: "offset",
+    options,
+    async fn(state) {
+      var _middlewareData$offse, _middlewareData$arrow;
+      const {
+        x,
+        y,
+        placement,
+        middlewareData
+      } = state;
+      const diffCoords = await convertValueToCoords(state, options);
+      if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+        return {};
+      }
+      return {
+        x: x + diffCoords.x,
+        y: y + diffCoords.y,
+        data: {
+          ...diffCoords,
+          placement
+        }
+      };
+    }
+  };
+};
+var shift = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "shift",
+    options,
+    async fn(state) {
+      const {
+        x,
+        y,
+        placement,
+        platform: platform2
+      } = state;
+      const {
+        mainAxis: checkMainAxis = true,
+        crossAxis: checkCrossAxis = false,
+        limiter = {
+          fn: (_ref) => {
+            let {
+              x: x2,
+              y: y2
+            } = _ref;
+            return {
+              x: x2,
+              y: y2
+            };
+          }
+        },
+        ...detectOverflowOptions
+      } = evaluate(options, state);
+      const coords = {
+        x,
+        y
+      };
+      const overflow = await platform2.detectOverflow(state, detectOverflowOptions);
+      const crossAxis = getSideAxis(getSide(placement));
+      const mainAxis = getOppositeAxis(crossAxis);
+      let mainAxisCoord = coords[mainAxis];
+      let crossAxisCoord = coords[crossAxis];
+      if (checkMainAxis) {
+        const minSide = mainAxis === "y" ? "top" : "left";
+        const maxSide = mainAxis === "y" ? "bottom" : "right";
+        const min4 = mainAxisCoord + overflow[minSide];
+        const max4 = mainAxisCoord - overflow[maxSide];
+        mainAxisCoord = clamp(min4, mainAxisCoord, max4);
+      }
+      if (checkCrossAxis) {
+        const minSide = crossAxis === "y" ? "top" : "left";
+        const maxSide = crossAxis === "y" ? "bottom" : "right";
+        const min4 = crossAxisCoord + overflow[minSide];
+        const max4 = crossAxisCoord - overflow[maxSide];
+        crossAxisCoord = clamp(min4, crossAxisCoord, max4);
+      }
+      const limitedCoords = limiter.fn({
+        ...state,
+        [mainAxis]: mainAxisCoord,
+        [crossAxis]: crossAxisCoord
+      });
+      return {
+        ...limitedCoords,
+        data: {
+          x: limitedCoords.x - x,
+          y: limitedCoords.y - y,
+          enabled: {
+            [mainAxis]: checkMainAxis,
+            [crossAxis]: checkCrossAxis
+          }
+        }
+      };
+    }
+  };
+};
+var limitShift = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    options,
+    fn(state) {
+      const {
+        x,
+        y,
+        placement,
+        rects,
+        middlewareData
+      } = state;
+      const {
+        offset: offset3 = 0,
+        mainAxis: checkMainAxis = true,
+        crossAxis: checkCrossAxis = true
+      } = evaluate(options, state);
+      const coords = {
+        x,
+        y
+      };
+      const crossAxis = getSideAxis(placement);
+      const mainAxis = getOppositeAxis(crossAxis);
+      let mainAxisCoord = coords[mainAxis];
+      let crossAxisCoord = coords[crossAxis];
+      const rawOffset = evaluate(offset3, state);
+      const computedOffset = typeof rawOffset === "number" ? {
+        mainAxis: rawOffset,
+        crossAxis: 0
+      } : {
+        mainAxis: 0,
+        crossAxis: 0,
+        ...rawOffset
+      };
+      if (checkMainAxis) {
+        const len = mainAxis === "y" ? "height" : "width";
+        const limitMin = rects.reference[mainAxis] - rects.floating[len] + computedOffset.mainAxis;
+        const limitMax = rects.reference[mainAxis] + rects.reference[len] - computedOffset.mainAxis;
+        if (mainAxisCoord < limitMin) {
+          mainAxisCoord = limitMin;
+        } else if (mainAxisCoord > limitMax) {
+          mainAxisCoord = limitMax;
+        }
+      }
+      if (checkCrossAxis) {
+        var _middlewareData$offse, _middlewareData$offse2;
+        const len = mainAxis === "y" ? "width" : "height";
+        const isOriginSide = originSides.has(getSide(placement));
+        const limitMin = rects.reference[crossAxis] - rects.floating[len] + (isOriginSide ? ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse[crossAxis]) || 0 : 0) + (isOriginSide ? 0 : computedOffset.crossAxis);
+        const limitMax = rects.reference[crossAxis] + rects.reference[len] + (isOriginSide ? 0 : ((_middlewareData$offse2 = middlewareData.offset) == null ? void 0 : _middlewareData$offse2[crossAxis]) || 0) - (isOriginSide ? computedOffset.crossAxis : 0);
+        if (crossAxisCoord < limitMin) {
+          crossAxisCoord = limitMin;
+        } else if (crossAxisCoord > limitMax) {
+          crossAxisCoord = limitMax;
+        }
+      }
+      return {
+        [mainAxis]: mainAxisCoord,
+        [crossAxis]: crossAxisCoord
+      };
+    }
+  };
+};
+var size = function(options) {
+  if (options === void 0) {
+    options = {};
+  }
+  return {
+    name: "size",
+    options,
+    async fn(state) {
+      var _state$middlewareData, _state$middlewareData2;
+      const {
+        placement,
+        rects,
+        platform: platform2,
+        elements
+      } = state;
+      const {
+        apply = () => {
+        },
+        ...detectOverflowOptions
+      } = evaluate(options, state);
+      const overflow = await platform2.detectOverflow(state, detectOverflowOptions);
+      const side = getSide(placement);
+      const alignment = getAlignment(placement);
+      const isYAxis = getSideAxis(placement) === "y";
+      const {
+        width,
+        height
+      } = rects.floating;
+      let heightSide;
+      let widthSide;
+      if (side === "top" || side === "bottom") {
+        heightSide = side;
+        widthSide = alignment === (await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)) ? "start" : "end") ? "left" : "right";
+      } else {
+        widthSide = side;
+        heightSide = alignment === "end" ? "top" : "bottom";
+      }
+      const maximumClippingHeight = height - overflow.top - overflow.bottom;
+      const maximumClippingWidth = width - overflow.left - overflow.right;
+      const overflowAvailableHeight = min3(height - overflow[heightSide], maximumClippingHeight);
+      const overflowAvailableWidth = min3(width - overflow[widthSide], maximumClippingWidth);
+      const noShift = !state.middlewareData.shift;
+      let availableHeight = overflowAvailableHeight;
+      let availableWidth = overflowAvailableWidth;
+      if ((_state$middlewareData = state.middlewareData.shift) != null && _state$middlewareData.enabled.x) {
+        availableWidth = maximumClippingWidth;
+      }
+      if ((_state$middlewareData2 = state.middlewareData.shift) != null && _state$middlewareData2.enabled.y) {
+        availableHeight = maximumClippingHeight;
+      }
+      if (noShift && !alignment) {
+        const xMin = max3(overflow.left, 0);
+        const xMax = max3(overflow.right, 0);
+        const yMin = max3(overflow.top, 0);
+        const yMax = max3(overflow.bottom, 0);
+        if (isYAxis) {
+          availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max3(overflow.left, overflow.right));
+        } else {
+          availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max3(overflow.top, overflow.bottom));
+        }
+      }
+      await apply({
+        ...state,
+        availableWidth,
+        availableHeight
+      });
+      const nextDimensions = await platform2.getDimensions(elements.floating);
+      if (width !== nextDimensions.width || height !== nextDimensions.height) {
+        return {
+          reset: {
+            rects: true
+          }
+        };
+      }
+      return {};
+    }
+  };
+};
+
+// ../node_modules/.pnpm/@floating-ui+utils@0.2.10/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
+function hasWindow() {
+  return typeof window !== "undefined";
+}
+function getNodeName2(node) {
+  if (isNode3(node)) {
+    return (node.nodeName || "").toLowerCase();
+  }
+  return "#document";
+}
+function getWindow3(node) {
+  var _node$ownerDocument;
+  return (node == null || (_node$ownerDocument = node.ownerDocument) == null ? void 0 : _node$ownerDocument.defaultView) || window;
+}
+function getDocumentElement2(node) {
+  var _ref;
+  return (_ref = (isNode3(node) ? node.ownerDocument : node.document) || window.document) == null ? void 0 : _ref.documentElement;
+}
+function isNode3(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof Node || value instanceof getWindow3(value).Node;
+}
+function isElement2(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof Element || value instanceof getWindow3(value).Element;
+}
+function isHTMLElement3(value) {
+  if (!hasWindow()) {
+    return false;
+  }
+  return value instanceof HTMLElement || value instanceof getWindow3(value).HTMLElement;
+}
+function isShadowRoot3(value) {
+  if (!hasWindow() || typeof ShadowRoot === "undefined") {
+    return false;
+  }
+  return value instanceof ShadowRoot || value instanceof getWindow3(value).ShadowRoot;
+}
+var invalidOverflowDisplayValues = /* @__PURE__ */ new Set(["inline", "contents"]);
+function isOverflowElement2(element) {
+  const {
+    overflow,
+    overflowX,
+    overflowY,
+    display
+  } = getComputedStyle3(element);
+  return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !invalidOverflowDisplayValues.has(display);
+}
+var tableElements = /* @__PURE__ */ new Set(["table", "td", "th"]);
+function isTableElement(element) {
+  return tableElements.has(getNodeName2(element));
+}
+var topLayerSelectors = [":popover-open", ":modal"];
+function isTopLayer(element) {
+  return topLayerSelectors.some((selector) => {
+    try {
+      return element.matches(selector);
+    } catch (_e) {
+      return false;
+    }
+  });
+}
+var transformProperties = ["transform", "translate", "scale", "rotate", "perspective"];
+var willChangeValues = ["transform", "translate", "scale", "rotate", "perspective", "filter"];
+var containValues = ["paint", "layout", "strict", "content"];
+function isContainingBlock(elementOrCss) {
+  const webkit = isWebKit();
+  const css = isElement2(elementOrCss) ? getComputedStyle3(elementOrCss) : elementOrCss;
+  return transformProperties.some((value) => css[value] ? css[value] !== "none" : false) || (css.containerType ? css.containerType !== "normal" : false) || !webkit && (css.backdropFilter ? css.backdropFilter !== "none" : false) || !webkit && (css.filter ? css.filter !== "none" : false) || willChangeValues.some((value) => (css.willChange || "").includes(value)) || containValues.some((value) => (css.contain || "").includes(value));
+}
+function getContainingBlock(element) {
+  let currentNode = getParentNode2(element);
+  while (isHTMLElement3(currentNode) && !isLastTraversableNode(currentNode)) {
+    if (isContainingBlock(currentNode)) {
+      return currentNode;
+    } else if (isTopLayer(currentNode)) {
+      return null;
+    }
+    currentNode = getParentNode2(currentNode);
+  }
+  return null;
+}
+function isWebKit() {
+  if (typeof CSS === "undefined" || !CSS.supports) return false;
+  return CSS.supports("-webkit-backdrop-filter", "none");
+}
+var lastTraversableNodeNames = /* @__PURE__ */ new Set(["html", "body", "#document"]);
+function isLastTraversableNode(node) {
+  return lastTraversableNodeNames.has(getNodeName2(node));
+}
+function getComputedStyle3(element) {
+  return getWindow3(element).getComputedStyle(element);
+}
+function getNodeScroll(element) {
+  if (isElement2(element)) {
+    return {
+      scrollLeft: element.scrollLeft,
+      scrollTop: element.scrollTop
+    };
+  }
+  return {
+    scrollLeft: element.scrollX,
+    scrollTop: element.scrollY
+  };
+}
+function getParentNode2(node) {
+  if (getNodeName2(node) === "html") {
+    return node;
+  }
+  const result = (
+    // Step into the shadow DOM of the parent of a slotted node.
+    node.assignedSlot || // DOM Element detected.
+    node.parentNode || // ShadowRoot detected.
+    isShadowRoot3(node) && node.host || // Fallback.
+    getDocumentElement2(node)
+  );
+  return isShadowRoot3(result) ? result.host : result;
+}
+function getNearestOverflowAncestor2(node) {
+  const parentNode = getParentNode2(node);
+  if (isLastTraversableNode(parentNode)) {
+    return node.ownerDocument ? node.ownerDocument.body : node.body;
+  }
+  if (isHTMLElement3(parentNode) && isOverflowElement2(parentNode)) {
+    return parentNode;
+  }
+  return getNearestOverflowAncestor2(parentNode);
+}
+function getOverflowAncestors(node, list, traverseIframes) {
+  var _node$ownerDocument2;
+  if (list === void 0) {
+    list = [];
+  }
+  if (traverseIframes === void 0) {
+    traverseIframes = true;
+  }
+  const scrollableAncestor = getNearestOverflowAncestor2(node);
+  const isBody = scrollableAncestor === ((_node$ownerDocument2 = node.ownerDocument) == null ? void 0 : _node$ownerDocument2.body);
+  const win = getWindow3(scrollableAncestor);
+  if (isBody) {
+    const frameElement = getFrameElement(win);
+    return list.concat(win, win.visualViewport || [], isOverflowElement2(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
+  }
+  return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
+}
+function getFrameElement(win) {
+  return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
+}
+
+// ../node_modules/.pnpm/@floating-ui+dom@1.7.5/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
+function getCssDimensions(element) {
+  const css = getComputedStyle3(element);
+  let width = parseFloat(css.width) || 0;
+  let height = parseFloat(css.height) || 0;
+  const hasOffset = isHTMLElement3(element);
+  const offsetWidth = hasOffset ? element.offsetWidth : width;
+  const offsetHeight = hasOffset ? element.offsetHeight : height;
+  const shouldFallback = round3(width) !== offsetWidth || round3(height) !== offsetHeight;
+  if (shouldFallback) {
+    width = offsetWidth;
+    height = offsetHeight;
+  }
+  return {
+    width,
+    height,
+    $: shouldFallback
+  };
+}
+function unwrapElement(element) {
+  return !isElement2(element) ? element.contextElement : element;
+}
+function getScale(element) {
+  const domElement = unwrapElement(element);
+  if (!isHTMLElement3(domElement)) {
+    return createCoords(1);
+  }
+  const rect = domElement.getBoundingClientRect();
+  const {
+    width,
+    height,
+    $
+  } = getCssDimensions(domElement);
+  let x = ($ ? round3(rect.width) : rect.width) / width;
+  let y = ($ ? round3(rect.height) : rect.height) / height;
+  if (!x || !Number.isFinite(x)) {
+    x = 1;
+  }
+  if (!y || !Number.isFinite(y)) {
+    y = 1;
+  }
+  return {
+    x,
+    y
+  };
+}
+var noOffsets = /* @__PURE__ */ createCoords(0);
+function getVisualOffsets(element) {
+  const win = getWindow3(element);
+  if (!isWebKit() || !win.visualViewport) {
+    return noOffsets;
+  }
+  return {
+    x: win.visualViewport.offsetLeft,
+    y: win.visualViewport.offsetTop
+  };
+}
+function shouldAddVisualOffsets(element, isFixed, floatingOffsetParent) {
+  if (isFixed === void 0) {
+    isFixed = false;
+  }
+  if (!floatingOffsetParent || isFixed && floatingOffsetParent !== getWindow3(element)) {
+    return false;
+  }
+  return isFixed;
+}
+function getBoundingClientRect(element, includeScale, isFixedStrategy, offsetParent) {
+  if (includeScale === void 0) {
+    includeScale = false;
+  }
+  if (isFixedStrategy === void 0) {
+    isFixedStrategy = false;
+  }
+  const clientRect = element.getBoundingClientRect();
+  const domElement = unwrapElement(element);
+  let scale = createCoords(1);
+  if (includeScale) {
+    if (offsetParent) {
+      if (isElement2(offsetParent)) {
+        scale = getScale(offsetParent);
+      }
+    } else {
+      scale = getScale(element);
+    }
+  }
+  const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
+  let x = (clientRect.left + visualOffsets.x) / scale.x;
+  let y = (clientRect.top + visualOffsets.y) / scale.y;
+  let width = clientRect.width / scale.x;
+  let height = clientRect.height / scale.y;
+  if (domElement) {
+    const win = getWindow3(domElement);
+    const offsetWin = offsetParent && isElement2(offsetParent) ? getWindow3(offsetParent) : offsetParent;
+    let currentWin = win;
+    let currentIFrame = getFrameElement(currentWin);
+    while (currentIFrame && offsetParent && offsetWin !== currentWin) {
+      const iframeScale = getScale(currentIFrame);
+      const iframeRect = currentIFrame.getBoundingClientRect();
+      const css = getComputedStyle3(currentIFrame);
+      const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
+      const top = iframeRect.top + (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
+      x *= iframeScale.x;
+      y *= iframeScale.y;
+      width *= iframeScale.x;
+      height *= iframeScale.y;
+      x += left;
+      y += top;
+      currentWin = getWindow3(currentIFrame);
+      currentIFrame = getFrameElement(currentWin);
+    }
+  }
+  return rectToClientRect({
+    width,
+    height,
+    x,
+    y
+  });
+}
+function getWindowScrollBarX(element, rect) {
+  const leftScroll = getNodeScroll(element).scrollLeft;
+  if (!rect) {
+    return getBoundingClientRect(getDocumentElement2(element)).left + leftScroll;
+  }
+  return rect.left + leftScroll;
+}
+function getHTMLOffset(documentElement, scroll) {
+  const htmlRect = documentElement.getBoundingClientRect();
+  const x = htmlRect.left + scroll.scrollLeft - getWindowScrollBarX(documentElement, htmlRect);
+  const y = htmlRect.top + scroll.scrollTop;
+  return {
+    x,
+    y
+  };
+}
+function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
+  let {
+    elements,
+    rect,
+    offsetParent,
+    strategy
+  } = _ref;
+  const isFixed = strategy === "fixed";
+  const documentElement = getDocumentElement2(offsetParent);
+  const topLayer = elements ? isTopLayer(elements.floating) : false;
+  if (offsetParent === documentElement || topLayer && isFixed) {
+    return rect;
+  }
+  let scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  let scale = createCoords(1);
+  const offsets = createCoords(0);
+  const isOffsetParentAnElement = isHTMLElement3(offsetParent);
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+    if (getNodeName2(offsetParent) !== "body" || isOverflowElement2(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isHTMLElement3(offsetParent)) {
+      const offsetRect = getBoundingClientRect(offsetParent);
+      scale = getScale(offsetParent);
+      offsets.x = offsetRect.x + offsetParent.clientLeft;
+      offsets.y = offsetRect.y + offsetParent.clientTop;
+    }
+  }
+  const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
+  return {
+    width: rect.width * scale.x,
+    height: rect.height * scale.y,
+    x: rect.x * scale.x - scroll.scrollLeft * scale.x + offsets.x + htmlOffset.x,
+    y: rect.y * scale.y - scroll.scrollTop * scale.y + offsets.y + htmlOffset.y
+  };
+}
+function getClientRects(element) {
+  return Array.from(element.getClientRects());
+}
+function getDocumentRect(element) {
+  const html = getDocumentElement2(element);
+  const scroll = getNodeScroll(element);
+  const body = element.ownerDocument.body;
+  const width = max3(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
+  const height = max3(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
+  let x = -scroll.scrollLeft + getWindowScrollBarX(element);
+  const y = -scroll.scrollTop;
+  if (getComputedStyle3(body).direction === "rtl") {
+    x += max3(html.clientWidth, body.clientWidth) - width;
+  }
+  return {
+    width,
+    height,
+    x,
+    y
+  };
+}
+var SCROLLBAR_MAX = 25;
+function getViewportRect(element, strategy) {
+  const win = getWindow3(element);
+  const html = getDocumentElement2(element);
+  const visualViewport = win.visualViewport;
+  let width = html.clientWidth;
+  let height = html.clientHeight;
+  let x = 0;
+  let y = 0;
+  if (visualViewport) {
+    width = visualViewport.width;
+    height = visualViewport.height;
+    const visualViewportBased = isWebKit();
+    if (!visualViewportBased || visualViewportBased && strategy === "fixed") {
+      x = visualViewport.offsetLeft;
+      y = visualViewport.offsetTop;
+    }
+  }
+  const windowScrollbarX = getWindowScrollBarX(html);
+  if (windowScrollbarX <= 0) {
+    const doc = html.ownerDocument;
+    const body = doc.body;
+    const bodyStyles = getComputedStyle(body);
+    const bodyMarginInline = doc.compatMode === "CSS1Compat" ? parseFloat(bodyStyles.marginLeft) + parseFloat(bodyStyles.marginRight) || 0 : 0;
+    const clippingStableScrollbarWidth = Math.abs(html.clientWidth - body.clientWidth - bodyMarginInline);
+    if (clippingStableScrollbarWidth <= SCROLLBAR_MAX) {
+      width -= clippingStableScrollbarWidth;
+    }
+  } else if (windowScrollbarX <= SCROLLBAR_MAX) {
+    width += windowScrollbarX;
+  }
+  return {
+    width,
+    height,
+    x,
+    y
+  };
+}
+var absoluteOrFixed = /* @__PURE__ */ new Set(["absolute", "fixed"]);
+function getInnerBoundingClientRect(element, strategy) {
+  const clientRect = getBoundingClientRect(element, true, strategy === "fixed");
+  const top = clientRect.top + element.clientTop;
+  const left = clientRect.left + element.clientLeft;
+  const scale = isHTMLElement3(element) ? getScale(element) : createCoords(1);
+  const width = element.clientWidth * scale.x;
+  const height = element.clientHeight * scale.y;
+  const x = left * scale.x;
+  const y = top * scale.y;
+  return {
+    width,
+    height,
+    x,
+    y
+  };
+}
+function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) {
+  let rect;
+  if (clippingAncestor === "viewport") {
+    rect = getViewportRect(element, strategy);
+  } else if (clippingAncestor === "document") {
+    rect = getDocumentRect(getDocumentElement2(element));
+  } else if (isElement2(clippingAncestor)) {
+    rect = getInnerBoundingClientRect(clippingAncestor, strategy);
+  } else {
+    const visualOffsets = getVisualOffsets(element);
+    rect = {
+      x: clippingAncestor.x - visualOffsets.x,
+      y: clippingAncestor.y - visualOffsets.y,
+      width: clippingAncestor.width,
+      height: clippingAncestor.height
+    };
+  }
+  return rectToClientRect(rect);
+}
+function hasFixedPositionAncestor(element, stopNode) {
+  const parentNode = getParentNode2(element);
+  if (parentNode === stopNode || !isElement2(parentNode) || isLastTraversableNode(parentNode)) {
+    return false;
+  }
+  return getComputedStyle3(parentNode).position === "fixed" || hasFixedPositionAncestor(parentNode, stopNode);
+}
+function getClippingElementAncestors(element, cache) {
+  const cachedResult = cache.get(element);
+  if (cachedResult) {
+    return cachedResult;
+  }
+  let result = getOverflowAncestors(element, [], false).filter((el) => isElement2(el) && getNodeName2(el) !== "body");
+  let currentContainingBlockComputedStyle = null;
+  const elementIsFixed = getComputedStyle3(element).position === "fixed";
+  let currentNode = elementIsFixed ? getParentNode2(element) : element;
+  while (isElement2(currentNode) && !isLastTraversableNode(currentNode)) {
+    const computedStyle = getComputedStyle3(currentNode);
+    const currentNodeIsContaining = isContainingBlock(currentNode);
+    if (!currentNodeIsContaining && computedStyle.position === "fixed") {
+      currentContainingBlockComputedStyle = null;
+    }
+    const shouldDropCurrentNode = elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && absoluteOrFixed.has(currentContainingBlockComputedStyle.position) || isOverflowElement2(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode);
+    if (shouldDropCurrentNode) {
+      result = result.filter((ancestor) => ancestor !== currentNode);
+    } else {
+      currentContainingBlockComputedStyle = computedStyle;
+    }
+    currentNode = getParentNode2(currentNode);
+  }
+  cache.set(element, result);
+  return result;
+}
+function getClippingRect(_ref) {
+  let {
+    element,
+    boundary,
+    rootBoundary,
+    strategy
+  } = _ref;
+  const elementClippingAncestors = boundary === "clippingAncestors" ? isTopLayer(element) ? [] : getClippingElementAncestors(element, this._c) : [].concat(boundary);
+  const clippingAncestors = [...elementClippingAncestors, rootBoundary];
+  const firstClippingAncestor = clippingAncestors[0];
+  const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
+    const rect = getClientRectFromClippingAncestor(element, clippingAncestor, strategy);
+    accRect.top = max3(rect.top, accRect.top);
+    accRect.right = min3(rect.right, accRect.right);
+    accRect.bottom = min3(rect.bottom, accRect.bottom);
+    accRect.left = max3(rect.left, accRect.left);
+    return accRect;
+  }, getClientRectFromClippingAncestor(element, firstClippingAncestor, strategy));
+  return {
+    width: clippingRect.right - clippingRect.left,
+    height: clippingRect.bottom - clippingRect.top,
+    x: clippingRect.left,
+    y: clippingRect.top
+  };
+}
+function getDimensions(element) {
+  const {
+    width,
+    height
+  } = getCssDimensions(element);
+  return {
+    width,
+    height
+  };
+}
+function getRectRelativeToOffsetParent(element, offsetParent, strategy) {
+  const isOffsetParentAnElement = isHTMLElement3(offsetParent);
+  const documentElement = getDocumentElement2(offsetParent);
+  const isFixed = strategy === "fixed";
+  const rect = getBoundingClientRect(element, true, isFixed, offsetParent);
+  let scroll = {
+    scrollLeft: 0,
+    scrollTop: 0
+  };
+  const offsets = createCoords(0);
+  function setLeftRTLScrollbarOffset() {
+    offsets.x = getWindowScrollBarX(documentElement);
+  }
+  if (isOffsetParentAnElement || !isOffsetParentAnElement && !isFixed) {
+    if (getNodeName2(offsetParent) !== "body" || isOverflowElement2(documentElement)) {
+      scroll = getNodeScroll(offsetParent);
+    }
+    if (isOffsetParentAnElement) {
+      const offsetRect = getBoundingClientRect(offsetParent, true, isFixed, offsetParent);
+      offsets.x = offsetRect.x + offsetParent.clientLeft;
+      offsets.y = offsetRect.y + offsetParent.clientTop;
+    } else if (documentElement) {
+      setLeftRTLScrollbarOffset();
+    }
+  }
+  if (isFixed && !isOffsetParentAnElement && documentElement) {
+    setLeftRTLScrollbarOffset();
+  }
+  const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
+  const x = rect.left + scroll.scrollLeft - offsets.x - htmlOffset.x;
+  const y = rect.top + scroll.scrollTop - offsets.y - htmlOffset.y;
+  return {
+    x,
+    y,
+    width: rect.width,
+    height: rect.height
+  };
+}
+function isStaticPositioned(element) {
+  return getComputedStyle3(element).position === "static";
+}
+function getTrueOffsetParent(element, polyfill) {
+  if (!isHTMLElement3(element) || getComputedStyle3(element).position === "fixed") {
+    return null;
+  }
+  if (polyfill) {
+    return polyfill(element);
+  }
+  let rawOffsetParent = element.offsetParent;
+  if (getDocumentElement2(element) === rawOffsetParent) {
+    rawOffsetParent = rawOffsetParent.ownerDocument.body;
+  }
+  return rawOffsetParent;
+}
+function getOffsetParent(element, polyfill) {
+  const win = getWindow3(element);
+  if (isTopLayer(element)) {
+    return win;
+  }
+  if (!isHTMLElement3(element)) {
+    let svgOffsetParent = getParentNode2(element);
+    while (svgOffsetParent && !isLastTraversableNode(svgOffsetParent)) {
+      if (isElement2(svgOffsetParent) && !isStaticPositioned(svgOffsetParent)) {
+        return svgOffsetParent;
+      }
+      svgOffsetParent = getParentNode2(svgOffsetParent);
+    }
+    return win;
+  }
+  let offsetParent = getTrueOffsetParent(element, polyfill);
+  while (offsetParent && isTableElement(offsetParent) && isStaticPositioned(offsetParent)) {
+    offsetParent = getTrueOffsetParent(offsetParent, polyfill);
+  }
+  if (offsetParent && isLastTraversableNode(offsetParent) && isStaticPositioned(offsetParent) && !isContainingBlock(offsetParent)) {
+    return win;
+  }
+  return offsetParent || getContainingBlock(element) || win;
+}
+var getElementRects = async function(data) {
+  const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
+  const getDimensionsFn = this.getDimensions;
+  const floatingDimensions = await getDimensionsFn(data.floating);
+  return {
+    reference: getRectRelativeToOffsetParent(data.reference, await getOffsetParentFn(data.floating), data.strategy),
+    floating: {
+      x: 0,
+      y: 0,
+      width: floatingDimensions.width,
+      height: floatingDimensions.height
+    }
+  };
+};
+function isRTL(element) {
+  return getComputedStyle3(element).direction === "rtl";
+}
+var platform = {
+  convertOffsetParentRelativeRectToViewportRelativeRect,
+  getDocumentElement: getDocumentElement2,
+  getClippingRect,
+  getOffsetParent,
+  getElementRects,
+  getClientRects,
+  getDimensions,
+  getScale,
+  isElement: isElement2,
+  isRTL
+};
+function rectsAreEqual(a, b) {
+  return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+}
+function observeMove(element, onMove) {
+  let io = null;
+  let timeoutId;
+  const root = getDocumentElement2(element);
+  function cleanup() {
+    var _io;
+    clearTimeout(timeoutId);
+    (_io = io) == null || _io.disconnect();
+    io = null;
+  }
+  function refresh(skip, threshold) {
+    if (skip === void 0) {
+      skip = false;
+    }
+    if (threshold === void 0) {
+      threshold = 1;
+    }
+    cleanup();
+    const elementRectForRootMargin = element.getBoundingClientRect();
+    const {
+      left,
+      top,
+      width,
+      height
+    } = elementRectForRootMargin;
+    if (!skip) {
+      onMove();
+    }
+    if (!width || !height) {
+      return;
+    }
+    const insetTop = floor3(top);
+    const insetRight = floor3(root.clientWidth - (left + width));
+    const insetBottom = floor3(root.clientHeight - (top + height));
+    const insetLeft = floor3(left);
+    const rootMargin = -insetTop + "px " + -insetRight + "px " + -insetBottom + "px " + -insetLeft + "px";
+    const options = {
+      rootMargin,
+      threshold: max3(0, min3(1, threshold)) || 1
+    };
+    let isFirstUpdate = true;
+    function handleObserve(entries) {
+      const ratio = entries[0].intersectionRatio;
+      if (ratio !== threshold) {
+        if (!isFirstUpdate) {
+          return refresh();
+        }
+        if (!ratio) {
+          timeoutId = setTimeout(() => {
+            refresh(false, 1e-7);
+          }, 1e3);
+        } else {
+          refresh(false, ratio);
+        }
+      }
+      if (ratio === 1 && !rectsAreEqual(elementRectForRootMargin, element.getBoundingClientRect())) {
+        refresh();
+      }
+      isFirstUpdate = false;
+    }
+    try {
+      io = new IntersectionObserver(handleObserve, {
+        ...options,
+        // Handle <iframe>s
+        root: root.ownerDocument
+      });
+    } catch (_e) {
+      io = new IntersectionObserver(handleObserve, options);
+    }
+    io.observe(element);
+  }
+  refresh(true);
+  return cleanup;
+}
+function autoUpdate(reference, floating, update, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  const {
+    ancestorScroll = true,
+    ancestorResize = true,
+    elementResize = typeof ResizeObserver === "function",
+    layoutShift = typeof IntersectionObserver === "function",
+    animationFrame = false
+  } = options;
+  const referenceEl = unwrapElement(reference);
+  const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...getOverflowAncestors(floating)] : [];
+  ancestors.forEach((ancestor) => {
+    ancestorScroll && ancestor.addEventListener("scroll", update, {
+      passive: true
+    });
+    ancestorResize && ancestor.addEventListener("resize", update);
+  });
+  const cleanupIo = referenceEl && layoutShift ? observeMove(referenceEl, update) : null;
+  let reobserveFrame = -1;
+  let resizeObserver = null;
+  if (elementResize) {
+    resizeObserver = new ResizeObserver((_ref) => {
+      let [firstEntry] = _ref;
+      if (firstEntry && firstEntry.target === referenceEl && resizeObserver) {
+        resizeObserver.unobserve(floating);
+        cancelAnimationFrame(reobserveFrame);
+        reobserveFrame = requestAnimationFrame(() => {
+          var _resizeObserver;
+          (_resizeObserver = resizeObserver) == null || _resizeObserver.observe(floating);
+        });
+      }
+      update();
+    });
+    if (referenceEl && !animationFrame) {
+      resizeObserver.observe(referenceEl);
+    }
+    resizeObserver.observe(floating);
+  }
+  let frameId;
+  let prevRefRect = animationFrame ? getBoundingClientRect(reference) : null;
+  if (animationFrame) {
+    frameLoop();
+  }
+  function frameLoop() {
+    const nextRefRect = getBoundingClientRect(reference);
+    if (prevRefRect && !rectsAreEqual(prevRefRect, nextRefRect)) {
+      update();
+    }
+    prevRefRect = nextRefRect;
+    frameId = requestAnimationFrame(frameLoop);
+  }
+  update();
+  return () => {
+    var _resizeObserver2;
+    ancestors.forEach((ancestor) => {
+      ancestorScroll && ancestor.removeEventListener("scroll", update);
+      ancestorResize && ancestor.removeEventListener("resize", update);
+    });
+    cleanupIo == null || cleanupIo();
+    (_resizeObserver2 = resizeObserver) == null || _resizeObserver2.disconnect();
+    resizeObserver = null;
+    if (animationFrame) {
+      cancelAnimationFrame(frameId);
+    }
+  };
+}
+var offset2 = offset;
+var shift2 = shift;
+var flip2 = flip;
+var size2 = size;
+var hide2 = hide;
+var arrow2 = arrow;
+var limitShift2 = limitShift;
+var computePosition2 = (reference, floating, options) => {
+  const cache = /* @__PURE__ */ new Map();
+  const mergedOptions = {
+    platform,
+    ...options
+  };
+  const platformWithCache = {
+    ...mergedOptions.platform,
+    _c: cache
+  };
+  return computePosition(reference, floating, {
+    ...mergedOptions,
+    platform: platformWithCache
+  });
+};
+
+// ../node_modules/.pnpm/@zag-js+popper@1.33.1/node_modules/@zag-js/popper/dist/index.mjs
+function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
+  if (typeof DOMRect === "function") {
+    return new DOMRect(x, y, width, height);
+  }
+  const rect = {
+    x,
+    y,
+    width,
+    height,
+    top: y,
+    right: x + width,
+    bottom: y + height,
+    left: x
+  };
+  return { ...rect, toJSON: () => rect };
+}
+function getDOMRect(anchorRect) {
+  if (!anchorRect) return createDOMRect();
+  const { x, y, width, height } = anchorRect;
+  return createDOMRect(x, y, width, height);
+}
+function getAnchorElement(anchorElement, getAnchorRect) {
+  return {
+    contextElement: isHTMLElement2(anchorElement) ? anchorElement : anchorElement?.contextElement,
+    getBoundingClientRect: () => {
+      const anchor = anchorElement;
+      const anchorRect = getAnchorRect?.(anchor);
+      if (anchorRect || !anchor) {
+        return getDOMRect(anchorRect);
+      }
+      return anchor.getBoundingClientRect();
+    }
+  };
+}
+var toVar = (value) => ({ variable: value, reference: `var(${value})` });
+var cssVars = {
+  arrowSize: toVar("--arrow-size"),
+  arrowSizeHalf: toVar("--arrow-size-half"),
+  arrowBg: toVar("--arrow-background"),
+  transformOrigin: toVar("--transform-origin"),
+  arrowOffset: toVar("--arrow-offset")
+};
+var getSideAxis2 = (side) => side === "top" || side === "bottom" ? "y" : "x";
+function createTransformOriginMiddleware(opts, arrowEl) {
+  return {
+    name: "transformOrigin",
+    fn(state) {
+      const { elements, middlewareData, placement, rects, y } = state;
+      const side = placement.split("-")[0];
+      const axis = getSideAxis2(side);
+      const arrowX = middlewareData.arrow?.x || 0;
+      const arrowY = middlewareData.arrow?.y || 0;
+      const arrowWidth = arrowEl?.clientWidth || 0;
+      const arrowHeight = arrowEl?.clientHeight || 0;
+      const transformX = arrowX + arrowWidth / 2;
+      const transformY = arrowY + arrowHeight / 2;
+      const shiftY = Math.abs(middlewareData.shift?.y || 0);
+      const halfAnchorHeight = rects.reference.height / 2;
+      const arrowOffset = arrowHeight / 2;
+      const gutter = opts.offset?.mainAxis ?? opts.gutter;
+      const sideOffsetValue = typeof gutter === "number" ? gutter + arrowOffset : gutter ?? arrowOffset;
+      const isOverlappingAnchor = shiftY > sideOffsetValue;
+      const adjacentTransformOrigin = {
+        top: `${transformX}px calc(100% + ${sideOffsetValue}px)`,
+        bottom: `${transformX}px ${-sideOffsetValue}px`,
+        left: `calc(100% + ${sideOffsetValue}px) ${transformY}px`,
+        right: `${-sideOffsetValue}px ${transformY}px`
+      }[side];
+      const overlapTransformOrigin = `${transformX}px ${rects.reference.y + halfAnchorHeight - y}px`;
+      const useOverlap = Boolean(opts.overlap) && axis === "y" && isOverlappingAnchor;
+      elements.floating.style.setProperty(
+        cssVars.transformOrigin.variable,
+        useOverlap ? overlapTransformOrigin : adjacentTransformOrigin
+      );
+      return {
+        data: {
+          transformOrigin: useOverlap ? overlapTransformOrigin : adjacentTransformOrigin
+        }
+      };
+    }
+  };
+}
+var rectMiddleware = {
+  name: "rects",
+  fn({ rects }) {
+    return {
+      data: rects
+    };
+  }
+};
+var shiftArrowMiddleware = (arrowEl) => {
+  if (!arrowEl) return;
+  return {
+    name: "shiftArrow",
+    fn({ placement, middlewareData }) {
+      if (!middlewareData.arrow) return {};
+      const { x, y } = middlewareData.arrow;
+      const dir = placement.split("-")[0];
+      Object.assign(arrowEl.style, {
+        left: x != null ? `${x}px` : "",
+        top: y != null ? `${y}px` : "",
+        [dir]: `calc(100% + ${cssVars.arrowOffset.reference})`
+      });
+      return {};
+    }
+  };
+};
+function getPlacementDetails(placement) {
+  const [side, align] = placement.split("-");
+  return { side, align, hasAlign: align != null };
+}
+var defaultOptions = {
+  strategy: "absolute",
+  placement: "bottom",
+  listeners: true,
+  gutter: 8,
+  flip: true,
+  slide: true,
+  overlap: false,
+  sameWidth: false,
+  fitViewport: false,
+  overflowPadding: 8,
+  arrowPadding: 4
+};
+function roundByDpr(win, value) {
+  const dpr = win.devicePixelRatio || 1;
+  return Math.round(value * dpr) / dpr;
+}
+function resolveBoundaryOption(boundary) {
+  if (typeof boundary === "function") return boundary();
+  if (boundary === "clipping-ancestors") return "clippingAncestors";
+  return boundary;
+}
+function getArrowMiddleware(arrowElement, doc, opts) {
+  const element = arrowElement || doc.createElement("div");
+  return arrow2({ element, padding: opts.arrowPadding });
+}
+function getOffsetMiddleware(arrowElement, opts) {
+  if (isNull(opts.offset ?? opts.gutter)) return;
+  return offset2(({ placement }) => {
+    const arrowOffset = (arrowElement?.clientHeight || 0) / 2;
+    const gutter = opts.offset?.mainAxis ?? opts.gutter;
+    const mainAxis = typeof gutter === "number" ? gutter + arrowOffset : gutter ?? arrowOffset;
+    const { hasAlign } = getPlacementDetails(placement);
+    const shift22 = !hasAlign ? opts.shift : void 0;
+    const crossAxis = opts.offset?.crossAxis ?? shift22;
+    return compact2({
+      crossAxis,
+      mainAxis,
+      alignmentAxis: opts.shift
+    });
+  });
+}
+function getFlipMiddleware(opts) {
+  if (!opts.flip) return;
+  const boundary = resolveBoundaryOption(opts.boundary);
+  return flip2({
+    ...boundary ? { boundary } : void 0,
+    padding: opts.overflowPadding,
+    fallbackPlacements: opts.flip === true ? void 0 : opts.flip
+  });
+}
+function getShiftMiddleware(opts) {
+  if (!opts.slide && !opts.overlap) return;
+  const boundary = resolveBoundaryOption(opts.boundary);
+  return shift2({
+    ...boundary ? { boundary } : void 0,
+    mainAxis: opts.slide,
+    crossAxis: opts.overlap,
+    padding: opts.overflowPadding,
+    limiter: limitShift2()
+  });
+}
+function getSizeMiddleware(opts) {
+  return size2({
+    padding: opts.overflowPadding,
+    apply({ elements, rects, availableHeight, availableWidth }) {
+      const floating = elements.floating;
+      const referenceWidth = Math.round(rects.reference.width);
+      const referenceHeight = Math.round(rects.reference.height);
+      availableWidth = Math.floor(availableWidth);
+      availableHeight = Math.floor(availableHeight);
+      floating.style.setProperty("--reference-width", `${referenceWidth}px`);
+      floating.style.setProperty("--reference-height", `${referenceHeight}px`);
+      floating.style.setProperty("--available-width", `${availableWidth}px`);
+      floating.style.setProperty("--available-height", `${availableHeight}px`);
+    }
+  });
+}
+function hideWhenDetachedMiddleware(opts) {
+  if (!opts.hideWhenDetached) return;
+  return hide2({ strategy: "referenceHidden", boundary: resolveBoundaryOption(opts.boundary) ?? "clippingAncestors" });
+}
+function getAutoUpdateOptions(opts) {
+  if (!opts) return {};
+  if (opts === true) {
+    return { ancestorResize: true, ancestorScroll: true, elementResize: true, layoutShift: true };
+  }
+  return opts;
+}
+function getPlacementImpl(referenceOrVirtual, floating, opts = {}) {
+  const anchor = opts.getAnchorElement?.() ?? referenceOrVirtual;
+  const reference = getAnchorElement(anchor, opts.getAnchorRect);
+  if (!floating || !reference) return;
+  const options = Object.assign({}, defaultOptions, opts);
+  const arrowEl = floating.querySelector("[data-part=arrow]");
+  const middleware = [
+    getOffsetMiddleware(arrowEl, options),
+    getFlipMiddleware(options),
+    getShiftMiddleware(options),
+    getArrowMiddleware(arrowEl, floating.ownerDocument, options),
+    shiftArrowMiddleware(arrowEl),
+    createTransformOriginMiddleware(
+      { gutter: options.gutter, offset: options.offset, overlap: options.overlap },
+      arrowEl
+    ),
+    getSizeMiddleware(options),
+    hideWhenDetachedMiddleware(options),
+    rectMiddleware
+  ];
+  const { placement, strategy, onComplete, onPositioned } = options;
+  const updatePosition = async () => {
+    if (!reference || !floating) return;
+    const pos = await computePosition2(reference, floating, {
+      placement,
+      middleware,
+      strategy
+    });
+    onComplete?.(pos);
+    onPositioned?.({ placed: true });
+    const win = getWindow2(floating);
+    const x = roundByDpr(win, pos.x);
+    const y = roundByDpr(win, pos.y);
+    floating.style.setProperty("--x", `${x}px`);
+    floating.style.setProperty("--y", `${y}px`);
+    if (options.hideWhenDetached) {
+      const isHidden = pos.middlewareData.hide?.referenceHidden;
+      if (isHidden) {
+        floating.style.setProperty("visibility", "hidden");
+        floating.style.setProperty("pointer-events", "none");
+      } else {
+        floating.style.removeProperty("visibility");
+        floating.style.removeProperty("pointer-events");
+      }
+    }
+    const contentEl = floating.firstElementChild;
+    if (contentEl) {
+      const styles = getComputedStyle2(contentEl);
+      floating.style.setProperty("--z-index", styles.zIndex);
+    }
+  };
+  const update = async () => {
+    if (opts.updatePosition) {
+      await opts.updatePosition({ updatePosition, floatingElement: floating });
+      onPositioned?.({ placed: true });
+    } else {
+      await updatePosition();
+    }
+  };
+  const autoUpdateOptions = getAutoUpdateOptions(options.listeners);
+  const cancelAutoUpdate = options.listeners ? autoUpdate(reference, floating, update, autoUpdateOptions) : noop3;
+  update();
+  return () => {
+    cancelAutoUpdate?.();
+    onPositioned?.({ placed: false });
+  };
+}
+function getPlacement(referenceOrFn, floatingOrFn, opts = {}) {
+  const { defer, ...options } = opts;
+  const func = defer ? raf2 : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const reference = typeof referenceOrFn === "function" ? referenceOrFn() : referenceOrFn;
+      const floating = typeof floatingOrFn === "function" ? floatingOrFn() : floatingOrFn;
+      cleanups.push(getPlacementImpl(reference, floating, options));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
+}
+var ARROW_FLOATING_STYLE = {
+  bottom: "rotate(45deg)",
+  left: "rotate(135deg)",
+  top: "rotate(225deg)",
+  right: "rotate(315deg)"
+};
+function getPlacementStyles(options = {}) {
+  const { placement, sameWidth, fitViewport, strategy = "absolute" } = options;
+  return {
+    arrow: {
+      position: "absolute",
+      width: cssVars.arrowSize.reference,
+      height: cssVars.arrowSize.reference,
+      [cssVars.arrowSizeHalf.variable]: `calc(${cssVars.arrowSize.reference} / 2)`,
+      [cssVars.arrowOffset.variable]: `calc(${cssVars.arrowSizeHalf.reference} * -1)`
+    },
+    arrowTip: {
+      // @ts-expect-error - Fix this
+      transform: placement ? ARROW_FLOATING_STYLE[placement.split("-")[0]] : void 0,
+      background: cssVars.arrowBg.reference,
+      top: "0",
+      left: "0",
+      width: "100%",
+      height: "100%",
+      position: "absolute",
+      zIndex: "inherit"
+    },
+    floating: {
+      position: strategy,
+      isolation: "isolate",
+      minWidth: sameWidth ? void 0 : "max-content",
+      width: sameWidth ? "var(--reference-width)" : void 0,
+      maxWidth: fitViewport ? "var(--available-width)" : void 0,
+      maxHeight: fitViewport ? "var(--available-height)" : void 0,
+      pointerEvents: !placement ? "none" : void 0,
+      top: "0px",
+      left: "0px",
+      // move off-screen if placement is not defined
+      transform: placement ? "translate3d(var(--x), var(--y), 0)" : "translate3d(0, -100vh, 0)",
+      zIndex: "var(--z-index)"
+    }
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+interact-outside@1.33.1/node_modules/@zag-js/interact-outside/dist/index.mjs
+function getWindowFrames(win) {
+  const frames = {
+    each(cb) {
+      for (let i = 0; i < win.frames?.length; i += 1) {
+        const frame = win.frames[i];
+        if (frame) cb(frame);
+      }
+    },
+    addEventListener(event, listener, options) {
+      frames.each((frame) => {
+        try {
+          frame.document.addEventListener(event, listener, options);
+        } catch {
+        }
+      });
+      return () => {
+        try {
+          frames.removeEventListener(event, listener, options);
+        } catch {
+        }
+      };
+    },
+    removeEventListener(event, listener, options) {
+      frames.each((frame) => {
+        try {
+          frame.document.removeEventListener(event, listener, options);
+        } catch {
+        }
+      });
+    }
+  };
+  return frames;
+}
+function getParentWindow(win) {
+  const parent = win.frameElement != null ? win.parent : null;
+  return {
+    addEventListener: (event, listener, options) => {
+      try {
+        parent?.addEventListener(event, listener, options);
+      } catch {
+      }
+      return () => {
+        try {
+          parent?.removeEventListener(event, listener, options);
+        } catch {
+        }
+      };
+    },
+    removeEventListener: (event, listener, options) => {
+      try {
+        parent?.removeEventListener(event, listener, options);
+      } catch {
+      }
+    }
+  };
+}
+var POINTER_OUTSIDE_EVENT = "pointerdown.outside";
+var FOCUS_OUTSIDE_EVENT = "focus.outside";
+function isComposedPathFocusable(composedPath) {
+  for (const node of composedPath) {
+    if (isHTMLElement2(node) && isFocusable(node)) return true;
+  }
+  return false;
+}
+var isPointerEvent = (event) => "clientY" in event;
+function isEventPointWithin(node, event) {
+  if (!isPointerEvent(event) || !node) return false;
+  const rect = node.getBoundingClientRect();
+  if (rect.width === 0 || rect.height === 0) return false;
+  return rect.top <= event.clientY && event.clientY <= rect.top + rect.height && rect.left <= event.clientX && event.clientX <= rect.left + rect.width;
+}
+function isPointInRect(rect, point) {
+  return rect.y <= point.y && point.y <= rect.y + rect.height && rect.x <= point.x && point.x <= rect.x + rect.width;
+}
+function isEventWithinScrollbar(event, ancestor) {
+  if (!ancestor || !isPointerEvent(event)) return false;
+  const isScrollableY = ancestor.scrollHeight > ancestor.clientHeight;
+  const onScrollbarY = isScrollableY && event.clientX > ancestor.offsetLeft + ancestor.clientWidth;
+  const isScrollableX = ancestor.scrollWidth > ancestor.clientWidth;
+  const onScrollbarX = isScrollableX && event.clientY > ancestor.offsetTop + ancestor.clientHeight;
+  const rect = {
+    x: ancestor.offsetLeft,
+    y: ancestor.offsetTop,
+    width: ancestor.clientWidth + (isScrollableY ? 16 : 0),
+    height: ancestor.clientHeight + (isScrollableX ? 16 : 0)
+  };
+  const point = {
+    x: event.clientX,
+    y: event.clientY
+  };
+  if (!isPointInRect(rect, point)) return false;
+  return onScrollbarY || onScrollbarX;
+}
+function trackInteractOutsideImpl(node, options) {
+  const {
+    exclude,
+    onFocusOutside,
+    onPointerDownOutside,
+    onInteractOutside,
+    defer,
+    followControlledElements = true
+  } = options;
+  if (!node) return;
+  const doc = getDocument2(node);
+  const win = getWindow2(node);
+  const frames = getWindowFrames(win);
+  const parentWin = getParentWindow(win);
+  function isEventOutside(event, target) {
+    if (!isHTMLElement2(target)) return false;
+    if (!target.isConnected) return false;
+    if (contains2(node, target)) return false;
+    if (isEventPointWithin(node, event)) return false;
+    if (followControlledElements && isControlledElement(node, target)) return false;
+    const triggerEl = doc.querySelector(`[aria-controls="${node.id}"]`);
+    if (triggerEl) {
+      const triggerAncestor = getNearestOverflowAncestor(triggerEl);
+      if (isEventWithinScrollbar(event, triggerAncestor)) return false;
+    }
+    const nodeAncestor = getNearestOverflowAncestor(node);
+    if (isEventWithinScrollbar(event, nodeAncestor)) return false;
+    return !exclude?.(target);
+  }
+  const pointerdownCleanups = /* @__PURE__ */ new Set();
+  const isInShadowRoot = isShadowRoot2(node?.getRootNode());
+  function onPointerDown(event) {
+    function handler(clickEvent) {
+      const func = defer && !isTouchDevice() ? raf2 : (v) => v();
+      const evt = clickEvent ?? event;
+      const composedPath = evt?.composedPath?.() ?? [evt?.target];
+      func(() => {
+        const target = isInShadowRoot ? composedPath[0] : getEventTarget2(event);
+        if (!node || !isEventOutside(event, target)) return;
+        if (onPointerDownOutside || onInteractOutside) {
+          const handler2 = callAll(onPointerDownOutside, onInteractOutside);
+          node.addEventListener(POINTER_OUTSIDE_EVENT, handler2, { once: true });
+        }
+        fireCustomEvent2(node, POINTER_OUTSIDE_EVENT, {
+          bubbles: false,
+          cancelable: true,
+          detail: {
+            originalEvent: evt,
+            contextmenu: isContextMenuEvent(evt),
+            focusable: isComposedPathFocusable(composedPath),
+            target
+          }
+        });
+      });
+    }
+    if (event.pointerType === "touch") {
+      pointerdownCleanups.forEach((fn) => fn());
+      pointerdownCleanups.add(addDomEvent2(doc, "click", handler, { once: true }));
+      pointerdownCleanups.add(parentWin.addEventListener("click", handler, { once: true }));
+      pointerdownCleanups.add(frames.addEventListener("click", handler, { once: true }));
+    } else {
+      handler();
+    }
+  }
+  const cleanups = /* @__PURE__ */ new Set();
+  const timer = setTimeout(() => {
+    cleanups.add(addDomEvent2(doc, "pointerdown", onPointerDown, true));
+    cleanups.add(parentWin.addEventListener("pointerdown", onPointerDown, true));
+    cleanups.add(frames.addEventListener("pointerdown", onPointerDown, true));
+  }, 0);
+  function onFocusin(event) {
+    const func = defer ? raf2 : (v) => v();
+    func(() => {
+      const composedPath = event?.composedPath?.() ?? [event?.target];
+      const target = isInShadowRoot ? composedPath[0] : getEventTarget2(event);
+      if (!node || !isEventOutside(event, target)) return;
+      if (onFocusOutside || onInteractOutside) {
+        const handler = callAll(onFocusOutside, onInteractOutside);
+        node.addEventListener(FOCUS_OUTSIDE_EVENT, handler, { once: true });
+      }
+      fireCustomEvent2(node, FOCUS_OUTSIDE_EVENT, {
+        bubbles: false,
+        cancelable: true,
+        detail: {
+          originalEvent: event,
+          contextmenu: false,
+          focusable: isFocusable(target),
+          target
+        }
+      });
+    });
+  }
+  if (!isTouchDevice()) {
+    cleanups.add(addDomEvent2(doc, "focusin", onFocusin, true));
+    cleanups.add(parentWin.addEventListener("focusin", onFocusin, true));
+    cleanups.add(frames.addEventListener("focusin", onFocusin, true));
+  }
+  return () => {
+    clearTimeout(timer);
+    pointerdownCleanups.forEach((fn) => fn());
+    cleanups.forEach((fn) => fn());
+  };
+}
+function trackInteractOutside(nodeOrFn, options) {
+  const { defer } = options;
+  const func = defer ? raf2 : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const node = typeof nodeOrFn === "function" ? nodeOrFn() : nodeOrFn;
+      cleanups.push(trackInteractOutsideImpl(node, options));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
+}
+function fireCustomEvent2(el, type, init) {
+  const win = el.ownerDocument.defaultView || window;
+  const event = new win.CustomEvent(type, init);
+  return el.dispatchEvent(event);
+}
+
+// ../node_modules/.pnpm/@zag-js+dismissable@1.33.1/node_modules/@zag-js/dismissable/dist/index.mjs
+function trackEscapeKeydown(node, fn) {
+  const handleKeyDown = (event) => {
+    if (event.key !== "Escape") return;
+    if (event.isComposing) return;
+    fn?.(event);
+  };
+  return addDomEvent2(getDocument2(node), "keydown", handleKeyDown, { capture: true });
+}
+var LAYER_REQUEST_DISMISS_EVENT2 = "layer:request-dismiss";
+var layerStack2 = {
+  layers: [],
+  branches: [],
+  recentlyRemoved: /* @__PURE__ */ new Set(),
+  count() {
+    return this.layers.length;
+  },
+  pointerBlockingLayers() {
+    return this.layers.filter((layer) => layer.pointerBlocking);
+  },
+  topMostPointerBlockingLayer() {
+    return [...this.pointerBlockingLayers()].slice(-1)[0];
+  },
+  hasPointerBlockingLayer() {
+    return this.pointerBlockingLayers().length > 0;
+  },
+  isBelowPointerBlockingLayer(node) {
+    const index = this.indexOf(node);
+    const highestBlockingIndex = this.topMostPointerBlockingLayer() ? this.indexOf(this.topMostPointerBlockingLayer()?.node) : -1;
+    return index < highestBlockingIndex;
+  },
+  isTopMost(node) {
+    const layer = this.layers[this.count() - 1];
+    return layer?.node === node;
+  },
+  getNestedLayers(node) {
+    return Array.from(this.layers).slice(this.indexOf(node) + 1);
+  },
+  getLayersByType(type) {
+    return this.layers.filter((layer) => layer.type === type);
+  },
+  getNestedLayersByType(node, type) {
+    const index = this.indexOf(node);
+    if (index === -1) return [];
+    return this.layers.slice(index + 1).filter((layer) => layer.type === type);
+  },
+  getParentLayerOfType(node, type) {
+    const index = this.indexOf(node);
+    if (index <= 0) return void 0;
+    return this.layers.slice(0, index).reverse().find((layer) => layer.type === type);
+  },
+  countNestedLayersOfType(node, type) {
+    return this.getNestedLayersByType(node, type).length;
+  },
+  isInNestedLayer(node, target) {
+    const inNested = this.getNestedLayers(node).some((layer) => contains2(layer.node, target));
+    if (inNested) return true;
+    if (this.recentlyRemoved.size > 0) return true;
+    return false;
+  },
+  isInBranch(target) {
+    return Array.from(this.branches).some((branch) => contains2(branch, target));
+  },
+  add(layer) {
+    this.layers.push(layer);
+    this.syncLayers();
+  },
+  addBranch(node) {
+    this.branches.push(node);
+  },
+  remove(node) {
+    const index = this.indexOf(node);
+    if (index < 0) return;
+    this.recentlyRemoved.add(node);
+    nextTick(() => this.recentlyRemoved.delete(node));
+    if (index < this.count() - 1) {
+      const _layers = this.getNestedLayers(node);
+      _layers.forEach((layer) => layerStack2.dismiss(layer.node, node));
+    }
+    this.layers.splice(index, 1);
+    this.syncLayers();
+  },
+  removeBranch(node) {
+    const index = this.branches.indexOf(node);
+    if (index >= 0) this.branches.splice(index, 1);
+  },
+  syncLayers() {
+    this.layers.forEach((layer, index) => {
+      layer.node.style.setProperty("--layer-index", `${index}`);
+      layer.node.removeAttribute("data-nested");
+      layer.node.removeAttribute("data-has-nested");
+      const parentOfSameType = this.getParentLayerOfType(layer.node, layer.type);
+      if (parentOfSameType) {
+        layer.node.setAttribute("data-nested", layer.type);
+      }
+      const nestedCount = this.countNestedLayersOfType(layer.node, layer.type);
+      if (nestedCount > 0) {
+        layer.node.setAttribute("data-has-nested", layer.type);
+      }
+      layer.node.style.setProperty("--nested-layer-count", `${nestedCount}`);
+    });
+  },
+  indexOf(node) {
+    return this.layers.findIndex((layer) => layer.node === node);
+  },
+  dismiss(node, parent) {
+    const index = this.indexOf(node);
+    if (index === -1) return;
+    const layer = this.layers[index];
+    addListenerOnce2(node, LAYER_REQUEST_DISMISS_EVENT2, (event) => {
+      layer.requestDismiss?.(event);
+      if (!event.defaultPrevented) {
+        layer?.dismiss();
+      }
+    });
+    fireCustomEvent3(node, LAYER_REQUEST_DISMISS_EVENT2, {
+      originalLayer: node,
+      targetLayer: parent,
+      originalIndex: index,
+      targetIndex: parent ? this.indexOf(parent) : -1
+    });
+    this.syncLayers();
+  },
+  clear() {
+    this.remove(this.layers[0].node);
+  }
+};
+function fireCustomEvent3(el, type, detail) {
+  const win = el.ownerDocument.defaultView || window;
+  const event = new win.CustomEvent(type, { cancelable: true, bubbles: true, detail });
+  return el.dispatchEvent(event);
+}
+function addListenerOnce2(el, type, callback) {
+  el.addEventListener(type, callback, { once: true });
+}
+var originalBodyPointerEvents;
+function assignPointerEventToLayers() {
+  layerStack2.layers.forEach(({ node }) => {
+    node.style.pointerEvents = layerStack2.isBelowPointerBlockingLayer(node) ? "none" : "auto";
+  });
+}
+function clearPointerEvent(node) {
+  node.style.pointerEvents = "";
+}
+function disablePointerEventsOutside(node, persistentElements) {
+  const doc = getDocument2(node);
+  const cleanups = [];
+  if (layerStack2.hasPointerBlockingLayer() && !doc.body.hasAttribute("data-inert")) {
+    originalBodyPointerEvents = document.body.style.pointerEvents;
+    queueMicrotask(() => {
+      doc.body.style.pointerEvents = "none";
+      doc.body.setAttribute("data-inert", "");
+    });
+  }
+  persistentElements?.forEach((el) => {
+    const [promise, abort] = waitForElement2(
+      () => {
+        const node2 = el();
+        return isHTMLElement2(node2) ? node2 : null;
+      },
+      { timeout: 1e3 }
+    );
+    promise.then((el2) => cleanups.push(setStyle2(el2, { pointerEvents: "auto" })));
+    cleanups.push(abort);
+  });
+  return () => {
+    if (layerStack2.hasPointerBlockingLayer()) return;
+    queueMicrotask(() => {
+      doc.body.style.pointerEvents = originalBodyPointerEvents;
+      doc.body.removeAttribute("data-inert");
+      if (doc.body.style.length === 0) doc.body.removeAttribute("style");
+    });
+    cleanups.forEach((fn) => fn());
+  };
+}
+function trackDismissableElementImpl(node, options) {
+  const { warnOnMissingNode = true } = options;
+  if (warnOnMissingNode && !node) {
+    warn2("[@zag-js/dismissable] node is `null` or `undefined`");
+    return;
+  }
+  if (!node) {
+    return;
+  }
+  const { onDismiss, onRequestDismiss, pointerBlocking, exclude: excludeContainers, debug, type = "dialog" } = options;
+  const layer = { dismiss: onDismiss, node, type, pointerBlocking, requestDismiss: onRequestDismiss };
+  layerStack2.add(layer);
+  assignPointerEventToLayers();
+  function onPointerDownOutside(event) {
+    const target = getEventTarget2(event.detail.originalEvent);
+    if (layerStack2.isBelowPointerBlockingLayer(node) || layerStack2.isInBranch(target)) return;
+    options.onPointerDownOutside?.(event);
+    options.onInteractOutside?.(event);
+    if (event.defaultPrevented) return;
+    if (debug) {
+      console.log("onPointerDownOutside:", event.detail.originalEvent);
+    }
+    onDismiss?.();
+  }
+  function onFocusOutside(event) {
+    const target = getEventTarget2(event.detail.originalEvent);
+    if (layerStack2.isInBranch(target)) return;
+    options.onFocusOutside?.(event);
+    options.onInteractOutside?.(event);
+    if (event.defaultPrevented) return;
+    if (debug) {
+      console.log("onFocusOutside:", event.detail.originalEvent);
+    }
+    onDismiss?.();
+  }
+  function onEscapeKeyDown(event) {
+    if (!layerStack2.isTopMost(node)) return;
+    options.onEscapeKeyDown?.(event);
+    if (!event.defaultPrevented && onDismiss) {
+      event.preventDefault();
+      onDismiss();
+    }
+  }
+  function exclude(target) {
+    if (!node) return false;
+    const containers = typeof excludeContainers === "function" ? excludeContainers() : excludeContainers;
+    const _containers = Array.isArray(containers) ? containers : [containers];
+    const persistentElements = options.persistentElements?.map((fn) => fn()).filter(isHTMLElement2);
+    if (persistentElements) _containers.push(...persistentElements);
+    return _containers.some((node2) => contains2(node2, target)) || layerStack2.isInNestedLayer(node, target);
+  }
+  const cleanups = [
+    pointerBlocking ? disablePointerEventsOutside(node, options.persistentElements) : void 0,
+    trackEscapeKeydown(node, onEscapeKeyDown),
+    trackInteractOutside(node, { exclude, onFocusOutside, onPointerDownOutside, defer: options.defer })
+  ];
+  return () => {
+    layerStack2.remove(node);
+    assignPointerEventToLayers();
+    clearPointerEvent(node);
+    cleanups.forEach((fn) => fn?.());
+  };
+}
+function trackDismissableElement(nodeOrFn, options) {
+  const { defer } = options;
+  const func = defer ? raf2 : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const node = isFunction2(nodeOrFn) ? nodeOrFn() : nodeOrFn;
+      cleanups.push(trackDismissableElementImpl(node, options));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+combobox@1.33.1/node_modules/@zag-js/combobox/dist/index.mjs
+var anatomy5 = createAnatomy2("combobox").parts(
+  "root",
+  "clearTrigger",
+  "content",
+  "control",
+  "input",
+  "item",
+  "itemGroup",
+  "itemGroupLabel",
+  "itemIndicator",
+  "itemText",
+  "label",
+  "list",
+  "positioner",
+  "trigger"
+);
+var parts5 = anatomy5.build();
+var collection = (options) => {
+  return new ListCollection(options);
+};
+collection.empty = () => {
+  return new ListCollection({ items: [] });
+};
+var getRootId5 = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
+var getLabelId2 = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
+var getControlId2 = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
+var getInputId = (ctx) => ctx.ids?.input ?? `combobox:${ctx.id}:input`;
+var getContentId = (ctx) => ctx.ids?.content ?? `combobox:${ctx.id}:content`;
+var getPositionerId = (ctx) => ctx.ids?.positioner ?? `combobox:${ctx.id}:popper`;
+var getTriggerId = (ctx) => ctx.ids?.trigger ?? `combobox:${ctx.id}:toggle-btn`;
+var getClearTriggerId = (ctx) => ctx.ids?.clearTrigger ?? `combobox:${ctx.id}:clear-btn`;
+var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `combobox:${ctx.id}:optgroup:${id}`;
+var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `combobox:${ctx.id}:optgroup-label:${id}`;
+var getItemId3 = (ctx, id) => ctx.ids?.item?.(id) ?? `combobox:${ctx.id}:option:${id}`;
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
+var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
+var getControlEl = (ctx) => ctx.getById(getControlId2(ctx));
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
+var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
+var getItemEl = (ctx, value) => {
+  if (value == null) return null;
+  const selector = `[role=option][data-value="${CSS.escape(value)}"]`;
+  return query(getContentEl(ctx), selector);
+};
+var focusInputEl = (ctx) => {
+  const inputEl = getInputEl(ctx);
+  if (ctx.isActiveElement(inputEl)) return;
+  inputEl?.focus({ preventScroll: true });
+};
+var focusTriggerEl = (ctx) => {
+  const triggerEl = getTriggerEl(ctx);
+  if (ctx.isActiveElement(triggerEl)) return;
+  triggerEl?.focus({ preventScroll: true });
+};
+function connect5(service, normalize) {
+  const { context, prop, state, send, scope, computed, event } = service;
+  const translations = prop("translations");
+  const collection2 = prop("collection");
+  const disabled = !!prop("disabled");
+  const interactive = computed("isInteractive");
+  const invalid = !!prop("invalid");
+  const required = !!prop("required");
+  const readOnly = !!prop("readOnly");
+  const open = state.hasTag("open");
+  const focused = state.hasTag("focused");
+  const composite = prop("composite");
+  const highlightedValue = context.get("highlightedValue");
+  const popperStyles = getPlacementStyles({
+    ...prop("positioning"),
+    placement: context.get("currentPlacement")
+  });
+  function getItemState(props22) {
+    const disabled2 = collection2.getItemDisabled(props22.item);
+    const value = collection2.getItemValue(props22.item);
+    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props22.item)}`);
+    return {
+      value,
+      disabled: Boolean(disabled2 || disabled2),
+      highlighted: highlightedValue === value,
+      selected: context.get("value").includes(value)
+    };
+  }
+  return {
+    focused,
+    open,
+    inputValue: context.get("inputValue"),
+    highlightedValue,
+    highlightedItem: context.get("highlightedItem"),
+    value: context.get("value"),
+    valueAsString: computed("valueAsString"),
+    hasSelectedItems: computed("hasSelectedItems"),
+    selectedItems: context.get("selectedItems"),
+    collection: prop("collection"),
+    multiple: !!prop("multiple"),
+    disabled: !!disabled,
+    syncSelectedItems() {
+      send({ type: "SELECTED_ITEMS.SYNC" });
+    },
+    reposition(options = {}) {
+      send({ type: "POSITIONING.SET", options });
+    },
+    setHighlightValue(value) {
+      send({ type: "HIGHLIGHTED_VALUE.SET", value });
+    },
+    clearHighlightValue() {
+      send({ type: "HIGHLIGHTED_VALUE.CLEAR" });
+    },
+    selectValue(value) {
+      send({ type: "ITEM.SELECT", value });
+    },
+    setValue(value) {
+      send({ type: "VALUE.SET", value });
+    },
+    setInputValue(value, reason = "script") {
+      send({ type: "INPUT_VALUE.SET", value, src: reason });
+    },
+    clearValue(value) {
+      if (value != null) {
+        send({ type: "ITEM.CLEAR", value });
+      } else {
+        send({ type: "VALUE.CLEAR" });
+      }
+    },
+    focus() {
+      getInputEl(scope)?.focus();
+    },
+    setOpen(nextOpen, reason = "script") {
+      const open2 = state.hasTag("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE", src: reason });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts5.root.attrs,
+        dir: prop("dir"),
+        id: getRootId5(scope),
+        "data-invalid": dataAttr2(invalid),
+        "data-readonly": dataAttr2(readOnly)
+      });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts5.label.attrs,
+        dir: prop("dir"),
+        htmlFor: getInputId(scope),
+        id: getLabelId2(scope),
+        "data-readonly": dataAttr2(readOnly),
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid),
+        "data-required": dataAttr2(required),
+        "data-focus": dataAttr2(focused),
+        onClick(event2) {
+          if (composite) return;
+          event2.preventDefault();
+          getTriggerEl(scope)?.focus({ preventScroll: true });
+        }
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts5.control.attrs,
+        dir: prop("dir"),
+        id: getControlId2(scope),
+        "data-state": open ? "open" : "closed",
+        "data-focus": dataAttr2(focused),
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid)
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts5.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId(scope),
+        style: popperStyles.floating
+      });
+    },
+    getInputProps() {
+      return normalize.input({
+        ...parts5.input.attrs,
+        dir: prop("dir"),
+        "aria-invalid": ariaAttr(invalid),
+        "data-invalid": dataAttr2(invalid),
+        "data-autofocus": dataAttr2(prop("autoFocus")),
+        name: prop("name"),
+        form: prop("form"),
+        disabled,
+        required: prop("required"),
+        autoComplete: "off",
+        autoCorrect: "off",
+        autoCapitalize: "none",
+        spellCheck: "false",
+        readOnly,
+        placeholder: prop("placeholder"),
+        id: getInputId(scope),
+        type: "text",
+        role: "combobox",
+        defaultValue: context.get("inputValue"),
+        "aria-autocomplete": computed("autoComplete") ? "both" : "list",
+        "aria-controls": getContentId(scope),
+        "aria-expanded": open,
+        "data-state": open ? "open" : "closed",
+        "aria-activedescendant": highlightedValue ? getItemId3(scope, highlightedValue) : void 0,
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
+          if (!prop("openOnClick")) return;
+          if (!interactive) return;
+          send({ type: "INPUT.CLICK", src: "input-click" });
+        },
+        onFocus() {
+          if (disabled) return;
+          send({ type: "INPUT.FOCUS" });
+        },
+        onBlur() {
+          if (disabled) return;
+          send({ type: "INPUT.BLUR" });
+        },
+        onChange(event2) {
+          send({ type: "INPUT.CHANGE", value: event2.currentTarget.value, src: "input-change" });
+        },
+        onKeyDown(event2) {
+          if (event2.defaultPrevented) return;
+          if (!interactive) return;
+          if (event2.ctrlKey || event2.shiftKey || isComposingEvent(event2)) return;
+          const openOnKeyPress = prop("openOnKeyPress");
+          const isModifierKey = event2.ctrlKey || event2.metaKey || event2.shiftKey;
+          const keypress = true;
+          const keymap = {
+            ArrowDown(event3) {
+              if (!openOnKeyPress && !open) return;
+              send({ type: event3.altKey ? "OPEN" : "INPUT.ARROW_DOWN", keypress, src: "arrow-key" });
+              event3.preventDefault();
+            },
+            ArrowUp() {
+              if (!openOnKeyPress && !open) return;
+              send({ type: event2.altKey ? "CLOSE" : "INPUT.ARROW_UP", keypress, src: "arrow-key" });
+              event2.preventDefault();
+            },
+            Home(event3) {
+              if (isModifierKey) return;
+              send({ type: "INPUT.HOME", keypress });
+              if (open) {
+                event3.preventDefault();
+              }
+            },
+            End(event3) {
+              if (isModifierKey) return;
+              send({ type: "INPUT.END", keypress });
+              if (open) {
+                event3.preventDefault();
+              }
+            },
+            Enter(event3) {
+              send({ type: "INPUT.ENTER", keypress, src: "item-select" });
+              const submittable = computed("isCustomValue") && prop("allowCustomValue");
+              const hasHighlight = highlightedValue != null;
+              const alwaysSubmit = prop("alwaysSubmitOnEnter");
+              if (open && !submittable && !alwaysSubmit && hasHighlight) {
+                event3.preventDefault();
+              }
+              if (highlightedValue == null) return;
+              const itemEl = getItemEl(scope, highlightedValue);
+              if (isAnchorElement(itemEl)) {
+                prop("navigate")?.({ value: highlightedValue, node: itemEl, href: itemEl.href });
+              }
+            },
+            Escape() {
+              send({ type: "INPUT.ESCAPE", keypress, src: "escape-key" });
+              event2.preventDefault();
+            }
+          };
+          const key = getEventKey2(event2, { dir: prop("dir") });
+          const exec = keymap[key];
+          exec?.(event2);
+        }
+      });
+    },
+    getTriggerProps(props22 = {}) {
+      return normalize.button({
+        ...parts5.trigger.attrs,
+        dir: prop("dir"),
+        id: getTriggerId(scope),
+        "aria-haspopup": composite ? "listbox" : "dialog",
+        type: "button",
+        tabIndex: props22.focusable ? void 0 : -1,
+        "aria-label": translations.triggerLabel,
+        "aria-expanded": open,
+        "data-state": open ? "open" : "closed",
+        "aria-controls": open ? getContentId(scope) : void 0,
+        disabled,
+        "data-invalid": dataAttr2(invalid),
+        "data-focusable": dataAttr2(props22.focusable),
+        "data-readonly": dataAttr2(readOnly),
+        "data-disabled": dataAttr2(disabled),
+        onFocus() {
+          if (!props22.focusable) return;
+          send({ type: "INPUT.FOCUS", src: "trigger" });
+        },
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
+          if (!interactive) return;
+          if (!isLeftClick(event2)) return;
+          send({ type: "TRIGGER.CLICK", src: "trigger-click" });
+        },
+        onPointerDown(event2) {
+          if (!interactive) return;
+          if (event2.pointerType === "touch") return;
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
+          queueMicrotask(() => {
+            getInputEl(scope)?.focus({ preventScroll: true });
+          });
+        },
+        onKeyDown(event2) {
+          if (event2.defaultPrevented) return;
+          if (composite) return;
+          const keyMap3 = {
+            ArrowDown() {
+              send({ type: "INPUT.ARROW_DOWN", src: "arrow-key" });
+            },
+            ArrowUp() {
+              send({ type: "INPUT.ARROW_UP", src: "arrow-key" });
+            }
+          };
+          const key = getEventKey2(event2, { dir: prop("dir") });
+          const exec = keyMap3[key];
+          if (exec) {
+            exec(event2);
+            event2.preventDefault();
+          }
+        }
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        ...parts5.content.attrs,
+        dir: prop("dir"),
+        id: getContentId(scope),
+        role: !composite ? "dialog" : "listbox",
+        tabIndex: -1,
+        hidden: !open,
+        "data-state": open ? "open" : "closed",
+        "data-placement": context.get("currentPlacement"),
+        "aria-labelledby": getLabelId2(scope),
+        "aria-multiselectable": prop("multiple") && composite ? true : void 0,
+        "data-empty": dataAttr2(collection2.size === 0),
+        onPointerDown(event2) {
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
+        }
+      });
+    },
+    getListProps() {
+      return normalize.element({
+        ...parts5.list.attrs,
+        role: !composite ? "listbox" : void 0,
+        "data-empty": dataAttr2(collection2.size === 0),
+        "aria-labelledby": getLabelId2(scope),
+        "aria-multiselectable": prop("multiple") && !composite ? true : void 0
+      });
+    },
+    getClearTriggerProps() {
+      return normalize.button({
+        ...parts5.clearTrigger.attrs,
+        dir: prop("dir"),
+        id: getClearTriggerId(scope),
+        type: "button",
+        tabIndex: -1,
+        disabled,
+        "data-invalid": dataAttr2(invalid),
+        "aria-label": translations.clearTriggerLabel,
+        "aria-controls": getInputId(scope),
+        hidden: !context.get("value").length,
+        onPointerDown(event2) {
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
+        },
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
+          if (!interactive) return;
+          send({ type: "VALUE.CLEAR", src: "clear-trigger" });
+        }
+      });
+    },
+    getItemState,
+    getItemProps(props22) {
+      const itemState = getItemState(props22);
+      const value = itemState.value;
+      return normalize.element({
+        ...parts5.item.attrs,
+        dir: prop("dir"),
+        id: getItemId3(scope, value),
+        role: "option",
+        tabIndex: -1,
+        "data-highlighted": dataAttr2(itemState.highlighted),
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "aria-selected": ariaAttr(itemState.highlighted),
+        "aria-disabled": ariaAttr(itemState.disabled),
+        "data-disabled": dataAttr2(itemState.disabled),
+        "data-value": itemState.value,
+        onPointerMove() {
+          if (itemState.disabled) return;
+          if (itemState.highlighted) return;
+          send({ type: "ITEM.POINTER_MOVE", value });
+        },
+        onPointerLeave() {
+          if (props22.persistFocus) return;
+          if (itemState.disabled) return;
+          const prev = event.previous();
+          const mouseMoved = prev?.type.includes("POINTER");
+          if (!mouseMoved) return;
+          send({ type: "ITEM.POINTER_LEAVE", value });
+        },
+        onClick(event2) {
+          if (isDownloadingEvent(event2)) return;
+          if (isOpeningInNewTab(event2)) return;
+          if (isContextMenuEvent(event2)) return;
+          if (itemState.disabled) return;
+          send({ type: "ITEM.CLICK", src: "item-select", value });
+        }
+      });
+    },
+    getItemTextProps(props22) {
+      const itemState = getItemState(props22);
+      return normalize.element({
+        ...parts5.itemText.attrs,
+        dir: prop("dir"),
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "data-disabled": dataAttr2(itemState.disabled),
+        "data-highlighted": dataAttr2(itemState.highlighted)
+      });
+    },
+    getItemIndicatorProps(props22) {
+      const itemState = getItemState(props22);
+      return normalize.element({
+        "aria-hidden": true,
+        ...parts5.itemIndicator.attrs,
+        dir: prop("dir"),
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        hidden: !itemState.selected
+      });
+    },
+    getItemGroupProps(props22) {
+      const { id } = props22;
+      return normalize.element({
+        ...parts5.itemGroup.attrs,
+        dir: prop("dir"),
+        id: getItemGroupId(scope, id),
+        "aria-labelledby": getItemGroupLabelId(scope, id),
+        "data-empty": dataAttr2(collection2.size === 0),
+        role: "group"
+      });
+    },
+    getItemGroupLabelProps(props22) {
+      const { htmlFor } = props22;
+      return normalize.element({
+        ...parts5.itemGroupLabel.attrs,
+        dir: prop("dir"),
+        id: getItemGroupLabelId(scope, htmlFor),
+        role: "presentation"
+      });
+    }
+  };
+}
+var { guards: guards2, createMachine: createMachine4, choose } = setup2();
+var { and: and4, not: not5 } = guards2;
+var machine5 = createMachine4({
+  props({ props: props22 }) {
+    return {
+      loopFocus: true,
+      openOnClick: false,
+      defaultValue: [],
+      defaultInputValue: "",
+      closeOnSelect: !props22.multiple,
+      allowCustomValue: false,
+      alwaysSubmitOnEnter: false,
+      inputBehavior: "none",
+      selectionBehavior: props22.multiple ? "clear" : "replace",
+      openOnKeyPress: true,
+      openOnChange: true,
+      composite: true,
+      navigate({ node }) {
+        clickIfLink(node);
+      },
+      collection: collection.empty(),
+      ...props22,
+      positioning: {
+        placement: "bottom",
+        sameWidth: true,
+        ...props22.positioning
+      },
+      translations: {
+        triggerLabel: "Toggle suggestions",
+        clearTriggerLabel: "Clear value",
+        ...props22.translations
+      }
+    };
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "suggesting" : "idle";
+  },
+  context({ prop, bindable: bindable2, getContext, getEvent }) {
+    return {
+      currentPlacement: bindable2(() => ({
+        defaultValue: void 0
+      })),
+      value: bindable2(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        isEqual: isEqual3,
+        hash(value) {
+          return value.join(",");
+        },
+        onChange(value) {
+          const context = getContext();
+          const prevSelectedItems = context.get("selectedItems");
+          const collection2 = prop("collection");
+          const nextItems = value.map((v) => {
+            const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === v);
+            return item || collection2.find(v);
+          });
+          context.set("selectedItems", nextItems);
+          prop("onValueChange")?.({ value, items: nextItems });
+        }
+      })),
+      highlightedValue: bindable2(() => ({
+        defaultValue: prop("defaultHighlightedValue") || null,
+        value: prop("highlightedValue"),
+        onChange(value) {
+          const item = prop("collection").find(value);
+          prop("onHighlightChange")?.({ highlightedValue: value, highlightedItem: item });
+        }
+      })),
+      inputValue: bindable2(() => {
+        let inputValue = prop("inputValue") || prop("defaultInputValue");
+        const value = prop("value") || prop("defaultValue");
+        if (!inputValue.trim() && !prop("multiple")) {
+          const valueAsString = prop("collection").stringifyMany(value);
+          inputValue = match(prop("selectionBehavior"), {
+            preserve: inputValue || valueAsString,
+            replace: valueAsString,
+            clear: ""
+          });
+        }
+        return {
+          defaultValue: inputValue,
+          value: prop("inputValue"),
+          onChange(value2) {
+            const event = getEvent();
+            const reason = (event.previousEvent || event).src;
+            prop("onInputValueChange")?.({ inputValue: value2, reason });
+          }
+        };
+      }),
+      highlightedItem: bindable2(() => {
+        const highlightedValue = prop("highlightedValue");
+        const highlightedItem = prop("collection").find(highlightedValue);
+        return { defaultValue: highlightedItem };
+      }),
+      selectedItems: bindable2(() => {
+        const value = prop("value") || prop("defaultValue") || [];
+        const selectedItems = prop("collection").findMany(value);
+        return { defaultValue: selectedItems };
+      })
+    };
+  },
+  computed: {
+    isInputValueEmpty: ({ context }) => context.get("inputValue").length === 0,
+    isInteractive: ({ prop }) => !(prop("readOnly") || prop("disabled")),
+    autoComplete: ({ prop }) => prop("inputBehavior") === "autocomplete",
+    autoHighlight: ({ prop }) => prop("inputBehavior") === "autohighlight",
+    hasSelectedItems: ({ context }) => context.get("value").length > 0,
+    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems")),
+    isCustomValue: ({ context, computed }) => context.get("inputValue") !== computed("valueAsString")
+  },
+  watch({ context, prop, track, action, send }) {
+    track([() => context.hash("value")], () => {
+      action(["syncSelectedItems"]);
+    });
+    track([() => context.get("inputValue")], () => {
+      action(["syncInputValue"]);
+    });
+    track([() => context.get("highlightedValue")], () => {
+      action(["syncHighlightedItem", "autofillInputValue"]);
+    });
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+    track([() => prop("collection").toString()], () => {
+      send({ type: "CHILDREN_CHANGE" });
+    });
+  },
+  on: {
+    "SELECTED_ITEMS.SYNC": {
+      actions: ["syncSelectedItems"]
+    },
+    "HIGHLIGHTED_VALUE.SET": {
+      actions: ["setHighlightedValue"]
+    },
+    "HIGHLIGHTED_VALUE.CLEAR": {
+      actions: ["clearHighlightedValue"]
+    },
+    "ITEM.SELECT": {
+      actions: ["selectItem"]
+    },
+    "ITEM.CLEAR": {
+      actions: ["clearItem"]
+    },
+    "VALUE.SET": {
+      actions: ["setValue"]
+    },
+    "INPUT_VALUE.SET": {
+      actions: ["setInputValue"]
+    },
+    "POSITIONING.SET": {
+      actions: ["reposition"]
+    }
+  },
+  entry: choose([
+    {
+      guard: "autoFocus",
+      actions: ["setInitialFocus"]
+    }
+  ]),
+  states: {
+    idle: {
+      tags: ["idle", "closed"],
+      entry: ["scrollContentToTop", "clearHighlightedValue"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "interacting"
+        },
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.FOCUS": {
+          target: "focused"
+        },
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        "VALUE.CLEAR": {
+          target: "focused",
+          actions: ["clearInputValue", "clearSelectedItems", "setInitialFocus"]
+        }
+      }
+    },
+    focused: {
+      tags: ["focused", "closed"],
+      entry: ["scrollContentToTop", "clearHighlightedValue"],
+      on: {
+        "CONTROLLED.OPEN": [
+          {
+            guard: "isChangeEvent",
+            target: "suggesting"
+          },
+          {
+            target: "interacting"
+          }
+        ],
+        "INPUT.CHANGE": [
+          {
+            guard: and4("isOpenControlled", "openOnChange"),
+            actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+          },
+          {
+            guard: "openOnChange",
+            target: "suggesting",
+            actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+          },
+          {
+            actions: ["setInputValue"]
+          }
+        ],
+        "LAYER.INTERACT_OUTSIDE": {
+          target: "idle"
+        },
+        "INPUT.ESCAPE": {
+          guard: and4("isCustomValue", not5("allowCustomValue")),
+          actions: ["revertInputValue"]
+        },
+        "INPUT.BLUR": {
+          target: "idle"
+        },
+        "INPUT.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.ARROW_DOWN": [
+          // == group 1 ==
+          {
+            guard: and4("isOpenControlled", "autoComplete"),
+            actions: ["invokeOnOpen"]
+          },
+          {
+            guard: "autoComplete",
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          },
+          // == group 2 ==
+          {
+            guard: "isOpenControlled",
+            actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.ARROW_UP": [
+          // == group 1 ==
+          {
+            guard: "autoComplete",
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            guard: "autoComplete",
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          },
+          // == group 2 ==
+          {
+            target: "interacting",
+            actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        "VALUE.CLEAR": {
+          actions: ["clearInputValue", "clearSelectedItems"]
+        }
+      }
+    },
+    interacting: {
+      tags: ["open", "focused"],
+      entry: ["setInitialFocus"],
+      effects: ["scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            guard: "restoreFocus",
+            target: "focused",
+            actions: ["setFinalFocus"]
+          },
+          {
+            target: "idle"
+          }
+        ],
+        CHILDREN_CHANGE: [
+          {
+            guard: "isHighlightedItemRemoved",
+            actions: ["clearHighlightedValue"]
+          },
+          {
+            actions: ["scrollToHighlightedItem"]
+          }
+        ],
+        "INPUT.HOME": {
+          actions: ["highlightFirstItem"]
+        },
+        "INPUT.END": {
+          actions: ["highlightLastItem"]
+        },
+        "INPUT.ARROW_DOWN": [
+          {
+            guard: and4("autoComplete", "isLastItemHighlighted"),
+            actions: ["clearHighlightedValue", "scrollContentToTop"]
+          },
+          {
+            actions: ["highlightNextItem"]
+          }
+        ],
+        "INPUT.ARROW_UP": [
+          {
+            guard: and4("autoComplete", "isFirstItemHighlighted"),
+            actions: ["clearHighlightedValue"]
+          },
+          {
+            actions: ["highlightPrevItem"]
+          }
+        ],
+        "INPUT.ENTER": [
+          // == group 1 ==
+          {
+            guard: and4("isOpenControlled", "isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and4("isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            target: "focused",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: and4("isOpenControlled", "closeOnSelect"),
+            actions: ["selectHighlightedItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectHighlightedItem"]
+          }
+        ],
+        "INPUT.CHANGE": [
+          {
+            guard: "autoComplete",
+            target: "suggesting",
+            actions: ["setInputValue"]
+          },
+          {
+            target: "suggesting",
+            actions: ["clearHighlightedValue", "setInputValue"]
+          }
+        ],
+        "ITEM.POINTER_MOVE": {
+          actions: ["setHighlightedValue"]
+        },
+        "ITEM.POINTER_LEAVE": {
+          actions: ["clearHighlightedValue"]
+        },
+        "ITEM.CLICK": [
+          {
+            guard: and4("isOpenControlled", "closeOnSelect"),
+            actions: ["selectItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectItem"]
+          }
+        ],
+        "LAYER.ESCAPE": [
+          {
+            guard: and4("isOpenControlled", "autoComplete"),
+            actions: ["syncInputValue", "invokeOnClose"]
+          },
+          {
+            guard: "autoComplete",
+            target: "focused",
+            actions: ["syncInputValue", "invokeOnClose"]
+          },
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "LAYER.INTERACT_OUTSIDE": [
+          // == group 1 ==
+          {
+            guard: and4("isOpenControlled", "isCustomValue", not5("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and4("isCustomValue", not5("allowCustomValue")),
+            target: "idle",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "idle",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          }
+        ],
+        "VALUE.CLEAR": [
+          {
+            guard: "isOpenControlled",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
+          }
+        ]
+      }
+    },
+    suggesting: {
+      tags: ["open", "focused"],
+      effects: ["trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
+      entry: ["setInitialFocus"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            guard: "restoreFocus",
+            target: "focused",
+            actions: ["setFinalFocus"]
+          },
+          {
+            target: "idle"
+          }
+        ],
+        CHILDREN_CHANGE: [
+          {
+            guard: and4("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
+            actions: ["clearHighlightedValue", "highlightFirstItem"]
+          },
+          {
+            guard: "isHighlightedItemRemoved",
+            actions: ["clearHighlightedValue"]
+          },
+          {
+            guard: "autoHighlight",
+            actions: ["highlightFirstItem"]
+          }
+        ],
+        "INPUT.ARROW_DOWN": {
+          target: "interacting",
+          actions: ["highlightNextItem"]
+        },
+        "INPUT.ARROW_UP": {
+          target: "interacting",
+          actions: ["highlightPrevItem"]
+        },
+        "INPUT.HOME": {
+          target: "interacting",
+          actions: ["highlightFirstItem"]
+        },
+        "INPUT.END": {
+          target: "interacting",
+          actions: ["highlightLastItem"]
+        },
+        "INPUT.ENTER": [
+          // == group 1 ==
+          {
+            guard: and4("isOpenControlled", "isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and4("isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            target: "focused",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: and4("isOpenControlled", "closeOnSelect"),
+            actions: ["selectHighlightedItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectHighlightedItem"]
+          }
+        ],
+        "INPUT.CHANGE": {
+          actions: ["setInputValue"]
+        },
+        "LAYER.ESCAPE": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "ITEM.POINTER_MOVE": {
+          target: "interacting",
+          actions: ["setHighlightedValue"]
+        },
+        "ITEM.POINTER_LEAVE": {
+          actions: ["clearHighlightedValue"]
+        },
+        "LAYER.INTERACT_OUTSIDE": [
+          // == group 1 ==
+          {
+            guard: and4("isOpenControlled", "isCustomValue", not5("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and4("isCustomValue", not5("allowCustomValue")),
+            target: "idle",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "idle",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "ITEM.CLICK": [
+          {
+            guard: and4("isOpenControlled", "closeOnSelect"),
+            actions: ["selectItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectItem"]
+          }
+        ],
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          }
+        ],
+        "VALUE.CLEAR": [
+          {
+            guard: "isOpenControlled",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
+          }
+        ]
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      isInputValueEmpty: ({ computed }) => computed("isInputValueEmpty"),
+      autoComplete: ({ computed, prop }) => computed("autoComplete") && !prop("multiple"),
+      autoHighlight: ({ computed }) => computed("autoHighlight"),
+      isFirstItemHighlighted: ({ prop, context }) => prop("collection").firstValue === context.get("highlightedValue"),
+      isLastItemHighlighted: ({ prop, context }) => prop("collection").lastValue === context.get("highlightedValue"),
+      isCustomValue: ({ computed }) => computed("isCustomValue"),
+      allowCustomValue: ({ prop }) => !!prop("allowCustomValue"),
+      hasHighlightedItem: ({ context }) => context.get("highlightedValue") != null,
+      closeOnSelect: ({ prop }) => !!prop("closeOnSelect"),
+      isOpenControlled: ({ prop }) => prop("open") != null,
+      openOnChange: ({ prop, context }) => {
+        const openOnChange = prop("openOnChange");
+        if (isBoolean(openOnChange)) return openOnChange;
+        return !!openOnChange?.({ inputValue: context.get("inputValue") });
+      },
+      restoreFocus: ({ event }) => {
+        const restoreFocus = event.restoreFocus ?? event.previousEvent?.restoreFocus;
+        return restoreFocus == null ? true : !!restoreFocus;
+      },
+      isChangeEvent: ({ event }) => event.previousEvent?.type === "INPUT.CHANGE",
+      autoFocus: ({ prop }) => !!prop("autoFocus"),
+      isHighlightedItemRemoved: ({ prop, context }) => !prop("collection").has(context.get("highlightedValue")),
+      hasCollectionItems: ({ prop }) => prop("collection").size > 0
+    },
+    effects: {
+      trackDismissableLayer({ send, prop, scope }) {
+        if (prop("disableLayer")) return;
+        const contentEl = () => getContentEl(scope);
+        return trackDismissableElement(contentEl, {
+          type: "listbox",
+          defer: true,
+          exclude: () => [getInputEl(scope), getTriggerEl(scope), getClearTriggerEl(scope)],
+          onFocusOutside: prop("onFocusOutside"),
+          onPointerDownOutside: prop("onPointerDownOutside"),
+          onInteractOutside: prop("onInteractOutside"),
+          onEscapeKeyDown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            send({ type: "LAYER.ESCAPE", src: "escape-key" });
+          },
+          onDismiss() {
+            send({ type: "LAYER.INTERACT_OUTSIDE", src: "interact-outside", restoreFocus: false });
+          }
+        });
+      },
+      trackPlacement({ context, prop, scope }) {
+        const anchorEl = () => getControlEl(scope) || getTriggerEl(scope);
+        const positionerEl = () => getPositionerEl(scope);
+        context.set("currentPlacement", prop("positioning").placement);
+        return getPlacement(anchorEl, positionerEl, {
+          ...prop("positioning"),
+          defer: true,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      scrollToHighlightedItem({ context, prop, scope, event }) {
+        const inputEl = getInputEl(scope);
+        let cleanups = [];
+        const exec = (immediate) => {
+          const pointer = event.current().type.includes("POINTER");
+          const highlightedValue = context.get("highlightedValue");
+          if (pointer || !highlightedValue) return;
+          const contentEl = getContentEl(scope);
+          const scrollToIndexFn = prop("scrollToIndexFn");
+          if (scrollToIndexFn) {
+            const highlightedIndex = prop("collection").indexOf(highlightedValue);
+            scrollToIndexFn({
+              index: highlightedIndex,
+              immediate,
+              getElement: () => getItemEl(scope, highlightedValue)
+            });
+            return;
+          }
+          const itemEl = getItemEl(scope, highlightedValue);
+          const raf_cleanup = raf2(() => {
+            scrollIntoView(itemEl, { rootEl: contentEl, block: "nearest" });
+          });
+          cleanups.push(raf_cleanup);
+        };
+        const rafCleanup = raf2(() => exec(true));
+        cleanups.push(rafCleanup);
+        const observerCleanup = observeAttributes(inputEl, {
+          attributes: ["aria-activedescendant"],
+          callback: () => exec(false)
+        });
+        cleanups.push(observerCleanup);
+        return () => {
+          cleanups.forEach((cleanup) => cleanup());
+        };
+      }
+    },
+    actions: {
+      reposition({ context, prop, scope, event }) {
+        const controlEl = () => getControlEl(scope);
+        const positionerEl = () => getPositionerEl(scope);
+        getPlacement(controlEl, positionerEl, {
+          ...prop("positioning"),
+          ...event.options,
+          defer: true,
+          listeners: false,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      setHighlightedValue({ context, event }) {
+        if (event.value == null) return;
+        context.set("highlightedValue", event.value);
+      },
+      clearHighlightedValue({ context }) {
+        context.set("highlightedValue", null);
+      },
+      selectHighlightedItem(params) {
+        const { context, prop } = params;
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        if (!highlightedValue || !collection2.has(highlightedValue)) return;
+        const nextValue = prop("multiple") ? addOrRemove(context.get("value"), highlightedValue) : [highlightedValue];
+        prop("onSelect")?.({ value: nextValue, itemValue: highlightedValue });
+        context.set("value", nextValue);
+        const inputValue = match(prop("selectionBehavior"), {
+          preserve: context.get("inputValue"),
+          replace: collection2.stringifyMany(nextValue),
+          clear: ""
+        });
+        context.set("inputValue", inputValue);
+      },
+      scrollToHighlightedItem({ context, prop, scope }) {
+        nextTick(() => {
+          const highlightedValue = context.get("highlightedValue");
+          if (highlightedValue == null) return;
+          const itemEl = getItemEl(scope, highlightedValue);
+          const contentEl = getContentEl(scope);
+          const scrollToIndexFn = prop("scrollToIndexFn");
+          if (scrollToIndexFn) {
+            const highlightedIndex = prop("collection").indexOf(highlightedValue);
+            scrollToIndexFn({
+              index: highlightedIndex,
+              immediate: true,
+              getElement: () => getItemEl(scope, highlightedValue)
+            });
+            return;
+          }
+          scrollIntoView(itemEl, { rootEl: contentEl, block: "nearest" });
+        });
+      },
+      selectItem(params) {
+        const { context, event, flush, prop } = params;
+        if (event.value == null) return;
+        flush(() => {
+          const nextValue = prop("multiple") ? addOrRemove(context.get("value"), event.value) : [event.value];
+          prop("onSelect")?.({ value: nextValue, itemValue: event.value });
+          context.set("value", nextValue);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany(nextValue),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      clearItem(params) {
+        const { context, event, flush, prop } = params;
+        if (event.value == null) return;
+        flush(() => {
+          const nextValue = remove2(context.get("value"), event.value);
+          context.set("value", nextValue);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany(nextValue),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      setInitialFocus({ scope }) {
+        raf2(() => {
+          focusInputEl(scope);
+        });
+      },
+      setFinalFocus({ scope }) {
+        raf2(() => {
+          const triggerEl = getTriggerEl(scope);
+          if (triggerEl?.dataset.focusable == null) {
+            focusInputEl(scope);
+          } else {
+            focusTriggerEl(scope);
+          }
+        });
+      },
+      syncInputValue({ context, scope, event }) {
+        const inputEl = getInputEl(scope);
+        if (!inputEl) return;
+        inputEl.value = context.get("inputValue");
+        queueMicrotask(() => {
+          if (event.current().type === "INPUT.CHANGE") return;
+          setCaretToEnd(inputEl);
+        });
+      },
+      setInputValue({ context, event }) {
+        context.set("inputValue", event.value);
+      },
+      clearInputValue({ context }) {
+        context.set("inputValue", "");
+      },
+      revertInputValue({ context, prop, computed }) {
+        const selectionBehavior = prop("selectionBehavior");
+        const inputValue = match(selectionBehavior, {
+          replace: computed("hasSelectedItems") ? computed("valueAsString") : "",
+          preserve: context.get("inputValue"),
+          clear: ""
+        });
+        context.set("inputValue", inputValue);
+      },
+      setValue(params) {
+        const { context, flush, event, prop } = params;
+        flush(() => {
+          context.set("value", event.value);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany(event.value),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      clearSelectedItems(params) {
+        const { context, flush, prop } = params;
+        flush(() => {
+          context.set("value", []);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany([]),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      scrollContentToTop({ prop, scope }) {
+        const scrollToIndexFn = prop("scrollToIndexFn");
+        if (scrollToIndexFn) {
+          const firstValue = prop("collection").firstValue;
+          scrollToIndexFn({
+            index: 0,
+            immediate: true,
+            getElement: () => getItemEl(scope, firstValue)
+          });
+        } else {
+          const contentEl = getContentEl(scope);
+          if (!contentEl) return;
+          contentEl.scrollTop = 0;
+        }
+      },
+      invokeOnOpen({ prop, event, context }) {
+        const reason = getOpenChangeReason(event);
+        prop("onOpenChange")?.({ open: true, reason, value: context.get("value") });
+      },
+      invokeOnClose({ prop, event, context }) {
+        const reason = getOpenChangeReason(event);
+        prop("onOpenChange")?.({ open: false, reason, value: context.get("value") });
+      },
+      highlightFirstItem({ context, prop, scope }) {
+        const exec = getContentEl(scope) ? queueMicrotask : raf2;
+        exec(() => {
+          const value = prop("collection").firstValue;
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightFirstItemIfNeeded({ computed, action }) {
+        if (!computed("autoHighlight")) return;
+        action(["highlightFirstItem"]);
+      },
+      highlightLastItem({ context, prop, scope }) {
+        const exec = getContentEl(scope) ? queueMicrotask : raf2;
+        exec(() => {
+          const value = prop("collection").lastValue;
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightNextItem({ context, prop }) {
+        let value = null;
+        const highlightedValue = context.get("highlightedValue");
+        const collection2 = prop("collection");
+        if (highlightedValue) {
+          value = collection2.getNextValue(highlightedValue);
+          if (!value && prop("loopFocus")) value = collection2.firstValue;
+        } else {
+          value = collection2.firstValue;
+        }
+        if (value) context.set("highlightedValue", value);
+      },
+      highlightPrevItem({ context, prop }) {
+        let value = null;
+        const highlightedValue = context.get("highlightedValue");
+        const collection2 = prop("collection");
+        if (highlightedValue) {
+          value = collection2.getPreviousValue(highlightedValue);
+          if (!value && prop("loopFocus")) value = collection2.lastValue;
+        } else {
+          value = collection2.lastValue;
+        }
+        if (value) context.set("highlightedValue", value);
+      },
+      highlightFirstSelectedItem({ context, prop }) {
+        raf2(() => {
+          const [value] = prop("collection").sort(context.get("value"));
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightFirstOrSelectedItem({ context, prop, computed }) {
+        raf2(() => {
+          let value = null;
+          if (computed("hasSelectedItems")) {
+            value = prop("collection").sort(context.get("value"))[0];
+          } else {
+            value = prop("collection").firstValue;
+          }
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightLastOrSelectedItem({ context, prop, computed }) {
+        raf2(() => {
+          const collection2 = prop("collection");
+          let value = null;
+          if (computed("hasSelectedItems")) {
+            value = collection2.sort(context.get("value"))[0];
+          } else {
+            value = collection2.lastValue;
+          }
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      autofillInputValue({ context, computed, prop, event, scope }) {
+        const inputEl = getInputEl(scope);
+        const collection2 = prop("collection");
+        if (!computed("autoComplete") || !inputEl || !event.keypress) return;
+        const valueText = collection2.stringify(context.get("highlightedValue"));
+        raf2(() => {
+          inputEl.value = valueText || context.get("inputValue");
+        });
+      },
+      syncSelectedItems(params) {
+        queueMicrotask(() => {
+          const { context, prop } = params;
+          const collection2 = prop("collection");
+          const value = context.get("value");
+          const selectedItems = value.map((v) => {
+            const item = context.get("selectedItems").find((item2) => collection2.getItemValue(item2) === v);
+            return item || collection2.find(v);
+          });
+          context.set("selectedItems", selectedItems);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: collection2.stringifyMany(value),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      syncHighlightedItem({ context, prop }) {
+        const item = prop("collection").find(context.get("highlightedValue"));
+        context.set("highlightedItem", item);
+      },
+      toggleVisibility({ event, send, prop }) {
+        send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+      }
+    }
+  }
+});
+function getOpenChangeReason(event) {
+  return (event.previousEvent || event).src;
+}
+var props4 = createProps2()([
+  "allowCustomValue",
+  "autoFocus",
+  "closeOnSelect",
+  "collection",
+  "composite",
+  "defaultHighlightedValue",
+  "defaultInputValue",
+  "defaultOpen",
+  "defaultValue",
+  "dir",
+  "disabled",
+  "disableLayer",
+  "form",
+  "getRootNode",
+  "highlightedValue",
+  "id",
+  "ids",
+  "inputBehavior",
+  "inputValue",
+  "invalid",
+  "loopFocus",
+  "multiple",
+  "name",
+  "navigate",
+  "onFocusOutside",
+  "onHighlightChange",
+  "onInputValueChange",
+  "onInteractOutside",
+  "onOpenChange",
+  "onOpenChange",
+  "onPointerDownOutside",
+  "onSelect",
+  "onValueChange",
+  "open",
+  "openOnChange",
+  "openOnClick",
+  "openOnKeyPress",
+  "placeholder",
+  "positioning",
+  "readOnly",
+  "required",
+  "scrollToIndexFn",
+  "selectionBehavior",
+  "translations",
+  "value",
+  "alwaysSubmitOnEnter"
+]);
+var splitProps6 = createSplitProps2(props4);
+var itemGroupLabelProps = createProps2()(["htmlFor"]);
+var splitItemGroupLabelProps = createSplitProps2(itemGroupLabelProps);
+var itemGroupProps = createProps2()(["id"]);
+var splitItemGroupProps = createSplitProps2(itemGroupProps);
+var itemProps3 = createProps2()(["item", "persistFocus"]);
+var splitItemProps3 = createSplitProps2(itemProps3);
+
+// components/combobox.ts
+var Combobox = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props5) {
+    return new VanillaMachine(machine5, props5);
+  }
+  initApi() {
+    return connect5(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const labelEl = this.el.querySelector('[data-part="label"]');
+    if (labelEl) {
+      this.spreadProps(labelEl, this.api.getLabelProps());
+    }
+    const controlEl = this.el.querySelector('[data-part="control"]');
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+    }
+    const inputEl = this.el.querySelector('[data-part="input"]');
+    if (inputEl) {
+      this.spreadProps(inputEl, this.api.getInputProps());
+    }
+    const triggerEl = this.el.querySelector('[data-part="trigger"]');
+    if (triggerEl) {
+      this.spreadProps(triggerEl, this.api.getTriggerProps());
+    }
+    const clearTriggerEl = this.el.querySelector('[data-part="clear-trigger"]');
+    if (clearTriggerEl) {
+      this.spreadProps(clearTriggerEl, this.api.getClearTriggerProps());
+    }
+    const positionerEl = this.el.querySelector('[data-part="positioner"]');
+    if (positionerEl) {
+      this.spreadProps(positionerEl, this.api.getPositionerProps());
+    }
+    const contentEl = this.el.querySelector('[data-part="content"]');
+    if (contentEl) {
+      this.spreadProps(contentEl, this.api.getContentProps());
+      const visibleGroups = /* @__PURE__ */ new Set();
+      const itemEls = contentEl.querySelectorAll('[data-part="item"]');
+      for (let j = 0; j < itemEls.length; j++) {
+        const itemEl = itemEls[j];
+        const value = getString(itemEl, "value");
+        if (!value) continue;
+        const item = this.api.collection.find(value);
+        if (!item) {
+          itemEl.style.display = "none";
+          continue;
+        }
+        itemEl.style.display = "";
+        this.spreadProps(itemEl, this.api.getItemProps({ item }));
+        const groupEl = itemEl.closest('[data-part="item-group"]');
+        if (groupEl) {
+          const groupId = groupEl.getAttribute("data-id");
+          if (groupId) visibleGroups.add(groupId);
+        }
+        const indicatorEl = itemEl.querySelector('[data-part="item-indicator"]');
+        if (indicatorEl) {
+          this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
+        }
+        const itemTextEl = itemEl.querySelector('[data-part="item-text"]');
+        if (itemTextEl) {
+          this.spreadProps(itemTextEl, this.api.getItemTextProps({ item }));
+        }
+      }
+      const groupEls = contentEl.querySelectorAll('[data-part="item-group"]');
+      for (let i = 0; i < groupEls.length; i++) {
+        const groupEl = groupEls[i];
+        const groupId = groupEl.getAttribute("data-id");
+        if (groupId && visibleGroups.has(groupId)) {
+          groupEl.style.display = "";
+          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+        } else {
+          groupEl.style.display = "none";
+        }
+      }
+      const groupLabelEls = contentEl.querySelectorAll('[data-part="item-group-label"]');
+      for (let i = 0; i < groupLabelEls.length; i++) {
+        const labelEl2 = groupLabelEls[i];
+        const groupId = labelEl2.getAttribute("data-id");
+        if (groupId && visibleGroups.has(groupId)) {
+          labelEl2.style.display = "";
+          this.spreadProps(labelEl2, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+        } else {
+          labelEl2.style.display = "none";
+        }
+      }
+    }
+  }
+};
+
+// hooks/combobox.ts
+var ComboboxHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const allItems = JSON.parse(el.dataset.collection || "[]");
+    this.allItems = allItems;
+    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const createCollection = (items) => {
+      if (hasGroups) {
+        return collection({
+          items,
+          itemToValue: (item) => item.id,
+          itemToString: (item) => item.label,
+          isItemDisabled: (item) => item.disabled,
+          groupBy: (item) => item.group
+        });
+      }
+      return collection({
+        items,
+        itemToValue: (item) => item.id,
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => item.disabled
+      });
+    };
+    const props5 = {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      disabled: getBoolean(el, "disabled"),
+      placeholder: getString(el, "placeholder"),
+      collection: createCollection(allItems),
+      alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
+      autoFocus: getBoolean(el, "autoFocus"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      inputBehavior: getString(this.el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      name: getString(el, "name"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      positioning: {
+        hideWhenDetached: getBoolean(el, "hideWhenDetached"),
+        strategy: getString(el, "strategy", ["absolute", "fixed"]),
+        placement: getString(el, "placement", ["top", "bottom", "left", "right"]),
+        offset: {
+          mainAxis: getNumber(el, "offsetMainAxis"),
+          crossAxis: getNumber(el, "offsetCrossAxis")
+        },
+        gutter: getNumber(el, "gutter"),
+        shift: getNumber(el, "shift"),
+        overflowPadding: getNumber(el, "overflowPadding"),
+        flip: getBoolean(el, "flip"),
+        slide: getBoolean(el, "slide"),
+        overlap: getBoolean(el, "overlap"),
+        sameWidth: getBoolean(el, "sameWidth"),
+        fitViewport: getBoolean(el, "fitViewport")
+      },
+      onOpenChange: (details) => {
+        if (details.open && this.combobox) {
+          this.combobox.updateProps({
+            collection: createCollection(this.allItems || [])
+          });
+        }
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            open: details.open,
+            reason: details.reason,
+            value: details.value,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                open: details.open,
+                reason: details.reason,
+                value: details.value,
+                id: el.id
+              }
+            })
+          );
+        }
+      },
+      onInputValueChange: (details) => {
+        if (!this.combobox || !this.allItems) return;
+        const filtered = this.allItems.filter(
+          (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+        );
+        const currentItems = filtered.length > 0 ? filtered : this.allItems;
+        this.combobox.updateProps({
+          collection: createCollection(currentItems)
+        });
+        const eventName = getString(el, "onInputValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.inputValue,
+            reason: details.reason,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onInputValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.inputValue,
+                reason: details.reason,
+                id: el.id
+              }
+            })
+          );
+        }
+      }
+    };
+    const combobox = new Combobox(el, props5);
+    combobox.init();
+    this.combobox = combobox;
+    this.handlers = [];
+  },
+  updated() {
+    this.combobox?.updateProps({
+      disabled: getBoolean(this.el, "disabled"),
+      placeholder: getString(this.el, "placeholder"),
+      name: getString(this.el, "name"),
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }
+    });
+  },
+  destroyed() {
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.combobox?.destroy();
+  }
+};
+
 // hooks/corex.ts
-var Hooks = { Accordion: AccordionHook, Toast: ToastHook, Switch: SwitchHook };
+var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Switch: SwitchHook, Combobox: ComboboxHook };
 var corex_default = Hooks;
 export {
   corex_default as default

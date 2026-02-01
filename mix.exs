@@ -4,12 +4,15 @@ defmodule Corex.MixProject do
   def project do
     [
       app: :corex,
-      version: "0.1.0-alpha.1",
+      version: "0.1.0-alpha.6",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
       name: "Corex",
+      description:
+        "Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework.",
+      package: package(),
       source_url: "https://github.com/corex-ui/corex",
       homepage_url: "https://corex-ui.com",
       docs: &docs/0
@@ -28,10 +31,12 @@ defmodule Corex.MixProject do
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0"},
       {:esbuild, "~> 0.8", only: :dev},
-      {:ex_doc, "~> 0.34", only: :docs},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: :docs},
-      {:makeup_eex, "~> 2.0", only: :docs}
+      {:ex_doc, "~> 0.40", only: :dev, runtime: false, warn_if_outdated: true},
+      {:makeup, "~> 1.2", only: :dev},
+      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: :dev},
+      {:makeup_eex, "~> 2.0", only: :dev},
+      {:makeup_syntect, "~> 0.1.0", only: :dev},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -42,10 +47,26 @@ defmodule Corex.MixProject do
     ]
   end
 
+  defp package do
+    [
+      maintainers: ["Karim Semmoud"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/corex-ui/corex",
+        "Website" => "https://corex-ui.com"
+      },
+      files: ~w(
+        lib priv mix.exs package.json README.md .formatter.exs
+        )
+    ]
+  end
+
   defp docs do
     [
       main: "Corex",
-      extras: ["README.md", "guides/installation.md"],
+      extras: ["guides/installation.md"],
+      main: "installation",
+      formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
       groups_for_docs: [
         Components: &(&1[:type] == :component),
@@ -59,8 +80,13 @@ defmodule Corex.MixProject do
     [
       Components: [
         Corex.Accordion,
+        Corex.Combobox,
         Corex.Switch,
-        Corex.Toast
+        Corex.Toast,
+        Corex.ToggleGroup
+      ],
+      Helpers: [
+        Corex.Collection.Item
       ]
     ]
   end

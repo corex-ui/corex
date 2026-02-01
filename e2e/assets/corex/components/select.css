@@ -1,0 +1,131 @@
+@import "../main.css";
+
+@layer components {
+  .select [data-scope="select"][data-part="root"] {
+    @apply ui-root;
+  }
+
+  .select [data-scope="select"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .select [data-scope="select"][data-part="control"] {
+    display: flex;
+    flex-direction: column;
+    max-width: var(--container-mini);
+    width: 100%;
+    position: relative;
+    margin-inline: auto;
+    gap: var(--spacing-mini-gap);
+  }
+
+  .select [data-scope="select"][data-part="trigger"] {
+    @apply ui-trigger;
+
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .select [data-scope="select"][data-part="positioner"] {
+    position: relative;
+  }
+
+  .select [data-scope="select"][data-part="content"] {
+    @apply ui-content;
+
+    border: 1px solid var(--color-ui--border);
+    z-index: 50;
+    padding: 0;
+    border-radius: var(--radius-ui);
+    overflow: hidden;
+    box-shadow: var(--shadow-ui);
+
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  .select [data-scope="select"][data-part="item-group"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .select [data-scope="select"][data-part="item-group-label"] {
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    text-align: start;
+    padding-inline: var(--spacing-ui-padding);
+    padding-block: var(--spacing-mini-padding-sm);
+    background-color: var(--color-root);
+    color: var(--color-root--text);
+    border-bottom: 1px solid var(--color-ui--border);
+  }
+
+  .select [data-scope="select"][data-part="item"] {
+    @apply ui-item;
+  }
+
+  .select [data-scope="select"][data-part="item-text"] {
+    width: 100%;
+    text-align: start;
+  }
+}
+
+@utility select--* {
+  [data-scope="select"][data-part="root"] {
+    max-width: --value(--container-mini-*, [length]);
+  }
+
+  [data-scope="select"][data-part="label"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="select"][data-part="trigger"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+
+  [data-scope="select"][data-part="control"] {
+    max-width: --value(--container-mini-*, [length]);
+    gap: --value(--spacing-mini-gap-*, [length]);
+  }
+
+  [data-scope="select"][data-part="item"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+
+  /* States for item */
+  [data-scope="select"][data-part="item"][data-selected],
+  [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected]:hover,
+  [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: --value(--color-ui-* -hover, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected]:active {
+    background-color: --value(--color-ui-* -active, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-highlighted] {
+    outline: 2px solid --value(--color-ui-* --text, [color]);
+    background-color: --value(--color-ui-* -hover, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: 2px solid var(--color-ui-accent--text);
+    background-color: --value(--color-ui-* -hover, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+}

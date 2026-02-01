@@ -28,7 +28,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.1"}
+    {:corex, "~> 0.1.0-alpha.6"}
   ]
 end
 ```
@@ -94,15 +94,21 @@ Add `import Corex` into your `MyAppWeb` `html_helpers`
 
 All components are unstyled by default, in this guide we will use the default styling provided by Corex
 
+Copy the default Corex Design files to your `assets` folder by running
+
+```bash
+mix corex.design
+```
+
 Apply the default theme by adding `data-theme="neo" data-mode="light"` to your `html` tag in `root.html.heex`
 
 In your `app.css` add the following:
 
 ```css
-@import "corex/design";
-@import "corex/design/themes/neo/light.css";
-@import "corex/design/components/typo.css";
-@import "corex/design/components/accordion.css";
+@import "../corex/main.css";
+@import "../corex/tokens/themes/neo/light.css";
+@import "../corex/components/typo.css";
+@import "../corex/components/accordion.css";
 ```
 
 ## Add your first component

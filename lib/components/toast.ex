@@ -1,9 +1,7 @@
 defmodule Corex.Toast do
   @moduledoc """
-  Provides Toast UI components that integrate with Zag.js via Phoenix LiveView hooks.
+  Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
 
-  Toast is used to give feedback to users after an action has taken place.
-  Toasts can be created programmatically and support multiple types (info, success, error, loading).
   """
 
   use Phoenix.Component
@@ -13,33 +11,42 @@ defmodule Corex.Toast do
 
   This component should be rendered once in your layout.
 
-  ## Attributes
-
-  - `id`: The ID of the toast group (default: auto-generated)
-  - `flash`: Map of flash messages to display as toasts (optional)
-  - `placement`: Where toasts appear (default: "bottom-end")
-  - `overlap`: Whether toasts overlap (default: true)
-  - `max`: Maximum number of visible toasts
-  - `gap`: Gap between toasts in pixels
-  - `offset`: Offset from viewport edge
-  - `pause_on_page_idle`: Pause toasts when page is idle (default: false)
-
   ## Examples
 
-      <.toast_group />
-      <.toast_group flash={@flash} />
-      <.toast_group flash={@flash} placement="bottom-end" max={5} />
+  ```heex
+   <.toast_group id="layout-toast" />
+   <div phx-disconnected={Corex.Toast.create("We can't find the internet", "Attempting to reconnect", :loading, duration: :infinity)}></div>
+  ```
+  ## API Control
+
+  ***Client-side***
+
+  ```heex
+  <button phx-click={Corex.Toast.create_toast("This is an info toast", "This is an info toast description", :info)} class="button">
+   Create Info Toast
+  </button>
+
+  ```
+
+  ***Server-side***
+
+  ```elixir
+  def handle_event("create_info_toast", _, socket) do
+    {:noreply, Corex.Toast.push_toast(socket, "This is an info toast", "This is an info toast description", :info)}
+  end
+  ```
+
+
   """
   attr(:id, :string, default: nil)
-  attr(:flash, :map, default: %{}, doc: "the map of flash messages to display as toasts")
 
   attr(:placement, :string,
     default: "bottom-end",
     values: ~w(top-start top top-end bottom-start bottom bottom-end)
   )
 
-  attr(:overlap, :boolean, default: true)
-  attr(:max, :integer, default: nil)
+  attr(:overlap, :boolean, default: false)
+  attr(:max, :integer, default: 5)
   attr(:gap, :integer, default: nil)
   attr(:offset, :string, default: nil)
   attr(:pause_on_page_idle, :boolean, default: false)
@@ -55,8 +62,6 @@ defmodule Corex.Toast do
       data-gap={@gap}
       data-offset={@offset}
       data-overlap={@overlap}
-
-
     >
       <div data-scope="toast" data-part="group">
 
@@ -94,7 +99,7 @@ defmodule Corex.Toast do
         Show Loading
       </button>
   """
-  def create(title, description \\ nil, type \\ :info, opts \\ []) do
+  def create_toast(title, description \\ nil, type \\ :info, opts \\ []) do
     duration = Keyword.get(opts, :duration, 5000)
     duration_str = if duration == :infinity, do: "Infinity", else: duration
 

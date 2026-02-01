@@ -10,7 +10,6 @@ type SwitchHookState = {
   switch?: Switch;
   handlers?: Array<CallbackRef>;
   onSetChecked?: (event: Event) => void;
-  wasFocused?: boolean;
 };
 
 const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
@@ -22,7 +21,8 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       id: el.id,
       ...(getBoolean(el, "controlled")
         ? { checked: getBoolean(el, "checked") }
-        : { defaultChecked: getBoolean(el, "default-checked") }),
+        : { defaultChecked: getBoolean(el, "defaultChecked") }),
+        defaultChecked: getBoolean(el, "defaultChecked"),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -38,7 +38,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             checked: details.checked,
-            switch_id: el.id,
+            id: el.id,
           });
         }
 
@@ -49,13 +49,14 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
               bubbles: true,
               detail: {
                 value: details,
-                switch_id: el.id,
+                id: el.id,
               },
             })
           );
         }
       },
     });
+
     zagSwitch.init();
     this.zagSwitch = zagSwitch;
 
@@ -68,16 +69,16 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("switch_set_checked", (payload: { switch_id?: string; value: boolean }) => {
-        const targetId = payload.switch_id;
+      this.handleEvent("switch_set_checked", (payload: { id?: string; value: boolean }) => {
+        const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
         zagSwitch.api.setChecked(payload.value);
       })
     );
 
     this.handlers.push(
-      this.handleEvent("switch_toggle_checked", (payload: { switch_id?: string }) => {
-        const targetId = payload.switch_id;
+      this.handleEvent("switch_toggle_checked", (payload: { id?: string }) => {
+        const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
         zagSwitch.api.toggleChecked();
       })
@@ -108,31 +109,21 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     );
   },
 
-  beforeUpdate(this: object & HookInterface<HTMLElement> & SwitchHookState) {
-    this.wasFocused = this.zagSwitch?.api.focused || false;
-  },
-
   updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
     this.zagSwitch?.updateProps({
       id: this.el.id,
       ...(getBoolean(this.el, "controlled")
         ? { checked: getBoolean(this.el, "checked") }
-        : { defaultChecked: getBoolean(this.el, "default-checked") }),
+        : { defaultChecked: getBoolean(this.el, "defaultChecked") }),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       value: getString(this.el, "value"),
       dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "read-only"),
+      readOnly: getBoolean(this.el, "readOnly"),
       label: getString(this.el, "label"),
     });
-    if (getBoolean(this.el, "controlled")) {
-      if (this.wasFocused) {
-        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]') as HTMLInputElement;
-        hiddenInput?.focus();
-      }
-    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SwitchHookState) {

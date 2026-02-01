@@ -1,15 +1,66 @@
 defmodule Mix.Tasks.Corex.Design do
   use Mix.Task
 
-  @shortdoc "Copies Corex design assets"
+  @shortdoc "Copy Corex design assets into your project"
 
   @moduledoc """
-  Copies Corex design assets.
+  Setup Corex design assets into your project.
+  You can select a target directory, defaults to `assets/corex`.
+  You can use the `--force` option to overwrite existing files.
 
-      mix corex.design
-      mix corex.design assets/design
-      mix corex.design --force
-      mix corex.design --no-designex
+  ## Examples
+
+  ```bash
+  mix corex.design
+  mix corex.design assets/design
+  mix corex.design --force
+  mix corex.design --designex
+  ```
+
+  ## With Design Tokens
+
+  You can also generate Tailwind CSS tokens and utilities from design tokens directly in Elixir using
+  Style Dictionary and Token Studio.
+
+  First install designex, add to your `mix.exs`:
+  ```elixir
+  def deps do
+    [
+      {:designex, "~> 1.0", only: :dev}
+    ]
+  end
+  ```
+
+  Then run the task with the `--designex` option:
+  This will copy the Corex design file including the design tokens and build scripts
+
+  ```bash
+  mix corex.design --designex
+  ```
+
+  Add the configuration for Designex
+
+  ```elixir
+  config :designex,
+  version: "1.0.2",
+  commit: "1da4b31",
+  cd: Path.expand("../assets", __DIR__),
+  dir: "corex",
+  corex: [
+  build_args: ~w(
+  --dir=design
+  --script=build.mjs
+  --tokens=tokens
+  )
+  ]
+  ```
+
+  You can now build the design tokens
+
+  ```bash
+  mix designex corex
+  ```
+
   """
 
   @default_target "assets/corex"
@@ -22,7 +73,7 @@ defmodule Mix.Tasks.Corex.Design do
 
     target = List.first(paths) || @default_target
     force = Keyword.get(opts, :force, false)
-    designex = Keyword.get(opts, :designex, true)
+    designex = Keyword.get(opts, :designex, false)
 
     validate_source!()
     validate_target!(target, force)

@@ -60,8 +60,13 @@ export const getNumber = (
  * @param attrName - The data attribute name (without 'data-' prefix)
  * @returns Boolean value (true if attribute exists, false otherwise)
  */
+// export const getBoolean = (element: HTMLElement, attrName: string): boolean => {
+//   return element.hasAttribute(`data-${attrName}`);
+// };
+
 export const getBoolean = (element: HTMLElement, attrName: string): boolean => {
-  return element.hasAttribute(`data-${attrName}`);
+  const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
+  return element.hasAttribute(`data-${dashName}`);
 };
 /**
  * Generate a random ID if none is provided
