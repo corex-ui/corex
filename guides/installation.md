@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.6"}
+    {:corex, "~> 0.1.0-alpha.7"}
   ]
 end
 ```
@@ -54,8 +54,8 @@ Configure Gettext backend and Jason Library in your `config/config.exs`:
 
 ```elixir
 config :corex,
-  gettext_backend: MyAppWeb.Gettext
-  json_library: Jason,
+  gettext_backend: MyAppWeb.Gettext,
+  json_library: Jason
 
 ```
 
@@ -102,7 +102,18 @@ Add `use Corex` into your `MyAppWeb` `html_helpers`
 
 ```
 
-By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates. You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions
+By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates.
+You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions
+
+```elixir
+use Corex, only: [:accordion], prefix: "ui"
+```
+This will only import Accordion component and you can use as
+```heex
+<.ui_accordion>
+...
+</.ui_accordion>
+```
 
 
 ## Styling

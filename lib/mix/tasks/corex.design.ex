@@ -31,14 +31,7 @@ defmodule Mix.Tasks.Corex.Design do
   end
   ```
 
-  Then run the task with the `--designex` option:
-  This will copy the Corex design file including the design tokens and build scripts
-
-  ```bash
-  mix corex.design --designex
-  ```
-
-  Add the configuration for Designex
+    Add the configuration for Designex
 
   ```elixir
   config :designex,
@@ -55,11 +48,40 @@ defmodule Mix.Tasks.Corex.Design do
   ]
   ```
 
+  Then run the task with the `--designex` option:
+  This will copy the Corex design file including the design tokens and build scripts
+  You may have to use the `--force` option to overwrite existing files.
+
+  ```bash
+  mix corex.design --designex
+  mix corex.design --designex --force
+  ```
+
+
   You can now build the design tokens
 
   ```bash
   mix designex corex
   ```
+
+  Optionally you can add the build into your assets build pipeline by adding the following to your `mix.exs`:
+
+  ```elixir
+  "assets.build": ["compile", "tailwind my_app", "esbuild my_app", "designex corex"],
+  ```
+
+  the `designex corex` task will be run automatically when you run `mix assets.build`.
+
+  You can also watch for changes in the design tokens by adding the following to your `config/dev.exs`:
+
+  ```elixir
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:my_app, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:my_app, ~w(--watch)]},
+    designex: {Designex, :install_and_run, [:corex, ~w(--watch)]}
+  ]
+  ```
+
 
   """
 

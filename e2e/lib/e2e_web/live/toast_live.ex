@@ -67,7 +67,9 @@ defmodule E2eWeb.ToastLive do
             Corex.Toast.create_toast(
               "This is a loading toast",
               "This is a loading toast description",
-              :loading, duration: :infinity)
+              :loading,
+              duration: :infinity
+            )
           }
           class="button"
         >
