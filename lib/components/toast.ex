@@ -2,8 +2,33 @@ defmodule Corex.Toast do
   @moduledoc """
   Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
 
-  """
+  ## Examples
 
+  ```heex
+   <.toast_group />
+   <div phx-disconnected={Corex.Toast.create("We can't find the internet", "Attempting to reconnect", :loading, duration: :infinity)}></div>
+  ```
+  ## API Control
+
+  ***Client-side***
+
+  ```heex
+  <button phx-click={Corex.Toast.create_toast("This is an info toast", "This is an info toast description", :info)} class="button">
+   Create Info Toast
+  </button>
+
+  ```
+
+  ***Server-side***
+
+  ```elixir
+  def handle_event("create_info_toast", _, socket) do
+    {:noreply, Corex.Toast.push_toast(socket, "This is an info toast", "This is an info toast description", :info)}
+  end
+  ```
+
+  """
+  @doc type: :component
   use Phoenix.Component
 
   @doc """
@@ -14,8 +39,8 @@ defmodule Corex.Toast do
   ## Examples
 
   ```heex
-   <.toast_group id="layout-toast" />
-   <div phx-disconnected={Corex.Toast.create("We can't find the internet", "Attempting to reconnect", :loading, duration: :infinity)}></div>
+   <.toast_group />
+   <div phx-disconnected={Corex.Toast.create_toast("We can't find the internet", "Attempting to reconnect", :loading, duration: :infinity)}></div>
   ```
   ## API Control
 
@@ -73,6 +98,7 @@ defmodule Corex.Toast do
     """
   end
 
+  @doc type: :api
   @doc """
   Creates a toast notification programmatically (client-side).
 
@@ -124,6 +150,7 @@ defmodule Corex.Toast do
     )
   end
 
+  @doc type: :api
   @doc """
   Server-side function to push a toast event to the client.
 

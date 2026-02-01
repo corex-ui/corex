@@ -2,7 +2,10 @@ defmodule Corex.Switch do
   @moduledoc """
   Phoenix implementation of [Zag.js Switch](https://zagjs.com/components/react/switch).
 
-  ## Basic Usage
+  ## Examples
+  <!-- tabs-open -->
+
+  ### Basic Usage
 
   ```heex
   <.switch id="my-switch">
@@ -10,7 +13,7 @@ defmodule Corex.Switch do
   </.switch>
   ```
 
-  ## Controlled Mode
+  ### Controlled Mode
 
   ```heex
   <.switch
@@ -27,6 +30,8 @@ defmodule Corex.Switch do
     {:noreply, assign(socket, :switch_checked, checked)}
   end
   ```
+
+  <!-- tabs-close -->
 
   ## Phoenix Form Integration
 

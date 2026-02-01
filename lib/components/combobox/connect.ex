@@ -71,9 +71,9 @@ defmodule Corex.Combobox.Connect do
         Map.merge(
           base,
           %{
-            # "id" => "combobox:#{assigns.id}",
-            # "data-invalid" => get_boolean(assigns.invalid),
-            # "data-readonly" => get_boolean(assigns.read_only),
+            "id" => "combobox:#{assigns.id}",
+            "data-invalid" => get_boolean(assigns.invalid),
+            "data-readonly" => get_boolean(assigns.read_only)
           }
         )
   end
@@ -91,14 +91,14 @@ defmodule Corex.Combobox.Connect do
         Map.merge(
           base,
           %{
-            # "dir" => assigns.dir,
-            # "id" => "combobox:#{assigns.id}:label",
-            # "htmlFor" => "combobox:#{assigns.id}:input",
-            # "for" => "combobox:#{assigns.id}:input",
-            # "data-required" => get_boolean(assigns.required),
-            # "data-disabled" => get_boolean(assigns.disabled),
-            # "data-invalid" => get_boolean(assigns.invalid),
-            # "data-readonly" => get_boolean(assigns.read_only),
+            "dir" => assigns.dir,
+            "id" => "combobox:#{assigns.id}:label",
+            "htmlFor" => "combobox:#{assigns.id}:input",
+            "for" => "combobox:#{assigns.id}:input",
+            "data-required" => get_boolean(assigns.required),
+            "data-disabled" => get_boolean(assigns.disabled),
+            "data-invalid" => get_boolean(assigns.invalid),
+            "data-readonly" => get_boolean(assigns.read_only)
           }
         )
   end
@@ -116,11 +116,10 @@ defmodule Corex.Combobox.Connect do
         Map.merge(
           base,
           %{
-            # "dir" => assigns.dir,
-            # "id" => "combobox:#{assigns.id}:control",
-            # "data-disabled" => get_boolean(assigns.disabled),
-            # "data-invalid" => get_boolean(assigns.invalid),
-            # "data-state" => if(assigns.open, do: "open", else: "closed"),
+            "dir" => assigns.dir,
+            "id" => "combobox:#{assigns.id}:control",
+            "data-disabled" => get_boolean(assigns.disabled),
+            "data-invalid" => get_boolean(assigns.invalid)
           }
         )
   end
@@ -138,23 +137,21 @@ defmodule Corex.Combobox.Connect do
         Map.merge(
           base,
           %{
-            # "autoComplete" => "off",
-            # "autoCorrect" => "off",
-            # "autoCapitalize" => "none",
-            # "spellCheck" => "false",
-            # "type" => "text",
-            # "role" => "combobox",
-            # "dir" => assigns.dir,
-            # "id" => "combobox:#{assigns.id}:input",
-            # "data-disabled" => get_boolean(assigns.disabled),
-            # "data-invalid" => get_boolean(assigns.invalid),
-            # "data-state" => if(assigns.open, do: "open", else: "closed"),
-            # "aria-expanded" => get_boolean(assigns.open),
-            # "aria-controls" => "combobox:#{assigns.id}:content",
-            # "name" => assigns.name,
-            # "placeholder" => assigns.placeholder,
-            # "required" => get_boolean(assigns.required),
-            # "autoFocus" => get_boolean(assigns.auto_focus),
+            "autoComplete" => "off",
+            "autoCorrect" => "off",
+            "autoCapitalize" => "none",
+            "spellCheck" => "false",
+            "type" => "text",
+            "role" => "combobox",
+            "dir" => assigns.dir,
+            "id" => "combobox:#{assigns.id}:input",
+            "data-disabled" => get_boolean(assigns.disabled),
+            "data-invalid" => get_boolean(assigns.invalid),
+            "aria-controls" => "combobox:#{assigns.id}:content",
+            "name" => assigns.name,
+            "placeholder" => assigns.placeholder,
+            "required" => get_boolean(assigns.required),
+            "autoFocus" => get_boolean(assigns.auto_focus)
           }
         )
   end
@@ -172,8 +169,8 @@ defmodule Corex.Combobox.Connect do
         Map.merge(
           base,
           %{
-            # "dir" => assigns.dir,
-            # "id" => "combobox:#{assigns.id}:positioner",
+            "dir" => assigns.dir,
+            "id" => "combobox:#{assigns.id}:positioner"
           }
         )
   end
@@ -191,13 +188,12 @@ defmodule Corex.Combobox.Connect do
         Map.merge(
           base,
           %{
-            # "dir" => assigns.dir,
-            # "id" => "combobox:#{assigns.id}:content",
-            # "tabindex" => -1,
-            # "role" => "listbox",
-            # "hidden" => "true",
-            # "aria-labelledby" => "combobox:#{assigns.id}:label",
-            # "data-state" => if(assigns.open, do: "open", else: "closed"),
+            "dir" => assigns.dir,
+            "id" => "combobox:#{assigns.id}:content",
+            "tabindex" => -1,
+            "role" => "listbox",
+            "hidden" => "true",
+            "aria-labelledby" => "combobox:#{assigns.id}:label"
           }
         )
   end
