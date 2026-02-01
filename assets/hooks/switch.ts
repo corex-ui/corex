@@ -16,7 +16,6 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SwitchHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-
     const zagSwitch = new Switch(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")

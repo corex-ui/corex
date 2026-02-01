@@ -41,12 +41,14 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         isItemDisabled: (item: any) => item.disabled,
       });
     };
-    
     const props: Props = {
       id: el.id,
       ...(getBoolean(el, "controlled")
       ? { value: getStringList(el, "value") }
       : { defaultValue: getStringList(el, "defaultValue") }),
+      ...(getBoolean(el, "controlled")
+      ? { inputValue: getStringList(el, "value")?.[0] ?? "" }
+      : { defaultInputValue: getStringList(el, "defaultValue")?.[0] ?? "" }),
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
       collection: createCollection(allItems),
