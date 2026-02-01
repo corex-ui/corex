@@ -16,20 +16,17 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 > Corex is actively being developed and is currently in alpha stage. 
 > It's not recommended for production use at this time. 
 > You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
+> 
 
 
 This guide will walk you through installing and configuring Corex in your Phoenix application.
 
-## Prerequisites
-
-- Phoenix 1.7+ with LiveView
-- Gettext
 
 ## Phoenix App
 
 If you don't already have a [Phoenix app up and running](https://hexdocs.pm/phoenix/up_and_running.html) you can run
 
-```r_console
+```bash
 mix phx.new my_app
 ```
 
@@ -40,28 +37,30 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.5"}
+    {:corex, "~> 0.1.0-alpha.6"}
   ]
 end
 ```
 
 Then fetch the dependencies:
 
-```console
+```bash
 mix deps.get
 ```
 
 ## Configuration
 
-Configure Gettext backend in your `config/config.exs`:
+Configure Gettext backend and Jason Library in your `config/config.exs`:
 
 ```elixir
 config :corex,
   gettext_backend: MyAppWeb.Gettext
+  json_library: Jason,
+
 ```
 
 
-### 2. Import Corex Hooks
+### Import Corex Hooks
 
 In your `assets/js/app.js`, import and register the Corex hooks:
 
@@ -99,23 +98,29 @@ Add `use Corex` into your `MyAppWeb` `html_helpers`
       # Routes generation with the ~p sigil
       unquote(verified_routes())
     end
-  end
-
+  end.
 
 ```
+
+By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates. You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions
+
 
 ## Styling
 
 All components are unstyled by default, in this guide we will use the default styling provided by Corex
 
-Copy once the default Corex Design files to your `assets` folder by running
+- Copy once the default Corex Design files to your `assets` folder by running
 
-```console
+```bash
 mix corex.design
 ```
 
-Apply the default theme by adding `data-theme="neo" data-mode="light"` to your `html` tag in `root.html.heex`
+- Apply the default theme 
+  
+Add `data-theme="neo" data-mode="light"` to your `html` tag in `root.html.heex`
 
+- Add CSS imports
+  
 In your `app.css` add the following:
 
 ```css
@@ -125,7 +130,11 @@ In your `app.css` add the following:
 @import "../corex/components/accordion.css";
 ```
 
+For more details see [Corex Design](Mix.Tasks.Corex.Design.html) mix task use
+
 ## Add your first component
+
+Add the following Accordion example to your application
 
 <!-- tabs-open -->
 
@@ -241,9 +250,14 @@ end
 <!-- tabs-close -->
 
 
+
 ## Next Steps
 
 Now that Corex is installed, explore the component documentation:
 
 - [Accordion](Corex.Accordion.html)
+- [Combobox](Corex.Combobox.html)
 - [Switch](Corex.Switch.html)
+- [Toast](Corex.Toast.html)
+- [Toggle Group](Corex.ToggleGroup.html)
+

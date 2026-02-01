@@ -12,6 +12,7 @@ config :e2e,
   generators: [timestamp_type: :utc_datetime]
 
 config :corex,
+  json_library: Jason,
   gettext_backend: E2eWeb.Gettext
 
 # Configure the endpoint

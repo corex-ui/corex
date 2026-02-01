@@ -2,6 +2,8 @@ defmodule Corex.Accordion do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Accordion](https://zagjs.com/components/react/accordion).
 
+  ## Examples
+
   <!-- tabs-open -->
 
   ### Minimal
@@ -45,7 +47,7 @@ defmodule Corex.Accordion do
     <.accordion_trigger item={item}>
       Lorem ipsum dolor sit amet
       <:indicator>
-       <.icon name="hero-chevron-right" class="icon" />
+       <.icon name="hero-chevron-right" />
       </:indicator>
     </.accordion_trigger>
     <.accordion_content item={item}">
@@ -56,7 +58,7 @@ defmodule Corex.Accordion do
     <.accordion_trigger item={item}>
       Duis dictum gravida odio ac pharetra?
       <:indicator>
-       <.icon name="hero-chevron-right" class="icon" />
+       <.icon name="hero-chevron-right" />
       </:indicator>
     </.accordion_trigger>
     <.accordion_content item={item}>
@@ -107,7 +109,7 @@ defmodule Corex.Accordion do
   ```
   <!-- tabs-close -->
 
-  ## Programmatic Control
+  ## API Control
 
   ***Client-side***
 
@@ -118,9 +120,9 @@ defmodule Corex.Accordion do
 
   ```
 
-    ***Server-side***
+  ***Server-side***
 
-    ```elixir
+  ```elixir
   def handle_event("open_item", _, socket) do
     {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["item-1"])}
   end
@@ -129,11 +131,15 @@ defmodule Corex.Accordion do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="accordion"][data-part="root"]` - Container
-  - `[data-scope="accordion"][data-part="item"]` - Item wrapper
-  - `[data-scope="accordion"][data-part="item-trigger"]` - Trigger button
-  - `[data-scope="accordion"][data-part="item-content"]` - Content area
-  - `[data-scope="accordion"][data-part="item-indicator"]` - Optional indicator
+
+  ```css
+  [data-scope="accordion"][data-part="root"] {}
+  [data-scope="accordion"][data-part="item"] {}
+  [data-scope="accordion"][data-part="item-trigger"] {}
+  [data-scope="accordion"][data-part="item-content"] {}
+  [data-scope="accordion"][data-part="item-indicator"] {}
+  ```
+
   '''
 
   @doc type: :component
@@ -141,6 +147,7 @@ defmodule Corex.Accordion do
 
   alias Corex.Accordion.Anatomy.{Props, Root, Item}
   alias Corex.Accordion.Connect
+  import Corex.Helpers, only: [validate_value!: 1]
 
   @doc """
   Renders an accordion component.
@@ -322,7 +329,7 @@ defmodule Corex.Accordion do
   def set_value(accordion_id, value) when is_binary(accordion_id) do
     Phoenix.LiveView.JS.dispatch("phx:accordion:set-value",
       to: "##{accordion_id}",
-      detail: %{value: Connect.validate_value!(value)},
+      detail: %{value: validate_value!(value)},
       bubbles: false
     )
   end
@@ -342,7 +349,7 @@ defmodule Corex.Accordion do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
     Phoenix.LiveView.push_event(socket, "accordion_set_value", %{
       accordion_id: accordion_id,
-      value: Connect.validate_value!(value)
+      value: validate_value!(value)
     })
   end
 end

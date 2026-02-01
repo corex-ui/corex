@@ -4,7 +4,7 @@ defmodule Corex.MixProject do
   def project do
     [
       app: :corex,
-      version: "0.1.0-alpha.5",
+      version: "0.1.0-alpha.6",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -80,9 +80,13 @@ defmodule Corex.MixProject do
     [
       Components: [
         Corex.Accordion,
+        Corex.Combobox,
         Corex.Switch,
         Corex.Toast,
         Corex.ToggleGroup
+      ],
+      Helpers: [
+        Corex.Collection.Item
       ]
     ]
   end

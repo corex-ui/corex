@@ -10,7 +10,6 @@ type ToggleGroupHookState = {
   toggleGroup?: ToggleGroup;
   handlers?: Array<CallbackRef>;
   onSetValue?: (event: Event) => void;
-  wasFocused?: string | null;
 };
 
 const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
@@ -19,11 +18,13 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const props: Props = {
       id: el.id,
+      ...(getBoolean(el, "controlled")
+      ? { value: getStringList(el, "value") }
+      : { defaultValue: getStringList(el, "defaultValue") }),
       defaultValue: getStringList(el, "defaultValue"),
       deselectable: getBoolean(el, "deselectable"),
       loopFocus: getBoolean(el, "loopFocus"),
       rovingFocus: getBoolean(el, "rovingFocus"),
-      value: getStringList(el, "value"),
       disabled: getBoolean(el, "disabled"),
       multiple: getBoolean(el, "multiple"),
       orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
@@ -33,7 +34,7 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             value: details.value,
-            toggle_group_id: el.id,
+            id: el.id,
           });
         }
 
@@ -44,7 +45,7 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
               bubbles: true,
               detail: {
                 value: details.value,
-                toggle_group_id: el.id,
+                id: el.id,
               },
             })
           );
@@ -67,8 +68,8 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
     this.handlers.push(
       this.handleEvent(
         "toggle-group_set_value",
-        (payload: { toggleGroup_id?: string; value: string[] }) => {
-          const targetId = payload.toggleGroup_id;
+        (payload: { id?: string; value: string[] }) => {
+          const targetId = payload.id;
           if (targetId && targetId !== el.id) return;
           toggleGroup.api.setValue(payload.value);
         }
@@ -86,8 +87,9 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
     this.toggleGroup?.updateProps({
-      defaultValue: getStringList(this.el, "defaultValue"),
-      value: getStringList(this.el, "value"),
+      ...(getBoolean(this.el, "controlled")
+      ? { value: getStringList(this.el, "value") }
+      : { defaultValue: getStringList(this.el, "defaultValue") }),
       deselectable: getBoolean(this.el, "deselectable"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       rovingFocus: getBoolean(this.el, "rovingFocus"),

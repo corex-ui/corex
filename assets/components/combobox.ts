@@ -1,7 +1,7 @@
 import * as combobox from "@zag-js/combobox";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { getString, getBoolean } from "../lib/util";
+import { getString } from "../lib/util";
 
 export class Combobox extends Component<combobox.Props, combobox.Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,6 +50,8 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
     const contentEl = this.el.querySelector<HTMLElement>('[data-part="content"]');
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
+
+      const visibleGroups = new Set<string>();
   
       const itemEls = contentEl.querySelectorAll<HTMLElement>('[data-part="item"]');
       for (let j = 0; j < itemEls.length; j++) {
@@ -63,16 +65,51 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
           continue;
         }
         
-        // Show and render items that are in the collection
         itemEl.style.display = '';
         this.spreadProps(itemEl, this.api.getItemProps({ item }));
+
+        const groupEl = itemEl.closest('[data-part="item-group"]') as HTMLElement | null;
+        if (groupEl) {
+          const groupId = groupEl.getAttribute("data-id");
+          if (groupId) visibleGroups.add(groupId);
+        }
   
-        // ✅ This should be INSIDE the item loop
         const indicatorEl = itemEl.querySelector<HTMLElement>('[data-part="item-indicator"]');
         if (indicatorEl) {
           this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
         }
-      } // ✅ Close the item loop here
-    } // ✅ Close the contentEl check here
+
+        const itemTextEl = itemEl.querySelector<HTMLElement>('[data-part="item-text"]');
+        if (itemTextEl) {
+          this.spreadProps(itemTextEl, this.api.getItemTextProps({ item }));
+        }
+      }
+
+      const groupEls = contentEl.querySelectorAll<HTMLElement>('[data-part="item-group"]');
+      for (let i = 0; i < groupEls.length; i++) {
+        const groupEl = groupEls[i];
+        const groupId = groupEl.getAttribute("data-id");
+        
+        if (groupId && visibleGroups.has(groupId)) {
+          groupEl.style.display = '';
+          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+        } else {
+          groupEl.style.display = 'none';
+        }
+      }
+
+      const groupLabelEls = contentEl.querySelectorAll<HTMLElement>('[data-part="item-group-label"]');
+      for (let i = 0; i < groupLabelEls.length; i++) {
+        const labelEl = groupLabelEls[i];
+        const groupId = labelEl.getAttribute("data-id");
+        
+        if (groupId && visibleGroups.has(groupId)) {
+          labelEl.style.display = '';
+          this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+        } else {
+          labelEl.style.display = 'none';
+        }
+      }
+    }
   }
 }

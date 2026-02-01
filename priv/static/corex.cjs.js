@@ -1735,7 +1735,8 @@ var getNumber = (element, attrName, validValues) => {
   return parsed;
 };
 var getBoolean = (element, attrName) => {
-  return element.hasAttribute(`data-${attrName}`);
+  const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
+  return element.hasAttribute(`data-${dashName}`);
 };
 var generateId = (element, fallbackId = "element") => {
   if (element?.id) return element.id;
@@ -1784,8 +1785,7 @@ var AccordionHook = {
     const pushEvent = this.pushEvent.bind(this);
     const props5 = {
       id: el.id,
-      defaultValue: getStringList(el, "defaultValue"),
-      value: getStringList(el, "value"),
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       collapsible: getBoolean(el, "collapsible"),
       disabled: getBoolean(el, "disabled"),
       multiple: getBoolean(el, "multiple"),
@@ -1796,7 +1796,7 @@ var AccordionHook = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             value: details.value,
-            accordion_id: el.id
+            id: el.id
           });
         }
         const eventNameClient = getString(el, "onValueChangeClient");
@@ -1806,7 +1806,7 @@ var AccordionHook = {
               bubbles: true,
               detail: {
                 value: details.value,
-                accordion_id: el.id
+                id: el.id
               }
             })
           );
@@ -1849,8 +1849,7 @@ var AccordionHook = {
   },
   updated() {
     this.accordion?.updateProps({
-      defaultValue: getStringList(this.el, "defaultValue"),
-      value: getStringList(this.el, "value"),
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
       collapsible: getBoolean(this.el, "collapsible"),
       disabled: getBoolean(this.el, "disabled"),
       multiple: getBoolean(this.el, "multiple"),
@@ -4383,11 +4382,11 @@ var ToggleGroupHook = {
     const pushEvent = this.pushEvent.bind(this);
     const props5 = {
       id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       defaultValue: getStringList(el, "defaultValue"),
       deselectable: getBoolean(el, "deselectable"),
       loopFocus: getBoolean(el, "loopFocus"),
       rovingFocus: getBoolean(el, "rovingFocus"),
-      value: getStringList(el, "value"),
       disabled: getBoolean(el, "disabled"),
       multiple: getBoolean(el, "multiple"),
       orientation: getString(el, "orientation", ["horizontal", "vertical"]),
@@ -4397,7 +4396,7 @@ var ToggleGroupHook = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             value: details.value,
-            toggle_group_id: el.id
+            id: el.id
           });
         }
         const eventNameClient = getString(el, "onValueChangeClient");
@@ -4407,7 +4406,7 @@ var ToggleGroupHook = {
               bubbles: true,
               detail: {
                 value: details.value,
-                toggle_group_id: el.id
+                id: el.id
               }
             })
           );
@@ -4427,7 +4426,7 @@ var ToggleGroupHook = {
       this.handleEvent(
         "toggle-group_set_value",
         (payload) => {
-          const targetId = payload.toggleGroup_id;
+          const targetId = payload.id;
           if (targetId && targetId !== el.id) return;
           toggleGroup.api.setValue(payload.value);
         }
@@ -4443,8 +4442,7 @@ var ToggleGroupHook = {
   },
   updated() {
     this.toggleGroup?.updateProps({
-      defaultValue: getStringList(this.el, "defaultValue"),
-      value: getStringList(this.el, "value"),
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
       deselectable: getBoolean(this.el, "deselectable"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       rovingFocus: getBoolean(this.el, "rovingFocus"),
@@ -4940,7 +4938,8 @@ var SwitchHook = {
     const pushEvent = this.pushEvent.bind(this);
     const zagSwitch = new Switch(el, {
       id: el.id,
-      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "default-checked") },
+      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
+      defaultChecked: getBoolean(el, "defaultChecked"),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -4955,7 +4954,7 @@ var SwitchHook = {
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             checked: details.checked,
-            switch_id: el.id
+            id: el.id
           });
         }
         const eventNameClient = getString(el, "onCheckedChangeClient");
@@ -4965,7 +4964,7 @@ var SwitchHook = {
               bubbles: true,
               detail: {
                 value: details,
-                switch_id: el.id
+                id: el.id
               }
             })
           );
@@ -4982,14 +4981,14 @@ var SwitchHook = {
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("switch_set_checked", (payload) => {
-        const targetId = payload.switch_id;
+        const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
         zagSwitch.api.setChecked(payload.value);
       })
     );
     this.handlers.push(
       this.handleEvent("switch_toggle_checked", (payload) => {
-        const targetId = payload.switch_id;
+        const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
         zagSwitch.api.toggleChecked();
       })
@@ -5016,28 +5015,19 @@ var SwitchHook = {
       })
     );
   },
-  beforeUpdate() {
-    this.wasFocused = this.zagSwitch?.api.focused || false;
-  },
   updated() {
     this.zagSwitch?.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "default-checked") },
+      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") },
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       value: getString(this.el, "value"),
       dir: getString(this.el, "dir", ["ltr", "rtl"]),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "read-only"),
+      readOnly: getBoolean(this.el, "readOnly"),
       label: getString(this.el, "label")
     });
-    if (getBoolean(this.el, "controlled")) {
-      if (this.wasFocused) {
-        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
-        hiddenInput?.focus();
-      }
-    }
   },
   destroyed() {
     if (this.onSetChecked) {
@@ -9428,6 +9418,7 @@ var Combobox = class extends Component {
     const contentEl = this.el.querySelector('[data-part="content"]');
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
+      const visibleGroups = /* @__PURE__ */ new Set();
       const itemEls = contentEl.querySelectorAll('[data-part="item"]');
       for (let j = 0; j < itemEls.length; j++) {
         const itemEl = itemEls[j];
@@ -9440,9 +9431,40 @@ var Combobox = class extends Component {
         }
         itemEl.style.display = "";
         this.spreadProps(itemEl, this.api.getItemProps({ item }));
+        const groupEl = itemEl.closest('[data-part="item-group"]');
+        if (groupEl) {
+          const groupId = groupEl.getAttribute("data-id");
+          if (groupId) visibleGroups.add(groupId);
+        }
         const indicatorEl = itemEl.querySelector('[data-part="item-indicator"]');
         if (indicatorEl) {
           this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
+        }
+        const itemTextEl = itemEl.querySelector('[data-part="item-text"]');
+        if (itemTextEl) {
+          this.spreadProps(itemTextEl, this.api.getItemTextProps({ item }));
+        }
+      }
+      const groupEls = contentEl.querySelectorAll('[data-part="item-group"]');
+      for (let i = 0; i < groupEls.length; i++) {
+        const groupEl = groupEls[i];
+        const groupId = groupEl.getAttribute("data-id");
+        if (groupId && visibleGroups.has(groupId)) {
+          groupEl.style.display = "";
+          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+        } else {
+          groupEl.style.display = "none";
+        }
+      }
+      const groupLabelEls = contentEl.querySelectorAll('[data-part="item-group-label"]');
+      for (let i = 0; i < groupLabelEls.length; i++) {
+        const labelEl2 = groupLabelEls[i];
+        const groupId = labelEl2.getAttribute("data-id");
+        if (groupId && visibleGroups.has(groupId)) {
+          labelEl2.style.display = "";
+          this.spreadProps(labelEl2, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+        } else {
+          labelEl2.style.display = "none";
         }
       }
     }
@@ -9453,25 +9475,90 @@ var Combobox = class extends Component {
 var ComboboxHook = {
   mounted() {
     const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
     this.allItems = allItems;
+    const hasGroups = allItems.some((item) => item.group !== void 0);
     const createCollection = (items) => {
+      if (hasGroups) {
+        return collection({
+          items,
+          itemToValue: (item) => item.id,
+          itemToString: (item) => item.label,
+          isItemDisabled: (item) => item.disabled,
+          groupBy: (item) => item.group
+        });
+      }
       return collection({
         items,
-        itemToValue: (item) => item.code,
-        itemToString: (item) => item.label
+        itemToValue: (item) => item.id,
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => item.disabled
       });
     };
     const props5 = {
       id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
       collection: createCollection(allItems),
+      alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
+      autoFocus: getBoolean(el, "autoFocus"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      inputBehavior: getString(this.el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      name: getString(el, "name"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      positioning: {
+        hideWhenDetached: getBoolean(el, "hideWhenDetached"),
+        strategy: getString(el, "strategy", ["absolute", "fixed"]),
+        placement: getString(el, "placement", ["top", "bottom", "left", "right"]),
+        offset: {
+          mainAxis: getNumber(el, "offsetMainAxis"),
+          crossAxis: getNumber(el, "offsetCrossAxis")
+        },
+        gutter: getNumber(el, "gutter"),
+        shift: getNumber(el, "shift"),
+        overflowPadding: getNumber(el, "overflowPadding"),
+        flip: getBoolean(el, "flip"),
+        slide: getBoolean(el, "slide"),
+        overlap: getBoolean(el, "overlap"),
+        sameWidth: getBoolean(el, "sameWidth"),
+        fitViewport: getBoolean(el, "fitViewport")
+      },
       onOpenChange: (details) => {
         if (details.open && this.combobox) {
           this.combobox.updateProps({
             collection: createCollection(this.allItems || [])
           });
+        }
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            open: details.open,
+            reason: details.reason,
+            value: details.value,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                open: details.open,
+                reason: details.reason,
+                value: details.value,
+                id: el.id
+              }
+            })
+          );
         }
       },
       onInputValueChange: (details) => {
@@ -9483,6 +9570,27 @@ var ComboboxHook = {
         this.combobox.updateProps({
           collection: createCollection(currentItems)
         });
+        const eventName = getString(el, "onInputValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.inputValue,
+            reason: details.reason,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onInputValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.inputValue,
+                reason: details.reason,
+                id: el.id
+              }
+            })
+          );
+        }
       }
     };
     const combobox = new Combobox(el, props5);
@@ -9493,7 +9601,9 @@ var ComboboxHook = {
   updated() {
     this.combobox?.updateProps({
       disabled: getBoolean(this.el, "disabled"),
-      placeholder: getString(this.el, "placeholder")
+      placeholder: getString(this.el, "placeholder"),
+      name: getString(this.el, "name"),
+      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }
     });
   },
   destroyed() {

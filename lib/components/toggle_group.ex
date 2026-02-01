@@ -131,13 +131,13 @@ defmodule Corex.ToggleGroup do
 
   attr(:controlled, :boolean, default: false, doc: "Whether the toggle group is controlled")
   attr(:deselectable, :boolean, default: false, doc: "Whether the toggle group is deselectable")
-  attr(:loopFocus, :boolean, default: false, doc: "Whether the toggle group is loopFocus")
-  attr(:rovingFocus, :boolean, default: false, doc: "Whether the toggle group is rovingFocus")
+  attr(:loopFocus, :boolean, default: true, doc: "Whether the toggle group is loopFocus")
+  attr(:rovingFocus, :boolean, default: true, doc: "Whether the toggle group is rovingFocus")
   attr(:disabled, :boolean, default: false, doc: "Whether the toggle group is disabled")
 
   attr(:multiple, :boolean,
     default: true,
-    doc: "Whether the accordion allows multiple items to be selected"
+    doc: "Whether the toggle group allows multiple items to be selected"
   )
 
   attr(:orientation, :string,
@@ -193,7 +193,7 @@ defmodule Corex.ToggleGroup do
       on_value_change_client: @on_value_change_client
     })}>
       <div {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
-        <div :for={{item_entry, index} <- Enum.with_index(@item)}
+        <button :for={{item_entry, index} <- Enum.with_index(@item)}
         {Connect.item(%Item{
           id: @id,
           changed: if(@__changed__, do: true, else: false),
@@ -203,7 +203,7 @@ defmodule Corex.ToggleGroup do
           dir: @dir,
           disabled_root: @disabled})}>
         <%= render_slot(item_entry)%>
-        </div>
+        </button>
       </div>
     </div>
     """

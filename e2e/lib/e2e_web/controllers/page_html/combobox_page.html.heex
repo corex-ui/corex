@@ -1,16 +1,20 @@
 <Layouts.app flash={@flash}>
-  <h1>Accordion</h1>
+  <h1>Combobox</h1>
   <h2>Controller View</h2>
 
+  <h2>Minimal</h2>
   <.combobox
+    id="my-combobox"
     class="combobox"
+    placeholder="Select a country"
+    on_open_change_client="handle_open_change"
     collection={[
-      %{label: "France", code: "fra"},
-      %{label: "Belgium", code: "bel"},
-      %{label: "Germany", code: "deu"},
-      %{label: "Netherlands", code: "nld"},
-      %{label: "Switzerland", code: "che"},
-      %{label: "Austria", code: "aut"}
+      %{label: "France", id: "fra", disabled: true},
+      %{label: "Belgium", id: "bel"},
+      %{label: "Germany", id: "deu"},
+      %{label: "Netherlands", id: "nld"},
+      %{label: "Switzerland", id: "che"},
+      %{label: "Austria", id: "aut"}
     ]}
   >
     <:trigger>
@@ -18,19 +22,77 @@
     </:trigger>
   </.combobox>
 
+  <h2>Grouped</h2>
   <.combobox
     class="combobox"
+    placeholder="Select a country"
     collection={[
-      %{label: "France", code: "fra"},
-      %{label: "Belgium", code: "bel"},
-      %{label: "Germany", code: "deu"},
-      %{label: "Netherlands", code: "nld"},
-      %{label: "Switzerland", code: "che"},
-      %{label: "Austria", code: "aut"}
+      %{label: "France", id: "fra", group: "Europe"},
+      %{label: "Belgium", id: "bel", group: "Europe"},
+      %{label: "Germany", id: "deu", group: "Europe"},
+      %{label: "Netherlands", id: "nld", group: "Europe"},
+      %{label: "Switzerland", id: "che", group: "Europe"},
+      %{label: "Austria", id: "aut", group: "Europe"},
+      %{label: "Japan", id: "jpn", group: "Asia"},
+      %{label: "China", id: "chn", group: "Asia"},
+      %{label: "South Korea", id: "kor", group: "Asia"},
+      %{label: "Thailand", id: "tha", group: "Asia"},
+      %{label: "USA", id: "usa", group: "North America"},
+      %{label: "Canada", id: "can", group: "North America"},
+      %{label: "Mexico", id: "mex", group: "North America"}
+    ]}
+  >
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+  </.combobox>
+
+  <h2>Extended</h2>
+  <.combobox
+    class="combobox"
+    placeholder="Select a country"
+    collection={[
+      %{label: "France", id: "fra"},
+      %{label: "Belgium", id: "bel"},
+      %{label: "Germany", id: "deu"},
+      %{label: "Netherlands", id: "nld"},
+      %{label: "Switzerland", id: "che"},
+      %{label: "Austria", id: "aut"}
+    ]}
+  >
+    <:label>
+      Country of residence
+    </:label>
+    <:item :let={item}>
+      <Flagpack.flag name={String.to_atom(item.id)} />
+      {item.label}
+    </:item>
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+    <:clear_trigger>
+      <.icon name="hero-backspace" />
+    </:clear_trigger>
+    <:item_indicator>
+      <.icon name="hero-check" />
+    </:item_indicator>
+  </.combobox>
+
+  <h2>Extended Grouped</h2>
+  <.combobox
+    class="combobox"
+    placeholder="Select a country"
+    collection={[
+      %{label: "France", id: "fra", group: "Europe"},
+      %{label: "Belgium", id: "bel", group: "Europe"},
+      %{label: "Germany", id: "deu", group: "Europe"},
+      %{label: "Japan", id: "jpn", group: "Asia"},
+      %{label: "China", id: "chn", group: "Asia"},
+      %{label: "South Korea", id: "kor", group: "Asia"}
     ]}
   >
     <:item :let={item}>
-      <Flagpack.flag name={String.to_atom(item.code)} />
+      <Flagpack.flag name={String.to_atom(item.id)} />
       {item.label}
     </:item>
     <:trigger>

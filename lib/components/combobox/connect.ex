@@ -1,16 +1,19 @@
 defmodule Corex.Combobox.Connect do
   @moduledoc false
-  alias Corex.Combobox.Anatomy.{Props, Root, Item}
+  alias Corex.Combobox.Anatomy.Control
+  alias Corex.Combobox.Anatomy.{Props, Root, Label, Input, Positioner, Content}
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  import Corex.Helpers,
+    only: [get_boolean: 1, get_default_boolean: 2, get_boolean: 2, validate_value!: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-collapsible" => data_attr(assigns.collapsible),
+      "data-collection" => Corex.Json.encode!(validate_collection!(assigns.collection)),
+      "data-controlled" => get_boolean(assigns.controlled),
+      "data-default-open" => get_default_boolean(assigns.controlled, assigns.open),
+      "data-open" => get_boolean(assigns.controlled, assigns.open),
       "data-default-value" =>
         if assigns.controlled do
           nil
@@ -23,143 +26,197 @@ defmodule Corex.Combobox.Connect do
         else
           nil
         end,
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-multiple" => data_attr(assigns.multiple),
-      "data-orientation" => assigns.orientation,
+      "data-placeholder" => assigns.placeholder,
+      "data-close-on-select" => get_boolean(assigns.close_on_select),
+      "data-always-submit-on-enter" => get_boolean(assigns.always_submit_on_enter),
+      "data-auto-focus" => get_boolean(assigns.auto_focus),
+      "data-dir" => assigns.dir,
+      "data-input-behavior" => assigns.input_behavior,
+      "data-loop-focus" => get_boolean(assigns.loop_focus),
+      "data-multiple" => get_boolean(assigns.multiple),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-name" => assigns.name,
+      "data-read-only" => get_boolean(assigns.read_only),
+      "data-required" => get_boolean(assigns.required),
+      "data-on-open-change" => assigns.on_open_change,
+      "data-on-open-change-client" => assigns.on_open_change_client,
+      "data-on-input-value-change" => assigns.on_input_value_change,
       "data-on-value-change" => assigns.on_value_change,
-      "data-on-value-change-client" => assigns.on_value_change_client,
-      "data-dir" => assigns.dir
+      "data-same-width" => get_boolean(assigns.same_width),
+      "data-fit-viewport" => get_boolean(assigns.fit_viewport),
+      "data-flip" => get_boolean(assigns.flip),
+      "data-hide-when-detached" => get_boolean(assigns.hide_when_detached),
+      "data-strategy" => assigns.strategy,
+      "data-placement" => assigns.placement,
+      "data-offset-main-axis" => assigns.offset_main_axis,
+      "data-offset-cross-axis" => assigns.offset_cross_axis,
+      "data-gutter" => assigns.gutter,
+      "data-shift" => assigns.shift,
+      "data-overflow-padding" => assigns.overflow_padding,
+      "data-bubble" => get_boolean(assigns.bubble)
     }
   end
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
     base = %{
-      "data-scope" => "accordion",
+      "data-scope" => "combobox",
       "data-part" => "root"
     }
 
     if assigns.changed,
       do: base,
       else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "data-orientation" => assigns.orientation,
-          "id" => "accordion:#{assigns.id}"
-        })
+        Map.merge(
+          base,
+          %{
+            # "id" => "combobox:#{assigns.id}",
+            # "data-invalid" => get_boolean(assigns.invalid),
+            # "data-readonly" => get_boolean(assigns.read_only),
+          }
+        )
   end
 
-  @spec item(Item.t()) :: map()
-  def item(assigns) do
-    value = assigns.value
-    data_state = if(value in assigns.values, do: "open", else: "closed")
-
+  @spec label(Label.t()) :: map()
+  def label(assigns) do
     base = %{
-      "data-scope" => "accordion",
-      "data-part" => "item",
-      "data-value" => value,
-      "data-disabled" => assigns.disabled_root || assigns.disabled
+      "data-scope" => "combobox",
+      "data-part" => "label"
     }
 
     if assigns.changed,
       do: base,
       else:
-        Map.merge(base, %{
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "data-state" => data_state,
-          "id" => "accordion:#{assigns.id}:item:#{value}"
-        })
+        Map.merge(
+          base,
+          %{
+            # "dir" => assigns.dir,
+            # "id" => "combobox:#{assigns.id}:label",
+            # "htmlFor" => "combobox:#{assigns.id}:input",
+            # "for" => "combobox:#{assigns.id}:input",
+            # "data-required" => get_boolean(assigns.required),
+            # "data-disabled" => get_boolean(assigns.disabled),
+            # "data-invalid" => get_boolean(assigns.invalid),
+            # "data-readonly" => get_boolean(assigns.read_only),
+          }
+        )
   end
 
-  @spec trigger(Item.t()) :: map()
-  def trigger(assigns) do
-    expanded = assigns.value in assigns.values
-    data_state = if expanded, do: "open", else: "closed"
-
+  @spec control(Control.t()) :: map()
+  def control(assigns) do
     base = %{
-      "data-scope" => "accordion",
-      "data-part" => "item-trigger"
+      "data-scope" => "combobox",
+      "data-part" => "control"
     }
 
     if assigns.changed,
       do: base,
       else:
-        Map.merge(base, %{
-          "type" => "button",
-          "tabindex" => if(assigns.disabled, do: -1, else: 0),
-          "aria-expanded" => if(expanded, do: "true", else: "false"),
-          "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
-          "data-disabled" => assigns.disabled,
-          "disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "data-state" => data_state,
-          "id" => "accordion:#{assigns.id}:trigger:#{assigns.value}",
-          "data-controls" => "accordion:#{assigns.id}:content:#{assigns.value}",
-          "aria-controls" => "accordion:#{assigns.id}:content:#{assigns.value}",
-          "data-ownedby" => "accordion:#{assigns.id}"
-        })
+        Map.merge(
+          base,
+          %{
+            # "dir" => assigns.dir,
+            # "id" => "combobox:#{assigns.id}:control",
+            # "data-disabled" => get_boolean(assigns.disabled),
+            # "data-invalid" => get_boolean(assigns.invalid),
+            # "data-state" => if(assigns.open, do: "open", else: "closed"),
+          }
+        )
   end
 
-  @spec content(Item.t()) :: map()
+  @spec input(Input.t()) :: map()
+  def input(assigns) do
+    base = %{
+      "data-scope" => "combobox",
+      "data-part" => "input"
+    }
+
+    if assigns.changed,
+      do: base,
+      else:
+        Map.merge(
+          base,
+          %{
+            # "autoComplete" => "off",
+            # "autoCorrect" => "off",
+            # "autoCapitalize" => "none",
+            # "spellCheck" => "false",
+            # "type" => "text",
+            # "role" => "combobox",
+            # "dir" => assigns.dir,
+            # "id" => "combobox:#{assigns.id}:input",
+            # "data-disabled" => get_boolean(assigns.disabled),
+            # "data-invalid" => get_boolean(assigns.invalid),
+            # "data-state" => if(assigns.open, do: "open", else: "closed"),
+            # "aria-expanded" => get_boolean(assigns.open),
+            # "aria-controls" => "combobox:#{assigns.id}:content",
+            # "name" => assigns.name,
+            # "placeholder" => assigns.placeholder,
+            # "required" => get_boolean(assigns.required),
+            # "autoFocus" => get_boolean(assigns.auto_focus),
+          }
+        )
+  end
+
+  @spec positioner(Positioner.t()) :: map()
+  def positioner(assigns) do
+    base = %{
+      "data-scope" => "combobox",
+      "data-part" => "positioner"
+    }
+
+    if assigns.changed,
+      do: base,
+      else:
+        Map.merge(
+          base,
+          %{
+            # "dir" => assigns.dir,
+            # "id" => "combobox:#{assigns.id}:positioner",
+          }
+        )
+  end
+
+  @spec content(Content.t()) :: map()
   def content(assigns) do
-    expanded = assigns.value in assigns.values
-    data_state = if expanded, do: "open", else: "closed"
-
     base = %{
-      "data-scope" => "accordion",
-      "data-part" => "item-content"
+      "data-scope" => "combobox",
+      "data-part" => "content"
     }
 
     if assigns.changed,
       do: base,
       else:
-        Map.merge(base, %{
-          "role" => "region",
-          "data-state" => data_state,
-          "data-disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "aria-labelledby" => "accordion:#{assigns.id}:trigger:#{assigns.value}",
-          "hidden" => !expanded,
-          "id" => "accordion:#{assigns.id}:content:#{assigns.value}"
-        })
+        Map.merge(
+          base,
+          %{
+            # "dir" => assigns.dir,
+            # "id" => "combobox:#{assigns.id}:content",
+            # "tabindex" => -1,
+            # "role" => "listbox",
+            # "hidden" => "true",
+            # "aria-labelledby" => "combobox:#{assigns.id}:label",
+            # "data-state" => if(assigns.open, do: "open", else: "closed"),
+          }
+        )
   end
 
-  @spec indicator(Item.t()) :: map()
-  def indicator(assigns) do
-    expanded = assigns.value in assigns.values
-    data_state = if expanded, do: "open", else: "closed"
+  defp validate_collection!(items) when is_list(items) do
+    Enum.map(items, fn
+      %Corex.Collection.Item{} = item ->
+        item
 
-    base = %{
-      "data-scope" => "accordion",
-      "data-part" => "item-indicator"
-    }
+      %{id: _, label: _} = map ->
+        struct(Corex.Collection.Item, map)
 
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "aria-hidden" => true,
-          "data-state" => data_state,
-          "data-disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir
-        })
+      other ->
+        raise ArgumentError, """
+        <.combobox> items must be Corex.Collection.Item or maps with :id and :label.
+
+        Got:
+        #{inspect(other)}
+        """
+    end)
   end
-
-  def validate_value!([]), do: []
-
-  def validate_value!(value) when is_list(value) do
-    if Enum.all?(value, &is_binary/1) do
-      value
-    else
-      raise ArgumentError, value_error(value)
-    end
-  end
-
-  def validate_value!(value), do: raise(ArgumentError, value_error(value))
-
-  def value_error(value), do: "value must be a list of strings, got: #{inspect(value)}"
 end

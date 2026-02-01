@@ -1,0 +1,57 @@
+<Layouts.app flash={@flash}>
+  <h1>Toast</h1>
+  <h2>Controller View</h2>
+
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={
+        Corex.Toast.create_toast(
+          "This is an info toast",
+          "This is an info toast description",
+          :info
+        )
+      }
+      class="button"
+    >
+      Create Info Toast
+    </button>
+
+    <button
+      phx-click={
+        Corex.Toast.create_toast(
+          "This is a success toast",
+          "This is a success toast description",
+          :success
+        )
+      }
+      class="button"
+    >
+      Succes Toast
+    </button>
+    <button
+      phx-click={
+        Corex.Toast.create_toast(
+          "This is a error toast",
+          "This is a error toast description",
+          :error
+        )
+      }
+      class="button"
+    >
+      Error Toast
+    </button>
+
+    <button
+      phx-click={
+        Corex.Toast.create_toast(
+          "This is a loading toast",
+          "This is a loading toast description",
+          :loading, duration: :infinity)
+      }
+      class="button"
+    >
+      Create Loading
+    </button>
+  </div>
+</Layouts.app>

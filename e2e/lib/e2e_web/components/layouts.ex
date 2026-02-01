@@ -144,7 +144,13 @@ defmodule E2eWeb.Layouts do
       </div>
     </main>
 
-    <.flash_group flash={@flash} />
+    <.toast_group id="layout-toast" />
+    <div phx-disconnected={
+      Corex.Toast.create_toast("We can't find the internet", "Attempting to reconnect", :loading,
+        duration: :infinity
+      )
+    }>
+    </div>
     """
   end
 

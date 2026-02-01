@@ -20,4 +20,8 @@ defmodule E2eWeb.PageController do
   def combobox_page(conn, _params) do
     render(conn, :combobox_page)
   end
+
+  def toast_page(conn, _params) do
+    render(conn, :toast_page)
+  end
 end

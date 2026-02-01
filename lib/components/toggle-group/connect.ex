@@ -14,16 +14,12 @@ defmodule Corex.ToggleGroup.Connect do
       "data-loop-focus" => data_attr(assigns.loopFocus),
       "data-roving-focus" => data_attr(assigns.rovingFocus),
       "data-default-value" =>
-        if assigns.controlled do
-          nil
-        else
-          Enum.join(validate_value!(assigns.value), ",")
+        if !assigns.controlled and assigns.value != [] do
+          Enum.join(assigns.value, ",")
         end,
       "data-value" =>
-        if assigns.controlled do
-          Enum.join(validate_value!(assigns.value), ",")
-        else
-          nil
+        if assigns.controlled and assigns.value != [] do
+          Enum.join(assigns.value, ",")
         end,
       "data-disabled" => data_attr(assigns.disabled),
       "data-multiple" => data_attr(assigns.multiple),
@@ -61,7 +57,7 @@ defmodule Corex.ToggleGroup.Connect do
     base = %{
       "data-scope" => "toggle-group",
       "data-part" => "item",
-
+      "data-value" => value
     }
 
     if assigns.changed,
@@ -71,12 +67,11 @@ defmodule Corex.ToggleGroup.Connect do
           "data-orientation" => assigns.orientation,
           "dir" => assigns.dir,
           "type" => "button",
-          "data-value" => value,
           "data-disabled" => assigns.disabled_root || assigns.disabled,
           "data-ownedby" => "toggle-group:#{assigns.id}",
           "disabled" => assigns.disabled_root || assigns.disabled,
           "data-state" => data_state,
-          "id" => "toggle-group:#{assigns.id}:item:#{value}"
+          "id" => "toggle-group:#{assigns.id}:#{value}"
         })
   end
 

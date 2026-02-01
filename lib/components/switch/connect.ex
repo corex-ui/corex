@@ -28,18 +28,6 @@ defmodule Corex.Switch.Connect do
     }
   end
 
-  defp data_default_checked(assigns) do
-    if !assigns.controlled && assigns.checked, do: "", else: nil
-  end
-
-  defp data_checked(assigns) do
-    if assigns.controlled do
-      if assigns.checked, do: "", else: nil
-    else
-      nil
-    end
-  end
-
   @spec root(Root.t()) :: map()
   def root(assigns) do
     data_state = if assigns.checked, do: "checked", else: "unchecked"
@@ -148,5 +136,17 @@ defmodule Corex.Switch.Connect do
           "id" => "switch:#{assigns.id}:label",
           "data-state" => data_state
         })
+  end
+
+  defp data_default_checked(assigns) do
+    if !assigns.controlled && assigns.checked, do: "", else: nil
+  end
+
+  defp data_checked(assigns) do
+    if assigns.controlled do
+      if assigns.checked, do: "", else: nil
+    else
+      nil
+    end
   end
 end

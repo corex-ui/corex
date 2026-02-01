@@ -1,6 +1,7 @@
 defmodule Corex.Accordion.Connect do
   @moduledoc false
   alias Corex.Accordion.Anatomy.{Props, Root, Item}
+  import Corex.Helpers, only: [validate_value!: 1]
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
@@ -148,18 +149,4 @@ defmodule Corex.Accordion.Connect do
           "dir" => assigns.dir
         })
   end
-
-  def validate_value!([]), do: []
-
-  def validate_value!(value) when is_list(value) do
-    if Enum.all?(value, &is_binary/1) do
-      value
-    else
-      raise ArgumentError, value_error(value)
-    end
-  end
-
-  def validate_value!(value), do: raise(ArgumentError, value_error(value))
-
-  def value_error(value), do: "value must be a list of strings, got: #{inspect(value)}"
 end

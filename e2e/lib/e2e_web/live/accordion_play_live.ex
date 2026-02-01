@@ -18,7 +18,7 @@ defmodule E2eWeb.AccordionPlayLive do
   @impl true
   def handle_event(
         "control_changed",
-        %{"checked" => checked, "switch_id" => id},
+        %{"checked" => checked, "id" => id},
         socket
       ) do
     {:noreply, update_control(socket, id, checked)}
@@ -26,7 +26,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
   def handle_event(
         "control_changed",
-        %{"value" => [value], "toggle_group_id" => id},
+        %{"value" => [value], "id" => id},
         socket
       ) do
     {:noreply, update_control(socket, id, value)}
@@ -40,24 +40,16 @@ defmodule E2eWeb.AccordionPlayLive do
     update(socket, :controls, &Map.put(&1, :disabled_lorem, checked))
   end
 
-  defp update_control(socket, "rtl", true) do
-    update(socket, :controls, &Map.put(&1, :dir, "rtl"))
-  end
-
-  defp update_control(socket, "rtl", false) do
-    update(socket, :controls, &Map.put(&1, :dir, "ltr"))
-  end
-
-  defp update_control(socket, "orientation", true) do
-    update(socket, :controls, &Map.put(&1, :orientation, "horizontal"))
-  end
-
-  defp update_control(socket, "orientation", false) do
-    update(socket, :controls, &Map.put(&1, :orientation, "vertical"))
+  defp update_control(socket, "orientation", value) do
+    update(socket, :controls, &Map.put(&1, :orientation, value))
   end
 
   defp update_control(socket, "dir", value) do
     update(socket, :controls, &Map.put(&1, :dir, value))
+  end
+
+  defp update_control(socket, "collapsible", value) do
+    update(socket, :controls, &Map.put(&1, :collapsible, value))
   end
 
   defp update_control(socket, _unknown, _checked), do: socket
@@ -88,11 +80,22 @@ defmodule E2eWeb.AccordionPlayLive do
           <:label>Disable “Lorem” Item</:label>
         </.switch>
 
+        <.switch
+          class="switch"
+          id="collapsible"
+          on_checked_change="control_changed"
+          checked
+        >
+          <:label>Collapsible</:label>
+        </.switch>
+
         <.toggle_group
           class="toggle-group"
           id="dir"
           on_value_change="control_changed"
           multiple={false}
+          deselectable={false}
+          value={["ltr"]}
         >
           <:item value="ltr">
             LTR
@@ -103,13 +106,22 @@ defmodule E2eWeb.AccordionPlayLive do
           </:item>
         </.toggle_group>
 
-        <.switch
-          class="switch"
+        <.toggle_group
+          class="toggle-group"
           id="orientation"
-          on_checked_change="control_changed"
+          on_value_change="control_changed"
+          multiple={false}
+          deselectable={false}
+          value={["vertical"]}
         >
-          <:label>Horizontal</:label>
-        </.switch>
+          <:item value="horizontal">
+            <.icon name="hero-arrows-right-left" />
+          </:item>
+
+          <:item value="vertical">
+            <.icon name="hero-arrows-up-down" />
+          </:item>
+        </.toggle_group>
       </div>
 
       <.accordion
@@ -117,7 +129,7 @@ defmodule E2eWeb.AccordionPlayLive do
         class="accordion"
         disabled={@controls.disabled}
         collapsible={@controls.collapsible}
-        multiple={@controls.multiple}
+        multiple={false}
         orientation={@controls.orientation}
         dir={@controls.dir}
       >

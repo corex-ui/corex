@@ -3,6 +3,6 @@ defmodule E2eWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Corex end-to-end tests"
+    assert html_response(conn, 200) =~ "Corex E2E tests"
   end
 end
