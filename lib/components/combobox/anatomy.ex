@@ -148,7 +148,8 @@ defmodule Corex.Combobox.Anatomy do
       :required,
       :placeholder,
       :name,
-      :auto_focus
+      :auto_focus,
+      :value
     ]
 
     @type t :: %__MODULE__{
@@ -161,7 +162,8 @@ defmodule Corex.Combobox.Anatomy do
             required: boolean(),
             placeholder: String.t() | nil,
             name: String.t() | nil,
-            auto_focus: boolean()
+            auto_focus: boolean(),
+            value: list(String.t())
           }
   end
 

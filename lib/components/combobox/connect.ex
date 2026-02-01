@@ -139,7 +139,7 @@ defmodule Corex.Combobox.Connect do
           %{
             "autoComplete" => "off",
             "autoCorrect" => "off",
-            "autoCapitalize" => "none",
+            "autoCapitalize" => "off",
             "spellCheck" => "false",
             "type" => "text",
             "role" => "combobox",
@@ -151,7 +151,8 @@ defmodule Corex.Combobox.Connect do
             "name" => assigns.name,
             "placeholder" => assigns.placeholder,
             "required" => get_boolean(assigns.required),
-            "autoFocus" => get_boolean(assigns.auto_focus)
+            "autoFocus" => get_boolean(assigns.auto_focus),
+            "value" => Enum.at(assigns.value || [], 0)
           }
         )
   end
@@ -170,6 +171,7 @@ defmodule Corex.Combobox.Connect do
           base,
           %{
             "dir" => assigns.dir,
+            "style" => "display: none;",
             "id" => "combobox:#{assigns.id}:positioner"
           }
         )

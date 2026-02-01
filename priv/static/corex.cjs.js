@@ -4936,6 +4936,7 @@ var SwitchHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    console.log(getString(el, "form"));
     const zagSwitch = new Switch(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
@@ -9499,6 +9500,7 @@ var ComboboxHook = {
     const props5 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      ...getBoolean(el, "controlled") ? { inputValue: getStringList(el, "value")?.[0] ?? "" } : { defaultInputValue: getStringList(el, "defaultValue")?.[0] ?? "" },
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
       collection: createCollection(allItems),

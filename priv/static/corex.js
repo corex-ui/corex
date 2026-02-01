@@ -5116,6 +5116,7 @@ var Corex = (() => {
     mounted() {
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
+      console.log(getString(el, "form"));
       const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
         id: el.id
       }, getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") }), {
@@ -9714,6 +9715,7 @@ var Corex = (() => {
   // hooks/combobox.ts
   var ComboboxHook = {
     mounted() {
+      var _a, _b, _c, _d;
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
       const allItems = JSON.parse(el.dataset.collection || "[]");
@@ -9736,9 +9738,9 @@ var Corex = (() => {
           isItemDisabled: (item) => item.disabled
         });
       };
-      const props5 = __spreadProps(__spreadValues(__spreadProps(__spreadValues({
+      const props5 = __spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
         id: el.id
-      }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+      }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), getBoolean(el, "controlled") ? { inputValue: (_b = (_a = getStringList(el, "value")) == null ? void 0 : _a[0]) != null ? _b : "" } : { defaultInputValue: (_d = (_c = getStringList(el, "defaultValue")) == null ? void 0 : _c[0]) != null ? _d : "" }), {
         disabled: getBoolean(el, "disabled"),
         placeholder: getString(el, "placeholder"),
         collection: createCollection(allItems),

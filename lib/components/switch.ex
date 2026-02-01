@@ -120,10 +120,7 @@ defmodule Corex.Switch do
 
   attr(:name, :string, doc: "The name of the switch input for form submission")
 
-  attr(:form, :string,
-    default: nil,
-    doc: "The form id to associate the switch with"
-  )
+  attr(:form, :string, doc: "The form id to associate the switch with")
 
   attr(:aria_label, :string,
     default: "Label",
@@ -194,13 +191,16 @@ defmodule Corex.Switch do
   def switch(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = field.errors || []
 
-    assigns
-    |> assign(field: nil)
-    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign_new(:id, fn -> field.id end)
-    |> assign_new(:name, fn -> field.name end)
-    |> assign(:checked, Phoenix.HTML.Form.normalize_value("checkbox", field[:value]))
-    |> switch()
+    assigns =
+      assigns
+      |> assign(field: nil)
+      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+      |> assign_new(:id, fn -> field.id end)
+      |> assign_new(:name, fn -> field.name end)
+      |> assign(:checked, field.value)
+      |> assign_new(:form, fn -> field.form.id end)
+
+    switch(assigns)
   end
 
   def switch(assigns) do
@@ -208,6 +208,7 @@ defmodule Corex.Switch do
       assigns
       |> assign_new(:id, fn -> "switch-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form, fn -> nil end)
 
     ~H"""
     <div

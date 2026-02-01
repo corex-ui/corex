@@ -176,7 +176,7 @@ defmodule Corex.Combobox do
   attr(:bubble, :boolean, default: false, doc: "Whether the client events are bubbled")
   attr(:disabled, :boolean, default: false, doc: "Whether the combobox is disabled")
   attr(:open, :boolean, default: false, doc: "Whether the combobox is open")
-  attr(:value, :list, default: [], doc: "The value of the combobox")
+  attr(:value, :list, doc: "The value of the combobox")
 
   attr(:placeholder, :string, default: nil, doc: "The placeholder of the combobox")
 
@@ -242,6 +242,10 @@ defmodule Corex.Combobox do
   slot(:clear_trigger, required: false, doc: "The clear button content")
   slot(:item_indicator, required: false, doc: "Optional indicator for selected items")
 
+  slot :error, required: false do
+    attr(:class, :string, required: false)
+  end
+
   slot(:item,
     required: false,
     doc: "Custom content for each item. Receives the item as :let binding"
@@ -250,6 +254,11 @@ defmodule Corex.Combobox do
   attr(:field, Phoenix.HTML.FormField,
     doc:
       "A form field struct retrieved from the form, for example: @form[:country]. Automatically sets id, name, value, and errors from the form field"
+  )
+
+  attr(:errors, :list,
+    default: [],
+    doc: "List of error messages to display"
   )
 
   def combobox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
@@ -299,15 +308,17 @@ defmodule Corex.Combobox do
         {render_slot(@label)}
       </div>
       <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
-          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: @name, auto_focus: @auto_focus})} />
+          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, value: @value, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: @name, auto_focus: @auto_focus})} />
           <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
           </button>
           <button data-scope="combobox" data-part="trigger">
             {render_slot(@trigger)}
           </button>
-        </div>
-
+      </div>
+      <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
+          {render_slot(@error, msg)}
+      </div>
         <div {Connect.positioner(%Positioner{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir})}>
           <ul {Connect.content(%Content{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir, open: @open})}>
                 <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"}>
