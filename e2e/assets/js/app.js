@@ -35,11 +35,11 @@ const liveSocket = new LiveSocket("/live", Socket, {
 
 const el = document.getElementById("my-combobox");
 
-if (el) {
-  el.addEventListener("handle_open_change", function (event) {
-    console.log(event.detail);
-  });
-}
+// if (el) {
+//   el.addEventListener("handle_open_change", function (event) {
+//     console.log(event.detail);
+//   });
+// }
 
 
 // Show progress bar on live navigation and form submits

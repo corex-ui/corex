@@ -19,20 +19,4 @@ defmodule E2e.AccountsFixtures do
 
     user
   end
-
-  @doc """
-  Generate a admin.
-  """
-  def admin_fixture(attrs \\ %{}) do
-    {:ok, admin} =
-      attrs
-      |> Enum.into(%{
-        country: "some country",
-        name: "some name",
-        terms: true
-      })
-      |> E2e.Accounts.create_admin()
-
-    admin
-  end
 end

@@ -1,8 +1,9 @@
-<.form :let={f} for={@changeset} action={@action} class="flex flex-col gap-ui">
+<.form :let={f} id="user" for={@changeset} action={@action} class="flex flex-col gap-ui">
   <.input field={f[:name]} type="text" label="Name" />
   <.combobox
     class="combobox"
     field={f[:country]}
+    form="user"
     placeholder="Select a country"
     collection={[
       %{label: "France", id: "fra", disabled: true},

@@ -10,16 +10,11 @@ defmodule E2eWeb.ComboboxLive do
     {:noreply, socket}
   end
 
-  def handle_event("handle_change", params, socket) do
-    # {:noreply, socket}
-    {:noreply, assign(socket, form: to_form(params))}
-  end
-
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
       <div class="layout__row">
-        <h1>Accordion</h1>
+        <h1>Combobox</h1>
         <h2>Live View</h2>
       </div>
       <h2>Minimal</h2>
@@ -124,28 +119,6 @@ defmodule E2eWeb.ComboboxLive do
           <.icon name="hero-check" />
         </:item_indicator>
       </.combobox>
-
-      <h2>Form</h2>
-      <.form for={@form} phx-submit="handle_change">
-        <.combobox
-          class="combobox"
-          field={@form[:country]}
-          placeholder="Select a country"
-          collection={[
-            %{label: "France", id: "fra", disabled: true},
-            %{label: "Belgium", id: "bel"},
-            %{label: "Germany", id: "deu"},
-            %{label: "Netherlands", id: "nld"},
-            %{label: "Switzerland", id: "che"},
-            %{label: "Austria", id: "aut"}
-          ]}
-        >
-          <:trigger>
-            <.icon name="hero-chevron-down" />
-          </:trigger>
-        </.combobox>
-        <button class="button button--accent">Save</button>
-      </.form>
     </Layouts.app>
     """
   end
