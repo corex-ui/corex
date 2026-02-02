@@ -12,7 +12,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
   }
 
   renderItems(): void {
-    const contentEl = this.el.querySelector<HTMLElement>('[data-part="content"]');
+    const contentEl = this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="content"]');
     if (!contentEl) return;
 
     const templatesContainer =
@@ -20,11 +20,11 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
     if (!templatesContainer) return;
 
     contentEl
-      .querySelectorAll('[data-part="item"]:not([data-template])')
+      .querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])')
       .forEach(el => el.remove());
 
     contentEl
-      .querySelectorAll('[data-part="item-group"]:not([data-template])')
+      .querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])')
       .forEach(el => el.remove());
 
     const items = this.api.collection.items;
@@ -48,7 +48,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
       if (groupId == null) continue;
 
       const groupTemplate = templatesContainer.querySelector<HTMLElement>(
-        `[data-part="item-group"][data-id="${groupId}"][data-template]`
+        `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
       );
       if (!groupTemplate) continue;
 
@@ -58,7 +58,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
 
       const labelEl = groupEl.querySelector<HTMLElement>(
-        '[data-part="item-group-label"]'
+        '[data-scope="combobox"][data-part="item-group-label"]'
       );
       if (labelEl) {
         this.spreadProps(
@@ -68,7 +68,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
       }
 
       groupEl
-        .querySelectorAll('[data-part="item"][data-template]')
+        .querySelectorAll('[data-scope="combobox"][data-part="item"][data-template]')
         .forEach(el => el.remove());
 
       for (const item of groupItems) {
@@ -98,7 +98,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
     const value = this.api.collection.getItemValue(item);
 
     const template = templatesContainer.querySelector<HTMLElement>(
-      `[data-part="item"][data-value="${value}"][data-template]`
+      `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
     );
     if (!template) return null;
 
@@ -107,13 +107,13 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
 
     this.spreadProps(el, this.api.getItemProps({ item }));
 
-    const textEl = el.querySelector<HTMLElement>('[data-part="item-text"]');
+    const textEl = el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="item-text"]');
     if (textEl) {
       this.spreadProps(textEl, this.api.getItemTextProps({ item }));
     }
 
     const indicatorEl =
-      el.querySelector<HTMLElement>('[data-part="item-indicator"]');
+      el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="item-indicator"]');
     if (indicatorEl) {
       this.spreadProps(
         indicatorEl,
@@ -126,7 +126,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
 
   render(): void {
     const root =
-      this.el.querySelector<HTMLElement>('[data-part="root"]') ?? this.el;
+      this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
 
     [
@@ -137,7 +137,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
       "clear-trigger",
       "positioner",
     ].forEach(part => {
-      const el = this.el.querySelector<HTMLElement>(`[data-part="${part}"]`);
+      const el = this.el.querySelector<HTMLElement>(`[data-scope="combobox"][data-part="${part}"]`);
       if (!el) return;
 
       const apiMethod =
@@ -153,7 +153,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
     });
 
     const contentEl =
-      this.el.querySelector<HTMLElement>('[data-part="content"]');
+      this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="content"]');
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
       this.renderItems();
