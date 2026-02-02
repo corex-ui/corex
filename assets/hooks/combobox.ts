@@ -18,6 +18,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
+    // Store all items from the server
     const allItems = JSON.parse(el.dataset.collection || "[]");
     this.allItems = allItems;
     
@@ -41,28 +42,29 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         isItemDisabled: (item: any) => item.disabled,
       });
     };
+
     const props: Props = {
       id: el.id,
       ...(getBoolean(el, "controlled")
-      ? { value: getStringList(el, "value") }
-      : { defaultValue: getStringList(el, "defaultValue") }),
+        ? { value: getStringList(el, "value") }
+        : { defaultValue: getStringList(el, "defaultValue") }),
       ...(getBoolean(el, "controlled")
-      ? { inputValue: getStringList(el, "value")?.[0] ?? "" }
-      : { defaultInputValue: getStringList(el, "defaultValue")?.[0] ?? "" }),
+        ? { inputValue: getStringList(el, "value")?.[0] ?? "" }
+        : { defaultInputValue: getStringList(el, "defaultValue")?.[0] ?? "" }),
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
       collection: createCollection(allItems),
       alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
       autoFocus: getBoolean(el, "autoFocus"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
-      inputBehavior: getString(this.el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
+      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      inputBehavior: getString(el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
       loopFocus: getBoolean(el, "loopFocus"),
       multiple: getBoolean(el, "multiple"),
       invalid: getBoolean(el, "invalid"),
       ...(getBoolean(el, "controlled")
-      ? { open: getBoolean(el, "open") }
-      : { defaultOpen: getBoolean(el, "defaultOpen") }),
+        ? { open: getBoolean(el, "open") }
+        : { defaultOpen: getBoolean(el, "defaultOpen") }),
       name: getString(el, "name"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
@@ -82,12 +84,12 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         overlap: getBoolean(el, "overlap"),
         sameWidth: getBoolean(el, "sameWidth"),
         fitViewport: getBoolean(el, "fitViewport"),
-        
       },
       onOpenChange: (details: OpenChangeDetails) => {
-        if (details.open && this.combobox) {
+        // Reset to all items when opening
+        if (details.open && this.combobox && this.allItems) {
           this.combobox.updateProps({
-            collection: createCollection(this.allItems || []),
+            collection: createCollection(this.allItems),
           });
         }
 
@@ -118,9 +120,13 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       },
       onInputValueChange: (details: InputValueChangeDetails) => {
         if (!this.combobox || !this.allItems) return;
-          const filtered = this.allItems.filter((item: any) =>
-          item.label.toLowerCase().includes(details.inputValue.toLowerCase()),
+
+        // Filter items based on input
+        const filtered = this.allItems.filter((item: any) =>
+          item.label.toLowerCase().includes(details.inputValue.toLowerCase())
         );
+        
+        // Update collection with filtered items
         const currentItems = filtered.length > 0 ? filtered : this.allItems;
         this.combobox.updateProps({
           collection: createCollection(currentItems),
@@ -159,14 +165,43 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
+    // Update allItems if collection changed
+    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+    if (JSON.stringify(newCollection) !== JSON.stringify(this.allItems)) {
+      this.allItems = newCollection;
+      
+      const hasGroups = newCollection.some((item: any) => item.group !== undefined);
+      const createCollection = (items: any[]) => {
+        if (hasGroups) {
+          return collection({
+            items: items,
+            itemToValue: (item: any) => item.id,
+            itemToString: (item: any) => item.label,
+            isItemDisabled: (item: any) => item.disabled,
+            groupBy: (item: any) => item.group,
+          });
+        }
+        
+        return collection({
+          items: items,
+          itemToValue: (item: any) => item.id,
+          itemToString: (item: any) => item.label,
+          isItemDisabled: (item: any) => item.disabled,
+        });
+      };
+      
+      this.combobox?.updateProps({
+        collection: createCollection(newCollection),
+      });
+    }
+
     this.combobox?.updateProps({
       disabled: getBoolean(this.el, "disabled"),
       placeholder: getString(this.el, "placeholder"),
       name: getString(this.el, "name"),
-
       ...(getBoolean(this.el, "controlled")
-      ? { value: getStringList(this.el, "value") }
-      : { defaultValue: getStringList(this.el, "defaultValue") })
+        ? { value: getStringList(this.el, "value") }
+        : { defaultValue: getStringList(this.el, "defaultValue") })
     });
   },
 

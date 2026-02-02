@@ -23,6 +23,7 @@ defmodule Corex.Combobox.Anatomy do
       invalid: false,
       disabled: false,
       name: nil,
+      form: nil,
       read_only: false,
       required: false,
       hide_when_detached: false,
@@ -61,6 +62,7 @@ defmodule Corex.Combobox.Anatomy do
             invalid: boolean(),
             disabled: boolean(),
             name: String.t() | nil,
+            form: String.t() | nil,
             read_only: boolean(),
             required: boolean(),
             hide_when_detached: boolean(),
@@ -149,7 +151,8 @@ defmodule Corex.Combobox.Anatomy do
       :placeholder,
       :name,
       :auto_focus,
-      :value
+      :value,
+      :form
     ]
 
     @type t :: %__MODULE__{
@@ -163,7 +166,8 @@ defmodule Corex.Combobox.Anatomy do
             placeholder: String.t() | nil,
             name: String.t() | nil,
             auto_focus: boolean(),
-            value: list(String.t())
+            value: list(String.t()),
+            form: String.t() | nil
           }
   end
 

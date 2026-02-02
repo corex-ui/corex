@@ -4910,7 +4910,7 @@ var SwitchHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    console.log(getString(el, "form"));
+    this.wasFocused = false;
     const zagSwitch = new Switch(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
@@ -4990,12 +4990,16 @@ var SwitchHook = {
       })
     );
   },
+  beforeUpdate() {
+    this.wasFocused = this.zagSwitch?.api.focused ?? false;
+  },
   updated() {
     this.zagSwitch?.updateProps({
       id: this.el.id,
       ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") },
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
       value: getString(this.el, "value"),
       dir: getString(this.el, "dir", ["ltr", "rtl"]),
       invalid: getBoolean(this.el, "invalid"),
@@ -5003,6 +5007,12 @@ var SwitchHook = {
       readOnly: getBoolean(this.el, "readOnly"),
       label: getString(this.el, "label")
     });
+    if (getBoolean(this.el, "controlled")) {
+      if (this.wasFocused) {
+        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
+        hiddenInput?.focus();
+      }
+    }
   },
   destroyed() {
     if (this.onSetChecked) {
@@ -9356,92 +9366,103 @@ var splitItemProps3 = createSplitProps2(itemProps3);
 
 // components/combobox.ts
 var Combobox = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props5) {
     return new VanillaMachine(machine5, props5);
   }
   initApi() {
     return connect5(this.machine.service, normalizeProps);
   }
+  renderItems() {
+    const contentEl = this.el.querySelector('[data-part="content"]');
+    if (!contentEl) return;
+    const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
+    if (!templatesContainer) return;
+    contentEl.querySelectorAll('[data-part="item"]:not([data-template])').forEach((el) => el.remove());
+    contentEl.querySelectorAll('[data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
+    const items = this.api.collection.items;
+    const groups = this.api.collection.group?.() ?? [];
+    const hasGroups = groups.some(([group2]) => group2 != null);
+    if (hasGroups) {
+      this.renderGroupedItems(contentEl, templatesContainer, groups);
+    } else {
+      this.renderFlatItems(contentEl, templatesContainer, items);
+    }
+  }
+  renderGroupedItems(contentEl, templatesContainer, groups) {
+    for (const [groupId, groupItems] of groups) {
+      if (groupId == null) continue;
+      const groupTemplate = templatesContainer.querySelector(
+        `[data-part="item-group"][data-id="${groupId}"][data-template]`
+      );
+      if (!groupTemplate) continue;
+      const groupEl = groupTemplate.cloneNode(true);
+      groupEl.removeAttribute("data-template");
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+      const labelEl = groupEl.querySelector(
+        '[data-part="item-group-label"]'
+      );
+      if (labelEl) {
+        this.spreadProps(
+          labelEl,
+          this.api.getItemGroupLabelProps({ htmlFor: groupId })
+        );
+      }
+      groupEl.querySelectorAll('[data-part="item"][data-template]').forEach((el) => el.remove());
+      for (const item of groupItems) {
+        const itemEl = this.cloneItem(templatesContainer, item);
+        if (itemEl) groupEl.appendChild(itemEl);
+      }
+      contentEl.appendChild(groupEl);
+    }
+  }
+  renderFlatItems(contentEl, templatesContainer, items) {
+    for (const item of items) {
+      const itemEl = this.cloneItem(templatesContainer, item);
+      if (itemEl) contentEl.appendChild(itemEl);
+    }
+  }
+  cloneItem(templatesContainer, item) {
+    const value = this.api.collection.getItemValue(item);
+    const template = templatesContainer.querySelector(
+      `[data-part="item"][data-value="${value}"][data-template]`
+    );
+    if (!template) return null;
+    const el = template.cloneNode(true);
+    el.removeAttribute("data-template");
+    this.spreadProps(el, this.api.getItemProps({ item }));
+    const textEl = el.querySelector('[data-part="item-text"]');
+    if (textEl) {
+      this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+    }
+    const indicatorEl = el.querySelector('[data-part="item-indicator"]');
+    if (indicatorEl) {
+      this.spreadProps(
+        indicatorEl,
+        this.api.getItemIndicatorProps({ item })
+      );
+    }
+    return el;
+  }
   render() {
-    const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
-    this.spreadProps(rootEl, this.api.getRootProps());
-    const labelEl = this.el.querySelector('[data-part="label"]');
-    if (labelEl) {
-      this.spreadProps(labelEl, this.api.getLabelProps());
-    }
-    const controlEl = this.el.querySelector('[data-part="control"]');
-    if (controlEl) {
-      this.spreadProps(controlEl, this.api.getControlProps());
-    }
-    const inputEl = this.el.querySelector('[data-part="input"]');
-    if (inputEl) {
-      this.spreadProps(inputEl, this.api.getInputProps());
-    }
-    const triggerEl = this.el.querySelector('[data-part="trigger"]');
-    if (triggerEl) {
-      this.spreadProps(triggerEl, this.api.getTriggerProps());
-    }
-    const clearTriggerEl = this.el.querySelector('[data-part="clear-trigger"]');
-    if (clearTriggerEl) {
-      this.spreadProps(clearTriggerEl, this.api.getClearTriggerProps());
-    }
-    const positionerEl = this.el.querySelector('[data-part="positioner"]');
-    if (positionerEl) {
-      this.spreadProps(positionerEl, this.api.getPositionerProps());
-    }
+    const root = this.el.querySelector('[data-part="root"]') ?? this.el;
+    this.spreadProps(root, this.api.getRootProps());
+    [
+      "label",
+      "control",
+      "input",
+      "trigger",
+      "clear-trigger",
+      "positioner"
+    ].forEach((part) => {
+      const el = this.el.querySelector(`[data-part="${part}"]`);
+      if (!el) return;
+      const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
+      this.spreadProps(el, this.api[apiMethod]());
+    });
     const contentEl = this.el.querySelector('[data-part="content"]');
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
-      const visibleGroups = /* @__PURE__ */ new Set();
-      const itemEls = contentEl.querySelectorAll('[data-part="item"]');
-      for (let j = 0; j < itemEls.length; j++) {
-        const itemEl = itemEls[j];
-        const value = getString(itemEl, "value");
-        if (!value) continue;
-        const item = this.api.collection.find(value);
-        if (!item) {
-          itemEl.style.display = "none";
-          continue;
-        }
-        itemEl.style.display = "";
-        this.spreadProps(itemEl, this.api.getItemProps({ item }));
-        const groupEl = itemEl.closest('[data-part="item-group"]');
-        if (groupEl) {
-          const groupId = groupEl.getAttribute("data-id");
-          if (groupId) visibleGroups.add(groupId);
-        }
-        const indicatorEl = itemEl.querySelector('[data-part="item-indicator"]');
-        if (indicatorEl) {
-          this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
-        }
-        const itemTextEl = itemEl.querySelector('[data-part="item-text"]');
-        if (itemTextEl) {
-          this.spreadProps(itemTextEl, this.api.getItemTextProps({ item }));
-        }
-      }
-      const groupEls = contentEl.querySelectorAll('[data-part="item-group"]');
-      for (let i = 0; i < groupEls.length; i++) {
-        const groupEl = groupEls[i];
-        const groupId = groupEl.getAttribute("data-id");
-        if (groupId && visibleGroups.has(groupId)) {
-          groupEl.style.display = "";
-          this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
-        } else {
-          groupEl.style.display = "none";
-        }
-      }
-      const groupLabelEls = contentEl.querySelectorAll('[data-part="item-group-label"]');
-      for (let i = 0; i < groupLabelEls.length; i++) {
-        const labelEl2 = groupLabelEls[i];
-        const groupId = labelEl2.getAttribute("data-id");
-        if (groupId && visibleGroups.has(groupId)) {
-          labelEl2.style.display = "";
-          this.spreadProps(labelEl2, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
-        } else {
-          labelEl2.style.display = "none";
-        }
-      }
+      this.renderItems();
     }
   }
 };
@@ -9481,8 +9502,8 @@ var ComboboxHook = {
       alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
       autoFocus: getBoolean(el, "autoFocus"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"]),
-      inputBehavior: getString(this.el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      inputBehavior: getString(el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
       loopFocus: getBoolean(el, "loopFocus"),
       multiple: getBoolean(el, "multiple"),
       invalid: getBoolean(el, "invalid"),
@@ -9508,9 +9529,9 @@ var ComboboxHook = {
         fitViewport: getBoolean(el, "fitViewport")
       },
       onOpenChange: (details) => {
-        if (details.open && this.combobox) {
+        if (details.open && this.combobox && this.allItems) {
           this.combobox.updateProps({
-            collection: createCollection(this.allItems || [])
+            collection: createCollection(this.allItems)
           });
         }
         const eventName = getString(el, "onOpenChange");
@@ -9575,6 +9596,31 @@ var ComboboxHook = {
     this.handlers = [];
   },
   updated() {
+    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+    if (JSON.stringify(newCollection) !== JSON.stringify(this.allItems)) {
+      this.allItems = newCollection;
+      const hasGroups = newCollection.some((item) => item.group !== void 0);
+      const createCollection = (items) => {
+        if (hasGroups) {
+          return collection({
+            items,
+            itemToValue: (item) => item.id,
+            itemToString: (item) => item.label,
+            isItemDisabled: (item) => item.disabled,
+            groupBy: (item) => item.group
+          });
+        }
+        return collection({
+          items,
+          itemToValue: (item) => item.id,
+          itemToString: (item) => item.label,
+          isItemDisabled: (item) => item.disabled
+        });
+      };
+      this.combobox?.updateProps({
+        collection: createCollection(newCollection)
+      });
+    }
     this.combobox?.updateProps({
       disabled: getBoolean(this.el, "disabled"),
       placeholder: getString(this.el, "placeholder"),

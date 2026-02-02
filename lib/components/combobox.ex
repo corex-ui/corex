@@ -176,7 +176,7 @@ defmodule Corex.Combobox do
   attr(:bubble, :boolean, default: false, doc: "Whether the client events are bubbled")
   attr(:disabled, :boolean, default: false, doc: "Whether the combobox is disabled")
   attr(:open, :boolean, default: false, doc: "Whether the combobox is open")
-  attr(:value, :list, doc: "The value of the combobox")
+  attr(:value, :list, default: [], doc: "The value of the combobox")
 
   attr(:placeholder, :string, default: nil, doc: "The placeholder of the combobox")
 
@@ -198,6 +198,8 @@ defmodule Corex.Combobox do
   attr(:multiple, :boolean, default: false, doc: "Whether to allow multiple selection")
   attr(:invalid, :boolean, default: false, doc: "Whether the combobox is invalid")
   attr(:name, :string, doc: "The name of the combobox")
+  attr(:form, :string, doc: "The id of the form of the combobox")
+
   attr(:read_only, :boolean, default: false, doc: "Whether the combobox is read only")
   attr(:required, :boolean, default: false, doc: "Whether the combobox is required")
 
@@ -268,6 +270,7 @@ defmodule Corex.Combobox do
     |> assign(field: nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
     |> assign_new(:id, fn -> field.id end)
+    |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
     |> assign(
       :value,
@@ -285,17 +288,22 @@ defmodule Corex.Combobox do
       assigns
       |> assign_new(:id, fn -> "combobox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:form, fn -> nil end)
 
     # Group items by their group field
     grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
-    has_groups = Map.has_key?(grouped_items, nil) == false or map_size(grouped_items) > 1
+
+    has_groups =
+      grouped_items
+      |> Map.keys()
+      |> Enum.any?(& &1)
 
     assigns = assign(assigns, :grouped_items, grouped_items)
     assigns = assign(assigns, :has_groups, has_groups)
 
     ~H"""
     <div id={@id} phx-hook="Combobox" {@rest} {Connect.props(%Props{
-      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder, value: @value,
+      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder, value: @value, form: @form,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
       dir: @dir, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
      name: @name, read_only: @read_only, required: @required,
@@ -304,41 +312,32 @@ defmodule Corex.Combobox do
       bubble: @bubble, disabled: @disabled
     })}>
       <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
-      <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
-        {render_slot(@label)}
-      </div>
-      <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
-          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, value: @value, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: @name, auto_focus: @auto_focus})} />
+        <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+          {render_slot(@label)}
+        </div>
+        <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
+          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, value: @value, form: @form, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: @name, auto_focus: @auto_focus})} />
+
           <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
           </button>
           <button data-scope="combobox" data-part="trigger">
             {render_slot(@trigger)}
           </button>
-      </div>
-      <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
+        </div>
+        <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
           {render_slot(@error, msg)}
-      </div>
+        </div>
         <div {Connect.positioner(%Positioner{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir})}>
           <ul {Connect.content(%Content{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir, open: @open})}>
-                <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"}>
-                  <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>
-                    {group}
-                  </div>
-                  <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id}>
-                    <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                      {render_slot(@item, item)}
-                    </span>
-                    <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                      {item.label}
-                    </span>
-                    <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
-                      {render_slot(@item_indicator)}
-                    </span>
-                  </li>
-                </div>
+          </ul>
 
-              <li :if={!@has_groups} :for={item <- @collection} data-scope="combobox" data-part="item" data-value={item.id}>
+          <div style="display: none;" data-templates="combobox">
+            <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"} data-template="true">
+              <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>
+                {group}
+              </div>
+              <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
                 <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
                   {render_slot(@item, item)}
                 </span>
@@ -349,7 +348,20 @@ defmodule Corex.Combobox do
                   {render_slot(@item_indicator)}
                 </span>
               </li>
-          </ul>
+            </div>
+
+            <li :if={!@has_groups} :for={item <- @collection} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
+              <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
+                {render_slot(@item, item)}
+              </span>
+              <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
+                {item.label}
+              </span>
+              <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
+                {render_slot(@item_indicator)}
+              </span>
+            </li>
+          </div>
         </div>
       </div>
     </div>
