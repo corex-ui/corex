@@ -57,6 +57,47 @@
       margin-block: 0;
     }
   }
+
+  .accordion
+  [data-scope="accordion"][data-part="root"][data-loading] {
+  pointer-events: none;
+  user-select: none;
+  min-width: var(--container-ui);
+
+}
+
+.accordion
+  [data-scope="accordion"][data-part="root"][data-loading]
+  [data-scope="accordion"][data-part="item-text"] > *,
+.accordion
+  [data-scope="accordion"][data-part="root"][data-loading]
+  [data-scope="accordion"][data-part="item-indicator"] > * {
+  animation: accordion-skeleton 1.4s ease-in-out infinite;
+}
+@keyframes accordion-skeleton {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.accordion
+  [data-scope="accordion"][data-part="root"][data-loading]
+  [data-scope="accordion"][data-part="item-text"]::before,
+.accordion
+  [data-scope="accordion"][data-part="root"][data-loading]
+  [data-scope="accordion"][data-part="item-text"]::after {
+  content: "";
+  display: block;
+  height: var(--spacing-micro);
+  background: var(--color-ui-active);
+  border-radius: var(--radius-ui);
+}
+.accordion
+  [data-scope="accordion"][data-part="root"][data-loading]
+  [data-scope="accordion"][data-part="item-text"]::before {
+  width: var(--spacing-ui);
+  margin-block: var(--spacing-ui-padding);
+}
 }
 
 @utility accordion--* {
