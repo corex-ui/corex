@@ -1,7 +1,7 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Accordion } from "../components/accordion";
-import type { ValueChangeDetails, Props } from "@zag-js/accordion";
+import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/accordion";
 import type { Direction, Orientation } from "@zag-js/types";
 
 import { getString, getBoolean, getStringList } from "../lib/util";
@@ -18,41 +18,65 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const props: Props = {
-      id: el.id,
-      ...(getBoolean(el, "controlled")
-        ? { value: getStringList(el, "value") }
-        : { defaultValue: getStringList(el, "defaultValue") }),
-      collapsible: getBoolean(el, "collapsible"),
-      disabled: getBoolean(el, "disabled"),
-      multiple: getBoolean(el, "multiple"),
-      orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-      onValueChange: (details: ValueChangeDetails) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            value: details.value,
-            id: el.id,
-          });
-        }
 
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                value: details.value,
-                id: el.id,
-              },
-            })
-          );
-        }
-      },
-    };
-
-    const accordion = new Accordion(el, props);
+    const accordion = new Accordion(el, 
+      {
+        id: el.id,
+        ...(getBoolean(el, "controlled")
+          ? { value: getStringList(el, "value") }
+          : { defaultValue: getStringList(el, "defaultValue") }),
+        collapsible: getBoolean(el, "collapsible"),
+        disabled: getBoolean(el, "disabled"),
+        multiple: getBoolean(el, "multiple"),
+        orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
+        dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+        onValueChange: (details: ValueChangeDetails) => {
+          const eventName = getString(el, "onValueChange");
+          if (eventName && this.liveSocket.main.isConnected()) {
+            pushEvent(eventName, {
+              id: el.id,
+              value: details.value ?? null,
+            });
+          }
+          
+          const eventNameClient = getString(el, "onValueChangeClient");
+          if (eventNameClient) {
+            el.dispatchEvent(
+              new CustomEvent(eventNameClient, {
+                bubbles: true,
+                detail: {
+                  id: el.id,
+                  value: details.value ?? null,
+                },
+              })
+            );
+          }
+        },
+        
+        onFocusChange: (details: FocusChangeDetails) => {
+          const eventName = getString(el, "onFocusChange");
+          if (eventName && this.liveSocket.main.isConnected()) {
+            pushEvent(eventName, {
+              id: el.id,
+              value: details.value ?? null,
+            });
+          }
+  
+          const eventNameClient = getString(el, "onFocusChangeClient");
+          if (eventNameClient) {
+            el.dispatchEvent(
+              new CustomEvent(eventNameClient, {
+                bubbles: true,
+                detail: {
+                  id: el.id,
+                  value: details.value ?? null,
+                },
+              })
+            );
+          }
+        },
+      }
+    );
     accordion.init();
     this.accordion = accordion;
 
@@ -94,6 +118,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & AccordionHookState) {
     this.accordion?.updateProps({
+      id: this.el.id,
       ...(getBoolean(this.el, "controlled")
         ? { value: getStringList(this.el, "value") }
         : { defaultValue: getStringList(this.el, "defaultValue") }),
@@ -101,10 +126,23 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
       disabled: getBoolean(this.el, "disabled"),
       multiple: getBoolean(this.el, "multiple"),
       orientation: getString<Orientation>(this.el, "orientation", ["horizontal", "vertical"]),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
-    });
+      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"])
+    } as Props);
+
+    const wasFocused = this.accordion?.api?.focusedValue;
+    if (wasFocused) {
+        const triggerEl = this.el.querySelector(
+          `[data-scope="accordion"][data-part="item-trigger"][id*="${wasFocused}"]`
+        ) as HTMLElement;
+        
+        if (triggerEl && document.activeElement !== triggerEl) {
+          triggerEl.focus();
+        }
+    }
   },
 
+
+  
   destroyed(this: object & HookInterface<HTMLElement> & AccordionHookState) {
     if (this.onSetValue) {
       this.el.removeEventListener("phx:accordion:set-value", this.onSetValue);
