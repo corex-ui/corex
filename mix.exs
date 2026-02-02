@@ -4,7 +4,7 @@ defmodule Corex.MixProject do
   def project do
     [
       app: :corex,
-      version: "0.1.0-alpha.8",
+      version: "0.1.0-alpha.9",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
