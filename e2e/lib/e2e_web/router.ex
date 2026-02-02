@@ -19,14 +19,17 @@ defmodule E2eWeb.Router do
 
     get "/", PageController, :home
     get "/accordion", PageController, :accordion_page
+    live "/live/accordion", AccordionLive
+    live "/playground/accordion", AccordionPlayLive
+    live "/controlled/accordion", AccordionControlledLive
+    live "/async/accordion", AccordionAsyncLive
+
     get "/switch", PageController, :switch_page
     get "/toggle-group", PageController, :toggle_group_page
     get "/combobox", PageController, :combobox_page
     get "/toast", PageController, :toast_page
     live "/live/toast", ToastLive
 
-    live "/live/accordion", AccordionLive
-    live "/playground/accordion", AccordionPlayLive
     live "/live/combobox", ComboboxLive
     live "/live/switch", SwitchLive
 

@@ -1913,37 +1913,62 @@ var Corex = (() => {
     mounted() {
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
-      const props5 = __spreadProps(__spreadValues({
-        id: el.id
-      }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-        collapsible: getBoolean(el, "collapsible"),
-        disabled: getBoolean(el, "disabled"),
-        multiple: getBoolean(el, "multiple"),
-        orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-        dir: getString(el, "dir", ["ltr", "rtl"]),
-        onValueChange: (details) => {
-          const eventName = getString(el, "onValueChange");
-          if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-            pushEvent(eventName, {
-              value: details.value,
-              id: el.id
-            });
+      const accordion = new Accordion(
+        el,
+        __spreadProps(__spreadValues({
+          id: el.id
+        }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+          collapsible: getBoolean(el, "collapsible"),
+          disabled: getBoolean(el, "disabled"),
+          multiple: getBoolean(el, "multiple"),
+          orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+          dir: getString(el, "dir", ["ltr", "rtl"]),
+          onValueChange: (details) => {
+            var _a, _b;
+            const eventName = getString(el, "onValueChange");
+            if (eventName && this.liveSocket.main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a = details.value) != null ? _a : null
+              });
+            }
+            const eventNameClient = getString(el, "onValueChangeClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: (_b = details.value) != null ? _b : null
+                  }
+                })
+              );
+            }
+          },
+          onFocusChange: (details) => {
+            var _a, _b;
+            const eventName = getString(el, "onFocusChange");
+            if (eventName && this.liveSocket.main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a = details.value) != null ? _a : null
+              });
+            }
+            const eventNameClient = getString(el, "onFocusChangeClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: (_b = details.value) != null ? _b : null
+                  }
+                })
+              );
+            }
           }
-          const eventNameClient = getString(el, "onValueChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  value: details.value,
-                  id: el.id
-                }
-              })
-            );
-          }
-        }
-      });
-      const accordion = new Accordion(el, props5);
+        })
+      );
       accordion.init();
       this.accordion = accordion;
       this.onSetValue = (event) => {
@@ -1978,14 +2003,25 @@ var Corex = (() => {
       );
     },
     updated() {
-      var _a;
-      (_a = this.accordion) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+      var _a, _b, _c;
+      (_a = this.accordion) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+        id: this.el.id
+      }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
         collapsible: getBoolean(this.el, "collapsible"),
         disabled: getBoolean(this.el, "disabled"),
         multiple: getBoolean(this.el, "multiple"),
         orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
         dir: getString(this.el, "dir", ["ltr", "rtl"])
       }));
+      const wasFocused = (_c = (_b = this.accordion) == null ? void 0 : _b.api) == null ? void 0 : _c.focusedValue;
+      if (wasFocused) {
+        const triggerEl = this.el.querySelector(
+          `[data-scope="accordion"][data-part="item-trigger"][id*="${wasFocused}"]`
+        );
+        if (triggerEl && document.activeElement !== triggerEl) {
+          triggerEl.focus();
+        }
+      }
     },
     destroyed() {
       var _a;
