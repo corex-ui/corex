@@ -25,10 +25,13 @@ defmodule Corex.Accordion.Connect do
           nil
         end,
       "data-disabled" => data_attr(assigns.disabled),
+      "data-controlled" => data_attr(assigns.controlled),
       "data-multiple" => data_attr(assigns.multiple),
       "data-orientation" => assigns.orientation,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
+      "data-on-focus-change" => assigns.on_focus_change,
+      "data-on-focus-change-client" => assigns.on_focus_change_client,
       "data-dir" => assigns.dir
     }
   end

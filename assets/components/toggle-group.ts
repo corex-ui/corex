@@ -14,10 +14,10 @@ export class ToggleGroup extends Component<toggleGroup.Props, toggleGroup.Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]') || this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const items = this.el.querySelectorAll<HTMLElement>('[data-part="item"]');
+    const items = this.el.querySelectorAll<HTMLElement>('[data-scope="toggle-group"][data-part="item"]');
 
     for (let i = 0; i < items.length; i++) {
       const itemEl = items[i];

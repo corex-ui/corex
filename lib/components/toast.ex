@@ -70,7 +70,7 @@ defmodule Corex.Toast do
     values: ~w(top-start top top-end bottom-start bottom bottom-end)
   )
 
-  attr(:overlap, :boolean, default: false)
+  attr(:overlap, :boolean, default: true)
   attr(:max, :integer, default: 5)
   attr(:gap, :integer, default: nil)
   attr(:offset, :string, default: nil)

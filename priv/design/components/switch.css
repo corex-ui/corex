@@ -80,6 +80,10 @@
   .switch--square [data-scope="switch"][data-part="control"] {
     border-radius: var(--radius-none);
   }
+
+  .switch [data-scope="switch"][data-part="error"] {
+    @apply ui-error;
+  }
 }
 
 @utility switch--* {

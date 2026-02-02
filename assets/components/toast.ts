@@ -56,11 +56,11 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
     `;
 
     this.parts = {
-      title: this.el.querySelector('[data-part="title"]')!,
-      description: this.el.querySelector('[data-part="description"]')!,
-      close: this.el.querySelector('[data-part="close-trigger"]')!,
-      ghostBefore: this.el.querySelector('[data-part="ghost-before"]')!,
-      ghostAfter: this.el.querySelector('[data-part="ghost-after"]')!,
+      title: this.el.querySelector('[data-scope="toast"][data-part="title"]')!,
+      description: this.el.querySelector('[data-scope="toast"][data-part="description"]')!,
+      close: this.el.querySelector('[data-scope="toast"][data-part="close-trigger"]')!,
+      ghostBefore: this.el.querySelector('[data-scope="toast"][data-part="ghost-before"]')!,
+      ghostAfter: this.el.querySelector('[data-scope="toast"][data-part="ghost-after"]')!,
     };
   }
 

@@ -8,6 +8,9 @@ defmodule Corex.Combobox.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    # IO.inspect(assigns.value, label: "assigns.value")
+    # IO.inspect(assigns.controlled, label: "assigns.controlled")
+
     %{
       "id" => assigns.id,
       "data-collection" => Corex.Json.encode!(validate_collection!(assigns.collection)),
@@ -37,6 +40,7 @@ defmodule Corex.Combobox.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-name" => assigns.name,
+      "data-form" => assigns.form,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
       "data-on-open-change" => assigns.on_open_change,
@@ -139,7 +143,7 @@ defmodule Corex.Combobox.Connect do
           %{
             "autoComplete" => "off",
             "autoCorrect" => "off",
-            "autoCapitalize" => "none",
+            "autoCapitalize" => "off",
             "spellCheck" => "false",
             "type" => "text",
             "role" => "combobox",
@@ -151,7 +155,10 @@ defmodule Corex.Combobox.Connect do
             "name" => assigns.name,
             "placeholder" => assigns.placeholder,
             "required" => get_boolean(assigns.required),
-            "autoFocus" => get_boolean(assigns.auto_focus)
+            "autoFocus" => get_boolean(assigns.auto_focus),
+            "defaultValue" => Enum.at(assigns.value || [], 0),
+            "value" => Enum.at(assigns.value || [], 0),
+            "form" => assigns.form
           }
         )
   end
@@ -170,6 +177,7 @@ defmodule Corex.Combobox.Connect do
           base,
           %{
             "dir" => assigns.dir,
+            "style" => "display: none;",
             "id" => "combobox:#{assigns.id}:positioner"
           }
         )

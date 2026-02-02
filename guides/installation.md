@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.8"}
+    {:corex, "~> 0.1.0-alpha.10"}
   ]
 end
 ```
@@ -211,6 +211,9 @@ This example assumes the import of `.icon` from `Core Components`
     <:item :let={item} value="donec">
     <.accordion_trigger item={item}>
       Donec condimentum ex mi
+      <:indicator>
+        <.icon name="hero-chevron-right" class="icon" />
+      </:indicator>
     </.accordion_trigger>
     <.accordion_content item={item}>
       Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.

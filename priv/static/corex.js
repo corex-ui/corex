@@ -1913,37 +1913,62 @@ var Corex = (() => {
     mounted() {
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
-      const props5 = __spreadProps(__spreadValues({
-        id: el.id
-      }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-        collapsible: getBoolean(el, "collapsible"),
-        disabled: getBoolean(el, "disabled"),
-        multiple: getBoolean(el, "multiple"),
-        orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-        dir: getString(el, "dir", ["ltr", "rtl"]),
-        onValueChange: (details) => {
-          const eventName = getString(el, "onValueChange");
-          if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-            pushEvent(eventName, {
-              value: details.value,
-              id: el.id
-            });
+      const accordion = new Accordion(
+        el,
+        __spreadProps(__spreadValues({
+          id: el.id
+        }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+          collapsible: getBoolean(el, "collapsible"),
+          disabled: getBoolean(el, "disabled"),
+          multiple: getBoolean(el, "multiple"),
+          orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+          dir: getString(el, "dir", ["ltr", "rtl"]),
+          onValueChange: (details) => {
+            var _a, _b;
+            const eventName = getString(el, "onValueChange");
+            if (eventName && this.liveSocket.main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a = details.value) != null ? _a : null
+              });
+            }
+            const eventNameClient = getString(el, "onValueChangeClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: (_b = details.value) != null ? _b : null
+                  }
+                })
+              );
+            }
+          },
+          onFocusChange: (details) => {
+            var _a, _b;
+            const eventName = getString(el, "onFocusChange");
+            if (eventName && this.liveSocket.main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a = details.value) != null ? _a : null
+              });
+            }
+            const eventNameClient = getString(el, "onFocusChangeClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: (_b = details.value) != null ? _b : null
+                  }
+                })
+              );
+            }
           }
-          const eventNameClient = getString(el, "onValueChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  value: details.value,
-                  id: el.id
-                }
-              })
-            );
-          }
-        }
-      });
-      const accordion = new Accordion(el, props5);
+        })
+      );
       accordion.init();
       this.accordion = accordion;
       this.onSetValue = (event) => {
@@ -1978,14 +2003,25 @@ var Corex = (() => {
       );
     },
     updated() {
-      var _a;
-      (_a = this.accordion) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+      var _a, _b, _c;
+      (_a = this.accordion) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+        id: this.el.id
+      }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
         collapsible: getBoolean(this.el, "collapsible"),
         disabled: getBoolean(this.el, "disabled"),
         multiple: getBoolean(this.el, "multiple"),
         orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
         dir: getString(this.el, "dir", ["ltr", "rtl"])
       }));
+      const wasFocused = (_c = (_b = this.accordion) == null ? void 0 : _b.api) == null ? void 0 : _c.focusedValue;
+      if (wasFocused) {
+        const triggerEl = this.el.querySelector(
+          `[data-scope="accordion"][data-part="item-trigger"][id*="${wasFocused}"]`
+        );
+        if (triggerEl && document.activeElement !== triggerEl) {
+          triggerEl.focus();
+        }
+      }
     },
     destroyed() {
       var _a;
@@ -5116,6 +5152,7 @@ var Corex = (() => {
     mounted() {
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
+      this.wasFocused = false;
       const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
         id: el.id
       }, getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") }), {
@@ -5195,6 +5232,10 @@ var Corex = (() => {
         })
       );
     },
+    beforeUpdate() {
+      var _a, _b;
+      this.wasFocused = (_b = (_a = this.zagSwitch) == null ? void 0 : _a.api.focused) != null ? _b : false;
+    },
     updated() {
       var _a;
       (_a = this.zagSwitch) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
@@ -5202,6 +5243,7 @@ var Corex = (() => {
       }, getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") }), {
         disabled: getBoolean(this.el, "disabled"),
         name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
         value: getString(this.el, "value"),
         dir: getString(this.el, "dir", ["ltr", "rtl"]),
         invalid: getBoolean(this.el, "invalid"),
@@ -5209,6 +5251,12 @@ var Corex = (() => {
         readOnly: getBoolean(this.el, "readOnly"),
         label: getString(this.el, "label")
       }));
+      if (getBoolean(this.el, "controlled")) {
+        if (this.wasFocused) {
+          const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
+          hiddenInput == null ? void 0 : hiddenInput.focus();
+        }
+      }
     },
     destroyed() {
       var _a;
@@ -9621,92 +9669,105 @@ var Corex = (() => {
 
   // components/combobox.ts
   var Combobox = class extends Component {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     initMachine(props5) {
       return new VanillaMachine(machine5, props5);
     }
     initApi() {
       return connect5(this.machine.service, normalizeProps);
     }
+    renderItems() {
+      var _a, _b, _c;
+      const contentEl = this.el.querySelector('[data-part="content"]');
+      if (!contentEl) return;
+      const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
+      if (!templatesContainer) return;
+      contentEl.querySelectorAll('[data-part="item"]:not([data-template])').forEach((el) => el.remove());
+      contentEl.querySelectorAll('[data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
+      const items = this.api.collection.items;
+      const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
+      const hasGroups = groups.some(([group2]) => group2 != null);
+      if (hasGroups) {
+        this.renderGroupedItems(contentEl, templatesContainer, groups);
+      } else {
+        this.renderFlatItems(contentEl, templatesContainer, items);
+      }
+    }
+    renderGroupedItems(contentEl, templatesContainer, groups) {
+      for (const [groupId, groupItems] of groups) {
+        if (groupId == null) continue;
+        const groupTemplate = templatesContainer.querySelector(
+          `[data-part="item-group"][data-id="${groupId}"][data-template]`
+        );
+        if (!groupTemplate) continue;
+        const groupEl = groupTemplate.cloneNode(true);
+        groupEl.removeAttribute("data-template");
+        this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+        const labelEl = groupEl.querySelector(
+          '[data-part="item-group-label"]'
+        );
+        if (labelEl) {
+          this.spreadProps(
+            labelEl,
+            this.api.getItemGroupLabelProps({ htmlFor: groupId })
+          );
+        }
+        groupEl.querySelectorAll('[data-part="item"][data-template]').forEach((el) => el.remove());
+        for (const item of groupItems) {
+          const itemEl = this.cloneItem(templatesContainer, item);
+          if (itemEl) groupEl.appendChild(itemEl);
+        }
+        contentEl.appendChild(groupEl);
+      }
+    }
+    renderFlatItems(contentEl, templatesContainer, items) {
+      for (const item of items) {
+        const itemEl = this.cloneItem(templatesContainer, item);
+        if (itemEl) contentEl.appendChild(itemEl);
+      }
+    }
+    cloneItem(templatesContainer, item) {
+      const value = this.api.collection.getItemValue(item);
+      const template = templatesContainer.querySelector(
+        `[data-part="item"][data-value="${value}"][data-template]`
+      );
+      if (!template) return null;
+      const el = template.cloneNode(true);
+      el.removeAttribute("data-template");
+      this.spreadProps(el, this.api.getItemProps({ item }));
+      const textEl = el.querySelector('[data-part="item-text"]');
+      if (textEl) {
+        this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+      }
+      const indicatorEl = el.querySelector('[data-part="item-indicator"]');
+      if (indicatorEl) {
+        this.spreadProps(
+          indicatorEl,
+          this.api.getItemIndicatorProps({ item })
+        );
+      }
+      return el;
+    }
     render() {
-      const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
-      this.spreadProps(rootEl, this.api.getRootProps());
-      const labelEl = this.el.querySelector('[data-part="label"]');
-      if (labelEl) {
-        this.spreadProps(labelEl, this.api.getLabelProps());
-      }
-      const controlEl = this.el.querySelector('[data-part="control"]');
-      if (controlEl) {
-        this.spreadProps(controlEl, this.api.getControlProps());
-      }
-      const inputEl = this.el.querySelector('[data-part="input"]');
-      if (inputEl) {
-        this.spreadProps(inputEl, this.api.getInputProps());
-      }
-      const triggerEl = this.el.querySelector('[data-part="trigger"]');
-      if (triggerEl) {
-        this.spreadProps(triggerEl, this.api.getTriggerProps());
-      }
-      const clearTriggerEl = this.el.querySelector('[data-part="clear-trigger"]');
-      if (clearTriggerEl) {
-        this.spreadProps(clearTriggerEl, this.api.getClearTriggerProps());
-      }
-      const positionerEl = this.el.querySelector('[data-part="positioner"]');
-      if (positionerEl) {
-        this.spreadProps(positionerEl, this.api.getPositionerProps());
-      }
+      var _a;
+      const root = (_a = this.el.querySelector('[data-part="root"]')) != null ? _a : this.el;
+      this.spreadProps(root, this.api.getRootProps());
+      [
+        "label",
+        "control",
+        "input",
+        "trigger",
+        "clear-trigger",
+        "positioner"
+      ].forEach((part) => {
+        const el = this.el.querySelector(`[data-part="${part}"]`);
+        if (!el) return;
+        const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
+        this.spreadProps(el, this.api[apiMethod]());
+      });
       const contentEl = this.el.querySelector('[data-part="content"]');
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getContentProps());
-        const visibleGroups = /* @__PURE__ */ new Set();
-        const itemEls = contentEl.querySelectorAll('[data-part="item"]');
-        for (let j = 0; j < itemEls.length; j++) {
-          const itemEl = itemEls[j];
-          const value = getString(itemEl, "value");
-          if (!value) continue;
-          const item = this.api.collection.find(value);
-          if (!item) {
-            itemEl.style.display = "none";
-            continue;
-          }
-          itemEl.style.display = "";
-          this.spreadProps(itemEl, this.api.getItemProps({ item }));
-          const groupEl = itemEl.closest('[data-part="item-group"]');
-          if (groupEl) {
-            const groupId = groupEl.getAttribute("data-id");
-            if (groupId) visibleGroups.add(groupId);
-          }
-          const indicatorEl = itemEl.querySelector('[data-part="item-indicator"]');
-          if (indicatorEl) {
-            this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
-          }
-          const itemTextEl = itemEl.querySelector('[data-part="item-text"]');
-          if (itemTextEl) {
-            this.spreadProps(itemTextEl, this.api.getItemTextProps({ item }));
-          }
-        }
-        const groupEls = contentEl.querySelectorAll('[data-part="item-group"]');
-        for (let i = 0; i < groupEls.length; i++) {
-          const groupEl = groupEls[i];
-          const groupId = groupEl.getAttribute("data-id");
-          if (groupId && visibleGroups.has(groupId)) {
-            groupEl.style.display = "";
-            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
-          } else {
-            groupEl.style.display = "none";
-          }
-        }
-        const groupLabelEls = contentEl.querySelectorAll('[data-part="item-group-label"]');
-        for (let i = 0; i < groupLabelEls.length; i++) {
-          const labelEl2 = groupLabelEls[i];
-          const groupId = labelEl2.getAttribute("data-id");
-          if (groupId && visibleGroups.has(groupId)) {
-            labelEl2.style.display = "";
-            this.spreadProps(labelEl2, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
-          } else {
-            labelEl2.style.display = "none";
-          }
-        }
+        this.renderItems();
       }
     }
   };
@@ -9714,6 +9775,7 @@ var Corex = (() => {
   // hooks/combobox.ts
   var ComboboxHook = {
     mounted() {
+      var _a, _b, _c, _d;
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
       const allItems = JSON.parse(el.dataset.collection || "[]");
@@ -9736,17 +9798,17 @@ var Corex = (() => {
           isItemDisabled: (item) => item.disabled
         });
       };
-      const props5 = __spreadProps(__spreadValues(__spreadProps(__spreadValues({
+      const props5 = __spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({
         id: el.id
-      }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+      }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), getBoolean(el, "controlled") ? { inputValue: (_b = (_a = getStringList(el, "value")) == null ? void 0 : _a[0]) != null ? _b : "" } : { defaultInputValue: (_d = (_c = getStringList(el, "defaultValue")) == null ? void 0 : _c[0]) != null ? _d : "" }), {
         disabled: getBoolean(el, "disabled"),
         placeholder: getString(el, "placeholder"),
         collection: createCollection(allItems),
         alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
         autoFocus: getBoolean(el, "autoFocus"),
         closeOnSelect: getBoolean(el, "closeOnSelect"),
-        dir: getString(this.el, "dir", ["ltr", "rtl"]),
-        inputBehavior: getString(this.el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
+        dir: getString(el, "dir", ["ltr", "rtl"]),
+        inputBehavior: getString(el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
         loopFocus: getBoolean(el, "loopFocus"),
         multiple: getBoolean(el, "multiple"),
         invalid: getBoolean(el, "invalid")
@@ -9772,9 +9834,9 @@ var Corex = (() => {
           fitViewport: getBoolean(el, "fitViewport")
         },
         onOpenChange: (details) => {
-          if (details.open && this.combobox) {
+          if (details.open && this.combobox && this.allItems) {
             this.combobox.updateProps({
-              collection: createCollection(this.allItems || [])
+              collection: createCollection(this.allItems)
             });
           }
           const eventName = getString(el, "onOpenChange");
@@ -9839,8 +9901,33 @@ var Corex = (() => {
       this.handlers = [];
     },
     updated() {
-      var _a;
-      (_a = this.combobox) == null ? void 0 : _a.updateProps(__spreadValues({
+      var _a, _b;
+      const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+      if (JSON.stringify(newCollection) !== JSON.stringify(this.allItems)) {
+        this.allItems = newCollection;
+        const hasGroups = newCollection.some((item) => item.group !== void 0);
+        const createCollection = (items) => {
+          if (hasGroups) {
+            return collection({
+              items,
+              itemToValue: (item) => item.id,
+              itemToString: (item) => item.label,
+              isItemDisabled: (item) => item.disabled,
+              groupBy: (item) => item.group
+            });
+          }
+          return collection({
+            items,
+            itemToValue: (item) => item.id,
+            itemToString: (item) => item.label,
+            isItemDisabled: (item) => item.disabled
+          });
+        };
+        (_a = this.combobox) == null ? void 0 : _a.updateProps({
+          collection: createCollection(newCollection)
+        });
+      }
+      (_b = this.combobox) == null ? void 0 : _b.updateProps(__spreadValues({
         disabled: getBoolean(this.el, "disabled"),
         placeholder: getString(this.el, "placeholder"),
         name: getString(this.el, "name")

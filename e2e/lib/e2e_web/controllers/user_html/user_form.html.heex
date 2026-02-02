@@ -1,0 +1,40 @@
+<.form :let={f} id="user" for={@changeset} action={@action} class="flex flex-col gap-ui">
+  <.input field={f[:name]} type="text" label="Name" />
+  <.combobox
+    class="combobox"
+    field={f[:country]}
+    placeholder="Select a country"
+    collection={[
+      %{label: "France", id: "fra", disabled: true},
+      %{label: "Belgium", id: "bel"},
+      %{label: "Germany", id: "deu"},
+      %{label: "Netherlands", id: "nld"},
+      %{label: "Switzerland", id: "che"},
+      %{label: "Austria", id: "aut"}
+    ]}
+  >
+    <:label>
+      Your country of residence
+    </:label>
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+    <:error :let={msg}>
+      <.icon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.combobox>
+  <.switch field={f[:terms]} class="switch">
+    <:label>
+      Accept the terms
+    </:label>
+    <:error :let={msg}>
+      <.icon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.switch>
+  <footer class="flex w-full justify-between gap-ui-gap">
+    <.button :if={@return_to} href={@return_to} class="button">Cancel</.button>
+    <.button class="button button--accent ">Save User</.button>
+  </footer>
+</.form>

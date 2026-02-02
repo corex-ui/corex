@@ -48,10 +48,6 @@ defmodule E2eWeb.AccordionPlayLive do
     update(socket, :controls, &Map.put(&1, :dir, value))
   end
 
-  defp update_control(socket, "collapsible", value) do
-    update(socket, :controls, &Map.put(&1, :collapsible, value))
-  end
-
   defp update_control(socket, _unknown, _checked), do: socket
 
   @impl true
@@ -78,15 +74,6 @@ defmodule E2eWeb.AccordionPlayLive do
           on_checked_change="control_changed"
         >
           <:label>Disable “Lorem” Item</:label>
-        </.switch>
-
-        <.switch
-          class="switch"
-          id="collapsible"
-          on_checked_change="control_changed"
-          checked
-        >
-          <:label>Collapsible</:label>
         </.switch>
 
         <.toggle_group
@@ -128,7 +115,6 @@ defmodule E2eWeb.AccordionPlayLive do
         id="my-accordion"
         class="accordion"
         disabled={@controls.disabled}
-        collapsible={@controls.collapsible}
         multiple={false}
         orientation={@controls.orientation}
         dir={@controls.dir}
@@ -136,6 +122,9 @@ defmodule E2eWeb.AccordionPlayLive do
         <:item :let={item} value="lorem" disabled={@controls.disabled_lorem}>
           <.accordion_trigger item={item}>
             Lorem ipsum dolor sit amet
+            <:indicator>
+              <.icon name="hero-chevron-right" />
+            </:indicator>
           </.accordion_trigger>
           <.accordion_content item={item}>
             Consectetur adipiscing elit.
@@ -145,6 +134,9 @@ defmodule E2eWeb.AccordionPlayLive do
         <:item :let={item} value="ipsum">
           <.accordion_trigger item={item}>
             Duis dictum gravida odio ac pharetra?
+            <:indicator>
+              <.icon name="hero-chevron-right" />
+            </:indicator>
           </.accordion_trigger>
           <.accordion_content item={item}>
             Nullam eget vestibulum ligula.
@@ -154,6 +146,9 @@ defmodule E2eWeb.AccordionPlayLive do
         <:item :let={item} value="dolor">
           <.accordion_trigger item={item}>
             Donec condimentum ex mi
+            <:indicator>
+              <.icon name="hero-chevron-right" />
+            </:indicator>
           </.accordion_trigger>
           <.accordion_content item={item}>
             Congue molestie ipsum gravida a.

@@ -15,7 +15,9 @@ defmodule Corex.Accordion.Anatomy do
       orientation: "vertical",
       dir: "ltr",
       on_value_change: nil,
-      on_value_change_client: nil
+      on_value_change_client: nil,
+      on_focus_change: nil,
+      on_focus_change_client: nil
     ]
 
     @type t :: %__MODULE__{
@@ -28,7 +30,9 @@ defmodule Corex.Accordion.Anatomy do
             orientation: String.t(),
             dir: String.t(),
             on_value_change: String.t(),
-            on_value_change_client: String.t()
+            on_value_change_client: String.t(),
+            on_focus_change: String.t(),
+            on_focus_change_client: String.t()
           }
   end
 
@@ -54,11 +58,13 @@ defmodule Corex.Accordion.Anatomy do
       values: [],
       value: nil,
       disabled: false,
-      disabled_root: false
+      disabled_root: false,
+      data: %{}
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
+            data: map(),
             orientation: String.t(),
             dir: String.t(),
             value: String.t() | nil,

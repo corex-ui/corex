@@ -20,7 +20,7 @@
     line-height: var(--text-ui-xl--line-height);
     font-weight: var(--font-weight-ui-xl);
     color: var(--color-ui--text);
-    margin-block: var(--spacing-ui);
+    margin-block: var(--spacing-ui-padding-xl);
 
     &:focus-visible {
       outline: none;
@@ -32,7 +32,7 @@
     line-height: var(--text-ui-lg--line-height);
     font-weight: var(--font-weight-ui-lg);
     color: var(--color-ui--text);
-    margin-block: var(--spacing-ui);
+    margin-block: var(--spacing-ui-padding-lg);
 
     &:focus-visible {
       outline: none;
@@ -44,7 +44,7 @@
     line-height: var(--text-ui-lg--line-height);
     font-weight: var(--font-weight-ui-lg);
     color: var(--color-ui--text);
-    margin-block: var(--spacing-ui);
+    margin-block: var(--spacing-ui-padding);
 
     &:focus-visible {
       outline: none;
@@ -56,7 +56,7 @@
     line-height: var(--text-ui--line-height);
     font-weight: var(--font-weight-ui);
     color: var(--color-ui--text);
-    margin-block: var(--spacing-ui);
+    margin-block: var(--spacing-ui-padding-sm);
   }
 
   .typo p {
@@ -64,14 +64,14 @@
     line-height: var(--text-ui--line-height);
     font-weight: var(--font-weight-ui);
     color: var(--color-ui--text);
-    margin-block: var(--spacing-ui);
+    margin-block: var(--spacing-ui-padding-sm);
   }
 
   .typo small {
     font-size: var(--text-ui-sm);
     line-height: var(--text-ui-sm--line-height);
     font-weight: var(--font-weight-ui-sm);
-    margin-block: var(--spacing-ui);
+    margin-block: var(--spacing-ui-padding-sm);
   }
 
   .typo mark {

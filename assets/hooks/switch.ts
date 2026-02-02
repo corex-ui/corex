@@ -10,13 +10,14 @@ type SwitchHookState = {
   switch?: Switch;
   handlers?: Array<CallbackRef>;
   onSetChecked?: (event: Event) => void;
+  wasFocused?: boolean;
 };
 
 const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SwitchHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-
+    this.wasFocused = false;
     const zagSwitch = new Switch(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
@@ -109,6 +110,9 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     );
   },
 
+  beforeUpdate() {
+    this.wasFocused = this.zagSwitch?.api.focused ?? false;
+  },
   updated(this: object & HookInterface<HTMLElement> & SwitchHookState) {
     this.zagSwitch?.updateProps({
       id: this.el.id,
@@ -117,6 +121,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
         : { defaultChecked: getBoolean(this.el, "defaultChecked") }),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
       value: getString(this.el, "value"),
       dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
       invalid: getBoolean(this.el, "invalid"),
@@ -124,6 +129,12 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       readOnly: getBoolean(this.el, "readOnly"),
       label: getString(this.el, "label"),
     });
+    if (getBoolean(this.el, "controlled")) {
+      if (this.wasFocused) {
+        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]') as HTMLInputElement;
+        hiddenInput?.focus();
+      }
+    }
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SwitchHookState) {
