@@ -44,24 +44,6 @@ defmodule Corex.Checkbox do
   </.checkbox>
   ```
 
-  ### Controlled Mode
-
-  ```heex
-  <.checkbox
-    id="my-checkbox"
-    controlled
-    checked={@checkbox_checked}
-    on_checked_change="checkbox_changed">
-    <:label>Accept terms</:label>
-  </.checkbox>
-  ```
-
-  ```elixir
-  def handle_event("checkbox_changed", %{"checked" => checked}, socket) do
-    {:noreply, assign(socket, :checkbox_checked, checked)}
-  end
-  ```
-
   <!-- tabs-close -->
 
   ## Phoenix Form Integration
