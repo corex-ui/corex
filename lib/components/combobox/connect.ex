@@ -47,17 +47,7 @@ defmodule Corex.Combobox.Connect do
       "data-on-open-change-client" => assigns.on_open_change_client,
       "data-on-input-value-change" => assigns.on_input_value_change,
       "data-on-value-change" => assigns.on_value_change,
-      "data-same-width" => get_boolean(assigns.same_width),
-      "data-fit-viewport" => get_boolean(assigns.fit_viewport),
-      "data-flip" => get_boolean(assigns.flip),
-      "data-hide-when-detached" => get_boolean(assigns.hide_when_detached),
-      "data-strategy" => assigns.strategy,
-      "data-placement" => assigns.placement,
-      "data-offset-main-axis" => assigns.offset_main_axis,
-      "data-offset-cross-axis" => assigns.offset_cross_axis,
-      "data-gutter" => assigns.gutter,
-      "data-shift" => assigns.shift,
-      "data-overflow-padding" => assigns.overflow_padding,
+      "data-positioning" => Corex.Json.encode!(assigns.positioning),
       "data-bubble" => get_boolean(assigns.bubble)
     }
   end

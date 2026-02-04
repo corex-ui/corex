@@ -53,7 +53,7 @@ defmodule Corex.Switch.Connect do
   def hidden_input(assigns) do
     checked =
       if assigns.controlled do
-        if assigns.checked, do: "", else: nil
+        if assigns.checked, do: "", else: "false"
       else
         nil
       end

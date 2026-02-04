@@ -1,16 +1,16 @@
 // ../node_modules/.pnpm/@zag-js+anatomy@1.33.0/node_modules/@zag-js/anatomy/dist/index.mjs
-var createAnatomy = (name, parts6 = []) => ({
+var createAnatomy = (name, parts8 = []) => ({
   parts: (...values) => {
-    if (isEmpty(parts6)) {
+    if (isEmpty(parts8)) {
       return createAnatomy(name, values);
     }
     throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
   },
-  extendWith: (...values) => createAnatomy(name, [...parts6, ...values]),
-  omit: (...values) => createAnatomy(name, parts6.filter((part) => !values.includes(part))),
-  rename: (newName) => createAnatomy(newName, parts6),
-  keys: () => parts6,
-  build: () => [...new Set(parts6)].reduce(
+  extendWith: (...values) => createAnatomy(name, [...parts8, ...values]),
+  omit: (...values) => createAnatomy(name, parts8.filter((part) => !values.includes(part))),
+  rename: (newName) => createAnatomy(newName, parts8),
+  keys: () => parts8,
+  build: () => [...new Set(parts8)].reduce(
     (prev, part) => Object.assign(prev, {
       [part]: {
         selector: [
@@ -248,7 +248,7 @@ function trackPress(options) {
     onPress,
     onPressStart,
     onPressEnd,
-    isValidKey: isValidKey2 = (e) => e.key === "Enter"
+    isValidKey: isValidKey3 = (e) => e.key === "Enter"
   } = options;
   if (!pointerNode) return noop;
   const win = getWindow(pointerNode);
@@ -291,9 +291,9 @@ function trackPress(options) {
   removeStartListeners = pipe(removePointerListener, removeFocusListener);
   function startAccessiblePress() {
     const handleKeydown = (keydownEvent) => {
-      if (!isValidKey2(keydownEvent)) return;
+      if (!isValidKey3(keydownEvent)) return;
       const handleKeyup = (keyupEvent) => {
-        if (!isValidKey2(keyupEvent)) return;
+        if (!isValidKey3(keyupEvent)) return;
         const evt2 = new win.PointerEvent("pointerup");
         const info = getInfo(evt2);
         onPress?.(info);
@@ -446,23 +446,23 @@ function compact(obj) {
   }
   return filtered;
 }
-function splitProps(props5, keys) {
+function splitProps(props7, keys) {
   const rest = {};
   const result = {};
   const keySet = new Set(keys);
-  const ownKeys = Reflect.ownKeys(props5);
+  const ownKeys = Reflect.ownKeys(props7);
   for (const key of ownKeys) {
     if (keySet.has(key)) {
-      result[key] = props5[key];
+      result[key] = props7[key];
     } else {
-      rest[key] = props5[key];
+      rest[key] = props7[key];
     }
   }
   return [result, rest];
 }
 var createSplitProps = (keys) => {
-  return function split(props5) {
-    return splitProps(props5, keys);
+  return function split(props7) {
+    return splitProps(props7, keys);
   };
 };
 var currentTime = () => performance.now();
@@ -539,10 +539,10 @@ function warn(...a) {
     console.warn(m);
   }
 }
-function ensureProps(props5, keys, scope) {
+function ensureProps(props7, keys, scope) {
   let missingKeys = [];
   for (const key of keys) {
-    if (props5[key] == null) missingKeys.push(key);
+    if (props7[key] == null) missingKeys.push(key);
   }
   if (missingKeys.length > 0)
     throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
@@ -591,14 +591,14 @@ var MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
   return MachineStatus2;
 })(MachineStatus || {});
 var INIT_STATE = "__init__";
-function createScope(props5) {
-  const getRootNode2 = () => props5.getRootNode?.() ?? document;
+function createScope(props7) {
+  const getRootNode2 = () => props7.getRootNode?.() ?? document;
   const getDoc = () => getDocument(getRootNode2());
   const getWin = () => getDoc().defaultView ?? window;
   const getActiveElementFn = () => getActiveElement(getRootNode2());
   const getById = (id) => getRootNode2().getElementById(id);
   return {
-    ...props5,
+    ...props7,
     getRootNode: getRootNode2,
     getDoc,
     getWin,
@@ -613,14 +613,14 @@ function createNormalizer(fn) {
   return new Proxy({}, {
     get(_target, key) {
       if (key === "style")
-        return (props5) => {
-          return fn({ style: props5 }).style;
+        return (props7) => {
+          return fn({ style: props7 }).style;
         };
       return fn;
     }
   });
 }
-var createProps = () => (props5) => Array.from(new Set(props5));
+var createProps = () => (props7) => Array.from(new Set(props7));
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.33.0/node_modules/@zag-js/accordion/dist/index.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -1194,13 +1194,13 @@ var toStyleString = (style) => {
   for (let key in style) {
     const value = style[key];
     if (value === null || value === void 0) continue;
-    if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match3) => `-${match3.toLowerCase()}`);
+    if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match4) => `-${match4.toLowerCase()}`);
     string += `${key}:${value};`;
   }
   return string;
 };
-var normalizeProps = createNormalizer((props5) => {
-  return Object.entries(props5).reduce((acc, [key, value]) => {
+var normalizeProps = createNormalizer((props7) => {
+  return Object.entries(props7).reduce((acc, [key, value]) => {
     if (value === void 0) return acc;
     if (key in propMap) {
       key = propMap[key];
@@ -1310,36 +1310,36 @@ function spreadProps(node, attrs, machineId) {
     }
   };
 }
-function bindable(props5) {
-  const initial = props5().value ?? props5().defaultValue;
-  if (props5().debug) {
-    console.log(`[bindable > ${props5().debug}] initial`, initial);
+function bindable(props7) {
+  const initial = props7().value ?? props7().defaultValue;
+  if (props7().debug) {
+    console.log(`[bindable > ${props7().debug}] initial`, initial);
   }
-  const eq = props5().isEqual ?? Object.is;
+  const eq = props7().isEqual ?? Object.is;
   const store = proxy({ value: initial });
-  const controlled = () => props5().value !== void 0;
+  const controlled = () => props7().value !== void 0;
   return {
     initial,
     ref: store,
     get() {
-      return controlled() ? props5().value : store.value;
+      return controlled() ? props7().value : store.value;
     },
     set(nextValue) {
       const prev = store.value;
       const next = isFunction(nextValue) ? nextValue(prev) : nextValue;
-      if (props5().debug) {
-        console.log(`[bindable > ${props5().debug}] setValue`, { next, prev });
+      if (props7().debug) {
+        console.log(`[bindable > ${props7().debug}] setValue`, { next, prev });
       }
       if (!controlled()) store.value = next;
       if (!eq(next, prev)) {
-        props5().onChange?.(next, prev);
+        props7().onChange?.(next, prev);
       }
     },
     invoke(nextValue, prevValue) {
-      props5().onChange?.(nextValue, prevValue);
+      props7().onChange?.(nextValue, prevValue);
     },
     hash(value) {
-      return props5().hash?.(value) ?? String(value);
+      return props7().hash?.(value) ?? String(value);
     }
   };
 }
@@ -1385,8 +1385,8 @@ function mergeMachineProps(prev, next) {
   return result;
 }
 var VanillaMachine = class {
-  constructor(machine6, userProps = {}) {
-    this.machine = machine6;
+  constructor(machine8, userProps = {}) {
+    this.machine = machine8;
     __publicField3(this, "scope");
     __publicField3(this, "context");
     __publicField3(this, "prop");
@@ -1531,11 +1531,11 @@ var VanillaMachine = class {
     this.scope = createScope({ id, ids, getRootNode: getRootNode2 });
     const prop = (key) => {
       const __props = runIfFn(this.userPropsRef.current);
-      const props5 = machine6.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
-      return props5[key];
+      const props7 = machine8.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
+      return props7[key];
     };
     this.prop = prop;
-    const context = machine6.context?.({
+    const context = machine8.context?.({
       prop,
       bindable,
       scope: this.scope,
@@ -1576,7 +1576,7 @@ var VanillaMachine = class {
     };
     this.context = ctx;
     const computed = (key) => {
-      return machine6.computed?.[key]({
+      return machine8.computed?.[key]({
         context: ctx,
         event: this.getEvent(),
         prop,
@@ -1586,10 +1586,10 @@ var VanillaMachine = class {
       }) ?? {};
     };
     this.computed = computed;
-    const refs = createRefs(machine6.refs?.({ prop, context: ctx }) ?? {});
+    const refs = createRefs(machine8.refs?.({ prop, context: ctx }) ?? {});
     this.refs = refs;
     const state = bindable(() => ({
-      defaultValue: machine6.initialState({ prop }),
+      defaultValue: machine8.initialState({ prop }),
       onChange: (nextState, prevState) => {
         if (prevState) {
           const exitEffects = this.effects.get(prevState);
@@ -1603,8 +1603,8 @@ var VanillaMachine = class {
         const cleanup = this.effect(this.getStateConfig(nextState)?.effects);
         if (cleanup) this.effects.set(nextState, cleanup);
         if (prevState === INIT_STATE) {
-          this.action(machine6.entry);
-          const cleanup2 = this.effect(machine6.effects);
+          this.action(machine8.entry);
+          const cleanup2 = this.effect(machine8.effects);
           if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
         }
         this.action(this.getStateConfig(nextState)?.entry);
@@ -1660,10 +1660,10 @@ var Component = class {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine;
   api;
-  constructor(el, props5) {
+  constructor(el, props7) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
-    this.machine = this.initMachine(props5);
+    this.machine = this.initMachine(props7);
     this.api = this.initApi();
   }
   init = () => {
@@ -1677,11 +1677,11 @@ var Component = class {
   destroy = () => {
     this.machine.stop();
   };
-  spreadProps = (el, props5) => {
-    spreadProps(el, props5);
+  spreadProps = (el, props7) => {
+    spreadProps(el, props7);
   };
-  updateProps = (props5) => {
-    this.machine.updateProps(props5);
+  updateProps = (props7) => {
+    this.machine.updateProps(props7);
   };
 };
 
@@ -1720,31 +1720,33 @@ var generateId = (element, fallbackId = "element") => {
 // components/accordion.ts
 var Accordion = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props5) {
-    return new VanillaMachine(machine, props5);
+  initMachine(props7) {
+    return new VanillaMachine(machine, props7);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="accordion"][data-part="root"]') || this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const items = this.el.querySelectorAll('[data-part="item"]');
+    const items = rootEl.querySelectorAll(
+      ':scope > [data-scope="accordion"][data-part="item"]'
+    );
     for (let i = 0; i < items.length; i++) {
       const itemEl = items[i];
       const value = getString(itemEl, "value");
       if (!value) continue;
       const disabled = getBoolean(itemEl, "disabled");
       this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
-      const triggerEl = itemEl.querySelector('[data-part="item-trigger"]');
+      const triggerEl = itemEl.querySelector('[data-scope="accordion"][data-part="item-trigger"]');
       if (triggerEl) {
         this.spreadProps(triggerEl, this.api.getItemTriggerProps({ value, disabled }));
       }
-      const indicatorEl = itemEl.querySelector('[data-part="item-indicator"]');
+      const indicatorEl = itemEl.querySelector('[data-scope="accordion"][data-part="item-indicator"]');
       if (indicatorEl) {
         this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ value, disabled }));
       }
-      const contentEl = itemEl.querySelector('[data-part="item-content"]');
+      const contentEl = itemEl.querySelector('[data-scope="accordion"][data-part="item-content"]');
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
       }
@@ -2264,12 +2266,12 @@ function groupConnect(service, normalize) {
 var { guards, createMachine: createMachine2 } = setup();
 var { and: and2 } = guards;
 var groupMachine = createMachine2({
-  props({ props: props5 }) {
+  props({ props: props7 }) {
     return {
       dir: "ltr",
       id: uuid(),
-      ...props5,
-      store: props5.store
+      ...props7,
+      store: props7.store
     };
   },
   initialState({ prop }) {
@@ -2623,12 +2625,12 @@ function connect2(service, normalize) {
 }
 var { not: not2 } = createGuards();
 var machine2 = createMachine({
-  props({ props: props5 }) {
-    ensureProps(props5, ["id", "type", "parent", "removeDelay"], "toast");
+  props({ props: props7 }) {
+    ensureProps(props7, ["id", "type", "parent", "removeDelay"], "toast");
     return {
       closable: true,
-      ...props5,
-      duration: getToastDuration(props5.duration, props5.type)
+      ...props7,
+      duration: getToastDuration(props7.duration, props7.type)
     };
   },
   initialState({ prop }) {
@@ -2871,8 +2873,8 @@ function setHeight(parent, item) {
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
 };
-function createToastStore(props5 = {}) {
-  const attrs = withDefaults(props5, {
+function createToastStore(props7 = {}) {
+  const attrs = withDefaults(props7, {
     placement: "bottom",
     overlap: false,
     max: 24,
@@ -3097,13 +3099,16 @@ var toastGroups = /* @__PURE__ */ new Map();
 var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
   parts;
-  constructor(el, props5) {
-    super(el, props5);
+  duration;
+  constructor(el, props7) {
+    super(el, props7);
+    this.duration = props7.duration;
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
       <div data-scope="toast" data-part="progressbar"></div>
+      <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
 
       <div data-scope="toast" data-part="content">
         <div data-scope="toast" data-part="title"></div>
@@ -3119,16 +3124,18 @@ var ToastItem = class extends Component {
       <span data-scope="toast" data-part="ghost-after"></span>
     `;
     this.parts = {
-      title: this.el.querySelector('[data-part="title"]'),
-      description: this.el.querySelector('[data-part="description"]'),
-      close: this.el.querySelector('[data-part="close-trigger"]'),
-      ghostBefore: this.el.querySelector('[data-part="ghost-before"]'),
-      ghostAfter: this.el.querySelector('[data-part="ghost-after"]')
+      title: this.el.querySelector('[data-scope="toast"][data-part="title"]'),
+      description: this.el.querySelector('[data-scope="toast"][data-part="description"]'),
+      close: this.el.querySelector('[data-scope="toast"][data-part="close-trigger"]'),
+      ghostBefore: this.el.querySelector('[data-scope="toast"][data-part="ghost-before"]'),
+      ghostAfter: this.el.querySelector('[data-scope="toast"][data-part="ghost-after"]'),
+      progressbar: this.el.querySelector('[data-scope="toast"][data-part="progressbar"]'),
+      loadingSpinner: this.el.querySelector('[data-scope="toast"][data-part="loading-spinner"]')
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props5) {
-    return new VanillaMachine(machine2, props5);
+  initMachine(props7) {
+    return new VanillaMachine(machine2, props7);
   }
   initApi() {
     return connect2(this.machine.service, normalizeProps);
@@ -3146,6 +3153,23 @@ var ToastItem = class extends Component {
     }
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
+    const duration = this.duration;
+    const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
+    const toastGroup = this.el.closest('[phx-hook="Toast"]');
+    const loadingIconTemplate = toastGroup?.querySelector("[data-loading-icon-template]");
+    const loadingIcon = loadingIconTemplate?.innerHTML;
+    if (isInfinity) {
+      this.parts.progressbar.style.display = "none";
+      this.parts.loadingSpinner.style.display = "flex";
+      this.el.setAttribute("data-duration-infinity", "true");
+      if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
+        this.parts.loadingSpinner.innerHTML = loadingIcon;
+      }
+    } else {
+      this.parts.progressbar.style.display = "block";
+      this.parts.loadingSpinner.style.display = "none";
+      this.el.removeAttribute("data-duration-infinity");
+    }
   }
   destroy = () => {
     this.machine.stop();
@@ -3156,9 +3180,9 @@ var ToastGroup = class extends Component {
   toastComponents = /* @__PURE__ */ new Map();
   groupEl;
   store;
-  constructor(el, props5) {
-    super(el, props5);
-    this.store = props5.store;
+  constructor(el, props7) {
+    super(el, props7);
+    this.store = props7.store;
     this.groupEl = el.querySelector('[data-part="group"]') ?? (() => {
       const g = document.createElement("div");
       g.setAttribute("data-scope", "toast");
@@ -3168,8 +3192,8 @@ var ToastGroup = class extends Component {
     })();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props5) {
-    return new VanillaMachine(group.machine, props5);
+  initMachine(props7) {
+    return new VanillaMachine(group.machine, props7);
   }
   initApi() {
     return group.connect(this.machine.service, normalizeProps);
@@ -3193,6 +3217,7 @@ var ToastGroup = class extends Component {
         item.init();
         this.toastComponents.set(toastData.id, item);
       } else {
+        item.duration = toastData.duration;
         item.updateProps({
           ...toastData,
           parent: this.machine.service,
@@ -3242,24 +3267,6 @@ function getToastStore(groupId) {
 }
 
 // hooks/toast.ts
-function onDisconnect(groupId) {
-  const store = getToastStore(groupId);
-  if (!store) return;
-  store.create({
-    title: "Disconnected",
-    description: "You have been disconnected from the server.",
-    type: "info"
-  });
-}
-function onConnect(groupId) {
-  const store = getToastStore(groupId);
-  if (!store) return;
-  store.create({
-    title: "Connected",
-    description: "You have been connected to the server.",
-    type: "success"
-  });
-}
 var ToastHook = {
   mounted() {
     const el = this.el;
@@ -3303,12 +3310,13 @@ var ToastHook = {
         const store2 = getToastStore(payload.groupId || groupId);
         if (!store2) return;
         try {
+          const duration = payload.duration === "Infinity" || payload.duration === Infinity ? Infinity : typeof payload.duration === "string" ? parseInt(payload.duration, 10) || void 0 : payload.duration;
           store2.create({
             title: payload.title,
             description: payload.description,
             type: payload.type || "info",
             id: payload.id || generateId(void 0, "toast"),
-            duration: payload.duration
+            duration
           });
         } catch (error) {
           console.error("Failed to create toast:", error);
@@ -3345,12 +3353,13 @@ var ToastHook = {
       const store2 = getToastStore(detail.groupId || groupId);
       if (!store2) return;
       try {
+        const duration = detail.duration === "Infinity" || detail.duration === Infinity ? Infinity : typeof detail.duration === "string" ? parseInt(detail.duration, 10) || void 0 : detail.duration;
         store2.create({
           title: detail.title,
           description: detail.description,
           type: detail.type || "info",
           id: detail.id || generateId(void 0, "toast"),
-          duration: detail.duration
+          duration
         });
       } catch (error) {
         console.error("Failed to create toast:", error);
@@ -3381,12 +3390,6 @@ var ToastHook = {
         console.error("Failed to create flash error toast:", error);
       }
     }
-    const handleDisconnect = () => onDisconnect(groupId);
-    const handleConnect = () => onConnect(groupId);
-    this._toastDisconnect = handleDisconnect;
-    this._toastConnect = handleConnect;
-    window.addEventListener("phx:disconnect", handleDisconnect);
-    window.addEventListener("phx:connect", handleConnect);
   },
   destroyed() {
     const anyThis = this;
@@ -3400,18 +3403,18 @@ var ToastHook = {
 };
 
 // ../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs
-var createAnatomy2 = (name, parts6 = []) => ({
+var createAnatomy2 = (name, parts8 = []) => ({
   parts: (...values) => {
-    if (isEmpty2(parts6)) {
+    if (isEmpty2(parts8)) {
       return createAnatomy2(name, values);
     }
     throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
   },
-  extendWith: (...values) => createAnatomy2(name, [...parts6, ...values]),
-  omit: (...values) => createAnatomy2(name, parts6.filter((part) => !values.includes(part))),
-  rename: (newName) => createAnatomy2(newName, parts6),
-  keys: () => parts6,
-  build: () => [...new Set(parts6)].reduce(
+  extendWith: (...values) => createAnatomy2(name, [...parts8, ...values]),
+  omit: (...values) => createAnatomy2(name, parts8.filter((part) => !values.includes(part))),
+  rename: (newName) => createAnatomy2(newName, parts8),
+  keys: () => parts8,
+  build: () => [...new Set(parts8)].reduce(
     (prev, part) => Object.assign(prev, {
       [part]: {
         selector: [
@@ -3440,6 +3443,10 @@ function setCaretToEnd(input) {
   } catch {
   }
 }
+var wrap = (v, idx) => {
+  return v.map((_, index) => v[(Math.max(idx, 0) + index) % v.length]);
+};
+var pipe2 = (...fns) => (arg) => fns.reduce((acc, fn) => fn(acc), arg);
 var noop2 = () => void 0;
 var isObject3 = (v) => typeof v === "object" && v !== null;
 var dataAttr2 = (guard) => guard ? "" : void 0;
@@ -3459,11 +3466,26 @@ function isRootElement(node) {
 }
 var isNode2 = (el) => isObject3(el) && el.nodeType !== void 0;
 var isShadowRoot2 = (el) => isNode2(el) && el.nodeType === DOCUMENT_FRAGMENT_NODE2 && "host" in el;
+var isInputElement = (el) => isHTMLElement2(el) && el.localName === "input";
 var isAnchorElement = (el) => !!el?.matches("a[href]");
 var isElementVisible = (el) => {
   if (!isHTMLElement2(el)) return false;
   return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
 };
+function isActiveElement2(element) {
+  if (!element) return false;
+  const rootNode = element.getRootNode();
+  return getActiveElement2(rootNode) === element;
+}
+var TEXTAREA_SELECT_REGEX = /(textarea|select)/;
+function isEditableElement(el) {
+  if (el == null || !isHTMLElement2(el)) return false;
+  try {
+    return isInputElement(el) && el.selectionStart != null || TEXTAREA_SELECT_REGEX.test(el.localName) || el.isContentEditable || el.getAttribute("contenteditable") === "true" || el.getAttribute("contenteditable") === "";
+  } catch {
+    return false;
+  }
+}
 function contains2(parent, child) {
   if (!parent || !child) return false;
   if (!isHTMLElement2(parent) || !isHTMLElement2(child)) return false;
@@ -3492,6 +3514,15 @@ function getWindow2(el) {
   if (isDocument2(el)) return el.defaultView ?? window;
   if (isHTMLElement2(el)) return el.ownerDocument?.defaultView ?? window;
   return window;
+}
+function getActiveElement2(rootNode) {
+  let activeElement = rootNode.activeElement;
+  while (activeElement?.shadowRoot) {
+    const el = activeElement.shadowRoot.activeElement;
+    if (!el || el === activeElement) break;
+    else activeElement = el;
+  }
+  return activeElement;
 }
 function getParentNode(node) {
   if (getNodeName(node) === "html") return node;
@@ -3570,6 +3601,7 @@ var isApple2 = () => isMac2() || isIos2();
 var isMac2 = () => pt2(/^Mac/i);
 var isSafari2 = () => isApple2() && vn2(/apple/i);
 var isFirefox = () => ua2(/Firefox/i);
+var isAndroid2 = () => ua2(/Android/i);
 function getComposedPath2(event) {
   return event.composedPath?.() ?? event.nativeEvent?.composedPath?.();
 }
@@ -3603,10 +3635,18 @@ function isCtrlOrMetaKey(e) {
   if (isMac2()) return e.metaKey;
   return e.ctrlKey;
 }
+function isVirtualClick2(e) {
+  if (e.pointerType === "" && e.isTrusted) return true;
+  if (isAndroid2() && e.pointerType) {
+    return e.type === "click" && e.buttons === 1;
+  }
+  return e.detail === 0 && !e.pointerType;
+}
 var isLeftClick = (e) => e.button === 0;
 var isContextMenuEvent = (e) => {
   return e.button === 2 || isMac2() && e.ctrlKey && e.button === 0;
 };
+var isTouchEvent2 = (event) => "touches" in event && event.touches.length > 0;
 var keyMap2 = {
   Up: "ArrowUp",
   Down: "ArrowDown",
@@ -3631,6 +3671,10 @@ function getEventKey2(event, options = {}) {
 function getNativeEvent(event) {
   return event.nativeEvent ?? event;
 }
+function getEventPoint2(event, type = "client") {
+  const point = isTouchEvent2(event) ? event.touches[0] || event.changedTouches[0] : event;
+  return { x: point[`${type}X`], y: point[`${type}Y`] };
+}
 var addDomEvent2 = (target, eventName, handler, options) => {
   const node = typeof target === "function" ? target() : target;
   node?.addEventListener(eventName, handler, options);
@@ -3638,10 +3682,175 @@ var addDomEvent2 = (target, eventName, handler, options) => {
     node?.removeEventListener(eventName, handler, options);
   };
 };
+function getDescriptor2(el, options) {
+  const { type = "HTMLInputElement", property = "value" } = options;
+  const proto = getWindow2(el)[type].prototype;
+  return Object.getOwnPropertyDescriptor(proto, property) ?? {};
+}
+function setElementChecked2(el, checked) {
+  if (!el) return;
+  const descriptor = getDescriptor2(el, { type: "HTMLInputElement", property: "checked" });
+  descriptor.set?.call(el, checked);
+  if (checked) el.setAttribute("checked", "");
+  else el.removeAttribute("checked");
+}
+function dispatchInputCheckedEvent2(el, options) {
+  const { checked, bubbles = true } = options;
+  if (!el) return;
+  const win = getWindow2(el);
+  if (!(el instanceof win.HTMLInputElement)) return;
+  setElementChecked2(el, checked);
+  el.dispatchEvent(new win.Event("click", { bubbles }));
+}
+function getClosestForm2(el) {
+  return isFormElement2(el) ? el.form : el.closest("form");
+}
+function isFormElement2(el) {
+  return el.matches("textarea, input, select, button");
+}
+function trackFormReset2(el, callback) {
+  if (!el) return;
+  const form = getClosestForm2(el);
+  const onReset = (e) => {
+    if (e.defaultPrevented) return;
+    callback();
+  };
+  form?.addEventListener("reset", onReset, { passive: true });
+  return () => form?.removeEventListener("reset", onReset);
+}
+function trackFieldsetDisabled2(el, callback) {
+  const fieldset = el?.closest("fieldset");
+  if (!fieldset) return;
+  callback(fieldset.disabled);
+  const win = getWindow2(fieldset);
+  const obs = new win.MutationObserver(() => callback(fieldset.disabled));
+  obs.observe(fieldset, {
+    attributes: true,
+    attributeFilter: ["disabled"]
+  });
+  return () => obs.disconnect();
+}
+function trackFormControl2(el, options) {
+  if (!el) return;
+  const { onFieldsetDisabledChange, onFormReset } = options;
+  const cleanups = [trackFormReset2(el, onFormReset), trackFieldsetDisabled2(el, onFieldsetDisabledChange)];
+  return () => cleanups.forEach((cleanup) => cleanup?.());
+}
+var isFrame = (el) => isHTMLElement2(el) && el.tagName === "IFRAME";
+function parseTabIndex(el) {
+  const attr = el.getAttribute("tabindex");
+  if (!attr) return NaN;
+  return parseInt(attr, 10);
+}
+var hasNegativeTabIndex = (el) => parseTabIndex(el) < 0;
+function getShadowRootForNode(element, getShadowRoot) {
+  if (!getShadowRoot) return null;
+  if (getShadowRoot === true) {
+    return element.shadowRoot || null;
+  }
+  const result = getShadowRoot(element);
+  return (result === true ? element.shadowRoot : result) || null;
+}
+function collectElementsWithShadowDOM(elements, getShadowRoot, filterFn) {
+  const allElements = [...elements];
+  const toProcess = [...elements];
+  const processed = /* @__PURE__ */ new Set();
+  const positionMap = /* @__PURE__ */ new Map();
+  elements.forEach((el, i) => positionMap.set(el, i));
+  let processIndex = 0;
+  while (processIndex < toProcess.length) {
+    const element = toProcess[processIndex++];
+    if (!element || processed.has(element)) continue;
+    processed.add(element);
+    const shadowRoot = getShadowRootForNode(element, getShadowRoot);
+    if (shadowRoot) {
+      const shadowElements = Array.from(shadowRoot.querySelectorAll(focusableSelector)).filter(filterFn);
+      const hostIndex = positionMap.get(element);
+      if (hostIndex !== void 0) {
+        const insertPosition = hostIndex + 1;
+        allElements.splice(insertPosition, 0, ...shadowElements);
+        shadowElements.forEach((el, i) => {
+          positionMap.set(el, insertPosition + i);
+        });
+        for (let i = insertPosition + shadowElements.length; i < allElements.length; i++) {
+          positionMap.set(allElements[i], i);
+        }
+      } else {
+        const insertPosition = allElements.length;
+        allElements.push(...shadowElements);
+        shadowElements.forEach((el, i) => {
+          positionMap.set(el, insertPosition + i);
+        });
+      }
+      toProcess.push(...shadowElements);
+    }
+  }
+  return allElements;
+}
 var focusableSelector = "input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], button:not([disabled]), [tabindex], iframe, object, embed, area[href], audio[controls], video[controls], [contenteditable]:not([contenteditable='false']), details > summary:first-of-type";
 function isFocusable(element) {
   if (!isHTMLElement2(element) || element.closest("[inert]")) return false;
   return element.matches(focusableSelector) && isElementVisible(element);
+}
+function getTabbables(container, options = {}) {
+  if (!container) return [];
+  const { includeContainer, getShadowRoot } = options;
+  const elements = Array.from(container.querySelectorAll(focusableSelector));
+  if (includeContainer && isTabbable(container)) {
+    elements.unshift(container);
+  }
+  const tabbableElements = [];
+  for (const element of elements) {
+    if (!isTabbable(element)) continue;
+    if (isFrame(element) && element.contentDocument) {
+      const frameBody = element.contentDocument.body;
+      tabbableElements.push(...getTabbables(frameBody, { getShadowRoot }));
+      continue;
+    }
+    tabbableElements.push(element);
+  }
+  if (getShadowRoot) {
+    const allElements = collectElementsWithShadowDOM(tabbableElements, getShadowRoot, isTabbable);
+    if (!allElements.length && includeContainer) {
+      return elements;
+    }
+    return allElements;
+  }
+  if (!tabbableElements.length && includeContainer) {
+    return elements;
+  }
+  return tabbableElements;
+}
+function isTabbable(el) {
+  if (isHTMLElement2(el) && el.tabIndex > 0) return true;
+  return isFocusable(el) && !hasNegativeTabIndex(el);
+}
+function getTabbableEdges(container, options = {}) {
+  const elements = getTabbables(container, options);
+  const first3 = elements[0] || null;
+  const last3 = elements[elements.length - 1] || null;
+  return [first3, last3];
+}
+function getInitialFocus(options) {
+  const { root, getInitialEl, filter, enabled = true } = options;
+  if (!enabled) return;
+  let node = null;
+  node || (node = typeof getInitialEl === "function" ? getInitialEl() : getInitialEl);
+  node || (node = root?.querySelector("[data-autofocus],[autofocus]"));
+  if (!node) {
+    const tabbables = getTabbables(root);
+    node = filter ? tabbables.filter(filter)[0] : tabbables[0];
+  }
+  return node || root || void 0;
+}
+function isValidTabEvent(event) {
+  const container = event.currentTarget;
+  if (!container) return false;
+  const [firstTabbable, lastTabbable] = getTabbableEdges(container);
+  if (isActiveElement2(firstTabbable) && event.shiftKey) return false;
+  if (isActiveElement2(lastTabbable) && !event.shiftKey) return false;
+  if (!firstTabbable && !lastTabbable) return false;
+  return true;
 }
 var AnimationFrame2 = class _AnimationFrame2 {
   constructor() {
@@ -3762,6 +3971,83 @@ function scrollIntoView(el, options) {
   if (!isOverflowElement(rootEl) || !isScrollable(rootEl)) return;
   el.scrollIntoView(scrollOptions);
 }
+function trackPress2(options) {
+  const {
+    pointerNode,
+    keyboardNode = pointerNode,
+    onPress,
+    onPressStart,
+    onPressEnd,
+    isValidKey: isValidKey3 = (e) => e.key === "Enter"
+  } = options;
+  if (!pointerNode) return noop2;
+  const win = getWindow2(pointerNode);
+  let removeStartListeners = noop2;
+  let removeEndListeners = noop2;
+  let removeAccessibleListeners = noop2;
+  const getInfo = (event) => ({
+    point: getEventPoint2(event),
+    event
+  });
+  function startPress(event) {
+    onPressStart?.(getInfo(event));
+  }
+  function cancelPress(event) {
+    onPressEnd?.(getInfo(event));
+  }
+  const startPointerPress = (startEvent) => {
+    removeEndListeners();
+    const endPointerPress = (endEvent) => {
+      const target = getEventTarget2(endEvent);
+      if (contains2(pointerNode, target)) {
+        onPress?.(getInfo(endEvent));
+      } else {
+        onPressEnd?.(getInfo(endEvent));
+      }
+    };
+    const removePointerUpListener = addDomEvent2(win, "pointerup", endPointerPress, { passive: !onPress, once: true });
+    const removePointerCancelListener = addDomEvent2(win, "pointercancel", cancelPress, {
+      passive: !onPressEnd,
+      once: true
+    });
+    removeEndListeners = pipe2(removePointerUpListener, removePointerCancelListener);
+    if (isActiveElement2(keyboardNode) && startEvent.pointerType === "mouse") {
+      startEvent.preventDefault();
+    }
+    startPress(startEvent);
+  };
+  const removePointerListener = addDomEvent2(pointerNode, "pointerdown", startPointerPress, { passive: !onPressStart });
+  const removeFocusListener = addDomEvent2(keyboardNode, "focus", startAccessiblePress);
+  removeStartListeners = pipe2(removePointerListener, removeFocusListener);
+  function startAccessiblePress() {
+    const handleKeydown = (keydownEvent) => {
+      if (!isValidKey3(keydownEvent)) return;
+      const handleKeyup = (keyupEvent) => {
+        if (!isValidKey3(keyupEvent)) return;
+        const evt2 = new win.PointerEvent("pointerup");
+        const info = getInfo(evt2);
+        onPress?.(info);
+        onPressEnd?.(info);
+      };
+      removeEndListeners();
+      removeEndListeners = addDomEvent2(keyboardNode, "keyup", handleKeyup);
+      const evt = new win.PointerEvent("pointerdown");
+      startPress(evt);
+    };
+    const handleBlur = () => {
+      const evt = new win.PointerEvent("pointercancel");
+      cancelPress(evt);
+    };
+    const removeKeydownListener = addDomEvent2(keyboardNode, "keydown", handleKeydown);
+    const removeBlurListener = addDomEvent2(keyboardNode, "blur", handleBlur);
+    removeAccessibleListeners = pipe2(removeKeydownListener, removeBlurListener);
+  }
+  return () => {
+    removeStartListeners();
+    removeEndListeners();
+    removeAccessibleListeners();
+  };
+}
 function queryAll2(root, selector) {
   return Array.from(root?.querySelectorAll(selector) ?? []);
 }
@@ -3787,6 +4073,27 @@ function prevById2(v, id, loop = true) {
   idx = loop ? (idx - 1 + v.length) % v.length : Math.max(0, idx - 1);
   return v[idx];
 }
+var sanitize = (str) => str.split("").map((char) => {
+  const code = char.charCodeAt(0);
+  if (code > 0 && code < 128) return char;
+  if (code >= 128 && code <= 255) return `/x${code.toString(16)}`.replace("/", "\\");
+  return "";
+}).join("").trim();
+var getValueText = (el) => {
+  return sanitize(el.dataset?.valuetext ?? el.textContent ?? "");
+};
+var match = (valueText, query2) => {
+  return valueText.trim().toLowerCase().startsWith(query2.toLowerCase());
+};
+function getByText(v, text, currentId, itemToId = defaultItemToId2) {
+  const index = currentId ? indexOfId2(v, currentId, itemToId) : -1;
+  let items = currentId ? wrap(v, index) : v;
+  const isSingleKey = text.length === 1;
+  if (isSingleKey) {
+    items = items.filter((item) => itemToId(item) !== currentId);
+  }
+  return items.find((item) => match(getValueText(item), text));
+}
 function setStyle2(el, style) {
   if (!el) return noop2;
   const prev = Object.keys(style).reduce((acc, key) => {
@@ -3805,6 +4112,49 @@ function setStyle2(el, style) {
 function isEqual2(a, b) {
   return Object.keys(a).every((key) => a[key] === b[key]);
 }
+function getByTypeaheadImpl(baseItems, options) {
+  const { state: state2, activeId, key, timeout = 350, itemToId } = options;
+  const search = state2.keysSoFar + key;
+  const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+  const query2 = isRepeated ? search[0] : search;
+  let items = baseItems.slice();
+  const next = getByText(items, query2, activeId, itemToId);
+  function cleanup() {
+    clearTimeout(state2.timer);
+    state2.timer = -1;
+  }
+  function update(value) {
+    state2.keysSoFar = value;
+    cleanup();
+    if (value !== "") {
+      state2.timer = +setTimeout(() => {
+        update("");
+        cleanup();
+      }, timeout);
+    }
+  }
+  update(search);
+  return next;
+}
+var getByTypeahead = /* @__PURE__ */ Object.assign(getByTypeaheadImpl, {
+  defaultOptions: { keysSoFar: "", timer: -1 },
+  isValidEvent: isValidTypeaheadEvent
+});
+function isValidTypeaheadEvent(event) {
+  return event.key.length === 1 && !event.ctrlKey && !event.metaKey;
+}
+var visuallyHiddenStyle2 = {
+  border: "0",
+  clip: "rect(0 0 0 0)",
+  height: "1px",
+  margin: "-1px",
+  overflow: "hidden",
+  padding: "0",
+  position: "absolute",
+  width: "1px",
+  whiteSpace: "nowrap",
+  wordWrap: "normal"
+};
 function waitForPromise(promise, controller, timeout) {
   const { signal } = controller;
   const wrappedPromise = new Promise((resolve, reject) => {
@@ -3926,13 +4276,13 @@ var callAll = (...fns) => (...a) => {
     fn?.(...a);
   });
 };
-function match(key, record, ...args) {
+function match2(key, record, ...args) {
   if (key in record) {
     const fn = record[key];
     return isFunction2(fn) ? fn(...args) : fn;
   }
   const error = new Error(`No matching key: ${JSON.stringify(key)} in ${JSON.stringify(Object.keys(record))}`);
-  Error.captureStackTrace?.(error, match);
+  Error.captureStackTrace?.(error, match2);
   throw error;
 }
 var { floor: floor2, abs: abs2, round: round2, min: min2, max: max2, pow: pow2, sign: sign2 } = Math;
@@ -3948,23 +4298,23 @@ function compact2(obj) {
   }
   return filtered;
 }
-function splitProps3(props5, keys) {
+function splitProps3(props7, keys) {
   const rest = {};
   const result = {};
   const keySet = new Set(keys);
-  const ownKeys = Reflect.ownKeys(props5);
+  const ownKeys = Reflect.ownKeys(props7);
   for (const key of ownKeys) {
     if (keySet.has(key)) {
-      result[key] = props5[key];
+      result[key] = props7[key];
     } else {
-      rest[key] = props5[key];
+      rest[key] = props7[key];
     }
   }
   return [result, rest];
 }
 var createSplitProps2 = (keys) => {
-  return function split(props5) {
-    return splitProps3(props5, keys);
+  return function split(props7) {
+    return splitProps3(props7, keys);
   };
 };
 var _tick2;
@@ -3979,10 +4329,10 @@ function warn2(...a) {
 function ensure(c, m) {
   if (c == null) throw new Error(m());
 }
-function ensureProps2(props5, keys, scope) {
+function ensureProps2(props7, keys, scope) {
   let missingKeys = [];
   for (const key of keys) {
-    if (props5[key] == null) missingKeys.push(key);
+    if (props7[key] == null) missingKeys.push(key);
   }
   if (missingKeys.length > 0)
     throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
@@ -4026,7 +4376,7 @@ function setup2() {
 }
 
 // ../node_modules/.pnpm/@zag-js+types@1.33.1/node_modules/@zag-js/types/dist/index.mjs
-var createProps2 = () => (props5) => Array.from(new Set(props5));
+var createProps2 = () => (props7) => Array.from(new Set(props7));
 
 // ../node_modules/.pnpm/@zag-js+toggle-group@1.33.1/node_modules/@zag-js/toggle-group/dist/index.mjs
 var anatomy3 = createAnatomy2("toggle-group").parts("root", "item");
@@ -4362,16 +4712,16 @@ var splitItemProps2 = createSplitProps2(itemProps2);
 // components/toggle-group.ts
 var ToggleGroup = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props5) {
-    return new VanillaMachine(machine3, props5);
+  initMachine(props7) {
+    return new VanillaMachine(machine3, props7);
   }
   initApi() {
     return connect3(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="toggle-group"][data-part="root"]') || this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const items = this.el.querySelectorAll('[data-part="item"]');
+    const items = this.el.querySelectorAll('[data-scope="toggle-group"][data-part="item"]');
     for (let i = 0; i < items.length; i++) {
       const itemEl = items[i];
       const value = getString(itemEl, "value");
@@ -4387,7 +4737,7 @@ var ToggleGroupHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const props5 = {
+    const props7 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       defaultValue: getStringList(el, "defaultValue"),
@@ -4420,7 +4770,7 @@ var ToggleGroupHook = {
         }
       }
     };
-    const toggleGroup = new ToggleGroup(el, props5);
+    const toggleGroup = new ToggleGroup(el, props7);
     toggleGroup.init();
     this.toggleGroup = toggleGroup;
     this.onSetValue = (event) => {
@@ -4469,594 +4819,6 @@ var ToggleGroupHook = {
       }
     }
     this.toggleGroup?.destroy();
-  }
-};
-
-// ../node_modules/.pnpm/@zag-js+focus-visible@1.33.0/node_modules/@zag-js/focus-visible/dist/index.mjs
-function isValidKey(e) {
-  return !(e.metaKey || !isMac() && e.altKey || e.ctrlKey || e.key === "Control" || e.key === "Shift" || e.key === "Meta");
-}
-var nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
-function isKeyboardFocusEvent(isTextInput, modality, e) {
-  const target = e ? getEventTarget(e) : null;
-  const win = getWindow(target);
-  isTextInput = isTextInput || target instanceof win.HTMLInputElement && !nonTextInputTypes.has(target?.type) || target instanceof win.HTMLTextAreaElement || target instanceof win.HTMLElement && target.isContentEditable;
-  return !(isTextInput && modality === "keyboard" && e instanceof win.KeyboardEvent && !Reflect.has(FOCUS_VISIBLE_INPUT_KEYS, e.key));
-}
-var currentModality = null;
-var changeHandlers = /* @__PURE__ */ new Set();
-var listenerMap = /* @__PURE__ */ new Map();
-var hasEventBeforeFocus = false;
-var hasBlurredWindowRecently = false;
-var FOCUS_VISIBLE_INPUT_KEYS = {
-  Tab: true,
-  Escape: true
-};
-function triggerChangeHandlers(modality, e) {
-  for (let handler of changeHandlers) {
-    handler(modality, e);
-  }
-}
-function handleKeyboardEvent(e) {
-  hasEventBeforeFocus = true;
-  if (isValidKey(e)) {
-    currentModality = "keyboard";
-    triggerChangeHandlers("keyboard", e);
-  }
-}
-function handlePointerEvent(e) {
-  currentModality = "pointer";
-  if (e.type === "mousedown" || e.type === "pointerdown") {
-    hasEventBeforeFocus = true;
-    triggerChangeHandlers("pointer", e);
-  }
-}
-function handleClickEvent(e) {
-  if (isVirtualClick(e)) {
-    hasEventBeforeFocus = true;
-    currentModality = "virtual";
-  }
-}
-function handleFocusEvent(e) {
-  const target = getEventTarget(e);
-  if (target === getWindow(target) || target === getDocument(target)) {
-    return;
-  }
-  if (!hasEventBeforeFocus && !hasBlurredWindowRecently) {
-    currentModality = "virtual";
-    triggerChangeHandlers("virtual", e);
-  }
-  hasEventBeforeFocus = false;
-  hasBlurredWindowRecently = false;
-}
-function handleWindowBlur() {
-  hasEventBeforeFocus = false;
-  hasBlurredWindowRecently = true;
-}
-function setupGlobalFocusEvents(root) {
-  if (typeof window === "undefined" || listenerMap.get(getWindow(root))) {
-    return;
-  }
-  const win = getWindow(root);
-  const doc = getDocument(root);
-  let focus = win.HTMLElement.prototype.focus;
-  function patchedFocus() {
-    currentModality = "virtual";
-    triggerChangeHandlers("virtual", null);
-    hasEventBeforeFocus = true;
-    focus.apply(this, arguments);
-  }
-  try {
-    Object.defineProperty(win.HTMLElement.prototype, "focus", {
-      configurable: true,
-      value: patchedFocus
-    });
-  } catch {
-  }
-  doc.addEventListener("keydown", handleKeyboardEvent, true);
-  doc.addEventListener("keyup", handleKeyboardEvent, true);
-  doc.addEventListener("click", handleClickEvent, true);
-  win.addEventListener("focus", handleFocusEvent, true);
-  win.addEventListener("blur", handleWindowBlur, false);
-  if (typeof win.PointerEvent !== "undefined") {
-    doc.addEventListener("pointerdown", handlePointerEvent, true);
-    doc.addEventListener("pointermove", handlePointerEvent, true);
-    doc.addEventListener("pointerup", handlePointerEvent, true);
-  } else {
-    doc.addEventListener("mousedown", handlePointerEvent, true);
-    doc.addEventListener("mousemove", handlePointerEvent, true);
-    doc.addEventListener("mouseup", handlePointerEvent, true);
-  }
-  win.addEventListener(
-    "beforeunload",
-    () => {
-      tearDownWindowFocusTracking(root);
-    },
-    { once: true }
-  );
-  listenerMap.set(win, { focus });
-}
-var tearDownWindowFocusTracking = (root, loadListener) => {
-  const win = getWindow(root);
-  const doc = getDocument(root);
-  const listenerData = listenerMap.get(win);
-  if (!listenerData) {
-    return;
-  }
-  try {
-    Object.defineProperty(win.HTMLElement.prototype, "focus", {
-      configurable: true,
-      value: listenerData.focus
-    });
-  } catch {
-  }
-  doc.removeEventListener("keydown", handleKeyboardEvent, true);
-  doc.removeEventListener("keyup", handleKeyboardEvent, true);
-  doc.removeEventListener("click", handleClickEvent, true);
-  win.removeEventListener("focus", handleFocusEvent, true);
-  win.removeEventListener("blur", handleWindowBlur, false);
-  if (typeof win.PointerEvent !== "undefined") {
-    doc.removeEventListener("pointerdown", handlePointerEvent, true);
-    doc.removeEventListener("pointermove", handlePointerEvent, true);
-    doc.removeEventListener("pointerup", handlePointerEvent, true);
-  } else {
-    doc.removeEventListener("mousedown", handlePointerEvent, true);
-    doc.removeEventListener("mousemove", handlePointerEvent, true);
-    doc.removeEventListener("mouseup", handlePointerEvent, true);
-  }
-  listenerMap.delete(win);
-};
-function isFocusVisible() {
-  return currentModality === "keyboard";
-}
-function trackFocusVisible(props5 = {}) {
-  const { isTextInput, autoFocus, onChange, root } = props5;
-  setupGlobalFocusEvents(root);
-  onChange?.({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
-  const handler = (modality, e) => {
-    if (!isKeyboardFocusEvent(!!isTextInput, modality, e)) return;
-    onChange?.({ isFocusVisible: isFocusVisible(), modality });
-  };
-  changeHandlers.add(handler);
-  return () => {
-    changeHandlers.delete(handler);
-  };
-}
-
-// ../node_modules/.pnpm/@zag-js+switch@1.33.0/node_modules/@zag-js/switch/dist/index.mjs
-var anatomy4 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-var parts4 = anatomy4.build();
-var getRootId4 = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
-var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
-var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
-var getControlId = (ctx) => ctx.ids?.control ?? `switch:${ctx.id}:control`;
-var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`;
-var getRootEl4 = (ctx) => ctx.getById(getRootId4(ctx));
-var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
-function connect4(service, normalize) {
-  const { context, send, prop, scope } = service;
-  const disabled = !!prop("disabled");
-  const readOnly = !!prop("readOnly");
-  const required = !!prop("required");
-  const checked = !!context.get("checked");
-  const focused = !disabled && context.get("focused");
-  const focusVisible = !disabled && context.get("focusVisible");
-  const active = !disabled && context.get("active");
-  const dataAttrs = {
-    "data-active": dataAttr(active),
-    "data-focus": dataAttr(focused),
-    "data-focus-visible": dataAttr(focusVisible),
-    "data-readonly": dataAttr(readOnly),
-    "data-hover": dataAttr(context.get("hovered")),
-    "data-disabled": dataAttr(disabled),
-    "data-state": checked ? "checked" : "unchecked",
-    "data-invalid": dataAttr(prop("invalid")),
-    "data-required": dataAttr(required)
-  };
-  return {
-    checked,
-    disabled,
-    focused,
-    setChecked(checked2) {
-      send({ type: "CHECKED.SET", checked: checked2, isTrusted: false });
-    },
-    toggleChecked() {
-      send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
-    },
-    getRootProps() {
-      return normalize.label({
-        ...parts4.root.attrs,
-        ...dataAttrs,
-        dir: prop("dir"),
-        id: getRootId4(scope),
-        htmlFor: getHiddenInputId(scope),
-        onPointerMove() {
-          if (disabled) return;
-          send({ type: "CONTEXT.SET", context: { hovered: true } });
-        },
-        onPointerLeave() {
-          if (disabled) return;
-          send({ type: "CONTEXT.SET", context: { hovered: false } });
-        },
-        onClick(event) {
-          if (disabled) return;
-          const target = getEventTarget(event);
-          if (target === getHiddenInputEl(scope)) {
-            event.stopPropagation();
-          }
-          if (isSafari()) {
-            getHiddenInputEl(scope)?.focus();
-          }
-        }
-      });
-    },
-    getLabelProps() {
-      return normalize.element({
-        ...parts4.label.attrs,
-        ...dataAttrs,
-        dir: prop("dir"),
-        id: getLabelId(scope)
-      });
-    },
-    getThumbProps() {
-      return normalize.element({
-        ...parts4.thumb.attrs,
-        ...dataAttrs,
-        dir: prop("dir"),
-        id: getThumbId(scope),
-        "aria-hidden": true
-      });
-    },
-    getControlProps() {
-      return normalize.element({
-        ...parts4.control.attrs,
-        ...dataAttrs,
-        dir: prop("dir"),
-        id: getControlId(scope),
-        "aria-hidden": true
-      });
-    },
-    getHiddenInputProps() {
-      return normalize.input({
-        id: getHiddenInputId(scope),
-        type: "checkbox",
-        required: prop("required"),
-        defaultChecked: checked,
-        disabled,
-        "aria-labelledby": getLabelId(scope),
-        "aria-invalid": prop("invalid"),
-        name: prop("name"),
-        form: prop("form"),
-        value: prop("value"),
-        style: visuallyHiddenStyle,
-        onFocus() {
-          const focusVisible2 = isFocusVisible();
-          send({ type: "CONTEXT.SET", context: { focused: true, focusVisible: focusVisible2 } });
-        },
-        onBlur() {
-          send({ type: "CONTEXT.SET", context: { focused: false, focusVisible: false } });
-        },
-        onClick(event) {
-          if (readOnly) {
-            event.preventDefault();
-            return;
-          }
-          const checked2 = event.currentTarget.checked;
-          send({ type: "CHECKED.SET", checked: checked2, isTrusted: true });
-        }
-      });
-    }
-  };
-}
-var { not: not4 } = createGuards();
-var machine4 = createMachine({
-  props({ props: props22 }) {
-    return {
-      defaultChecked: false,
-      label: "switch",
-      value: "on",
-      ...props22
-    };
-  },
-  initialState() {
-    return "ready";
-  },
-  context({ prop, bindable: bindable2 }) {
-    return {
-      checked: bindable2(() => ({
-        defaultValue: prop("defaultChecked"),
-        value: prop("checked"),
-        onChange(value) {
-          prop("onCheckedChange")?.({ checked: value });
-        }
-      })),
-      fieldsetDisabled: bindable2(() => ({
-        defaultValue: false
-      })),
-      focusVisible: bindable2(() => ({
-        defaultValue: false
-      })),
-      active: bindable2(() => ({
-        defaultValue: false
-      })),
-      focused: bindable2(() => ({
-        defaultValue: false
-      })),
-      hovered: bindable2(() => ({
-        defaultValue: false
-      }))
-    };
-  },
-  computed: {
-    isDisabled: ({ context, prop }) => prop("disabled") || context.get("fieldsetDisabled")
-  },
-  watch({ track, prop, context, action }) {
-    track([() => prop("disabled")], () => {
-      action(["removeFocusIfNeeded"]);
-    });
-    track([() => context.get("checked")], () => {
-      action(["syncInputElement"]);
-    });
-  },
-  effects: ["trackFormControlState", "trackPressEvent", "trackFocusVisible"],
-  on: {
-    "CHECKED.TOGGLE": [
-      {
-        guard: not4("isTrusted"),
-        actions: ["toggleChecked", "dispatchChangeEvent"]
-      },
-      {
-        actions: ["toggleChecked"]
-      }
-    ],
-    "CHECKED.SET": [
-      {
-        guard: not4("isTrusted"),
-        actions: ["setChecked", "dispatchChangeEvent"]
-      },
-      {
-        actions: ["setChecked"]
-      }
-    ],
-    "CONTEXT.SET": {
-      actions: ["setContext"]
-    }
-  },
-  states: {
-    ready: {}
-  },
-  implementations: {
-    guards: {
-      isTrusted: ({ event }) => !!event.isTrusted
-    },
-    effects: {
-      trackPressEvent({ computed, scope, context }) {
-        if (computed("isDisabled")) return;
-        return trackPress({
-          pointerNode: getRootEl4(scope),
-          keyboardNode: getHiddenInputEl(scope),
-          isValidKey: (event) => event.key === " ",
-          onPress: () => context.set("active", false),
-          onPressStart: () => context.set("active", true),
-          onPressEnd: () => context.set("active", false)
-        });
-      },
-      trackFocusVisible({ computed, scope }) {
-        if (computed("isDisabled")) return;
-        return trackFocusVisible({ root: scope.getRootNode() });
-      },
-      trackFormControlState({ context, send, scope }) {
-        return trackFormControl(getHiddenInputEl(scope), {
-          onFieldsetDisabledChange(disabled) {
-            context.set("fieldsetDisabled", disabled);
-          },
-          onFormReset() {
-            const checked = context.initial("checked");
-            send({ type: "CHECKED.SET", checked: !!checked, src: "form-reset" });
-          }
-        });
-      }
-    },
-    actions: {
-      setContext({ context, event }) {
-        for (const key in event.context) {
-          context.set(key, event.context[key]);
-        }
-      },
-      syncInputElement({ context, scope }) {
-        const inputEl = getHiddenInputEl(scope);
-        if (!inputEl) return;
-        setElementChecked(inputEl, !!context.get("checked"));
-      },
-      removeFocusIfNeeded({ context, prop }) {
-        if (prop("disabled")) {
-          context.set("focused", false);
-        }
-      },
-      setChecked({ context, event }) {
-        context.set("checked", event.checked);
-      },
-      toggleChecked({ context }) {
-        context.set("checked", !context.get("checked"));
-      },
-      dispatchChangeEvent({ context, scope }) {
-        queueMicrotask(() => {
-          const inputEl = getHiddenInputEl(scope);
-          dispatchInputCheckedEvent(inputEl, { checked: context.get("checked") });
-        });
-      }
-    }
-  }
-});
-var props3 = createProps()([
-  "checked",
-  "defaultChecked",
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "label",
-  "name",
-  "onCheckedChange",
-  "readOnly",
-  "required",
-  "value"
-]);
-var splitProps5 = createSplitProps(props3);
-
-// components/switch.ts
-var Switch = class extends Component {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props5) {
-    return new VanillaMachine(machine4, props5);
-  }
-  initApi() {
-    return connect4(this.machine.service, normalizeProps);
-  }
-  render() {
-    const rootEl = this.el.querySelector('[data-part="root"]') || this.el;
-    this.spreadProps(rootEl, this.api.getRootProps());
-    const inputEl = this.el.querySelector('[data-part="hidden-input"]');
-    if (inputEl) {
-      this.spreadProps(inputEl, this.api.getHiddenInputProps());
-    }
-    const labelEl = this.el.querySelector('[data-part="label"]');
-    if (labelEl) {
-      this.spreadProps(labelEl, this.api.getLabelProps());
-    }
-    const controlEl = this.el.querySelector('[data-part="control"]');
-    if (controlEl) {
-      this.spreadProps(controlEl, this.api.getControlProps());
-    }
-    const thumbEl = this.el.querySelector('[data-part="thumb"]');
-    if (thumbEl) {
-      this.spreadProps(thumbEl, this.api.getThumbProps());
-    }
-  }
-};
-
-// hooks/switch.ts
-var SwitchHook = {
-  mounted() {
-    const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
-    this.wasFocused = false;
-    const zagSwitch = new Switch(el, {
-      id: el.id,
-      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
-      defaultChecked: getBoolean(el, "defaultChecked"),
-      disabled: getBoolean(el, "disabled"),
-      name: getString(el, "name"),
-      form: getString(el, "form"),
-      value: getString(el, "value"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
-      invalid: getBoolean(el, "invalid"),
-      required: getBoolean(el, "required"),
-      readOnly: getBoolean(el, "readOnly"),
-      label: getString(el, "label"),
-      onCheckedChange: (details) => {
-        const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            checked: details.checked,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onCheckedChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                value: details,
-                id: el.id
-              }
-            })
-          );
-        }
-      }
-    });
-    zagSwitch.init();
-    this.zagSwitch = zagSwitch;
-    this.onSetChecked = (event) => {
-      const { value } = event.detail;
-      zagSwitch.api.setChecked(value);
-    };
-    el.addEventListener("phx:switch:set-checked", this.onSetChecked);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("switch_set_checked", (payload) => {
-        const targetId = payload.id;
-        if (targetId && targetId !== el.id) return;
-        zagSwitch.api.setChecked(payload.value);
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_toggle_checked", (payload) => {
-        const targetId = payload.id;
-        if (targetId && targetId !== el.id) return;
-        zagSwitch.api.toggleChecked();
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_checked", () => {
-        this.pushEvent("switch_checked_response", {
-          value: zagSwitch.api.checked
-        });
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_focused", () => {
-        this.pushEvent("switch_focused_response", {
-          value: zagSwitch.api.focused
-        });
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_disabled", () => {
-        this.pushEvent("switch_disabled_response", {
-          value: zagSwitch.api.disabled
-        });
-      })
-    );
-  },
-  beforeUpdate() {
-    this.wasFocused = this.zagSwitch?.api.focused ?? false;
-  },
-  updated() {
-    this.zagSwitch?.updateProps({
-      id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") },
-      disabled: getBoolean(this.el, "disabled"),
-      name: getString(this.el, "name"),
-      form: getString(this.el, "form"),
-      value: getString(this.el, "value"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"]),
-      invalid: getBoolean(this.el, "invalid"),
-      required: getBoolean(this.el, "required"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      label: getString(this.el, "label")
-    });
-    if (getBoolean(this.el, "controlled")) {
-      if (this.wasFocused) {
-        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
-        hiddenInput?.focus();
-      }
-    }
-  },
-  destroyed() {
-    if (this.onSetChecked) {
-      this.el.removeEventListener("phx:switch:set-checked", this.onSetChecked);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-    this.zagSwitch?.destroy();
   }
 };
 
@@ -5242,7 +5004,7 @@ var ListCollection = class _ListCollection {
         const item = this.items[(currentIndex + i + 1) % this.items.length];
         if (isSingleKey && this.getItemValue(item) === current) continue;
         if (this.getItemDisabled(item)) continue;
-        if (match2(this.stringifyItem(item), text)) return item;
+        if (match3(this.stringifyItem(item), text)) return item;
       }
       return void 0;
     });
@@ -5417,7 +5179,7 @@ var ListCollection = class _ListCollection {
     yield* this.items;
   }
 };
-var match2 = (label, query2) => {
+var match3 = (label, query2) => {
   return !!label?.toLowerCase().startsWith(query2.toLowerCase());
 };
 function insert(items, index, ...values) {
@@ -7842,8 +7604,2081 @@ function trackDismissableElement(nodeOrFn, options) {
   };
 }
 
+// ../node_modules/.pnpm/@zag-js+select@1.33.1/node_modules/@zag-js/select/dist/index.mjs
+var anatomy4 = createAnatomy2("select").parts(
+  "label",
+  "positioner",
+  "trigger",
+  "indicator",
+  "clearTrigger",
+  "item",
+  "itemText",
+  "itemIndicator",
+  "itemGroup",
+  "itemGroupLabel",
+  "list",
+  "content",
+  "root",
+  "control",
+  "valueText"
+);
+var parts4 = anatomy4.build();
+var collection = (options) => {
+  return new ListCollection(options);
+};
+collection.empty = () => {
+  return new ListCollection({ items: [] });
+};
+var getRootId4 = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
+var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
+var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
+var getClearTriggerId = (ctx) => ctx.ids?.clearTrigger ?? `select:${ctx.id}:clear-trigger`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `select:${ctx.id}:label`;
+var getControlId = (ctx) => ctx.ids?.control ?? `select:${ctx.id}:control`;
+var getItemId3 = (ctx, id) => ctx.ids?.item?.(id) ?? `select:${ctx.id}:option:${id}`;
+var getHiddenSelectId = (ctx) => ctx.ids?.hiddenSelect ?? `select:${ctx.id}:select`;
+var getPositionerId = (ctx) => ctx.ids?.positioner ?? `select:${ctx.id}:positioner`;
+var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `select:${ctx.id}:optgroup:${id}`;
+var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `select:${ctx.id}:optgroup-label:${id}`;
+var getHiddenSelectEl = (ctx) => ctx.getById(getHiddenSelectId(ctx));
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
+var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
+var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
+var getItemEl = (ctx, id) => {
+  if (id == null) return null;
+  return ctx.getById(getItemId3(ctx, id));
+};
+function connect4(service, normalize) {
+  const { context, prop, scope, state, computed, send } = service;
+  const disabled = prop("disabled") || context.get("fieldsetDisabled");
+  const invalid = !!prop("invalid");
+  const required = !!prop("required");
+  const readOnly = !!prop("readOnly");
+  const composite = prop("composite");
+  const collection22 = prop("collection");
+  const open = state.hasTag("open");
+  const focused = state.matches("focused");
+  const highlightedValue = context.get("highlightedValue");
+  const highlightedItem = context.get("highlightedItem");
+  const selectedItems = context.get("selectedItems");
+  const currentPlacement = context.get("currentPlacement");
+  const isTypingAhead = computed("isTypingAhead");
+  const interactive = computed("isInteractive");
+  const ariaActiveDescendant = highlightedValue ? getItemId3(scope, highlightedValue) : void 0;
+  function getItemState(props22) {
+    const _disabled = collection22.getItemDisabled(props22.item);
+    const value = collection22.getItemValue(props22.item);
+    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props22.item)}`);
+    return {
+      value,
+      disabled: Boolean(disabled || _disabled),
+      highlighted: highlightedValue === value,
+      selected: context.get("value").includes(value)
+    };
+  }
+  const popperStyles = getPlacementStyles({
+    ...prop("positioning"),
+    placement: currentPlacement
+  });
+  return {
+    open,
+    focused,
+    empty: context.get("value").length === 0,
+    highlightedItem,
+    highlightedValue,
+    selectedItems,
+    hasSelectedItems: computed("hasSelectedItems"),
+    value: context.get("value"),
+    valueAsString: computed("valueAsString"),
+    collection: collection22,
+    multiple: !!prop("multiple"),
+    disabled: !!disabled,
+    reposition(options = {}) {
+      send({ type: "POSITIONING.SET", options });
+    },
+    focus() {
+      getTriggerEl(scope)?.focus({ preventScroll: true });
+    },
+    setOpen(nextOpen) {
+      const open2 = state.hasTag("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE" });
+    },
+    selectValue(value) {
+      send({ type: "ITEM.SELECT", value });
+    },
+    setValue(value) {
+      send({ type: "VALUE.SET", value });
+    },
+    selectAll() {
+      send({ type: "VALUE.SET", value: collection22.getValues() });
+    },
+    setHighlightValue(value) {
+      send({ type: "HIGHLIGHTED_VALUE.SET", value });
+    },
+    clearHighlightValue() {
+      send({ type: "HIGHLIGHTED_VALUE.CLEAR" });
+    },
+    clearValue(value) {
+      if (value) {
+        send({ type: "ITEM.CLEAR", value });
+      } else {
+        send({ type: "VALUE.CLEAR" });
+      }
+    },
+    getItemState,
+    getRootProps() {
+      return normalize.element({
+        ...parts4.root.attrs,
+        dir: prop("dir"),
+        id: getRootId4(scope),
+        "data-invalid": dataAttr2(invalid),
+        "data-readonly": dataAttr2(readOnly)
+      });
+    },
+    getLabelProps() {
+      return normalize.label({
+        dir: prop("dir"),
+        id: getLabelId(scope),
+        ...parts4.label.attrs,
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid),
+        "data-readonly": dataAttr2(readOnly),
+        "data-required": dataAttr2(required),
+        htmlFor: getHiddenSelectId(scope),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (disabled) return;
+          getTriggerEl(scope)?.focus({ preventScroll: true });
+        }
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts4.control.attrs,
+        dir: prop("dir"),
+        id: getControlId(scope),
+        "data-state": open ? "open" : "closed",
+        "data-focus": dataAttr2(focused),
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid)
+      });
+    },
+    getValueTextProps() {
+      return normalize.element({
+        ...parts4.valueText.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid),
+        "data-focus": dataAttr2(focused)
+      });
+    },
+    getTriggerProps() {
+      return normalize.button({
+        id: getTriggerId(scope),
+        disabled,
+        dir: prop("dir"),
+        type: "button",
+        role: "combobox",
+        "aria-controls": getContentId(scope),
+        "aria-expanded": open,
+        "aria-haspopup": "listbox",
+        "data-state": open ? "open" : "closed",
+        "aria-invalid": invalid,
+        "aria-required": required,
+        "aria-labelledby": getLabelId(scope),
+        ...parts4.trigger.attrs,
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid),
+        "data-readonly": dataAttr2(readOnly),
+        "data-placement": currentPlacement,
+        "data-placeholder-shown": dataAttr2(!computed("hasSelectedItems")),
+        onClick(event) {
+          if (!interactive) return;
+          if (event.defaultPrevented) return;
+          send({ type: "TRIGGER.CLICK" });
+        },
+        onFocus() {
+          send({ type: "TRIGGER.FOCUS" });
+        },
+        onBlur() {
+          send({ type: "TRIGGER.BLUR" });
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (!interactive) return;
+          const keyMap3 = {
+            ArrowUp() {
+              send({ type: "TRIGGER.ARROW_UP" });
+            },
+            ArrowDown(event2) {
+              send({ type: event2.altKey ? "OPEN" : "TRIGGER.ARROW_DOWN" });
+            },
+            ArrowLeft() {
+              send({ type: "TRIGGER.ARROW_LEFT" });
+            },
+            ArrowRight() {
+              send({ type: "TRIGGER.ARROW_RIGHT" });
+            },
+            Home() {
+              send({ type: "TRIGGER.HOME" });
+            },
+            End() {
+              send({ type: "TRIGGER.END" });
+            },
+            Enter() {
+              send({ type: "TRIGGER.ENTER" });
+            },
+            Space(event2) {
+              if (isTypingAhead) {
+                send({ type: "TRIGGER.TYPEAHEAD", key: event2.key });
+              } else {
+                send({ type: "TRIGGER.ENTER" });
+              }
+            }
+          };
+          const exec = keyMap3[getEventKey2(event, {
+            dir: prop("dir"),
+            orientation: "vertical"
+          })];
+          if (exec) {
+            exec(event);
+            event.preventDefault();
+            return;
+          }
+          if (getByTypeahead.isValidEvent(event)) {
+            send({ type: "TRIGGER.TYPEAHEAD", key: event.key });
+            event.preventDefault();
+          }
+        }
+      });
+    },
+    getIndicatorProps() {
+      return normalize.element({
+        ...parts4.indicator.attrs,
+        dir: prop("dir"),
+        "aria-hidden": true,
+        "data-state": open ? "open" : "closed",
+        "data-disabled": dataAttr2(disabled),
+        "data-invalid": dataAttr2(invalid),
+        "data-readonly": dataAttr2(readOnly)
+      });
+    },
+    getItemProps(props22) {
+      const itemState = getItemState(props22);
+      return normalize.element({
+        id: getItemId3(scope, itemState.value),
+        role: "option",
+        ...parts4.item.attrs,
+        dir: prop("dir"),
+        "data-value": itemState.value,
+        "aria-selected": itemState.selected,
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "data-highlighted": dataAttr2(itemState.highlighted),
+        "data-disabled": dataAttr2(itemState.disabled),
+        "aria-disabled": ariaAttr(itemState.disabled),
+        onPointerMove(event) {
+          if (itemState.disabled || event.pointerType !== "mouse") return;
+          if (itemState.value === highlightedValue) return;
+          send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
+        },
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (itemState.disabled) return;
+          send({ type: "ITEM.CLICK", src: "pointerup", value: itemState.value });
+        },
+        onPointerLeave(event) {
+          if (itemState.disabled) return;
+          if (props22.persistFocus) return;
+          if (event.pointerType !== "mouse") return;
+          const pointerMoved = service.event.previous()?.type.includes("POINTER");
+          if (!pointerMoved) return;
+          send({ type: "ITEM.POINTER_LEAVE" });
+        }
+      });
+    },
+    getItemTextProps(props22) {
+      const itemState = getItemState(props22);
+      return normalize.element({
+        ...parts4.itemText.attrs,
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "data-disabled": dataAttr2(itemState.disabled),
+        "data-highlighted": dataAttr2(itemState.highlighted)
+      });
+    },
+    getItemIndicatorProps(props22) {
+      const itemState = getItemState(props22);
+      return normalize.element({
+        "aria-hidden": true,
+        ...parts4.itemIndicator.attrs,
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        hidden: !itemState.selected
+      });
+    },
+    getItemGroupLabelProps(props22) {
+      const { htmlFor } = props22;
+      return normalize.element({
+        ...parts4.itemGroupLabel.attrs,
+        id: getItemGroupLabelId(scope, htmlFor),
+        dir: prop("dir"),
+        role: "presentation"
+      });
+    },
+    getItemGroupProps(props22) {
+      const { id } = props22;
+      return normalize.element({
+        ...parts4.itemGroup.attrs,
+        "data-disabled": dataAttr2(disabled),
+        id: getItemGroupId(scope, id),
+        "aria-labelledby": getItemGroupLabelId(scope, id),
+        role: "group",
+        dir: prop("dir")
+      });
+    },
+    getClearTriggerProps() {
+      return normalize.button({
+        ...parts4.clearTrigger.attrs,
+        id: getClearTriggerId(scope),
+        type: "button",
+        "aria-label": "Clear value",
+        "data-invalid": dataAttr2(invalid),
+        disabled,
+        hidden: !computed("hasSelectedItems"),
+        dir: prop("dir"),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "CLEAR.CLICK" });
+        }
+      });
+    },
+    getHiddenSelectProps() {
+      const value = context.get("value");
+      const defaultValue = prop("multiple") ? value : value?.[0];
+      return normalize.select({
+        name: prop("name"),
+        form: prop("form"),
+        disabled,
+        multiple: prop("multiple"),
+        required: prop("required"),
+        "aria-hidden": true,
+        id: getHiddenSelectId(scope),
+        defaultValue,
+        style: visuallyHiddenStyle2,
+        tabIndex: -1,
+        // Some browser extensions will focus the hidden select.
+        // Let's forward the focus to the trigger.
+        onFocus() {
+          getTriggerEl(scope)?.focus({ preventScroll: true });
+        },
+        "aria-labelledby": getLabelId(scope)
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts4.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId(scope),
+        style: popperStyles.floating
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        hidden: !open,
+        dir: prop("dir"),
+        id: getContentId(scope),
+        role: composite ? "listbox" : "dialog",
+        ...parts4.content.attrs,
+        "data-state": open ? "open" : "closed",
+        "data-placement": currentPlacement,
+        "data-activedescendant": ariaActiveDescendant,
+        "aria-activedescendant": composite ? ariaActiveDescendant : void 0,
+        "aria-multiselectable": prop("multiple") && composite ? true : void 0,
+        "aria-labelledby": getLabelId(scope),
+        tabIndex: 0,
+        onKeyDown(event) {
+          if (!interactive) return;
+          if (!contains2(event.currentTarget, getEventTarget2(event))) return;
+          if (event.key === "Tab") {
+            const valid = isValidTabEvent(event);
+            if (!valid) {
+              event.preventDefault();
+              return;
+            }
+          }
+          const keyMap3 = {
+            ArrowUp() {
+              send({ type: "CONTENT.ARROW_UP" });
+            },
+            ArrowDown() {
+              send({ type: "CONTENT.ARROW_DOWN" });
+            },
+            Home() {
+              send({ type: "CONTENT.HOME" });
+            },
+            End() {
+              send({ type: "CONTENT.END" });
+            },
+            Enter() {
+              send({ type: "ITEM.CLICK", src: "keydown.enter" });
+            },
+            Space(event2) {
+              if (isTypingAhead) {
+                send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
+              } else {
+                keyMap3.Enter?.(event2);
+              }
+            }
+          };
+          const exec = keyMap3[getEventKey2(event)];
+          if (exec) {
+            exec(event);
+            event.preventDefault();
+            return;
+          }
+          const target = getEventTarget2(event);
+          if (isEditableElement(target)) {
+            return;
+          }
+          if (getByTypeahead.isValidEvent(event)) {
+            send({ type: "CONTENT.TYPEAHEAD", key: event.key });
+            event.preventDefault();
+          }
+        }
+      });
+    },
+    getListProps() {
+      return normalize.element({
+        ...parts4.list.attrs,
+        tabIndex: 0,
+        role: !composite ? "listbox" : void 0,
+        "aria-labelledby": getTriggerId(scope),
+        "aria-activedescendant": !composite ? ariaActiveDescendant : void 0,
+        "aria-multiselectable": !composite && prop("multiple") ? true : void 0
+      });
+    }
+  };
+}
+var { and: and4, not: not4, or } = createGuards2();
+var machine4 = createMachine3({
+  props({ props: props22 }) {
+    return {
+      loopFocus: false,
+      closeOnSelect: !props22.multiple,
+      composite: true,
+      defaultValue: [],
+      ...props22,
+      collection: props22.collection ?? collection.empty(),
+      positioning: {
+        placement: "bottom-start",
+        gutter: 8,
+        ...props22.positioning
+      }
+    };
+  },
+  context({ prop, bindable: bindable2 }) {
+    return {
+      value: bindable2(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        isEqual: isEqual3,
+        onChange(value) {
+          const items = prop("collection").findMany(value);
+          return prop("onValueChange")?.({ value, items });
+        }
+      })),
+      highlightedValue: bindable2(() => ({
+        defaultValue: prop("defaultHighlightedValue") || null,
+        value: prop("highlightedValue"),
+        onChange(value) {
+          prop("onHighlightChange")?.({
+            highlightedValue: value,
+            highlightedItem: prop("collection").find(value),
+            highlightedIndex: prop("collection").indexOf(value)
+          });
+        }
+      })),
+      currentPlacement: bindable2(() => ({
+        defaultValue: void 0
+      })),
+      fieldsetDisabled: bindable2(() => ({
+        defaultValue: false
+      })),
+      highlightedItem: bindable2(() => ({
+        defaultValue: null
+      })),
+      selectedItems: bindable2(() => {
+        const value = prop("value") ?? prop("defaultValue") ?? [];
+        const items = prop("collection").findMany(value);
+        return { defaultValue: items };
+      })
+    };
+  },
+  refs() {
+    return {
+      typeahead: { ...getByTypeahead.defaultOptions }
+    };
+  },
+  computed: {
+    hasSelectedItems: ({ context }) => context.get("value").length > 0,
+    isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
+    isDisabled: ({ prop, context }) => !!prop("disabled") || !!context.get("fieldsetDisabled"),
+    isInteractive: ({ prop }) => !(prop("disabled") || prop("readOnly")),
+    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "open" : "idle";
+  },
+  entry: ["syncSelectElement"],
+  watch({ context, prop, track, action }) {
+    track([() => context.get("value").toString()], () => {
+      action(["syncSelectedItems", "syncSelectElement", "dispatchChangeEvent"]);
+    });
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+    track([() => context.get("highlightedValue")], () => {
+      action(["syncHighlightedItem"]);
+    });
+    track([() => prop("collection").toString()], () => {
+      action(["syncCollection"]);
+    });
+  },
+  on: {
+    "HIGHLIGHTED_VALUE.SET": {
+      actions: ["setHighlightedItem"]
+    },
+    "HIGHLIGHTED_VALUE.CLEAR": {
+      actions: ["clearHighlightedItem"]
+    },
+    "ITEM.SELECT": {
+      actions: ["selectItem"]
+    },
+    "ITEM.CLEAR": {
+      actions: ["clearItem"]
+    },
+    "VALUE.SET": {
+      actions: ["setSelectedItems"]
+    },
+    "VALUE.CLEAR": {
+      actions: ["clearSelectedItems"]
+    },
+    "CLEAR.CLICK": {
+      actions: ["clearSelectedItems", "focusTriggerEl"]
+    }
+  },
+  effects: ["trackFormControlState"],
+  states: {
+    idle: {
+      tags: ["closed"],
+      on: {
+        "CONTROLLED.OPEN": [
+          {
+            guard: "isTriggerClickEvent",
+            target: "open",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen", "setInitialFocus", "highlightFirstSelectedItem"]
+          }
+        ],
+        "TRIGGER.FOCUS": {
+          target: "focused"
+        },
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus", "invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    focused: {
+      tags: ["closed"],
+      on: {
+        "CONTROLLED.OPEN": [
+          {
+            guard: "isTriggerClickEvent",
+            target: "open",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem"]
+          },
+          {
+            guard: "isTriggerArrowUpEvent",
+            target: "open",
+            actions: ["setInitialFocus", "highlightComputedLastItem"]
+          },
+          {
+            guard: or("isTriggerArrowDownEvent", "isTriggerEnterEvent"),
+            target: "open",
+            actions: ["setInitialFocus", "highlightComputedFirstItem"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus"]
+          }
+        ],
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus", "invokeOnOpen"]
+          }
+        ],
+        "TRIGGER.BLUR": {
+          target: "idle"
+        },
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus", "invokeOnOpen", "highlightFirstSelectedItem"]
+          }
+        ],
+        "TRIGGER.ENTER": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus", "invokeOnOpen", "highlightComputedFirstItem"]
+          }
+        ],
+        "TRIGGER.ARROW_UP": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus", "invokeOnOpen", "highlightComputedLastItem"]
+          }
+        ],
+        "TRIGGER.ARROW_DOWN": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitialFocus", "invokeOnOpen", "highlightComputedFirstItem"]
+          }
+        ],
+        "TRIGGER.ARROW_LEFT": [
+          {
+            guard: and4(not4("multiple"), "hasSelectedItems"),
+            actions: ["selectPreviousItem"]
+          },
+          {
+            guard: not4("multiple"),
+            actions: ["selectLastItem"]
+          }
+        ],
+        "TRIGGER.ARROW_RIGHT": [
+          {
+            guard: and4(not4("multiple"), "hasSelectedItems"),
+            actions: ["selectNextItem"]
+          },
+          {
+            guard: not4("multiple"),
+            actions: ["selectFirstItem"]
+          }
+        ],
+        "TRIGGER.HOME": {
+          guard: not4("multiple"),
+          actions: ["selectFirstItem"]
+        },
+        "TRIGGER.END": {
+          guard: not4("multiple"),
+          actions: ["selectLastItem"]
+        },
+        "TRIGGER.TYPEAHEAD": {
+          guard: not4("multiple"),
+          actions: ["selectMatchingItem"]
+        }
+      }
+    },
+    open: {
+      tags: ["open"],
+      exit: ["scrollContentToTop"],
+      effects: ["trackDismissableElement", "computePlacement", "scrollToHighlightedItem"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            guard: "restoreFocus",
+            target: "focused",
+            actions: ["focusTriggerEl", "clearHighlightedItem"]
+          },
+          {
+            target: "idle",
+            actions: ["clearHighlightedItem"]
+          }
+        ],
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            guard: "restoreFocus",
+            target: "focused",
+            actions: ["invokeOnClose", "focusTriggerEl", "clearHighlightedItem"]
+          },
+          {
+            target: "idle",
+            actions: ["invokeOnClose", "clearHighlightedItem"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "clearHighlightedItem"]
+          }
+        ],
+        "ITEM.CLICK": [
+          {
+            guard: and4("closeOnSelect", "isOpenControlled"),
+            actions: ["selectHighlightedItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectHighlightedItem", "invokeOnClose", "focusTriggerEl", "clearHighlightedItem"]
+          },
+          {
+            actions: ["selectHighlightedItem"]
+          }
+        ],
+        "CONTENT.HOME": {
+          actions: ["highlightFirstItem"]
+        },
+        "CONTENT.END": {
+          actions: ["highlightLastItem"]
+        },
+        "CONTENT.ARROW_DOWN": [
+          {
+            guard: and4("hasHighlightedItem", "loop", "isLastItemHighlighted"),
+            actions: ["highlightFirstItem"]
+          },
+          {
+            guard: "hasHighlightedItem",
+            actions: ["highlightNextItem"]
+          },
+          {
+            actions: ["highlightFirstItem"]
+          }
+        ],
+        "CONTENT.ARROW_UP": [
+          {
+            guard: and4("hasHighlightedItem", "loop", "isFirstItemHighlighted"),
+            actions: ["highlightLastItem"]
+          },
+          {
+            guard: "hasHighlightedItem",
+            actions: ["highlightPreviousItem"]
+          },
+          {
+            actions: ["highlightLastItem"]
+          }
+        ],
+        "CONTENT.TYPEAHEAD": {
+          actions: ["highlightMatchingItem"]
+        },
+        "ITEM.POINTER_MOVE": {
+          actions: ["highlightItem"]
+        },
+        "ITEM.POINTER_LEAVE": {
+          actions: ["clearHighlightedItem"]
+        },
+        "POSITIONING.SET": {
+          actions: ["reposition"]
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      loop: ({ prop }) => !!prop("loopFocus"),
+      multiple: ({ prop }) => !!prop("multiple"),
+      hasSelectedItems: ({ computed }) => !!computed("hasSelectedItems"),
+      hasHighlightedItem: ({ context }) => context.get("highlightedValue") != null,
+      isFirstItemHighlighted: ({ context, prop }) => context.get("highlightedValue") === prop("collection").firstValue,
+      isLastItemHighlighted: ({ context, prop }) => context.get("highlightedValue") === prop("collection").lastValue,
+      closeOnSelect: ({ prop, event }) => !!(event.closeOnSelect ?? prop("closeOnSelect")),
+      restoreFocus: ({ event }) => restoreFocusFn(event),
+      // guard assertions (for controlled mode)
+      isOpenControlled: ({ prop }) => prop("open") !== void 0,
+      isTriggerClickEvent: ({ event }) => event.previousEvent?.type === "TRIGGER.CLICK",
+      isTriggerEnterEvent: ({ event }) => event.previousEvent?.type === "TRIGGER.ENTER",
+      isTriggerArrowUpEvent: ({ event }) => event.previousEvent?.type === "TRIGGER.ARROW_UP",
+      isTriggerArrowDownEvent: ({ event }) => event.previousEvent?.type === "TRIGGER.ARROW_DOWN"
+    },
+    effects: {
+      trackFormControlState({ context, scope }) {
+        return trackFormControl2(getHiddenSelectEl(scope), {
+          onFieldsetDisabledChange(disabled) {
+            context.set("fieldsetDisabled", disabled);
+          },
+          onFormReset() {
+            const value = context.initial("value");
+            context.set("value", value);
+          }
+        });
+      },
+      trackDismissableElement({ scope, send, prop }) {
+        const contentEl = () => getContentEl(scope);
+        let restoreFocus = true;
+        return trackDismissableElement(contentEl, {
+          type: "listbox",
+          defer: true,
+          exclude: [getTriggerEl(scope), getClearTriggerEl(scope)],
+          onFocusOutside: prop("onFocusOutside"),
+          onPointerDownOutside: prop("onPointerDownOutside"),
+          onInteractOutside(event) {
+            prop("onInteractOutside")?.(event);
+            restoreFocus = !(event.detail.focusable || event.detail.contextmenu);
+          },
+          onDismiss() {
+            send({ type: "CLOSE", src: "interact-outside", restoreFocus });
+          }
+        });
+      },
+      computePlacement({ context, prop, scope }) {
+        const positioning = prop("positioning");
+        context.set("currentPlacement", positioning.placement);
+        const triggerEl = () => getTriggerEl(scope);
+        const positionerEl = () => getPositionerEl(scope);
+        return getPlacement(triggerEl, positionerEl, {
+          defer: true,
+          ...positioning,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      scrollToHighlightedItem({ context, prop, scope, event }) {
+        const exec = (immediate) => {
+          const highlightedValue = context.get("highlightedValue");
+          if (highlightedValue == null) return;
+          if (event.current().type.includes("POINTER")) return;
+          const contentEl2 = getContentEl(scope);
+          const scrollToIndexFn = prop("scrollToIndexFn");
+          if (scrollToIndexFn) {
+            const highlightedIndex = prop("collection").indexOf(highlightedValue);
+            scrollToIndexFn?.({
+              index: highlightedIndex,
+              immediate,
+              getElement: () => getItemEl(scope, highlightedValue)
+            });
+            return;
+          }
+          const itemEl = getItemEl(scope, highlightedValue);
+          scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
+        };
+        raf2(() => exec(true));
+        const contentEl = () => getContentEl(scope);
+        return observeAttributes(contentEl, {
+          defer: true,
+          attributes: ["data-activedescendant"],
+          callback() {
+            exec(false);
+          }
+        });
+      }
+    },
+    actions: {
+      reposition({ context, prop, scope, event }) {
+        const positionerEl = () => getPositionerEl(scope);
+        getPlacement(getTriggerEl(scope), positionerEl, {
+          ...prop("positioning"),
+          ...event.options,
+          defer: true,
+          listeners: false,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      toggleVisibility({ send, prop, event }) {
+        send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+      },
+      highlightPreviousItem({ context, prop }) {
+        const highlightedValue = context.get("highlightedValue");
+        if (highlightedValue == null) return;
+        const value = prop("collection").getPreviousValue(highlightedValue, 1, prop("loopFocus"));
+        if (value == null) return;
+        context.set("highlightedValue", value);
+      },
+      highlightNextItem({ context, prop }) {
+        const highlightedValue = context.get("highlightedValue");
+        if (highlightedValue == null) return;
+        const value = prop("collection").getNextValue(highlightedValue, 1, prop("loopFocus"));
+        if (value == null) return;
+        context.set("highlightedValue", value);
+      },
+      highlightFirstItem({ context, prop }) {
+        const value = prop("collection").firstValue;
+        context.set("highlightedValue", value);
+      },
+      highlightLastItem({ context, prop }) {
+        const value = prop("collection").lastValue;
+        context.set("highlightedValue", value);
+      },
+      setInitialFocus({ scope }) {
+        raf2(() => {
+          const element = getInitialFocus({
+            root: getContentEl(scope)
+          });
+          element?.focus({ preventScroll: true });
+        });
+      },
+      focusTriggerEl({ event, scope }) {
+        if (!restoreFocusFn(event)) return;
+        raf2(() => {
+          const element = getTriggerEl(scope);
+          element?.focus({ preventScroll: true });
+        });
+      },
+      selectHighlightedItem({ context, prop, event }) {
+        let value = event.value ?? context.get("highlightedValue");
+        if (value == null || !prop("collection").has(value)) return;
+        prop("onSelect")?.({ value });
+        const nullable = prop("deselectable") && !prop("multiple") && context.get("value").includes(value);
+        value = nullable ? null : value;
+        context.set("value", (prev) => {
+          if (value == null) return [];
+          if (prop("multiple")) return addOrRemove(prev, value);
+          return [value];
+        });
+      },
+      highlightComputedFirstItem({ context, prop, computed }) {
+        const collection22 = prop("collection");
+        const value = computed("hasSelectedItems") ? collection22.sort(context.get("value"))[0] : collection22.firstValue;
+        context.set("highlightedValue", value);
+      },
+      highlightComputedLastItem({ context, prop, computed }) {
+        const collection22 = prop("collection");
+        const value = computed("hasSelectedItems") ? collection22.sort(context.get("value"))[0] : collection22.lastValue;
+        context.set("highlightedValue", value);
+      },
+      highlightFirstSelectedItem({ context, prop, computed }) {
+        if (!computed("hasSelectedItems")) return;
+        const value = prop("collection").sort(context.get("value"))[0];
+        context.set("highlightedValue", value);
+      },
+      highlightItem({ context, event }) {
+        context.set("highlightedValue", event.value);
+      },
+      highlightMatchingItem({ context, prop, event, refs }) {
+        const value = prop("collection").search(event.key, {
+          state: refs.get("typeahead"),
+          currentValue: context.get("highlightedValue")
+        });
+        if (value == null) return;
+        context.set("highlightedValue", value);
+      },
+      setHighlightedItem({ context, event }) {
+        context.set("highlightedValue", event.value);
+      },
+      clearHighlightedItem({ context }) {
+        context.set("highlightedValue", null);
+      },
+      selectItem({ context, prop, event }) {
+        prop("onSelect")?.({ value: event.value });
+        const nullable = prop("deselectable") && !prop("multiple") && context.get("value").includes(event.value);
+        const value = nullable ? null : event.value;
+        context.set("value", (prev) => {
+          if (value == null) return [];
+          if (prop("multiple")) return addOrRemove(prev, value);
+          return [value];
+        });
+      },
+      clearItem({ context, event }) {
+        context.set("value", (prev) => prev.filter((v) => v !== event.value));
+      },
+      setSelectedItems({ context, event }) {
+        context.set("value", event.value);
+      },
+      clearSelectedItems({ context }) {
+        context.set("value", []);
+      },
+      selectPreviousItem({ context, prop }) {
+        const [firstItem] = context.get("value");
+        const value = prop("collection").getPreviousValue(firstItem);
+        if (value) context.set("value", [value]);
+      },
+      selectNextItem({ context, prop }) {
+        const [firstItem] = context.get("value");
+        const value = prop("collection").getNextValue(firstItem);
+        if (value) context.set("value", [value]);
+      },
+      selectFirstItem({ context, prop }) {
+        const value = prop("collection").firstValue;
+        if (value) context.set("value", [value]);
+      },
+      selectLastItem({ context, prop }) {
+        const value = prop("collection").lastValue;
+        if (value) context.set("value", [value]);
+      },
+      selectMatchingItem({ context, prop, event, refs }) {
+        const value = prop("collection").search(event.key, {
+          state: refs.get("typeahead"),
+          currentValue: context.get("value")[0]
+        });
+        if (value == null) return;
+        context.set("value", [value]);
+      },
+      scrollContentToTop({ prop, scope }) {
+        if (prop("scrollToIndexFn")) {
+          const firstValue = prop("collection").firstValue;
+          prop("scrollToIndexFn")?.({
+            index: 0,
+            immediate: true,
+            getElement: () => getItemEl(scope, firstValue)
+          });
+        } else {
+          getContentEl(scope)?.scrollTo(0, 0);
+        }
+      },
+      invokeOnOpen({ prop, context }) {
+        prop("onOpenChange")?.({ open: true, value: context.get("value") });
+      },
+      invokeOnClose({ prop, context }) {
+        prop("onOpenChange")?.({ open: false, value: context.get("value") });
+      },
+      syncSelectElement({ context, prop, scope }) {
+        const selectEl = getHiddenSelectEl(scope);
+        if (!selectEl) return;
+        if (context.get("value").length === 0 && !prop("multiple")) {
+          selectEl.selectedIndex = -1;
+          return;
+        }
+        for (const option of selectEl.options) {
+          option.selected = context.get("value").includes(option.value);
+        }
+      },
+      syncCollection({ context, prop }) {
+        const collection22 = prop("collection");
+        const highlightedItem = collection22.find(context.get("highlightedValue"));
+        if (highlightedItem) context.set("highlightedItem", highlightedItem);
+        const selectedItems = collection22.findMany(context.get("value"));
+        context.set("selectedItems", selectedItems);
+      },
+      syncSelectedItems({ context, prop }) {
+        const collection22 = prop("collection");
+        const prevSelectedItems = context.get("selectedItems");
+        const value = context.get("value");
+        const selectedItems = value.map((value2) => {
+          const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === value2);
+          return item || collection22.find(value2);
+        });
+        context.set("selectedItems", selectedItems);
+      },
+      syncHighlightedItem({ context, prop }) {
+        const collection22 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        const highlightedItem = highlightedValue ? collection22.find(highlightedValue) : null;
+        context.set("highlightedItem", highlightedItem);
+      },
+      dispatchChangeEvent({ scope }) {
+        queueMicrotask(() => {
+          const node = getHiddenSelectEl(scope);
+          if (!node) return;
+          const win = scope.getWin();
+          const changeEvent = new win.Event("change", { bubbles: true, composed: true });
+          node.dispatchEvent(changeEvent);
+        });
+      }
+    }
+  }
+});
+function restoreFocusFn(event) {
+  const v = event.restoreFocus ?? event.previousEvent?.restoreFocus;
+  return v == null || !!v;
+}
+var props3 = createProps2()([
+  "closeOnSelect",
+  "collection",
+  "composite",
+  "defaultHighlightedValue",
+  "defaultOpen",
+  "defaultValue",
+  "deselectable",
+  "dir",
+  "disabled",
+  "form",
+  "getRootNode",
+  "highlightedValue",
+  "id",
+  "ids",
+  "invalid",
+  "loopFocus",
+  "multiple",
+  "name",
+  "onFocusOutside",
+  "onHighlightChange",
+  "onInteractOutside",
+  "onOpenChange",
+  "onPointerDownOutside",
+  "onSelect",
+  "onValueChange",
+  "open",
+  "positioning",
+  "readOnly",
+  "required",
+  "scrollToIndexFn",
+  "value"
+]);
+var splitProps5 = createSplitProps2(props3);
+var itemProps3 = createProps2()(["item", "persistFocus"]);
+var splitItemProps3 = createSplitProps2(itemProps3);
+var itemGroupProps = createProps2()(["id"]);
+var splitItemGroupProps = createSplitProps2(itemGroupProps);
+var itemGroupLabelProps = createProps2()(["htmlFor"]);
+var splitItemGroupLabelProps = createSplitProps2(itemGroupLabelProps);
+
+// components/select.ts
+var Select = class extends Component {
+  _options = [];
+  hasGroups = false;
+  placeholder = "";
+  constructor(el, props7) {
+    super(el, props7);
+    this.placeholder = getString(this.el, "placeholder") || "";
+  }
+  get options() {
+    return Array.isArray(this._options) ? this._options : [];
+  }
+  setOptions(options) {
+    this._options = Array.isArray(options) ? options : [];
+  }
+  // ---------------------------------------------------------------------------
+  // Collection (with group support)
+  // ---------------------------------------------------------------------------
+  getCollection() {
+    const items = this.options;
+    if (this.hasGroups) {
+      return collection({
+        items,
+        itemToValue: (item) => item.id ?? item.value ?? "",
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => item.group
+      });
+    }
+    return collection({
+      items,
+      itemToValue: (item) => item.id ?? item.value ?? "",
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    });
+  }
+  // ---------------------------------------------------------------------------
+  // Machine / API
+  // ---------------------------------------------------------------------------
+  initMachine(props7) {
+    const self2 = this;
+    return new VanillaMachine(machine4, {
+      ...props7,
+      get collection() {
+        return self2.getCollection();
+      }
+    });
+  }
+  initApi() {
+    return connect4(this.machine.service, normalizeProps);
+  }
+  // ---------------------------------------------------------------------------
+  // Item rendering (with group support)
+  // ---------------------------------------------------------------------------
+  renderItems() {
+    const contentEl = this.el.querySelector(
+      '[data-scope="select"][data-part="content"]'
+    );
+    if (!contentEl) return;
+    const templatesContainer = this.el.querySelector('[data-templates="select"]');
+    if (!templatesContainer) return;
+    contentEl.querySelectorAll('[data-scope="select"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
+    contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
+    const items = this.api.collection.items;
+    const groups = this.api.collection.group?.() ?? [];
+    const hasGroupsInCollection = groups.some(([group2]) => group2 != null);
+    if (hasGroupsInCollection) {
+      this.renderGroupedItems(contentEl, templatesContainer, groups);
+    } else {
+      this.renderFlatItems(contentEl, templatesContainer, items);
+    }
+  }
+  renderGroupedItems(contentEl, templatesContainer, groups) {
+    for (const [groupId, groupItems] of groups) {
+      if (groupId == null) continue;
+      const groupTemplate = templatesContainer.querySelector(
+        `[data-scope="select"][data-part="item-group"][data-id="${groupId}"][data-template]`
+      );
+      if (!groupTemplate) continue;
+      const groupEl = groupTemplate.cloneNode(true);
+      groupEl.removeAttribute("data-template");
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+      const labelEl = groupEl.querySelector(
+        '[data-scope="select"][data-part="item-group-label"]'
+      );
+      if (labelEl) {
+        this.spreadProps(
+          labelEl,
+          this.api.getItemGroupLabelProps({ htmlFor: groupId })
+        );
+      }
+      const templateItems = groupEl.querySelectorAll(
+        '[data-scope="select"][data-part="item"][data-template]'
+      );
+      templateItems.forEach((item) => item.remove());
+      for (const item of groupItems) {
+        const itemEl = this.cloneItem(templatesContainer, item);
+        if (itemEl) groupEl.appendChild(itemEl);
+      }
+      contentEl.appendChild(groupEl);
+    }
+  }
+  renderFlatItems(contentEl, templatesContainer, items) {
+    for (const item of items) {
+      const itemEl = this.cloneItem(templatesContainer, item);
+      if (itemEl) contentEl.appendChild(itemEl);
+    }
+  }
+  cloneItem(templatesContainer, item) {
+    const value = this.api.collection.getItemValue(item);
+    const template = templatesContainer.querySelector(
+      `[data-scope="select"][data-part="item"][data-value="${value}"][data-template]`
+    );
+    if (!template) return null;
+    const el = template.cloneNode(true);
+    el.removeAttribute("data-template");
+    this.spreadProps(el, this.api.getItemProps({ item }));
+    const textEl = el.querySelector(
+      '[data-scope="select"][data-part="item-text"]'
+    );
+    if (textEl) {
+      this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+    }
+    const indicatorEl = el.querySelector(
+      '[data-scope="select"][data-part="item-indicator"]'
+    );
+    if (indicatorEl) {
+      this.spreadProps(
+        indicatorEl,
+        this.api.getItemIndicatorProps({ item })
+      );
+    }
+    return el;
+  }
+  render() {
+    const root = this.el.querySelector('[data-scope="select"][data-part="root"]') ?? this.el;
+    this.spreadProps(root, this.api.getRootProps());
+    [
+      "label",
+      "control",
+      "trigger",
+      "indicator",
+      "clear-trigger",
+      "positioner"
+    ].forEach((part) => {
+      const el = this.el.querySelector(
+        `[data-scope="select"][data-part="${part}"]`
+      );
+      if (!el) return;
+      const method = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
+      this.spreadProps(el, this.api[method]());
+    });
+    const valueText = this.el.querySelector(
+      '[data-scope="select"][data-part="item-text"]'
+    );
+    if (valueText) {
+      const valueAsString = this.api.valueAsString;
+      if (this.api.value && this.api.value.length > 0 && !valueAsString) {
+        const selectedValue = this.api.value[0];
+        const selectedItem = this.options.find((item) => {
+          const itemValue = item.id ?? item.value ?? "";
+          return String(itemValue) === String(selectedValue);
+        });
+        if (selectedItem) {
+          valueText.textContent = selectedItem.label;
+        } else {
+          valueText.textContent = this.placeholder || "";
+        }
+      } else {
+        valueText.textContent = valueAsString || this.placeholder || "";
+      }
+    }
+    const hiddenSelect = this.el.querySelector(
+      '[data-scope="select"][data-part="hidden-select"]'
+    );
+    if (hiddenSelect) {
+      this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+      if (!this.api.value || this.api.value.length === 0) {
+        hiddenSelect.value = "";
+      }
+    }
+    const contentEl = this.el.querySelector(
+      '[data-scope="select"][data-part="content"]'
+    );
+    if (contentEl) {
+      this.spreadProps(contentEl, this.api.getContentProps());
+      this.renderItems();
+    }
+  }
+};
+
+// hooks/select.ts
+function snakeToCamel(str) {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+function transformPositioningOptions(obj) {
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = snakeToCamel(key);
+    result[camelKey] = value;
+  }
+  return result;
+}
+var SelectHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const allItems = JSON.parse(el.dataset.collection || "[]");
+    const hasGroups = allItems.some((item) => item.group !== void 0);
+    let selectComponent;
+    const hook = this;
+    this.wasFocused = false;
+    const props7 = {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      disabled: getBoolean(el, "disabled"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      positioning: (() => {
+        const positioningJson = el.dataset.positioning;
+        if (positioningJson) {
+          try {
+            const parsed = JSON.parse(positioningJson);
+            return transformPositioningOptions(parsed);
+          } catch {
+            return void 0;
+          }
+        }
+        return void 0;
+      })(),
+      collection: collection({
+        items: allItems,
+        itemToValue: () => "",
+        itemToString: () => "",
+        isItemDisabled: () => false
+      }),
+      onValueChange: (details) => {
+        const isControlled = getBoolean(el, "controlled");
+        if (isControlled) {
+          const hiddenSelect = el.querySelector(
+            '[data-scope="select"][data-part="hidden-select"]'
+          );
+          if (hiddenSelect) {
+            const selectedValue = details.value && details.value.length > 0 ? details.value[0] : "";
+            hiddenSelect.value = selectedValue;
+            hiddenSelect.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+        const eventName = getString(el, "onValueChange");
+        if (!isControlled && eventName && !hook.liveSocket.main.isDead && hook.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.value,
+            items: details.items,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.value,
+                items: details.items,
+                id: el.id
+              }
+            })
+          );
+        }
+      }
+    };
+    selectComponent = new Select(el, props7);
+    selectComponent.hasGroups = hasGroups;
+    selectComponent.setOptions(allItems);
+    selectComponent.init();
+    this.select = selectComponent;
+    this.handlers = [];
+  },
+  beforeUpdate() {
+    this.wasFocused = this.select?.api?.focused ?? false;
+  },
+  updated() {
+    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+    const hasGroups = newCollection.some((item) => item.group !== void 0);
+    if (this.select) {
+      this.select.hasGroups = hasGroups;
+      this.select.setOptions(newCollection);
+      this.select.updateProps({
+        id: this.el.id,
+        ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
+        disabled: getBoolean(this.el, "disabled"),
+        multiple: getBoolean(this.el, "multiple"),
+        dir: getString(this.el, "dir", ["ltr", "rtl"]),
+        invalid: getBoolean(this.el, "invalid"),
+        required: getBoolean(this.el, "required"),
+        readOnly: getBoolean(this.el, "readOnly")
+      });
+      this.select.render();
+      if (getBoolean(this.el, "controlled")) {
+        if (this.wasFocused) {
+          const trigger = this.el.querySelector('[data-scope="select"][data-part="trigger"]');
+          if (trigger && document.activeElement !== trigger) {
+            trigger.focus();
+          }
+        }
+      }
+    }
+  },
+  destroyed() {
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.select?.destroy();
+  }
+};
+
+// ../node_modules/.pnpm/@zag-js+focus-visible@1.33.0/node_modules/@zag-js/focus-visible/dist/index.mjs
+function isValidKey(e) {
+  return !(e.metaKey || !isMac() && e.altKey || e.ctrlKey || e.key === "Control" || e.key === "Shift" || e.key === "Meta");
+}
+var nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
+function isKeyboardFocusEvent(isTextInput, modality, e) {
+  const target = e ? getEventTarget(e) : null;
+  const win = getWindow(target);
+  isTextInput = isTextInput || target instanceof win.HTMLInputElement && !nonTextInputTypes.has(target?.type) || target instanceof win.HTMLTextAreaElement || target instanceof win.HTMLElement && target.isContentEditable;
+  return !(isTextInput && modality === "keyboard" && e instanceof win.KeyboardEvent && !Reflect.has(FOCUS_VISIBLE_INPUT_KEYS, e.key));
+}
+var currentModality = null;
+var changeHandlers = /* @__PURE__ */ new Set();
+var listenerMap = /* @__PURE__ */ new Map();
+var hasEventBeforeFocus = false;
+var hasBlurredWindowRecently = false;
+var FOCUS_VISIBLE_INPUT_KEYS = {
+  Tab: true,
+  Escape: true
+};
+function triggerChangeHandlers(modality, e) {
+  for (let handler of changeHandlers) {
+    handler(modality, e);
+  }
+}
+function handleKeyboardEvent(e) {
+  hasEventBeforeFocus = true;
+  if (isValidKey(e)) {
+    currentModality = "keyboard";
+    triggerChangeHandlers("keyboard", e);
+  }
+}
+function handlePointerEvent(e) {
+  currentModality = "pointer";
+  if (e.type === "mousedown" || e.type === "pointerdown") {
+    hasEventBeforeFocus = true;
+    triggerChangeHandlers("pointer", e);
+  }
+}
+function handleClickEvent(e) {
+  if (isVirtualClick(e)) {
+    hasEventBeforeFocus = true;
+    currentModality = "virtual";
+  }
+}
+function handleFocusEvent(e) {
+  const target = getEventTarget(e);
+  if (target === getWindow(target) || target === getDocument(target)) {
+    return;
+  }
+  if (!hasEventBeforeFocus && !hasBlurredWindowRecently) {
+    currentModality = "virtual";
+    triggerChangeHandlers("virtual", e);
+  }
+  hasEventBeforeFocus = false;
+  hasBlurredWindowRecently = false;
+}
+function handleWindowBlur() {
+  hasEventBeforeFocus = false;
+  hasBlurredWindowRecently = true;
+}
+function setupGlobalFocusEvents(root) {
+  if (typeof window === "undefined" || listenerMap.get(getWindow(root))) {
+    return;
+  }
+  const win = getWindow(root);
+  const doc = getDocument(root);
+  let focus = win.HTMLElement.prototype.focus;
+  function patchedFocus() {
+    currentModality = "virtual";
+    triggerChangeHandlers("virtual", null);
+    hasEventBeforeFocus = true;
+    focus.apply(this, arguments);
+  }
+  try {
+    Object.defineProperty(win.HTMLElement.prototype, "focus", {
+      configurable: true,
+      value: patchedFocus
+    });
+  } catch {
+  }
+  doc.addEventListener("keydown", handleKeyboardEvent, true);
+  doc.addEventListener("keyup", handleKeyboardEvent, true);
+  doc.addEventListener("click", handleClickEvent, true);
+  win.addEventListener("focus", handleFocusEvent, true);
+  win.addEventListener("blur", handleWindowBlur, false);
+  if (typeof win.PointerEvent !== "undefined") {
+    doc.addEventListener("pointerdown", handlePointerEvent, true);
+    doc.addEventListener("pointermove", handlePointerEvent, true);
+    doc.addEventListener("pointerup", handlePointerEvent, true);
+  } else {
+    doc.addEventListener("mousedown", handlePointerEvent, true);
+    doc.addEventListener("mousemove", handlePointerEvent, true);
+    doc.addEventListener("mouseup", handlePointerEvent, true);
+  }
+  win.addEventListener(
+    "beforeunload",
+    () => {
+      tearDownWindowFocusTracking(root);
+    },
+    { once: true }
+  );
+  listenerMap.set(win, { focus });
+}
+var tearDownWindowFocusTracking = (root, loadListener) => {
+  const win = getWindow(root);
+  const doc = getDocument(root);
+  const listenerData = listenerMap.get(win);
+  if (!listenerData) {
+    return;
+  }
+  try {
+    Object.defineProperty(win.HTMLElement.prototype, "focus", {
+      configurable: true,
+      value: listenerData.focus
+    });
+  } catch {
+  }
+  doc.removeEventListener("keydown", handleKeyboardEvent, true);
+  doc.removeEventListener("keyup", handleKeyboardEvent, true);
+  doc.removeEventListener("click", handleClickEvent, true);
+  win.removeEventListener("focus", handleFocusEvent, true);
+  win.removeEventListener("blur", handleWindowBlur, false);
+  if (typeof win.PointerEvent !== "undefined") {
+    doc.removeEventListener("pointerdown", handlePointerEvent, true);
+    doc.removeEventListener("pointermove", handlePointerEvent, true);
+    doc.removeEventListener("pointerup", handlePointerEvent, true);
+  } else {
+    doc.removeEventListener("mousedown", handlePointerEvent, true);
+    doc.removeEventListener("mousemove", handlePointerEvent, true);
+    doc.removeEventListener("mouseup", handlePointerEvent, true);
+  }
+  listenerMap.delete(win);
+};
+function isFocusVisible() {
+  return currentModality === "keyboard";
+}
+function trackFocusVisible(props7 = {}) {
+  const { isTextInput, autoFocus, onChange, root } = props7;
+  setupGlobalFocusEvents(root);
+  onChange?.({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
+  const handler = (modality, e) => {
+    if (!isKeyboardFocusEvent(!!isTextInput, modality, e)) return;
+    onChange?.({ isFocusVisible: isFocusVisible(), modality });
+  };
+  changeHandlers.add(handler);
+  return () => {
+    changeHandlers.delete(handler);
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+switch@1.33.0/node_modules/@zag-js/switch/dist/index.mjs
+var anatomy5 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+var parts5 = anatomy5.build();
+var getRootId5 = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
+var getLabelId2 = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
+var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
+var getControlId2 = (ctx) => ctx.ids?.control ?? `switch:${ctx.id}:control`;
+var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`;
+var getRootEl4 = (ctx) => ctx.getById(getRootId5(ctx));
+var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
+function connect5(service, normalize) {
+  const { context, send, prop, scope } = service;
+  const disabled = !!prop("disabled");
+  const readOnly = !!prop("readOnly");
+  const required = !!prop("required");
+  const checked = !!context.get("checked");
+  const focused = !disabled && context.get("focused");
+  const focusVisible = !disabled && context.get("focusVisible");
+  const active = !disabled && context.get("active");
+  const dataAttrs = {
+    "data-active": dataAttr(active),
+    "data-focus": dataAttr(focused),
+    "data-focus-visible": dataAttr(focusVisible),
+    "data-readonly": dataAttr(readOnly),
+    "data-hover": dataAttr(context.get("hovered")),
+    "data-disabled": dataAttr(disabled),
+    "data-state": checked ? "checked" : "unchecked",
+    "data-invalid": dataAttr(prop("invalid")),
+    "data-required": dataAttr(required)
+  };
+  return {
+    checked,
+    disabled,
+    focused,
+    setChecked(checked2) {
+      send({ type: "CHECKED.SET", checked: checked2, isTrusted: false });
+    },
+    toggleChecked() {
+      send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
+    },
+    getRootProps() {
+      return normalize.label({
+        ...parts5.root.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getRootId5(scope),
+        htmlFor: getHiddenInputId(scope),
+        onPointerMove() {
+          if (disabled) return;
+          send({ type: "CONTEXT.SET", context: { hovered: true } });
+        },
+        onPointerLeave() {
+          if (disabled) return;
+          send({ type: "CONTEXT.SET", context: { hovered: false } });
+        },
+        onClick(event) {
+          if (disabled) return;
+          const target = getEventTarget(event);
+          if (target === getHiddenInputEl(scope)) {
+            event.stopPropagation();
+          }
+          if (isSafari()) {
+            getHiddenInputEl(scope)?.focus();
+          }
+        }
+      });
+    },
+    getLabelProps() {
+      return normalize.element({
+        ...parts5.label.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getLabelId2(scope)
+      });
+    },
+    getThumbProps() {
+      return normalize.element({
+        ...parts5.thumb.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getThumbId(scope),
+        "aria-hidden": true
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts5.control.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getControlId2(scope),
+        "aria-hidden": true
+      });
+    },
+    getHiddenInputProps() {
+      return normalize.input({
+        id: getHiddenInputId(scope),
+        type: "checkbox",
+        required: prop("required"),
+        defaultChecked: checked,
+        disabled,
+        "aria-labelledby": getLabelId2(scope),
+        "aria-invalid": prop("invalid"),
+        name: prop("name"),
+        form: prop("form"),
+        value: prop("value"),
+        style: visuallyHiddenStyle,
+        onFocus() {
+          const focusVisible2 = isFocusVisible();
+          send({ type: "CONTEXT.SET", context: { focused: true, focusVisible: focusVisible2 } });
+        },
+        onBlur() {
+          send({ type: "CONTEXT.SET", context: { focused: false, focusVisible: false } });
+        },
+        onClick(event) {
+          if (readOnly) {
+            event.preventDefault();
+            return;
+          }
+          const checked2 = event.currentTarget.checked;
+          send({ type: "CHECKED.SET", checked: checked2, isTrusted: true });
+        }
+      });
+    }
+  };
+}
+var { not: not5 } = createGuards();
+var machine5 = createMachine({
+  props({ props: props22 }) {
+    return {
+      defaultChecked: false,
+      label: "switch",
+      value: "on",
+      ...props22
+    };
+  },
+  initialState() {
+    return "ready";
+  },
+  context({ prop, bindable: bindable2 }) {
+    return {
+      checked: bindable2(() => ({
+        defaultValue: prop("defaultChecked"),
+        value: prop("checked"),
+        onChange(value) {
+          prop("onCheckedChange")?.({ checked: value });
+        }
+      })),
+      fieldsetDisabled: bindable2(() => ({
+        defaultValue: false
+      })),
+      focusVisible: bindable2(() => ({
+        defaultValue: false
+      })),
+      active: bindable2(() => ({
+        defaultValue: false
+      })),
+      focused: bindable2(() => ({
+        defaultValue: false
+      })),
+      hovered: bindable2(() => ({
+        defaultValue: false
+      }))
+    };
+  },
+  computed: {
+    isDisabled: ({ context, prop }) => prop("disabled") || context.get("fieldsetDisabled")
+  },
+  watch({ track, prop, context, action }) {
+    track([() => prop("disabled")], () => {
+      action(["removeFocusIfNeeded"]);
+    });
+    track([() => context.get("checked")], () => {
+      action(["syncInputElement"]);
+    });
+  },
+  effects: ["trackFormControlState", "trackPressEvent", "trackFocusVisible"],
+  on: {
+    "CHECKED.TOGGLE": [
+      {
+        guard: not5("isTrusted"),
+        actions: ["toggleChecked", "dispatchChangeEvent"]
+      },
+      {
+        actions: ["toggleChecked"]
+      }
+    ],
+    "CHECKED.SET": [
+      {
+        guard: not5("isTrusted"),
+        actions: ["setChecked", "dispatchChangeEvent"]
+      },
+      {
+        actions: ["setChecked"]
+      }
+    ],
+    "CONTEXT.SET": {
+      actions: ["setContext"]
+    }
+  },
+  states: {
+    ready: {}
+  },
+  implementations: {
+    guards: {
+      isTrusted: ({ event }) => !!event.isTrusted
+    },
+    effects: {
+      trackPressEvent({ computed, scope, context }) {
+        if (computed("isDisabled")) return;
+        return trackPress({
+          pointerNode: getRootEl4(scope),
+          keyboardNode: getHiddenInputEl(scope),
+          isValidKey: (event) => event.key === " ",
+          onPress: () => context.set("active", false),
+          onPressStart: () => context.set("active", true),
+          onPressEnd: () => context.set("active", false)
+        });
+      },
+      trackFocusVisible({ computed, scope }) {
+        if (computed("isDisabled")) return;
+        return trackFocusVisible({ root: scope.getRootNode() });
+      },
+      trackFormControlState({ context, send, scope }) {
+        return trackFormControl(getHiddenInputEl(scope), {
+          onFieldsetDisabledChange(disabled) {
+            context.set("fieldsetDisabled", disabled);
+          },
+          onFormReset() {
+            const checked = context.initial("checked");
+            send({ type: "CHECKED.SET", checked: !!checked, src: "form-reset" });
+          }
+        });
+      }
+    },
+    actions: {
+      setContext({ context, event }) {
+        for (const key in event.context) {
+          context.set(key, event.context[key]);
+        }
+      },
+      syncInputElement({ context, scope }) {
+        const inputEl = getHiddenInputEl(scope);
+        if (!inputEl) return;
+        setElementChecked(inputEl, !!context.get("checked"));
+      },
+      removeFocusIfNeeded({ context, prop }) {
+        if (prop("disabled")) {
+          context.set("focused", false);
+        }
+      },
+      setChecked({ context, event }) {
+        context.set("checked", event.checked);
+      },
+      toggleChecked({ context }) {
+        context.set("checked", !context.get("checked"));
+      },
+      dispatchChangeEvent({ context, scope }) {
+        queueMicrotask(() => {
+          const inputEl = getHiddenInputEl(scope);
+          dispatchInputCheckedEvent(inputEl, { checked: context.get("checked") });
+        });
+      }
+    }
+  }
+});
+var props4 = createProps()([
+  "checked",
+  "defaultChecked",
+  "dir",
+  "disabled",
+  "form",
+  "getRootNode",
+  "id",
+  "ids",
+  "invalid",
+  "label",
+  "name",
+  "onCheckedChange",
+  "readOnly",
+  "required",
+  "value"
+]);
+var splitProps6 = createSplitProps(props4);
+
+// components/switch.ts
+var Switch = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props7) {
+    return new VanillaMachine(machine5, props7);
+  }
+  initApi() {
+    return connect5(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]') || this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const inputEl = this.el.querySelector('[data-scope="switch"][data-part="hidden-input"]');
+    if (inputEl) {
+      this.spreadProps(inputEl, this.api.getHiddenInputProps());
+    }
+    const labelEl = this.el.querySelector('[data-scope="switch"][data-part="label"]');
+    if (labelEl) {
+      this.spreadProps(labelEl, this.api.getLabelProps());
+    }
+    const controlEl = this.el.querySelector('[data-scope="switch"][data-part="control"]');
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+    }
+    const thumbEl = this.el.querySelector('[data-scope="switch"][data-part="thumb"]');
+    if (thumbEl) {
+      this.spreadProps(thumbEl, this.api.getThumbProps());
+    }
+  }
+};
+
+// hooks/switch.ts
+var SwitchHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    this.wasFocused = false;
+    const zagSwitch = new Switch(el, {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
+      disabled: getBoolean(el, "disabled"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      value: getString(el, "value"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readOnly"),
+      label: getString(el, "label"),
+      onCheckedChange: (details) => {
+        const eventName = getString(el, "onCheckedChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            checked: details.checked,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onCheckedChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                value: details,
+                id: el.id
+              }
+            })
+          );
+        }
+      }
+    });
+    zagSwitch.init();
+    this.zagSwitch = zagSwitch;
+    this.onSetChecked = (event) => {
+      const { value } = event.detail;
+      zagSwitch.api.setChecked(value);
+    };
+    el.addEventListener("phx:switch:set-checked", this.onSetChecked);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("switch_set_checked", (payload) => {
+        const targetId = payload.id;
+        if (targetId && targetId !== el.id) return;
+        zagSwitch.api.setChecked(payload.value);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("switch_toggle_checked", (payload) => {
+        const targetId = payload.id;
+        if (targetId && targetId !== el.id) return;
+        zagSwitch.api.toggleChecked();
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("switch_checked", () => {
+        this.pushEvent("switch_checked_response", {
+          value: zagSwitch.api.checked
+        });
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("switch_focused", () => {
+        this.pushEvent("switch_focused_response", {
+          value: zagSwitch.api.focused
+        });
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("switch_disabled", () => {
+        this.pushEvent("switch_disabled_response", {
+          value: zagSwitch.api.disabled
+        });
+      })
+    );
+  },
+  beforeUpdate() {
+    this.wasFocused = this.zagSwitch?.api.focused ?? false;
+  },
+  updated() {
+    this.zagSwitch?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") },
+      disabled: getBoolean(this.el, "disabled"),
+      name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
+      value: getString(this.el, "value"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      invalid: getBoolean(this.el, "invalid"),
+      required: getBoolean(this.el, "required"),
+      readOnly: getBoolean(this.el, "readOnly"),
+      label: getString(this.el, "label")
+    });
+    if (getBoolean(this.el, "controlled")) {
+      if (this.wasFocused) {
+        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
+        hiddenInput?.focus();
+      }
+    }
+  },
+  destroyed() {
+    if (this.onSetChecked) {
+      this.el.removeEventListener("phx:switch:set-checked", this.onSetChecked);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.zagSwitch?.destroy();
+  }
+};
+
 // ../node_modules/.pnpm/@zag-js+combobox@1.33.1/node_modules/@zag-js/combobox/dist/index.mjs
-var anatomy5 = createAnatomy2("combobox").parts(
+var anatomy6 = createAnatomy2("combobox").parts(
   "root",
   "clearTrigger",
   "content",
@@ -7859,34 +9694,34 @@ var anatomy5 = createAnatomy2("combobox").parts(
   "positioner",
   "trigger"
 );
-var parts5 = anatomy5.build();
-var collection = (options) => {
+var parts6 = anatomy6.build();
+var collection2 = (options) => {
   return new ListCollection(options);
 };
-collection.empty = () => {
+collection2.empty = () => {
   return new ListCollection({ items: [] });
 };
-var getRootId5 = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
-var getLabelId2 = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
-var getControlId2 = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
+var getRootId6 = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
+var getLabelId3 = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
+var getControlId3 = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
 var getInputId = (ctx) => ctx.ids?.input ?? `combobox:${ctx.id}:input`;
-var getContentId = (ctx) => ctx.ids?.content ?? `combobox:${ctx.id}:content`;
-var getPositionerId = (ctx) => ctx.ids?.positioner ?? `combobox:${ctx.id}:popper`;
-var getTriggerId = (ctx) => ctx.ids?.trigger ?? `combobox:${ctx.id}:toggle-btn`;
-var getClearTriggerId = (ctx) => ctx.ids?.clearTrigger ?? `combobox:${ctx.id}:clear-btn`;
-var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `combobox:${ctx.id}:optgroup:${id}`;
-var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `combobox:${ctx.id}:optgroup-label:${id}`;
-var getItemId3 = (ctx, id) => ctx.ids?.item?.(id) ?? `combobox:${ctx.id}:option:${id}`;
-var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getContentId2 = (ctx) => ctx.ids?.content ?? `combobox:${ctx.id}:content`;
+var getPositionerId2 = (ctx) => ctx.ids?.positioner ?? `combobox:${ctx.id}:popper`;
+var getTriggerId2 = (ctx) => ctx.ids?.trigger ?? `combobox:${ctx.id}:toggle-btn`;
+var getClearTriggerId2 = (ctx) => ctx.ids?.clearTrigger ?? `combobox:${ctx.id}:clear-btn`;
+var getItemGroupId2 = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `combobox:${ctx.id}:optgroup:${id}`;
+var getItemGroupLabelId2 = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `combobox:${ctx.id}:optgroup-label:${id}`;
+var getItemId4 = (ctx, id) => ctx.ids?.item?.(id) ?? `combobox:${ctx.id}:option:${id}`;
+var getContentEl2 = (ctx) => ctx.getById(getContentId2(ctx));
 var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
-var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
-var getControlEl = (ctx) => ctx.getById(getControlId2(ctx));
-var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
-var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
-var getItemEl = (ctx, value) => {
+var getPositionerEl2 = (ctx) => ctx.getById(getPositionerId2(ctx));
+var getControlEl = (ctx) => ctx.getById(getControlId3(ctx));
+var getTriggerEl2 = (ctx) => ctx.getById(getTriggerId2(ctx));
+var getClearTriggerEl2 = (ctx) => ctx.getById(getClearTriggerId2(ctx));
+var getItemEl2 = (ctx, value) => {
   if (value == null) return null;
   const selector = `[role=option][data-value="${CSS.escape(value)}"]`;
-  return query(getContentEl(ctx), selector);
+  return query(getContentEl2(ctx), selector);
 };
 var focusInputEl = (ctx) => {
   const inputEl = getInputEl(ctx);
@@ -7894,14 +9729,14 @@ var focusInputEl = (ctx) => {
   inputEl?.focus({ preventScroll: true });
 };
 var focusTriggerEl = (ctx) => {
-  const triggerEl = getTriggerEl(ctx);
+  const triggerEl = getTriggerEl2(ctx);
   if (ctx.isActiveElement(triggerEl)) return;
   triggerEl?.focus({ preventScroll: true });
 };
-function connect5(service, normalize) {
+function connect6(service, normalize) {
   const { context, prop, state, send, scope, computed, event } = service;
   const translations = prop("translations");
-  const collection2 = prop("collection");
+  const collection22 = prop("collection");
   const disabled = !!prop("disabled");
   const interactive = computed("isInteractive");
   const invalid = !!prop("invalid");
@@ -7916,8 +9751,8 @@ function connect5(service, normalize) {
     placement: context.get("currentPlacement")
   });
   function getItemState(props22) {
-    const disabled2 = collection2.getItemDisabled(props22.item);
-    const value = collection2.getItemValue(props22.item);
+    const disabled2 = collection22.getItemDisabled(props22.item);
+    const value = collection22.getItemValue(props22.item);
     ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props22.item)}`);
     return {
       value,
@@ -7977,19 +9812,19 @@ function connect5(service, normalize) {
     },
     getRootProps() {
       return normalize.element({
-        ...parts5.root.attrs,
+        ...parts6.root.attrs,
         dir: prop("dir"),
-        id: getRootId5(scope),
+        id: getRootId6(scope),
         "data-invalid": dataAttr2(invalid),
         "data-readonly": dataAttr2(readOnly)
       });
     },
     getLabelProps() {
       return normalize.label({
-        ...parts5.label.attrs,
+        ...parts6.label.attrs,
         dir: prop("dir"),
         htmlFor: getInputId(scope),
-        id: getLabelId2(scope),
+        id: getLabelId3(scope),
         "data-readonly": dataAttr2(readOnly),
         "data-disabled": dataAttr2(disabled),
         "data-invalid": dataAttr2(invalid),
@@ -7998,15 +9833,15 @@ function connect5(service, normalize) {
         onClick(event2) {
           if (composite) return;
           event2.preventDefault();
-          getTriggerEl(scope)?.focus({ preventScroll: true });
+          getTriggerEl2(scope)?.focus({ preventScroll: true });
         }
       });
     },
     getControlProps() {
       return normalize.element({
-        ...parts5.control.attrs,
+        ...parts6.control.attrs,
         dir: prop("dir"),
-        id: getControlId2(scope),
+        id: getControlId3(scope),
         "data-state": open ? "open" : "closed",
         "data-focus": dataAttr2(focused),
         "data-disabled": dataAttr2(disabled),
@@ -8015,15 +9850,15 @@ function connect5(service, normalize) {
     },
     getPositionerProps() {
       return normalize.element({
-        ...parts5.positioner.attrs,
+        ...parts6.positioner.attrs,
         dir: prop("dir"),
-        id: getPositionerId(scope),
+        id: getPositionerId2(scope),
         style: popperStyles.floating
       });
     },
     getInputProps() {
       return normalize.input({
-        ...parts5.input.attrs,
+        ...parts6.input.attrs,
         dir: prop("dir"),
         "aria-invalid": ariaAttr(invalid),
         "data-invalid": dataAttr2(invalid),
@@ -8043,10 +9878,10 @@ function connect5(service, normalize) {
         role: "combobox",
         defaultValue: context.get("inputValue"),
         "aria-autocomplete": computed("autoComplete") ? "both" : "list",
-        "aria-controls": getContentId(scope),
+        "aria-controls": getContentId2(scope),
         "aria-expanded": open,
         "data-state": open ? "open" : "closed",
-        "aria-activedescendant": highlightedValue ? getItemId3(scope, highlightedValue) : void 0,
+        "aria-activedescendant": highlightedValue ? getItemId4(scope, highlightedValue) : void 0,
         onClick(event2) {
           if (event2.defaultPrevented) return;
           if (!prop("openOnClick")) return;
@@ -8105,7 +9940,7 @@ function connect5(service, normalize) {
                 event3.preventDefault();
               }
               if (highlightedValue == null) return;
-              const itemEl = getItemEl(scope, highlightedValue);
+              const itemEl = getItemEl2(scope, highlightedValue);
               if (isAnchorElement(itemEl)) {
                 prop("navigate")?.({ value: highlightedValue, node: itemEl, href: itemEl.href });
               }
@@ -8123,16 +9958,16 @@ function connect5(service, normalize) {
     },
     getTriggerProps(props22 = {}) {
       return normalize.button({
-        ...parts5.trigger.attrs,
+        ...parts6.trigger.attrs,
         dir: prop("dir"),
-        id: getTriggerId(scope),
+        id: getTriggerId2(scope),
         "aria-haspopup": composite ? "listbox" : "dialog",
         type: "button",
         tabIndex: props22.focusable ? void 0 : -1,
         "aria-label": translations.triggerLabel,
         "aria-expanded": open,
         "data-state": open ? "open" : "closed",
-        "aria-controls": open ? getContentId(scope) : void 0,
+        "aria-controls": open ? getContentId2(scope) : void 0,
         disabled,
         "data-invalid": dataAttr2(invalid),
         "data-focusable": dataAttr2(props22.focusable),
@@ -8179,17 +10014,17 @@ function connect5(service, normalize) {
     },
     getContentProps() {
       return normalize.element({
-        ...parts5.content.attrs,
+        ...parts6.content.attrs,
         dir: prop("dir"),
-        id: getContentId(scope),
+        id: getContentId2(scope),
         role: !composite ? "dialog" : "listbox",
         tabIndex: -1,
         hidden: !open,
         "data-state": open ? "open" : "closed",
         "data-placement": context.get("currentPlacement"),
-        "aria-labelledby": getLabelId2(scope),
+        "aria-labelledby": getLabelId3(scope),
         "aria-multiselectable": prop("multiple") && composite ? true : void 0,
-        "data-empty": dataAttr2(collection2.size === 0),
+        "data-empty": dataAttr2(collection22.size === 0),
         onPointerDown(event2) {
           if (!isLeftClick(event2)) return;
           event2.preventDefault();
@@ -8198,18 +10033,18 @@ function connect5(service, normalize) {
     },
     getListProps() {
       return normalize.element({
-        ...parts5.list.attrs,
+        ...parts6.list.attrs,
         role: !composite ? "listbox" : void 0,
-        "data-empty": dataAttr2(collection2.size === 0),
-        "aria-labelledby": getLabelId2(scope),
+        "data-empty": dataAttr2(collection22.size === 0),
+        "aria-labelledby": getLabelId3(scope),
         "aria-multiselectable": prop("multiple") && !composite ? true : void 0
       });
     },
     getClearTriggerProps() {
       return normalize.button({
-        ...parts5.clearTrigger.attrs,
+        ...parts6.clearTrigger.attrs,
         dir: prop("dir"),
-        id: getClearTriggerId(scope),
+        id: getClearTriggerId2(scope),
         type: "button",
         tabIndex: -1,
         disabled,
@@ -8233,9 +10068,9 @@ function connect5(service, normalize) {
       const itemState = getItemState(props22);
       const value = itemState.value;
       return normalize.element({
-        ...parts5.item.attrs,
+        ...parts6.item.attrs,
         dir: prop("dir"),
-        id: getItemId3(scope, value),
+        id: getItemId4(scope, value),
         role: "option",
         tabIndex: -1,
         "data-highlighted": dataAttr2(itemState.highlighted),
@@ -8269,7 +10104,7 @@ function connect5(service, normalize) {
     getItemTextProps(props22) {
       const itemState = getItemState(props22);
       return normalize.element({
-        ...parts5.itemText.attrs,
+        ...parts6.itemText.attrs,
         dir: prop("dir"),
         "data-state": itemState.selected ? "checked" : "unchecked",
         "data-disabled": dataAttr2(itemState.disabled),
@@ -8280,7 +10115,7 @@ function connect5(service, normalize) {
       const itemState = getItemState(props22);
       return normalize.element({
         "aria-hidden": true,
-        ...parts5.itemIndicator.attrs,
+        ...parts6.itemIndicator.attrs,
         dir: prop("dir"),
         "data-state": itemState.selected ? "checked" : "unchecked",
         hidden: !itemState.selected
@@ -8289,28 +10124,28 @@ function connect5(service, normalize) {
     getItemGroupProps(props22) {
       const { id } = props22;
       return normalize.element({
-        ...parts5.itemGroup.attrs,
+        ...parts6.itemGroup.attrs,
         dir: prop("dir"),
-        id: getItemGroupId(scope, id),
-        "aria-labelledby": getItemGroupLabelId(scope, id),
-        "data-empty": dataAttr2(collection2.size === 0),
+        id: getItemGroupId2(scope, id),
+        "aria-labelledby": getItemGroupLabelId2(scope, id),
+        "data-empty": dataAttr2(collection22.size === 0),
         role: "group"
       });
     },
     getItemGroupLabelProps(props22) {
       const { htmlFor } = props22;
       return normalize.element({
-        ...parts5.itemGroupLabel.attrs,
+        ...parts6.itemGroupLabel.attrs,
         dir: prop("dir"),
-        id: getItemGroupLabelId(scope, htmlFor),
+        id: getItemGroupLabelId2(scope, htmlFor),
         role: "presentation"
       });
     }
   };
 }
 var { guards: guards2, createMachine: createMachine4, choose } = setup2();
-var { and: and4, not: not5 } = guards2;
-var machine5 = createMachine4({
+var { and: and5, not: not6 } = guards2;
+var machine6 = createMachine4({
   props({ props: props22 }) {
     return {
       loopFocus: true,
@@ -8328,7 +10163,7 @@ var machine5 = createMachine4({
       navigate({ node }) {
         clickIfLink(node);
       },
-      collection: collection.empty(),
+      collection: collection2.empty(),
       ...props22,
       positioning: {
         placement: "bottom",
@@ -8361,10 +10196,10 @@ var machine5 = createMachine4({
         onChange(value) {
           const context = getContext();
           const prevSelectedItems = context.get("selectedItems");
-          const collection2 = prop("collection");
+          const collection22 = prop("collection");
           const nextItems = value.map((v) => {
-            const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === v);
-            return item || collection2.find(v);
+            const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === v);
+            return item || collection22.find(v);
           });
           context.set("selectedItems", nextItems);
           prop("onValueChange")?.({ value, items: nextItems });
@@ -8383,7 +10218,7 @@ var machine5 = createMachine4({
         const value = prop("value") || prop("defaultValue");
         if (!inputValue.trim() && !prop("multiple")) {
           const valueAsString = prop("collection").stringifyMany(value);
-          inputValue = match(prop("selectionBehavior"), {
+          inputValue = match2(prop("selectionBehavior"), {
             preserve: inputValue || valueAsString,
             replace: valueAsString,
             clear: ""
@@ -8531,7 +10366,7 @@ var machine5 = createMachine4({
         ],
         "INPUT.CHANGE": [
           {
-            guard: and4("isOpenControlled", "openOnChange"),
+            guard: and5("isOpenControlled", "openOnChange"),
             actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
           },
           {
@@ -8547,7 +10382,7 @@ var machine5 = createMachine4({
           target: "idle"
         },
         "INPUT.ESCAPE": {
-          guard: and4("isCustomValue", not5("allowCustomValue")),
+          guard: and5("isCustomValue", not6("allowCustomValue")),
           actions: ["revertInputValue"]
         },
         "INPUT.BLUR": {
@@ -8576,7 +10411,7 @@ var machine5 = createMachine4({
         "INPUT.ARROW_DOWN": [
           // == group 1 ==
           {
-            guard: and4("isOpenControlled", "autoComplete"),
+            guard: and5("isOpenControlled", "autoComplete"),
             actions: ["invokeOnOpen"]
           },
           {
@@ -8663,7 +10498,7 @@ var machine5 = createMachine4({
         },
         "INPUT.ARROW_DOWN": [
           {
-            guard: and4("autoComplete", "isLastItemHighlighted"),
+            guard: and5("autoComplete", "isLastItemHighlighted"),
             actions: ["clearHighlightedValue", "scrollContentToTop"]
           },
           {
@@ -8672,7 +10507,7 @@ var machine5 = createMachine4({
         ],
         "INPUT.ARROW_UP": [
           {
-            guard: and4("autoComplete", "isFirstItemHighlighted"),
+            guard: and5("autoComplete", "isFirstItemHighlighted"),
             actions: ["clearHighlightedValue"]
           },
           {
@@ -8682,17 +10517,17 @@ var machine5 = createMachine4({
         "INPUT.ENTER": [
           // == group 1 ==
           {
-            guard: and4("isOpenControlled", "isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            guard: and5("isOpenControlled", "isCustomValue", not6("hasHighlightedItem"), not6("allowCustomValue")),
             actions: ["revertInputValue", "invokeOnClose"]
           },
           {
-            guard: and4("isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            guard: and5("isCustomValue", not6("hasHighlightedItem"), not6("allowCustomValue")),
             target: "focused",
             actions: ["revertInputValue", "invokeOnClose"]
           },
           // == group 2 ==
           {
-            guard: and4("isOpenControlled", "closeOnSelect"),
+            guard: and5("isOpenControlled", "closeOnSelect"),
             actions: ["selectHighlightedItem", "invokeOnClose"]
           },
           {
@@ -8723,7 +10558,7 @@ var machine5 = createMachine4({
         },
         "ITEM.CLICK": [
           {
-            guard: and4("isOpenControlled", "closeOnSelect"),
+            guard: and5("isOpenControlled", "closeOnSelect"),
             actions: ["selectItem", "invokeOnClose"]
           },
           {
@@ -8737,7 +10572,7 @@ var machine5 = createMachine4({
         ],
         "LAYER.ESCAPE": [
           {
-            guard: and4("isOpenControlled", "autoComplete"),
+            guard: and5("isOpenControlled", "autoComplete"),
             actions: ["syncInputValue", "invokeOnClose"]
           },
           {
@@ -8767,11 +10602,11 @@ var machine5 = createMachine4({
         "LAYER.INTERACT_OUTSIDE": [
           // == group 1 ==
           {
-            guard: and4("isOpenControlled", "isCustomValue", not5("allowCustomValue")),
+            guard: and5("isOpenControlled", "isCustomValue", not6("allowCustomValue")),
             actions: ["revertInputValue", "invokeOnClose"]
           },
           {
-            guard: and4("isCustomValue", not5("allowCustomValue")),
+            guard: and5("isCustomValue", not6("allowCustomValue")),
             target: "idle",
             actions: ["revertInputValue", "invokeOnClose"]
           },
@@ -8824,7 +10659,7 @@ var machine5 = createMachine4({
         ],
         CHILDREN_CHANGE: [
           {
-            guard: and4("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
+            guard: and5("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
             actions: ["clearHighlightedValue", "highlightFirstItem"]
           },
           {
@@ -8855,17 +10690,17 @@ var machine5 = createMachine4({
         "INPUT.ENTER": [
           // == group 1 ==
           {
-            guard: and4("isOpenControlled", "isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            guard: and5("isOpenControlled", "isCustomValue", not6("hasHighlightedItem"), not6("allowCustomValue")),
             actions: ["revertInputValue", "invokeOnClose"]
           },
           {
-            guard: and4("isCustomValue", not5("hasHighlightedItem"), not5("allowCustomValue")),
+            guard: and5("isCustomValue", not6("hasHighlightedItem"), not6("allowCustomValue")),
             target: "focused",
             actions: ["revertInputValue", "invokeOnClose"]
           },
           // == group 2 ==
           {
-            guard: and4("isOpenControlled", "closeOnSelect"),
+            guard: and5("isOpenControlled", "closeOnSelect"),
             actions: ["selectHighlightedItem", "invokeOnClose"]
           },
           {
@@ -8900,11 +10735,11 @@ var machine5 = createMachine4({
         "LAYER.INTERACT_OUTSIDE": [
           // == group 1 ==
           {
-            guard: and4("isOpenControlled", "isCustomValue", not5("allowCustomValue")),
+            guard: and5("isOpenControlled", "isCustomValue", not6("allowCustomValue")),
             actions: ["revertInputValue", "invokeOnClose"]
           },
           {
-            guard: and4("isCustomValue", not5("allowCustomValue")),
+            guard: and5("isCustomValue", not6("allowCustomValue")),
             target: "idle",
             actions: ["revertInputValue", "invokeOnClose"]
           },
@@ -8930,7 +10765,7 @@ var machine5 = createMachine4({
         ],
         "ITEM.CLICK": [
           {
-            guard: and4("isOpenControlled", "closeOnSelect"),
+            guard: and5("isOpenControlled", "closeOnSelect"),
             actions: ["selectItem", "invokeOnClose"]
           },
           {
@@ -8994,11 +10829,11 @@ var machine5 = createMachine4({
     effects: {
       trackDismissableLayer({ send, prop, scope }) {
         if (prop("disableLayer")) return;
-        const contentEl = () => getContentEl(scope);
+        const contentEl = () => getContentEl2(scope);
         return trackDismissableElement(contentEl, {
           type: "listbox",
           defer: true,
-          exclude: () => [getInputEl(scope), getTriggerEl(scope), getClearTriggerEl(scope)],
+          exclude: () => [getInputEl(scope), getTriggerEl2(scope), getClearTriggerEl2(scope)],
           onFocusOutside: prop("onFocusOutside"),
           onPointerDownOutside: prop("onPointerDownOutside"),
           onInteractOutside: prop("onInteractOutside"),
@@ -9013,8 +10848,8 @@ var machine5 = createMachine4({
         });
       },
       trackPlacement({ context, prop, scope }) {
-        const anchorEl = () => getControlEl(scope) || getTriggerEl(scope);
-        const positionerEl = () => getPositionerEl(scope);
+        const anchorEl = () => getControlEl(scope) || getTriggerEl2(scope);
+        const positionerEl = () => getPositionerEl2(scope);
         context.set("currentPlacement", prop("positioning").placement);
         return getPlacement(anchorEl, positionerEl, {
           ...prop("positioning"),
@@ -9031,18 +10866,18 @@ var machine5 = createMachine4({
           const pointer = event.current().type.includes("POINTER");
           const highlightedValue = context.get("highlightedValue");
           if (pointer || !highlightedValue) return;
-          const contentEl = getContentEl(scope);
+          const contentEl = getContentEl2(scope);
           const scrollToIndexFn = prop("scrollToIndexFn");
           if (scrollToIndexFn) {
             const highlightedIndex = prop("collection").indexOf(highlightedValue);
             scrollToIndexFn({
               index: highlightedIndex,
               immediate,
-              getElement: () => getItemEl(scope, highlightedValue)
+              getElement: () => getItemEl2(scope, highlightedValue)
             });
             return;
           }
-          const itemEl = getItemEl(scope, highlightedValue);
+          const itemEl = getItemEl2(scope, highlightedValue);
           const raf_cleanup = raf2(() => {
             scrollIntoView(itemEl, { rootEl: contentEl, block: "nearest" });
           });
@@ -9063,7 +10898,7 @@ var machine5 = createMachine4({
     actions: {
       reposition({ context, prop, scope, event }) {
         const controlEl = () => getControlEl(scope);
-        const positionerEl = () => getPositionerEl(scope);
+        const positionerEl = () => getPositionerEl2(scope);
         getPlacement(controlEl, positionerEl, {
           ...prop("positioning"),
           ...event.options,
@@ -9083,15 +10918,15 @@ var machine5 = createMachine4({
       },
       selectHighlightedItem(params) {
         const { context, prop } = params;
-        const collection2 = prop("collection");
+        const collection22 = prop("collection");
         const highlightedValue = context.get("highlightedValue");
-        if (!highlightedValue || !collection2.has(highlightedValue)) return;
+        if (!highlightedValue || !collection22.has(highlightedValue)) return;
         const nextValue = prop("multiple") ? addOrRemove(context.get("value"), highlightedValue) : [highlightedValue];
         prop("onSelect")?.({ value: nextValue, itemValue: highlightedValue });
         context.set("value", nextValue);
-        const inputValue = match(prop("selectionBehavior"), {
+        const inputValue = match2(prop("selectionBehavior"), {
           preserve: context.get("inputValue"),
-          replace: collection2.stringifyMany(nextValue),
+          replace: collection22.stringifyMany(nextValue),
           clear: ""
         });
         context.set("inputValue", inputValue);
@@ -9100,15 +10935,15 @@ var machine5 = createMachine4({
         nextTick(() => {
           const highlightedValue = context.get("highlightedValue");
           if (highlightedValue == null) return;
-          const itemEl = getItemEl(scope, highlightedValue);
-          const contentEl = getContentEl(scope);
+          const itemEl = getItemEl2(scope, highlightedValue);
+          const contentEl = getContentEl2(scope);
           const scrollToIndexFn = prop("scrollToIndexFn");
           if (scrollToIndexFn) {
             const highlightedIndex = prop("collection").indexOf(highlightedValue);
             scrollToIndexFn({
               index: highlightedIndex,
               immediate: true,
-              getElement: () => getItemEl(scope, highlightedValue)
+              getElement: () => getItemEl2(scope, highlightedValue)
             });
             return;
           }
@@ -9122,7 +10957,7 @@ var machine5 = createMachine4({
           const nextValue = prop("multiple") ? addOrRemove(context.get("value"), event.value) : [event.value];
           prop("onSelect")?.({ value: nextValue, itemValue: event.value });
           context.set("value", nextValue);
-          const inputValue = match(prop("selectionBehavior"), {
+          const inputValue = match2(prop("selectionBehavior"), {
             preserve: context.get("inputValue"),
             replace: prop("collection").stringifyMany(nextValue),
             clear: ""
@@ -9136,7 +10971,7 @@ var machine5 = createMachine4({
         flush(() => {
           const nextValue = remove2(context.get("value"), event.value);
           context.set("value", nextValue);
-          const inputValue = match(prop("selectionBehavior"), {
+          const inputValue = match2(prop("selectionBehavior"), {
             preserve: context.get("inputValue"),
             replace: prop("collection").stringifyMany(nextValue),
             clear: ""
@@ -9151,7 +10986,7 @@ var machine5 = createMachine4({
       },
       setFinalFocus({ scope }) {
         raf2(() => {
-          const triggerEl = getTriggerEl(scope);
+          const triggerEl = getTriggerEl2(scope);
           if (triggerEl?.dataset.focusable == null) {
             focusInputEl(scope);
           } else {
@@ -9176,7 +11011,7 @@ var machine5 = createMachine4({
       },
       revertInputValue({ context, prop, computed }) {
         const selectionBehavior = prop("selectionBehavior");
-        const inputValue = match(selectionBehavior, {
+        const inputValue = match2(selectionBehavior, {
           replace: computed("hasSelectedItems") ? computed("valueAsString") : "",
           preserve: context.get("inputValue"),
           clear: ""
@@ -9187,7 +11022,7 @@ var machine5 = createMachine4({
         const { context, flush, event, prop } = params;
         flush(() => {
           context.set("value", event.value);
-          const inputValue = match(prop("selectionBehavior"), {
+          const inputValue = match2(prop("selectionBehavior"), {
             preserve: context.get("inputValue"),
             replace: prop("collection").stringifyMany(event.value),
             clear: ""
@@ -9199,7 +11034,7 @@ var machine5 = createMachine4({
         const { context, flush, prop } = params;
         flush(() => {
           context.set("value", []);
-          const inputValue = match(prop("selectionBehavior"), {
+          const inputValue = match2(prop("selectionBehavior"), {
             preserve: context.get("inputValue"),
             replace: prop("collection").stringifyMany([]),
             clear: ""
@@ -9214,10 +11049,10 @@ var machine5 = createMachine4({
           scrollToIndexFn({
             index: 0,
             immediate: true,
-            getElement: () => getItemEl(scope, firstValue)
+            getElement: () => getItemEl2(scope, firstValue)
           });
         } else {
-          const contentEl = getContentEl(scope);
+          const contentEl = getContentEl2(scope);
           if (!contentEl) return;
           contentEl.scrollTop = 0;
         }
@@ -9231,7 +11066,7 @@ var machine5 = createMachine4({
         prop("onOpenChange")?.({ open: false, reason, value: context.get("value") });
       },
       highlightFirstItem({ context, prop, scope }) {
-        const exec = getContentEl(scope) ? queueMicrotask : raf2;
+        const exec = getContentEl2(scope) ? queueMicrotask : raf2;
         exec(() => {
           const value = prop("collection").firstValue;
           if (value) context.set("highlightedValue", value);
@@ -9242,7 +11077,7 @@ var machine5 = createMachine4({
         action(["highlightFirstItem"]);
       },
       highlightLastItem({ context, prop, scope }) {
-        const exec = getContentEl(scope) ? queueMicrotask : raf2;
+        const exec = getContentEl2(scope) ? queueMicrotask : raf2;
         exec(() => {
           const value = prop("collection").lastValue;
           if (value) context.set("highlightedValue", value);
@@ -9251,24 +11086,24 @@ var machine5 = createMachine4({
       highlightNextItem({ context, prop }) {
         let value = null;
         const highlightedValue = context.get("highlightedValue");
-        const collection2 = prop("collection");
+        const collection22 = prop("collection");
         if (highlightedValue) {
-          value = collection2.getNextValue(highlightedValue);
-          if (!value && prop("loopFocus")) value = collection2.firstValue;
+          value = collection22.getNextValue(highlightedValue);
+          if (!value && prop("loopFocus")) value = collection22.firstValue;
         } else {
-          value = collection2.firstValue;
+          value = collection22.firstValue;
         }
         if (value) context.set("highlightedValue", value);
       },
       highlightPrevItem({ context, prop }) {
         let value = null;
         const highlightedValue = context.get("highlightedValue");
-        const collection2 = prop("collection");
+        const collection22 = prop("collection");
         if (highlightedValue) {
-          value = collection2.getPreviousValue(highlightedValue);
-          if (!value && prop("loopFocus")) value = collection2.lastValue;
+          value = collection22.getPreviousValue(highlightedValue);
+          if (!value && prop("loopFocus")) value = collection22.lastValue;
         } else {
-          value = collection2.lastValue;
+          value = collection22.lastValue;
         }
         if (value) context.set("highlightedValue", value);
       },
@@ -9291,21 +11126,21 @@ var machine5 = createMachine4({
       },
       highlightLastOrSelectedItem({ context, prop, computed }) {
         raf2(() => {
-          const collection2 = prop("collection");
+          const collection22 = prop("collection");
           let value = null;
           if (computed("hasSelectedItems")) {
-            value = collection2.sort(context.get("value"))[0];
+            value = collection22.sort(context.get("value"))[0];
           } else {
-            value = collection2.lastValue;
+            value = collection22.lastValue;
           }
           if (value) context.set("highlightedValue", value);
         });
       },
       autofillInputValue({ context, computed, prop, event, scope }) {
         const inputEl = getInputEl(scope);
-        const collection2 = prop("collection");
+        const collection22 = prop("collection");
         if (!computed("autoComplete") || !inputEl || !event.keypress) return;
-        const valueText = collection2.stringify(context.get("highlightedValue"));
+        const valueText = collection22.stringify(context.get("highlightedValue"));
         raf2(() => {
           inputEl.value = valueText || context.get("inputValue");
         });
@@ -9313,16 +11148,16 @@ var machine5 = createMachine4({
       syncSelectedItems(params) {
         queueMicrotask(() => {
           const { context, prop } = params;
-          const collection2 = prop("collection");
+          const collection22 = prop("collection");
           const value = context.get("value");
           const selectedItems = value.map((v) => {
-            const item = context.get("selectedItems").find((item2) => collection2.getItemValue(item2) === v);
-            return item || collection2.find(v);
+            const item = context.get("selectedItems").find((item2) => collection22.getItemValue(item2) === v);
+            return item || collection22.find(v);
           });
           context.set("selectedItems", selectedItems);
-          const inputValue = match(prop("selectionBehavior"), {
+          const inputValue = match2(prop("selectionBehavior"), {
             preserve: context.get("inputValue"),
-            replace: collection2.stringifyMany(value),
+            replace: collection22.stringifyMany(value),
             clear: ""
           });
           context.set("inputValue", inputValue);
@@ -9341,7 +11176,7 @@ var machine5 = createMachine4({
 function getOpenChangeReason(event) {
   return (event.previousEvent || event).src;
 }
-var props4 = createProps2()([
+var props5 = createProps2()([
   "allowCustomValue",
   "autoFocus",
   "closeOnSelect",
@@ -9389,33 +11224,81 @@ var props4 = createProps2()([
   "value",
   "alwaysSubmitOnEnter"
 ]);
-var splitProps6 = createSplitProps2(props4);
-var itemGroupLabelProps = createProps2()(["htmlFor"]);
-var splitItemGroupLabelProps = createSplitProps2(itemGroupLabelProps);
-var itemGroupProps = createProps2()(["id"]);
-var splitItemGroupProps = createSplitProps2(itemGroupProps);
-var itemProps3 = createProps2()(["item", "persistFocus"]);
-var splitItemProps3 = createSplitProps2(itemProps3);
+var splitProps7 = createSplitProps2(props5);
+var itemGroupLabelProps2 = createProps2()(["htmlFor"]);
+var splitItemGroupLabelProps2 = createSplitProps2(itemGroupLabelProps2);
+var itemGroupProps2 = createProps2()(["id"]);
+var splitItemGroupProps2 = createSplitProps2(itemGroupProps2);
+var itemProps4 = createProps2()(["item", "persistFocus"]);
+var splitItemProps4 = createSplitProps2(itemProps4);
 
 // components/combobox.ts
 var Combobox = class extends Component {
-  initMachine(props5) {
-    return new VanillaMachine(machine5, props5);
+  options = [];
+  allOptions = [];
+  hasGroups = false;
+  setAllOptions(options) {
+    this.allOptions = options;
+    this.options = options;
+  }
+  getCollection() {
+    const items = this.options || this.allOptions || [];
+    if (this.hasGroups) {
+      return collection2({
+        items,
+        itemToValue: (item) => item.id,
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => item.disabled,
+        groupBy: (item) => item.group
+      });
+    }
+    return collection2({
+      items,
+      itemToValue: (item) => item.id,
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => item.disabled
+    });
+  }
+  initMachine(props7) {
+    const self2 = this;
+    return new VanillaMachine(machine6, {
+      ...props7,
+      get collection() {
+        return self2.getCollection();
+      },
+      onOpenChange: (details) => {
+        if (details.open) {
+          self2.options = self2.allOptions;
+        }
+        if (props7.onOpenChange) {
+          props7.onOpenChange(details);
+        }
+      },
+      onInputValueChange: (details) => {
+        const filtered = self2.allOptions.filter(
+          (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+        );
+        self2.options = filtered.length > 0 ? filtered : self2.allOptions;
+        if (props7.onInputValueChange) {
+          props7.onInputValueChange(details);
+        }
+      }
+    });
   }
   initApi() {
-    return connect5(this.machine.service, normalizeProps);
+    return connect6(this.machine.service, normalizeProps);
   }
   renderItems() {
-    const contentEl = this.el.querySelector('[data-part="content"]');
+    const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
     if (!contentEl) return;
     const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
     if (!templatesContainer) return;
-    contentEl.querySelectorAll('[data-part="item"]:not([data-template])').forEach((el) => el.remove());
-    contentEl.querySelectorAll('[data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
+    contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
+    contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
     const items = this.api.collection.items;
     const groups = this.api.collection.group?.() ?? [];
-    const hasGroups = groups.some(([group2]) => group2 != null);
-    if (hasGroups) {
+    const hasGroupsInCollection = groups.some(([group2]) => group2 != null);
+    if (hasGroupsInCollection) {
       this.renderGroupedItems(contentEl, templatesContainer, groups);
     } else {
       this.renderFlatItems(contentEl, templatesContainer, items);
@@ -9425,14 +11308,14 @@ var Combobox = class extends Component {
     for (const [groupId, groupItems] of groups) {
       if (groupId == null) continue;
       const groupTemplate = templatesContainer.querySelector(
-        `[data-part="item-group"][data-id="${groupId}"][data-template]`
+        `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
       );
       if (!groupTemplate) continue;
       const groupEl = groupTemplate.cloneNode(true);
       groupEl.removeAttribute("data-template");
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
-        '[data-part="item-group-label"]'
+        '[data-scope="combobox"][data-part="item-group-label"]'
       );
       if (labelEl) {
         this.spreadProps(
@@ -9440,10 +11323,14 @@ var Combobox = class extends Component {
           this.api.getItemGroupLabelProps({ htmlFor: groupId })
         );
       }
-      groupEl.querySelectorAll('[data-part="item"][data-template]').forEach((el) => el.remove());
+      const groupContentEl = groupEl.querySelector(
+        '[data-scope="combobox"][data-part="item-group-content"]'
+      );
+      if (!groupContentEl) continue;
+      groupContentEl.innerHTML = "";
       for (const item of groupItems) {
         const itemEl = this.cloneItem(templatesContainer, item);
-        if (itemEl) groupEl.appendChild(itemEl);
+        if (itemEl) groupContentEl.appendChild(itemEl);
       }
       contentEl.appendChild(groupEl);
     }
@@ -9457,17 +11344,20 @@ var Combobox = class extends Component {
   cloneItem(templatesContainer, item) {
     const value = this.api.collection.getItemValue(item);
     const template = templatesContainer.querySelector(
-      `[data-part="item"][data-value="${value}"][data-template]`
+      `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
     );
     if (!template) return null;
     const el = template.cloneNode(true);
     el.removeAttribute("data-template");
     this.spreadProps(el, this.api.getItemProps({ item }));
-    const textEl = el.querySelector('[data-part="item-text"]');
+    const textEl = el.querySelector('[data-scope="combobox"][data-part="item-text"]');
     if (textEl) {
       this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+      if (textEl.children.length === 0) {
+        textEl.textContent = item.label || "";
+      }
     }
-    const indicatorEl = el.querySelector('[data-part="item-indicator"]');
+    const indicatorEl = el.querySelector('[data-scope="combobox"][data-part="item-indicator"]');
     if (indicatorEl) {
       this.spreadProps(
         indicatorEl,
@@ -9477,7 +11367,7 @@ var Combobox = class extends Component {
     return el;
   }
   render() {
-    const root = this.el.querySelector('[data-part="root"]') ?? this.el;
+    const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
     [
       "label",
@@ -9487,12 +11377,12 @@ var Combobox = class extends Component {
       "clear-trigger",
       "positioner"
     ].forEach((part) => {
-      const el = this.el.querySelector(`[data-part="${part}"]`);
+      const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
       if (!el) return;
       const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
       this.spreadProps(el, this.api[apiMethod]());
     });
-    const contentEl = this.el.querySelector('[data-part="content"]');
+    const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
       this.renderItems();
@@ -9501,37 +11391,28 @@ var Combobox = class extends Component {
 };
 
 // hooks/combobox.ts
+function snakeToCamel2(str) {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+function transformPositioningOptions2(obj) {
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = snakeToCamel2(key);
+    result[camelKey] = value;
+  }
+  return result;
+}
 var ComboboxHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
-    this.allItems = allItems;
     const hasGroups = allItems.some((item) => item.group !== void 0);
-    const createCollection = (items) => {
-      if (hasGroups) {
-        return collection({
-          items,
-          itemToValue: (item) => item.id,
-          itemToString: (item) => item.label,
-          isItemDisabled: (item) => item.disabled,
-          groupBy: (item) => item.group
-        });
-      }
-      return collection({
-        items,
-        itemToValue: (item) => item.id,
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => item.disabled
-      });
-    };
-    const props5 = {
+    const props7 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
-      ...getBoolean(el, "controlled") ? { inputValue: getStringList(el, "value")?.[0] ?? "" } : { defaultInputValue: getStringList(el, "defaultValue")?.[0] ?? "" },
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
-      collection: createCollection(allItems),
       alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
       autoFocus: getBoolean(el, "autoFocus"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
@@ -9540,33 +11421,25 @@ var ComboboxHook = {
       loopFocus: getBoolean(el, "loopFocus"),
       multiple: getBoolean(el, "multiple"),
       invalid: getBoolean(el, "invalid"),
-      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      allowCustomValue: false,
+      selectionBehavior: "replace",
       name: getString(el, "name"),
+      form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
-      positioning: {
-        hideWhenDetached: getBoolean(el, "hideWhenDetached"),
-        strategy: getString(el, "strategy", ["absolute", "fixed"]),
-        placement: getString(el, "placement", ["top", "bottom", "left", "right"]),
-        offset: {
-          mainAxis: getNumber(el, "offsetMainAxis"),
-          crossAxis: getNumber(el, "offsetCrossAxis")
-        },
-        gutter: getNumber(el, "gutter"),
-        shift: getNumber(el, "shift"),
-        overflowPadding: getNumber(el, "overflowPadding"),
-        flip: getBoolean(el, "flip"),
-        slide: getBoolean(el, "slide"),
-        overlap: getBoolean(el, "overlap"),
-        sameWidth: getBoolean(el, "sameWidth"),
-        fitViewport: getBoolean(el, "fitViewport")
-      },
-      onOpenChange: (details) => {
-        if (details.open && this.combobox && this.allItems) {
-          this.combobox.updateProps({
-            collection: createCollection(this.allItems)
-          });
+      positioning: (() => {
+        const positioningJson = el.dataset.positioning;
+        if (positioningJson) {
+          try {
+            const parsed = JSON.parse(positioningJson);
+            return transformPositioningOptions2(parsed);
+          } catch {
+            return void 0;
+          }
         }
+        return void 0;
+      })(),
+      onOpenChange: (details) => {
         const eventName = getString(el, "onOpenChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -9592,14 +11465,6 @@ var ComboboxHook = {
         }
       },
       onInputValueChange: (details) => {
-        if (!this.combobox || !this.allItems) return;
-        const filtered = this.allItems.filter(
-          (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-        );
-        const currentItems = filtered.length > 0 ? filtered : this.allItems;
-        this.combobox.updateProps({
-          collection: createCollection(currentItems)
-        });
         const eventName = getString(el, "onInputValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -9621,45 +11486,45 @@ var ComboboxHook = {
             })
           );
         }
+      },
+      onValueChange: (details) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.value,
+            items: details.items,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.value,
+                items: details.items,
+                id: el.id
+              }
+            })
+          );
+        }
       }
     };
-    const combobox = new Combobox(el, props5);
+    const combobox = new Combobox(el, props7);
+    combobox.hasGroups = hasGroups;
+    combobox.setAllOptions(allItems);
     combobox.init();
     this.combobox = combobox;
     this.handlers = [];
   },
   updated() {
     const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    if (JSON.stringify(newCollection) !== JSON.stringify(this.allItems)) {
-      this.allItems = newCollection;
-      const hasGroups = newCollection.some((item) => item.group !== void 0);
-      const createCollection = (items) => {
-        if (hasGroups) {
-          return collection({
-            items,
-            itemToValue: (item) => item.id,
-            itemToString: (item) => item.label,
-            isItemDisabled: (item) => item.disabled,
-            groupBy: (item) => item.group
-          });
-        }
-        return collection({
-          items,
-          itemToValue: (item) => item.id,
-          itemToString: (item) => item.label,
-          isItemDisabled: (item) => item.disabled
-        });
-      };
-      this.combobox?.updateProps({
-        collection: createCollection(newCollection)
-      });
+    const hasGroups = newCollection.some((item) => item.group !== void 0);
+    if (this.combobox) {
+      this.combobox.hasGroups = hasGroups;
+      this.combobox.setAllOptions(newCollection);
     }
-    this.combobox?.updateProps({
-      disabled: getBoolean(this.el, "disabled"),
-      placeholder: getString(this.el, "placeholder"),
-      name: getString(this.el, "name"),
-      ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }
-    });
   },
   destroyed() {
     if (this.handlers) {
@@ -9671,8 +11536,617 @@ var ComboboxHook = {
   }
 };
 
+// ../node_modules/.pnpm/@zag-js+focus-visible@1.33.1/node_modules/@zag-js/focus-visible/dist/index.mjs
+function isValidKey2(e) {
+  return !(e.metaKey || !isMac2() && e.altKey || e.ctrlKey || e.key === "Control" || e.key === "Shift" || e.key === "Meta");
+}
+var nonTextInputTypes2 = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
+function isKeyboardFocusEvent2(isTextInput, modality, e) {
+  const target = e ? getEventTarget2(e) : null;
+  const win = getWindow2(target);
+  isTextInput = isTextInput || target instanceof win.HTMLInputElement && !nonTextInputTypes2.has(target?.type) || target instanceof win.HTMLTextAreaElement || target instanceof win.HTMLElement && target.isContentEditable;
+  return !(isTextInput && modality === "keyboard" && e instanceof win.KeyboardEvent && !Reflect.has(FOCUS_VISIBLE_INPUT_KEYS2, e.key));
+}
+var currentModality2 = null;
+var changeHandlers2 = /* @__PURE__ */ new Set();
+var listenerMap2 = /* @__PURE__ */ new Map();
+var hasEventBeforeFocus2 = false;
+var hasBlurredWindowRecently2 = false;
+var FOCUS_VISIBLE_INPUT_KEYS2 = {
+  Tab: true,
+  Escape: true
+};
+function triggerChangeHandlers2(modality, e) {
+  for (let handler of changeHandlers2) {
+    handler(modality, e);
+  }
+}
+function handleKeyboardEvent2(e) {
+  hasEventBeforeFocus2 = true;
+  if (isValidKey2(e)) {
+    currentModality2 = "keyboard";
+    triggerChangeHandlers2("keyboard", e);
+  }
+}
+function handlePointerEvent2(e) {
+  currentModality2 = "pointer";
+  if (e.type === "mousedown" || e.type === "pointerdown") {
+    hasEventBeforeFocus2 = true;
+    triggerChangeHandlers2("pointer", e);
+  }
+}
+function handleClickEvent2(e) {
+  if (isVirtualClick2(e)) {
+    hasEventBeforeFocus2 = true;
+    currentModality2 = "virtual";
+  }
+}
+function handleFocusEvent2(e) {
+  const target = getEventTarget2(e);
+  if (target === getWindow2(target) || target === getDocument2(target)) {
+    return;
+  }
+  if (!hasEventBeforeFocus2 && !hasBlurredWindowRecently2) {
+    currentModality2 = "virtual";
+    triggerChangeHandlers2("virtual", e);
+  }
+  hasEventBeforeFocus2 = false;
+  hasBlurredWindowRecently2 = false;
+}
+function handleWindowBlur2() {
+  hasEventBeforeFocus2 = false;
+  hasBlurredWindowRecently2 = true;
+}
+function setupGlobalFocusEvents2(root) {
+  if (typeof window === "undefined" || listenerMap2.get(getWindow2(root))) {
+    return;
+  }
+  const win = getWindow2(root);
+  const doc = getDocument2(root);
+  let focus = win.HTMLElement.prototype.focus;
+  function patchedFocus() {
+    currentModality2 = "virtual";
+    triggerChangeHandlers2("virtual", null);
+    hasEventBeforeFocus2 = true;
+    focus.apply(this, arguments);
+  }
+  try {
+    Object.defineProperty(win.HTMLElement.prototype, "focus", {
+      configurable: true,
+      value: patchedFocus
+    });
+  } catch {
+  }
+  doc.addEventListener("keydown", handleKeyboardEvent2, true);
+  doc.addEventListener("keyup", handleKeyboardEvent2, true);
+  doc.addEventListener("click", handleClickEvent2, true);
+  win.addEventListener("focus", handleFocusEvent2, true);
+  win.addEventListener("blur", handleWindowBlur2, false);
+  if (typeof win.PointerEvent !== "undefined") {
+    doc.addEventListener("pointerdown", handlePointerEvent2, true);
+    doc.addEventListener("pointermove", handlePointerEvent2, true);
+    doc.addEventListener("pointerup", handlePointerEvent2, true);
+  } else {
+    doc.addEventListener("mousedown", handlePointerEvent2, true);
+    doc.addEventListener("mousemove", handlePointerEvent2, true);
+    doc.addEventListener("mouseup", handlePointerEvent2, true);
+  }
+  win.addEventListener(
+    "beforeunload",
+    () => {
+      tearDownWindowFocusTracking2(root);
+    },
+    { once: true }
+  );
+  listenerMap2.set(win, { focus });
+}
+var tearDownWindowFocusTracking2 = (root, loadListener) => {
+  const win = getWindow2(root);
+  const doc = getDocument2(root);
+  const listenerData = listenerMap2.get(win);
+  if (!listenerData) {
+    return;
+  }
+  try {
+    Object.defineProperty(win.HTMLElement.prototype, "focus", {
+      configurable: true,
+      value: listenerData.focus
+    });
+  } catch {
+  }
+  doc.removeEventListener("keydown", handleKeyboardEvent2, true);
+  doc.removeEventListener("keyup", handleKeyboardEvent2, true);
+  doc.removeEventListener("click", handleClickEvent2, true);
+  win.removeEventListener("focus", handleFocusEvent2, true);
+  win.removeEventListener("blur", handleWindowBlur2, false);
+  if (typeof win.PointerEvent !== "undefined") {
+    doc.removeEventListener("pointerdown", handlePointerEvent2, true);
+    doc.removeEventListener("pointermove", handlePointerEvent2, true);
+    doc.removeEventListener("pointerup", handlePointerEvent2, true);
+  } else {
+    doc.removeEventListener("mousedown", handlePointerEvent2, true);
+    doc.removeEventListener("mousemove", handlePointerEvent2, true);
+    doc.removeEventListener("mouseup", handlePointerEvent2, true);
+  }
+  listenerMap2.delete(win);
+};
+function isFocusVisible2() {
+  return currentModality2 === "keyboard";
+}
+function trackFocusVisible2(props7 = {}) {
+  const { isTextInput, autoFocus, onChange, root } = props7;
+  setupGlobalFocusEvents2(root);
+  onChange?.({ isFocusVisible: autoFocus || isFocusVisible2(), modality: currentModality2 });
+  const handler = (modality, e) => {
+    if (!isKeyboardFocusEvent2(!!isTextInput, modality, e)) return;
+    onChange?.({ isFocusVisible: isFocusVisible2(), modality });
+  };
+  changeHandlers2.add(handler);
+  return () => {
+    changeHandlers2.delete(handler);
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+checkbox@1.33.1/node_modules/@zag-js/checkbox/dist/index.mjs
+var anatomy7 = createAnatomy2("checkbox").parts("root", "label", "control", "indicator");
+var parts7 = anatomy7.build();
+var getRootId7 = (ctx) => ctx.ids?.root ?? `checkbox:${ctx.id}`;
+var getLabelId4 = (ctx) => ctx.ids?.label ?? `checkbox:${ctx.id}:label`;
+var getControlId4 = (ctx) => ctx.ids?.control ?? `checkbox:${ctx.id}:control`;
+var getHiddenInputId2 = (ctx) => ctx.ids?.hiddenInput ?? `checkbox:${ctx.id}:input`;
+var getRootEl5 = (ctx) => ctx.getById(getRootId7(ctx));
+var getHiddenInputEl2 = (ctx) => ctx.getById(getHiddenInputId2(ctx));
+function connect7(service, normalize) {
+  const { send, context, prop, computed, scope } = service;
+  const disabled = !!prop("disabled");
+  const readOnly = !!prop("readOnly");
+  const required = !!prop("required");
+  const invalid = !!prop("invalid");
+  const focused = !disabled && context.get("focused");
+  const focusVisible = !disabled && context.get("focusVisible");
+  const checked = computed("checked");
+  const indeterminate = computed("indeterminate");
+  const checkedState = context.get("checked");
+  const dataAttrs = {
+    "data-active": dataAttr2(context.get("active")),
+    "data-focus": dataAttr2(focused),
+    "data-focus-visible": dataAttr2(focusVisible),
+    "data-readonly": dataAttr2(readOnly),
+    "data-hover": dataAttr2(context.get("hovered")),
+    "data-disabled": dataAttr2(disabled),
+    "data-state": indeterminate ? "indeterminate" : checked ? "checked" : "unchecked",
+    "data-invalid": dataAttr2(invalid),
+    "data-required": dataAttr2(required)
+  };
+  return {
+    checked,
+    disabled,
+    indeterminate,
+    focused,
+    checkedState,
+    setChecked(checked2) {
+      send({ type: "CHECKED.SET", checked: checked2, isTrusted: false });
+    },
+    toggleChecked() {
+      send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
+    },
+    getRootProps() {
+      return normalize.label({
+        ...parts7.root.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getRootId7(scope),
+        htmlFor: getHiddenInputId2(scope),
+        onPointerMove() {
+          if (disabled) return;
+          send({ type: "CONTEXT.SET", context: { hovered: true } });
+        },
+        onPointerLeave() {
+          if (disabled) return;
+          send({ type: "CONTEXT.SET", context: { hovered: false } });
+        },
+        onClick(event) {
+          const target = getEventTarget2(event);
+          if (target === getHiddenInputEl2(scope)) {
+            event.stopPropagation();
+          }
+        }
+      });
+    },
+    getLabelProps() {
+      return normalize.element({
+        ...parts7.label.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getLabelId4(scope)
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts7.control.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        id: getControlId4(scope),
+        "aria-hidden": true
+      });
+    },
+    getIndicatorProps() {
+      return normalize.element({
+        ...parts7.indicator.attrs,
+        ...dataAttrs,
+        dir: prop("dir"),
+        hidden: !indeterminate && !checked
+      });
+    },
+    getHiddenInputProps() {
+      return normalize.input({
+        id: getHiddenInputId2(scope),
+        type: "checkbox",
+        required: prop("required"),
+        defaultChecked: checked,
+        disabled,
+        "aria-labelledby": getLabelId4(scope),
+        "aria-invalid": invalid,
+        name: prop("name"),
+        form: prop("form"),
+        value: prop("value"),
+        style: visuallyHiddenStyle2,
+        onFocus() {
+          const focusVisible2 = isFocusVisible2();
+          send({ type: "CONTEXT.SET", context: { focused: true, focusVisible: focusVisible2 } });
+        },
+        onBlur() {
+          send({ type: "CONTEXT.SET", context: { focused: false, focusVisible: false } });
+        },
+        onClick(event) {
+          if (readOnly) {
+            event.preventDefault();
+            return;
+          }
+          const checked2 = event.currentTarget.checked;
+          send({ type: "CHECKED.SET", checked: checked2, isTrusted: true });
+        }
+      });
+    }
+  };
+}
+var { not: not7 } = createGuards2();
+var machine7 = createMachine3({
+  props({ props: props22 }) {
+    return {
+      value: "on",
+      ...props22,
+      defaultChecked: props22.defaultChecked ?? false
+    };
+  },
+  initialState() {
+    return "ready";
+  },
+  context({ prop, bindable: bindable2 }) {
+    return {
+      checked: bindable2(() => ({
+        defaultValue: prop("defaultChecked"),
+        value: prop("checked"),
+        onChange(checked) {
+          prop("onCheckedChange")?.({ checked });
+        }
+      })),
+      fieldsetDisabled: bindable2(() => ({ defaultValue: false })),
+      focusVisible: bindable2(() => ({ defaultValue: false })),
+      active: bindable2(() => ({ defaultValue: false })),
+      focused: bindable2(() => ({ defaultValue: false })),
+      hovered: bindable2(() => ({ defaultValue: false }))
+    };
+  },
+  watch({ track, context, prop, action }) {
+    track([() => prop("disabled")], () => {
+      action(["removeFocusIfNeeded"]);
+    });
+    track([() => context.get("checked")], () => {
+      action(["syncInputElement"]);
+    });
+  },
+  effects: ["trackFormControlState", "trackPressEvent", "trackFocusVisible"],
+  on: {
+    "CHECKED.TOGGLE": [
+      {
+        guard: not7("isTrusted"),
+        actions: ["toggleChecked", "dispatchChangeEvent"]
+      },
+      {
+        actions: ["toggleChecked"]
+      }
+    ],
+    "CHECKED.SET": [
+      {
+        guard: not7("isTrusted"),
+        actions: ["setChecked", "dispatchChangeEvent"]
+      },
+      {
+        actions: ["setChecked"]
+      }
+    ],
+    "CONTEXT.SET": {
+      actions: ["setContext"]
+    }
+  },
+  computed: {
+    indeterminate: ({ context }) => isIndeterminate(context.get("checked")),
+    checked: ({ context }) => isChecked(context.get("checked")),
+    disabled: ({ context, prop }) => !!prop("disabled") || context.get("fieldsetDisabled")
+  },
+  states: {
+    ready: {}
+  },
+  implementations: {
+    guards: {
+      isTrusted: ({ event }) => !!event.isTrusted
+    },
+    effects: {
+      trackPressEvent({ context, computed, scope }) {
+        if (computed("disabled")) return;
+        return trackPress2({
+          pointerNode: getRootEl5(scope),
+          keyboardNode: getHiddenInputEl2(scope),
+          isValidKey: (event) => event.key === " ",
+          onPress: () => context.set("active", false),
+          onPressStart: () => context.set("active", true),
+          onPressEnd: () => context.set("active", false)
+        });
+      },
+      trackFocusVisible({ computed, scope }) {
+        if (computed("disabled")) return;
+        return trackFocusVisible2({ root: scope.getRootNode?.() });
+      },
+      trackFormControlState({ context, scope }) {
+        return trackFormControl2(getHiddenInputEl2(scope), {
+          onFieldsetDisabledChange(disabled) {
+            context.set("fieldsetDisabled", disabled);
+          },
+          onFormReset() {
+            context.set("checked", context.initial("checked"));
+          }
+        });
+      }
+    },
+    actions: {
+      setContext({ context, event }) {
+        for (const key in event.context) {
+          context.set(key, event.context[key]);
+        }
+      },
+      syncInputElement({ context, computed, scope }) {
+        const inputEl = getHiddenInputEl2(scope);
+        if (!inputEl) return;
+        setElementChecked2(inputEl, computed("checked"));
+        inputEl.indeterminate = isIndeterminate(context.get("checked"));
+      },
+      removeFocusIfNeeded({ context, prop }) {
+        if (prop("disabled") && context.get("focused")) {
+          context.set("focused", false);
+          context.set("focusVisible", false);
+        }
+      },
+      setChecked({ context, event }) {
+        context.set("checked", event.checked);
+      },
+      toggleChecked({ context, computed }) {
+        const checked = isIndeterminate(computed("checked")) ? true : !computed("checked");
+        context.set("checked", checked);
+      },
+      dispatchChangeEvent({ computed, scope }) {
+        queueMicrotask(() => {
+          const inputEl = getHiddenInputEl2(scope);
+          dispatchInputCheckedEvent2(inputEl, { checked: computed("checked") });
+        });
+      }
+    }
+  }
+});
+function isIndeterminate(checked) {
+  return checked === "indeterminate";
+}
+function isChecked(checked) {
+  return isIndeterminate(checked) ? false : !!checked;
+}
+var props6 = createProps2()([
+  "defaultChecked",
+  "checked",
+  "dir",
+  "disabled",
+  "form",
+  "getRootNode",
+  "id",
+  "ids",
+  "invalid",
+  "name",
+  "onCheckedChange",
+  "readOnly",
+  "required",
+  "value"
+]);
+var splitProps8 = createSplitProps2(props6);
+
+// components/checkbox.ts
+var Checkbox = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props7) {
+    return new VanillaMachine(machine7, props7);
+  }
+  initApi() {
+    return connect7(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]') || this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const inputEl = this.el.querySelector('[data-scope="checkbox"][data-part="hidden-input"]');
+    if (inputEl) {
+      this.spreadProps(inputEl, this.api.getHiddenInputProps());
+    }
+    const labelEl = this.el.querySelector('[data-scope="checkbox"][data-part="label"]');
+    if (labelEl) {
+      this.spreadProps(labelEl, this.api.getLabelProps());
+    }
+    const controlEl = this.el.querySelector('[data-scope="checkbox"][data-part="control"]');
+    if (controlEl) {
+      this.spreadProps(controlEl, this.api.getControlProps());
+    }
+    const indicatorEl = this.el.querySelector('[data-scope="checkbox"][data-part="indicator"]');
+    if (indicatorEl) {
+      this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+    }
+  }
+};
+
+// hooks/checkbox.ts
+var CheckboxHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    this.wasFocused = false;
+    const indeterminateAttr = el.getAttribute("data-indeterminate");
+    const indeterminate = indeterminateAttr !== null && indeterminateAttr !== "false";
+    const checkedValue = getBoolean(el, "checked");
+    const defaultCheckedValue = getBoolean(el, "defaultChecked");
+    let checkedProp;
+    let defaultCheckedProp;
+    if (indeterminate) {
+      if (getBoolean(el, "controlled")) {
+        checkedProp = "indeterminate";
+      } else {
+        defaultCheckedProp = "indeterminate";
+      }
+    } else {
+      if (getBoolean(el, "controlled")) {
+        checkedProp = checkedValue;
+      } else {
+        defaultCheckedProp = defaultCheckedValue;
+      }
+    }
+    const zagCheckbox = new Checkbox(el, {
+      id: el.id,
+      ...checkedProp !== void 0 ? { checked: checkedProp } : {},
+      ...defaultCheckedProp !== void 0 ? { defaultChecked: defaultCheckedProp } : {},
+      disabled: getBoolean(el, "disabled"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      value: getString(el, "value"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readOnly"),
+      onCheckedChange: (details) => {
+        const eventName = getString(el, "onCheckedChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            checked: details.checked,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onCheckedChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                value: details,
+                id: el.id
+              }
+            })
+          );
+        }
+      }
+    });
+    zagCheckbox.init();
+    this.checkbox = zagCheckbox;
+    this.onSetChecked = (event) => {
+      const { checked } = event.detail;
+      zagCheckbox.api.setChecked(checked);
+    };
+    el.addEventListener("phx:checkbox:set-checked", this.onSetChecked);
+    this.onToggleChecked = () => {
+      zagCheckbox.api.toggleChecked();
+    };
+    el.addEventListener("phx:checkbox:toggle-checked", this.onToggleChecked);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("checkbox_set_checked", (payload) => {
+        const targetId = payload.id;
+        if (targetId && targetId !== el.id) return;
+        zagCheckbox.api.setChecked(payload.checked);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("checkbox_toggle_checked", (payload) => {
+        const targetId = payload.id;
+        if (targetId && targetId !== el.id) return;
+        zagCheckbox.api.toggleChecked();
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("checkbox_checked", () => {
+        this.pushEvent("checkbox_checked_response", {
+          value: zagCheckbox.api.checked
+        });
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("checkbox_focused", () => {
+        this.pushEvent("checkbox_focused_response", {
+          value: zagCheckbox.api.focused
+        });
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("checkbox_disabled", () => {
+        this.pushEvent("checkbox_disabled_response", {
+          value: zagCheckbox.api.disabled
+        });
+      })
+    );
+  },
+  beforeUpdate() {
+    this.wasFocused = this.checkbox?.api.focused ?? false;
+  },
+  updated() {
+    this.checkbox?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") },
+      disabled: getBoolean(this.el, "disabled"),
+      name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
+      value: getString(this.el, "value"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      invalid: getBoolean(this.el, "invalid"),
+      required: getBoolean(this.el, "required"),
+      readOnly: getBoolean(this.el, "readOnly"),
+      label: getString(this.el, "label")
+    });
+    if (getBoolean(this.el, "controlled")) {
+      if (this.wasFocused) {
+        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
+        hiddenInput?.focus();
+      }
+    }
+  },
+  destroyed() {
+    if (this.onSetChecked) {
+      this.el.removeEventListener("phx:checkbox:set-checked", this.onSetChecked);
+    }
+    if (this.onToggleChecked) {
+      this.el.removeEventListener("phx:checkbox:toggle-checked", this.onToggleChecked);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.checkbox?.destroy();
+  }
+};
+
 // hooks/corex.ts
-var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Switch: SwitchHook, Combobox: ComboboxHook };
+var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook };
 var corex_default = Hooks;
 export {
   corex_default as default

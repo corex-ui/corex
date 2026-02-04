@@ -1,10 +1,72 @@
 import * as combobox from "@zag-js/combobox";
+import { collection } from "@zag-js/combobox";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { OpenChangeDetails, InputValueChangeDetails } from "@zag-js/combobox";
 
 export class Combobox extends Component<combobox.Props, combobox.Api> {
+  options: any[] = [];
+  allOptions: any[] = [];
+  hasGroups: boolean = false;
+
+  setAllOptions(options: any[]) {
+    this.allOptions = options;
+    this.options = options;
+  }
+
+  private getCollection() {
+    // Ensure we always have an array
+    const items = this.options || this.allOptions || [];
+    
+    if (this.hasGroups) {
+      return collection({
+        items: items,
+        itemToValue: (item: any) => item.id,
+        itemToString: (item: any) => item.label,
+        isItemDisabled: (item: any) => item.disabled,
+        groupBy: (item: any) => item.group,
+      });
+    }
+
+    return collection({
+      items: items,
+      itemToValue: (item: any) => item.id,
+      itemToString: (item: any) => item.label,
+      isItemDisabled: (item: any) => item.disabled,
+    });
+  }
+
   initMachine(props: combobox.Props): VanillaMachine<any> {
-    return new VanillaMachine(combobox.machine, props);
+    const self = this;
+    
+    return new VanillaMachine(combobox.machine, {
+      ...props,
+      get collection() {
+        return self.getCollection();
+      },
+      onOpenChange: (details: OpenChangeDetails) => {
+        // Reset to all items when opening
+        if (details.open) {
+          self.options = self.allOptions;
+        }
+        // Call the original callback if it exists
+        if (props.onOpenChange) {
+          props.onOpenChange(details);
+        }
+      },
+      onInputValueChange: (details: InputValueChangeDetails) => {
+        // Filter items based on input
+        const filtered = self.allOptions.filter((item: any) =>
+          item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+        );
+        self.options = filtered.length > 0 ? filtered : self.allOptions;
+        
+        // Call the original callback if it exists
+        if (props.onInputValueChange) {
+          props.onInputValueChange(details);
+        }
+      },
+    });
   }
 
   initApi(): combobox.Api {
@@ -30,9 +92,9 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
     const items = this.api.collection.items;
 
     const groups = this.api.collection.group?.() ?? [];
-    const hasGroups = groups.some(([group]) => group != null);
+    const hasGroupsInCollection = groups.some(([group]) => group != null);
 
-    if (hasGroups) {
+    if (hasGroupsInCollection) {
       this.renderGroupedItems(contentEl, templatesContainer, groups);
     } else {
       this.renderFlatItems(contentEl, templatesContainer, items);
@@ -46,17 +108,17 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
   ): void {
     for (const [groupId, groupItems] of groups) {
       if (groupId == null) continue;
-
+  
       const groupTemplate = templatesContainer.querySelector<HTMLElement>(
         `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
       );
       if (!groupTemplate) continue;
-
+  
       const groupEl = groupTemplate.cloneNode(true) as HTMLElement;
       groupEl.removeAttribute("data-template");
-
+  
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
-
+  
       const labelEl = groupEl.querySelector<HTMLElement>(
         '[data-scope="combobox"][data-part="item-group-label"]'
       );
@@ -66,19 +128,24 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
           this.api.getItemGroupLabelProps({ htmlFor: groupId })
         );
       }
+  
+      const groupContentEl = groupEl.querySelector<HTMLElement>(
+        '[data-scope="combobox"][data-part="item-group-content"]'
+      );
+      if (!groupContentEl) continue;
 
-      groupEl
-        .querySelectorAll('[data-scope="combobox"][data-part="item"][data-template]')
-        .forEach(el => el.remove());
+      // Clear any template items that were cloned with the group template
+      groupContentEl.innerHTML = "";
 
       for (const item of groupItems) {
         const itemEl = this.cloneItem(templatesContainer, item);
-        if (itemEl) groupEl.appendChild(itemEl);
+        if (itemEl) groupContentEl.appendChild(itemEl);
       }
-
+  
       contentEl.appendChild(groupEl);
     }
   }
+  
 
   renderFlatItems(
     contentEl: HTMLElement,
@@ -97,6 +164,7 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
   ): HTMLElement | null {
     const value = this.api.collection.getItemValue(item);
 
+    // Find template by data-value (templates are rendered per item in Elixir when custom slots are used)
     const template = templatesContainer.querySelector<HTMLElement>(
       `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
     );
@@ -110,6 +178,10 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
     const textEl = el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="item-text"]');
     if (textEl) {
       this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+      // Only set textContent if there are no child elements (custom HTML slots preserve their structure)
+      if (textEl.children.length === 0) {
+        textEl.textContent = item.label || "";
+      }
     }
 
     const indicatorEl =

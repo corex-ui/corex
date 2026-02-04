@@ -2,6 +2,44 @@
   <h1>Toast</h1>
   <h2>Controller View</h2>
 
+  <h3>Create Flash Message</h3>
+  <.form
+    :let={f}
+    for={@changeset}
+    as={:toast}
+    action={~p"/toast"}
+    method="post"
+    id="toast-form"
+    class="flex flex-col gap-ui max-w-md"
+  >
+    <.input
+      field={f[:message]}
+      type="text"
+      label="Message"
+      placeholder="Enter flash message"
+      required
+    />
+
+    <.select
+      class="select"
+      field={f[:type]}
+      placeholder="Select flash type"
+      collection={[
+        %{label: "Info", id: "info"},
+        %{label: "Error", id: "error"}
+      ]}
+    >
+      <:label>Type</:label>
+      <:trigger>
+        <.icon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
+
+    <footer class="flex w-full justify-end gap-ui-gap">
+      <.button class="button button--accent">Create Flash Message</.button>
+    </footer>
+  </.form>
+
   <h3>Client Api</h3>
   <div class="layout__row">
     <button

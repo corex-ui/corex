@@ -13,7 +13,18 @@ defmodule Corex do
     combobox: {Corex.Combobox, [combobox: 1]},
     switch: {Corex.Switch, [switch: 1]},
     toggle_group: {Corex.ToggleGroup, [toggle_group: 1]},
-    toast: {Corex.Toast, [toast_group: 1]}
+    toast:
+      {Corex.Toast,
+       [
+         toast_group: 1,
+         toast_client_error: 1,
+         toast_server_error: 1,
+         toast_connected: 1,
+         toast_disconnected: 1
+       ]},
+    form: {Corex.Form, [get_form_id: 1]},
+    select: {Corex.Select, [select: 1]},
+    checkbox: {Corex.Checkbox, [checkbox: 1]}
   }
 
   defmacro __using__(opts \\ []) do

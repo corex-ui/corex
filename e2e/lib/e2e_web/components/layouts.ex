@@ -5,6 +5,8 @@ defmodule E2eWeb.Layouts do
   """
   use E2eWeb, :html
 
+  alias Phoenix.LiveView.JS
+
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
   # skeleton of your application, namely HTML headers
@@ -144,13 +146,23 @@ defmodule E2eWeb.Layouts do
       </div>
     </main>
 
-    <.toast_group id="layout-toast" />
-    <div phx-disconnected={
-      Corex.Toast.create_toast("We can't find the internet", "Attempting to reconnect", :loading,
-        duration: :infinity
-      )
-    }>
-    </div>
+    <Corex.Toast.toast_group id="layout-toast" flash={@flash}>
+      <:loading>
+        <.icon name="hero-arrow-path" />
+      </:loading>
+    </Corex.Toast.toast_group>
+    <.toast_client_error
+      title={gettext("We can't find the internet")}
+      description={gettext("Attempting to reconnect")}
+      type={:error}
+      duration={:infinity}
+    />
+    <.toast_server_error
+      title={gettext("Something went wrong!")}
+      description={gettext("Attempting to reconnect")}
+      type={:error}
+      duration={:infinity}
+    />
     """
   end
 

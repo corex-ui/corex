@@ -189,7 +189,7 @@ defmodule Corex.Switch do
   end
 
   def switch(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = field.errors || []
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
     assigns =
       assigns
@@ -197,7 +197,7 @@ defmodule Corex.Switch do
       |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
       |> assign_new(:id, fn -> field.id end)
       |> assign_new(:name, fn -> field.name end)
-      |> assign(:checked, field.value)
+      |> assign(:checked, Phoenix.HTML.Form.normalize_value("checkbox", field.value))
       |> assign_new(:form, fn -> field.form.id end)
 
     switch(assigns)
@@ -232,8 +232,9 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, changed: Map.get(assigns, :__changed__, nil) != nil})} />
+      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
+      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, changed: Map.get(assigns, :__changed__, nil) != nil})} />
         <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}>
           <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}></span>
         </span>

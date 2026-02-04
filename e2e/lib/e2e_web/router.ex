@@ -29,11 +29,18 @@ defmodule E2eWeb.Router do
     get "/toggle-group", PageController, :toggle_group_page
     get "/combobox", PageController, :combobox_page
     get "/toast", PageController, :toast_page
+    post "/toast", PageController, :create_toast
+    get "/select", PageController, :select_page
     live "/live/toast", ToastLive
-
+    live "/live/select", SelectLive
     live "/live/combobox", ComboboxLive
     live "/live/switch", SwitchLive
-
+    get "/checkbox", PageController, :checkbox_page
+    live "/live/checkbox", CheckboxLive
+    live "/admins", AdminLive.Index, :index
+    live "/admins/new", AdminLive.Form, :new
+    live "/admins/:id", AdminLive.Show, :show
+    live "/admins/:id/edit", AdminLive.Form, :edit
     live_capture "/captures", E2eWeb.LiveCapture
     resources "/users", UserController
   end

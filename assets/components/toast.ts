@@ -29,10 +29,15 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
     close: HTMLElement;
     ghostBefore: HTMLElement;
     ghostAfter: HTMLElement;
+    progressbar: HTMLElement;
+    loadingSpinner: HTMLElement;
   };
+  duration?: number | string;
 
   constructor(el: HTMLElement, props: ToastItemProps<T>) {
     super(el, props);
+
+    this.duration = props.duration;
 
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
@@ -40,6 +45,7 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
       <div data-scope="toast" data-part="progressbar"></div>
+      <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
 
       <div data-scope="toast" data-part="content">
         <div data-scope="toast" data-part="title"></div>
@@ -61,6 +67,8 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
       close: this.el.querySelector('[data-scope="toast"][data-part="close-trigger"]')!,
       ghostBefore: this.el.querySelector('[data-scope="toast"][data-part="ghost-before"]')!,
       ghostAfter: this.el.querySelector('[data-scope="toast"][data-part="ghost-after"]')!,
+      progressbar: this.el.querySelector('[data-scope="toast"][data-part="progressbar"]')!,
+      loadingSpinner: this.el.querySelector('[data-scope="toast"][data-part="loading-spinner"]')!,
     };
   }
 
@@ -90,6 +98,26 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
 
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
+
+    // Handle loading spinner vs progressbar based on duration
+    const duration = this.duration;
+    const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
+    const toastGroup = this.el.closest('[phx-hook="Toast"]') as HTMLElement;
+    const loadingIconTemplate = toastGroup?.querySelector('[data-loading-icon-template]') as HTMLElement;
+    const loadingIcon = loadingIconTemplate?.innerHTML;
+
+    if (isInfinity) {
+      this.parts.progressbar.style.display = "none";
+      this.parts.loadingSpinner.style.display = "flex";
+      this.el.setAttribute("data-duration-infinity", "true");
+      if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
+        this.parts.loadingSpinner.innerHTML = loadingIcon;
+      }
+    } else {
+      this.parts.progressbar.style.display = "block";
+      this.parts.loadingSpinner.style.display = "none";
+      this.el.removeAttribute("data-duration-infinity");
+    }
   }
 
   destroy = () => {
@@ -159,6 +187,7 @@ export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
         item.init();
         this.toastComponents.set(toastData.id, item);
       } else {
+        item.duration = toastData.duration;
         item.updateProps({
           ...toastData,
           parent: this.machine.service,

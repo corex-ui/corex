@@ -4,7 +4,7 @@ defmodule Corex.MixProject do
   def project do
     [
       app: :corex,
-      version: "0.1.0-alpha.10",
+      version: "0.1.0-alpha.11",
       elixir: "~> 1.17",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
@@ -30,6 +30,7 @@ defmodule Corex.MixProject do
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0"},
+      {:ecto, "~> 3.10"},
       {:esbuild, "~> 0.8", only: :dev},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false, warn_if_outdated: true},
       {:makeup, "~> 1.2", only: :dev},
@@ -80,14 +81,22 @@ defmodule Corex.MixProject do
     [
       Components: [
         Corex.Accordion,
+        Corex.Checkbox,
         Corex.Combobox,
+        Corex.Select,
         Corex.Switch,
         Corex.Toast,
         Corex.ToggleGroup
       ],
       Helpers: [
+        Corex.Form
+      ],
+      Structures: [
         Corex.Collection.Item,
-        Corex.Accordion.Item
+        Corex.Accordion.Item,
+        Corex.Flash.Info,
+        Corex.Flash.Error,
+        Corex.Positioning
       ]
     ]
   end
