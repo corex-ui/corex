@@ -1844,6 +1844,8 @@ var AccordionHook = {
     this.onSetValue = (event) => {
       const { value } = event.detail;
       accordion.api.setValue(value);
+      const wasFocused = this.accordion?.api?.focusedValue;
+      console.log("wasFocused", wasFocused);
     };
     el.addEventListener("phx:accordion:set-value", this.onSetValue);
     this.handlers = [];
@@ -1885,7 +1887,7 @@ var AccordionHook = {
     const wasFocused = this.accordion?.api?.focusedValue;
     if (wasFocused) {
       const triggerEl = this.el.querySelector(
-        `[data-scope="accordion"][data-part="item-trigger"][id*="${wasFocused}"]`
+        `[data-scope="accordion"][data-part="item"][data-value="${wasFocused}"] [data-part="item-trigger"]`
       );
       if (triggerEl && document.activeElement !== triggerEl) {
         triggerEl.focus();

@@ -1974,8 +1974,11 @@ var Corex = (() => {
       accordion.init();
       this.accordion = accordion;
       this.onSetValue = (event) => {
+        var _a, _b;
         const { value } = event.detail;
         accordion.api.setValue(value);
+        const wasFocused = (_b = (_a = this.accordion) == null ? void 0 : _a.api) == null ? void 0 : _b.focusedValue;
+        console.log("wasFocused", wasFocused);
       };
       el.addEventListener("phx:accordion:set-value", this.onSetValue);
       this.handlers = [];
@@ -2018,7 +2021,7 @@ var Corex = (() => {
       const wasFocused = (_c = (_b = this.accordion) == null ? void 0 : _b.api) == null ? void 0 : _c.focusedValue;
       if (wasFocused) {
         const triggerEl = this.el.querySelector(
-          `[data-scope="accordion"][data-part="item-trigger"][id*="${wasFocused}"]`
+          `[data-scope="accordion"][data-part="item"][data-value="${wasFocused}"] [data-part="item-trigger"]`
         );
         if (triggerEl && document.activeElement !== triggerEl) {
           triggerEl.focus();
