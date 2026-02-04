@@ -40,7 +40,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.11"}
+    {:corex, "~> 0.1.0-alpha.12"}
   ]
 end
 ```
@@ -143,6 +143,8 @@ In your `app.css` add the following:
 @import "../corex/components/accordion.css";
 ```
 
+- Delete Daisy UI related css and plugin `app.css`
+  
 For more details see [Corex Design](https://hexdocs.pm/corex/Mix.Tasks.Corex.Design.html) mix task use
 
 ## Add your first component

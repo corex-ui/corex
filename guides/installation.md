@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.11"}
+    {:corex, "~> 0.1.0-alpha.12"}
   ]
 end
 ```
@@ -132,7 +132,7 @@ Add `data-theme="neo" data-mode="light"` to your `html` tag in `root.html.heex`
 
 - Add CSS imports
   
-In your `app.css` add the following and delete the Daisy UI plugin
+In your `app.css` add the following
 
 ```css
 @import "../corex/main.css";
@@ -140,6 +140,8 @@ In your `app.css` add the following and delete the Daisy UI plugin
 @import "../corex/components/typo.css";
 @import "../corex/components/accordion.css";
 ```
+
+- Delete Daisy UI related css and plugin `app.css`
 
 For more details see [Corex Design](Mix.Tasks.Corex.Design.html) mix task use
 
