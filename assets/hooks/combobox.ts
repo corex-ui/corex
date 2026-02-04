@@ -1,59 +1,45 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Combobox } from "../components/combobox";
-import type { Props, Placement, InputValueChangeDetails, OpenChangeDetails } from "@zag-js/combobox";
-import { collection } from "@zag-js/combobox";
+import type { Props, InputValueChangeDetails, OpenChangeDetails, ValueChangeDetails, PositioningOptions } from "@zag-js/combobox";
 import type { Direction } from "@zag-js/types";
 
-import { getString, getBoolean, getNumber, getStringList } from "../lib/util";
+import { getString, getBoolean, getStringList } from "../lib/util";
 
 type ComboboxHookState = {
   combobox?: Combobox;
   handlers?: Array<CallbackRef>;
-  allItems?: any[];
 };
+
+function snakeToCamel(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+
+function transformPositioningOptions(obj: any): PositioningOptions {
+  const result: any = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = snakeToCamel(key);
+    result[camelKey] = value;
+  }
+  return result as PositioningOptions;
+}
 
 const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
-    // Store all items from the server
+    // Get all items from the server
     const allItems = JSON.parse(el.dataset.collection || "[]");
-    this.allItems = allItems;
-    
     const hasGroups = allItems.some((item: any) => item.group !== undefined);
-    
-    const createCollection = (items: any[]) => {
-      if (hasGroups) {
-        return collection({
-          items: items,
-          itemToValue: (item: any) => item.id,
-          itemToString: (item: any) => item.label,
-          isItemDisabled: (item: any) => item.disabled,
-          groupBy: (item: any) => item.group,
-        });
-      }
-      
-      return collection({
-        items: items,
-        itemToValue: (item: any) => item.id,
-        itemToString: (item: any) => item.label,
-        isItemDisabled: (item: any) => item.disabled,
-      });
-    };
 
     const props: Props = {
       id: el.id,
       ...(getBoolean(el, "controlled")
         ? { value: getStringList(el, "value") }
         : { defaultValue: getStringList(el, "defaultValue") }),
-      ...(getBoolean(el, "controlled")
-        ? { inputValue: getStringList(el, "value")?.[0] ?? "" }
-        : { defaultInputValue: getStringList(el, "defaultValue")?.[0] ?? "" }),
       disabled: getBoolean(el, "disabled"),
       placeholder: getString(el, "placeholder"),
-      collection: createCollection(allItems),
       alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
       autoFocus: getBoolean(el, "autoFocus"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
@@ -62,37 +48,25 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       loopFocus: getBoolean(el, "loopFocus"),
       multiple: getBoolean(el, "multiple"),
       invalid: getBoolean(el, "invalid"),
-      ...(getBoolean(el, "controlled")
-        ? { open: getBoolean(el, "open") }
-        : { defaultOpen: getBoolean(el, "defaultOpen") }),
+      allowCustomValue: false,
+      selectionBehavior: "replace",
       name: getString(el, "name"),
+      form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
-      positioning: {
-        hideWhenDetached: getBoolean(el, "hideWhenDetached"),
-        strategy: getString(el, "strategy", ["absolute", "fixed"]),
-        placement: getString<Placement>(el, "placement", ["top", "bottom", "left", "right"]),
-        offset: {
-          mainAxis: getNumber(el, "offsetMainAxis"),
-          crossAxis: getNumber(el, "offsetCrossAxis"),
-        },
-        gutter: getNumber(el, "gutter"),
-        shift: getNumber(el, "shift"),
-        overflowPadding: getNumber(el, "overflowPadding"),
-        flip: getBoolean(el, "flip"),
-        slide: getBoolean(el, "slide"),
-        overlap: getBoolean(el, "overlap"),
-        sameWidth: getBoolean(el, "sameWidth"),
-        fitViewport: getBoolean(el, "fitViewport"),
-      },
-      onOpenChange: (details: OpenChangeDetails) => {
-        // Reset to all items when opening
-        if (details.open && this.combobox && this.allItems) {
-          this.combobox.updateProps({
-            collection: createCollection(this.allItems),
-          });
+      positioning: (() => {
+        const positioningJson = el.dataset.positioning;
+        if (positioningJson) {
+          try {
+            const parsed = JSON.parse(positioningJson);
+            return transformPositioningOptions(parsed);
+          } catch {
+            return undefined;
+          }
         }
-
+        return undefined;
+      })(),
+      onOpenChange: (details: OpenChangeDetails) => {
         const eventName = getString(el, "onOpenChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -119,19 +93,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         }
       },
       onInputValueChange: (details: InputValueChangeDetails) => {
-        if (!this.combobox || !this.allItems) return;
-
-        // Filter items based on input
-        const filtered = this.allItems.filter((item: any) =>
-          item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-        );
-        
-        // Update collection with filtered items
-        const currentItems = filtered.length > 0 ? filtered : this.allItems;
-        this.combobox.updateProps({
-          collection: createCollection(currentItems),
-        });
-
         const eventName = getString(el, "onInputValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -155,9 +116,40 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
           );
         }
       },
+      onValueChange: (details: ValueChangeDetails) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.value,
+            items: details.items,
+            id: el.id,
+          });
+        }
+
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.value,
+                items: details.items,
+                id: el.id,
+              },
+            })
+          );
+        }
+      },
     };
 
+    // Create combobox instance
     const combobox = new Combobox(el, props);
+    
+    // IMPORTANT: Set options BEFORE calling init()
+    combobox.hasGroups = hasGroups;
+    combobox.setAllOptions(allItems);
+    
+    // Now initialize (this will call initMachine which accesses the getter)
     combobox.init();
 
     this.combobox = combobox;
@@ -165,44 +157,14 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
-    // Update allItems if collection changed
+    // Update options when collection changes from server
     const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    if (JSON.stringify(newCollection) !== JSON.stringify(this.allItems)) {
-      this.allItems = newCollection;
-      
-      const hasGroups = newCollection.some((item: any) => item.group !== undefined);
-      const createCollection = (items: any[]) => {
-        if (hasGroups) {
-          return collection({
-            items: items,
-            itemToValue: (item: any) => item.id,
-            itemToString: (item: any) => item.label,
-            isItemDisabled: (item: any) => item.disabled,
-            groupBy: (item: any) => item.group,
-          });
-        }
-        
-        return collection({
-          items: items,
-          itemToValue: (item: any) => item.id,
-          itemToString: (item: any) => item.label,
-          isItemDisabled: (item: any) => item.disabled,
-        });
-      };
-      
-      this.combobox?.updateProps({
-        collection: createCollection(newCollection),
-      });
+    const hasGroups = newCollection.some((item: any) => item.group !== undefined);
+    
+    if (this.combobox) {
+      this.combobox.hasGroups = hasGroups;
+      this.combobox.setAllOptions(newCollection);
     }
-
-    this.combobox?.updateProps({
-      disabled: getBoolean(this.el, "disabled"),
-      placeholder: getString(this.el, "placeholder"),
-      name: getString(this.el, "name"),
-      ...(getBoolean(this.el, "controlled")
-        ? { value: getStringList(this.el, "value") }
-        : { defaultValue: getStringList(this.el, "defaultValue") })
-    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ComboboxHookState) {

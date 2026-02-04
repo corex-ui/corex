@@ -1,18 +1,111 @@
-# E2e
+# E2E
 
-To start your Phoenix server:
+End-to-end Phoenix + LiveView application used to develop, exercise, and validate **Corex UI components**.
 
-* Run `mix setup` to install and setup dependencies
-* Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+This application acts as examples and tests for different rendering and interaction modes, as well as for end-to-end and accessibility testing.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+## Getting started
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+Clone the Corex repository and move into the E2E application:
 
-## Learn more
+```bash
+git clone https://github.com/corex-ui/corex
+cd corex/e2e
+```
 
-* Official website: https://www.phoenixframework.org/
-* Guides: https://hexdocs.pm/phoenix/overview.html
-* Docs: https://hexdocs.pm/phoenix
-* Forum: https://elixirforum.com/c/phoenix-forum
-* Source: https://github.com/phoenixframework/phoenix
+## Requirements
+
+- Elixir ~> 1.15
+- Erlang/OTP compatible with Elixir 1.15
+- PostgreSQL (running locally)
+
+Make sure PostgreSQL is running before continuing.
+
+## Database setup
+
+Create and migrate the database:
+
+```bash
+mix ecto.setup
+```
+
+This will:
+
+- Create the database
+- Run migrations
+
+## Install dependencies and assets
+
+```bash
+mix setup
+```
+
+This will:
+
+- Fetch Elixir dependencies
+- Install Tailwind and Esbuild
+- Build frontend assets
+
+## Run the server
+
+```bash
+mix phx.server
+```
+
+Then visit:
+
+```
+http://localhost:4000
+```
+
+## Purpose
+
+This project is **not a library**. It exists to:
+
+- Showcase Corex UI components in realistic usage scenarios
+- Validate LiveView + JS hook integration
+- Test controlled and uncontrolled component behavior
+- Exercise async and loading states
+- Run E2E and accessibility tests
+
+## Example types
+
+Components are demonstrated using several architectural patterns:
+
+### Controller-based views
+
+Classic Phoenix controller + template examples.  
+Used to validate server-rendered HTML and progressive enhancement.
+
+### LiveView
+
+Standard LiveView implementations where components manage state through assigns and LiveView events.
+
+### Controlled mode
+
+Examples where component state is **fully controlled by LiveView**, typically by passing explicit values (e.g. `value`, `open`, `checked`).  
+Used to test synchronization, external state updates, and edge cases.
+
+### Async mode
+
+Examples that introduce **asynchronous behavior**, such as delayed data loading or background updates, to ensure components behave correctly under non-instant conditions.
+
+## Tests
+
+Run the full test suite:
+
+```bash
+mix test
+```
+
+This includes:
+
+- LiveView tests
+- Wallaby browser-based E2E tests
+- Accessibility audits
+
+## Notes
+
+- This app depends on Corex via a local path dependency (`path: "../"`).
+- Intended for development, experimentation, and regression testing.
+- Not intended for production deployment.

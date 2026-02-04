@@ -1,6 +1,5 @@
 <Layouts.app flash={@flash}>
   <h1>Corex E2E tests</h1>
-
   <ul class="list-none flex flex-col">
     <.link navigate={~p"/accordion"} class="link">
       Accordion
@@ -18,6 +17,12 @@
     <.link navigate={~p"/async/accordion"} class="link">
       Accordion Async
     </.link>
+    <.link navigate={~p"/checkbox"} class="link">
+      Checkbox
+    </.link>
+    <.link navigate={~p"/live/checkbox"} class="link">
+      Checkbox Live
+    </.link>
     <.link navigate={~p"/combobox"} class="link">
       Combobox
     </.link>
@@ -26,6 +31,15 @@
     </.link>
     <.link navigate={~p"/users"} class="link">
       Phoenix Form
+    </.link>
+    <.link navigate={~p"/admins"} class="link">
+      Phoenix Form Live
+    </.link>
+    <.link navigate={~p"/select"} class="link">
+      Select
+    </.link>
+    <.link navigate={~p"/live/select"} class="link">
+      Select Live
     </.link>
     <.link navigate={~p"/switch"} class="link">
       Switch

@@ -87,6 +87,7 @@ defmodule E2e.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
         "assets.build",
+        "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
         "test"

@@ -6,27 +6,6 @@ import type { Placement } from "@zag-js/toast";
 
 import { getString, getBoolean, getNumber, generateId } from "../lib/util";
 
-function onDisconnect(groupId: string) {
-  const store = getToastStore(groupId);
-  if (!store) return;
-
-  store.create({
-    title: "Disconnected",
-    description: "You have been disconnected from the server.",
-    type: "info",
-  });
-}
-
-function onConnect(groupId: string) {
-  const store = getToastStore(groupId);
-  if (!store) return;
-
-  store.create({
-    title: "Connected",
-    description: "You have been connected to the server.",
-    type: "success",
-  });
-}
 
 const ToastHook: Hook<object, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement>) {
@@ -77,21 +56,28 @@ const ToastHook: Hook<object, HTMLElement> = {
       (payload: {
         title: string;
         description?: string;
-        type?: "info" | "success" | "error" | "warning" | "loading";
+        type?: "info" | "success" | "error";
         id?: string;
-        duration?: number;
+        duration?: number | string;
         groupId?: string;
       }) => {
         const store = getToastStore(payload.groupId || groupId);
         if (!store) return;
 
         try {
+          const duration =
+            payload.duration === "Infinity" || payload.duration === Infinity
+              ? Infinity
+              : typeof payload.duration === "string"
+                ? parseInt(payload.duration, 10) || undefined
+                : payload.duration;
+
           store.create({
             title: payload.title,
             description: payload.description,
             type: payload.type || "info",
             id: payload.id || generateId(undefined, "toast"),
-            duration: payload.duration,
+            duration: duration,
           });
         } catch (error) {
           console.error("Failed to create toast:", error);
@@ -105,7 +91,7 @@ const ToastHook: Hook<object, HTMLElement> = {
         id: string;
         title?: string;
         description?: string;
-        type?: "info" | "success" | "error" | "warning" | "loading";
+        type?: "info" | "success" | "error";
         groupId?: string;
       }) => {
         const store = getToastStore(payload.groupId || groupId);
@@ -138,9 +124,9 @@ const ToastHook: Hook<object, HTMLElement> = {
       event: CustomEvent<{
         title: string;
         description?: string;
-        type?: "info" | "success" | "error" | "warning" | "loading";
+        type?: "info" | "success" | "error";
         id?: string;
-        duration?: number;
+        duration?: number | string;
         groupId?: string;
       }>
     ) => {
@@ -149,12 +135,19 @@ const ToastHook: Hook<object, HTMLElement> = {
       if (!store) return;
 
       try {
+        const duration =
+          detail.duration === "Infinity" || detail.duration === Infinity
+            ? Infinity
+            : typeof detail.duration === "string"
+              ? parseInt(detail.duration, 10) || undefined
+              : detail.duration;
+
         store.create({
           title: detail.title,
           description: detail.description,
           type: detail.type || "info",
           id: detail.id || generateId(undefined, "toast"),
-          duration: detail.duration,
+          duration: duration,
         });
       } catch (error) {
         console.error("Failed to create toast:", error);
@@ -188,15 +181,6 @@ const ToastHook: Hook<object, HTMLElement> = {
         console.error("Failed to create flash error toast:", error);
       }
     }
-    const handleDisconnect = () => onDisconnect(groupId);
-    const handleConnect = () => onConnect(groupId);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this as any)._toastDisconnect = handleDisconnect;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (this as any)._toastConnect = handleConnect;
-
-    window.addEventListener("phx:disconnect", handleDisconnect);
-    window.addEventListener("phx:connect", handleConnect);
   },
 
   destroyed(this: object & HookInterface<HTMLElement>) {

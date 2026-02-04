@@ -23,7 +23,6 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
       ...(getBoolean(el, "controlled")
         ? { checked: getBoolean(el, "checked") }
         : { defaultChecked: getBoolean(el, "defaultChecked") }),
-        defaultChecked: getBoolean(el, "defaultChecked"),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),

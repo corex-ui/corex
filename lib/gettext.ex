@@ -6,6 +6,19 @@ defmodule Corex.Gettext do
   end
 
   @doc """
+  Translates a message using gettext.
+  """
+  def gettext(msg, opts \\ []) do
+    backend = backend()
+
+    if is_nil(backend) do
+      msg
+    else
+      Gettext.gettext(backend, msg, opts)
+    end
+  end
+
+  @doc """
   Translates an error message using gettext.
   """
   def translate_error({msg, opts}) do

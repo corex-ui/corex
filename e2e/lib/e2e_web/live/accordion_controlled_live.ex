@@ -9,9 +9,7 @@ defmodule E2eWeb.AccordionControlledLive do
     {:noreply, assign(socket, :value, value)}
   end
 
-  def handle_event("on_focus_change", %{"id" => _id, "value" => value}, socket) do
-    IO.inspect(value)
-
+  def handle_event("on_focus_change", %{"id" => _id, "value" => _value}, socket) do
     {:noreply, socket}
   end
 

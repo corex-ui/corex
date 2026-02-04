@@ -17,8 +17,9 @@ export class Accordion extends Component<accordion.Props, accordion.Api> {
     const rootEl = this.el.querySelector<HTMLElement>('[data-scope="accordion"][data-part="root"]') || this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const items = this.el.querySelectorAll<HTMLElement>('[data-scope="accordion"][data-part="item"]');
-
+    const items = rootEl.querySelectorAll<HTMLElement>(
+      ':scope > [data-scope="accordion"][data-part="item"]'
+    );
     for (let i = 0; i < items.length; i++) {
       const itemEl = items[i];
       const value = getString(itemEl, "value");

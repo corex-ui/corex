@@ -4,8 +4,8 @@
   .toast [data-scope="toast"][data-part="group"] {
     display: flex;
     flex-direction: column;
-    gap: var(--gap);
-    width: var(--container-mini);
+    gap: var(--spacing-ui-gap);
+    width: var(--container-ui);
   }
 
   .toast [data-scope="toast"][data-part="root"] {
@@ -17,7 +17,7 @@
     height: var(--height);
     opacity: var(--opacity);
     will-change: translate, opacity, scale;
-    
+
     transition:
       translate 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
       scale 400ms cubic-bezier(0.21, 1.02, 0.73, 1),
@@ -52,14 +52,15 @@
     color: var(--color-layer--text);
     padding-block: var(--spacing-ui-padding-sm);
     border-block-end: 1px solid var(--color-ui--border);
-    padding-inline: var(--spacing-ui-padding);
+    padding-inline: var(--spacing-ui-lg);
   }
 
   .toast [data-scope="toast"][data-part="description"] {
     font-size: var(--text-ui);
     line-height: var(--text-ui--line-height);
     font-weight: var(--font-weight-ui);
-    padding: var(--spacing-mini-padding);
+    padding: var(--spacing-ui-padding);
+    min-height: var(--spacing-ui-xl);
   }
 
   .toast [data-scope="toast"][data-part="close-trigger"] {
@@ -68,64 +69,44 @@
     position: absolute;
     min-height: var(--spacing-mini-sm);
     right: var(--spacing-mini-gap);
-    top: var(--spacing-mini-gap);
+    top: var(--spacing-ui-gap-sm);
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="error"]
-    [data-scope="toast"][data-part="title"] {
+  .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="title"] {
     color: var(--color-ui-alert);
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="error"]
-    [data-scope="toast"][data-part="progressbar"] {
-    background: linear-gradient(
-      to left,
-      --alpha(var(--color-ui-alert) / 80%),
-      var(--color-ui-alert)
-    );
+  .toast [data-scope="toast"][data-part="root"][data-type="error"] [data-scope="toast"][data-part="progressbar"] {
+    background: linear-gradient(to left,
+        --alpha(var(--color-ui-alert) / 80%),
+        var(--color-ui-alert));
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="info"]
-    [data-scope="toast"][data-part="title"] {
+  .toast [data-scope="toast"][data-part="root"][data-type="info"] [data-scope="toast"][data-part="title"] {
     color: var(--color-ui-info);
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="info"]
-    [data-scope="toast"][data-part="progressbar"] {
-    background: linear-gradient(
-      to left,
-      --alpha(var(--color-ui-info) / 80%),
-      var(--color-ui-info)
-    );
+  .toast [data-scope="toast"][data-part="root"][data-type="info"] [data-scope="toast"][data-part="progressbar"] {
+    background: linear-gradient(to left,
+        --alpha(var(--color-ui-info) / 80%),
+        var(--color-ui-info));
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="success"]
-    [data-scope="toast"][data-part="title"] {
+  .toast [data-scope="toast"][data-part="root"][data-type="success"] [data-scope="toast"][data-part="title"] {
     color: var(--color-ui-success);
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="success"]
-    [data-scope="toast"][data-part="progressbar"] {
-    background: linear-gradient(
-      to left,
-      --alpha(var(--color-ui-success) / 80%),
-      var(--color-ui-success)
-    );
+  .toast [data-scope="toast"][data-part="root"][data-type="success"] [data-scope="toast"][data-part="progressbar"] {
+    background: linear-gradient(to left,
+        --alpha(var(--color-ui-success) / 80%),
+        var(--color-ui-success));
   }
 
   .toast [data-scope="toast"][data-part="progressbar"] {
     height: var(--spacing-micro-sm);
-    background: linear-gradient(
-      to left,
-      --alpha(var(--color-ui-accent) / 80%),
-      var(--color-ui-accent)
-    );
+    background: linear-gradient(to left,
+        --alpha(var(--color-ui-accent) / 80%),
+        var(--color-ui-accent));
     width: 100%;
     position: absolute;
     bottom: 0;
@@ -145,24 +126,19 @@
     }
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="loading"]
-    [data-scope="toast"][data-part="progressbar"] {
-    display: none;
+  .toast [data-scope="toast"][data-part="loading-spinner"] {
+    @apply ui-icon ui-icon--sm;
+
+    position: absolute;
+    min-height: var(--spacing-mini-sm);
+    left: var(--spacing-mini-gap);
+    top: var(--spacing-mini-gap-lg);
+
+    animation: spin 1s linear infinite;
   }
 
-  .toast
-    [data-scope="toast"][data-part="root"][data-type="loading"]
-    [data-scope="toast"][data-part="title"]::before {
-    content: "";
-    display: inline-flex;
-    height: 1em;
-    width: 1em;
-    aspect-ratio: 1/1;
-    border: 2px solid var(--color-ui-accent);
-    border-top-color: var(--color-ui);
-    border-radius: var(--radius-full);
-    animation: spin 1s linear infinite;
+  .toast [data-scope="toast"][data-part="root"][data-duration-infinity="true"] [data-scope="toast"][data-part="progressbar"] {
+    display: none;
   }
 
   @keyframes spin {
@@ -177,11 +153,11 @@
 
   @keyframes shrink {
     from {
-      transform: scaleX(0);
+      transform: scaleX(1);
     }
 
     to {
-      transform: scaleX(1);
+      transform: scaleX(0);
     }
   }
 }

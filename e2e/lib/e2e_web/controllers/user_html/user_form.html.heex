@@ -1,7 +1,13 @@
-<.form :let={f} id="user" for={@changeset} action={@action} class="flex flex-col gap-ui">
+<.form
+  :let={f}
+  for={@changeset}
+  action={@action}
+  id={get_form_id(@changeset)}
+  class="flex flex-col gap-ui"
+>
   <.input field={f[:name]} type="text" label="Name" />
-  <.combobox
-    class="combobox"
+  <.select
+    class="select"
     field={f[:country]}
     placeholder="Select a country"
     collection={[
@@ -23,16 +29,19 @@
       <.icon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
-  </.combobox>
-  <.switch field={f[:terms]} class="switch">
+  </.select>
+  <.checkbox field={f[:terms]} class="checkbox">
     <:label>
       Accept the terms
     </:label>
+    <:control>
+      <.icon name="hero-check" class="data-checked" />
+    </:control>
     <:error :let={msg}>
       <.icon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
-  </.switch>
+  </.checkbox>
   <footer class="flex w-full justify-between gap-ui-gap">
     <.button :if={@return_to} href={@return_to} class="button">Cancel</.button>
     <.button class="button button--accent ">Save User</.button>

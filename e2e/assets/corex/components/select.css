@@ -3,6 +3,8 @@
 @layer components {
   .select [data-scope="select"][data-part="root"] {
     @apply ui-root;
+    width: var(--container-mini);
+    gap: var(--spacing-ui-gap);
   }
 
   .select [data-scope="select"][data-part="label"] {
@@ -11,12 +13,8 @@
 
   .select [data-scope="select"][data-part="control"] {
     display: flex;
-    flex-direction: column;
-    max-width: var(--container-mini);
     width: 100%;
     position: relative;
-    margin-inline: auto;
-    gap: var(--spacing-mini-gap);
   }
 
   .select [data-scope="select"][data-part="trigger"] {
@@ -69,11 +67,15 @@
     width: 100%;
     text-align: start;
   }
+
+  .select [data-scope="select"][data-part="error"] {
+    @apply ui-error;
+  }
 }
 
 @utility select--* {
   [data-scope="select"][data-part="root"] {
-    max-width: --value(--container-mini-*, [length]);
+    width: --value(--container-mini-*, [length]);
   }
 
   [data-scope="select"][data-part="label"] {

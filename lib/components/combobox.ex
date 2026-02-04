@@ -213,30 +213,8 @@ defmodule Corex.Combobox do
     doc: "The server event name to trigger on value change"
   )
 
-  attr(:same_width, :boolean,
-    default: true,
-    doc: "Whether the combobox is the same width as the trigger"
-  )
+  attr(:positioning, :map, default: %Corex.Positioning{}, doc: "The positioning of the combobox")
 
-  attr(:fit_viewport, :boolean,
-    default: false,
-    doc: "Whether the combobox is the same width as the trigger"
-  )
-
-  attr(:flip, :boolean, default: true, doc: "Whether the combobox is flipped")
-
-  attr(:hide_when_detached, :boolean,
-    default: true,
-    doc: "Whether the combobox is hidden when detached"
-  )
-
-  attr(:strategy, :string, default: "absolute", doc: "The strategy of the combobox")
-  attr(:placement, :string, default: "bottom", doc: "The placement of the combobox")
-  attr(:offset_main_axis, :integer, default: 0, doc: "The offset main axis of the combobox")
-  attr(:offset_cross_axis, :integer, default: 0, doc: "The offset cross axis of the combobox")
-  attr(:gutter, :integer, default: 0, doc: "The gutter of the combobox")
-  attr(:shift, :integer, default: 0, doc: "The shift of the combobox")
-  attr(:overflow_padding, :integer, default: 0, doc: "The overflow padding of the combobox")
   attr(:rest, :global)
 
   slot(:label, required: false, doc: "The label content")
@@ -274,11 +252,7 @@ defmodule Corex.Combobox do
     |> assign_new(:name, fn -> field.name end)
     |> assign(
       :value,
-      if field.value do
-        [field.value]
-      else
-        []
-      end
+      if(field.value, do: [field.value], else: [])
     )
     |> combobox()
   end
@@ -290,7 +264,6 @@ defmodule Corex.Combobox do
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
 
-    # Group items by their group field
     grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
 
     has_groups =
@@ -308,7 +281,7 @@ defmodule Corex.Combobox do
       dir: @dir, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
      name: @name, read_only: @read_only, required: @required,
       on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
-      open: @open, same_width: @same_width, fit_viewport: @fit_viewport, flip: @flip, hide_when_detached: @hide_when_detached,
+      open: @open, positioning: @positioning,
       bubble: @bubble, disabled: @disabled
     })}>
       <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
@@ -337,17 +310,19 @@ defmodule Corex.Combobox do
               <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>
                 {group}
               </div>
-              <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
-                <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                  {render_slot(@item, item)}
-                </span>
-                <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                  {item.label}
-                </span>
-                <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
-                  {render_slot(@item_indicator)}
-                </span>
-              </li>
+              <div data-scope="combobox" data-part="item-group-content">
+                <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
+                  <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
+                    {render_slot(@item, item)}
+                  </span>
+                  <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
+                    {item.label}
+                  </span>
+                  <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
+                    {render_slot(@item_indicator)}
+                  </span>
+                </li>
+              </div>
             </div>
 
             <li :if={!@has_groups} :for={item <- @collection} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
