@@ -31,12 +31,12 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   abstract render(): void;
 
   init = () => {
-    this.machine.start();
     this.render();
     this.machine.subscribe(() => {
       this.api = this.initApi();
       this.render();
     });
+    this.machine.start();
   };
 
   destroy = () => {

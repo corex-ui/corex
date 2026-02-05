@@ -51,7 +51,7 @@ defmodule Corex.Select.Connect do
     base = %{
       "data-scope" => "select",
       "data-part" => "root",
-      "id" => "select:#{assigns.id}"
+      # "id" => "select:#{assigns.id}"
     }
 
     if assigns.changed,
@@ -60,9 +60,9 @@ defmodule Corex.Select.Connect do
         Map.merge(
           base,
           %{
-            "id" => "select:#{assigns.id}",
-            "data-invalid" => get_boolean(assigns.invalid),
-            "data-readonly" => get_boolean(assigns.read_only)
+            # "id" => "select:#{assigns.id}",
+            # "data-invalid" => get_boolean(assigns.invalid),
+            # "data-readonly" => get_boolean(assigns.read_only)
           }
         )
   end

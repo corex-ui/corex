@@ -83,9 +83,6 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
     this.onSetValue = (event: Event) => {
       const { value } = (event as CustomEvent<{ value: string[] }>).detail;
       accordion.api.setValue(value);
-
-    const wasFocused = this.accordion?.api?.focusedValue;
-    console.log("wasFocused", wasFocused);
     };
     el.addEventListener("phx:accordion:set-value", this.onSetValue);
 

@@ -35,7 +35,7 @@ defmodule E2eWeb.AdminLiveTest do
       assert render(form_live) =~ "New Admin"
 
       assert form_live
-             |> form("#admin", admin: @invalid_attrs)
+             |> form("#admin", admin: Map.put(@invalid_attrs, :country, ""))
              |> render_change() =~ "can&#39;t be blank"
 
       assert {:ok, index_live, _html} =
@@ -61,7 +61,7 @@ defmodule E2eWeb.AdminLiveTest do
       assert render(form_live) =~ "Edit Admin"
 
       assert form_live
-             |> form("#admin", admin: @invalid_attrs)
+             |> form("#admin", admin: %{name: "", country: admin.country, terms: true})
              |> render_change() =~ "can&#39;t be blank"
 
       assert {:ok, index_live, _html} =
@@ -106,7 +106,7 @@ defmodule E2eWeb.AdminLiveTest do
       assert render(form_live) =~ "Edit Admin"
 
       assert form_live
-             |> form("#admin", admin: @invalid_attrs)
+             |> form("#admin", admin: %{name: "", country: admin.country, terms: true})
              |> render_change() =~ "can&#39;t be blank"
 
       assert {:ok, show_live, _html} =

@@ -120,4 +120,15 @@ defmodule Corex.Select.Anatomy do
             changed: boolean()
           }
   end
+
+  defmodule HiddenSelect do
+    @moduledoc false
+    defstruct [:id, :dir, :changed]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            changed: boolean()
+          }
+  end
 end

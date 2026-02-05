@@ -29,9 +29,6 @@ export class Select extends Component<select.Props, select.Api> {
     this._options = Array.isArray(options) ? options : [];
   }
 
-  // ---------------------------------------------------------------------------
-  // Collection (with group support)
-  // ---------------------------------------------------------------------------
   getCollection(): any {
     // Use the getter which ensures we always have an array
     const items = this.options;
@@ -54,9 +51,6 @@ export class Select extends Component<select.Props, select.Api> {
     });
   }
 
-  // ---------------------------------------------------------------------------
-  // Machine / API
-  // ---------------------------------------------------------------------------
   initMachine(props: select.Props): VanillaMachine<any> {
     const self = this;
 
@@ -72,9 +66,6 @@ export class Select extends Component<select.Props, select.Api> {
     return select.connect(this.machine.service, normalizeProps);
   }
 
-  // ---------------------------------------------------------------------------
-  // Item rendering (with group support)
-  // ---------------------------------------------------------------------------
   renderItems(): void {
     const contentEl = this.el.querySelector<HTMLElement>(
       '[data-scope="select"][data-part="content"]'
@@ -195,10 +186,31 @@ export class Select extends Component<select.Props, select.Api> {
 
   render(): void {
     const root =
-      this.el.querySelector<HTMLElement>('[data-scope="select"][data-part="root"]') ??
-      this.el;
+    this.el.querySelector<HTMLElement>('[data-scope="select"][data-part="root"]') ??
+    this.el;
 
-    this.spreadProps(root, this.api.getRootProps());
+  this.spreadProps(root, this.api.getRootProps());
+  
+  const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
+    '[data-scope="select"][data-part="hidden-select"]'
+  );
+
+  const valueInput = this.el.querySelector<HTMLInputElement>(
+    '[data-scope="select"][data-part="value-input"]'
+  );
+  if (valueInput) {
+    if (!this.api.value || this.api.value.length === 0) {
+      valueInput.value = "";
+    } else if (this.api.value.length === 1) {
+      valueInput.value = String(this.api.value[0]);
+    } else {
+      valueInput.value = this.api.value.map(String).join(",");
+    }
+  }
+
+  if (hiddenSelect) {
+    this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+  }
 
     [
       "label",
@@ -229,15 +241,11 @@ export class Select extends Component<select.Props, select.Api> {
       '[data-scope="select"][data-part="item-text"]'
     );
     if (valueText) {
-      // Always try valueAsString first (Zag.js's way)
       const valueAsString = this.api.valueAsString;
-      // Check if we have a value but valueAsString is empty - use fallback
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
-        // Fallback: manually find the label if valueAsString isn't available yet
         const selectedValue = this.api.value[0];
         const selectedItem = this.options.find((item: any) => {
           const itemValue = item.id ?? item.value ?? "";
-          // Compare as strings to handle type mismatches (string vs number)
           return String(itemValue) === String(selectedValue);
         });
         if (selectedItem) {
@@ -246,18 +254,7 @@ export class Select extends Component<select.Props, select.Api> {
           valueText.textContent = this.placeholder || "";
         }
       } else {
-        // Use valueAsString if available, otherwise placeholder
         valueText.textContent = valueAsString || this.placeholder || "";
-      }
-    }
-
-    const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
-      '[data-scope="select"][data-part="hidden-select"]'
-    );
-    if (hiddenSelect) {
-      this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
-      if (!this.api.value || this.api.value.length === 0) {
-        hiddenSelect.value = "";
       }
     }
 
@@ -270,3 +267,4 @@ export class Select extends Component<select.Props, select.Api> {
     }
   }
 }
+
