@@ -146,7 +146,7 @@ defmodule Corex.Accordion do
 
   def render(assigns) do
     ~H"""
-    <.accordion value={@value} on_value_change="on_value_change" class="accordion">
+    <.accordion controlled value={@value} on_value_change="on_value_change" class="accordion">
       <:item :let={item} value="lorem">
         <.accordion_trigger item={item}>
           Lorem ipsum dolor sit amet
@@ -219,12 +219,6 @@ defmodule Corex.Accordion do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Async</h2>
-      </div>
-
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
           <.accordion_skeleton count={3} class="accordion" />
@@ -241,7 +235,6 @@ defmodule Corex.Accordion do
           value={accordion.value}
         />
       </.async_result>
-    </Layouts.app>
     """
   end
   end
@@ -250,6 +243,8 @@ defmodule Corex.Accordion do
   <!-- tabs-close -->
 
   ## API Control
+
+In order to use the API, you must use and id on the component
 
   ***Client-side***
 

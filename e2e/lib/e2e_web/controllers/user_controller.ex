@@ -11,7 +11,7 @@ defmodule E2eWeb.UserController do
 
   def new(conn, _params) do
     changeset = Accounts.change_user(%User{})
-    render(conn, :new, changeset: changeset, form_id: "dsdqssd")
+    render(conn, :new, changeset: changeset)
   end
 
   def create(conn, %{"user" => user_params}) do
@@ -22,7 +22,7 @@ defmodule E2eWeb.UserController do
         |> redirect(to: ~p"/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset, form_id: "dsdqssd")
+        render(conn, :new, changeset: changeset)
     end
   end
 
@@ -47,7 +47,7 @@ defmodule E2eWeb.UserController do
         |> redirect(to: ~p"/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, user: user, changeset: changeset, form_id: "dsdqssd")
+        render(conn, :edit, user: user, changeset: changeset)
     end
   end
 

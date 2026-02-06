@@ -151,6 +151,8 @@ In your `app.css` add the following
 
 - Delete Daisy UI related css and plugin `app.css`
 
+If you don't see the styling, please run `mix assets.build`
+
 For more details see [Corex Design](Mix.Tasks.Corex.Design.html) mix task use
 
 ## Add your first component
@@ -299,7 +301,7 @@ Add the following Accordion example to your application
 
   def render(assigns) do
     ~H"""
-    <.accordion value={@value} on_value_change="on_value_change" class="accordion">
+    <.accordion controlled value={@value} on_value_change="on_value_change" class="accordion">
       <:item :let={item} value="lorem">
         <.accordion_trigger item={item}>
           Lorem ipsum dolor sit amet
@@ -372,12 +374,6 @@ Add the following Accordion example to your application
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Async</h2>
-      </div>
-
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
           <.accordion_skeleton count={3} class="accordion" />
@@ -394,7 +390,6 @@ Add the following Accordion example to your application
           value={accordion.value}
         />
       </.async_result>
-    </Layouts.app>
     """
   end
   end
@@ -402,6 +397,27 @@ Add the following Accordion example to your application
   ```
   <!-- tabs-close -->
 
+
+## API Control
+
+In order to use the API, you must use and id on the component
+
+  ***Client-side***
+
+  ```heex
+  <button phx-click={Corex.Accordion.set_value("my-accordion", ["item-1"])}>
+    Open Item 1
+  </button>
+
+  ```
+
+  ***Server-side***
+
+  ```elixir
+  def handle_event("open_item", _, socket) do
+    {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["item-1"])}
+  end
+  ```
 
 ## Components
 
