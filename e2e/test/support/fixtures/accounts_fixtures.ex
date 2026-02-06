@@ -27,7 +27,7 @@ defmodule E2e.AccountsFixtures do
     {:ok, admin} =
       attrs
       |> Enum.into(%{
-        country: "bel",
+        country: :fra,
         name: "some name",
         terms: true
       })

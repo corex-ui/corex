@@ -4,7 +4,7 @@ defmodule E2e.Accounts.Admin do
 
   schema "admins" do
     field :name, :string
-    field :country, :string
+    field :country, Ecto.Enum, values: [:fra, :deu, :bel]
     field :terms, :boolean, default: false
 
     timestamps(type: :utc_datetime)
@@ -16,5 +16,6 @@ defmodule E2e.Accounts.Admin do
     |> cast(attrs, [:name, :country, :terms])
     |> validate_required([:name, :country, :terms])
     |> validate_acceptance(:terms)
+    |> validate_inclusion(:country, Ecto.Enum.values(E2e.Accounts.Admin, :country))
   end
 end

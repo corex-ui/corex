@@ -26,14 +26,15 @@ defmodule E2eWeb.AdminLive.Index do
         <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
         <:action :let={{_id, admin}}>
           <div class="sr-only">
-            <.link navigate={~p"/admins/#{admin}"}>Show</.link>
+            <.link navigate={~p"/admins/#{admin}"} class="link">Show</.link>
           </div>
-          <.link class="link" navigate={~p"/admins/#{admin}/edit"}>Edit</.link>
+          <.link navigate={~p"/admins/#{admin}/edit"} class="link">Edit</.link>
         </:action>
         <:action :let={{id, admin}}>
           <.link
             phx-click={JS.push("delete", value: %{id: admin.id}) |> hide("##{id}")}
             data-confirm="Are you sure?"
+            class="link link--alert"
           >
             Delete
           </.link>

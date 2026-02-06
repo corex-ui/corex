@@ -307,6 +307,7 @@ defmodule Corex.Select do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     value = get_value(field.value)
     selected_label = get_selected_label(assigns.collection, value)
+
     assigns
     |> assign(field: nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
@@ -361,7 +362,7 @@ defmodule Corex.Select do
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
-    <div id={@id} phx-hook="Select" phx-update="ignore" {@rest} {Connect.props(%Props{
+    <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
       id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
@@ -372,7 +373,7 @@ defmodule Corex.Select do
 
       <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
 
-      <select multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
+      <select id="delse-id" phx-update="ignore" multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
         <%= Phoenix.HTML.Form.options_for_select(
           @options_with_prompt,
           @selected_for_options,
@@ -434,10 +435,9 @@ defmodule Corex.Select do
     """
   end
 
-
   defp get_disabled_values(collection) do
     collection
-    |> Enum.filter(& Map.get(&1, :disabled, false))
+    |> Enum.filter(&Map.get(&1, :disabled, false))
     |> Enum.map(& &1.id)
   end
 
@@ -473,8 +473,8 @@ defmodule Corex.Select do
     case field_value do
       nil -> []
       [] -> []
-      value when is_list(value) -> value
-      value -> [value]
+      value when is_list(value) -> Enum.map(value, &to_string/1)
+      value -> [to_string(value)]
     end
   end
 
@@ -497,5 +497,4 @@ defmodule Corex.Select do
         end
     end
   end
-
 end

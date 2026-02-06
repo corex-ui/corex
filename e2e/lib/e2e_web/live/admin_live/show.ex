@@ -11,10 +11,10 @@ defmodule E2eWeb.AdminLive.Show do
         Admin {@admin.id}
         <:subtitle>This is a admin record from your database.</:subtitle>
         <:actions>
-          <.button navigate={~p"/admins"}>
+          <.button class="button" navigate={~p"/admins"}>
             <.icon name="hero-arrow-left" />
           </.button>
-          <.button variant="primary" navigate={~p"/admins/#{@admin}/edit?return_to=show"}>
+          <.button class="button button--accent" navigate={~p"/admins/#{@admin}/edit?return_to=show"}>
             <.icon name="hero-pencil-square" /> Edit admin
           </.button>
         </:actions>

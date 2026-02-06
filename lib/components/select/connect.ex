@@ -50,7 +50,7 @@ defmodule Corex.Select.Connect do
   def root(assigns) do
     base = %{
       "data-scope" => "select",
-      "data-part" => "root",
+      "data-part" => "root"
       # "id" => "select:#{assigns.id}"
     }
 

@@ -21,18 +21,16 @@ defmodule E2eWeb.AdminLive.Form do
         class="flex flex-col gap-ui"
       >
         <.input field={@form[:name]} type="text" label="Name" />
+
         <.select
           class="select"
           field={@form[:country]}
           controlled
           placeholder="Select a country"
           collection={[
-            %{label: "France", id: "fra", disabled: true},
+            %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
-            %{label: "Germany", id: "deu"},
-            %{label: "Netherlands", id: "nld"},
-            %{label: "Switzerland", id: "che"},
-            %{label: "Austria", id: "aut"}
+            %{label: "Germany", id: "deu"}
           ]}
         >
           <:label>
@@ -46,6 +44,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.select>
+
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>
             Accept the terms
@@ -58,9 +57,10 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.checkbox>
+
         <footer class="flex w-full justify-between gap-ui-gap">
           <.button navigate={return_path(@return_to, @admin)} class="button">Cancel</.button>
-          <.button phx-disable-with="Saving..." class="button button--accent">Save Admin</.button>
+          <.button phx-disable-with="Saving..." class="button button--accent ">Save Admin</.button>
         </footer>
       </.form>
     </Layouts.app>
