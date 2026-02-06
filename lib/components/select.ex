@@ -305,9 +305,7 @@ defmodule Corex.Select do
 
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
-
     value = get_value(field.value)
-
     selected_label = get_selected_label(assigns.collection, value)
 
     assigns
@@ -335,6 +333,8 @@ defmodule Corex.Select do
 
     assigns = assign(assigns, :selected_label, selected_label)
 
+    options = transform_collection_to_options(assigns.collection)
+
     grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
 
     has_groups =
@@ -342,8 +342,24 @@ defmodule Corex.Select do
       |> Map.keys()
       |> Enum.any?(& &1)
 
-    assigns = assign(assigns, :grouped_items, grouped_items)
-    assigns = assign(assigns, :has_groups, has_groups)
+    selected_for_options =
+      if assigns.multiple do
+        value_list
+      else
+        if value_list == [], do: "", else: List.first(value_list)
+      end
+
+    options_with_prompt = [{"", ""} | options]
+
+    assigns =
+      assigns
+      |> assign(:grouped_items, grouped_items)
+      |> assign(:has_groups, has_groups)
+      |> assign(:options, options)
+      |> assign(:options_with_prompt, options_with_prompt)
+      |> assign(:selected_for_options, selected_for_options)
+      |> assign(:disabled_values, get_disabled_values(assigns.collection))
+      |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
     <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
@@ -355,21 +371,16 @@ defmodule Corex.Select do
     })}>
       <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
 
+      <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
 
-      <select
-          :if={@name}
-          name={@name},
-          multiple={@multiple}
-          data-scope="select"
-          data-part="hidden-select"
-          style="display: none;"
-        >
-          <option value="">
-          </option>
-          <option :if={!Enum.empty?(@value)} :for={item <- @collection} value={item.id}>
-            {item.label}
-          </option>
-        </select>
+      <select id="delse-id" phx-update="ignore" multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
+        <%= Phoenix.HTML.Form.options_for_select(
+          @options_with_prompt,
+          @selected_for_options,
+          disabled: @disabled_values
+        ) %>
+      </select>
+
         <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
@@ -424,13 +435,46 @@ defmodule Corex.Select do
     """
   end
 
+  defp get_disabled_values(collection) do
+    collection
+    |> Enum.filter(&Map.get(&1, :disabled, false))
+    |> Enum.map(& &1.id)
+  end
+
+  defp value_for_hidden_input(value_list, _multiple) when value_list == [], do: ""
+  defp value_for_hidden_input(value_list, false), do: List.first(value_list)
+  defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
+
+  defp transform_collection_to_options(collection) do
+    grouped = Enum.group_by(collection, &Map.get(&1, :group))
+
+    case Map.keys(grouped) do
+      [nil] ->
+        # No groups, flat list
+        Enum.map(collection, fn item ->
+          {item.label, item.id}
+        end)
+
+      _ ->
+        # Has groups
+        grouped
+        |> Enum.sort_by(fn {group, _} -> group || "" end)
+        |> Enum.flat_map(fn
+          {nil, items} ->
+            Enum.map(items, fn item -> {item.label, item.id} end)
+
+          {group, items} ->
+            [{group, Enum.map(items, fn item -> {item.label, item.id} end)}]
+        end)
+    end
+  end
+
   defp get_value(field_value) do
     case field_value do
       nil -> []
       [] -> []
-      [""] -> []
-      value when is_list(value) -> value
-      value -> [value]
+      value when is_list(value) -> Enum.map(value, &to_string/1)
+      value -> [to_string(value)]
     end
   end
 

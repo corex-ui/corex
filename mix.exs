@@ -1,11 +1,14 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
+  @version "0.1.0-alpha.13"
+  @elixir_requirement "~> 1.15"
+
   def project do
     [
       app: :corex,
-      version: "0.1.0-alpha.12",
-      elixir: "~> 1.17",
+      version: @version,
+      elixir: @elixir_requirement,
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),

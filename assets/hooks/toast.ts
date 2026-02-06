@@ -1,104 +1,103 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 
 import { createToastGroup, getToastStore } from "../components/toast";
 import type { Placement } from "@zag-js/toast";
 
 import { getString, getBoolean, getNumber, generateId } from "../lib/util";
 
+type ToastPayload = {
+  title: string;
+  description?: string;
+  type?: "info" | "success" | "error";
+  id?: string;
+  duration?: number | string;
+  groupId?: string;
+};
 
-const ToastHook: Hook<object, HTMLElement> = {
-  mounted(this: object & HookInterface<HTMLElement>) {
+type ToastHookState = {
+  groupId: string;
+  handlers?: Array<CallbackRef>;
+};
+
+const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
+  mounted(this: object & HookInterface<HTMLElement> & ToastHookState) {
     const el = this.el;
 
+    // Ensure element has an ID
     if (!el.id) {
       el.id = generateId(el, "toast");
     }
-    const groupId = el.id;
+    this.groupId = el.id;
 
-    const placement =
-      getString<Placement>(el, "placement", [
-        "top-start",
-        "top",
-        "top-end",
-        "bottom-start",
-        "bottom",
-        "bottom-end",
-      ]) || "bottom-end";
-
-    const overlap = getBoolean(el, "overlap");
-    const max = getNumber(el, "max");
-    const gap = getNumber(el, "gap");
-    const offsets = getString(el, "offset");
-    const pauseOnPageIdle = getBoolean(el, "pause-on-page-idle");
-
-    let parsedOffsets: string | Record<"left" | "right" | "bottom" | "top", string> | undefined;
-    if (offsets) {
+    // Parse offsets helper
+    const parseOffsets = (offsetsString?: string) => {
+      if (!offsetsString) return undefined;
       try {
-        parsedOffsets = offsets.includes("{") ? JSON.parse(offsets) : offsets;
+        return offsetsString.includes("{") ? JSON.parse(offsetsString) : offsetsString;
       } catch {
-        parsedOffsets = offsets;
+        return offsetsString;
       }
-    }
+    };
+
+    // Parse duration helper
+    const parseDuration = (duration?: number | string): number | undefined => {
+      if (duration === "Infinity" || duration === Infinity) {
+        return Infinity;
+      }
+      if (typeof duration === "string") {
+        return parseInt(duration, 10) || undefined;
+      }
+      return duration;
+    };
+
+    // Initialize toast group
+    const placement = getString<Placement>(el, "placement", [
+      "top-start", "top", "top-end",
+      "bottom-start", "bottom", "bottom-end",
+    ]) ?? "bottom-end";
 
     createToastGroup(el, {
-      id: groupId,
+      id: this.groupId,
       placement,
-      overlap,
-      max,
-      gap,
-      offsets: parsedOffsets,
-      pauseOnPageIdle,
+      overlap: getBoolean(el, "overlap"),
+      max: getNumber(el, "max"),
+      gap: getNumber(el, "gap"),
+      offsets: parseOffsets(getString(el, "offset")),
+      pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle"),
     });
 
-    this.handleEvent(
-      "toast-create",
-      (payload: {
-        title: string;
-        description?: string;
-        type?: "info" | "success" | "error";
-        id?: string;
-        duration?: number | string;
-        groupId?: string;
-      }) => {
-        const store = getToastStore(payload.groupId || groupId);
+    // Setup event handlers
+    this.handlers = [];
+
+    // Server-side event: toast-create
+    this.handlers.push(
+      this.handleEvent("toast-create", (payload: ToastPayload) => {
+        const store = getToastStore(payload.groupId || this.groupId);
         if (!store) return;
 
         try {
-          const duration =
-            payload.duration === "Infinity" || payload.duration === Infinity
-              ? Infinity
-              : typeof payload.duration === "string"
-                ? parseInt(payload.duration, 10) || undefined
-                : payload.duration;
-
           store.create({
             title: payload.title,
             description: payload.description,
             type: payload.type || "info",
             id: payload.id || generateId(undefined, "toast"),
-            duration: duration,
+            duration: parseDuration(payload.duration),
           });
         } catch (error) {
           console.error("Failed to create toast:", error);
         }
-      }
+      })
     );
 
-    this.handleEvent(
-      "toast-update",
-      (payload: {
-        id: string;
-        title?: string;
-        description?: string;
-        type?: "info" | "success" | "error";
-        groupId?: string;
-      }) => {
-        const store = getToastStore(payload.groupId || groupId);
+    // Server-side event: toast-update
+    this.handlers.push(
+      this.handleEvent("toast-update", (payload: Omit<ToastPayload, "duration">) => {
+        const store = getToastStore(payload.groupId || this.groupId);
         if (!store) return;
 
         try {
-          store.update(payload.id, {
+          store.update(payload.id!, {
             title: payload.title,
             description: payload.description,
             type: payload.type,
@@ -106,93 +105,49 @@ const ToastHook: Hook<object, HTMLElement> = {
         } catch (error) {
           console.error("Failed to update toast:", error);
         }
-      }
+      })
     );
 
-    this.handleEvent("toast-dismiss", (payload: { id: string; groupId?: string }) => {
-      const store = getToastStore(payload.groupId || groupId);
-      if (!store) return;
+    // Server-side event: toast-dismiss
+    this.handlers.push(
+      this.handleEvent("toast-dismiss", (payload: { id: string; groupId?: string }) => {
+        const store = getToastStore(payload.groupId || this.groupId);
+        if (!store) return;
 
-      try {
-        store.dismiss(payload.id);
-      } catch (error) {
-        console.error("Failed to dismiss toast:", error);
-      }
-    });
+        try {
+          store.dismiss(payload.id);
+        } catch (error) {
+          console.error("Failed to dismiss toast:", error);
+        }
+      })
+    );
 
-    el.addEventListener("toast:create", ((
-      event: CustomEvent<{
-        title: string;
-        description?: string;
-        type?: "info" | "success" | "error";
-        id?: string;
-        duration?: number | string;
-        groupId?: string;
-      }>
-    ) => {
+    // Client-side event: toast:create
+    el.addEventListener("toast:create", ((event: CustomEvent<ToastPayload>) => {
       const { detail } = event;
-      const store = getToastStore(detail.groupId || groupId);
+      const store = getToastStore(detail.groupId || this.groupId);
       if (!store) return;
 
       try {
-        const duration =
-          detail.duration === "Infinity" || detail.duration === Infinity
-            ? Infinity
-            : typeof detail.duration === "string"
-              ? parseInt(detail.duration, 10) || undefined
-              : detail.duration;
-
         store.create({
           title: detail.title,
           description: detail.description,
           type: detail.type || "info",
           id: detail.id || generateId(undefined, "toast"),
-          duration: duration,
+          duration: parseDuration(detail.duration),
         });
       } catch (error) {
         console.error("Failed to create toast:", error);
       }
     }) as EventListener);
 
-    const store = getToastStore(groupId);
-    const flashInfo = el.dataset.flashInfo;
-    const flashError = el.dataset.flashError;
-
-    if (store && flashInfo) {
-      try {
-        store.create({
-          title: flashInfo,
-          type: "info",
-          id: generateId(undefined, "toast"),
-        });
-      } catch (error) {
-        console.error("Failed to create flash info toast:", error);
-      }
-    }
-
-    if (store && flashError) {
-      try {
-        store.create({
-          title: flashError,
-          type: "error",
-          id: generateId(undefined, "toast"),
-        });
-      } catch (error) {
-        console.error("Failed to create flash error toast:", error);
-      }
-    }
   },
 
-  destroyed(this: object & HookInterface<HTMLElement>) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const anyThis = this as any;
-
-    if (anyThis._toastDisconnect) {
-      window.removeEventListener("phx:disconnect", anyThis._toastDisconnect);
-    }
-
-    if (anyThis._toastConnect) {
-      window.removeEventListener("phx:connect", anyThis._toastConnect);
+  destroyed(this: object & HookInterface<HTMLElement> & ToastHookState) {
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
     }
   },
 };

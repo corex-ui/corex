@@ -1,16 +1,15 @@
-import * as accordion from "@zag-js/accordion";
+import {connect, machine, type Props, type Api}  from "@zag-js/accordion";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { getString, getBoolean } from "../lib/util";
 
-export class Accordion extends Component<accordion.Props, accordion.Api> {
+export class Accordion extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: accordion.Props): VanillaMachine<any> {
-    return new VanillaMachine(accordion.machine, props);
+  initMachine(props: Props): VanillaMachine<any> {
+    return new VanillaMachine(machine, props);
   }
 
-  initApi(): accordion.Api {
-    return accordion.connect(this.machine.service, normalizeProps);
+  initApi(): Api {
+    return connect(this.machine.service, normalizeProps);
   }
 
   render(): void {
@@ -20,12 +19,13 @@ export class Accordion extends Component<accordion.Props, accordion.Api> {
     const items = rootEl.querySelectorAll<HTMLElement>(
       ':scope > [data-scope="accordion"][data-part="item"]'
     );
+    
     for (let i = 0; i < items.length; i++) {
       const itemEl = items[i];
-      const value = getString(itemEl, "value");
+      const value = itemEl.dataset.value;
       if (!value) continue;
 
-      const disabled = getBoolean(itemEl, "disabled");
+      const disabled = itemEl.hasAttribute('data-disabled');
       this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
 
       const triggerEl = itemEl.querySelector<HTMLElement>('[data-scope="accordion"][data-part="item-trigger"]');

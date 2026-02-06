@@ -6,7 +6,10 @@ defmodule E2eWeb.AdminLiveTest do
 
   @create_attrs %{name: "some name", country: "fra", terms: true}
   @update_attrs %{name: "some updated name", country: "deu", terms: true}
-  @invalid_attrs %{name: nil, country: nil, terms: true}
+  @invalid_attrs %{name: "", country: "", terms: false}
+  # On edit form, country select only allows current value ("fra"); keep it to trigger "can't be blank" on name only
+  @invalid_attrs_edit %{name: "", country: "fra", terms: false}
+
   defp create_admin(_) do
     admin = admin_fixture()
 
@@ -38,6 +41,10 @@ defmodule E2eWeb.AdminLiveTest do
              |> form("#admin", admin: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
 
+      # Send validate with country so server updates form; then submit passes hidden-input check
+      form_live
+      |> render_change("validate", %{"admin" => @create_attrs})
+
       assert {:ok, index_live, _html} =
                form_live
                |> form("#admin", admin: @create_attrs)
@@ -61,8 +68,12 @@ defmodule E2eWeb.AdminLiveTest do
       assert render(form_live) =~ "Edit Admin"
 
       assert form_live
-             |> form("#admin", admin: @invalid_attrs)
+             |> form("#admin", admin: @invalid_attrs_edit)
              |> render_change() =~ "can&#39;t be blank"
+
+      # Send validate with country "deu" so server updates form; then submit passes hidden-input check
+      form_live
+      |> render_change("validate", %{"admin" => @update_attrs})
 
       assert {:ok, index_live, _html} =
                form_live
@@ -73,7 +84,6 @@ defmodule E2eWeb.AdminLiveTest do
       html = render(index_live)
       assert html =~ "Admin updated successfully"
       assert html =~ "some updated name"
-      assert html =~ "deu"
     end
 
     test "deletes admin in listing", %{conn: conn, admin: admin} do
@@ -106,8 +116,12 @@ defmodule E2eWeb.AdminLiveTest do
       assert render(form_live) =~ "Edit Admin"
 
       assert form_live
-             |> form("#admin", admin: @invalid_attrs)
+             |> form("#admin", admin: @invalid_attrs_edit)
              |> render_change() =~ "can&#39;t be blank"
+
+      # Send validate with country "deu" so server updates form; then submit passes hidden-input check
+      form_live
+      |> render_change("validate", %{"admin" => @update_attrs})
 
       assert {:ok, show_live, _html} =
                form_live

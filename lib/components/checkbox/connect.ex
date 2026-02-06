@@ -54,21 +54,18 @@ defmodule Corex.Checkbox.Connect do
     base = %{
       "data-scope" => "checkbox",
       "data-part" => "hidden-input",
+      "id" => "checkbox:#{assigns.id}:input",
       "type" => "checkbox",
       "checked" => data_attr(assigns.checked),
       "value" => "true",
-      "name" => assigns.name
+      "name" => assigns.name,
+      "phx-update" => "ignore"
     }
 
     if assigns.changed,
       do: base,
       else:
         Map.merge(base, %{
-          "id" => "checkbox:#{assigns.id}:input",
-          "type" => "checkbox",
-          "checked" => data_attr(assigns.checked),
-          "value" => "true",
-          "name" => assigns.name,
           "required" => data_attr(assigns.required),
           "disabled" => data_attr(assigns.disabled),
           "aria-labelledby" => "checkbox:#{assigns.id}:label",

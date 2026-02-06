@@ -79,11 +79,11 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_admin/1 with valid data creates a admin" do
-      valid_attrs = %{name: "some name", country: "France", terms: true}
+      valid_attrs = %{name: "some name", country: :fra, terms: true}
 
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(valid_attrs)
       assert admin.name == "some name"
-      assert admin.country == "France"
+      assert admin.country == :fra
       assert admin.terms == true
     end
 
@@ -93,11 +93,11 @@ defmodule E2e.AccountsTest do
 
     test "update_admin/2 with valid data updates the admin" do
       admin = admin_fixture()
-      update_attrs = %{name: "some updated name", country: "some updated country", terms: true}
+      update_attrs = %{name: "some updated name", country: :deu, terms: true}
 
       assert {:ok, %Admin{} = admin} = Accounts.update_admin(admin, update_attrs)
       assert admin.name == "some updated name"
-      assert admin.country == "some updated country"
+      assert admin.country == :deu
       assert admin.terms == true
     end
 

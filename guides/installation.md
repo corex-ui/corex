@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.12"}
+    {:corex, "~> 0.1.0-alpha.13"}
   ]
 end
 ```
@@ -74,6 +74,14 @@ const liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
   hooks: {...colocatedHooks, ...Hooks}
 })
+```
+
+You can add individual components with:
+
+```javascript
+import {Accordion, Checkbox} from "corex"
+
+hooks: {...colocatedHooks, Accordion, Checkbox }
 ```
 
 ## Import Components
