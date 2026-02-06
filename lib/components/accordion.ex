@@ -244,7 +244,7 @@ defmodule Corex.Accordion do
 
   ## API Control
 
-In order to use the API, you must use and id on the component
+  In order to use the API, you must use and id on the component
 
   ***Client-side***
 

@@ -1,4 +1,3 @@
-# test/components/accordion_test.exs
 defmodule E2eWeb.AccordionTest do
   use ExUnit.Case, async: true
   use Wallaby.Feature
