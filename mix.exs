@@ -96,7 +96,7 @@ defmodule Corex.MixProject do
       ],
       Structures: [
         Corex.Collection.Item,
-        Corex.Accordion.Item,
+        Corex.List.Item,
         Corex.Flash.Info,
         Corex.Flash.Error,
         Corex.Positioning

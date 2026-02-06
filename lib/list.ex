@@ -1,18 +1,23 @@
-defmodule Corex.Accordion.Item do
-  @moduledoc """
-  List item structure for use with Accordion component.
+defmodule Corex.List do
+  @moduledoc false
 
-  Use it to create a list of items for [Accordion](Corex.Accordion.html)
+defmodule Item do
+  @moduledoc """
+  List item structure.
+
+  Use it to create a list of items for
+  - [Accordion](Corex.Accordion.html)
+  - [Tabs](Corex.Tabs.html)
 
   ## Fields
 
-  * `:trigger` - (required) Content to display in the accordion trigger/button
-  * `:content` - (required) Content to display in the accordion panel
+  * `:trigger` - (required) Content to display in the trigger
+  * `:content` - (required) Content to display in the content
   * `:value` - (optional) Unique identifier for the item
   * `:disabled` - (optional) Whether the item is disabled
   * `:meta` - (optional) Additional metadata for the item
 
-  The fields are available in the item slot as `{item.meta.trigger}` and `{item.meta.content}` etc
+  The fields are available in the item slot as `{item.trigger}`, `{item.content}`, `{item.meta.icon}` etc
 
   ## Example
 
@@ -22,7 +27,7 @@ defmodule Corex.Accordion.Item do
   <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
@@ -30,14 +35,14 @@ defmodule Corex.Accordion.Item do
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "donec",
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
@@ -80,4 +85,6 @@ defmodule Corex.Accordion.Item do
           meta: map(),
           disabled: boolean()
         }
+end
+
 end

@@ -126,6 +126,7 @@ defmodule Corex.Combobox.Anatomy do
       :name,
       :auto_focus,
       :value,
+      :selected_label,
       :form
     ]
 
@@ -141,6 +142,7 @@ defmodule Corex.Combobox.Anatomy do
             name: String.t() | nil,
             auto_focus: boolean(),
             value: list(String.t()),
+            selected_label: String.t() | nil,
             form: String.t() | nil
           }
   end

@@ -1,16 +1,16 @@
 // ../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs
-var createAnatomy = (name, parts8 = []) => ({
+var createAnatomy = (name, parts9 = []) => ({
   parts: (...values) => {
-    if (isEmpty(parts8)) {
+    if (isEmpty(parts9)) {
       return createAnatomy(name, values);
     }
     throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
   },
-  extendWith: (...values) => createAnatomy(name, [...parts8, ...values]),
-  omit: (...values) => createAnatomy(name, parts8.filter((part) => !values.includes(part))),
-  rename: (newName) => createAnatomy(newName, parts8),
-  keys: () => parts8,
-  build: () => [...new Set(parts8)].reduce(
+  extendWith: (...values) => createAnatomy(name, [...parts9, ...values]),
+  omit: (...values) => createAnatomy(name, parts9.filter((part) => !values.includes(part))),
+  rename: (newName) => createAnatomy(newName, parts9),
+  keys: () => parts9,
+  build: () => [...new Set(parts9)].reduce(
     (prev, part) => Object.assign(prev, {
       [part]: {
         selector: [
@@ -385,6 +385,29 @@ function collectElementsWithShadowDOM(elements, getShadowRoot, filterFn) {
   return allElements;
 }
 var focusableSelector = "input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href], button:not([disabled]), [tabindex], iframe, object, embed, area[href], audio[controls], video[controls], [contenteditable]:not([contenteditable='false']), details > summary:first-of-type";
+var getFocusables = (container, options = {}) => {
+  if (!container) return [];
+  const { includeContainer = false, getShadowRoot } = options;
+  const elements = Array.from(container.querySelectorAll(focusableSelector));
+  const include = includeContainer == true || includeContainer == "if-empty" && elements.length === 0;
+  if (include && isHTMLElement(container) && isFocusable(container)) {
+    elements.unshift(container);
+  }
+  const focusableElements = [];
+  for (const element of elements) {
+    if (!isFocusable(element)) continue;
+    if (isFrame(element) && element.contentDocument) {
+      const frameBody = element.contentDocument.body;
+      focusableElements.push(...getFocusables(frameBody, { getShadowRoot }));
+      continue;
+    }
+    focusableElements.push(element);
+  }
+  if (getShadowRoot) {
+    return collectElementsWithShadowDOM(focusableElements, getShadowRoot, isFocusable);
+  }
+  return focusableElements;
+};
 function isFocusable(element) {
   if (!isHTMLElement(element) || element.closest("[inert]")) return false;
   return element.matches(focusableSelector) && isElementVisible(element);
@@ -670,6 +693,53 @@ function prevById(v, id, loop = true) {
   idx = loop ? (idx - 1 + v.length) % v.length : Math.max(0, idx - 1);
   return v[idx];
 }
+function createSharedResizeObserver(options) {
+  const listeners = /* @__PURE__ */ new WeakMap();
+  let observer;
+  const entries = /* @__PURE__ */ new WeakMap();
+  const getObserver = (win) => {
+    if (observer) return observer;
+    observer = new win.ResizeObserver((observedEntries) => {
+      for (const entry of observedEntries) {
+        entries.set(entry.target, entry);
+        const elementListeners = listeners.get(entry.target);
+        if (elementListeners) {
+          for (const listener of elementListeners) {
+            listener(entry);
+          }
+        }
+      }
+    });
+    return observer;
+  };
+  const observe = (element, listener) => {
+    let elementListeners = listeners.get(element) || /* @__PURE__ */ new Set();
+    elementListeners.add(listener);
+    listeners.set(element, elementListeners);
+    const win = getWindow(element);
+    getObserver(win).observe(element, options);
+    return () => {
+      const elementListeners2 = listeners.get(element);
+      if (!elementListeners2) return;
+      elementListeners2.delete(listener);
+      if (elementListeners2.size === 0) {
+        listeners.delete(element);
+        getObserver(win).unobserve(element);
+      }
+    };
+  };
+  const unobserve = (element) => {
+    listeners.delete(element);
+    observer?.unobserve(element);
+  };
+  return {
+    observe,
+    unobserve
+  };
+}
+var resizeObserverBorderBox = /* @__PURE__ */ createSharedResizeObserver({
+  box: "border-box"
+});
 var sanitize = (str) => str.split("").map((char) => {
   const code = char.charCodeAt(0);
   if (code > 0 && code < 128) return char;
@@ -909,6 +979,7 @@ function match2(key, record, ...args) {
   throw error;
 }
 var { floor, abs, round, min, max, pow, sign } = Math;
+var toPx = (v) => typeof v === "number" ? `${v}px` : v;
 function compact(obj) {
   if (!isPlainObject(obj) || obj === void 0) return obj;
   const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
@@ -921,23 +992,23 @@ function compact(obj) {
   }
   return filtered;
 }
-function splitProps(props7, keys) {
+function splitProps(props8, keys) {
   const rest = {};
   const result = {};
   const keySet = new Set(keys);
-  const ownKeys = Reflect.ownKeys(props7);
+  const ownKeys = Reflect.ownKeys(props8);
   for (const key of ownKeys) {
     if (keySet.has(key)) {
-      result[key] = props7[key];
+      result[key] = props8[key];
     } else {
-      rest[key] = props7[key];
+      rest[key] = props8[key];
     }
   }
   return [result, rest];
 }
 var createSplitProps = (keys) => {
-  return function split(props7) {
-    return splitProps(props7, keys);
+  return function split(props8) {
+    return splitProps(props8, keys);
   };
 };
 var currentTime = () => performance.now();
@@ -1017,10 +1088,10 @@ function warn(...a) {
 function ensure(c, m) {
   if (c == null) throw new Error(m());
 }
-function ensureProps(props7, keys, scope) {
+function ensureProps(props8, keys, scope) {
   let missingKeys = [];
   for (const key of keys) {
-    if (props7[key] == null) missingKeys.push(key);
+    if (props8[key] == null) missingKeys.push(key);
   }
   if (missingKeys.length > 0)
     throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
@@ -1069,14 +1140,14 @@ var MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
   return MachineStatus2;
 })(MachineStatus || {});
 var INIT_STATE = "__init__";
-function createScope(props7) {
-  const getRootNode2 = () => props7.getRootNode?.() ?? document;
+function createScope(props8) {
+  const getRootNode2 = () => props8.getRootNode?.() ?? document;
   const getDoc = () => getDocument(getRootNode2());
   const getWin = () => getDoc().defaultView ?? window;
   const getActiveElementFn = () => getActiveElement(getRootNode2());
   const getById = (id) => getRootNode2().getElementById(id);
   return {
-    ...props7,
+    ...props8,
     getRootNode: getRootNode2,
     getDoc,
     getWin,
@@ -1091,14 +1162,14 @@ function createNormalizer(fn) {
   return new Proxy({}, {
     get(_target, key) {
       if (key === "style")
-        return (props7) => {
-          return fn({ style: props7 }).style;
+        return (props8) => {
+          return fn({ style: props8 }).style;
         };
       return fn;
     }
   });
 }
-var createProps = () => (props7) => Array.from(new Set(props7));
+var createProps = () => (props8) => Array.from(new Set(props8));
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.33.1/node_modules/@zag-js/accordion/dist/index.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -1677,8 +1748,8 @@ var toStyleString = (style) => {
   }
   return string;
 };
-var normalizeProps = createNormalizer((props7) => {
-  return Object.entries(props7).reduce((acc, [key, value]) => {
+var normalizeProps = createNormalizer((props8) => {
+  return Object.entries(props8).reduce((acc, [key, value]) => {
     if (value === void 0) return acc;
     if (key in propMap) {
       key = propMap[key];
@@ -1788,36 +1859,36 @@ function spreadProps(node, attrs, machineId) {
     }
   };
 }
-function bindable(props7) {
-  const initial = props7().value ?? props7().defaultValue;
-  if (props7().debug) {
-    console.log(`[bindable > ${props7().debug}] initial`, initial);
+function bindable(props8) {
+  const initial = props8().value ?? props8().defaultValue;
+  if (props8().debug) {
+    console.log(`[bindable > ${props8().debug}] initial`, initial);
   }
-  const eq = props7().isEqual ?? Object.is;
+  const eq = props8().isEqual ?? Object.is;
   const store = proxy({ value: initial });
-  const controlled = () => props7().value !== void 0;
+  const controlled = () => props8().value !== void 0;
   return {
     initial,
     ref: store,
     get() {
-      return controlled() ? props7().value : store.value;
+      return controlled() ? props8().value : store.value;
     },
     set(nextValue) {
       const prev = store.value;
       const next = isFunction(nextValue) ? nextValue(prev) : nextValue;
-      if (props7().debug) {
-        console.log(`[bindable > ${props7().debug}] setValue`, { next, prev });
+      if (props8().debug) {
+        console.log(`[bindable > ${props8().debug}] setValue`, { next, prev });
       }
       if (!controlled()) store.value = next;
       if (!eq(next, prev)) {
-        props7().onChange?.(next, prev);
+        props8().onChange?.(next, prev);
       }
     },
     invoke(nextValue, prevValue) {
-      props7().onChange?.(nextValue, prevValue);
+      props8().onChange?.(nextValue, prevValue);
     },
     hash(value) {
-      return props7().hash?.(value) ?? String(value);
+      return props8().hash?.(value) ?? String(value);
     }
   };
 }
@@ -1863,8 +1934,8 @@ function mergeMachineProps(prev, next) {
   return result;
 }
 var VanillaMachine = class {
-  constructor(machine8, userProps = {}) {
-    this.machine = machine8;
+  constructor(machine9, userProps = {}) {
+    this.machine = machine9;
     __publicField3(this, "scope");
     __publicField3(this, "context");
     __publicField3(this, "prop");
@@ -2009,11 +2080,11 @@ var VanillaMachine = class {
     this.scope = createScope({ id, ids, getRootNode: getRootNode2 });
     const prop = (key) => {
       const __props = runIfFn(this.userPropsRef.current);
-      const props7 = machine8.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
-      return props7[key];
+      const props8 = machine9.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
+      return props8[key];
     };
     this.prop = prop;
-    const context = machine8.context?.({
+    const context = machine9.context?.({
       prop,
       bindable,
       scope: this.scope,
@@ -2054,7 +2125,7 @@ var VanillaMachine = class {
     };
     this.context = ctx;
     const computed = (key) => {
-      return machine8.computed?.[key]({
+      return machine9.computed?.[key]({
         context: ctx,
         event: this.getEvent(),
         prop,
@@ -2064,10 +2135,10 @@ var VanillaMachine = class {
       }) ?? {};
     };
     this.computed = computed;
-    const refs = createRefs(machine8.refs?.({ prop, context: ctx }) ?? {});
+    const refs = createRefs(machine9.refs?.({ prop, context: ctx }) ?? {});
     this.refs = refs;
     const state = bindable(() => ({
-      defaultValue: machine8.initialState({ prop }),
+      defaultValue: machine9.initialState({ prop }),
       onChange: (nextState, prevState) => {
         if (prevState) {
           const exitEffects = this.effects.get(prevState);
@@ -2081,8 +2152,8 @@ var VanillaMachine = class {
         const cleanup = this.effect(this.getStateConfig(nextState)?.effects);
         if (cleanup) this.effects.set(nextState, cleanup);
         if (prevState === INIT_STATE) {
-          this.action(machine8.entry);
-          const cleanup2 = this.effect(machine8.effects);
+          this.action(machine9.entry);
+          const cleanup2 = this.effect(machine9.effects);
           if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
         }
         this.action(this.getStateConfig(nextState)?.entry);
@@ -2138,10 +2209,10 @@ var Component = class {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine;
   api;
-  constructor(el, props7) {
+  constructor(el, props8) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
-    this.machine = this.initMachine(props7);
+    this.machine = this.initMachine(props8);
     this.api = this.initApi();
   }
   init = () => {
@@ -2155,19 +2226,19 @@ var Component = class {
   destroy = () => {
     this.machine.stop();
   };
-  spreadProps = (el, props7) => {
-    spreadProps(el, props7);
+  spreadProps = (el, props8) => {
+    spreadProps(el, props8);
   };
-  updateProps = (props7) => {
-    this.machine.updateProps(props7);
+  updateProps = (props8) => {
+    this.machine.updateProps(props8);
   };
 };
 
 // components/accordion.ts
 var Accordion = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props7) {
-    return new VanillaMachine(machine, props7);
+  initMachine(props8) {
+    return new VanillaMachine(machine, props8);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -3092,12 +3163,12 @@ function groupConnect(service, normalize) {
 var { guards, createMachine: createMachine2 } = setup();
 var { and: and2 } = guards;
 var groupMachine = createMachine2({
-  props({ props: props7 }) {
+  props({ props: props8 }) {
     return {
       dir: "ltr",
       id: uuid(),
-      ...props7,
-      store: props7.store
+      ...props8,
+      store: props8.store
     };
   },
   initialState({ prop }) {
@@ -3451,12 +3522,12 @@ function connect2(service, normalize) {
 }
 var { not: not2 } = createGuards();
 var machine2 = createMachine({
-  props({ props: props7 }) {
-    ensureProps(props7, ["id", "type", "parent", "removeDelay"], "toast");
+  props({ props: props8 }) {
+    ensureProps(props8, ["id", "type", "parent", "removeDelay"], "toast");
     return {
       closable: true,
-      ...props7,
-      duration: getToastDuration(props7.duration, props7.type)
+      ...props8,
+      duration: getToastDuration(props8.duration, props8.type)
     };
   },
   initialState({ prop }) {
@@ -3699,8 +3770,8 @@ function setHeight(parent, item) {
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
 };
-function createToastStore(props7 = {}) {
-  const attrs = withDefaults(props7, {
+function createToastStore(props8 = {}) {
+  const attrs = withDefaults(props8, {
     placement: "bottom",
     overlap: false,
     max: 24,
@@ -3926,9 +3997,9 @@ var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
   parts;
   duration;
-  constructor(el, props7) {
-    super(el, props7);
-    this.duration = props7.duration;
+  constructor(el, props8) {
+    super(el, props8);
+    this.duration = props8.duration;
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
     this.el.innerHTML = `
@@ -3960,8 +4031,8 @@ var ToastItem = class extends Component {
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props7) {
-    return new VanillaMachine(machine2, props7);
+  initMachine(props8) {
+    return new VanillaMachine(machine2, props8);
   }
   initApi() {
     return connect2(this.machine.service, normalizeProps);
@@ -4006,9 +4077,9 @@ var ToastGroup = class extends Component {
   toastComponents = /* @__PURE__ */ new Map();
   groupEl;
   store;
-  constructor(el, props7) {
-    super(el, props7);
-    this.store = props7.store;
+  constructor(el, props8) {
+    super(el, props8);
+    this.store = props8.store;
     this.groupEl = el.querySelector('[data-part="group"]') ?? (() => {
       const g = document.createElement("div");
       g.setAttribute("data-scope", "toast");
@@ -4018,8 +4089,8 @@ var ToastGroup = class extends Component {
     })();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props7) {
-    return new VanillaMachine(group.machine, props7);
+  initMachine(props8) {
+    return new VanillaMachine(group.machine, props8);
   }
   initApi() {
     return group.connect(this.machine.service, normalizeProps);
@@ -4538,8 +4609,8 @@ var splitItemProps2 = createSplitProps(itemProps2);
 // components/toggle-group.ts
 var ToggleGroup = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props7) {
-    return new VanillaMachine(machine3, props7);
+  initMachine(props8) {
+    return new VanillaMachine(machine3, props8);
   }
   initApi() {
     return connect3(this.machine.service, normalizeProps);
@@ -4563,7 +4634,7 @@ var ToggleGroupHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const props7 = {
+    const props8 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       defaultValue: getStringList(el, "defaultValue"),
@@ -4596,7 +4667,7 @@ var ToggleGroupHook = {
         }
       }
     };
-    const toggleGroup = new ToggleGroup(el, props7);
+    const toggleGroup = new ToggleGroup(el, props8);
     toggleGroup.init();
     this.toggleGroup = toggleGroup;
     this.onSetValue = (event) => {
@@ -8124,8 +8195,8 @@ var Select = class extends Component {
   _options = [];
   hasGroups = false;
   placeholder = "";
-  constructor(el, props7) {
-    super(el, props7);
+  constructor(el, props8) {
+    super(el, props8);
     this.placeholder = getString(this.el, "placeholder") || "";
   }
   get options() {
@@ -8152,10 +8223,10 @@ var Select = class extends Component {
       isItemDisabled: (item) => !!item.disabled
     });
   }
-  initMachine(props7) {
+  initMachine(props8) {
     const self2 = this;
     return new VanillaMachine(machine4, {
-      ...props7,
+      ...props8,
       get collection() {
         return self2.getCollection();
       }
@@ -8407,10 +8478,10 @@ var SelectHook = {
       this.select.hasGroups = hasGroups;
       this.select.setOptions(newCollection);
       this.select.updateProps({
-        // id: this.el.id,
+        id: this.el.id,
         ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
-        // name: getString(this.el, "name"),
-        // form: getString(this.el, "form"),
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
         disabled: getBoolean(this.el, "disabled"),
         multiple: getBoolean(this.el, "multiple"),
         dir: getString(this.el, "dir", ["ltr", "rtl"]),
@@ -8575,8 +8646,8 @@ var tearDownWindowFocusTracking = (root, loadListener) => {
 function isFocusVisible() {
   return currentModality === "keyboard";
 }
-function trackFocusVisible(props7 = {}) {
-  const { isTextInput, autoFocus, onChange, root } = props7;
+function trackFocusVisible(props8 = {}) {
+  const { isTextInput, autoFocus, onChange, root } = props8;
   setupGlobalFocusEvents(root);
   onChange?.({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
   const handler = (modality, e) => {
@@ -8876,8 +8947,8 @@ var splitProps5 = createSplitProps(props4);
 // components/switch.ts
 var Switch = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props7) {
-    return new VanillaMachine(machine5, props7);
+  initMachine(props8) {
+    return new VanillaMachine(machine5, props8);
   }
   initApi() {
     return connect5(this.machine.service, normalizeProps);
@@ -10607,10 +10678,10 @@ var Combobox = class extends Component {
       isItemDisabled: (item) => item.disabled
     });
   }
-  initMachine(props7) {
+  initMachine(props8) {
     const self2 = this;
     return new VanillaMachine(machine6, {
-      ...props7,
+      ...props8,
       get collection() {
         return self2.getCollection();
       },
@@ -10618,8 +10689,8 @@ var Combobox = class extends Component {
         if (details.open) {
           self2.options = self2.allOptions;
         }
-        if (props7.onOpenChange) {
-          props7.onOpenChange(details);
+        if (props8.onOpenChange) {
+          props8.onOpenChange(details);
         }
       },
       onInputValueChange: (details) => {
@@ -10627,8 +10698,8 @@ var Combobox = class extends Component {
           (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
         );
         self2.options = filtered.length > 0 ? filtered : self2.allOptions;
-        if (props7.onInputValueChange) {
-          props7.onInputValueChange(details);
+        if (props8.onInputValueChange) {
+          props8.onInputValueChange(details);
         }
       }
     });
@@ -10756,7 +10827,7 @@ var ComboboxHook = {
     const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item) => item.group !== void 0);
-    const props7 = {
+    const props8 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       disabled: getBoolean(el, "disabled"),
@@ -10836,6 +10907,48 @@ var ComboboxHook = {
         }
       },
       onValueChange: (details) => {
+        const valueInput = el.querySelector(
+          '[data-scope="combobox"][data-part="value-input"]'
+        );
+        if (valueInput) {
+          const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+          valueInput.value = idValue;
+          const formId = valueInput.getAttribute("form");
+          let form = null;
+          if (formId) {
+            form = document.getElementById(formId);
+          } else {
+            form = valueInput.closest("form");
+          }
+          const changeEvent = new Event("change", {
+            bubbles: true,
+            cancelable: true
+          });
+          valueInput.dispatchEvent(changeEvent);
+          const inputEvent = new Event("input", {
+            bubbles: true,
+            cancelable: true
+          });
+          valueInput.dispatchEvent(inputEvent);
+          if (form && form.hasAttribute("phx-change")) {
+            requestAnimationFrame(() => {
+              const formElement = form.querySelector("input, select, textarea");
+              if (formElement) {
+                const formChangeEvent = new Event("change", {
+                  bubbles: true,
+                  cancelable: true
+                });
+                formElement.dispatchEvent(formChangeEvent);
+              } else {
+                const formChangeEvent = new Event("change", {
+                  bubbles: true,
+                  cancelable: true
+                });
+                form.dispatchEvent(formChangeEvent);
+              }
+            });
+          }
+        }
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -10859,10 +10972,29 @@ var ComboboxHook = {
         }
       }
     };
-    const combobox = new Combobox(el, props7);
+    const combobox = new Combobox(el, props8);
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();
+    const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
+    if (initialValue && initialValue.length > 0) {
+      const selectedItems = allItems.filter(
+        (item) => initialValue.includes(item.id)
+      );
+      if (selectedItems.length > 0) {
+        const inputValue = selectedItems.map((item) => item.label).join(", ");
+        if (combobox.api && typeof combobox.api.setInputValue === "function") {
+          combobox.api.setInputValue(inputValue);
+        } else {
+          const inputEl = el.querySelector(
+            '[data-scope="combobox"][data-part="input"]'
+          );
+          if (inputEl) {
+            inputEl.value = inputValue;
+          }
+        }
+      }
+    }
     this.combobox = combobox;
     this.handlers = [];
   },
@@ -10872,6 +11004,25 @@ var ComboboxHook = {
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
+      this.combobox.updateProps({
+        ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+        // name: getString(this.el, "name"),
+        // form: getString(this.el, "form"),
+        disabled: getBoolean(this.el, "disabled"),
+        multiple: getBoolean(this.el, "multiple"),
+        dir: getString(this.el, "dir", ["ltr", "rtl"]),
+        invalid: getBoolean(this.el, "invalid"),
+        required: getBoolean(this.el, "required"),
+        readOnly: getBoolean(this.el, "readOnly")
+      });
+      const inputEl = this.el.querySelector(
+        '[data-scope="combobox"][data-part="input"]'
+      );
+      if (inputEl) {
+        inputEl.removeAttribute("name");
+        inputEl.removeAttribute("form");
+        inputEl.name = "";
+      }
     }
   },
   destroyed() {
@@ -11167,8 +11318,8 @@ var splitProps7 = createSplitProps(props6);
 // components/checkbox.ts
 var Checkbox = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props7) {
-    return new VanillaMachine(machine7, props7);
+  initMachine(props8) {
+    return new VanillaMachine(machine7, props8);
   }
   initApi() {
     return connect7(this.machine.service, normalizeProps);
@@ -11342,8 +11493,651 @@ var CheckboxHook = {
   }
 };
 
+// ../node_modules/.pnpm/@zag-js+tabs@1.33.1/node_modules/@zag-js/tabs/dist/index.mjs
+var anatomy8 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+var parts8 = anatomy8.build();
+var getRootId8 = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
+var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
+var getContentId3 = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
+var getTriggerId3 = (ctx, value) => ctx.ids?.trigger?.(value) ?? `tabs:${ctx.id}:trigger-${value}`;
+var getIndicatorId = (ctx) => ctx.ids?.indicator ?? `tabs:${ctx.id}:indicator`;
+var getListEl = (ctx) => ctx.getById(getListId(ctx));
+var getContentEl3 = (ctx, value) => ctx.getById(getContentId3(ctx, value));
+var getTriggerEl3 = (ctx, value) => value != null ? ctx.getById(getTriggerId3(ctx, value)) : null;
+var getIndicatorEl = (ctx) => ctx.getById(getIndicatorId(ctx));
+var getElements2 = (ctx) => {
+  const ownerId = CSS.escape(getListId(ctx));
+  const selector = `[role=tab][data-ownedby='${ownerId}']:not([disabled])`;
+  return queryAll(getListEl(ctx), selector);
+};
+var getFirstTriggerEl2 = (ctx) => first(getElements2(ctx));
+var getLastTriggerEl2 = (ctx) => last(getElements2(ctx));
+var getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId3(ctx, opts.value), opts.loopFocus);
+var getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId3(ctx, opts.value), opts.loopFocus);
+var getOffsetRect = (el) => ({
+  x: el?.offsetLeft ?? 0,
+  y: el?.offsetTop ?? 0,
+  width: el?.offsetWidth ?? 0,
+  height: el?.offsetHeight ?? 0
+});
+var getRectByValue = (ctx, value) => {
+  const tab = itemById(getElements2(ctx), getTriggerId3(ctx, value));
+  return getOffsetRect(tab);
+};
+function connect8(service, normalize) {
+  const { state, send, context, prop, scope } = service;
+  const translations = prop("translations");
+  const focused = state.matches("focused");
+  const isVertical = prop("orientation") === "vertical";
+  const isHorizontal = prop("orientation") === "horizontal";
+  const composite = prop("composite");
+  function getTriggerState(props22) {
+    return {
+      selected: context.get("value") === props22.value,
+      focused: context.get("focusedValue") === props22.value,
+      disabled: !!props22.disabled
+    };
+  }
+  return {
+    value: context.get("value"),
+    focusedValue: context.get("focusedValue"),
+    setValue(value) {
+      send({ type: "SET_VALUE", value });
+    },
+    clearValue() {
+      send({ type: "CLEAR_VALUE" });
+    },
+    setIndicatorRect(value) {
+      const id = getTriggerId3(scope, value);
+      send({ type: "SET_INDICATOR_RECT", id });
+    },
+    syncTabIndex() {
+      send({ type: "SYNC_TAB_INDEX" });
+    },
+    selectNext(fromValue) {
+      send({ type: "TAB_FOCUS", value: fromValue, src: "selectNext" });
+      send({ type: "ARROW_NEXT", src: "selectNext" });
+    },
+    selectPrev(fromValue) {
+      send({ type: "TAB_FOCUS", value: fromValue, src: "selectPrev" });
+      send({ type: "ARROW_PREV", src: "selectPrev" });
+    },
+    focus() {
+      const value = context.get("value");
+      if (!value) return;
+      getTriggerEl3(scope, value)?.focus();
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts8.root.attrs,
+        id: getRootId8(scope),
+        "data-orientation": prop("orientation"),
+        "data-focus": dataAttr(focused),
+        dir: prop("dir")
+      });
+    },
+    getListProps() {
+      return normalize.element({
+        ...parts8.list.attrs,
+        id: getListId(scope),
+        role: "tablist",
+        dir: prop("dir"),
+        "data-focus": dataAttr(focused),
+        "aria-orientation": prop("orientation"),
+        "data-orientation": prop("orientation"),
+        "aria-label": translations?.listLabel,
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (isComposingEvent(event)) return;
+          if (!contains(event.currentTarget, getEventTarget(event))) return;
+          const keyMap2 = {
+            ArrowDown() {
+              if (isHorizontal) return;
+              send({ type: "ARROW_NEXT", key: "ArrowDown" });
+            },
+            ArrowUp() {
+              if (isHorizontal) return;
+              send({ type: "ARROW_PREV", key: "ArrowUp" });
+            },
+            ArrowLeft() {
+              if (isVertical) return;
+              send({ type: "ARROW_PREV", key: "ArrowLeft" });
+            },
+            ArrowRight() {
+              if (isVertical) return;
+              send({ type: "ARROW_NEXT", key: "ArrowRight" });
+            },
+            Home() {
+              send({ type: "HOME" });
+            },
+            End() {
+              send({ type: "END" });
+            }
+          };
+          let key = getEventKey(event, {
+            dir: prop("dir"),
+            orientation: prop("orientation")
+          });
+          const exec = keyMap2[key];
+          if (exec) {
+            event.preventDefault();
+            exec(event);
+            return;
+          }
+        }
+      });
+    },
+    getTriggerState,
+    getTriggerProps(props22) {
+      const { value, disabled } = props22;
+      const triggerState = getTriggerState(props22);
+      return normalize.button({
+        ...parts8.trigger.attrs,
+        role: "tab",
+        type: "button",
+        disabled,
+        dir: prop("dir"),
+        "data-orientation": prop("orientation"),
+        "data-disabled": dataAttr(disabled),
+        "aria-disabled": disabled,
+        "data-value": value,
+        "aria-selected": triggerState.selected,
+        "data-selected": dataAttr(triggerState.selected),
+        "data-focus": dataAttr(triggerState.focused),
+        "aria-controls": triggerState.selected ? getContentId3(scope, value) : void 0,
+        "data-ownedby": getListId(scope),
+        "data-ssr": dataAttr(context.get("ssr")),
+        id: getTriggerId3(scope, value),
+        tabIndex: triggerState.selected && composite ? 0 : -1,
+        onFocus() {
+          send({ type: "TAB_FOCUS", value });
+        },
+        onBlur(event) {
+          const target = event.relatedTarget;
+          if (target?.getAttribute("role") !== "tab") {
+            send({ type: "TAB_BLUR" });
+          }
+        },
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (isOpeningInNewTab(event)) return;
+          if (disabled) return;
+          if (isSafari()) {
+            event.currentTarget.focus();
+          }
+          send({ type: "TAB_CLICK", value });
+        }
+      });
+    },
+    getContentProps(props22) {
+      const { value } = props22;
+      const selected = context.get("value") === value;
+      return normalize.element({
+        ...parts8.content.attrs,
+        dir: prop("dir"),
+        id: getContentId3(scope, value),
+        tabIndex: composite ? 0 : -1,
+        "aria-labelledby": getTriggerId3(scope, value),
+        role: "tabpanel",
+        "data-ownedby": getListId(scope),
+        "data-selected": dataAttr(selected),
+        "data-orientation": prop("orientation"),
+        hidden: !selected
+      });
+    },
+    getIndicatorProps() {
+      const rect = context.get("indicatorRect");
+      const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+      return normalize.element({
+        id: getIndicatorId(scope),
+        ...parts8.indicator.attrs,
+        dir: prop("dir"),
+        "data-orientation": prop("orientation"),
+        hidden: rectIsEmpty,
+        style: {
+          "--transition-property": "left, right, top, bottom, width, height",
+          "--left": toPx(rect?.x),
+          "--top": toPx(rect?.y),
+          "--width": toPx(rect?.width),
+          "--height": toPx(rect?.height),
+          position: "absolute",
+          willChange: "var(--transition-property)",
+          transitionProperty: "var(--transition-property)",
+          transitionDuration: "var(--transition-duration, 150ms)",
+          transitionTimingFunction: "var(--transition-timing-function)",
+          [isHorizontal ? "left" : "top"]: isHorizontal ? "var(--left)" : "var(--top)"
+        }
+      });
+    }
+  };
+}
+var { createMachine: createMachine4 } = setup();
+var machine8 = createMachine4({
+  props({ props: props22 }) {
+    return {
+      dir: "ltr",
+      orientation: "horizontal",
+      activationMode: "automatic",
+      loopFocus: true,
+      composite: true,
+      navigate(details) {
+        clickIfLink(details.node);
+      },
+      defaultValue: null,
+      ...props22
+    };
+  },
+  initialState() {
+    return "idle";
+  },
+  context({ prop, bindable: bindable2 }) {
+    return {
+      value: bindable2(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        onChange(value) {
+          prop("onValueChange")?.({ value });
+        }
+      })),
+      focusedValue: bindable2(() => ({
+        defaultValue: prop("value") || prop("defaultValue"),
+        sync: true,
+        onChange(value) {
+          prop("onFocusChange")?.({ focusedValue: value });
+        }
+      })),
+      ssr: bindable2(() => ({ defaultValue: true })),
+      indicatorRect: bindable2(() => ({
+        defaultValue: null
+      }))
+    };
+  },
+  watch({ context, prop, track, action }) {
+    track([() => context.get("value")], () => {
+      action(["syncIndicatorRect", "syncTabIndex", "navigateIfNeeded"]);
+    });
+    track([() => prop("dir"), () => prop("orientation")], () => {
+      action(["syncIndicatorRect"]);
+    });
+  },
+  on: {
+    SET_VALUE: {
+      actions: ["setValue"]
+    },
+    CLEAR_VALUE: {
+      actions: ["clearValue"]
+    },
+    SET_INDICATOR_RECT: {
+      actions: ["setIndicatorRect"]
+    },
+    SYNC_TAB_INDEX: {
+      actions: ["syncTabIndex"]
+    }
+  },
+  entry: ["syncIndicatorRect", "syncTabIndex", "syncSsr"],
+  exit: ["cleanupObserver"],
+  states: {
+    idle: {
+      on: {
+        TAB_FOCUS: {
+          target: "focused",
+          actions: ["setFocusedValue"]
+        },
+        TAB_CLICK: {
+          target: "focused",
+          actions: ["setFocusedValue", "setValue"]
+        }
+      }
+    },
+    focused: {
+      on: {
+        TAB_CLICK: {
+          actions: ["setFocusedValue", "setValue"]
+        },
+        ARROW_PREV: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusPrevTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusPrevTab"]
+          }
+        ],
+        ARROW_NEXT: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusNextTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusNextTab"]
+          }
+        ],
+        HOME: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusFirstTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusFirstTab"]
+          }
+        ],
+        END: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusLastTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusLastTab"]
+          }
+        ],
+        TAB_FOCUS: {
+          actions: ["setFocusedValue"]
+        },
+        TAB_BLUR: {
+          target: "idle",
+          actions: ["clearFocusedValue"]
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      selectOnFocus: ({ prop }) => prop("activationMode") === "automatic"
+    },
+    actions: {
+      selectFocusedTab({ context, prop }) {
+        raf(() => {
+          const focusedValue = context.get("focusedValue");
+          if (!focusedValue) return;
+          const nullable = prop("deselectable") && context.get("value") === focusedValue;
+          const value = nullable ? null : focusedValue;
+          context.set("value", value);
+        });
+      },
+      setFocusedValue({ context, event, flush }) {
+        if (event.value == null) return;
+        flush(() => {
+          context.set("focusedValue", event.value);
+        });
+      },
+      clearFocusedValue({ context }) {
+        context.set("focusedValue", null);
+      },
+      setValue({ context, event, prop }) {
+        const nullable = prop("deselectable") && context.get("value") === context.get("focusedValue");
+        context.set("value", nullable ? null : event.value);
+      },
+      clearValue({ context }) {
+        context.set("value", null);
+      },
+      focusFirstTab({ scope }) {
+        raf(() => {
+          getFirstTriggerEl2(scope)?.focus();
+        });
+      },
+      focusLastTab({ scope }) {
+        raf(() => {
+          getLastTriggerEl2(scope)?.focus();
+        });
+      },
+      focusNextTab({ context, prop, scope, event }) {
+        const focusedValue = event.value ?? context.get("focusedValue");
+        if (!focusedValue) return;
+        const triggerEl = getNextTriggerEl2(scope, {
+          value: focusedValue,
+          loopFocus: prop("loopFocus")
+        });
+        raf(() => {
+          if (prop("composite")) {
+            triggerEl?.focus();
+          } else if (triggerEl?.dataset.value != null) {
+            context.set("focusedValue", triggerEl.dataset.value);
+          }
+        });
+      },
+      focusPrevTab({ context, prop, scope, event }) {
+        const focusedValue = event.value ?? context.get("focusedValue");
+        if (!focusedValue) return;
+        const triggerEl = getPrevTriggerEl2(scope, {
+          value: focusedValue,
+          loopFocus: prop("loopFocus")
+        });
+        raf(() => {
+          if (prop("composite")) {
+            triggerEl?.focus();
+          } else if (triggerEl?.dataset.value != null) {
+            context.set("focusedValue", triggerEl.dataset.value);
+          }
+        });
+      },
+      syncTabIndex({ context, scope }) {
+        raf(() => {
+          const value = context.get("value");
+          if (!value) return;
+          const contentEl = getContentEl3(scope, value);
+          if (!contentEl) return;
+          const focusables = getFocusables(contentEl);
+          if (focusables.length > 0) {
+            contentEl.removeAttribute("tabindex");
+          } else {
+            contentEl.setAttribute("tabindex", "0");
+          }
+        });
+      },
+      cleanupObserver({ refs }) {
+        const cleanup = refs.get("indicatorCleanup");
+        if (cleanup) cleanup();
+      },
+      setIndicatorRect({ context, event, scope }) {
+        const value = event.id ?? context.get("value");
+        const indicatorEl = getIndicatorEl(scope);
+        if (!indicatorEl) return;
+        if (!value) return;
+        const triggerEl = getTriggerEl3(scope, value);
+        if (!triggerEl) return;
+        context.set("indicatorRect", getRectByValue(scope, value));
+      },
+      syncSsr({ context }) {
+        context.set("ssr", false);
+      },
+      syncIndicatorRect({ context, refs, scope }) {
+        const cleanup = refs.get("indicatorCleanup");
+        if (cleanup) cleanup();
+        const indicatorEl = getIndicatorEl(scope);
+        if (!indicatorEl) return;
+        const exec = () => {
+          const triggerEl = getTriggerEl3(scope, context.get("value"));
+          if (!triggerEl) return;
+          const rect = getOffsetRect(triggerEl);
+          context.set("indicatorRect", (prev) => isEqual2(prev, rect) ? prev : rect);
+        };
+        exec();
+        const triggerEls = getElements2(scope);
+        const indicatorCleanup = callAll(...triggerEls.map((el) => resizeObserverBorderBox.observe(el, exec)));
+        refs.set("indicatorCleanup", indicatorCleanup);
+      },
+      navigateIfNeeded({ context, prop, scope }) {
+        const value = context.get("value");
+        if (!value) return;
+        const triggerEl = getTriggerEl3(scope, value);
+        if (isAnchorElement(triggerEl)) {
+          prop("navigate")?.({ value, node: triggerEl, href: triggerEl.href });
+        }
+      }
+    }
+  }
+});
+var props7 = createProps()([
+  "activationMode",
+  "composite",
+  "deselectable",
+  "dir",
+  "getRootNode",
+  "id",
+  "ids",
+  "loopFocus",
+  "navigate",
+  "onFocusChange",
+  "onValueChange",
+  "orientation",
+  "translations",
+  "value",
+  "defaultValue"
+]);
+var splitProps8 = createSplitProps(props7);
+var triggerProps = createProps()(["disabled", "value"]);
+var splitTriggerProps = createSplitProps(triggerProps);
+var contentProps = createProps()(["value"]);
+var splitContentProps = createSplitProps(contentProps);
+
+// components/tabs.ts
+var Tabs = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props8) {
+    return new VanillaMachine(machine8, props8);
+  }
+  initApi() {
+    return connect8(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]') || this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]') || this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const triggers = listEl.querySelectorAll(
+      ':scope > [data-scope="tabs"][data-part="trigger"]'
+    );
+    for (let i = 0; i < triggers.length; i++) {
+      const triggerEl = triggers[i];
+      const value = triggerEl.dataset.value;
+      if (!value) continue;
+      this.spreadProps(triggerEl, this.api.getTriggerProps({ value }));
+    }
+  }
+};
+
+// hooks/tabs.ts
+var TabsHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const tabs = new Tabs(
+      el,
+      {
+        id: el.id,
+        composite: true,
+        ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
+        orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+        dir: getString(el, "dir", ["ltr", "rtl"]),
+        onValueChange: (details) => {
+          const eventName = getString(el, "onValueChange");
+          if (eventName && this.liveSocket.main.isConnected()) {
+            pushEvent(eventName, {
+              id: el.id,
+              value: details.value ?? null
+            });
+          }
+          const eventNameClient = getString(el, "onValueChangeClient");
+          if (eventNameClient) {
+            el.dispatchEvent(
+              new CustomEvent(eventNameClient, {
+                bubbles: true,
+                detail: {
+                  id: el.id,
+                  value: details.value ?? null
+                }
+              })
+            );
+          }
+        },
+        onFocusChange: (details) => {
+          const eventName = getString(el, "onFocusChange");
+          if (eventName && this.liveSocket.main.isConnected()) {
+            pushEvent(eventName, {
+              id: el.id,
+              value: details.focusedValue ?? null
+            });
+          }
+          const eventNameClient = getString(el, "onFocusChangeClient");
+          if (eventNameClient) {
+            el.dispatchEvent(
+              new CustomEvent(eventNameClient, {
+                bubbles: true,
+                detail: {
+                  id: el.id,
+                  value: details.focusedValue ?? null
+                }
+              })
+            );
+          }
+        }
+      }
+    );
+    tabs.init();
+    this.tabs = tabs;
+    this.onSetValue = (event) => {
+      const { value } = event.detail;
+      tabs.api.setValue(value);
+    };
+    el.addEventListener("phx:tabs:set-value", this.onSetValue);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent(
+        "tabs_set_value",
+        (payload) => {
+          const targetId = payload.tabs_id;
+          if (targetId && targetId !== el.id) return;
+          tabs.api.setValue(payload.value);
+        }
+      )
+    );
+    this.handlers.push(
+      this.handleEvent("tabs_value", () => {
+        this.pushEvent("tabs_value_response", {
+          value: tabs.api.value
+        });
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("tabs_focused_value", () => {
+        this.pushEvent("tabs_focused_value_response", {
+          value: tabs.api.focusedValue
+        });
+      })
+    );
+  },
+  updated() {
+    this.tabs?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") },
+      orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+    const wasFocused = this.tabs?.api?.focusedValue;
+    if (wasFocused) {
+      const triggerEl = this.el.querySelector(
+        `[data-scope="tabs"][data-part="list"] [data-part="trigger"][data-value="${wasFocused}"]`
+      );
+      if (triggerEl && document.activeElement !== triggerEl) {
+        triggerEl.focus();
+      }
+    }
+  },
+  destroyed() {
+    if (this.onSetValue) {
+      this.el.removeEventListener("phx:tabs:set-value", this.onSetValue);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.tabs?.destroy();
+  }
+};
+
 // hooks/corex.ts
-var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook };
+var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook, Tabs: TabsHook };
 var corex_default = Hooks;
 export {
   AccordionHook as Accordion,
@@ -11351,6 +12145,7 @@ export {
   ComboboxHook as Combobox,
   SelectHook as Select,
   SwitchHook as Switch,
+  TabsHook as Tabs,
   ToastHook as Toast,
   ToggleGroupHook as ToggleGroup,
   corex_default as default

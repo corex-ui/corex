@@ -41,6 +41,9 @@ importers:
       '@zag-js/switch':
         specifier: ^1.33.1
         version: 1.33.1
+      '@zag-js/tabs':
+        specifier: ^1.33.1
+        version: 1.33.1
       '@zag-js/toast':
         specifier: ^1.33.1
         version: 1.33.1
@@ -257,6 +260,9 @@ packages:
 
   '@zag-js/switch@1.33.1':
     resolution: {integrity: sha512-2jl/R4CKLYvk+4cmSYFo3D2gQ+1ts9H7Y4yH98o9rXgPMvdEM9KMKX1FTqJRIY7v6ZkcNbvV/vKP3bDvMdTpug==}
+
+  '@zag-js/tabs@1.33.1':
+    resolution: {integrity: sha512-Xquhso7jUch9UrG5N+5vNfR8S2bWUk6EDpBBArY0X5oPSnlzgwJcjWh98hH1QyHX3JmWZN4kAfVKUxNdQxRnVw==}
 
   '@zag-js/toast@1.33.1':
     resolution: {integrity: sha512-kI2/VJcBQGgHpmuWiIDqPn8ejFEODh5YhjWbnvjGRG+x3XoPuMq6hhxXV6VWJslbZJtTmzxDcP+Xamdrf1hbZA==}
@@ -910,6 +916,14 @@ snapshots:
       '@zag-js/core': 1.33.1
       '@zag-js/dom-query': 1.33.1
       '@zag-js/focus-visible': 1.33.1
+      '@zag-js/types': 1.33.1
+      '@zag-js/utils': 1.33.1
+
+  '@zag-js/tabs@1.33.1':
+    dependencies:
+      '@zag-js/anatomy': 1.33.1
+      '@zag-js/core': 1.33.1
+      '@zag-js/dom-query': 1.33.1
       '@zag-js/types': 1.33.1
       '@zag-js/utils': 1.33.1
 

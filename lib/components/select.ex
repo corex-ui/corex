@@ -373,7 +373,7 @@ defmodule Corex.Select do
 
       <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
 
-      <select id="delse-id" phx-update="ignore" multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
+      <select multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
         <%= Phoenix.HTML.Form.options_for_select(
           @options_with_prompt,
           @selected_for_options,

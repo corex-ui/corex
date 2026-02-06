@@ -10,6 +10,7 @@ defmodule E2eWeb.ComboboxTest do
     feature "#{@mode} - Combobox has no A11y violations", %{session: session} do
       session
       |> Combobox.goto(@mode)
+
       # |> Combobox.check_accessibility()
     end
   end

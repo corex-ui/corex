@@ -1,0 +1,48 @@
+<Layouts.app flash={@flash}>
+  <h1>Tabs</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={Corex.Tabs.set_value("my-tabs", ["item-0"])}
+      class="button button--sm"
+    >
+      Open Item 1
+    </button>
+    <button
+      phx-click={Corex.Tabs.set_value("my-tabs", ["item-0", "item-1"])}
+      class="button button--sm"
+    >
+      Open Item 1 and 2
+    </button>
+    <button phx-click={Corex.Tabs.set_value("my-tabs", [])} class="button button--sm">
+      Close all Items
+    </button>
+  </div>
+  <.tabs id="my-tabs" class="tabs">
+    <:item :let={item}>
+      <.tabs_trigger item={item}>
+        Lorem ipsum
+      </.tabs_trigger>
+      <.tabs_trigger item={item}>
+        Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
+      </.tabs_trigger>
+    </:item>
+    <:item :let={item}>
+      <.tabs_trigger item={item}>
+        Duis dictum
+      </.tabs_trigger>
+      <.tabs_trigger item={item}>
+        Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
+      </.tabs_trigger>
+    </:item>
+    <:item :let={item}>
+      <.tabs_trigger item={item}>
+        Donec
+      </.tabs_trigger>
+      <.tabs_trigger item={item}>
+        Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.
+      </.tabs_trigger>
+    </:item>
+  </.tabs>
+</Layouts.app>

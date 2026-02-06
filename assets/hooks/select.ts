@@ -131,12 +131,12 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
       this.select.setOptions(newCollection);
 
       this.select.updateProps({
-        // id: this.el.id,
+        id: this.el.id,
         ...(getBoolean(this.el, "controlled")
           ? { value: getStringList(this.el, "value") }
           : { defaultValue: getStringList(this.el, "defaultValue") }),
-        // name: getString(this.el, "name"),
-        // form: getString(this.el, "form"),
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
         disabled: getBoolean(this.el, "disabled"),
         multiple: getBoolean(this.el, "multiple"),
         dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
