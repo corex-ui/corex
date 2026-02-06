@@ -76,6 +76,14 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
+You can add individual components with:
+
+```javascript
+import {Accordion, Checkbox} from "corex"
+
+hooks: {...colocatedHooks, Accordion, Checkbox }
+```
+
 ## Import Components
 
 Add `use Corex` into your `MyAppWeb` `html_helpers`
