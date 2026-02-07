@@ -192,7 +192,8 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
 
   render(): void {
     const root =
-      this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]') ?? this.el;
+      this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]');
+    if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
 
     [

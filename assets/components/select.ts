@@ -185,10 +185,9 @@ export class Select extends Component<select.Props, select.Api> {
 
   render(): void {
     const root =
-    this.el.querySelector<HTMLElement>('[data-scope="select"][data-part="root"]') ??
-    this.el;
-
-  this.spreadProps(root, this.api.getRootProps());
+    this.el.querySelector<HTMLElement>('[data-scope="select"][data-part="root"]');
+    if (!root) return;
+    this.spreadProps(root, this.api.getRootProps());
   
   const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
     '[data-scope="select"][data-part="hidden-select"]'

@@ -63,4 +63,20 @@ defmodule E2eWeb.PageController do
   def tabs_page(conn, _params) do
     render(conn, :tabs_page)
   end
+
+  def collapsible_page(conn, _params) do
+    render(conn, :collapsible_page)
+  end
+
+  def dialog_page(conn, _params) do
+    render(conn, :dialog_page)
+  end
+
+  def clipboard_page(conn, _params) do
+    render(conn, :clipboard_page)
+  end
+
+  def date_picker_page(conn, _params) do
+    render(conn, :date_picker_page)
+  end
 end

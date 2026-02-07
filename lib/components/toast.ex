@@ -99,8 +99,6 @@ defmodule Corex.Toast do
   flash_info={%Corex.Flash.Info{title: "Success", type: :success, duration: 5000}}
   flash_error={%Corex.Flash.Error{title: "Error", type: :error, duration: :infinity}}/>
   ```
-  ```
-
 
   """
   attr(:id, :string, default: nil)

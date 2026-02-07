@@ -13,10 +13,12 @@ export class Tabs extends Component<Props, Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="tabs"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="tabs"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const listEl = rootEl.querySelector<HTMLElement>('[data-scope="tabs"][data-part="list"]') || this.el;
+    const listEl = rootEl.querySelector<HTMLElement>('[data-scope="tabs"][data-part="list"]');
+    if (!listEl) return;
     this.spreadProps(listEl, this.api.getListProps());
 
     const itemsData = this.el.getAttribute('data-items');

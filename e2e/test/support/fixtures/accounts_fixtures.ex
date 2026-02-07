@@ -11,6 +11,7 @@ defmodule E2e.AccountsFixtures do
     {:ok, user} =
       attrs
       |> Enum.into(%{
+        birth_date: ~D[1990-01-15],
         country: "some country",
         name: "some name",
         terms: true
@@ -27,6 +28,7 @@ defmodule E2e.AccountsFixtures do
     {:ok, admin} =
       attrs
       |> Enum.into(%{
+        birth_date: ~D[1990-01-15],
         country: :fra,
         name: "some name",
         terms: true

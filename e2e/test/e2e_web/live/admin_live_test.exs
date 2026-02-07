@@ -4,11 +4,16 @@ defmodule E2eWeb.AdminLiveTest do
   import Phoenix.LiveViewTest
   import E2e.AccountsFixtures
 
-  @create_attrs %{name: "some name", country: "fra", terms: true}
-  @update_attrs %{name: "some updated name", country: "deu", terms: true}
-  @invalid_attrs %{name: "", country: "", terms: false}
+  @create_attrs %{name: "some name", country: "fra", birth_date: "1990-01-15", terms: true}
+  @update_attrs %{
+    name: "some updated name",
+    country: "deu",
+    birth_date: "1995-06-20",
+    terms: true
+  }
+  @invalid_attrs %{name: "", country: "", birth_date: nil, terms: false}
   # On edit form, country select only allows current value ("fra"); keep it to trigger "can't be blank" on name only
-  @invalid_attrs_edit %{name: "", country: "fra", terms: false}
+  @invalid_attrs_edit %{name: "", country: "fra", birth_date: "1990-01-15", terms: false}
 
   defp create_admin(_) do
     admin = admin_fixture()

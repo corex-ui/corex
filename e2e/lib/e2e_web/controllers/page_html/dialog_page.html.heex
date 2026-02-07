@@ -1,0 +1,32 @@
+<Layouts.app flash={@flash}>
+  <h1>Dialog</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={Corex.Dialog.set_open("my-dialog", true)}
+      class="button button--sm"
+    >
+      Open Dialog
+    </button>
+  </div>
+  <.dialog id="my-dialog" class="dialog">
+    <:trigger>Open Dialog</:trigger>
+    <:title>Dialog Title</:title>
+    <:description>
+      This is a dialog description that explains what the dialog is about.
+    </:description>
+    <:content>
+      <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
+      <button
+        phx-click={Corex.Dialog.set_open("my-dialog", false)}
+        class="button button--sm"
+      >
+        API Close Dialog
+      </button>
+    </:content>
+    <:close_trigger>
+      <.icon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+  </.dialog>
+</Layouts.app>

@@ -13,7 +13,8 @@ export class Accordion extends Component<Props, Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="accordion"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="accordion"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
     const items = rootEl.querySelectorAll<HTMLElement>(

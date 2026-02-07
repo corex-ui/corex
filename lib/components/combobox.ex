@@ -383,16 +383,18 @@ defmodule Corex.Combobox do
   end
 
   defp normalize_value_to_ids(collection, value_list) do
-    Enum.map(value_list, fn val ->
-      if Enum.any?(collection, &(&1.id == val)) do
-        val
-      else
-        case Enum.find(collection, &(&1.label == val)) do
-          nil -> val
-          item -> item.id
-        end
-      end
-    end)
+    Enum.map(value_list, &resolve_value_id(collection, &1))
+  end
+
+  defp resolve_value_id(collection, val) do
+    by_id = Enum.find(collection, &(&1.id == val))
+    by_label = Enum.find(collection, &(&1.label == val))
+
+    cond do
+      by_id != nil -> val
+      by_label != nil -> by_label.id
+      true -> val
+    end
   end
 
   defp get_selected_label(collection, value) do

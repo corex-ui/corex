@@ -13,7 +13,8 @@ export class Switch extends Component<zagSwitch.Props, zagSwitch.Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
     const inputEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="hidden-input"]');

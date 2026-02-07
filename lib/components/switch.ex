@@ -1,5 +1,5 @@
 defmodule Corex.Switch do
-  @moduledoc """
+  @moduledoc ~S'''
   Phoenix implementation of [Zag.js Switch](https://zagjs.com/components/react/switch).
 
   ## Examples
@@ -35,23 +35,118 @@ defmodule Corex.Switch do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, the switch automatically integrates with form validation:
+  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+
+  ### Controller
+
+  ```elixir
+  defmodule MyAppWeb.PageController do
+    use MyAppWeb, :controller
+
+    def home(conn, params) do
+      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
+      render(conn, :home, form: form)
+    end
+  end
+  ```
 
   ```heex
-  <.form for={@form} phx-change="validate" phx-submit="save">
-    <.switch field={@form[:terms_accepted]}>
-      <:label>I accept the terms and conditions</:label>
-      <:error :let={msg}>{msg}</:error>
+  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
+    <.switch field={f[:notifications_enabled]} class="switch">
+      <:label>Enable notifications</:label>
+      <:error :let={msg}>
+        <.icon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.switch>
+    <button type="submit">Submit</button>
   </.form>
   ```
 
-  The `field` attribute automatically handles:
-  - Setting the `id` from the form field
-  - Setting the `name` for form submission
-  - Mapping the form value to the `checked` state
-  - Displaying validation errors
-  - Integration with Phoenix changesets
+  ### Live View
+
+  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly.
+
+  ```elixir
+  defmodule MyAppWeb.SwitchLive do
+    use MyAppWeb, :live_view
+
+    def mount(_params, _session, socket) do
+      form = to_form(%{"notifications_enabled" => "false"}, as: :user)
+      {:ok, assign(socket, :form, form)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.form as={:user} for={@form} id={get_form_id(@form)}>
+        <.switch field={@form[:notifications_enabled]} class="switch">
+          <:label>Enable notifications</:label>
+          <:error :let={msg}>
+            <.icon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.switch>
+        <button type="submit">Submit</button>
+      </.form>
+      """
+    end
+  end
+  ```
+
+  ### With Ecto changeset
+
+  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
+
+  This allows the Live View to be the source of truth and the component to be in sync accordingly.
+
+  First create your schema and changeset:
+
+  ```elixir
+  defmodule MyApp.Accounts.User do
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    embedded_schema do
+      field :notifications_enabled, :boolean, default: false
+    end
+
+    def changeset(user, attrs) do
+      user
+      |> cast(attrs, [:notifications_enabled])
+      |> validate_required([:notifications_enabled])
+    end
+  end
+  ```
+
+  ```elixir
+  defmodule MyAppWeb.UserLive do
+    use MyAppWeb, :live_view
+    alias MyApp.Accounts.User
+
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
+    end
+
+    def handle_event("validate", %{"user" => user_params}, socket) do
+      changeset = User.changeset(%User{}, user_params)
+      {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+        <.switch field={@form[:notifications_enabled]} class="switch" controlled>
+          <:label>Enable notifications</:label>
+          <:error :let={msg}>
+            <.icon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.switch>
+      </.form>
+      """
+    end
+  end
+  ```
 
   ## Programmatic Control
 
@@ -108,7 +203,7 @@ defmodule Corex.Switch do
   ```
 
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/switch#modifiers)
-  """
+  '''
 
   @doc type: :component
   use Phoenix.Component

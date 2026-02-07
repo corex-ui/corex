@@ -22,7 +22,11 @@ var corex_exports = {};
 __export(corex_exports, {
   Accordion: () => AccordionHook,
   Checkbox: () => CheckboxHook,
+  Clipboard: () => ClipboardHook,
+  Collapsible: () => CollapsibleHook,
   Combobox: () => ComboboxHook,
+  DatePicker: () => DatePickerHook,
+  Dialog: () => DialogHook,
   Select: () => SelectHook,
   Switch: () => SwitchHook,
   Tabs: () => TabsHook,
@@ -33,18 +37,18 @@ __export(corex_exports, {
 module.exports = __toCommonJS(corex_exports);
 
 // ../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs
-var createAnatomy = (name, parts9 = []) => ({
+var createAnatomy = (name, parts13 = []) => ({
   parts: (...values) => {
-    if (isEmpty(parts9)) {
+    if (isEmpty(parts13)) {
       return createAnatomy(name, values);
     }
     throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
   },
-  extendWith: (...values) => createAnatomy(name, [...parts9, ...values]),
-  omit: (...values) => createAnatomy(name, parts9.filter((part) => !values.includes(part))),
-  rename: (newName) => createAnatomy(newName, parts9),
-  keys: () => parts9,
-  build: () => [...new Set(parts9)].reduce(
+  extendWith: (...values) => createAnatomy(name, [...parts13, ...values]),
+  omit: (...values) => createAnatomy(name, parts13.filter((part) => !values.includes(part))),
+  rename: (newName) => createAnatomy(newName, parts13),
+  keys: () => parts13,
+  build: () => [...new Set(parts13)].reduce(
     (prev, part) => Object.assign(prev, {
       [part]: {
         selector: [
@@ -209,6 +213,59 @@ function isControlledElement(container, element) {
   };
   return checkElement(container);
 }
+function findControlledElements(searchRoot, callback) {
+  const rootNode = getRootNode(searchRoot);
+  const visitedIds = /* @__PURE__ */ new Set();
+  const findRecursive = (root) => {
+    const controllingElements = root.querySelectorAll("[aria-controls]");
+    for (const controller of controllingElements) {
+      if (controller.getAttribute("aria-expanded") !== "true") continue;
+      const controlledIds = getAriaControls(controller);
+      for (const id of controlledIds) {
+        if (!id || visitedIds.has(id)) continue;
+        visitedIds.add(id);
+        const controlledElement = rootNode.getElementById(id);
+        if (controlledElement) {
+          const role = controlledElement.getAttribute("role");
+          const modal = controlledElement.getAttribute("aria-modal") === "true";
+          if (role && INTERACTIVE_CONTAINER_ROLE.has(role) && !modal) {
+            callback(controlledElement);
+            findRecursive(controlledElement);
+          }
+        }
+      }
+    }
+  };
+  findRecursive(searchRoot);
+}
+function getControlledElements(container) {
+  const controlledElements = /* @__PURE__ */ new Set();
+  findControlledElements(container, (controlledElement) => {
+    if (!container.contains(controlledElement)) {
+      controlledElements.add(controlledElement);
+    }
+  });
+  return Array.from(controlledElements);
+}
+function isInteractiveContainerElement(element) {
+  const role = element.getAttribute("role");
+  return Boolean(role && INTERACTIVE_CONTAINER_ROLE.has(role));
+}
+function isControllerElement(element) {
+  return element.hasAttribute("aria-controls") && element.getAttribute("aria-expanded") === "true";
+}
+function hasControllerElements(element) {
+  if (isControllerElement(element)) return true;
+  return Boolean(element.querySelector?.('[aria-controls][aria-expanded="true"]'));
+}
+function isControlledByExpandedController(element) {
+  if (!element.id) return false;
+  const rootNode = getRootNode(element);
+  const escapedId = CSS.escape(element.id);
+  const selector = `[aria-controls~="${escapedId}"][aria-expanded="true"], [aria-controls="${escapedId}"][aria-expanded="true"]`;
+  const controller = rootNode.querySelector(selector);
+  return Boolean(controller && isInteractiveContainerElement(element));
+}
 var isDom = () => typeof document !== "undefined";
 function getPlatform() {
   const agent = navigator.userAgentData;
@@ -318,6 +375,20 @@ function getDescriptor(el, options) {
   const proto = getWindow(el)[type].prototype;
   return Object.getOwnPropertyDescriptor(proto, property) ?? {};
 }
+function getElementType(el) {
+  if (el.localName === "input") return "HTMLInputElement";
+  if (el.localName === "textarea") return "HTMLTextAreaElement";
+  if (el.localName === "select") return "HTMLSelectElement";
+}
+function setElementValue(el, value, property = "value") {
+  if (!el) return;
+  const type = getElementType(el);
+  if (type) {
+    const descriptor = getDescriptor(el, { type, property });
+    descriptor.set?.call(el, value);
+  }
+  el.setAttribute(property, value);
+}
 function setElementChecked(el, checked) {
   if (!el) return;
   const descriptor = getDescriptor(el, { type: "HTMLInputElement", property: "checked" });
@@ -368,11 +439,13 @@ function trackFormControl(el, options) {
   return () => cleanups.forEach((cleanup) => cleanup?.());
 }
 var isFrame = (el) => isHTMLElement(el) && el.tagName === "IFRAME";
+var NATURALLY_TABBABLE_REGEX = /^(audio|video|details)$/;
 function parseTabIndex(el) {
   const attr = el.getAttribute("tabindex");
   if (!attr) return NaN;
   return parseInt(attr, 10);
 }
+var hasTabIndex = (el) => !Number.isNaN(parseTabIndex(el));
 var hasNegativeTabIndex = (el) => parseTabIndex(el) < 0;
 function getShadowRootForNode(element, getShadowRoot) {
   if (!getShadowRoot) return null;
@@ -485,6 +558,14 @@ function getTabbableEdges(container, options = {}) {
   const last2 = elements[elements.length - 1] || null;
   return [first2, last2];
 }
+function getTabIndex(node) {
+  if (node.tabIndex < 0) {
+    if ((NATURALLY_TABBABLE_REGEX.test(node.localName) || isEditableElement(node)) && !hasTabIndex(node)) {
+      return 0;
+    }
+  }
+  return node.tabIndex;
+}
 function getInitialFocus(options) {
   const { root, getInitialEl, filter, enabled = true } = options;
   if (!enabled) return;
@@ -543,11 +624,11 @@ function raf(fn) {
 }
 function nextTick(fn) {
   const set = /* @__PURE__ */ new Set();
-  function raf2(fn2) {
+  function raf22(fn2) {
     const id = globalThis.requestAnimationFrame(fn2);
     set.add(() => globalThis.cancelAnimationFrame(id));
   }
-  raf2(() => raf2(fn));
+  raf22(() => raf22(fn));
   return function cleanup() {
     set.forEach((fn2) => fn2());
   };
@@ -592,6 +673,28 @@ function observeAttributes(nodeOrFn, options) {
     cleanups.forEach((fn) => fn?.());
   };
 }
+function observeChildrenImpl(node, options) {
+  const { callback: fn } = options;
+  if (!node) return;
+  const win = node.ownerDocument.defaultView || window;
+  const obs = new win.MutationObserver(fn);
+  obs.observe(node, { childList: true, subtree: true });
+  return () => obs.disconnect();
+}
+function observeChildren(nodeOrFn, options) {
+  const { defer } = options;
+  const func = defer ? raf : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const node = typeof nodeOrFn === "function" ? nodeOrFn() : nodeOrFn;
+      cleanups.push(observeChildrenImpl(node, options));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
+}
 function clickIfLink(el) {
   const click = () => {
     const win = getWindow(el);
@@ -624,6 +727,70 @@ function scrollIntoView(el, options) {
   if (!el || !rootEl) return;
   if (!isOverflowElement(rootEl) || !isScrollable(rootEl)) return;
   el.scrollIntoView(scrollOptions);
+}
+var state = "default";
+var userSelect = "";
+var elementMap = /* @__PURE__ */ new WeakMap();
+function disableTextSelectionImpl(options = {}) {
+  const { target, doc } = options;
+  const docNode = doc ?? document;
+  const rootEl = docNode.documentElement;
+  if (isIos()) {
+    if (state === "default") {
+      userSelect = rootEl.style.webkitUserSelect;
+      rootEl.style.webkitUserSelect = "none";
+    }
+    state = "disabled";
+  } else if (target) {
+    elementMap.set(target, target.style.userSelect);
+    target.style.userSelect = "none";
+  }
+  return () => restoreTextSelection({ target, doc: docNode });
+}
+function restoreTextSelection(options = {}) {
+  const { target, doc } = options;
+  const docNode = doc ?? document;
+  const rootEl = docNode.documentElement;
+  if (isIos()) {
+    if (state !== "disabled") return;
+    state = "restoring";
+    setTimeout(() => {
+      nextTick(() => {
+        if (state === "restoring") {
+          if (rootEl.style.webkitUserSelect === "none") {
+            rootEl.style.webkitUserSelect = userSelect || "";
+          }
+          userSelect = "";
+          state = "default";
+        }
+      });
+    }, 300);
+  } else {
+    if (target && elementMap.has(target)) {
+      const prevUserSelect = elementMap.get(target);
+      if (target.style.userSelect === "none") {
+        target.style.userSelect = prevUserSelect ?? "";
+      }
+      if (target.getAttribute("style") === "") {
+        target.removeAttribute("style");
+      }
+      elementMap.delete(target);
+    }
+  }
+}
+function disableTextSelection(options = {}) {
+  const { defer, target, ...restOptions } = options;
+  const func = defer ? raf : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const node = typeof target === "function" ? target() : target;
+      cleanups.push(disableTextSelectionImpl({ ...restOptions, target: node }));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
 }
 function trackPress(options) {
   const {
@@ -795,6 +962,19 @@ function getByText(v, text, currentId, itemToId = defaultItemToId) {
   }
   return items.find((item) => match(getValueText(item), text));
 }
+function setAttribute(el, attr, v) {
+  const prev = el.getAttribute(attr);
+  const exists = prev != null;
+  if (prev === v) return noop;
+  el.setAttribute(attr, v);
+  return () => {
+    if (!exists) {
+      el.removeAttribute(attr);
+    } else {
+      el.setAttribute(attr, prev);
+    }
+  };
+}
 function setStyle(el, style) {
   if (!el) return noop;
   const prev = Object.keys(style).reduce((acc, key) => {
@@ -805,6 +985,18 @@ function setStyle(el, style) {
   Object.assign(el.style, style);
   return () => {
     Object.assign(el.style, prev);
+    if (el.style.length === 0) {
+      el.removeAttribute("style");
+    }
+  };
+}
+function setStyleProperty(el, prop, value) {
+  if (!el) return noop;
+  const prev = el.style.getPropertyValue(prop);
+  if (prev === value) return noop;
+  el.style.setProperty(prop, value);
+  return () => {
+    el.style.setProperty(prop, prev);
     if (el.style.length === 0) {
       el.removeAttribute("style");
     }
@@ -930,6 +1122,13 @@ var has = (v, t) => v.indexOf(t) !== -1;
 var add = (v, ...items) => v.concat(items);
 var remove = (v, ...items) => v.filter((t) => !items.includes(t));
 var addOrRemove = (v, item) => has(v, item) ? remove(v, item) : add(v, item);
+function chunk(v, size3) {
+  return v.reduce((rows, value, index) => {
+    if (index % size3 === 0) rows.push([value]);
+    else last(rows)?.push(value);
+    return rows;
+  }, []);
+}
 var isArrayLike = (value) => value?.constructor.name === "Array";
 var isArrayEqual = (a, b) => {
   if (a.length !== b.length) return false;
@@ -1013,6 +1212,15 @@ function match2(key, record, ...args) {
   throw error;
 }
 var { floor, abs, round, min, max, pow, sign } = Math;
+var isNaN2 = (v) => Number.isNaN(v);
+var nan = (v) => isNaN2(v) ? 0 : v;
+var isValueWithinRange = (v, vmin, vmax) => {
+  const value = nan(v);
+  const minCheck = vmin == null || value >= vmin;
+  const maxCheck = vmax == null || value <= vmax;
+  return minCheck && maxCheck;
+};
+var clampValue = (v, vmin, vmax) => min(max(nan(v), vmin), vmax);
 var toPx = (v) => typeof v === "number" ? `${v}px` : v;
 function compact(obj) {
   if (!isPlainObject(obj) || obj === void 0) return obj;
@@ -1026,23 +1234,23 @@ function compact(obj) {
   }
   return filtered;
 }
-function splitProps(props8, keys) {
+function splitProps(props12, keys) {
   const rest = {};
   const result = {};
   const keySet = new Set(keys);
-  const ownKeys = Reflect.ownKeys(props8);
+  const ownKeys = Reflect.ownKeys(props12);
   for (const key of ownKeys) {
     if (keySet.has(key)) {
-      result[key] = props8[key];
+      result[key] = props12[key];
     } else {
-      rest[key] = props8[key];
+      rest[key] = props12[key];
     }
   }
   return [result, rest];
 }
 var createSplitProps = (keys) => {
-  return function split(props8) {
-    return splitProps(props8, keys);
+  return function split(props12) {
+    return splitProps(props12, keys);
   };
 };
 var currentTime = () => performance.now();
@@ -1122,16 +1330,29 @@ function warn(...a) {
 function ensure(c, m) {
   if (c == null) throw new Error(m());
 }
-function ensureProps(props8, keys, scope) {
+function ensureProps(props12, keys, scope) {
   let missingKeys = [];
   for (const key of keys) {
-    if (props8[key] == null) missingKeys.push(key);
+    if (props12[key] == null) missingKeys.push(key);
   }
   if (missingKeys.length > 0)
     throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
 }
 
 // ../node_modules/.pnpm/@zag-js+core@1.33.1/node_modules/@zag-js/core/dist/index.mjs
+function memo(getDeps, fn, opts) {
+  let deps = [];
+  let result;
+  return (depArgs) => {
+    const newDeps = getDeps(depArgs);
+    const depsChanged = newDeps.length !== deps.length || newDeps.some((dep, index) => !isEqual2(deps[index], dep));
+    if (!depsChanged) return result;
+    deps = newDeps;
+    result = fn(newDeps, depArgs);
+    opts?.onChange?.(result);
+    return result;
+  };
+}
 function createGuards() {
   return {
     and: (...guards3) => {
@@ -1174,14 +1395,14 @@ var MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
   return MachineStatus2;
 })(MachineStatus || {});
 var INIT_STATE = "__init__";
-function createScope(props8) {
-  const getRootNode2 = () => props8.getRootNode?.() ?? document;
+function createScope(props12) {
+  const getRootNode2 = () => props12.getRootNode?.() ?? document;
   const getDoc = () => getDocument(getRootNode2());
   const getWin = () => getDoc().defaultView ?? window;
   const getActiveElementFn = () => getActiveElement(getRootNode2());
   const getById = (id) => getRootNode2().getElementById(id);
   return {
-    ...props8,
+    ...props12,
     getRootNode: getRootNode2,
     getDoc,
     getWin,
@@ -1196,14 +1417,14 @@ function createNormalizer(fn) {
   return new Proxy({}, {
     get(_target, key) {
       if (key === "style")
-        return (props8) => {
-          return fn({ style: props8 }).style;
+        return (props12) => {
+          return fn({ style: props12 }).style;
         };
       return fn;
     }
   });
 }
-var createProps = () => (props8) => Array.from(new Set(props8));
+var createProps = () => (props12) => Array.from(new Set(props12));
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.33.1/node_modules/@zag-js/accordion/dist/index.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -1782,8 +2003,8 @@ var toStyleString = (style) => {
   }
   return string;
 };
-var normalizeProps = createNormalizer((props8) => {
-  return Object.entries(props8).reduce((acc, [key, value]) => {
+var normalizeProps = createNormalizer((props12) => {
+  return Object.entries(props12).reduce((acc, [key, value]) => {
     if (value === void 0) return acc;
     if (key in propMap) {
       key = propMap[key];
@@ -1893,36 +2114,36 @@ function spreadProps(node, attrs, machineId) {
     }
   };
 }
-function bindable(props8) {
-  const initial = props8().value ?? props8().defaultValue;
-  if (props8().debug) {
-    console.log(`[bindable > ${props8().debug}] initial`, initial);
+function bindable(props12) {
+  const initial = props12().value ?? props12().defaultValue;
+  if (props12().debug) {
+    console.log(`[bindable > ${props12().debug}] initial`, initial);
   }
-  const eq = props8().isEqual ?? Object.is;
+  const eq = props12().isEqual ?? Object.is;
   const store = proxy({ value: initial });
-  const controlled = () => props8().value !== void 0;
+  const controlled = () => props12().value !== void 0;
   return {
     initial,
     ref: store,
     get() {
-      return controlled() ? props8().value : store.value;
+      return controlled() ? props12().value : store.value;
     },
     set(nextValue) {
       const prev = store.value;
       const next = isFunction(nextValue) ? nextValue(prev) : nextValue;
-      if (props8().debug) {
-        console.log(`[bindable > ${props8().debug}] setValue`, { next, prev });
+      if (props12().debug) {
+        console.log(`[bindable > ${props12().debug}] setValue`, { next, prev });
       }
       if (!controlled()) store.value = next;
       if (!eq(next, prev)) {
-        props8().onChange?.(next, prev);
+        props12().onChange?.(next, prev);
       }
     },
     invoke(nextValue, prevValue) {
-      props8().onChange?.(nextValue, prevValue);
+      props12().onChange?.(nextValue, prevValue);
     },
     hash(value) {
-      return props8().hash?.(value) ?? String(value);
+      return props12().hash?.(value) ?? String(value);
     }
   };
 }
@@ -1968,8 +2189,8 @@ function mergeMachineProps(prev, next) {
   return result;
 }
 var VanillaMachine = class {
-  constructor(machine9, userProps = {}) {
-    this.machine = machine9;
+  constructor(machine13, userProps = {}) {
+    this.machine = machine13;
     __publicField3(this, "scope");
     __publicField3(this, "context");
     __publicField3(this, "prop");
@@ -1988,8 +2209,8 @@ var VanillaMachine = class {
       current: () => this.event,
       previous: () => this.previousEvent
     }));
-    __publicField3(this, "getStateConfig", (state2) => {
-      return this.machine.states[state2];
+    __publicField3(this, "getStateConfig", (state3) => {
+      return this.machine.states[state3];
     });
     __publicField3(this, "getState", () => ({
       ...this.state,
@@ -2114,11 +2335,11 @@ var VanillaMachine = class {
     this.scope = createScope({ id, ids, getRootNode: getRootNode2 });
     const prop = (key) => {
       const __props = runIfFn(this.userPropsRef.current);
-      const props8 = machine9.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
-      return props8[key];
+      const props12 = machine13.props?.({ props: compact(__props), scope: this.scope }) ?? __props;
+      return props12[key];
     };
     this.prop = prop;
-    const context = machine9.context?.({
+    const context = machine13.context?.({
       prop,
       bindable,
       scope: this.scope,
@@ -2159,7 +2380,7 @@ var VanillaMachine = class {
     };
     this.context = ctx;
     const computed = (key) => {
-      return machine9.computed?.[key]({
+      return machine13.computed?.[key]({
         context: ctx,
         event: this.getEvent(),
         prop,
@@ -2169,10 +2390,10 @@ var VanillaMachine = class {
       }) ?? {};
     };
     this.computed = computed;
-    const refs = createRefs(machine9.refs?.({ prop, context: ctx }) ?? {});
+    const refs = createRefs(machine13.refs?.({ prop, context: ctx }) ?? {});
     this.refs = refs;
-    const state = bindable(() => ({
-      defaultValue: machine9.initialState({ prop }),
+    const state2 = bindable(() => ({
+      defaultValue: machine13.initialState({ prop }),
       onChange: (nextState, prevState) => {
         if (prevState) {
           const exitEffects = this.effects.get(prevState);
@@ -2186,14 +2407,14 @@ var VanillaMachine = class {
         const cleanup = this.effect(this.getStateConfig(nextState)?.effects);
         if (cleanup) this.effects.set(nextState, cleanup);
         if (prevState === INIT_STATE) {
-          this.action(machine9.entry);
-          const cleanup2 = this.effect(machine9.effects);
+          this.action(machine13.entry);
+          const cleanup2 = this.effect(machine13.effects);
           if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
         }
         this.action(this.getStateConfig(nextState)?.entry);
       }
     }));
-    this.state = state;
+    this.state = state2;
     this.cleanups.push(subscribe(this.state.ref, () => this.notify()));
   }
   updateProps(newProps) {
@@ -2240,13 +2461,15 @@ var VanillaMachine = class {
 // lib/core.ts
 var Component = class {
   el;
+  doc;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine;
   api;
-  constructor(el, props8) {
+  constructor(el, props12) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
-    this.machine = this.initMachine(props8);
+    this.doc = document;
+    this.machine = this.initMachine(props12);
     this.api = this.initApi();
   }
   init = () => {
@@ -2260,25 +2483,26 @@ var Component = class {
   destroy = () => {
     this.machine.stop();
   };
-  spreadProps = (el, props8) => {
-    spreadProps(el, props8);
+  spreadProps = (el, props12) => {
+    spreadProps(el, props12, this.machine.scope.id);
   };
-  updateProps = (props8) => {
-    this.machine.updateProps(props8);
+  updateProps = (props12) => {
+    this.machine.updateProps(props12);
   };
 };
 
 // components/accordion.ts
 var Accordion = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(machine, props8);
+  initMachine(props12) {
+    return new VanillaMachine(machine, props12);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="accordion"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="accordion"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
     const items = rootEl.querySelectorAll(
       ':scope > [data-scope="accordion"][data-part="item"]'
@@ -3197,12 +3421,12 @@ function groupConnect(service, normalize) {
 var { guards, createMachine: createMachine2 } = setup();
 var { and: and2 } = guards;
 var groupMachine = createMachine2({
-  props({ props: props8 }) {
+  props({ props: props12 }) {
     return {
       dir: "ltr",
       id: uuid(),
-      ...props8,
-      store: props8.store
+      ...props12,
+      store: props12.store
     };
   },
   initialState({ prop }) {
@@ -3443,9 +3667,9 @@ var groupMachine = createMachine2({
   }
 });
 function connect2(service, normalize) {
-  const { state, send, prop, scope, context, computed } = service;
-  const visible = state.hasTag("visible");
-  const paused = state.hasTag("paused");
+  const { state: state2, send, prop, scope, context, computed } = service;
+  const visible = state2.hasTag("visible");
+  const paused = state2.hasTag("paused");
   const mounted = context.get("mounted");
   const frontmost = computed("frontmost");
   const placement = prop("parent").computed("placement");
@@ -3556,12 +3780,12 @@ function connect2(service, normalize) {
 }
 var { not: not2 } = createGuards();
 var machine2 = createMachine({
-  props({ props: props8 }) {
-    ensureProps(props8, ["id", "type", "parent", "removeDelay"], "toast");
+  props({ props: props12 }) {
+    ensureProps(props12, ["id", "type", "parent", "removeDelay"], "toast");
     return {
       closable: true,
-      ...props8,
-      duration: getToastDuration(props8.duration, props8.type)
+      ...props12,
+      duration: getToastDuration(props12.duration, props12.type)
     };
   },
   initialState({ prop }) {
@@ -3804,8 +4028,8 @@ function setHeight(parent, item) {
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
 };
-function createToastStore(props8 = {}) {
-  const attrs = withDefaults(props8, {
+function createToastStore(props12 = {}) {
+  const attrs = withDefaults(props12, {
     placement: "bottom",
     overlap: false,
     max: 24,
@@ -4031,9 +4255,9 @@ var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
   parts;
   duration;
-  constructor(el, props8) {
-    super(el, props8);
-    this.duration = props8.duration;
+  constructor(el, props12) {
+    super(el, props12);
+    this.duration = props12.duration;
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
     this.el.innerHTML = `
@@ -4065,8 +4289,8 @@ var ToastItem = class extends Component {
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(machine2, props8);
+  initMachine(props12) {
+    return new VanillaMachine(machine2, props12);
   }
   initApi() {
     return connect2(this.machine.service, normalizeProps);
@@ -4111,9 +4335,9 @@ var ToastGroup = class extends Component {
   toastComponents = /* @__PURE__ */ new Map();
   groupEl;
   store;
-  constructor(el, props8) {
-    super(el, props8);
-    this.store = props8.store;
+  constructor(el, props12) {
+    super(el, props12);
+    this.store = props12.store;
     this.groupEl = el.querySelector('[data-part="group"]') ?? (() => {
       const g = document.createElement("div");
       g.setAttribute("data-scope", "toast");
@@ -4123,8 +4347,8 @@ var ToastGroup = class extends Component {
     })();
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(group.machine, props8);
+  initMachine(props12) {
+    return new VanillaMachine(group.machine, props12);
   }
   initApi() {
     return group.connect(this.machine.service, normalizeProps);
@@ -4643,14 +4867,15 @@ var splitItemProps2 = createSplitProps(itemProps2);
 // components/toggle-group.ts
 var ToggleGroup = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(machine3, props8);
+  initMachine(props12) {
+    return new VanillaMachine(machine3, props12);
   }
   initApi() {
     return connect3(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="toggle-group"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="toggle-group"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
     const items = this.el.querySelectorAll('[data-scope="toggle-group"][data-part="item"]');
     for (let i = 0; i < items.length; i++) {
@@ -4668,7 +4893,7 @@ var ToggleGroupHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const props8 = {
+    const props12 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       defaultValue: getStringList(el, "defaultValue"),
@@ -4701,7 +4926,7 @@ var ToggleGroupHook = {
         }
       }
     };
-    const toggleGroup = new ToggleGroup(el, props8);
+    const toggleGroup = new ToggleGroup(el, props12);
     toggleGroup.init();
     this.toggleGroup = toggleGroup;
     this.onSetValue = (event) => {
@@ -4940,21 +5165,21 @@ var ListCollection = class _ListCollection {
       return void 0;
     });
     __publicField4(this, "search", (queryString, options2) => {
-      const { state, currentValue, timeout = 350 } = options2;
-      const search = state.keysSoFar + queryString;
+      const { state: state2, currentValue, timeout = 350 } = options2;
+      const search = state2.keysSoFar + queryString;
       const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
       const query2 = isRepeated ? search[0] : search;
       const item = this.getByText(query2, currentValue);
       const value = this.getItemValue(item);
       function cleanup() {
-        clearTimeout(state.timer);
-        state.timer = -1;
+        clearTimeout(state2.timer);
+        state2.timer = -1;
       }
       function update(value2) {
-        state.keysSoFar = value2;
+        state2.keysSoFar = value2;
         cleanup();
         if (value2 !== "") {
-          state.timer = +setTimeout(() => {
+          state2.timer = +setTimeout(() => {
             update("");
             cleanup();
           }, timeout);
@@ -5314,7 +5539,7 @@ function computeCoordsFromPlacement(_ref, placement, rtl) {
   }
   return coords;
 }
-async function detectOverflow(state, options) {
+async function detectOverflow(state2, options) {
   var _await$platform$isEle;
   if (options === void 0) {
     options = {};
@@ -5326,14 +5551,14 @@ async function detectOverflow(state, options) {
     rects,
     elements,
     strategy
-  } = state;
+  } = state2;
   const {
     boundary = "clippingAncestors",
     rootBoundary = "viewport",
     elementContext = "floating",
     altBoundary = false,
     padding = 0
-  } = evaluate(options, state);
+  } = evaluate(options, state2);
   const paddingObject = getPaddingObject(padding);
   const altContext = elementContext === "floating" ? "reference" : "floating";
   const element = elements[altBoundary ? altContext : elementContext];
@@ -5460,7 +5685,7 @@ var computePosition = async (reference, floating, config) => {
 var arrow = (options) => ({
   name: "arrow",
   options,
-  async fn(state) {
+  async fn(state2) {
     const {
       x,
       y,
@@ -5469,11 +5694,11 @@ var arrow = (options) => ({
       platform: platform2,
       elements,
       middlewareData
-    } = state;
+    } = state2;
     const {
       element,
       padding = 0
-    } = evaluate(options, state) || {};
+    } = evaluate(options, state2) || {};
     if (element == null) {
       return {};
     }
@@ -5526,7 +5751,7 @@ var flip = function(options) {
   return {
     name: "flip",
     options,
-    async fn(state) {
+    async fn(state2) {
       var _middlewareData$arrow, _middlewareData$flip;
       const {
         placement,
@@ -5535,7 +5760,7 @@ var flip = function(options) {
         initialPlacement,
         platform: platform2,
         elements
-      } = state;
+      } = state2;
       const {
         mainAxis: checkMainAxis = true,
         crossAxis: checkCrossAxis = true,
@@ -5544,7 +5769,7 @@ var flip = function(options) {
         fallbackAxisSideDirection = "none",
         flipAlignment = true,
         ...detectOverflowOptions
-      } = evaluate(options, state);
+      } = evaluate(options, state2);
       if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
         return {};
       }
@@ -5558,7 +5783,7 @@ var flip = function(options) {
         fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
       }
       const placements2 = [initialPlacement, ...fallbackPlacements];
-      const overflow = await platform2.detectOverflow(state, detectOverflowOptions);
+      const overflow = await platform2.detectOverflow(state2, detectOverflowOptions);
       const overflows = [];
       let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
       if (checkMainAxis) {
@@ -5646,18 +5871,18 @@ var hide = function(options) {
   return {
     name: "hide",
     options,
-    async fn(state) {
+    async fn(state2) {
       const {
         rects,
         platform: platform2
-      } = state;
+      } = state2;
       const {
         strategy = "referenceHidden",
         ...detectOverflowOptions
-      } = evaluate(options, state);
+      } = evaluate(options, state2);
       switch (strategy) {
         case "referenceHidden": {
-          const overflow = await platform2.detectOverflow(state, {
+          const overflow = await platform2.detectOverflow(state2, {
             ...detectOverflowOptions,
             elementContext: "reference"
           });
@@ -5670,7 +5895,7 @@ var hide = function(options) {
           };
         }
         case "escaped": {
-          const overflow = await platform2.detectOverflow(state, {
+          const overflow = await platform2.detectOverflow(state2, {
             ...detectOverflowOptions,
             altBoundary: true
           });
@@ -5690,19 +5915,19 @@ var hide = function(options) {
   };
 };
 var originSides = /* @__PURE__ */ new Set(["left", "top"]);
-async function convertValueToCoords(state, options) {
+async function convertValueToCoords(state2, options) {
   const {
     placement,
     platform: platform2,
     elements
-  } = state;
+  } = state2;
   const rtl = await (platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating));
   const side = getSide(placement);
   const alignment = getAlignment(placement);
   const isVertical = getSideAxis(placement) === "y";
   const mainAxisMulti = originSides.has(side) ? -1 : 1;
   const crossAxisMulti = rtl && isVertical ? -1 : 1;
-  const rawValue = evaluate(options, state);
+  const rawValue = evaluate(options, state2);
   let {
     mainAxis,
     crossAxis,
@@ -5734,15 +5959,15 @@ var offset = function(options) {
   return {
     name: "offset",
     options,
-    async fn(state) {
+    async fn(state2) {
       var _middlewareData$offse, _middlewareData$arrow;
       const {
         x,
         y,
         placement,
         middlewareData
-      } = state;
-      const diffCoords = await convertValueToCoords(state, options);
+      } = state2;
+      const diffCoords = await convertValueToCoords(state2, options);
       if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
         return {};
       }
@@ -5764,13 +5989,13 @@ var shift = function(options) {
   return {
     name: "shift",
     options,
-    async fn(state) {
+    async fn(state2) {
       const {
         x,
         y,
         placement,
         platform: platform2
-      } = state;
+      } = state2;
       const {
         mainAxis: checkMainAxis = true,
         crossAxis: checkCrossAxis = false,
@@ -5787,12 +6012,12 @@ var shift = function(options) {
           }
         },
         ...detectOverflowOptions
-      } = evaluate(options, state);
+      } = evaluate(options, state2);
       const coords = {
         x,
         y
       };
-      const overflow = await platform2.detectOverflow(state, detectOverflowOptions);
+      const overflow = await platform2.detectOverflow(state2, detectOverflowOptions);
       const crossAxis = getSideAxis(getSide(placement));
       const mainAxis = getOppositeAxis(crossAxis);
       let mainAxisCoord = coords[mainAxis];
@@ -5812,7 +6037,7 @@ var shift = function(options) {
         crossAxisCoord = clamp(min3, crossAxisCoord, max3);
       }
       const limitedCoords = limiter.fn({
-        ...state,
+        ...state2,
         [mainAxis]: mainAxisCoord,
         [crossAxis]: crossAxisCoord
       });
@@ -5836,19 +6061,19 @@ var limitShift = function(options) {
   }
   return {
     options,
-    fn(state) {
+    fn(state2) {
       const {
         x,
         y,
         placement,
         rects,
         middlewareData
-      } = state;
+      } = state2;
       const {
         offset: offset3 = 0,
         mainAxis: checkMainAxis = true,
         crossAxis: checkCrossAxis = true
-      } = evaluate(options, state);
+      } = evaluate(options, state2);
       const coords = {
         x,
         y
@@ -5857,7 +6082,7 @@ var limitShift = function(options) {
       const mainAxis = getOppositeAxis(crossAxis);
       let mainAxisCoord = coords[mainAxis];
       let crossAxisCoord = coords[crossAxis];
-      const rawOffset = evaluate(offset3, state);
+      const rawOffset = evaluate(offset3, state2);
       const computedOffset = typeof rawOffset === "number" ? {
         mainAxis: rawOffset,
         crossAxis: 0
@@ -5902,20 +6127,20 @@ var size = function(options) {
   return {
     name: "size",
     options,
-    async fn(state) {
+    async fn(state2) {
       var _state$middlewareData, _state$middlewareData2;
       const {
         placement,
         rects,
         platform: platform2,
         elements
-      } = state;
+      } = state2;
       const {
         apply = () => {
         },
         ...detectOverflowOptions
-      } = evaluate(options, state);
-      const overflow = await platform2.detectOverflow(state, detectOverflowOptions);
+      } = evaluate(options, state2);
+      const overflow = await platform2.detectOverflow(state2, detectOverflowOptions);
       const side = getSide(placement);
       const alignment = getAlignment(placement);
       const isYAxis = getSideAxis(placement) === "y";
@@ -5936,13 +6161,13 @@ var size = function(options) {
       const maximumClippingWidth = width - overflow.left - overflow.right;
       const overflowAvailableHeight = min2(height - overflow[heightSide], maximumClippingHeight);
       const overflowAvailableWidth = min2(width - overflow[widthSide], maximumClippingWidth);
-      const noShift = !state.middlewareData.shift;
+      const noShift = !state2.middlewareData.shift;
       let availableHeight = overflowAvailableHeight;
       let availableWidth = overflowAvailableWidth;
-      if ((_state$middlewareData = state.middlewareData.shift) != null && _state$middlewareData.enabled.x) {
+      if ((_state$middlewareData = state2.middlewareData.shift) != null && _state$middlewareData.enabled.x) {
         availableWidth = maximumClippingWidth;
       }
-      if ((_state$middlewareData2 = state.middlewareData.shift) != null && _state$middlewareData2.enabled.y) {
+      if ((_state$middlewareData2 = state2.middlewareData.shift) != null && _state$middlewareData2.enabled.y) {
         availableHeight = maximumClippingHeight;
       }
       if (noShift && !alignment) {
@@ -5957,7 +6182,7 @@ var size = function(options) {
         }
       }
       await apply({
-        ...state,
+        ...state2,
         availableWidth,
         availableHeight
       });
@@ -6785,8 +7010,8 @@ var getSideAxis2 = (side) => side === "top" || side === "bottom" ? "y" : "x";
 function createTransformOriginMiddleware(opts, arrowEl) {
   return {
     name: "transformOrigin",
-    fn(state) {
-      const { elements, middlewareData, placement, rects, y } = state;
+    fn(state2) {
+      const { elements, middlewareData, placement, rects, y } = state2;
       const side = placement.split("-")[0];
       const axis = getSideAxis2(side);
       const arrowX = middlewareData.arrow?.x || 0;
@@ -7111,15 +7336,15 @@ var getItemEl = (ctx, id) => {
   return ctx.getById(getItemId3(ctx, id));
 };
 function connect4(service, normalize) {
-  const { context, prop, scope, state, computed, send } = service;
+  const { context, prop, scope, state: state2, computed, send } = service;
   const disabled = prop("disabled") || context.get("fieldsetDisabled");
   const invalid = !!prop("invalid");
   const required = !!prop("required");
   const readOnly = !!prop("readOnly");
   const composite = prop("composite");
   const collection22 = prop("collection");
-  const open = state.hasTag("open");
-  const focused = state.matches("focused");
+  const open = state2.hasTag("open");
+  const focused = state2.matches("focused");
   const highlightedValue = context.get("highlightedValue");
   const highlightedItem = context.get("highlightedItem");
   const selectedItems = context.get("selectedItems");
@@ -7162,7 +7387,7 @@ function connect4(service, normalize) {
       getTriggerEl(scope)?.focus({ preventScroll: true });
     },
     setOpen(nextOpen) {
-      const open2 = state.hasTag("open");
+      const open2 = state2.hasTag("open");
       if (open2 === nextOpen) return;
       send({ type: nextOpen ? "OPEN" : "CLOSE" });
     },
@@ -8229,8 +8454,8 @@ var Select = class extends Component {
   _options = [];
   hasGroups = false;
   placeholder = "";
-  constructor(el, props8) {
-    super(el, props8);
+  constructor(el, props12) {
+    super(el, props12);
     this.placeholder = getString(this.el, "placeholder") || "";
   }
   get options() {
@@ -8257,10 +8482,10 @@ var Select = class extends Component {
       isItemDisabled: (item) => !!item.disabled
     });
   }
-  initMachine(props8) {
+  initMachine(props12) {
     const self2 = this;
     return new VanillaMachine(machine4, {
-      ...props8,
+      ...props12,
       get collection() {
         return self2.getCollection();
       }
@@ -8350,7 +8575,8 @@ var Select = class extends Component {
     return el;
   }
   render() {
-    const root = this.el.querySelector('[data-scope="select"][data-part="root"]') ?? this.el;
+    const root = this.el.querySelector('[data-scope="select"][data-part="root"]');
+    if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
     const hiddenSelect = this.el.querySelector(
       '[data-scope="select"][data-part="hidden-select"]'
@@ -8680,8 +8906,8 @@ var tearDownWindowFocusTracking = (root, loadListener) => {
 function isFocusVisible() {
   return currentModality === "keyboard";
 }
-function trackFocusVisible(props8 = {}) {
-  const { isTextInput, autoFocus, onChange, root } = props8;
+function trackFocusVisible(props12 = {}) {
+  const { isTextInput, autoFocus, onChange, root } = props12;
   setupGlobalFocusEvents(root);
   onChange?.({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
   const handler = (modality, e) => {
@@ -8981,14 +9207,15 @@ var splitProps5 = createSplitProps(props4);
 // components/switch.ts
 var Switch = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(machine5, props8);
+  initMachine(props12) {
+    return new VanillaMachine(machine5, props12);
   }
   initApi() {
     return connect5(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
     const inputEl = this.el.querySelector('[data-scope="switch"][data-part="hidden-input"]');
     if (inputEl) {
@@ -9187,7 +9414,7 @@ var focusTriggerEl = (ctx) => {
   triggerEl?.focus({ preventScroll: true });
 };
 function connect6(service, normalize) {
-  const { context, prop, state, send, scope, computed, event } = service;
+  const { context, prop, state: state2, send, scope, computed, event } = service;
   const translations = prop("translations");
   const collection22 = prop("collection");
   const disabled = !!prop("disabled");
@@ -9195,8 +9422,8 @@ function connect6(service, normalize) {
   const invalid = !!prop("invalid");
   const required = !!prop("required");
   const readOnly = !!prop("readOnly");
-  const open = state.hasTag("open");
-  const focused = state.hasTag("focused");
+  const open = state2.hasTag("open");
+  const focused = state2.hasTag("focused");
   const composite = prop("composite");
   const highlightedValue = context.get("highlightedValue");
   const popperStyles = getPlacementStyles({
@@ -9259,7 +9486,7 @@ function connect6(service, normalize) {
       getInputEl(scope)?.focus();
     },
     setOpen(nextOpen, reason = "script") {
-      const open2 = state.hasTag("open");
+      const open2 = state2.hasTag("open");
       if (open2 === nextOpen) return;
       send({ type: nextOpen ? "OPEN" : "CLOSE", src: reason });
     },
@@ -10712,10 +10939,10 @@ var Combobox = class extends Component {
       isItemDisabled: (item) => item.disabled
     });
   }
-  initMachine(props8) {
+  initMachine(props12) {
     const self2 = this;
     return new VanillaMachine(machine6, {
-      ...props8,
+      ...props12,
       get collection() {
         return self2.getCollection();
       },
@@ -10723,8 +10950,8 @@ var Combobox = class extends Component {
         if (details.open) {
           self2.options = self2.allOptions;
         }
-        if (props8.onOpenChange) {
-          props8.onOpenChange(details);
+        if (props12.onOpenChange) {
+          props12.onOpenChange(details);
         }
       },
       onInputValueChange: (details) => {
@@ -10732,8 +10959,8 @@ var Combobox = class extends Component {
           (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
         );
         self2.options = filtered.length > 0 ? filtered : self2.allOptions;
-        if (props8.onInputValueChange) {
-          props8.onInputValueChange(details);
+        if (props12.onInputValueChange) {
+          props12.onInputValueChange(details);
         }
       }
     });
@@ -10820,7 +11047,8 @@ var Combobox = class extends Component {
     return el;
   }
   render() {
-    const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]') ?? this.el;
+    const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
+    if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
     [
       "label",
@@ -10861,7 +11089,7 @@ var ComboboxHook = {
     const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item) => item.group !== void 0);
-    const props8 = {
+    const props12 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       disabled: getBoolean(el, "disabled"),
@@ -11006,7 +11234,7 @@ var ComboboxHook = {
         }
       }
     };
-    const combobox = new Combobox(el, props8);
+    const combobox = new Combobox(el, props12);
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();
@@ -11352,14 +11580,15 @@ var splitProps7 = createSplitProps(props6);
 // components/checkbox.ts
 var Checkbox = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(machine7, props8);
+  initMachine(props12) {
+    return new VanillaMachine(machine7, props12);
   }
   initApi() {
     return connect7(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
     const inputEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="hidden-input"]');
     if (inputEl) {
@@ -11559,9 +11788,9 @@ var getRectByValue = (ctx, value) => {
   return getOffsetRect(tab);
 };
 function connect8(service, normalize) {
-  const { state, send, context, prop, scope } = service;
+  const { state: state2, send, context, prop, scope } = service;
   const translations = prop("translations");
-  const focused = state.matches("focused");
+  const focused = state2.matches("focused");
   const isVertical = prop("orientation") === "vertical";
   const isHorizontal = prop("orientation") === "horizontal";
   const composite = prop("composite");
@@ -12027,16 +12256,18 @@ var splitContentProps = createSplitProps(contentProps);
 // components/tabs.ts
 var Tabs = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props8) {
-    return new VanillaMachine(machine8, props8);
+  initMachine(props12) {
+    return new VanillaMachine(machine8, props12);
   }
   initApi() {
     return connect8(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]') || this.el;
+    const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]');
+    if (!listEl) return;
     this.spreadProps(listEl, this.api.getListProps());
     const itemsData = this.el.getAttribute("data-items");
     const items = itemsData ? JSON.parse(itemsData) : [];
@@ -12179,7 +12410,6452 @@ var TabsHook = {
   }
 };
 
+// ../node_modules/.pnpm/@zag-js+clipboard@1.33.1/node_modules/@zag-js/clipboard/dist/index.mjs
+var anatomy9 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
+var parts9 = anatomy9.build();
+var getRootId9 = (ctx) => ctx.ids?.root ?? `clip:${ctx.id}`;
+var getInputId2 = (ctx) => ctx.ids?.input ?? `clip:${ctx.id}:input`;
+var getLabelId5 = (ctx) => ctx.ids?.label ?? `clip:${ctx.id}:label`;
+var getInputEl2 = (ctx) => ctx.getById(getInputId2(ctx));
+var writeToClipboard = (ctx, value) => copyText(ctx.getDoc(), value);
+function createNode(doc, text) {
+  const node = doc.createElement("pre");
+  Object.assign(node.style, {
+    width: "1px",
+    height: "1px",
+    position: "fixed",
+    top: "5px"
+  });
+  node.textContent = text;
+  return node;
+}
+function copyNode(node) {
+  const win = getWindow(node);
+  const selection = win.getSelection();
+  if (selection == null) {
+    return Promise.reject(new Error());
+  }
+  selection.removeAllRanges();
+  const doc = node.ownerDocument;
+  const range = doc.createRange();
+  range.selectNodeContents(node);
+  selection.addRange(range);
+  doc.execCommand("copy");
+  selection.removeAllRanges();
+  return Promise.resolve();
+}
+function copyText(doc, text) {
+  const win = doc.defaultView || window;
+  if (win.navigator.clipboard?.writeText !== void 0) {
+    return win.navigator.clipboard.writeText(text);
+  }
+  if (!doc.body) {
+    return Promise.reject(new Error());
+  }
+  const node = createNode(doc, text);
+  doc.body.appendChild(node);
+  copyNode(node);
+  doc.body.removeChild(node);
+  return Promise.resolve();
+}
+function connect9(service, normalize) {
+  const { state: state2, send, context, scope } = service;
+  const copied = state2.matches("copied");
+  return {
+    copied,
+    value: context.get("value"),
+    setValue(value) {
+      send({ type: "VALUE.SET", value });
+    },
+    copy() {
+      send({ type: "COPY" });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts9.root.attrs,
+        "data-copied": dataAttr(copied),
+        id: getRootId9(scope)
+      });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts9.label.attrs,
+        htmlFor: getInputId2(scope),
+        "data-copied": dataAttr(copied),
+        id: getLabelId5(scope)
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts9.control.attrs,
+        "data-copied": dataAttr(copied)
+      });
+    },
+    getInputProps() {
+      return normalize.input({
+        ...parts9.input.attrs,
+        defaultValue: context.get("value"),
+        "data-copied": dataAttr(copied),
+        readOnly: true,
+        "data-readonly": "true",
+        id: getInputId2(scope),
+        onFocus(event) {
+          event.currentTarget.select();
+        },
+        onCopy() {
+          send({ type: "INPUT.COPY" });
+        }
+      });
+    },
+    getTriggerProps() {
+      return normalize.button({
+        ...parts9.trigger.attrs,
+        type: "button",
+        "aria-label": copied ? "Copied to clipboard" : "Copy to clipboard",
+        "data-copied": dataAttr(copied),
+        onClick() {
+          send({ type: "COPY" });
+        }
+      });
+    },
+    getIndicatorProps(props22) {
+      return normalize.element({
+        ...parts9.indicator.attrs,
+        hidden: props22.copied !== copied
+      });
+    }
+  };
+}
+var machine9 = createMachine({
+  props({ props: props22 }) {
+    return {
+      timeout: 3e3,
+      defaultValue: "",
+      ...props22
+    };
+  },
+  initialState() {
+    return "idle";
+  },
+  context({ prop, bindable: bindable2 }) {
+    return {
+      value: bindable2(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        onChange(value) {
+          prop("onValueChange")?.({ value });
+        }
+      }))
+    };
+  },
+  watch({ track, context, action }) {
+    track([() => context.get("value")], () => {
+      action(["syncInputElement"]);
+    });
+  },
+  on: {
+    "VALUE.SET": {
+      actions: ["setValue"]
+    },
+    COPY: {
+      target: "copied",
+      actions: ["copyToClipboard", "invokeOnCopy"]
+    }
+  },
+  states: {
+    idle: {
+      on: {
+        "INPUT.COPY": {
+          target: "copied",
+          actions: ["invokeOnCopy"]
+        }
+      }
+    },
+    copied: {
+      effects: ["waitForTimeout"],
+      on: {
+        "COPY.DONE": {
+          target: "idle"
+        },
+        COPY: {
+          target: "copied",
+          actions: ["copyToClipboard", "invokeOnCopy"]
+        },
+        "INPUT.COPY": {
+          actions: ["invokeOnCopy"]
+        }
+      }
+    }
+  },
+  implementations: {
+    effects: {
+      waitForTimeout({ prop, send }) {
+        return setRafTimeout(() => {
+          send({ type: "COPY.DONE" });
+        }, prop("timeout"));
+      }
+    },
+    actions: {
+      setValue({ context, event }) {
+        context.set("value", event.value);
+      },
+      copyToClipboard({ context, scope }) {
+        writeToClipboard(scope, context.get("value"));
+      },
+      invokeOnCopy({ prop }) {
+        prop("onStatusChange")?.({ copied: true });
+      },
+      syncInputElement({ context, scope }) {
+        const inputEl = getInputEl2(scope);
+        if (!inputEl) return;
+        setElementValue(inputEl, context.get("value"));
+      }
+    }
+  }
+});
+var props8 = createProps()([
+  "getRootNode",
+  "id",
+  "ids",
+  "value",
+  "defaultValue",
+  "timeout",
+  "onStatusChange",
+  "onValueChange"
+]);
+var contextProps = createSplitProps(props8);
+var indicatorProps = createProps()(["copied"]);
+var splitIndicatorProps = createSplitProps(indicatorProps);
+
+// components/clipboard.ts
+var Clipboard = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props12) {
+    return new VanillaMachine(machine9, props12);
+  }
+  initApi() {
+    return connect9(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="clipboard"][data-part="root"]');
+    if (rootEl) {
+      this.spreadProps(rootEl, this.api.getRootProps());
+      const labelEl = rootEl.querySelector('[data-scope="clipboard"][data-part="label"]');
+      if (labelEl) {
+        this.spreadProps(labelEl, this.api.getLabelProps());
+      }
+      const controlEl = rootEl.querySelector('[data-scope="clipboard"][data-part="control"]');
+      if (controlEl) {
+        this.spreadProps(controlEl, this.api.getControlProps());
+        const inputEl = controlEl.querySelector('[data-scope="clipboard"][data-part="input"]');
+        if (inputEl) {
+          const inputProps2 = { ...this.api.getInputProps() };
+          const inputAriaLabel = this.el.dataset.inputAriaLabel;
+          if (inputAriaLabel) {
+            inputProps2["aria-label"] = inputAriaLabel;
+          }
+          this.spreadProps(inputEl, inputProps2);
+        }
+        const triggerEl = controlEl.querySelector('[data-scope="clipboard"][data-part="trigger"]');
+        if (triggerEl) {
+          const triggerProps2 = { ...this.api.getTriggerProps() };
+          const ariaLabel = this.el.dataset.triggerAriaLabel;
+          if (ariaLabel) {
+            triggerProps2["aria-label"] = ariaLabel;
+          }
+          this.spreadProps(triggerEl, triggerProps2);
+        }
+      }
+    }
+  }
+};
+
+// hooks/clipboard.ts
+var ClipboardHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const liveSocket = this.liveSocket;
+    const clipboard = new Clipboard(el, {
+      id: el.id,
+      timeout: getNumber(el, "timeout"),
+      ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
+      onValueChange: (details) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null
+          });
+        }
+      },
+      onStatusChange: (details) => {
+        const eventName = getString(el, "onStatusChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            copied: details.copied
+          });
+        }
+        const eventNameClient = getString(el, "onStatusChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true
+            })
+          );
+        }
+      }
+    });
+    clipboard.init();
+    this.clipboard = clipboard;
+    this.onCopy = () => {
+      clipboard.api.copy();
+    };
+    el.addEventListener("phx:clipboard:copy", this.onCopy);
+    this.onSetValue = (event) => {
+      const { value } = event.detail;
+      clipboard.api.setValue(value);
+    };
+    el.addEventListener("phx:clipboard:set-value", this.onSetValue);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("clipboard_copy", (payload) => {
+        const targetId = payload.clipboard_id;
+        if (targetId && targetId !== el.id) return;
+        clipboard.api.copy();
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("clipboard_set_value", (payload) => {
+        const targetId = payload.clipboard_id;
+        if (targetId && targetId !== el.id) return;
+        clipboard.api.setValue(payload.value);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("clipboard_copied", () => {
+        this.pushEvent("clipboard_copied_response", {
+          value: clipboard.api.copied
+        });
+      })
+    );
+  },
+  updated() {
+    this.clipboard?.updateProps({
+      id: this.el.id,
+      timeout: getNumber(this.el, "timeout"),
+      ...getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "value") },
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+  },
+  destroyed() {
+    if (this.onCopy) {
+      this.el.removeEventListener("phx:clipboard:copy", this.onCopy);
+    }
+    if (this.onSetValue) {
+      this.el.removeEventListener("phx:clipboard:set-value", this.onSetValue);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.clipboard?.destroy();
+  }
+};
+
+// ../node_modules/.pnpm/@zag-js+collapsible@1.33.1/node_modules/@zag-js/collapsible/dist/index.mjs
+var anatomy10 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
+var parts10 = anatomy10.build();
+var getRootId10 = (ctx) => ctx.ids?.root ?? `collapsible:${ctx.id}`;
+var getContentId4 = (ctx) => ctx.ids?.content ?? `collapsible:${ctx.id}:content`;
+var getTriggerId4 = (ctx) => ctx.ids?.trigger ?? `collapsible:${ctx.id}:trigger`;
+var getContentEl4 = (ctx) => ctx.getById(getContentId4(ctx));
+function connect10(service, normalize) {
+  const { state: state2, send, context, scope, prop } = service;
+  const visible = state2.matches("open") || state2.matches("closing");
+  const open = state2.matches("open");
+  const closed = state2.matches("closed");
+  const { width, height } = context.get("size");
+  const disabled = !!prop("disabled");
+  const collapsedHeight = prop("collapsedHeight");
+  const collapsedWidth = prop("collapsedWidth");
+  const hasCollapsedHeight = collapsedHeight != null;
+  const hasCollapsedWidth = collapsedWidth != null;
+  const hasCollapsedSize = hasCollapsedHeight || hasCollapsedWidth;
+  const skip = !context.get("initial") && open;
+  return {
+    disabled,
+    visible,
+    open,
+    measureSize() {
+      send({ type: "size.measure" });
+    },
+    setOpen(nextOpen) {
+      const open2 = state2.matches("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "open" : "close" });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts10.root.attrs,
+        "data-state": open ? "open" : "closed",
+        dir: prop("dir"),
+        id: getRootId10(scope)
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        ...parts10.content.attrs,
+        id: getContentId4(scope),
+        "data-collapsible": "",
+        "data-state": skip ? void 0 : open ? "open" : "closed",
+        "data-disabled": dataAttr(disabled),
+        "data-has-collapsed-size": dataAttr(hasCollapsedSize),
+        hidden: !visible && !hasCollapsedSize,
+        dir: prop("dir"),
+        style: {
+          "--height": toPx(height),
+          "--width": toPx(width),
+          "--collapsed-height": toPx(collapsedHeight),
+          "--collapsed-width": toPx(collapsedWidth),
+          ...closed && hasCollapsedHeight && {
+            overflow: "hidden",
+            minHeight: toPx(collapsedHeight),
+            maxHeight: toPx(collapsedHeight)
+          },
+          ...closed && hasCollapsedWidth && {
+            overflow: "hidden",
+            minWidth: toPx(collapsedWidth),
+            maxWidth: toPx(collapsedWidth)
+          }
+        }
+      });
+    },
+    getTriggerProps() {
+      return normalize.element({
+        ...parts10.trigger.attrs,
+        id: getTriggerId4(scope),
+        dir: prop("dir"),
+        type: "button",
+        "data-state": open ? "open" : "closed",
+        "data-disabled": dataAttr(disabled),
+        "aria-controls": getContentId4(scope),
+        "aria-expanded": visible || false,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (disabled) return;
+          send({ type: open ? "close" : "open" });
+        }
+      });
+    },
+    getIndicatorProps() {
+      return normalize.element({
+        ...parts10.indicator.attrs,
+        dir: prop("dir"),
+        "data-state": open ? "open" : "closed",
+        "data-disabled": dataAttr(disabled)
+      });
+    }
+  };
+}
+var machine10 = createMachine({
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "open" : "closed";
+  },
+  context({ bindable: bindable2 }) {
+    return {
+      size: bindable2(() => ({
+        defaultValue: { height: 0, width: 0 },
+        sync: true
+      })),
+      initial: bindable2(() => ({
+        defaultValue: false
+      }))
+    };
+  },
+  refs() {
+    return {
+      cleanup: void 0,
+      stylesRef: void 0
+    };
+  },
+  watch({ track, prop, action }) {
+    track([() => prop("open")], () => {
+      action(["setInitial", "computeSize", "toggleVisibility"]);
+    });
+  },
+  exit: ["cleanupNode"],
+  states: {
+    closed: {
+      effects: ["trackTabbableElements"],
+      on: {
+        "controlled.open": {
+          target: "open"
+        },
+        open: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitial", "computeSize", "invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    closing: {
+      effects: ["trackExitAnimation"],
+      on: {
+        "controlled.close": {
+          target: "closed"
+        },
+        "controlled.open": {
+          target: "open"
+        },
+        open: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setInitial", "invokeOnOpen"]
+          }
+        ],
+        close: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnExitComplete"]
+          },
+          {
+            target: "closed",
+            actions: ["setInitial", "computeSize", "invokeOnExitComplete"]
+          }
+        ],
+        "animation.end": {
+          target: "closed",
+          actions: ["invokeOnExitComplete", "clearInitial"]
+        }
+      }
+    },
+    open: {
+      effects: ["trackEnterAnimation"],
+      on: {
+        "controlled.close": {
+          target: "closing"
+        },
+        close: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closing",
+            actions: ["setInitial", "computeSize", "invokeOnClose"]
+          }
+        ],
+        "size.measure": {
+          actions: ["measureSize"]
+        },
+        "animation.end": {
+          actions: ["clearInitial"]
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      isOpenControlled: ({ prop }) => prop("open") != void 0
+    },
+    effects: {
+      trackEnterAnimation: ({ send, scope }) => {
+        let cleanup;
+        const rafCleanup = raf(() => {
+          const contentEl = getContentEl4(scope);
+          if (!contentEl) return;
+          const animationName = getComputedStyle2(contentEl).animationName;
+          const hasNoAnimation = !animationName || animationName === "none";
+          if (hasNoAnimation) {
+            send({ type: "animation.end" });
+            return;
+          }
+          const onEnd = (event) => {
+            const target = getEventTarget(event);
+            if (target === contentEl) {
+              send({ type: "animation.end" });
+            }
+          };
+          contentEl.addEventListener("animationend", onEnd);
+          cleanup = () => {
+            contentEl.removeEventListener("animationend", onEnd);
+          };
+        });
+        return () => {
+          rafCleanup();
+          cleanup?.();
+        };
+      },
+      trackExitAnimation: ({ send, scope }) => {
+        let cleanup;
+        const rafCleanup = raf(() => {
+          const contentEl = getContentEl4(scope);
+          if (!contentEl) return;
+          const animationName = getComputedStyle2(contentEl).animationName;
+          const hasNoAnimation = !animationName || animationName === "none";
+          if (hasNoAnimation) {
+            send({ type: "animation.end" });
+            return;
+          }
+          const onEnd = (event) => {
+            const target = getEventTarget(event);
+            if (target === contentEl) {
+              send({ type: "animation.end" });
+            }
+          };
+          contentEl.addEventListener("animationend", onEnd);
+          const restoreStyles = setStyle(contentEl, {
+            animationFillMode: "forwards"
+          });
+          cleanup = () => {
+            contentEl.removeEventListener("animationend", onEnd);
+            nextTick(() => restoreStyles());
+          };
+        });
+        return () => {
+          rafCleanup();
+          cleanup?.();
+        };
+      },
+      trackTabbableElements: ({ scope, prop }) => {
+        if (!prop("collapsedHeight") && !prop("collapsedWidth")) return;
+        const contentEl = getContentEl4(scope);
+        if (!contentEl) return;
+        const applyInertToTabbables = () => {
+          const tabbables = getTabbables(contentEl);
+          const restoreAttrs = tabbables.map((tabbable) => setAttribute(tabbable, "inert", ""));
+          return () => {
+            restoreAttrs.forEach((attr) => attr());
+          };
+        };
+        let restoreInert = applyInertToTabbables();
+        const observerCleanup = observeChildren(contentEl, {
+          callback() {
+            restoreInert();
+            restoreInert = applyInertToTabbables();
+          }
+        });
+        return () => {
+          restoreInert();
+          observerCleanup();
+        };
+      }
+    },
+    actions: {
+      setInitial: ({ context, flush }) => {
+        flush(() => {
+          context.set("initial", true);
+        });
+      },
+      clearInitial: ({ context }) => {
+        context.set("initial", false);
+      },
+      cleanupNode: ({ refs }) => {
+        refs.set("stylesRef", null);
+      },
+      measureSize: ({ context, scope }) => {
+        const contentEl = getContentEl4(scope);
+        if (!contentEl) return;
+        const { height, width } = contentEl.getBoundingClientRect();
+        context.set("size", { height, width });
+      },
+      computeSize: ({ refs, scope, context }) => {
+        refs.get("cleanup")?.();
+        const rafCleanup = raf(() => {
+          const contentEl = getContentEl4(scope);
+          if (!contentEl) return;
+          const hidden = contentEl.hidden;
+          contentEl.style.animationName = "none";
+          contentEl.style.animationDuration = "0s";
+          contentEl.hidden = false;
+          const rect = contentEl.getBoundingClientRect();
+          context.set("size", { height: rect.height, width: rect.width });
+          if (context.get("initial")) {
+            contentEl.style.animationName = "";
+            contentEl.style.animationDuration = "";
+          }
+          contentEl.hidden = hidden;
+        });
+        refs.set("cleanup", rafCleanup);
+      },
+      invokeOnOpen: ({ prop }) => {
+        prop("onOpenChange")?.({ open: true });
+      },
+      invokeOnClose: ({ prop }) => {
+        prop("onOpenChange")?.({ open: false });
+      },
+      invokeOnExitComplete: ({ prop }) => {
+        prop("onExitComplete")?.();
+      },
+      toggleVisibility: ({ prop, send }) => {
+        send({ type: prop("open") ? "controlled.open" : "controlled.close" });
+      }
+    }
+  }
+});
+var props9 = createProps()([
+  "dir",
+  "disabled",
+  "getRootNode",
+  "id",
+  "ids",
+  "collapsedHeight",
+  "collapsedWidth",
+  "onExitComplete",
+  "onOpenChange",
+  "defaultOpen",
+  "open"
+]);
+var splitProps9 = createSplitProps(props9);
+
+// components/collapsible.ts
+var Collapsible = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props12) {
+    return new VanillaMachine(machine10, props12);
+  }
+  initApi() {
+    return connect10(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="collapsible"][data-part="root"]');
+    if (rootEl) {
+      this.spreadProps(rootEl, this.api.getRootProps());
+      const triggerEl = rootEl.querySelector('[data-scope="collapsible"][data-part="trigger"]');
+      if (triggerEl) {
+        this.spreadProps(triggerEl, this.api.getTriggerProps());
+      }
+      const contentEl = rootEl.querySelector('[data-scope="collapsible"][data-part="content"]');
+      if (contentEl) {
+        this.spreadProps(contentEl, this.api.getContentProps());
+      }
+    }
+  }
+};
+
+// hooks/collapsible.ts
+var CollapsibleHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const collapsible = new Collapsible(el, {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      disabled: getBoolean(el, "disabled"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onOpenChange: (details) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            open: details.open
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                open: details.open
+              }
+            })
+          );
+        }
+      }
+    });
+    collapsible.init();
+    this.collapsible = collapsible;
+    this.onSetOpen = (event) => {
+      const { open } = event.detail;
+      collapsible.api.setOpen(open);
+    };
+    el.addEventListener("phx:collapsible:set-open", this.onSetOpen);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("collapsible_set_open", (payload) => {
+        const targetId = payload.collapsible_id;
+        if (targetId && targetId !== el.id) return;
+        collapsible.api.setOpen(payload.open);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("collapsible_open", () => {
+        this.pushEvent("collapsible_open_response", {
+          value: collapsible.api.open
+        });
+      })
+    );
+  },
+  updated() {
+    this.collapsible?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
+      disabled: getBoolean(this.el, "disabled"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+  },
+  destroyed() {
+    if (this.onSetOpen) {
+      this.el.removeEventListener("phx:collapsible:set-open", this.onSetOpen);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.collapsible?.destroy();
+  }
+};
+
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.33.1/node_modules/@zag-js/aria-hidden/dist/index.mjs
+var counterMap = /* @__PURE__ */ new WeakMap();
+var uncontrolledNodes = /* @__PURE__ */ new WeakMap();
+var markerMap = {};
+var lockCount = 0;
+var unwrapHost = (node) => node && (node.host || unwrapHost(node.parentNode));
+var correctTargets = (parent, targets) => targets.map((target) => {
+  if (parent.contains(target)) return target;
+  const correctedTarget = unwrapHost(target);
+  if (correctedTarget && parent.contains(correctedTarget)) {
+    return correctedTarget;
+  }
+  console.error("[zag-js > ariaHidden] target", target, "in not contained inside", parent, ". Doing nothing");
+  return null;
+}).filter((x) => Boolean(x));
+var ignoreableNodes = /* @__PURE__ */ new Set(["script", "output", "status", "next-route-announcer"]);
+var isIgnoredNode = (node) => {
+  if (ignoreableNodes.has(node.localName)) return true;
+  if (node.role === "status") return true;
+  if (node.hasAttribute("aria-live")) return true;
+  return node.matches("[data-live-announcer]");
+};
+var walkTreeOutside = (originalTarget, props12) => {
+  const { parentNode, markerName, controlAttribute, followControlledElements = true } = props12;
+  const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
+  markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
+  const markerCounter = markerMap[markerName];
+  const hiddenNodes = [];
+  const elementsToKeep = /* @__PURE__ */ new Set();
+  const elementsToStop = new Set(targets);
+  const keep = (el) => {
+    if (!el || elementsToKeep.has(el)) return;
+    elementsToKeep.add(el);
+    keep(el.parentNode);
+  };
+  targets.forEach((target) => {
+    keep(target);
+    if (followControlledElements && isHTMLElement(target)) {
+      findControlledElements(target, (controlledElement) => {
+        keep(controlledElement);
+      });
+    }
+  });
+  const deep = (parent) => {
+    if (!parent || elementsToStop.has(parent)) {
+      return;
+    }
+    Array.prototype.forEach.call(parent.children, (node) => {
+      if (elementsToKeep.has(node)) {
+        deep(node);
+      } else {
+        try {
+          if (isIgnoredNode(node)) return;
+          const attr = node.getAttribute(controlAttribute);
+          const alreadyHidden = attr === "true";
+          const counterValue = (counterMap.get(node) || 0) + 1;
+          const markerValue = (markerCounter.get(node) || 0) + 1;
+          counterMap.set(node, counterValue);
+          markerCounter.set(node, markerValue);
+          hiddenNodes.push(node);
+          if (counterValue === 1 && alreadyHidden) {
+            uncontrolledNodes.set(node, true);
+          }
+          if (markerValue === 1) {
+            node.setAttribute(markerName, "");
+          }
+          if (!alreadyHidden) {
+            node.setAttribute(controlAttribute, "true");
+          }
+        } catch (e) {
+          console.error("[zag-js > ariaHidden] cannot operate on ", node, e);
+        }
+      }
+    });
+  };
+  deep(parentNode);
+  elementsToKeep.clear();
+  lockCount++;
+  return () => {
+    hiddenNodes.forEach((node) => {
+      const counterValue = counterMap.get(node) - 1;
+      const markerValue = markerCounter.get(node) - 1;
+      counterMap.set(node, counterValue);
+      markerCounter.set(node, markerValue);
+      if (!counterValue) {
+        if (!uncontrolledNodes.has(node)) {
+          node.removeAttribute(controlAttribute);
+        }
+        uncontrolledNodes.delete(node);
+      }
+      if (!markerValue) {
+        node.removeAttribute(markerName);
+      }
+    });
+    lockCount--;
+    if (!lockCount) {
+      counterMap = /* @__PURE__ */ new WeakMap();
+      counterMap = /* @__PURE__ */ new WeakMap();
+      uncontrolledNodes = /* @__PURE__ */ new WeakMap();
+      markerMap = {};
+    }
+  };
+};
+var getParentNode3 = (originalTarget) => {
+  const target = Array.isArray(originalTarget) ? originalTarget[0] : originalTarget;
+  return target.ownerDocument.body;
+};
+var hideOthers = (originalTarget, parentNode = getParentNode3(originalTarget), markerName = "data-aria-hidden", followControlledElements = true) => {
+  if (!parentNode) return;
+  return walkTreeOutside(originalTarget, {
+    parentNode,
+    markerName,
+    controlAttribute: "aria-hidden",
+    followControlledElements
+  });
+};
+var raf2 = (fn) => {
+  const frameId = requestAnimationFrame(() => fn());
+  return () => cancelAnimationFrame(frameId);
+};
+function ariaHidden(targetsOrFn, options = {}) {
+  const { defer = true } = options;
+  const func = defer ? raf2 : (v) => v();
+  const cleanups = [];
+  cleanups.push(
+    func(() => {
+      const targets = typeof targetsOrFn === "function" ? targetsOrFn() : targetsOrFn;
+      const elements = targets.filter(Boolean);
+      if (elements.length === 0) return;
+      cleanups.push(hideOthers(elements));
+    })
+  );
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.33.1/node_modules/@zag-js/focus-trap/dist/index.mjs
+var __defProp6 = Object.defineProperty;
+var __defNormalProp5 = (obj, key, value) => key in obj ? __defProp6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
+var activeFocusTraps = {
+  activateTrap(trapStack, trap) {
+    if (trapStack.length > 0) {
+      const activeTrap = trapStack[trapStack.length - 1];
+      if (activeTrap !== trap) {
+        activeTrap.pause();
+      }
+    }
+    const trapIndex = trapStack.indexOf(trap);
+    if (trapIndex === -1) {
+      trapStack.push(trap);
+    } else {
+      trapStack.splice(trapIndex, 1);
+      trapStack.push(trap);
+    }
+  },
+  deactivateTrap(trapStack, trap) {
+    const trapIndex = trapStack.indexOf(trap);
+    if (trapIndex !== -1) {
+      trapStack.splice(trapIndex, 1);
+    }
+    if (trapStack.length > 0) {
+      trapStack[trapStack.length - 1].unpause();
+    }
+  }
+};
+var sharedTrapStack = [];
+var FocusTrap = class {
+  constructor(elements, options) {
+    __publicField5(this, "trapStack");
+    __publicField5(this, "config");
+    __publicField5(this, "doc");
+    __publicField5(this, "state", {
+      containers: [],
+      containerGroups: [],
+      tabbableGroups: [],
+      nodeFocusedBeforeActivation: null,
+      mostRecentlyFocusedNode: null,
+      active: false,
+      paused: false,
+      delayInitialFocusTimer: void 0,
+      recentNavEvent: void 0
+    });
+    __publicField5(this, "portalContainers", /* @__PURE__ */ new Set());
+    __publicField5(this, "listenerCleanups", []);
+    __publicField5(this, "handleFocus", (event) => {
+      const target = getEventTarget(event);
+      const targetContained = this.findContainerIndex(target, event) >= 0;
+      if (targetContained || isDocument(target)) {
+        if (targetContained) {
+          this.state.mostRecentlyFocusedNode = target;
+        }
+      } else {
+        event.stopImmediatePropagation();
+        let nextNode;
+        let navAcrossContainers = true;
+        if (this.state.mostRecentlyFocusedNode) {
+          if (getTabIndex(this.state.mostRecentlyFocusedNode) > 0) {
+            const mruContainerIdx = this.findContainerIndex(this.state.mostRecentlyFocusedNode);
+            const { tabbableNodes } = this.state.containerGroups[mruContainerIdx];
+            if (tabbableNodes.length > 0) {
+              const mruTabIdx = tabbableNodes.findIndex((node) => node === this.state.mostRecentlyFocusedNode);
+              if (mruTabIdx >= 0) {
+                if (this.config.isKeyForward(this.state.recentNavEvent)) {
+                  if (mruTabIdx + 1 < tabbableNodes.length) {
+                    nextNode = tabbableNodes[mruTabIdx + 1];
+                    navAcrossContainers = false;
+                  }
+                } else {
+                  if (mruTabIdx - 1 >= 0) {
+                    nextNode = tabbableNodes[mruTabIdx - 1];
+                    navAcrossContainers = false;
+                  }
+                }
+              }
+            }
+          } else {
+            if (!this.state.containerGroups.some((g) => g.tabbableNodes.some((n) => getTabIndex(n) > 0))) {
+              navAcrossContainers = false;
+            }
+          }
+        } else {
+          navAcrossContainers = false;
+        }
+        if (navAcrossContainers) {
+          nextNode = this.findNextNavNode({
+            // move FROM the MRU node, not event-related node (which will be the node that is
+            //  outside the trap causing the focus escape we're trying to fix)
+            target: this.state.mostRecentlyFocusedNode,
+            isBackward: this.config.isKeyBackward(this.state.recentNavEvent)
+          });
+        }
+        if (nextNode) {
+          this.tryFocus(nextNode);
+        } else {
+          this.tryFocus(this.state.mostRecentlyFocusedNode || this.getInitialFocusNode());
+        }
+      }
+      this.state.recentNavEvent = void 0;
+    });
+    __publicField5(this, "handlePointerDown", (event) => {
+      const target = getEventTarget(event);
+      if (this.findContainerIndex(target, event) >= 0) {
+        return;
+      }
+      if (valueOrHandler(this.config.clickOutsideDeactivates, event)) {
+        this.deactivate({ returnFocus: this.config.returnFocusOnDeactivate });
+        return;
+      }
+      if (valueOrHandler(this.config.allowOutsideClick, event)) {
+        return;
+      }
+      event.preventDefault();
+    });
+    __publicField5(this, "handleClick", (event) => {
+      const target = getEventTarget(event);
+      if (this.findContainerIndex(target, event) >= 0) {
+        return;
+      }
+      if (valueOrHandler(this.config.clickOutsideDeactivates, event)) {
+        return;
+      }
+      if (valueOrHandler(this.config.allowOutsideClick, event)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+    });
+    __publicField5(this, "handleTabKey", (event) => {
+      if (this.config.isKeyForward(event) || this.config.isKeyBackward(event)) {
+        this.state.recentNavEvent = event;
+        const isBackward = this.config.isKeyBackward(event);
+        const destinationNode = this.findNextNavNode({ event, isBackward });
+        if (!destinationNode) return;
+        if (isTabEvent(event)) {
+          event.preventDefault();
+        }
+        this.tryFocus(destinationNode);
+      }
+    });
+    __publicField5(this, "handleEscapeKey", (event) => {
+      if (isEscapeEvent(event) && valueOrHandler(this.config.escapeDeactivates, event) !== false) {
+        event.preventDefault();
+        this.deactivate();
+      }
+    });
+    __publicField5(this, "_mutationObserver");
+    __publicField5(this, "setupMutationObserver", () => {
+      const win = this.doc.defaultView || window;
+      this._mutationObserver = new win.MutationObserver((mutations) => {
+        const isFocusedNodeRemoved = mutations.some((mutation) => {
+          const removedNodes = Array.from(mutation.removedNodes);
+          return removedNodes.some((node) => node === this.state.mostRecentlyFocusedNode);
+        });
+        if (isFocusedNodeRemoved) {
+          this.tryFocus(this.getInitialFocusNode());
+        }
+        const hasControlledChanges = mutations.some((mutation) => {
+          if (mutation.type === "attributes" && (mutation.attributeName === "aria-controls" || mutation.attributeName === "aria-expanded")) {
+            return true;
+          }
+          if (mutation.type === "childList" && mutation.addedNodes.length > 0) {
+            return Array.from(mutation.addedNodes).some((node) => {
+              if (node.nodeType !== Node.ELEMENT_NODE) return false;
+              const element = node;
+              if (hasControllerElements(element)) {
+                return true;
+              }
+              if (element.id && !this.state.containers.some((c) => c.contains(element))) {
+                return isControlledByExpandedController(element);
+              }
+              return false;
+            });
+          }
+          return false;
+        });
+        if (hasControlledChanges && this.state.active && !this.state.paused) {
+          this.updateTabbableNodes();
+          this.updatePortalContainers();
+        }
+      });
+    });
+    __publicField5(this, "updateObservedNodes", () => {
+      this._mutationObserver?.disconnect();
+      if (this.state.active && !this.state.paused) {
+        this.state.containers.map((container) => {
+          this._mutationObserver?.observe(container, {
+            subtree: true,
+            childList: true,
+            attributes: true,
+            attributeFilter: ["aria-controls", "aria-expanded"]
+          });
+        });
+        this.portalContainers.forEach((portalContainer) => {
+          this.observePortalContainer(portalContainer);
+        });
+      }
+    });
+    __publicField5(this, "getInitialFocusNode", () => {
+      let node = this.getNodeForOption("initialFocus", { hasFallback: true });
+      if (node === false) {
+        return false;
+      }
+      if (node === void 0 || node && !isFocusable(node)) {
+        const activeElement = getActiveElement(this.doc);
+        if (activeElement && this.findContainerIndex(activeElement) >= 0) {
+          node = activeElement;
+        } else {
+          const firstTabbableGroup = this.state.tabbableGroups[0];
+          const firstTabbableNode = firstTabbableGroup && firstTabbableGroup.firstTabbableNode;
+          node = firstTabbableNode || this.getNodeForOption("fallbackFocus");
+        }
+      } else if (node === null) {
+        node = this.getNodeForOption("fallbackFocus");
+      }
+      if (!node) {
+        throw new Error("Your focus-trap needs to have at least one focusable element");
+      }
+      if (!node.isConnected) {
+        node = this.getNodeForOption("fallbackFocus");
+      }
+      return node;
+    });
+    __publicField5(this, "tryFocus", (node) => {
+      if (node === false) return;
+      if (node === getActiveElement(this.doc)) return;
+      if (!node || !node.focus) {
+        this.tryFocus(this.getInitialFocusNode());
+        return;
+      }
+      node.focus({ preventScroll: !!this.config.preventScroll });
+      this.state.mostRecentlyFocusedNode = node;
+      if (isSelectableInput(node)) {
+        node.select();
+      }
+    });
+    __publicField5(this, "deactivate", (deactivateOptions) => {
+      if (!this.state.active) return this;
+      const options2 = {
+        onDeactivate: this.config.onDeactivate,
+        onPostDeactivate: this.config.onPostDeactivate,
+        checkCanReturnFocus: this.config.checkCanReturnFocus,
+        ...deactivateOptions
+      };
+      clearTimeout(this.state.delayInitialFocusTimer);
+      this.state.delayInitialFocusTimer = void 0;
+      this.removeListeners();
+      this.state.active = false;
+      this.state.paused = false;
+      this.updateObservedNodes();
+      activeFocusTraps.deactivateTrap(this.trapStack, this);
+      this.portalContainers.clear();
+      const onDeactivate = this.getOption(options2, "onDeactivate");
+      const onPostDeactivate = this.getOption(options2, "onPostDeactivate");
+      const checkCanReturnFocus = this.getOption(options2, "checkCanReturnFocus");
+      const returnFocus = this.getOption(options2, "returnFocus", "returnFocusOnDeactivate");
+      onDeactivate?.();
+      const finishDeactivation = () => {
+        delay(() => {
+          if (returnFocus) {
+            const returnFocusNode = this.getReturnFocusNode(this.state.nodeFocusedBeforeActivation);
+            this.tryFocus(returnFocusNode);
+          }
+          onPostDeactivate?.();
+        });
+      };
+      if (returnFocus && checkCanReturnFocus) {
+        const returnFocusNode = this.getReturnFocusNode(this.state.nodeFocusedBeforeActivation);
+        checkCanReturnFocus(returnFocusNode).then(finishDeactivation, finishDeactivation);
+        return this;
+      }
+      finishDeactivation();
+      return this;
+    });
+    __publicField5(this, "pause", (pauseOptions) => {
+      if (this.state.paused || !this.state.active) {
+        return this;
+      }
+      const onPause = this.getOption(pauseOptions, "onPause");
+      const onPostPause = this.getOption(pauseOptions, "onPostPause");
+      this.state.paused = true;
+      onPause?.();
+      this.removeListeners();
+      this.updateObservedNodes();
+      onPostPause?.();
+      return this;
+    });
+    __publicField5(this, "unpause", (unpauseOptions) => {
+      if (!this.state.paused || !this.state.active) {
+        return this;
+      }
+      const onUnpause = this.getOption(unpauseOptions, "onUnpause");
+      const onPostUnpause = this.getOption(unpauseOptions, "onPostUnpause");
+      this.state.paused = false;
+      onUnpause?.();
+      this.updateTabbableNodes();
+      this.addListeners();
+      this.updateObservedNodes();
+      onPostUnpause?.();
+      return this;
+    });
+    __publicField5(this, "updateContainerElements", (containerElements) => {
+      this.state.containers = Array.isArray(containerElements) ? containerElements.filter(Boolean) : [containerElements].filter(Boolean);
+      if (this.state.active) {
+        this.updateTabbableNodes();
+      }
+      this.updateObservedNodes();
+      return this;
+    });
+    __publicField5(this, "getReturnFocusNode", (previousActiveElement) => {
+      const node = this.getNodeForOption("setReturnFocus", {
+        params: [previousActiveElement]
+      });
+      return node ? node : node === false ? false : previousActiveElement;
+    });
+    __publicField5(this, "getOption", (configOverrideOptions, optionName, configOptionName) => {
+      return configOverrideOptions && configOverrideOptions[optionName] !== void 0 ? configOverrideOptions[optionName] : (
+        // @ts-expect-error
+        this.config[configOptionName || optionName]
+      );
+    });
+    __publicField5(this, "getNodeForOption", (optionName, { hasFallback = false, params = [] } = {}) => {
+      let optionValue = this.config[optionName];
+      if (typeof optionValue === "function") optionValue = optionValue(...params);
+      if (optionValue === true) optionValue = void 0;
+      if (!optionValue) {
+        if (optionValue === void 0 || optionValue === false) {
+          return optionValue;
+        }
+        throw new Error(`\`${optionName}\` was specified but was not a node, or did not return a node`);
+      }
+      let node = optionValue;
+      if (typeof optionValue === "string") {
+        try {
+          node = this.doc.querySelector(optionValue);
+        } catch (err) {
+          throw new Error(`\`${optionName}\` appears to be an invalid selector; error="${err.message}"`);
+        }
+        if (!node) {
+          if (!hasFallback) {
+            throw new Error(`\`${optionName}\` as selector refers to no known node`);
+          }
+        }
+      }
+      return node;
+    });
+    __publicField5(this, "findNextNavNode", (opts) => {
+      const { event, isBackward = false } = opts;
+      const target = opts.target || getEventTarget(event);
+      this.updateTabbableNodes();
+      let destinationNode = null;
+      if (this.state.tabbableGroups.length > 0) {
+        const containerIndex = this.findContainerIndex(target, event);
+        const containerGroup = containerIndex >= 0 ? this.state.containerGroups[containerIndex] : void 0;
+        if (containerIndex < 0) {
+          if (isBackward) {
+            destinationNode = this.state.tabbableGroups[this.state.tabbableGroups.length - 1].lastTabbableNode;
+          } else {
+            destinationNode = this.state.tabbableGroups[0].firstTabbableNode;
+          }
+        } else if (isBackward) {
+          let startOfGroupIndex = this.state.tabbableGroups.findIndex(
+            ({ firstTabbableNode }) => target === firstTabbableNode
+          );
+          if (startOfGroupIndex < 0 && (containerGroup?.container === target || isFocusable(target) && !isTabbable(target) && !containerGroup?.nextTabbableNode(target, false))) {
+            startOfGroupIndex = containerIndex;
+          }
+          if (startOfGroupIndex >= 0) {
+            const destinationGroupIndex = startOfGroupIndex === 0 ? this.state.tabbableGroups.length - 1 : startOfGroupIndex - 1;
+            const destinationGroup = this.state.tabbableGroups[destinationGroupIndex];
+            destinationNode = getTabIndex(target) >= 0 ? destinationGroup.lastTabbableNode : destinationGroup.lastDomTabbableNode;
+          } else if (!isTabEvent(event)) {
+            destinationNode = containerGroup?.nextTabbableNode(target, false);
+          }
+        } else {
+          let lastOfGroupIndex = this.state.tabbableGroups.findIndex(
+            ({ lastTabbableNode }) => target === lastTabbableNode
+          );
+          if (lastOfGroupIndex < 0 && (containerGroup?.container === target || isFocusable(target) && !isTabbable(target) && !containerGroup?.nextTabbableNode(target))) {
+            lastOfGroupIndex = containerIndex;
+          }
+          if (lastOfGroupIndex >= 0) {
+            const destinationGroupIndex = lastOfGroupIndex === this.state.tabbableGroups.length - 1 ? 0 : lastOfGroupIndex + 1;
+            const destinationGroup = this.state.tabbableGroups[destinationGroupIndex];
+            destinationNode = getTabIndex(target) >= 0 ? destinationGroup.firstTabbableNode : destinationGroup.firstDomTabbableNode;
+          } else if (!isTabEvent(event)) {
+            destinationNode = containerGroup?.nextTabbableNode(target);
+          }
+        }
+      } else {
+        destinationNode = this.getNodeForOption("fallbackFocus");
+      }
+      return destinationNode;
+    });
+    this.trapStack = options.trapStack || sharedTrapStack;
+    const config = {
+      returnFocusOnDeactivate: true,
+      escapeDeactivates: true,
+      delayInitialFocus: true,
+      followControlledElements: true,
+      isKeyForward,
+      isKeyBackward,
+      ...options
+    };
+    this.doc = config.document || getDocument(Array.isArray(elements) ? elements[0] : elements);
+    this.config = config;
+    this.updateContainerElements(elements);
+    this.setupMutationObserver();
+  }
+  addPortalContainer(controlledElement) {
+    const portalContainer = controlledElement.parentElement;
+    if (portalContainer && !this.portalContainers.has(portalContainer)) {
+      this.portalContainers.add(portalContainer);
+      if (this.state.active && !this.state.paused) {
+        this.observePortalContainer(portalContainer);
+      }
+    }
+  }
+  observePortalContainer(portalContainer) {
+    this._mutationObserver?.observe(portalContainer, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["aria-controls", "aria-expanded"]
+    });
+  }
+  updatePortalContainers() {
+    if (!this.config.followControlledElements) return;
+    this.state.containers.forEach((container) => {
+      const controlledElements = getControlledElements(container);
+      controlledElements.forEach((controlledElement) => {
+        this.addPortalContainer(controlledElement);
+      });
+    });
+  }
+  get active() {
+    return this.state.active;
+  }
+  get paused() {
+    return this.state.paused;
+  }
+  findContainerIndex(element, event) {
+    const composedPath = typeof event?.composedPath === "function" ? event.composedPath() : void 0;
+    return this.state.containerGroups.findIndex(
+      ({ container, tabbableNodes }) => container.contains(element) || composedPath?.includes(container) || tabbableNodes.find((node) => node === element) || this.isControlledElement(container, element)
+    );
+  }
+  isControlledElement(container, element) {
+    if (!this.config.followControlledElements) return false;
+    return isControlledElement(container, element);
+  }
+  updateTabbableNodes() {
+    this.state.containerGroups = this.state.containers.map((container) => {
+      const tabbableNodes = getTabbables(container, { getShadowRoot: this.config.getShadowRoot });
+      const focusableNodes = getFocusables(container, { getShadowRoot: this.config.getShadowRoot });
+      const firstTabbableNode = tabbableNodes[0];
+      const lastTabbableNode = tabbableNodes[tabbableNodes.length - 1];
+      const firstDomTabbableNode = firstTabbableNode;
+      const lastDomTabbableNode = lastTabbableNode;
+      let posTabIndexesFound = false;
+      for (let i = 0; i < tabbableNodes.length; i++) {
+        if (getTabIndex(tabbableNodes[i]) > 0) {
+          posTabIndexesFound = true;
+          break;
+        }
+      }
+      function nextTabbableNode(node, forward = true) {
+        const nodeIdx = tabbableNodes.indexOf(node);
+        if (nodeIdx >= 0) {
+          return tabbableNodes[nodeIdx + (forward ? 1 : -1)];
+        }
+        const focusableIdx = focusableNodes.indexOf(node);
+        if (focusableIdx < 0) return void 0;
+        if (forward) {
+          for (let i = focusableIdx + 1; i < focusableNodes.length; i++) {
+            if (isTabbable(focusableNodes[i])) return focusableNodes[i];
+          }
+        } else {
+          for (let i = focusableIdx - 1; i >= 0; i--) {
+            if (isTabbable(focusableNodes[i])) return focusableNodes[i];
+          }
+        }
+        return void 0;
+      }
+      return {
+        container,
+        tabbableNodes,
+        focusableNodes,
+        posTabIndexesFound,
+        firstTabbableNode,
+        lastTabbableNode,
+        firstDomTabbableNode,
+        lastDomTabbableNode,
+        nextTabbableNode
+      };
+    });
+    this.state.tabbableGroups = this.state.containerGroups.filter((group2) => group2.tabbableNodes.length > 0);
+    if (this.state.tabbableGroups.length <= 0 && !this.getNodeForOption("fallbackFocus")) {
+      throw new Error(
+        "Your focus-trap must have at least one container with at least one tabbable node in it at all times"
+      );
+    }
+    if (this.state.containerGroups.find((g) => g.posTabIndexesFound) && this.state.containerGroups.length > 1) {
+      throw new Error(
+        "At least one node with a positive tabindex was found in one of your focus-trap's multiple containers. Positive tabindexes are only supported in single-container focus-traps."
+      );
+    }
+  }
+  addListeners() {
+    if (!this.state.active) return;
+    activeFocusTraps.activateTrap(this.trapStack, this);
+    this.state.delayInitialFocusTimer = this.config.delayInitialFocus ? delay(() => {
+      this.tryFocus(this.getInitialFocusNode());
+    }) : this.tryFocus(this.getInitialFocusNode());
+    this.listenerCleanups.push(
+      addDomEvent(this.doc, "focusin", this.handleFocus, true),
+      addDomEvent(this.doc, "mousedown", this.handlePointerDown, { capture: true, passive: false }),
+      addDomEvent(this.doc, "touchstart", this.handlePointerDown, { capture: true, passive: false }),
+      addDomEvent(this.doc, "click", this.handleClick, { capture: true, passive: false }),
+      addDomEvent(this.doc, "keydown", this.handleTabKey, { capture: true, passive: false }),
+      addDomEvent(this.doc, "keydown", this.handleEscapeKey)
+    );
+    return this;
+  }
+  removeListeners() {
+    if (!this.state.active) return;
+    this.listenerCleanups.forEach((cleanup) => cleanup());
+    this.listenerCleanups = [];
+    return this;
+  }
+  activate(activateOptions) {
+    if (this.state.active) {
+      return this;
+    }
+    const onActivate = this.getOption(activateOptions, "onActivate");
+    const onPostActivate = this.getOption(activateOptions, "onPostActivate");
+    const checkCanFocusTrap = this.getOption(activateOptions, "checkCanFocusTrap");
+    if (!checkCanFocusTrap) {
+      this.updateTabbableNodes();
+    }
+    this.state.active = true;
+    this.state.paused = false;
+    this.state.nodeFocusedBeforeActivation = getActiveElement(this.doc);
+    onActivate?.();
+    const finishActivation = () => {
+      if (checkCanFocusTrap) {
+        this.updateTabbableNodes();
+      }
+      this.addListeners();
+      this.updateObservedNodes();
+      onPostActivate?.();
+    };
+    if (checkCanFocusTrap) {
+      checkCanFocusTrap(this.state.containers.concat()).then(finishActivation, finishActivation);
+      return this;
+    }
+    finishActivation();
+    return this;
+  }
+};
+var isKeyboardEvent = (event) => event.type === "keydown";
+var isTabEvent = (event) => isKeyboardEvent(event) && event?.key === "Tab";
+var isKeyForward = (e) => isKeyboardEvent(e) && e.key === "Tab" && !e?.shiftKey;
+var isKeyBackward = (e) => isKeyboardEvent(e) && e.key === "Tab" && e?.shiftKey;
+var valueOrHandler = (value, ...params) => typeof value === "function" ? value(...params) : value;
+var isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
+var delay = (fn) => setTimeout(fn, 0);
+var isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
+function trapFocus(el, options = {}) {
+  let trap;
+  const cleanup = raf(() => {
+    const elements = Array.isArray(el) ? el : [el];
+    const resolvedElements = elements.map((e) => typeof e === "function" ? e() : e).filter((e) => e != null);
+    if (resolvedElements.length === 0) return;
+    const primaryEl = resolvedElements[0];
+    trap = new FocusTrap(resolvedElements, {
+      escapeDeactivates: false,
+      allowOutsideClick: true,
+      preventScroll: true,
+      returnFocusOnDeactivate: true,
+      delayInitialFocus: false,
+      fallbackFocus: primaryEl,
+      ...options,
+      document: getDocument(primaryEl)
+    });
+    try {
+      trap.activate();
+    } catch {
+    }
+  });
+  return function destroy() {
+    trap?.deactivate();
+    cleanup();
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+remove-scroll@1.33.1/node_modules/@zag-js/remove-scroll/dist/index.mjs
+var LOCK_CLASSNAME = "data-scroll-lock";
+function getPaddingProperty(documentElement) {
+  const documentLeft = documentElement.getBoundingClientRect().left;
+  const scrollbarX = Math.round(documentLeft) + documentElement.scrollLeft;
+  return scrollbarX ? "paddingLeft" : "paddingRight";
+}
+function hasStableScrollbarGutter(element) {
+  const styles = getComputedStyle2(element);
+  const scrollbarGutter = styles?.scrollbarGutter;
+  return scrollbarGutter === "stable" || scrollbarGutter?.startsWith("stable ") === true;
+}
+function preventBodyScroll(_document) {
+  const doc = _document ?? document;
+  const win = doc.defaultView ?? window;
+  const { documentElement, body } = doc;
+  const locked = body.hasAttribute(LOCK_CLASSNAME);
+  if (locked) return;
+  const hasStableGutter = hasStableScrollbarGutter(documentElement) || hasStableScrollbarGutter(body);
+  const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
+  body.setAttribute(LOCK_CLASSNAME, "");
+  const setScrollbarWidthProperty = () => setStyleProperty(documentElement, "--scrollbar-width", `${scrollbarWidth}px`);
+  const paddingProperty = getPaddingProperty(documentElement);
+  const setBodyStyle = () => {
+    const styles = {
+      overflow: "hidden"
+    };
+    if (!hasStableGutter && scrollbarWidth > 0) {
+      styles[paddingProperty] = `${scrollbarWidth}px`;
+    }
+    return setStyle(body, styles);
+  };
+  const setBodyStyleIOS = () => {
+    const { scrollX, scrollY, visualViewport } = win;
+    const offsetLeft = visualViewport?.offsetLeft ?? 0;
+    const offsetTop = visualViewport?.offsetTop ?? 0;
+    const styles = {
+      position: "fixed",
+      overflow: "hidden",
+      top: `${-(scrollY - Math.floor(offsetTop))}px`,
+      left: `${-(scrollX - Math.floor(offsetLeft))}px`,
+      right: "0"
+    };
+    if (!hasStableGutter && scrollbarWidth > 0) {
+      styles[paddingProperty] = `${scrollbarWidth}px`;
+    }
+    const restoreStyle = setStyle(body, styles);
+    return () => {
+      restoreStyle?.();
+      win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
+    };
+  };
+  const cleanups = [setScrollbarWidthProperty(), isIos() ? setBodyStyleIOS() : setBodyStyle()];
+  return () => {
+    cleanups.forEach((fn) => fn?.());
+    body.removeAttribute(LOCK_CLASSNAME);
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+dialog@1.33.1/node_modules/@zag-js/dialog/dist/index.mjs
+var anatomy11 = createAnatomy("dialog").parts(
+  "trigger",
+  "backdrop",
+  "positioner",
+  "content",
+  "title",
+  "description",
+  "closeTrigger"
+);
+var parts11 = anatomy11.build();
+var getPositionerId3 = (ctx) => ctx.ids?.positioner ?? `dialog:${ctx.id}:positioner`;
+var getBackdropId = (ctx) => ctx.ids?.backdrop ?? `dialog:${ctx.id}:backdrop`;
+var getContentId5 = (ctx) => ctx.ids?.content ?? `dialog:${ctx.id}:content`;
+var getTriggerId5 = (ctx) => ctx.ids?.trigger ?? `dialog:${ctx.id}:trigger`;
+var getTitleId2 = (ctx) => ctx.ids?.title ?? `dialog:${ctx.id}:title`;
+var getDescriptionId2 = (ctx) => ctx.ids?.description ?? `dialog:${ctx.id}:description`;
+var getCloseTriggerId2 = (ctx) => ctx.ids?.closeTrigger ?? `dialog:${ctx.id}:close`;
+var getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
+var getPositionerEl3 = (ctx) => ctx.getById(getPositionerId3(ctx));
+var getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
+var getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
+var getTitleEl = (ctx) => ctx.getById(getTitleId2(ctx));
+var getDescriptionEl = (ctx) => ctx.getById(getDescriptionId2(ctx));
+var getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId2(ctx));
+function connect11(service, normalize) {
+  const { state: state2, send, context, prop, scope } = service;
+  const ariaLabel = prop("aria-label");
+  const open = state2.matches("open");
+  return {
+    open,
+    setOpen(nextOpen) {
+      const open2 = state2.matches("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE" });
+    },
+    getTriggerProps() {
+      return normalize.button({
+        ...parts11.trigger.attrs,
+        dir: prop("dir"),
+        id: getTriggerId5(scope),
+        "aria-haspopup": "dialog",
+        type: "button",
+        "aria-expanded": open,
+        "data-state": open ? "open" : "closed",
+        "aria-controls": getContentId5(scope),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "TOGGLE" });
+        }
+      });
+    },
+    getBackdropProps() {
+      return normalize.element({
+        ...parts11.backdrop.attrs,
+        dir: prop("dir"),
+        hidden: !open,
+        id: getBackdropId(scope),
+        "data-state": open ? "open" : "closed"
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts11.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId3(scope),
+        style: {
+          pointerEvents: open ? void 0 : "none"
+        }
+      });
+    },
+    getContentProps() {
+      const rendered = context.get("rendered");
+      return normalize.element({
+        ...parts11.content.attrs,
+        dir: prop("dir"),
+        role: prop("role"),
+        hidden: !open,
+        id: getContentId5(scope),
+        tabIndex: -1,
+        "data-state": open ? "open" : "closed",
+        "aria-modal": true,
+        "aria-label": ariaLabel || void 0,
+        "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId2(scope),
+        "aria-describedby": rendered.description ? getDescriptionId2(scope) : void 0
+      });
+    },
+    getTitleProps() {
+      return normalize.element({
+        ...parts11.title.attrs,
+        dir: prop("dir"),
+        id: getTitleId2(scope)
+      });
+    },
+    getDescriptionProps() {
+      return normalize.element({
+        ...parts11.description.attrs,
+        dir: prop("dir"),
+        id: getDescriptionId2(scope)
+      });
+    },
+    getCloseTriggerProps() {
+      return normalize.button({
+        ...parts11.closeTrigger.attrs,
+        dir: prop("dir"),
+        id: getCloseTriggerId2(scope),
+        type: "button",
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          event.stopPropagation();
+          send({ type: "CLOSE" });
+        }
+      });
+    }
+  };
+}
+var machine11 = createMachine({
+  props({ props: props22, scope }) {
+    const alertDialog = props22.role === "alertdialog";
+    const initialFocusEl = alertDialog ? () => getCloseTriggerEl(scope) : void 0;
+    const modal = typeof props22.modal === "boolean" ? props22.modal : true;
+    return {
+      role: "dialog",
+      modal,
+      trapFocus: modal,
+      preventScroll: modal,
+      closeOnInteractOutside: !alertDialog,
+      closeOnEscape: true,
+      restoreFocus: true,
+      initialFocusEl,
+      ...props22
+    };
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "open" : "closed";
+  },
+  context({ bindable: bindable2 }) {
+    return {
+      rendered: bindable2(() => ({
+        defaultValue: { title: true, description: true }
+      }))
+    };
+  },
+  watch({ track, action, prop }) {
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+  },
+  states: {
+    open: {
+      entry: ["checkRenderedElements", "syncZIndex"],
+      effects: ["trackDismissableElement", "trapFocus", "preventScroll", "hideContentBelow"],
+      on: {
+        "CONTROLLED.CLOSE": {
+          target: "closed"
+        },
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        TOGGLE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose"]
+          }
+        ]
+      }
+    },
+    closed: {
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open"
+        },
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        TOGGLE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen"]
+          }
+        ]
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      isOpenControlled: ({ prop }) => prop("open") != void 0
+    },
+    effects: {
+      trackDismissableElement({ scope, send, prop }) {
+        const getContentEl22 = () => getContentEl5(scope);
+        return trackDismissableElement(getContentEl22, {
+          type: "dialog",
+          defer: true,
+          pointerBlocking: prop("modal"),
+          exclude: [getTriggerEl4(scope)],
+          onInteractOutside(event) {
+            prop("onInteractOutside")?.(event);
+            if (!prop("closeOnInteractOutside")) {
+              event.preventDefault();
+            }
+          },
+          persistentElements: prop("persistentElements"),
+          onFocusOutside: prop("onFocusOutside"),
+          onPointerDownOutside: prop("onPointerDownOutside"),
+          onRequestDismiss: prop("onRequestDismiss"),
+          onEscapeKeyDown(event) {
+            prop("onEscapeKeyDown")?.(event);
+            if (!prop("closeOnEscape")) {
+              event.preventDefault();
+            }
+          },
+          onDismiss() {
+            send({ type: "CLOSE", src: "interact-outside" });
+          }
+        });
+      },
+      preventScroll({ scope, prop }) {
+        if (!prop("preventScroll")) return;
+        return preventBodyScroll(scope.getDoc());
+      },
+      trapFocus({ scope, prop }) {
+        if (!prop("trapFocus")) return;
+        const contentEl = () => getContentEl5(scope);
+        return trapFocus(contentEl, {
+          preventScroll: true,
+          returnFocusOnDeactivate: !!prop("restoreFocus"),
+          initialFocus: prop("initialFocusEl"),
+          setReturnFocus: (el) => prop("finalFocusEl")?.() ?? el,
+          getShadowRoot: true
+        });
+      },
+      hideContentBelow({ scope, prop }) {
+        if (!prop("modal")) return;
+        const getElements3 = () => [getContentEl5(scope)];
+        return ariaHidden(getElements3, { defer: true });
+      }
+    },
+    actions: {
+      checkRenderedElements({ context, scope }) {
+        raf(() => {
+          context.set("rendered", {
+            title: !!getTitleEl(scope),
+            description: !!getDescriptionEl(scope)
+          });
+        });
+      },
+      syncZIndex({ scope }) {
+        raf(() => {
+          const contentEl = getContentEl5(scope);
+          if (!contentEl) return;
+          const styles = getComputedStyle2(contentEl);
+          const elems = [getPositionerEl3(scope), getBackdropEl(scope)];
+          elems.forEach((node) => {
+            node?.style.setProperty("--z-index", styles.zIndex);
+            node?.style.setProperty("--layer-index", styles.getPropertyValue("--layer-index"));
+          });
+        });
+      },
+      invokeOnClose({ prop }) {
+        prop("onOpenChange")?.({ open: false });
+      },
+      invokeOnOpen({ prop }) {
+        prop("onOpenChange")?.({ open: true });
+      },
+      toggleVisibility({ prop, send, event }) {
+        send({
+          type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE",
+          previousEvent: event
+        });
+      }
+    }
+  }
+});
+var props10 = createProps()([
+  "aria-label",
+  "closeOnEscape",
+  "closeOnInteractOutside",
+  "dir",
+  "finalFocusEl",
+  "getRootNode",
+  "getRootNode",
+  "id",
+  "id",
+  "ids",
+  "initialFocusEl",
+  "modal",
+  "onEscapeKeyDown",
+  "onFocusOutside",
+  "onInteractOutside",
+  "onOpenChange",
+  "onPointerDownOutside",
+  "onRequestDismiss",
+  "defaultOpen",
+  "open",
+  "persistentElements",
+  "preventScroll",
+  "restoreFocus",
+  "role",
+  "trapFocus"
+]);
+var splitProps10 = createSplitProps(props10);
+
+// components/dialog.ts
+var Dialog = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props12) {
+    return new VanillaMachine(machine11, props12);
+  }
+  initApi() {
+    return connect11(this.machine.service, normalizeProps);
+  }
+  render() {
+    const triggerEl = this.el.querySelector('[data-scope="dialog"][data-part="trigger"]');
+    if (triggerEl) {
+      this.spreadProps(triggerEl, this.api.getTriggerProps());
+    }
+    const backdropEl = this.el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+    if (backdropEl) {
+      this.spreadProps(backdropEl, this.api.getBackdropProps());
+    }
+    const positionerEl = this.el.querySelector('[data-scope="dialog"][data-part="positioner"]');
+    if (positionerEl) {
+      this.spreadProps(positionerEl, this.api.getPositionerProps());
+    }
+    const contentEl = this.el.querySelector('[data-scope="dialog"][data-part="content"]');
+    if (contentEl) {
+      this.spreadProps(contentEl, this.api.getContentProps());
+    }
+    const titleEl = this.el.querySelector('[data-scope="dialog"][data-part="title"]');
+    if (titleEl) {
+      this.spreadProps(titleEl, this.api.getTitleProps());
+    }
+    const descriptionEl = this.el.querySelector('[data-scope="dialog"][data-part="description"]');
+    if (descriptionEl) {
+      this.spreadProps(descriptionEl, this.api.getDescriptionProps());
+    }
+    const closeTriggerEl = this.el.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+    if (closeTriggerEl) {
+      this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
+    }
+  }
+};
+
+// hooks/dialog.ts
+var DialogHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const dialog = new Dialog(el, {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      modal: getBoolean(el, "modal"),
+      closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+      closeOnEscapeKeyDown: getBoolean(el, "closeOnEscapeKeyDown"),
+      preventScroll: getBoolean(el, "preventScroll"),
+      restoreFocus: getBoolean(el, "restoreFocus"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onOpenChange: (details) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            open: details.open
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                open: details.open
+              }
+            })
+          );
+        }
+      }
+    });
+    dialog.init();
+    this.dialog = dialog;
+    this.onSetOpen = (event) => {
+      const { open } = event.detail;
+      dialog.api.setOpen(open);
+    };
+    el.addEventListener("phx:dialog:set-open", this.onSetOpen);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("dialog_set_open", (payload) => {
+        const targetId = payload.dialog_id;
+        if (targetId && targetId !== el.id) return;
+        dialog.api.setOpen(payload.open);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("dialog_open", () => {
+        this.pushEvent("dialog_open_response", {
+          value: dialog.api.open
+        });
+      })
+    );
+  },
+  updated() {
+    this.dialog?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
+      modal: getBoolean(this.el, "modal"),
+      closeOnInteractOutside: getBoolean(this.el, "closeOnInteractOutside"),
+      closeOnEscapeKeyDown: getBoolean(this.el, "closeOnEscapeKeyDown"),
+      preventScroll: getBoolean(this.el, "preventScroll"),
+      restoreFocus: getBoolean(this.el, "restoreFocus"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+  },
+  destroyed() {
+    if (this.onSetOpen) {
+      this.el.removeEventListener("phx:dialog:set-open", this.onSetOpen);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.dialog?.destroy();
+  }
+};
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/utils.mjs
+function $2b4dce13dd5a17fa$export$842a2cf37af977e1(amount, numerator) {
+  return amount - numerator * Math.floor(amount / numerator);
+}
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs
+var $3b62074eb05584b2$var$EPOCH = 1721426;
+function $3b62074eb05584b2$export$f297eb839006d339(era, year, month, day) {
+  year = $3b62074eb05584b2$export$c36e0ecb2d4fa69d(era, year);
+  let y1 = year - 1;
+  let monthOffset = -2;
+  if (month <= 2) monthOffset = 0;
+  else if ($3b62074eb05584b2$export$553d7fa8e3805fc0(year)) monthOffset = -1;
+  return $3b62074eb05584b2$var$EPOCH - 1 + 365 * y1 + Math.floor(y1 / 4) - Math.floor(y1 / 100) + Math.floor(y1 / 400) + Math.floor((367 * month - 362) / 12 + monthOffset + day);
+}
+function $3b62074eb05584b2$export$553d7fa8e3805fc0(year) {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+function $3b62074eb05584b2$export$c36e0ecb2d4fa69d(era, year) {
+  return era === "BC" ? 1 - year : year;
+}
+function $3b62074eb05584b2$export$4475b7e617eb123c(year) {
+  let era = "AD";
+  if (year <= 0) {
+    era = "BC";
+    year = 1 - year;
+  }
+  return [
+    era,
+    year
+  ];
+}
+var $3b62074eb05584b2$var$daysInMonth = {
+  standard: [
+    31,
+    28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+  ],
+  leapyear: [
+    31,
+    29,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+  ]
+};
+var $3b62074eb05584b2$export$80ee6245ec4f29ec = class {
+  fromJulianDay(jd) {
+    let jd0 = jd;
+    let depoch = jd0 - $3b62074eb05584b2$var$EPOCH;
+    let quadricent = Math.floor(depoch / 146097);
+    let dqc = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(depoch, 146097);
+    let cent = Math.floor(dqc / 36524);
+    let dcent = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(dqc, 36524);
+    let quad = Math.floor(dcent / 1461);
+    let dquad = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(dcent, 1461);
+    let yindex = Math.floor(dquad / 365);
+    let extendedYear = quadricent * 400 + cent * 100 + quad * 4 + yindex + (cent !== 4 && yindex !== 4 ? 1 : 0);
+    let [era, year] = $3b62074eb05584b2$export$4475b7e617eb123c(extendedYear);
+    let yearDay = jd0 - $3b62074eb05584b2$export$f297eb839006d339(era, year, 1, 1);
+    let leapAdj = 2;
+    if (jd0 < $3b62074eb05584b2$export$f297eb839006d339(era, year, 3, 1)) leapAdj = 0;
+    else if ($3b62074eb05584b2$export$553d7fa8e3805fc0(year)) leapAdj = 1;
+    let month = Math.floor(((yearDay + leapAdj) * 12 + 373) / 367);
+    let day = jd0 - $3b62074eb05584b2$export$f297eb839006d339(era, year, month, 1) + 1;
+    return new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)(era, year, month, day);
+  }
+  toJulianDay(date) {
+    return $3b62074eb05584b2$export$f297eb839006d339(date.era, date.year, date.month, date.day);
+  }
+  getDaysInMonth(date) {
+    return $3b62074eb05584b2$var$daysInMonth[$3b62074eb05584b2$export$553d7fa8e3805fc0(date.year) ? "leapyear" : "standard"][date.month - 1];
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getMonthsInYear(date) {
+    return 12;
+  }
+  getDaysInYear(date) {
+    return $3b62074eb05584b2$export$553d7fa8e3805fc0(date.year) ? 366 : 365;
+  }
+  getMaximumMonthsInYear() {
+    return 12;
+  }
+  getMaximumDaysInMonth() {
+    return 31;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getYearsInEra(date) {
+    return 9999;
+  }
+  getEras() {
+    return [
+      "BC",
+      "AD"
+    ];
+  }
+  isInverseEra(date) {
+    return date.era === "BC";
+  }
+  balanceDate(date) {
+    if (date.year <= 0) {
+      date.era = date.era === "BC" ? "AD" : "BC";
+      date.year = 1 - date.year;
+    }
+  }
+  constructor() {
+    this.identifier = "gregory";
+  }
+};
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/weekStartData.mjs
+var $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
+  "001": 1,
+  AD: 1,
+  AE: 6,
+  AF: 6,
+  AI: 1,
+  AL: 1,
+  AM: 1,
+  AN: 1,
+  AR: 1,
+  AT: 1,
+  AU: 1,
+  AX: 1,
+  AZ: 1,
+  BA: 1,
+  BE: 1,
+  BG: 1,
+  BH: 6,
+  BM: 1,
+  BN: 1,
+  BY: 1,
+  CH: 1,
+  CL: 1,
+  CM: 1,
+  CN: 1,
+  CR: 1,
+  CY: 1,
+  CZ: 1,
+  DE: 1,
+  DJ: 6,
+  DK: 1,
+  DZ: 6,
+  EC: 1,
+  EE: 1,
+  EG: 6,
+  ES: 1,
+  FI: 1,
+  FJ: 1,
+  FO: 1,
+  FR: 1,
+  GB: 1,
+  GE: 1,
+  GF: 1,
+  GP: 1,
+  GR: 1,
+  HR: 1,
+  HU: 1,
+  IE: 1,
+  IQ: 6,
+  IR: 6,
+  IS: 1,
+  IT: 1,
+  JO: 6,
+  KG: 1,
+  KW: 6,
+  KZ: 1,
+  LB: 1,
+  LI: 1,
+  LK: 1,
+  LT: 1,
+  LU: 1,
+  LV: 1,
+  LY: 6,
+  MC: 1,
+  MD: 1,
+  ME: 1,
+  MK: 1,
+  MN: 1,
+  MQ: 1,
+  MV: 5,
+  MY: 1,
+  NL: 1,
+  NO: 1,
+  NZ: 1,
+  OM: 6,
+  PL: 1,
+  QA: 6,
+  RE: 1,
+  RO: 1,
+  RS: 1,
+  RU: 1,
+  SD: 6,
+  SE: 1,
+  SI: 1,
+  SK: 1,
+  SM: 1,
+  SY: 6,
+  TJ: 1,
+  TM: 1,
+  TR: 1,
+  UA: 1,
+  UY: 1,
+  UZ: 1,
+  VA: 1,
+  VN: 1,
+  XK: 1
+};
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/queries.mjs
+function $14e0f24ef4ac5c92$export$ea39ec197993aef0(a, b) {
+  b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
+  return a.era === b.era && a.year === b.year && a.month === b.month && a.day === b.day;
+}
+function $14e0f24ef4ac5c92$export$a18c89cbd24170ff(a, b) {
+  b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
+  a = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(a);
+  b = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(b);
+  return a.era === b.era && a.year === b.year && a.month === b.month;
+}
+function $14e0f24ef4ac5c92$export$5841f9eb9773f25f(a, b) {
+  b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
+  a = $14e0f24ef4ac5c92$export$f91e89d3d0406102(a);
+  b = $14e0f24ef4ac5c92$export$f91e89d3d0406102(b);
+  return a.era === b.era && a.year === b.year;
+}
+function $14e0f24ef4ac5c92$export$91b62ebf2ba703ee(a, b) {
+  return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a.calendar, b.calendar) && $14e0f24ef4ac5c92$export$ea39ec197993aef0(a, b);
+}
+function $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(a, b) {
+  return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a.calendar, b.calendar) && $14e0f24ef4ac5c92$export$a18c89cbd24170ff(a, b);
+}
+function $14e0f24ef4ac5c92$export$ea840f5a6dda8147(a, b) {
+  return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a.calendar, b.calendar) && $14e0f24ef4ac5c92$export$5841f9eb9773f25f(a, b);
+}
+function $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a, b) {
+  var _a_isEqual, _b_isEqual;
+  var _a_isEqual1, _ref;
+  return (_ref = (_a_isEqual1 = (_a_isEqual = a.isEqual) === null || _a_isEqual === void 0 ? void 0 : _a_isEqual.call(a, b)) !== null && _a_isEqual1 !== void 0 ? _a_isEqual1 : (_b_isEqual = b.isEqual) === null || _b_isEqual === void 0 ? void 0 : _b_isEqual.call(b, a)) !== null && _ref !== void 0 ? _ref : a.identifier === b.identifier;
+}
+function $14e0f24ef4ac5c92$export$629b0a497aa65267(date, timeZone) {
+  return $14e0f24ef4ac5c92$export$ea39ec197993aef0(date, $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
+}
+var $14e0f24ef4ac5c92$var$DAY_MAP = {
+  sun: 0,
+  mon: 1,
+  tue: 2,
+  wed: 3,
+  thu: 4,
+  fri: 5,
+  sat: 6
+};
+function $14e0f24ef4ac5c92$export$2061056d06d7cdf7(date, locale, firstDayOfWeek) {
+  let julian = date.calendar.toJulianDay(date);
+  let weekStart = firstDayOfWeek ? $14e0f24ef4ac5c92$var$DAY_MAP[firstDayOfWeek] : $14e0f24ef4ac5c92$var$getWeekStart(locale);
+  let dayOfWeek = Math.ceil(julian + 1 - weekStart) % 7;
+  if (dayOfWeek < 0) dayOfWeek += 7;
+  return dayOfWeek;
+}
+function $14e0f24ef4ac5c92$export$461939dd4422153(timeZone) {
+  return (0, $11d87f3f76e88657$export$1b96692a1ba042ac)(Date.now(), timeZone);
+}
+function $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone) {
+  return (0, $11d87f3f76e88657$export$93522d1a439f3617)($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
+}
+function $14e0f24ef4ac5c92$export$68781ddf31c0090f(a, b) {
+  return a.calendar.toJulianDay(a) - b.calendar.toJulianDay(b);
+}
+function $14e0f24ef4ac5c92$export$c19a80a9721b80f6(a, b) {
+  return $14e0f24ef4ac5c92$var$timeToMs(a) - $14e0f24ef4ac5c92$var$timeToMs(b);
+}
+function $14e0f24ef4ac5c92$var$timeToMs(a) {
+  return a.hour * 36e5 + a.minute * 6e4 + a.second * 1e3 + a.millisecond;
+}
+var $14e0f24ef4ac5c92$var$localTimeZone = null;
+function $14e0f24ef4ac5c92$export$aa8b41735afcabd2() {
+  if ($14e0f24ef4ac5c92$var$localTimeZone == null) $14e0f24ef4ac5c92$var$localTimeZone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return $14e0f24ef4ac5c92$var$localTimeZone;
+}
+function $14e0f24ef4ac5c92$export$a5a3b454ada2268e(date) {
+  return date.subtract({
+    days: date.day - 1
+  });
+}
+function $14e0f24ef4ac5c92$export$a2258d9c4118825c(date) {
+  return date.add({
+    days: date.calendar.getDaysInMonth(date) - date.day
+  });
+}
+function $14e0f24ef4ac5c92$export$f91e89d3d0406102(date) {
+  return $14e0f24ef4ac5c92$export$a5a3b454ada2268e(date.subtract({
+    months: date.month - 1
+  }));
+}
+function $14e0f24ef4ac5c92$export$8b7aa55c66d5569e(date) {
+  return $14e0f24ef4ac5c92$export$a2258d9c4118825c(date.add({
+    months: date.calendar.getMonthsInYear(date) - date.month
+  }));
+}
+function $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale, firstDayOfWeek) {
+  let dayOfWeek = $14e0f24ef4ac5c92$export$2061056d06d7cdf7(date, locale, firstDayOfWeek);
+  return date.subtract({
+    days: dayOfWeek
+  });
+}
+function $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(date, locale, firstDayOfWeek) {
+  return $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale, firstDayOfWeek).add({
+    days: 6
+  });
+}
+var $14e0f24ef4ac5c92$var$cachedRegions = /* @__PURE__ */ new Map();
+var $14e0f24ef4ac5c92$var$cachedWeekInfo = /* @__PURE__ */ new Map();
+function $14e0f24ef4ac5c92$var$getRegion(locale) {
+  if (Intl.Locale) {
+    let region = $14e0f24ef4ac5c92$var$cachedRegions.get(locale);
+    if (!region) {
+      region = new Intl.Locale(locale).maximize().region;
+      if (region) $14e0f24ef4ac5c92$var$cachedRegions.set(locale, region);
+    }
+    return region;
+  }
+  let part = locale.split("-")[1];
+  return part === "u" ? void 0 : part;
+}
+function $14e0f24ef4ac5c92$var$getWeekStart(locale) {
+  let weekInfo = $14e0f24ef4ac5c92$var$cachedWeekInfo.get(locale);
+  if (!weekInfo) {
+    if (Intl.Locale) {
+      let localeInst = new Intl.Locale(locale);
+      if ("getWeekInfo" in localeInst) {
+        weekInfo = localeInst.getWeekInfo();
+        if (weekInfo) {
+          $14e0f24ef4ac5c92$var$cachedWeekInfo.set(locale, weekInfo);
+          return weekInfo.firstDay;
+        }
+      }
+    }
+    let region = $14e0f24ef4ac5c92$var$getRegion(locale);
+    if (locale.includes("-fw-")) {
+      let day = locale.split("-fw-")[1].split("-")[0];
+      if (day === "mon") weekInfo = {
+        firstDay: 1
+      };
+      else if (day === "tue") weekInfo = {
+        firstDay: 2
+      };
+      else if (day === "wed") weekInfo = {
+        firstDay: 3
+      };
+      else if (day === "thu") weekInfo = {
+        firstDay: 4
+      };
+      else if (day === "fri") weekInfo = {
+        firstDay: 5
+      };
+      else if (day === "sat") weekInfo = {
+        firstDay: 6
+      };
+      else weekInfo = {
+        firstDay: 0
+      };
+    } else if (locale.includes("-ca-iso8601")) weekInfo = {
+      firstDay: 1
+    };
+    else weekInfo = {
+      firstDay: region ? (0, $2fe286d2fb449abb$export$7a5acbd77d414bd9)[region] || 0 : 0
+    };
+    $14e0f24ef4ac5c92$var$cachedWeekInfo.set(locale, weekInfo);
+  }
+  return weekInfo.firstDay;
+}
+function $14e0f24ef4ac5c92$export$ccc1b2479e7dd654(date, locale, firstDayOfWeek) {
+  let days = date.calendar.getDaysInMonth(date);
+  return Math.ceil(($14e0f24ef4ac5c92$export$2061056d06d7cdf7($14e0f24ef4ac5c92$export$a5a3b454ada2268e(date), locale, firstDayOfWeek) + days) / 7);
+}
+function $14e0f24ef4ac5c92$export$5c333a116e949cdd(a, b) {
+  if (a && b) return a.compare(b) <= 0 ? a : b;
+  return a || b;
+}
+function $14e0f24ef4ac5c92$export$a75f2bff57811055(a, b) {
+  if (a && b) return a.compare(b) >= 0 ? a : b;
+  return a || b;
+}
+var $14e0f24ef4ac5c92$var$WEEKEND_DATA = {
+  AF: [
+    4,
+    5
+  ],
+  AE: [
+    5,
+    6
+  ],
+  BH: [
+    5,
+    6
+  ],
+  DZ: [
+    5,
+    6
+  ],
+  EG: [
+    5,
+    6
+  ],
+  IL: [
+    5,
+    6
+  ],
+  IQ: [
+    5,
+    6
+  ],
+  IR: [
+    5,
+    5
+  ],
+  JO: [
+    5,
+    6
+  ],
+  KW: [
+    5,
+    6
+  ],
+  LY: [
+    5,
+    6
+  ],
+  OM: [
+    5,
+    6
+  ],
+  QA: [
+    5,
+    6
+  ],
+  SA: [
+    5,
+    6
+  ],
+  SD: [
+    5,
+    6
+  ],
+  SY: [
+    5,
+    6
+  ],
+  YE: [
+    5,
+    6
+  ]
+};
+function $14e0f24ef4ac5c92$export$618d60ea299da42(date, locale) {
+  let julian = date.calendar.toJulianDay(date);
+  let dayOfWeek = Math.ceil(julian + 1) % 7;
+  if (dayOfWeek < 0) dayOfWeek += 7;
+  let region = $14e0f24ef4ac5c92$var$getRegion(locale);
+  let [start, end] = $14e0f24ef4ac5c92$var$WEEKEND_DATA[region] || [
+    6,
+    0
+  ];
+  return dayOfWeek === start || dayOfWeek === end;
+}
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/conversion.mjs
+function $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) {
+  date = $11d87f3f76e88657$export$b4a036af3fc0b032(date, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
+  let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(date.era, date.year);
+  return $11d87f3f76e88657$var$epochFromParts(year, date.month, date.day, date.hour, date.minute, date.second, date.millisecond);
+}
+function $11d87f3f76e88657$var$epochFromParts(year, month, day, hour, minute, second, millisecond) {
+  let date = /* @__PURE__ */ new Date();
+  date.setUTCHours(hour, minute, second, millisecond);
+  date.setUTCFullYear(year, month - 1, day);
+  return date.getTime();
+}
+function $11d87f3f76e88657$export$59c99f3515d3493f(ms, timeZone) {
+  if (timeZone === "UTC") return 0;
+  if (ms > 0 && timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)()) return new Date(ms).getTimezoneOffset() * -6e4;
+  let { year, month, day, hour, minute, second } = $11d87f3f76e88657$var$getTimeZoneParts(ms, timeZone);
+  let utc = $11d87f3f76e88657$var$epochFromParts(year, month, day, hour, minute, second, 0);
+  return utc - Math.floor(ms / 1e3) * 1e3;
+}
+var $11d87f3f76e88657$var$formattersByTimeZone = /* @__PURE__ */ new Map();
+function $11d87f3f76e88657$var$getTimeZoneParts(ms, timeZone) {
+  let formatter = $11d87f3f76e88657$var$formattersByTimeZone.get(timeZone);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      hour12: false,
+      era: "short",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric"
+    });
+    $11d87f3f76e88657$var$formattersByTimeZone.set(timeZone, formatter);
+  }
+  let parts13 = formatter.formatToParts(new Date(ms));
+  let namedParts = {};
+  for (let part of parts13) if (part.type !== "literal") namedParts[part.type] = part.value;
+  return {
+    // Firefox returns B instead of BC... https://bugzilla.mozilla.org/show_bug.cgi?id=1752253
+    year: namedParts.era === "BC" || namedParts.era === "B" ? -namedParts.year + 1 : +namedParts.year,
+    month: +namedParts.month,
+    day: +namedParts.day,
+    hour: namedParts.hour === "24" ? 0 : +namedParts.hour,
+    minute: +namedParts.minute,
+    second: +namedParts.second
+  };
+}
+var $11d87f3f76e88657$var$DAYMILLIS = 864e5;
+function $11d87f3f76e88657$var$getValidWallTimes(date, timeZone, earlier, later) {
+  let found = earlier === later ? [
+    earlier
+  ] : [
+    earlier,
+    later
+  ];
+  return found.filter((absolute) => $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute));
+}
+function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
+  let parts13 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
+  return date.year === parts13.year && date.month === parts13.month && date.day === parts13.day && date.hour === parts13.hour && date.minute === parts13.minute && date.second === parts13.second;
+}
+function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
+  let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
+  if (timeZone === "UTC") return $11d87f3f76e88657$export$bd4fb2bc8bb06fb(dateTime);
+  if (timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && disambiguation === "compatible") {
+    dateTime = $11d87f3f76e88657$export$b4a036af3fc0b032(dateTime, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
+    let date2 = /* @__PURE__ */ new Date();
+    let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(dateTime.era, dateTime.year);
+    date2.setFullYear(year, dateTime.month - 1, dateTime.day);
+    date2.setHours(dateTime.hour, dateTime.minute, dateTime.second, dateTime.millisecond);
+    return date2.getTime();
+  }
+  let ms = $11d87f3f76e88657$export$bd4fb2bc8bb06fb(dateTime);
+  let offsetBefore = $11d87f3f76e88657$export$59c99f3515d3493f(ms - $11d87f3f76e88657$var$DAYMILLIS, timeZone);
+  let offsetAfter = $11d87f3f76e88657$export$59c99f3515d3493f(ms + $11d87f3f76e88657$var$DAYMILLIS, timeZone);
+  let valid = $11d87f3f76e88657$var$getValidWallTimes(dateTime, timeZone, ms - offsetBefore, ms - offsetAfter);
+  if (valid.length === 1) return valid[0];
+  if (valid.length > 1) switch (disambiguation) {
+    // 'compatible' means 'earlier' for "fall back" transitions
+    case "compatible":
+    case "earlier":
+      return valid[0];
+    case "later":
+      return valid[valid.length - 1];
+    case "reject":
+      throw new RangeError("Multiple possible absolute times found");
+  }
+  switch (disambiguation) {
+    case "earlier":
+      return Math.min(ms - offsetBefore, ms - offsetAfter);
+    // 'compatible' means 'later' for "spring forward" transitions
+    case "compatible":
+    case "later":
+      return Math.max(ms - offsetBefore, ms - offsetAfter);
+    case "reject":
+      throw new RangeError("No such absolute time found");
+  }
+}
+function $11d87f3f76e88657$export$e67a095c620b86fe(dateTime, timeZone, disambiguation = "compatible") {
+  return new Date($11d87f3f76e88657$export$5107c82f94518f5c(dateTime, timeZone, disambiguation));
+}
+function $11d87f3f76e88657$export$1b96692a1ba042ac(ms, timeZone) {
+  let offset3 = $11d87f3f76e88657$export$59c99f3515d3493f(ms, timeZone);
+  let date = new Date(ms + offset3);
+  let year = date.getUTCFullYear();
+  let month = date.getUTCMonth() + 1;
+  let day = date.getUTCDate();
+  let hour = date.getUTCHours();
+  let minute = date.getUTCMinutes();
+  let second = date.getUTCSeconds();
+  let millisecond = date.getUTCMilliseconds();
+  return new (0, $35ea8db9cb2ccb90$export$d3b7288e7994edea)(year < 1 ? "BC" : "AD", year < 1 ? -year + 1 : year, month, day, timeZone, offset3, hour, minute, second, millisecond);
+}
+function $11d87f3f76e88657$export$93522d1a439f3617(dateTime) {
+  return new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)(dateTime.calendar, dateTime.era, dateTime.year, dateTime.month, dateTime.day);
+}
+function $11d87f3f76e88657$export$b21e0b124e224484(date, time) {
+  let hour = 0, minute = 0, second = 0, millisecond = 0;
+  if ("timeZone" in date) ({ hour, minute, second, millisecond } = date);
+  else if ("hour" in date && !time) return date;
+  if (time) ({ hour, minute, second, millisecond } = time);
+  return new (0, $35ea8db9cb2ccb90$export$ca871e8dbb80966f)(date.calendar, date.era, date.year, date.month, date.day, hour, minute, second, millisecond);
+}
+function $11d87f3f76e88657$export$b4a036af3fc0b032(date, calendar) {
+  if ((0, $14e0f24ef4ac5c92$export$dbc69fd56b53d5e)(date.calendar, calendar)) return date;
+  let calendarDate = calendar.fromJulianDay(date.calendar.toJulianDay(date));
+  let copy = date.copy();
+  copy.calendar = calendar;
+  copy.era = calendarDate.era;
+  copy.year = calendarDate.year;
+  copy.month = calendarDate.month;
+  copy.day = calendarDate.day;
+  (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(copy);
+  return copy;
+}
+function $11d87f3f76e88657$export$84c95a83c799e074(date, timeZone, disambiguation) {
+  if (date instanceof (0, $35ea8db9cb2ccb90$export$d3b7288e7994edea)) {
+    if (date.timeZone === timeZone) return date;
+    return $11d87f3f76e88657$export$538b00033cc11c75(date, timeZone);
+  }
+  let ms = $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation);
+  return $11d87f3f76e88657$export$1b96692a1ba042ac(ms, timeZone);
+}
+function $11d87f3f76e88657$export$83aac07b4c37b25(date) {
+  let ms = $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) - date.offset;
+  return new Date(ms);
+}
+function $11d87f3f76e88657$export$538b00033cc11c75(date, timeZone) {
+  let ms = $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) - date.offset;
+  return $11d87f3f76e88657$export$b4a036af3fc0b032($11d87f3f76e88657$export$1b96692a1ba042ac(ms, timeZone), date.calendar);
+}
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/manipulation.mjs
+var $735220c2d4774dd3$var$ONE_HOUR = 36e5;
+function $735220c2d4774dd3$export$e16d8520af44a096(date, duration) {
+  let mutableDate = date.copy();
+  let days = "hour" in mutableDate ? $735220c2d4774dd3$var$addTimeFields(mutableDate, duration) : 0;
+  $735220c2d4774dd3$var$addYears(mutableDate, duration.years || 0);
+  if (mutableDate.calendar.balanceYearMonth) mutableDate.calendar.balanceYearMonth(mutableDate, date);
+  mutableDate.month += duration.months || 0;
+  $735220c2d4774dd3$var$balanceYearMonth(mutableDate);
+  $735220c2d4774dd3$var$constrainMonthDay(mutableDate);
+  mutableDate.day += (duration.weeks || 0) * 7;
+  mutableDate.day += duration.days || 0;
+  mutableDate.day += days;
+  $735220c2d4774dd3$var$balanceDay(mutableDate);
+  if (mutableDate.calendar.balanceDate) mutableDate.calendar.balanceDate(mutableDate);
+  if (mutableDate.year < 1) {
+    mutableDate.year = 1;
+    mutableDate.month = 1;
+    mutableDate.day = 1;
+  }
+  let maxYear = mutableDate.calendar.getYearsInEra(mutableDate);
+  if (mutableDate.year > maxYear) {
+    var _mutableDate_calendar_isInverseEra, _mutableDate_calendar;
+    let isInverseEra = (_mutableDate_calendar_isInverseEra = (_mutableDate_calendar = mutableDate.calendar).isInverseEra) === null || _mutableDate_calendar_isInverseEra === void 0 ? void 0 : _mutableDate_calendar_isInverseEra.call(_mutableDate_calendar, mutableDate);
+    mutableDate.year = maxYear;
+    mutableDate.month = isInverseEra ? 1 : mutableDate.calendar.getMonthsInYear(mutableDate);
+    mutableDate.day = isInverseEra ? 1 : mutableDate.calendar.getDaysInMonth(mutableDate);
+  }
+  if (mutableDate.month < 1) {
+    mutableDate.month = 1;
+    mutableDate.day = 1;
+  }
+  let maxMonth = mutableDate.calendar.getMonthsInYear(mutableDate);
+  if (mutableDate.month > maxMonth) {
+    mutableDate.month = maxMonth;
+    mutableDate.day = mutableDate.calendar.getDaysInMonth(mutableDate);
+  }
+  mutableDate.day = Math.max(1, Math.min(mutableDate.calendar.getDaysInMonth(mutableDate), mutableDate.day));
+  return mutableDate;
+}
+function $735220c2d4774dd3$var$addYears(date, years) {
+  var _date_calendar_isInverseEra, _date_calendar;
+  if ((_date_calendar_isInverseEra = (_date_calendar = date.calendar).isInverseEra) === null || _date_calendar_isInverseEra === void 0 ? void 0 : _date_calendar_isInverseEra.call(_date_calendar, date)) years = -years;
+  date.year += years;
+}
+function $735220c2d4774dd3$var$balanceYearMonth(date) {
+  while (date.month < 1) {
+    $735220c2d4774dd3$var$addYears(date, -1);
+    date.month += date.calendar.getMonthsInYear(date);
+  }
+  let monthsInYear = 0;
+  while (date.month > (monthsInYear = date.calendar.getMonthsInYear(date))) {
+    date.month -= monthsInYear;
+    $735220c2d4774dd3$var$addYears(date, 1);
+  }
+}
+function $735220c2d4774dd3$var$balanceDay(date) {
+  while (date.day < 1) {
+    date.month--;
+    $735220c2d4774dd3$var$balanceYearMonth(date);
+    date.day += date.calendar.getDaysInMonth(date);
+  }
+  while (date.day > date.calendar.getDaysInMonth(date)) {
+    date.day -= date.calendar.getDaysInMonth(date);
+    date.month++;
+    $735220c2d4774dd3$var$balanceYearMonth(date);
+  }
+}
+function $735220c2d4774dd3$var$constrainMonthDay(date) {
+  date.month = Math.max(1, Math.min(date.calendar.getMonthsInYear(date), date.month));
+  date.day = Math.max(1, Math.min(date.calendar.getDaysInMonth(date), date.day));
+}
+function $735220c2d4774dd3$export$c4e2ecac49351ef2(date) {
+  if (date.calendar.constrainDate) date.calendar.constrainDate(date);
+  date.year = Math.max(1, Math.min(date.calendar.getYearsInEra(date), date.year));
+  $735220c2d4774dd3$var$constrainMonthDay(date);
+}
+function $735220c2d4774dd3$export$3e2544e88a25bff8(duration) {
+  let inverseDuration = {};
+  for (let key in duration) if (typeof duration[key] === "number") inverseDuration[key] = -duration[key];
+  return inverseDuration;
+}
+function $735220c2d4774dd3$export$4e2d2ead65e5f7e3(date, duration) {
+  return $735220c2d4774dd3$export$e16d8520af44a096(date, $735220c2d4774dd3$export$3e2544e88a25bff8(duration));
+}
+function $735220c2d4774dd3$export$adaa4cf7ef1b65be(date, fields) {
+  let mutableDate = date.copy();
+  if (fields.era != null) mutableDate.era = fields.era;
+  if (fields.year != null) mutableDate.year = fields.year;
+  if (fields.month != null) mutableDate.month = fields.month;
+  if (fields.day != null) mutableDate.day = fields.day;
+  $735220c2d4774dd3$export$c4e2ecac49351ef2(mutableDate);
+  return mutableDate;
+}
+function $735220c2d4774dd3$export$e5d5e1c1822b6e56(value, fields) {
+  let mutableValue = value.copy();
+  if (fields.hour != null) mutableValue.hour = fields.hour;
+  if (fields.minute != null) mutableValue.minute = fields.minute;
+  if (fields.second != null) mutableValue.second = fields.second;
+  if (fields.millisecond != null) mutableValue.millisecond = fields.millisecond;
+  $735220c2d4774dd3$export$7555de1e070510cb(mutableValue);
+  return mutableValue;
+}
+function $735220c2d4774dd3$var$balanceTime(time) {
+  time.second += Math.floor(time.millisecond / 1e3);
+  time.millisecond = $735220c2d4774dd3$var$nonNegativeMod(time.millisecond, 1e3);
+  time.minute += Math.floor(time.second / 60);
+  time.second = $735220c2d4774dd3$var$nonNegativeMod(time.second, 60);
+  time.hour += Math.floor(time.minute / 60);
+  time.minute = $735220c2d4774dd3$var$nonNegativeMod(time.minute, 60);
+  let days = Math.floor(time.hour / 24);
+  time.hour = $735220c2d4774dd3$var$nonNegativeMod(time.hour, 24);
+  return days;
+}
+function $735220c2d4774dd3$export$7555de1e070510cb(time) {
+  time.millisecond = Math.max(0, Math.min(time.millisecond, 1e3));
+  time.second = Math.max(0, Math.min(time.second, 59));
+  time.minute = Math.max(0, Math.min(time.minute, 59));
+  time.hour = Math.max(0, Math.min(time.hour, 23));
+}
+function $735220c2d4774dd3$var$nonNegativeMod(a, b) {
+  let result = a % b;
+  if (result < 0) result += b;
+  return result;
+}
+function $735220c2d4774dd3$var$addTimeFields(time, duration) {
+  time.hour += duration.hours || 0;
+  time.minute += duration.minutes || 0;
+  time.second += duration.seconds || 0;
+  time.millisecond += duration.milliseconds || 0;
+  return $735220c2d4774dd3$var$balanceTime(time);
+}
+function $735220c2d4774dd3$export$d52ced6badfb9a4c(value, field, amount, options) {
+  let mutable = value.copy();
+  switch (field) {
+    case "era": {
+      let eras = value.calendar.getEras();
+      let eraIndex = eras.indexOf(value.era);
+      if (eraIndex < 0) throw new Error("Invalid era: " + value.era);
+      eraIndex = $735220c2d4774dd3$var$cycleValue(eraIndex, amount, 0, eras.length - 1, options === null || options === void 0 ? void 0 : options.round);
+      mutable.era = eras[eraIndex];
+      $735220c2d4774dd3$export$c4e2ecac49351ef2(mutable);
+      break;
+    }
+    case "year":
+      var _mutable_calendar_isInverseEra, _mutable_calendar;
+      if ((_mutable_calendar_isInverseEra = (_mutable_calendar = mutable.calendar).isInverseEra) === null || _mutable_calendar_isInverseEra === void 0 ? void 0 : _mutable_calendar_isInverseEra.call(_mutable_calendar, mutable)) amount = -amount;
+      mutable.year = $735220c2d4774dd3$var$cycleValue(value.year, amount, -Infinity, 9999, options === null || options === void 0 ? void 0 : options.round);
+      if (mutable.year === -Infinity) mutable.year = 1;
+      if (mutable.calendar.balanceYearMonth) mutable.calendar.balanceYearMonth(mutable, value);
+      break;
+    case "month":
+      mutable.month = $735220c2d4774dd3$var$cycleValue(value.month, amount, 1, value.calendar.getMonthsInYear(value), options === null || options === void 0 ? void 0 : options.round);
+      break;
+    case "day":
+      mutable.day = $735220c2d4774dd3$var$cycleValue(value.day, amount, 1, value.calendar.getDaysInMonth(value), options === null || options === void 0 ? void 0 : options.round);
+      break;
+    default:
+      throw new Error("Unsupported field " + field);
+  }
+  if (value.calendar.balanceDate) value.calendar.balanceDate(mutable);
+  $735220c2d4774dd3$export$c4e2ecac49351ef2(mutable);
+  return mutable;
+}
+function $735220c2d4774dd3$export$dd02b3e0007dfe28(value, field, amount, options) {
+  let mutable = value.copy();
+  switch (field) {
+    case "hour": {
+      let hours = value.hour;
+      let min3 = 0;
+      let max3 = 23;
+      if ((options === null || options === void 0 ? void 0 : options.hourCycle) === 12) {
+        let isPM = hours >= 12;
+        min3 = isPM ? 12 : 0;
+        max3 = isPM ? 23 : 11;
+      }
+      mutable.hour = $735220c2d4774dd3$var$cycleValue(hours, amount, min3, max3, options === null || options === void 0 ? void 0 : options.round);
+      break;
+    }
+    case "minute":
+      mutable.minute = $735220c2d4774dd3$var$cycleValue(value.minute, amount, 0, 59, options === null || options === void 0 ? void 0 : options.round);
+      break;
+    case "second":
+      mutable.second = $735220c2d4774dd3$var$cycleValue(value.second, amount, 0, 59, options === null || options === void 0 ? void 0 : options.round);
+      break;
+    case "millisecond":
+      mutable.millisecond = $735220c2d4774dd3$var$cycleValue(value.millisecond, amount, 0, 999, options === null || options === void 0 ? void 0 : options.round);
+      break;
+    default:
+      throw new Error("Unsupported field " + field);
+  }
+  return mutable;
+}
+function $735220c2d4774dd3$var$cycleValue(value, amount, min3, max3, round3 = false) {
+  if (round3) {
+    value += Math.sign(amount);
+    if (value < min3) value = max3;
+    let div = Math.abs(amount);
+    if (amount > 0) value = Math.ceil(value / div) * div;
+    else value = Math.floor(value / div) * div;
+    if (value > max3) value = min3;
+  } else {
+    value += amount;
+    if (value < min3) value = max3 - (min3 - value - 1);
+    else if (value > max3) value = min3 + (value - max3 - 1);
+  }
+  return value;
+}
+function $735220c2d4774dd3$export$96b1d28349274637(dateTime, duration) {
+  let ms;
+  if (duration.years != null && duration.years !== 0 || duration.months != null && duration.months !== 0 || duration.weeks != null && duration.weeks !== 0 || duration.days != null && duration.days !== 0) {
+    let res2 = $735220c2d4774dd3$export$e16d8520af44a096((0, $11d87f3f76e88657$export$b21e0b124e224484)(dateTime), {
+      years: duration.years,
+      months: duration.months,
+      weeks: duration.weeks,
+      days: duration.days
+    });
+    ms = (0, $11d87f3f76e88657$export$5107c82f94518f5c)(res2, dateTime.timeZone);
+  } else
+    ms = (0, $11d87f3f76e88657$export$bd4fb2bc8bb06fb)(dateTime) - dateTime.offset;
+  ms += duration.milliseconds || 0;
+  ms += (duration.seconds || 0) * 1e3;
+  ms += (duration.minutes || 0) * 6e4;
+  ms += (duration.hours || 0) * 36e5;
+  let res = (0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone);
+  return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(res, dateTime.calendar);
+}
+function $735220c2d4774dd3$export$6814caac34ca03c7(dateTime, duration) {
+  return $735220c2d4774dd3$export$96b1d28349274637(dateTime, $735220c2d4774dd3$export$3e2544e88a25bff8(duration));
+}
+function $735220c2d4774dd3$export$9a297d111fc86b79(dateTime, field, amount, options) {
+  switch (field) {
+    case "hour": {
+      let min3 = 0;
+      let max3 = 23;
+      if ((options === null || options === void 0 ? void 0 : options.hourCycle) === 12) {
+        let isPM = dateTime.hour >= 12;
+        min3 = isPM ? 12 : 0;
+        max3 = isPM ? 23 : 11;
+      }
+      let plainDateTime = (0, $11d87f3f76e88657$export$b21e0b124e224484)(dateTime);
+      let minDate = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)($735220c2d4774dd3$export$e5d5e1c1822b6e56(plainDateTime, {
+        hour: min3
+      }), new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
+      let minAbsolute = [
+        (0, $11d87f3f76e88657$export$5107c82f94518f5c)(minDate, dateTime.timeZone, "earlier"),
+        (0, $11d87f3f76e88657$export$5107c82f94518f5c)(minDate, dateTime.timeZone, "later")
+      ].filter((ms2) => (0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms2, dateTime.timeZone).day === minDate.day)[0];
+      let maxDate = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)($735220c2d4774dd3$export$e5d5e1c1822b6e56(plainDateTime, {
+        hour: max3
+      }), new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
+      let maxAbsolute = [
+        (0, $11d87f3f76e88657$export$5107c82f94518f5c)(maxDate, dateTime.timeZone, "earlier"),
+        (0, $11d87f3f76e88657$export$5107c82f94518f5c)(maxDate, dateTime.timeZone, "later")
+      ].filter((ms2) => (0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms2, dateTime.timeZone).day === maxDate.day).pop();
+      let ms = (0, $11d87f3f76e88657$export$bd4fb2bc8bb06fb)(dateTime) - dateTime.offset;
+      let hours = Math.floor(ms / $735220c2d4774dd3$var$ONE_HOUR);
+      let remainder = ms % $735220c2d4774dd3$var$ONE_HOUR;
+      ms = $735220c2d4774dd3$var$cycleValue(hours, amount, Math.floor(minAbsolute / $735220c2d4774dd3$var$ONE_HOUR), Math.floor(maxAbsolute / $735220c2d4774dd3$var$ONE_HOUR), options === null || options === void 0 ? void 0 : options.round) * $735220c2d4774dd3$var$ONE_HOUR + remainder;
+      return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)((0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone), dateTime.calendar);
+    }
+    case "minute":
+    case "second":
+    case "millisecond":
+      return $735220c2d4774dd3$export$dd02b3e0007dfe28(dateTime, field, amount, options);
+    case "era":
+    case "year":
+    case "month":
+    case "day": {
+      let res = $735220c2d4774dd3$export$d52ced6badfb9a4c((0, $11d87f3f76e88657$export$b21e0b124e224484)(dateTime), field, amount, options);
+      let ms = (0, $11d87f3f76e88657$export$5107c82f94518f5c)(res, dateTime.timeZone);
+      return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)((0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone), dateTime.calendar);
+    }
+    default:
+      throw new Error("Unsupported field " + field);
+  }
+}
+function $735220c2d4774dd3$export$31b5430eb18be4f8(dateTime, fields, disambiguation) {
+  let plainDateTime = (0, $11d87f3f76e88657$export$b21e0b124e224484)(dateTime);
+  let res = $735220c2d4774dd3$export$e5d5e1c1822b6e56($735220c2d4774dd3$export$adaa4cf7ef1b65be(plainDateTime, fields), fields);
+  if (res.compare(plainDateTime) === 0) return dateTime;
+  let ms = (0, $11d87f3f76e88657$export$5107c82f94518f5c)(res, dateTime.timeZone, disambiguation);
+  return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)((0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone), dateTime.calendar);
+}
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/string.mjs
+var $fae977aafc393c5c$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
+var $fae977aafc393c5c$var$ABSOLUTE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:(?:([+-]\d{2})(?::?(\d{2}))?)|Z)$/;
+var $fae977aafc393c5c$var$requiredDurationTimeGroups = [
+  "hours",
+  "minutes",
+  "seconds"
+];
+var $fae977aafc393c5c$var$requiredDurationGroups = [
+  "years",
+  "months",
+  "weeks",
+  "days",
+  ...$fae977aafc393c5c$var$requiredDurationTimeGroups
+];
+function $fae977aafc393c5c$export$6b862160d295c8e(value) {
+  let m = value.match($fae977aafc393c5c$var$DATE_RE);
+  if (!m) {
+    if ($fae977aafc393c5c$var$ABSOLUTE_RE.test(value)) throw new Error(`Invalid ISO 8601 date string: ${value}. Use parseAbsolute() instead.`);
+    throw new Error("Invalid ISO 8601 date string: " + value);
+  }
+  let date = new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)($fae977aafc393c5c$var$parseNumber(m[1], 0, 9999), $fae977aafc393c5c$var$parseNumber(m[2], 1, 12), 1);
+  date.day = $fae977aafc393c5c$var$parseNumber(m[3], 1, date.calendar.getDaysInMonth(date));
+  return date;
+}
+function $fae977aafc393c5c$var$parseNumber(value, min3, max3) {
+  let val = Number(value);
+  if (val < min3 || val > max3) throw new RangeError(`Value out of range: ${min3} <= ${val} <= ${max3}`);
+  return val;
+}
+function $fae977aafc393c5c$export$f59dee82248f5ad4(time) {
+  return `${String(time.hour).padStart(2, "0")}:${String(time.minute).padStart(2, "0")}:${String(time.second).padStart(2, "0")}${time.millisecond ? String(time.millisecond / 1e3).slice(1) : ""}`;
+}
+function $fae977aafc393c5c$export$60dfd74aa96791bd(date) {
+  let gregorianDate = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(date, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
+  let year;
+  if (gregorianDate.era === "BC") year = gregorianDate.year === 1 ? "0000" : "-" + String(Math.abs(1 - gregorianDate.year)).padStart(6, "00");
+  else year = String(gregorianDate.year).padStart(4, "0");
+  return `${year}-${String(gregorianDate.month).padStart(2, "0")}-${String(gregorianDate.day).padStart(2, "0")}`;
+}
+function $fae977aafc393c5c$export$4223de14708adc63(date) {
+  return `${$fae977aafc393c5c$export$60dfd74aa96791bd(date)}T${$fae977aafc393c5c$export$f59dee82248f5ad4(date)}`;
+}
+function $fae977aafc393c5c$var$offsetToString(offset3) {
+  let sign2 = Math.sign(offset3) < 0 ? "-" : "+";
+  offset3 = Math.abs(offset3);
+  let offsetHours = Math.floor(offset3 / 36e5);
+  let offsetMinutes = Math.floor(offset3 % 36e5 / 6e4);
+  let offsetSeconds = Math.floor(offset3 % 36e5 % 6e4 / 1e3);
+  let stringOffset = `${sign2}${String(offsetHours).padStart(2, "0")}:${String(offsetMinutes).padStart(2, "0")}`;
+  if (offsetSeconds !== 0) stringOffset += `:${String(offsetSeconds).padStart(2, "0")}`;
+  return stringOffset;
+}
+function $fae977aafc393c5c$export$bf79f1ebf4b18792(date) {
+  return `${$fae977aafc393c5c$export$4223de14708adc63(date)}${$fae977aafc393c5c$var$offsetToString(date.offset)}[${date.timeZone}]`;
+}
+
+// ../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_check_private_redeclaration.js
+function _check_private_redeclaration(obj, privateCollection) {
+  if (privateCollection.has(obj)) {
+    throw new TypeError("Cannot initialize the same private elements twice on an object");
+  }
+}
+
+// ../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_class_private_field_init.js
+function _class_private_field_init(obj, privateMap, value) {
+  _check_private_redeclaration(obj, privateMap);
+  privateMap.set(obj, value);
+}
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/CalendarDate.mjs
+function $35ea8db9cb2ccb90$var$shiftArgs(args) {
+  let calendar = typeof args[0] === "object" ? args.shift() : new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)();
+  let era;
+  if (typeof args[0] === "string") era = args.shift();
+  else {
+    let eras = calendar.getEras();
+    era = eras[eras.length - 1];
+  }
+  let year = args.shift();
+  let month = args.shift();
+  let day = args.shift();
+  return [
+    calendar,
+    era,
+    year,
+    month,
+    day
+  ];
+}
+var $35ea8db9cb2ccb90$var$_type = /* @__PURE__ */ new WeakMap();
+var $35ea8db9cb2ccb90$export$99faa760c7908e4f = class _$35ea8db9cb2ccb90$export$99faa760c7908e4f {
+  /** Returns a copy of this date. */
+  copy() {
+    if (this.era) return new _$35ea8db9cb2ccb90$export$99faa760c7908e4f(this.calendar, this.era, this.year, this.month, this.day);
+    else return new _$35ea8db9cb2ccb90$export$99faa760c7908e4f(this.calendar, this.year, this.month, this.day);
+  }
+  /** Returns a new `CalendarDate` with the given duration added to it. */
+  add(duration) {
+    return (0, $735220c2d4774dd3$export$e16d8520af44a096)(this, duration);
+  }
+  /** Returns a new `CalendarDate` with the given duration subtracted from it. */
+  subtract(duration) {
+    return (0, $735220c2d4774dd3$export$4e2d2ead65e5f7e3)(this, duration);
+  }
+  /** Returns a new `CalendarDate` with the given fields set to the provided values. Other fields will be constrained accordingly. */
+  set(fields) {
+    return (0, $735220c2d4774dd3$export$adaa4cf7ef1b65be)(this, fields);
+  }
+  /**
+  * Returns a new `CalendarDate` with the given field adjusted by a specified amount.
+  * When the resulting value reaches the limits of the field, it wraps around.
+  */
+  cycle(field, amount, options) {
+    return (0, $735220c2d4774dd3$export$d52ced6badfb9a4c)(this, field, amount, options);
+  }
+  /** Converts the date to a native JavaScript Date object, with the time set to midnight in the given time zone. */
+  toDate(timeZone) {
+    return (0, $11d87f3f76e88657$export$e67a095c620b86fe)(this, timeZone);
+  }
+  /** Converts the date to an ISO 8601 formatted string. */
+  toString() {
+    return (0, $fae977aafc393c5c$export$60dfd74aa96791bd)(this);
+  }
+  /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
+  compare(b) {
+    return (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b);
+  }
+  constructor(...args) {
+    (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type, {
+      writable: true,
+      value: void 0
+    });
+    let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
+    this.calendar = calendar;
+    this.era = era;
+    this.year = year;
+    this.month = month;
+    this.day = day;
+    (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
+  }
+};
+var $35ea8db9cb2ccb90$var$_type2 = /* @__PURE__ */ new WeakMap();
+var $35ea8db9cb2ccb90$export$ca871e8dbb80966f = class _$35ea8db9cb2ccb90$export$ca871e8dbb80966f {
+  /** Returns a copy of this date. */
+  copy() {
+    if (this.era) return new _$35ea8db9cb2ccb90$export$ca871e8dbb80966f(this.calendar, this.era, this.year, this.month, this.day, this.hour, this.minute, this.second, this.millisecond);
+    else return new _$35ea8db9cb2ccb90$export$ca871e8dbb80966f(this.calendar, this.year, this.month, this.day, this.hour, this.minute, this.second, this.millisecond);
+  }
+  /** Returns a new `CalendarDateTime` with the given duration added to it. */
+  add(duration) {
+    return (0, $735220c2d4774dd3$export$e16d8520af44a096)(this, duration);
+  }
+  /** Returns a new `CalendarDateTime` with the given duration subtracted from it. */
+  subtract(duration) {
+    return (0, $735220c2d4774dd3$export$4e2d2ead65e5f7e3)(this, duration);
+  }
+  /** Returns a new `CalendarDateTime` with the given fields set to the provided values. Other fields will be constrained accordingly. */
+  set(fields) {
+    return (0, $735220c2d4774dd3$export$adaa4cf7ef1b65be)((0, $735220c2d4774dd3$export$e5d5e1c1822b6e56)(this, fields), fields);
+  }
+  /**
+  * Returns a new `CalendarDateTime` with the given field adjusted by a specified amount.
+  * When the resulting value reaches the limits of the field, it wraps around.
+  */
+  cycle(field, amount, options) {
+    switch (field) {
+      case "era":
+      case "year":
+      case "month":
+      case "day":
+        return (0, $735220c2d4774dd3$export$d52ced6badfb9a4c)(this, field, amount, options);
+      default:
+        return (0, $735220c2d4774dd3$export$dd02b3e0007dfe28)(this, field, amount, options);
+    }
+  }
+  /** Converts the date to a native JavaScript Date object in the given time zone. */
+  toDate(timeZone, disambiguation) {
+    return (0, $11d87f3f76e88657$export$e67a095c620b86fe)(this, timeZone, disambiguation);
+  }
+  /** Converts the date to an ISO 8601 formatted string. */
+  toString() {
+    return (0, $fae977aafc393c5c$export$4223de14708adc63)(this);
+  }
+  /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
+  compare(b) {
+    let res = (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b);
+    if (res === 0) return (0, $14e0f24ef4ac5c92$export$c19a80a9721b80f6)(this, (0, $11d87f3f76e88657$export$b21e0b124e224484)(b));
+    return res;
+  }
+  constructor(...args) {
+    (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type2, {
+      writable: true,
+      value: void 0
+    });
+    let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
+    this.calendar = calendar;
+    this.era = era;
+    this.year = year;
+    this.month = month;
+    this.day = day;
+    this.hour = args.shift() || 0;
+    this.minute = args.shift() || 0;
+    this.second = args.shift() || 0;
+    this.millisecond = args.shift() || 0;
+    (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
+  }
+};
+var $35ea8db9cb2ccb90$var$_type3 = /* @__PURE__ */ new WeakMap();
+var $35ea8db9cb2ccb90$export$d3b7288e7994edea = class _$35ea8db9cb2ccb90$export$d3b7288e7994edea {
+  /** Returns a copy of this date. */
+  copy() {
+    if (this.era) return new _$35ea8db9cb2ccb90$export$d3b7288e7994edea(this.calendar, this.era, this.year, this.month, this.day, this.timeZone, this.offset, this.hour, this.minute, this.second, this.millisecond);
+    else return new _$35ea8db9cb2ccb90$export$d3b7288e7994edea(this.calendar, this.year, this.month, this.day, this.timeZone, this.offset, this.hour, this.minute, this.second, this.millisecond);
+  }
+  /** Returns a new `ZonedDateTime` with the given duration added to it. */
+  add(duration) {
+    return (0, $735220c2d4774dd3$export$96b1d28349274637)(this, duration);
+  }
+  /** Returns a new `ZonedDateTime` with the given duration subtracted from it. */
+  subtract(duration) {
+    return (0, $735220c2d4774dd3$export$6814caac34ca03c7)(this, duration);
+  }
+  /** Returns a new `ZonedDateTime` with the given fields set to the provided values. Other fields will be constrained accordingly. */
+  set(fields, disambiguation) {
+    return (0, $735220c2d4774dd3$export$31b5430eb18be4f8)(this, fields, disambiguation);
+  }
+  /**
+  * Returns a new `ZonedDateTime` with the given field adjusted by a specified amount.
+  * When the resulting value reaches the limits of the field, it wraps around.
+  */
+  cycle(field, amount, options) {
+    return (0, $735220c2d4774dd3$export$9a297d111fc86b79)(this, field, amount, options);
+  }
+  /** Converts the date to a native JavaScript Date object. */
+  toDate() {
+    return (0, $11d87f3f76e88657$export$83aac07b4c37b25)(this);
+  }
+  /** Converts the date to an ISO 8601 formatted string, including the UTC offset and time zone identifier. */
+  toString() {
+    return (0, $fae977aafc393c5c$export$bf79f1ebf4b18792)(this);
+  }
+  /** Converts the date to an ISO 8601 formatted string in UTC. */
+  toAbsoluteString() {
+    return this.toDate().toISOString();
+  }
+  /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
+  compare(b) {
+    return this.toDate().getTime() - (0, $11d87f3f76e88657$export$84c95a83c799e074)(b, this.timeZone).toDate().getTime();
+  }
+  constructor(...args) {
+    (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type3, {
+      writable: true,
+      value: void 0
+    });
+    let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
+    let timeZone = args.shift();
+    let offset3 = args.shift();
+    this.calendar = calendar;
+    this.era = era;
+    this.year = year;
+    this.month = month;
+    this.day = day;
+    this.timeZone = timeZone;
+    this.offset = offset3;
+    this.hour = args.shift() || 0;
+    this.minute = args.shift() || 0;
+    this.second = args.shift() || 0;
+    this.millisecond = args.shift() || 0;
+    (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
+  }
+};
+
+// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/DateFormatter.mjs
+var $fb18d541ea1ad717$var$formatterCache = /* @__PURE__ */ new Map();
+var $fb18d541ea1ad717$export$ad991b66133851cf = class {
+  /** Formats a date as a string according to the locale and format options passed to the constructor. */
+  format(value) {
+    return this.formatter.format(value);
+  }
+  /** Formats a date to an array of parts such as separators, numbers, punctuation, and more. */
+  formatToParts(value) {
+    return this.formatter.formatToParts(value);
+  }
+  /** Formats a date range as a string. */
+  formatRange(start, end) {
+    if (typeof this.formatter.formatRange === "function")
+      return this.formatter.formatRange(start, end);
+    if (end < start) throw new RangeError("End date must be >= start date");
+    return `${this.formatter.format(start)} \u2013 ${this.formatter.format(end)}`;
+  }
+  /** Formats a date range as an array of parts. */
+  formatRangeToParts(start, end) {
+    if (typeof this.formatter.formatRangeToParts === "function")
+      return this.formatter.formatRangeToParts(start, end);
+    if (end < start) throw new RangeError("End date must be >= start date");
+    let startParts = this.formatter.formatToParts(start);
+    let endParts = this.formatter.formatToParts(end);
+    return [
+      ...startParts.map((p) => ({
+        ...p,
+        source: "startRange"
+      })),
+      {
+        type: "literal",
+        value: " \u2013 ",
+        source: "shared"
+      },
+      ...endParts.map((p) => ({
+        ...p,
+        source: "endRange"
+      }))
+    ];
+  }
+  /** Returns the resolved formatting options based on the values passed to the constructor. */
+  resolvedOptions() {
+    let resolvedOptions = this.formatter.resolvedOptions();
+    if ($fb18d541ea1ad717$var$hasBuggyResolvedHourCycle()) {
+      if (!this.resolvedHourCycle) this.resolvedHourCycle = $fb18d541ea1ad717$var$getResolvedHourCycle(resolvedOptions.locale, this.options);
+      resolvedOptions.hourCycle = this.resolvedHourCycle;
+      resolvedOptions.hour12 = this.resolvedHourCycle === "h11" || this.resolvedHourCycle === "h12";
+    }
+    if (resolvedOptions.calendar === "ethiopic-amete-alem") resolvedOptions.calendar = "ethioaa";
+    return resolvedOptions;
+  }
+  constructor(locale, options = {}) {
+    this.formatter = $fb18d541ea1ad717$var$getCachedDateFormatter(locale, options);
+    this.options = options;
+  }
+};
+var $fb18d541ea1ad717$var$hour12Preferences = {
+  true: {
+    // Only Japanese uses the h11 style for 12 hour time. All others use h12.
+    ja: "h11"
+  },
+  false: {}
+};
+function $fb18d541ea1ad717$var$getCachedDateFormatter(locale, options = {}) {
+  if (typeof options.hour12 === "boolean" && $fb18d541ea1ad717$var$hasBuggyHour12Behavior()) {
+    options = {
+      ...options
+    };
+    let pref = $fb18d541ea1ad717$var$hour12Preferences[String(options.hour12)][locale.split("-")[0]];
+    let defaultHourCycle = options.hour12 ? "h12" : "h23";
+    options.hourCycle = pref !== null && pref !== void 0 ? pref : defaultHourCycle;
+    delete options.hour12;
+  }
+  let cacheKey = locale + (options ? Object.entries(options).sort((a, b) => a[0] < b[0] ? -1 : 1).join() : "");
+  if ($fb18d541ea1ad717$var$formatterCache.has(cacheKey)) return $fb18d541ea1ad717$var$formatterCache.get(cacheKey);
+  let numberFormatter = new Intl.DateTimeFormat(locale, options);
+  $fb18d541ea1ad717$var$formatterCache.set(cacheKey, numberFormatter);
+  return numberFormatter;
+}
+var $fb18d541ea1ad717$var$_hasBuggyHour12Behavior = null;
+function $fb18d541ea1ad717$var$hasBuggyHour12Behavior() {
+  if ($fb18d541ea1ad717$var$_hasBuggyHour12Behavior == null) $fb18d541ea1ad717$var$_hasBuggyHour12Behavior = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    hour12: false
+  }).format(new Date(2020, 2, 3, 0)) === "24";
+  return $fb18d541ea1ad717$var$_hasBuggyHour12Behavior;
+}
+var $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle = null;
+function $fb18d541ea1ad717$var$hasBuggyResolvedHourCycle() {
+  if ($fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle == null) $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle = new Intl.DateTimeFormat("fr", {
+    hour: "numeric",
+    hour12: false
+  }).resolvedOptions().hourCycle === "h12";
+  return $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle;
+}
+function $fb18d541ea1ad717$var$getResolvedHourCycle(locale, options) {
+  if (!options.timeStyle && !options.hour) return void 0;
+  locale = locale.replace(/(-u-)?-nu-[a-zA-Z0-9]+/, "");
+  locale += (locale.includes("-u-") ? "" : "-u") + "-nu-latn";
+  let formatter = $fb18d541ea1ad717$var$getCachedDateFormatter(locale, {
+    ...options,
+    timeZone: void 0
+    // use local timezone
+  });
+  let min3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 0)).find((p) => p.type === "hour").value, 10);
+  let max3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 23)).find((p) => p.type === "hour").value, 10);
+  if (min3 === 0 && max3 === 23) return "h23";
+  if (min3 === 24 && max3 === 23) return "h24";
+  if (min3 === 0 && max3 === 11) return "h11";
+  if (min3 === 12 && max3 === 11) return "h12";
+  throw new Error("Unexpected hour cycle result");
+}
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/index.mjs
+function alignCenter(date, duration, locale, min3, max3) {
+  const halfDuration = {};
+  for (let prop in duration) {
+    const key = prop;
+    const value = duration[key];
+    if (value == null) continue;
+    halfDuration[key] = Math.floor(value / 2);
+    if (halfDuration[key] > 0 && value % 2 === 0) {
+      halfDuration[key]--;
+    }
+  }
+  const aligned = alignStart(date, duration, locale).subtract(halfDuration);
+  return constrainStart(date, aligned, duration, locale, min3, max3);
+}
+function alignStart(date, duration, locale, min3, max3) {
+  let aligned = date;
+  if (duration.years) {
+    aligned = $14e0f24ef4ac5c92$export$f91e89d3d0406102(date);
+  } else if (duration.months) {
+    aligned = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(date);
+  } else if (duration.weeks) {
+    aligned = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale);
+  }
+  return constrainStart(date, aligned, duration, locale, min3, max3);
+}
+function alignEnd(date, duration, locale, min3, max3) {
+  let d = { ...duration };
+  if (d.days) {
+    d.days--;
+  } else if (d.weeks) {
+    d.weeks--;
+  } else if (d.months) {
+    d.months--;
+  } else if (d.years) {
+    d.years--;
+  }
+  let aligned = alignStart(date, duration, locale).subtract(d);
+  return constrainStart(date, aligned, duration, locale, min3, max3);
+}
+function constrainStart(date, aligned, duration, locale, min3, max3) {
+  if (min3 && date.compare(min3) >= 0) {
+    aligned = $14e0f24ef4ac5c92$export$a75f2bff57811055(aligned, alignStart($11d87f3f76e88657$export$93522d1a439f3617(min3), duration, locale));
+  }
+  if (max3 && date.compare(max3) <= 0) {
+    aligned = $14e0f24ef4ac5c92$export$5c333a116e949cdd(aligned, alignEnd($11d87f3f76e88657$export$93522d1a439f3617(max3), duration, locale));
+  }
+  return aligned;
+}
+function constrainValue(date, minValue, maxValue) {
+  let constrainedDate = $11d87f3f76e88657$export$93522d1a439f3617(date);
+  if (minValue) {
+    constrainedDate = $14e0f24ef4ac5c92$export$a75f2bff57811055(constrainedDate, $11d87f3f76e88657$export$93522d1a439f3617(minValue));
+  }
+  if (maxValue) {
+    constrainedDate = $14e0f24ef4ac5c92$export$5c333a116e949cdd(constrainedDate, $11d87f3f76e88657$export$93522d1a439f3617(maxValue));
+  }
+  return constrainedDate;
+}
+function alignDate(date, alignment, duration, locale, min3, max3) {
+  switch (alignment) {
+    case "start":
+      return alignStart(date, duration, locale, min3, max3);
+    case "end":
+      return alignEnd(date, duration, locale, min3, max3);
+    case "center":
+    default:
+      return alignCenter(date, duration, locale, min3, max3);
+  }
+}
+function isDateEqual(dateA, dateB) {
+  if (dateA == null || dateB == null) return dateA === dateB;
+  return $14e0f24ef4ac5c92$export$ea39ec197993aef0(dateA, dateB);
+}
+function isDateUnavailable(date, isUnavailable, locale, minValue, maxValue) {
+  if (!date) return false;
+  if (isUnavailable?.(date, locale)) return true;
+  return isDateOutsideRange(date, minValue, maxValue);
+}
+function isDateOutsideRange(date, startDate, endDate) {
+  return startDate != null && date.compare(startDate) < 0 || endDate != null && date.compare(endDate) > 0;
+}
+function isPreviousRangeInvalid(startDate, minValue, maxValue) {
+  const prevDate = startDate.subtract({ days: 1 });
+  return $14e0f24ef4ac5c92$export$ea39ec197993aef0(prevDate, startDate) || isDateOutsideRange(prevDate, minValue, maxValue);
+}
+function isNextRangeInvalid(endDate, minValue, maxValue) {
+  const nextDate = endDate.add({ days: 1 });
+  return $14e0f24ef4ac5c92$export$ea39ec197993aef0(nextDate, endDate) || isDateOutsideRange(nextDate, minValue, maxValue);
+}
+function getUnitDuration(duration) {
+  let clone = { ...duration };
+  for (let key in clone) clone[key] = 1;
+  return clone;
+}
+function getEndDate(startDate, duration) {
+  let clone = { ...duration };
+  if (clone.days) clone.days--;
+  else clone.days = -1;
+  return startDate.add(clone);
+}
+function getEraFormat(date) {
+  return date?.calendar.identifier === "gregory" && date.era === "BC" ? "short" : void 0;
+}
+function getDayFormatter(locale, timeZone) {
+  const date = $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
+  return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+    weekday: "long",
+    month: "long",
+    year: "numeric",
+    day: "numeric",
+    era: getEraFormat(date),
+    timeZone
+  });
+}
+function getMonthFormatter(locale, timeZone) {
+  const date = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone);
+  return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+    month: "long",
+    year: "numeric",
+    era: getEraFormat(date),
+    calendar: date?.calendar.identifier,
+    timeZone
+  });
+}
+function formatRange(startDate, endDate, formatter, toString, timeZone) {
+  let parts13 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
+  let separatorIndex = -1;
+  for (let i = 0; i < parts13.length; i++) {
+    let part = parts13[i];
+    if (part.source === "shared" && part.type === "literal") {
+      separatorIndex = i;
+    } else if (part.source === "endRange") {
+      break;
+    }
+  }
+  let start = "";
+  let end = "";
+  for (let i = 0; i < parts13.length; i++) {
+    if (i < separatorIndex) {
+      start += parts13[i].value;
+    } else if (i > separatorIndex) {
+      end += parts13[i].value;
+    }
+  }
+  return toString(start, end);
+}
+function formatSelectedDate(startDate, endDate, locale, timeZone) {
+  if (!startDate) return "";
+  let start = startDate;
+  let end = endDate ?? startDate;
+  let formatter = getDayFormatter(locale, timeZone);
+  if ($14e0f24ef4ac5c92$export$ea39ec197993aef0(start, end)) {
+    return formatter.format(start.toDate(timeZone));
+  }
+  return formatRange(start, end, formatter, (start2, end2) => `${start2} \u2013 ${end2}`, timeZone);
+}
+var daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+function normalizeFirstDayOfWeek(firstDayOfWeek) {
+  return firstDayOfWeek != null ? daysOfTheWeek[firstDayOfWeek] : void 0;
+}
+function getStartOfWeek(date, locale, firstDayOfWeek) {
+  const firstDay = normalizeFirstDayOfWeek(firstDayOfWeek);
+  return $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale, firstDay);
+}
+function getDaysInWeek(weekIndex, from, locale, firstDayOfWeek) {
+  const weekDate = from.add({ weeks: weekIndex });
+  const dates = [];
+  let date = getStartOfWeek(weekDate, locale, firstDayOfWeek);
+  while (dates.length < 7) {
+    dates.push(date);
+    let nextDate = date.add({ days: 1 });
+    if ($14e0f24ef4ac5c92$export$ea39ec197993aef0(date, nextDate)) break;
+    date = nextDate;
+  }
+  return dates;
+}
+function getMonthDays(from, locale, numOfWeeks, firstDayOfWeek) {
+  const firstDay = normalizeFirstDayOfWeek(firstDayOfWeek);
+  const monthWeeks = numOfWeeks ?? $14e0f24ef4ac5c92$export$ccc1b2479e7dd654(from, locale, firstDay);
+  const weeks = [...new Array(monthWeeks).keys()];
+  return weeks.map((week) => getDaysInWeek(week, from, locale, firstDayOfWeek));
+}
+function getWeekdayFormats(locale, timeZone) {
+  const longFormat = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { weekday: "long", timeZone });
+  const shortFormat = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { weekday: "short", timeZone });
+  const narrowFormat = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { weekday: "narrow", timeZone });
+  return (value) => {
+    const date = value instanceof Date ? value : value.toDate(timeZone);
+    return {
+      value,
+      short: shortFormat.format(date),
+      long: longFormat.format(date),
+      narrow: narrowFormat.format(date)
+    };
+  };
+}
+function getWeekDays(date, startOfWeekProp, timeZone, locale) {
+  const firstDayOfWeek = getStartOfWeek(date, locale, startOfWeekProp);
+  const weeks = [...new Array(7).keys()];
+  const format = getWeekdayFormats(locale, timeZone);
+  return weeks.map((index) => format(firstDayOfWeek.add({ days: index })));
+}
+function getMonthNames(locale, format = "long") {
+  const date = new Date(2021, 0, 1);
+  const monthNames = [];
+  for (let i = 0; i < 12; i++) {
+    monthNames.push(date.toLocaleString(locale, { month: format }));
+    date.setMonth(date.getMonth() + 1);
+  }
+  return monthNames;
+}
+function getYearsRange(range) {
+  const years = [];
+  for (let year = range.from; year <= range.to; year += 1) years.push(year);
+  return years;
+}
+var FUTURE_YEAR_COERCION = 10;
+function normalizeYear(year) {
+  if (!year) return;
+  if (year.length === 3) return year.padEnd(4, "0");
+  if (year.length === 2) {
+    const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
+    const currentCentury = Math.floor(currentYear / 100) * 100;
+    const twoDigitYear = parseInt(year.slice(-2), 10);
+    const fullYear = currentCentury + twoDigitYear;
+    return fullYear > currentYear + FUTURE_YEAR_COERCION ? (fullYear - 100).toString() : fullYear.toString();
+  }
+  return year;
+}
+function getDecadeRange(year, opts) {
+  const chunkSize = opts?.strict ? 10 : 12;
+  const computedYear = year - year % 10;
+  const years = [];
+  for (let i = 0; i < chunkSize; i += 1) {
+    const value = computedYear + i;
+    years.push(value);
+  }
+  return years;
+}
+function getTodayDate(timeZone) {
+  return $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone ?? $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
+}
+function getAdjustedDateFn(visibleDuration, locale, minValue, maxValue) {
+  return function getDate(options) {
+    const { startDate, focusedDate } = options;
+    const endDate = getEndDate(startDate, visibleDuration);
+    if (isDateOutsideRange(focusedDate, minValue, maxValue)) {
+      return {
+        startDate,
+        focusedDate: constrainValue(focusedDate, minValue, maxValue),
+        endDate
+      };
+    }
+    if (focusedDate.compare(startDate) < 0) {
+      return {
+        startDate: alignEnd(focusedDate, visibleDuration, locale, minValue, maxValue),
+        focusedDate: constrainValue(focusedDate, minValue, maxValue),
+        endDate
+      };
+    }
+    if (focusedDate.compare(endDate) > 0) {
+      return {
+        startDate: alignStart(focusedDate, visibleDuration, locale, minValue, maxValue),
+        endDate,
+        focusedDate: constrainValue(focusedDate, minValue, maxValue)
+      };
+    }
+    return {
+      startDate,
+      endDate,
+      focusedDate: constrainValue(focusedDate, minValue, maxValue)
+    };
+  };
+}
+function getNextPage(focusedDate, startDate, visibleDuration, locale, minValue, maxValue) {
+  const adjust = getAdjustedDateFn(visibleDuration, locale, minValue, maxValue);
+  const start = startDate.add(visibleDuration);
+  return adjust({
+    focusedDate: focusedDate.add(visibleDuration),
+    startDate: alignStart(
+      constrainStart(focusedDate, start, visibleDuration, locale, minValue, maxValue),
+      visibleDuration,
+      locale
+    )
+  });
+}
+function getPreviousPage(focusedDate, startDate, visibleDuration, locale, minValue, maxValue) {
+  const adjust = getAdjustedDateFn(visibleDuration, locale, minValue, maxValue);
+  let start = startDate.subtract(visibleDuration);
+  return adjust({
+    focusedDate: focusedDate.subtract(visibleDuration),
+    startDate: alignStart(
+      constrainStart(focusedDate, start, visibleDuration, locale, minValue, maxValue),
+      visibleDuration,
+      locale
+    )
+  });
+}
+function getNextSection(focusedDate, startDate, larger, visibleDuration, locale, minValue, maxValue) {
+  const adjust = getAdjustedDateFn(visibleDuration, locale, minValue, maxValue);
+  if (!larger && !visibleDuration.days) {
+    return adjust({
+      focusedDate: focusedDate.add(getUnitDuration(visibleDuration)),
+      startDate
+    });
+  }
+  if (visibleDuration.days) {
+    return getNextPage(focusedDate, startDate, visibleDuration, locale, minValue, maxValue);
+  }
+  if (visibleDuration.weeks) {
+    return adjust({
+      focusedDate: focusedDate.add({ months: 1 }),
+      startDate
+    });
+  }
+  if (visibleDuration.months || visibleDuration.years) {
+    return adjust({
+      focusedDate: focusedDate.add({ years: 1 }),
+      startDate
+    });
+  }
+}
+function getPreviousSection(focusedDate, startDate, larger, visibleDuration, locale, minValue, maxValue) {
+  const adjust = getAdjustedDateFn(visibleDuration, locale, minValue, maxValue);
+  if (!larger && !visibleDuration.days) {
+    return adjust({
+      focusedDate: focusedDate.subtract(getUnitDuration(visibleDuration)),
+      startDate
+    });
+  }
+  if (visibleDuration.days) {
+    return getPreviousPage(focusedDate, startDate, visibleDuration, locale, minValue, maxValue);
+  }
+  if (visibleDuration.weeks) {
+    return adjust({
+      focusedDate: focusedDate.subtract({ months: 1 }),
+      startDate
+    });
+  }
+  if (visibleDuration.months || visibleDuration.years) {
+    return adjust({
+      focusedDate: focusedDate.subtract({ years: 1 }),
+      startDate
+    });
+  }
+}
+var isValidYear = (year) => year != null && year.length === 4;
+var isValidMonth = (month) => month != null && parseFloat(month) <= 12;
+var isValidDay = (day) => day != null && parseFloat(day) <= 31;
+function parseDateString(date, locale, timeZone) {
+  const regex = createRegex(locale, timeZone);
+  let { year, month, day } = extract(regex, date) ?? {};
+  const hasMatch = year != null || month != null || day != null;
+  if (hasMatch) {
+    const curr = /* @__PURE__ */ new Date();
+    year || (year = curr.getFullYear().toString());
+    month || (month = (curr.getMonth() + 1).toString());
+    day || (day = curr.getDate().toString());
+  }
+  if (!isValidYear(year)) {
+    year = normalizeYear(year);
+  }
+  if (isValidYear(year) && isValidMonth(month) && isValidDay(day)) {
+    return new $35ea8db9cb2ccb90$export$99faa760c7908e4f(+year, +month, +day);
+  }
+  const time = Date.parse(date);
+  if (!isNaN(time)) {
+    const date2 = new Date(time);
+    return new $35ea8db9cb2ccb90$export$99faa760c7908e4f(date2.getFullYear(), date2.getMonth() + 1, date2.getDate());
+  }
+}
+function createRegex(locale, timeZone) {
+  const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone });
+  const parts13 = formatter.formatToParts(new Date(2e3, 11, 25));
+  return parts13.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
+}
+function extract(pattern, str) {
+  const matches = str.match(pattern);
+  return pattern.toString().match(/<(.+?)>/g)?.map((group2) => {
+    const groupMatches = group2.match(/<(.+)>/);
+    if (!groupMatches || groupMatches.length <= 0) {
+      return null;
+    }
+    return group2.match(/<(.+)>/)?.[1];
+  }).reduce((acc, curr, index) => {
+    if (!curr) return acc;
+    if (matches && matches.length > index) {
+      acc[curr] = matches[index + 1];
+    } else {
+      acc[curr] = null;
+    }
+    return acc;
+  }, {});
+}
+function getDateRangePreset(preset, locale, timeZone) {
+  const today3 = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
+  switch (preset) {
+    case "thisWeek":
+      return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today3, locale), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today3, locale)];
+    case "thisMonth":
+      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3), today3];
+    case "thisQuarter":
+      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3).add({ months: -((today3.month - 1) % 3) }), today3];
+    case "thisYear":
+      return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today3), today3];
+    case "last3Days":
+      return [today3.add({ days: -2 }), today3];
+    case "last7Days":
+      return [today3.add({ days: -6 }), today3];
+    case "last14Days":
+      return [today3.add({ days: -13 }), today3];
+    case "last30Days":
+      return [today3.add({ days: -29 }), today3];
+    case "last90Days":
+      return [today3.add({ days: -89 }), today3];
+    case "lastMonth":
+      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3.add({ months: -1 })), $14e0f24ef4ac5c92$export$a2258d9c4118825c(today3.add({ months: -1 }))];
+    case "lastQuarter":
+      return [
+        $14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3.add({ months: -((today3.month - 1) % 3) - 3 })),
+        $14e0f24ef4ac5c92$export$a2258d9c4118825c(today3.add({ months: -((today3.month - 1) % 3) - 1 }))
+      ];
+    case "lastWeek":
+      return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today3, locale).add({ weeks: -1 }), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today3, locale).add({ weeks: -1 })];
+    case "lastYear":
+      return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today3.add({ years: -1 })), $14e0f24ef4ac5c92$export$8b7aa55c66d5569e(today3.add({ years: -1 }))];
+    default:
+      throw new Error(`Invalid date range preset: ${preset}`);
+  }
+}
+
+// ../node_modules/.pnpm/@zag-js+live-region@1.33.1/node_modules/@zag-js/live-region/dist/index.mjs
+var ID = "__live-region__";
+function createLiveRegion(opts = {}) {
+  const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
+  const win = doc.defaultView ?? window;
+  const parent = root ?? doc.body;
+  function announce(message, delay2) {
+    const oldRegion = doc.getElementById(ID);
+    oldRegion?.remove();
+    delay2 = delay2 ?? _delay;
+    const region = doc.createElement("span");
+    region.id = ID;
+    region.dataset.liveAnnouncer = "true";
+    const role = level !== "assertive" ? "status" : "alert";
+    region.setAttribute("aria-live", level);
+    region.setAttribute("role", role);
+    Object.assign(region.style, {
+      border: "0",
+      clip: "rect(0 0 0 0)",
+      height: "1px",
+      margin: "-1px",
+      overflow: "hidden",
+      padding: "0",
+      position: "absolute",
+      width: "1px",
+      whiteSpace: "nowrap",
+      wordWrap: "normal"
+    });
+    parent.appendChild(region);
+    win.setTimeout(() => {
+      region.textContent = message;
+    }, delay2);
+  }
+  function destroy() {
+    const oldRegion = doc.getElementById(ID);
+    oldRegion?.remove();
+  }
+  return {
+    announce,
+    destroy,
+    toJSON() {
+      return ID;
+    }
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+date-picker@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/index.mjs
+var anatomy12 = createAnatomy("date-picker").parts(
+  "clearTrigger",
+  "content",
+  "control",
+  "input",
+  "label",
+  "monthSelect",
+  "nextTrigger",
+  "positioner",
+  "presetTrigger",
+  "prevTrigger",
+  "rangeText",
+  "root",
+  "table",
+  "tableBody",
+  "tableCell",
+  "tableCellTrigger",
+  "tableHead",
+  "tableHeader",
+  "tableRow",
+  "trigger",
+  "view",
+  "viewControl",
+  "viewTrigger",
+  "yearSelect"
+);
+var parts12 = anatomy12.build();
+var getLabelId6 = (ctx, index) => ctx.ids?.label?.(index) ?? `datepicker:${ctx.id}:label:${index}`;
+var getRootId11 = (ctx) => ctx.ids?.root ?? `datepicker:${ctx.id}`;
+var getTableId = (ctx, id) => ctx.ids?.table?.(id) ?? `datepicker:${ctx.id}:table:${id}`;
+var getContentId6 = (ctx) => ctx.ids?.content ?? `datepicker:${ctx.id}:content`;
+var getCellTriggerId = (ctx, id) => ctx.ids?.cellTrigger?.(id) ?? `datepicker:${ctx.id}:cell-trigger:${id}`;
+var getPrevTriggerId = (ctx, view) => ctx.ids?.prevTrigger?.(view) ?? `datepicker:${ctx.id}:prev:${view}`;
+var getNextTriggerId = (ctx, view) => ctx.ids?.nextTrigger?.(view) ?? `datepicker:${ctx.id}:next:${view}`;
+var getViewTriggerId = (ctx, view) => ctx.ids?.viewTrigger?.(view) ?? `datepicker:${ctx.id}:view:${view}`;
+var getClearTriggerId3 = (ctx) => ctx.ids?.clearTrigger ?? `datepicker:${ctx.id}:clear`;
+var getControlId5 = (ctx) => ctx.ids?.control ?? `datepicker:${ctx.id}:control`;
+var getInputId3 = (ctx, index) => ctx.ids?.input?.(index) ?? `datepicker:${ctx.id}:input:${index}`;
+var getTriggerId6 = (ctx) => ctx.ids?.trigger ?? `datepicker:${ctx.id}:trigger`;
+var getPositionerId4 = (ctx) => ctx.ids?.positioner ?? `datepicker:${ctx.id}:positioner`;
+var getMonthSelectId = (ctx) => ctx.ids?.monthSelect ?? `datepicker:${ctx.id}:month-select`;
+var getYearSelectId = (ctx) => ctx.ids?.yearSelect ?? `datepicker:${ctx.id}:year-select`;
+var getFocusedCell = (ctx, view) => query(getContentEl6(ctx), `[data-part=table-cell-trigger][data-view=${view}][data-focus]:not([data-outside-range])`);
+var getTriggerEl5 = (ctx) => ctx.getById(getTriggerId6(ctx));
+var getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
+var getInputEls = (ctx) => queryAll(getControlEl2(ctx), `[data-part=input]`);
+var getYearSelectEl = (ctx) => ctx.getById(getYearSelectId(ctx));
+var getMonthSelectEl = (ctx) => ctx.getById(getMonthSelectId(ctx));
+var getClearTriggerEl3 = (ctx) => ctx.getById(getClearTriggerId3(ctx));
+var getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
+var getControlEl2 = (ctx) => ctx.getById(getControlId5(ctx));
+function adjustStartAndEndDate(value) {
+  const [startDate, endDate] = value;
+  let result;
+  if (!startDate || !endDate) result = value;
+  else result = startDate.compare(endDate) <= 0 ? value : [endDate, startDate];
+  return result;
+}
+function isDateWithinRange(date, value) {
+  const [startDate, endDate] = value;
+  if (!startDate || !endDate) return false;
+  return startDate.compare(date) <= 0 && endDate.compare(date) >= 0;
+}
+function sortDates(values) {
+  return values.slice().filter((date) => date != null).sort((a, b) => a.compare(b));
+}
+function getRoleDescription(view) {
+  return match2(view, {
+    year: "calendar decade",
+    month: "calendar year",
+    day: "calendar month"
+  });
+}
+var PLACEHOLDERS = {
+  day: "dd",
+  month: "mm",
+  year: "yyyy"
+};
+function getInputPlaceholder(locale) {
+  return new $fb18d541ea1ad717$export$ad991b66133851cf(locale).formatToParts(/* @__PURE__ */ new Date()).map((item) => PLACEHOLDERS[item.type] ?? item.value).join("");
+}
+var isValidCharacter = (char, separator) => {
+  if (!char) return true;
+  return /\d/.test(char) || char === separator || char.length !== 1;
+};
+var isValidDate = (value) => {
+  return !Number.isNaN(value.day) && !Number.isNaN(value.month) && !Number.isNaN(value.year);
+};
+var ensureValidCharacters = (value, separator) => {
+  return value.split("").filter((char) => isValidCharacter(char, separator)).join("");
+};
+function getLocaleSeparator(locale) {
+  const dateFormatter = new Intl.DateTimeFormat(locale);
+  const parts22 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
+  const literalPart = parts22.find((part) => part.type === "literal");
+  return literalPart ? literalPart.value : "/";
+}
+var defaultTranslations = {
+  dayCell(state2) {
+    if (state2.unavailable) return `Not available. ${state2.formattedDate}`;
+    if (state2.selected) return `Selected date. ${state2.formattedDate}`;
+    return `Choose ${state2.formattedDate}`;
+  },
+  trigger(open) {
+    return open ? "Close calendar" : "Open calendar";
+  },
+  viewTrigger(view) {
+    return match2(view, {
+      year: "Switch to month view",
+      month: "Switch to day view",
+      day: "Switch to year view"
+    });
+  },
+  presetTrigger(value) {
+    const [start = "", end = ""] = value;
+    return `select ${start} to ${end}`;
+  },
+  prevTrigger(view) {
+    return match2(view, {
+      year: "Switch to previous decade",
+      month: "Switch to previous year",
+      day: "Switch to previous month"
+    });
+  },
+  nextTrigger(view) {
+    return match2(view, {
+      year: "Switch to next decade",
+      month: "Switch to next year",
+      day: "Switch to next month"
+    });
+  },
+  // TODO: Revisit this
+  placeholder() {
+    return { day: "dd", month: "mm", year: "yyyy" };
+  },
+  content: "calendar",
+  monthSelect: "Select month",
+  yearSelect: "Select year",
+  clearTrigger: "Clear selected dates"
+};
+function viewToNumber(view, fallback2) {
+  if (!view) return fallback2 || 0;
+  return view === "day" ? 0 : view === "month" ? 1 : 2;
+}
+function viewNumberToView(viewNumber) {
+  return viewNumber === 0 ? "day" : viewNumber === 1 ? "month" : "year";
+}
+function clampView(view, minView, maxView) {
+  return viewNumberToView(
+    clampValue(viewToNumber(view, 0), viewToNumber(minView, 0), viewToNumber(maxView, 2))
+  );
+}
+function isAboveMinView(view, minView) {
+  return viewToNumber(view, 0) > viewToNumber(minView, 0);
+}
+function isBelowMinView(view, minView) {
+  return viewToNumber(view, 0) < viewToNumber(minView, 0);
+}
+function getNextView(view, minView, maxView) {
+  const nextViewNumber = viewToNumber(view, 0) + 1;
+  return clampView(viewNumberToView(nextViewNumber), minView, maxView);
+}
+function getPreviousView(view, minView, maxView) {
+  const prevViewNumber = viewToNumber(view, 0) - 1;
+  return clampView(viewNumberToView(prevViewNumber), minView, maxView);
+}
+var views = ["day", "month", "year"];
+function eachView(cb) {
+  views.forEach((view) => cb(view));
+}
+var getVisibleRangeText = memo(
+  (opts) => [opts.view, opts.startValue.toString(), opts.endValue.toString(), opts.locale],
+  ([view], opts) => {
+    const { startValue, endValue, locale, timeZone, selectionMode } = opts;
+    if (view === "year") {
+      const years = getDecadeRange(startValue.year, { strict: true });
+      const start2 = years.at(0).toString();
+      const end2 = years.at(-1).toString();
+      return { start: start2, end: end2, formatted: `${start2} - ${end2}` };
+    }
+    if (view === "month") {
+      const formatter2 = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { year: "numeric", timeZone });
+      const start2 = formatter2.format(startValue.toDate(timeZone));
+      const end2 = formatter2.format(endValue.toDate(timeZone));
+      const formatted2 = selectionMode === "range" ? `${start2} - ${end2}` : start2;
+      return { start: start2, end: end2, formatted: formatted2 };
+    }
+    const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { month: "long", year: "numeric", timeZone });
+    const start = formatter.format(startValue.toDate(timeZone));
+    const end = formatter.format(endValue.toDate(timeZone));
+    const formatted = selectionMode === "range" ? `${start} - ${end}` : start;
+    return { start, end, formatted };
+  }
+);
+function connect12(service, normalize) {
+  const { state: state2, context, prop, send, computed, scope } = service;
+  const startValue = context.get("startValue");
+  const endValue = computed("endValue");
+  const selectedValue = context.get("value");
+  const focusedValue = context.get("focusedValue");
+  const hoveredValue = context.get("hoveredValue");
+  const hoveredRangeValue = hoveredValue ? adjustStartAndEndDate([selectedValue[0], hoveredValue]) : [];
+  const disabled = Boolean(prop("disabled"));
+  const readOnly = Boolean(prop("readOnly"));
+  const invalid = Boolean(prop("invalid"));
+  const interactive = computed("isInteractive");
+  const empty = selectedValue.length === 0;
+  const min3 = prop("min");
+  const max3 = prop("max");
+  const locale = prop("locale");
+  const timeZone = prop("timeZone");
+  const startOfWeek = prop("startOfWeek");
+  const focused = state2.matches("focused");
+  const open = state2.matches("open");
+  const isRangePicker = prop("selectionMode") === "range";
+  const isDateUnavailableFn = prop("isDateUnavailable");
+  const currentPlacement = context.get("currentPlacement");
+  const popperStyles = getPlacementStyles({
+    ...prop("positioning"),
+    placement: currentPlacement
+  });
+  const separator = getLocaleSeparator(locale);
+  const translations = { ...defaultTranslations, ...prop("translations") };
+  function getMonthWeeks(from = startValue) {
+    const numOfWeeks = prop("fixedWeeks") ? 6 : void 0;
+    return getMonthDays(from, locale, numOfWeeks, startOfWeek);
+  }
+  function getMonths(props22 = {}) {
+    const { format } = props22;
+    return getMonthNames(locale, format).map((label, index) => {
+      const value = index + 1;
+      const dateValue = focusedValue.set({ month: value });
+      const disabled2 = isDateOutsideRange(dateValue, min3, max3);
+      return { label, value, disabled: disabled2 };
+    });
+  }
+  function getYears() {
+    const range = getYearsRange({ from: min3?.year ?? 1900, to: max3?.year ?? 2100 });
+    return range.map((year) => ({
+      label: year.toString(),
+      value: year,
+      disabled: !isValueWithinRange(year, min3?.year, max3?.year)
+    }));
+  }
+  function isUnavailable(date) {
+    return isDateUnavailable(date, isDateUnavailableFn, locale, min3, max3);
+  }
+  function focusMonth(month) {
+    const date = startValue ?? getTodayDate(timeZone);
+    send({ type: "FOCUS.SET", value: date.set({ month }) });
+  }
+  function focusYear(year) {
+    const date = startValue ?? getTodayDate(timeZone);
+    send({ type: "FOCUS.SET", value: date.set({ year }) });
+  }
+  function getYearTableCellState(props22) {
+    const { value, disabled: disabled2 } = props22;
+    const dateValue = focusedValue.set({ year: value });
+    const decadeYears = getDecadeRange(startValue.year, { strict: true });
+    const isOutsideVisibleRange = !decadeYears.includes(value);
+    const isOutsideRange = isValueWithinRange(value, min3?.year, max3?.year);
+    const cellState = {
+      focused: focusedValue.year === props22.value,
+      selectable: isOutsideVisibleRange || isOutsideRange,
+      outsideRange: isOutsideVisibleRange,
+      selected: !!selectedValue.find((date) => date && date.year === value),
+      valueText: value.toString(),
+      inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
+      value: dateValue,
+      get disabled() {
+        return disabled2 || !cellState.selectable;
+      }
+    };
+    return cellState;
+  }
+  function getMonthTableCellState(props22) {
+    const { value, disabled: disabled2 } = props22;
+    const dateValue = focusedValue.set({ month: value });
+    const formatter = getMonthFormatter(locale, timeZone);
+    const cellState = {
+      focused: focusedValue.month === props22.value,
+      selectable: !isDateOutsideRange(dateValue, min3, max3),
+      selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
+      valueText: formatter.format(dateValue.toDate(timeZone)),
+      inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
+      value: dateValue,
+      get disabled() {
+        return disabled2 || !cellState.selectable;
+      }
+    };
+    return cellState;
+  }
+  function getDayTableCellState(props22) {
+    const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props22;
+    const formatter = getDayFormatter(locale, timeZone);
+    const unitDuration = getUnitDuration(computed("visibleDuration"));
+    const outsideDaySelectable = prop("outsideDaySelectable");
+    const end = visibleRange.start.add(unitDuration).subtract({ days: 1 });
+    const isOutsideRange = isDateOutsideRange(value, visibleRange.start, end);
+    const isInSelectedRange = isRangePicker && isDateWithinRange(value, selectedValue);
+    const isFirstInSelectedRange = isRangePicker && isDateEqual(value, selectedValue[0]);
+    const isLastInSelectedRange = isRangePicker && isDateEqual(value, selectedValue[1]);
+    const hasHoveredRange = isRangePicker && hoveredRangeValue.length > 0;
+    const isInHoveredRange = hasHoveredRange && isDateWithinRange(value, hoveredRangeValue);
+    const isFirstInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[0]);
+    const isLastInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[1]);
+    const cellState = {
+      invalid: isDateOutsideRange(value, min3, max3),
+      disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min3, max3),
+      selected: selectedValue.some((date) => isDateEqual(value, date)),
+      unavailable: isDateUnavailable(value, isDateUnavailableFn, locale, min3, max3) && !disabled2,
+      outsideRange: isOutsideRange,
+      today: $14e0f24ef4ac5c92$export$629b0a497aa65267(value, timeZone),
+      weekend: $14e0f24ef4ac5c92$export$618d60ea299da42(value, locale),
+      formattedDate: formatter.format(value.toDate(timeZone)),
+      get focused() {
+        return isDateEqual(value, focusedValue) && (!cellState.outsideRange || outsideDaySelectable);
+      },
+      get ariaLabel() {
+        return translations.dayCell(cellState);
+      },
+      get selectable() {
+        return !cellState.disabled && !cellState.unavailable;
+      },
+      // Range states
+      inRange: isInSelectedRange || isInHoveredRange,
+      firstInRange: isFirstInSelectedRange,
+      lastInRange: isLastInSelectedRange,
+      // Preview range states
+      inHoveredRange: isInHoveredRange,
+      firstInHoveredRange: isFirstInHoveredRange,
+      lastInHoveredRange: isLastInHoveredRange
+    };
+    return cellState;
+  }
+  function getTableId2(props22) {
+    const { view = "day", id } = props22;
+    return [view, id].filter(Boolean).join(" ");
+  }
+  return {
+    focused,
+    open,
+    disabled,
+    invalid,
+    readOnly,
+    inline: !!prop("inline"),
+    numOfMonths: prop("numOfMonths"),
+    selectionMode: prop("selectionMode"),
+    view: context.get("view"),
+    getRangePresetValue(preset) {
+      return getDateRangePreset(preset, locale, timeZone);
+    },
+    getDaysInWeek(week, from = startValue) {
+      return getDaysInWeek(week, from, locale, startOfWeek);
+    },
+    getOffset(duration) {
+      const from = startValue.add(duration);
+      const end = endValue.add(duration);
+      const formatter = getMonthFormatter(locale, timeZone);
+      return {
+        visibleRange: { start: from, end },
+        weeks: getMonthWeeks(from),
+        visibleRangeText: {
+          start: formatter.format(from.toDate(timeZone)),
+          end: formatter.format(end.toDate(timeZone))
+        }
+      };
+    },
+    getMonthWeeks,
+    isUnavailable,
+    weeks: getMonthWeeks(),
+    weekDays: getWeekDays(getTodayDate(timeZone), startOfWeek, timeZone, locale),
+    visibleRangeText: computed("visibleRangeText"),
+    value: selectedValue,
+    valueAsDate: selectedValue.filter((date) => date != null).map((date) => date.toDate(timeZone)),
+    valueAsString: computed("valueAsString"),
+    focusedValue,
+    focusedValueAsDate: focusedValue?.toDate(timeZone),
+    focusedValueAsString: prop("format")(focusedValue, { locale, timeZone }),
+    visibleRange: computed("visibleRange"),
+    selectToday() {
+      const value = constrainValue(getTodayDate(timeZone), min3, max3);
+      send({ type: "VALUE.SET", value });
+    },
+    setValue(values) {
+      const computedValue = values.map((date) => constrainValue(date, min3, max3));
+      send({ type: "VALUE.SET", value: computedValue });
+    },
+    clearValue() {
+      send({ type: "VALUE.CLEAR" });
+    },
+    setFocusedValue(value) {
+      send({ type: "FOCUS.SET", value });
+    },
+    setOpen(nextOpen) {
+      if (prop("inline")) return;
+      const open2 = state2.matches("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE" });
+    },
+    focusMonth,
+    focusYear,
+    getYears,
+    getMonths,
+    getYearsGrid(props22 = {}) {
+      const { columns = 1 } = props22;
+      const years = getDecadeRange(startValue.year, { strict: true }).map((year) => ({
+        label: year.toString(),
+        value: year,
+        disabled: !isValueWithinRange(year, min3?.year, max3?.year)
+      }));
+      return chunk(years, columns);
+    },
+    getDecade() {
+      const years = getDecadeRange(startValue.year, { strict: true });
+      return { start: years.at(0), end: years.at(-1) };
+    },
+    getMonthsGrid(props22 = {}) {
+      const { columns = 1, format } = props22;
+      return chunk(getMonths({ format }), columns);
+    },
+    format(value, opts = { month: "long", year: "numeric" }) {
+      return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, opts).format(value.toDate(timeZone));
+    },
+    setView(view) {
+      send({ type: "VIEW.SET", view });
+    },
+    goToNext() {
+      send({ type: "GOTO.NEXT", view: context.get("view") });
+    },
+    goToPrev() {
+      send({ type: "GOTO.PREV", view: context.get("view") });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts12.root.attrs,
+        dir: prop("dir"),
+        id: getRootId11(scope),
+        "data-state": open ? "open" : "closed",
+        "data-disabled": dataAttr(disabled),
+        "data-readonly": dataAttr(readOnly),
+        "data-empty": dataAttr(empty)
+      });
+    },
+    getLabelProps(props22 = {}) {
+      const { index = 0 } = props22;
+      return normalize.label({
+        ...parts12.label.attrs,
+        id: getLabelId6(scope, index),
+        dir: prop("dir"),
+        htmlFor: getInputId3(scope, index),
+        "data-state": open ? "open" : "closed",
+        "data-index": index,
+        "data-disabled": dataAttr(disabled),
+        "data-readonly": dataAttr(readOnly)
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts12.control.attrs,
+        dir: prop("dir"),
+        id: getControlId5(scope),
+        "data-disabled": dataAttr(disabled),
+        "data-placeholder-shown": dataAttr(empty)
+      });
+    },
+    getRangeTextProps() {
+      return normalize.element({
+        ...parts12.rangeText.attrs,
+        dir: prop("dir")
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        ...parts12.content.attrs,
+        hidden: !open,
+        dir: prop("dir"),
+        "data-state": open ? "open" : "closed",
+        "data-placement": currentPlacement,
+        "data-inline": dataAttr(prop("inline")),
+        id: getContentId6(scope),
+        tabIndex: -1,
+        role: "application",
+        "aria-roledescription": "datepicker",
+        "aria-label": translations.content
+      });
+    },
+    getTableProps(props22 = {}) {
+      const { view = "day", columns = view === "day" ? 7 : 4 } = props22;
+      const uid = getTableId2(props22);
+      return normalize.element({
+        ...parts12.table.attrs,
+        role: "grid",
+        "data-columns": columns,
+        "aria-roledescription": getRoleDescription(view),
+        id: getTableId(scope, uid),
+        "aria-readonly": ariaAttr(readOnly),
+        "aria-disabled": ariaAttr(disabled),
+        "aria-multiselectable": ariaAttr(prop("selectionMode") !== "single"),
+        "data-view": view,
+        dir: prop("dir"),
+        tabIndex: -1,
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          const keyMap2 = {
+            Enter() {
+              if (view === "day" && isUnavailable(focusedValue)) return;
+              if (view === "month") {
+                const cellState = getMonthTableCellState({ value: focusedValue.month });
+                if (!cellState.selectable) return;
+              }
+              if (view === "year") {
+                const cellState = getYearTableCellState({ value: focusedValue.year });
+                if (!cellState.selectable) return;
+              }
+              send({ type: "TABLE.ENTER", view, columns, focus: true });
+            },
+            ArrowLeft() {
+              send({ type: "TABLE.ARROW_LEFT", view, columns, focus: true });
+            },
+            ArrowRight() {
+              send({ type: "TABLE.ARROW_RIGHT", view, columns, focus: true });
+            },
+            ArrowUp() {
+              send({ type: "TABLE.ARROW_UP", view, columns, focus: true });
+            },
+            ArrowDown() {
+              send({ type: "TABLE.ARROW_DOWN", view, columns, focus: true });
+            },
+            PageUp(event2) {
+              send({ type: "TABLE.PAGE_UP", larger: event2.shiftKey, view, columns, focus: true });
+            },
+            PageDown(event2) {
+              send({ type: "TABLE.PAGE_DOWN", larger: event2.shiftKey, view, columns, focus: true });
+            },
+            Home() {
+              send({ type: "TABLE.HOME", view, columns, focus: true });
+            },
+            End() {
+              send({ type: "TABLE.END", view, columns, focus: true });
+            }
+          };
+          const exec = keyMap2[getEventKey(event, {
+            dir: prop("dir")
+          })];
+          if (exec) {
+            exec(event);
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        },
+        onPointerLeave() {
+          send({ type: "TABLE.POINTER_LEAVE" });
+        },
+        onPointerDown() {
+          send({ type: "TABLE.POINTER_DOWN", view });
+        },
+        onPointerUp() {
+          send({ type: "TABLE.POINTER_UP", view });
+        }
+      });
+    },
+    getTableHeadProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.element({
+        ...parts12.tableHead.attrs,
+        "aria-hidden": true,
+        dir: prop("dir"),
+        "data-view": view,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getTableHeaderProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.element({
+        ...parts12.tableHeader.attrs,
+        dir: prop("dir"),
+        "data-view": view,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getTableBodyProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.element({
+        ...parts12.tableBody.attrs,
+        "data-view": view,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getTableRowProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.element({
+        ...parts12.tableRow.attrs,
+        "aria-disabled": ariaAttr(disabled),
+        "data-disabled": dataAttr(disabled),
+        "data-view": view
+      });
+    },
+    getDayTableCellState,
+    getDayTableCellProps(props22) {
+      const { value } = props22;
+      const cellState = getDayTableCellState(props22);
+      return normalize.element({
+        ...parts12.tableCell.attrs,
+        role: "gridcell",
+        "aria-disabled": ariaAttr(!cellState.selectable),
+        "aria-selected": cellState.selected || cellState.inRange,
+        "aria-invalid": ariaAttr(cellState.invalid),
+        "aria-current": cellState.today ? "date" : void 0,
+        "data-value": value.toString()
+      });
+    },
+    getDayTableCellTriggerProps(props22) {
+      const { value } = props22;
+      const cellState = getDayTableCellState(props22);
+      return normalize.element({
+        ...parts12.tableCellTrigger.attrs,
+        id: getCellTriggerId(scope, value.toString()),
+        role: "button",
+        dir: prop("dir"),
+        tabIndex: cellState.focused ? 0 : -1,
+        "aria-label": cellState.ariaLabel,
+        "aria-disabled": ariaAttr(!cellState.selectable),
+        "aria-invalid": ariaAttr(cellState.invalid),
+        "data-disabled": dataAttr(!cellState.selectable),
+        "data-selected": dataAttr(cellState.selected),
+        "data-value": value.toString(),
+        "data-view": "day",
+        "data-today": dataAttr(cellState.today),
+        "data-focus": dataAttr(cellState.focused),
+        "data-unavailable": dataAttr(cellState.unavailable),
+        "data-range-start": dataAttr(cellState.firstInRange),
+        "data-range-end": dataAttr(cellState.lastInRange),
+        "data-in-range": dataAttr(cellState.inRange),
+        "data-outside-range": dataAttr(cellState.outsideRange),
+        "data-weekend": dataAttr(cellState.weekend),
+        "data-in-hover-range": dataAttr(cellState.inHoveredRange),
+        "data-hover-range-start": dataAttr(cellState.firstInHoveredRange),
+        "data-hover-range-end": dataAttr(cellState.lastInHoveredRange),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!cellState.selectable) return;
+          send({ type: "CELL.CLICK", cell: "day", value });
+        },
+        onPointerMove: isRangePicker ? (event) => {
+          if (event.pointerType === "touch") return;
+          if (!cellState.selectable) return;
+          const focus = !scope.isActiveElement(event.currentTarget);
+          if (hoveredValue && $14e0f24ef4ac5c92$export$91b62ebf2ba703ee(value, hoveredValue)) return;
+          send({ type: "CELL.POINTER_MOVE", cell: "day", value, focus });
+        } : void 0
+      });
+    },
+    getMonthTableCellState,
+    getMonthTableCellProps(props22) {
+      const { value, columns } = props22;
+      const cellState = getMonthTableCellState(props22);
+      return normalize.element({
+        ...parts12.tableCell.attrs,
+        dir: prop("dir"),
+        colSpan: columns,
+        role: "gridcell",
+        "aria-selected": ariaAttr(cellState.selected || cellState.inRange),
+        "data-selected": dataAttr(cellState.selected),
+        "aria-disabled": ariaAttr(!cellState.selectable),
+        "data-value": value
+      });
+    },
+    getMonthTableCellTriggerProps(props22) {
+      const { value } = props22;
+      const cellState = getMonthTableCellState(props22);
+      return normalize.element({
+        ...parts12.tableCellTrigger.attrs,
+        dir: prop("dir"),
+        role: "button",
+        id: getCellTriggerId(scope, value.toString()),
+        "data-selected": dataAttr(cellState.selected),
+        "aria-disabled": ariaAttr(!cellState.selectable),
+        "data-disabled": dataAttr(!cellState.selectable),
+        "data-focus": dataAttr(cellState.focused),
+        "data-in-range": dataAttr(cellState.inRange),
+        "data-outside-range": dataAttr(cellState.outsideRange),
+        "aria-label": cellState.valueText,
+        "data-view": "month",
+        "data-value": value,
+        tabIndex: cellState.focused ? 0 : -1,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!cellState.selectable) return;
+          send({ type: "CELL.CLICK", cell: "month", value });
+        },
+        onPointerMove: isRangePicker ? (event) => {
+          if (event.pointerType === "touch") return;
+          if (!cellState.selectable) return;
+          const focus = !scope.isActiveElement(event.currentTarget);
+          if (hoveredValue && cellState.value && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(cellState.value, hoveredValue)) return;
+          send({ type: "CELL.POINTER_MOVE", cell: "month", value: cellState.value, focus });
+        } : void 0
+      });
+    },
+    getYearTableCellState,
+    getYearTableCellProps(props22) {
+      const { value, columns } = props22;
+      const cellState = getYearTableCellState(props22);
+      return normalize.element({
+        ...parts12.tableCell.attrs,
+        dir: prop("dir"),
+        colSpan: columns,
+        role: "gridcell",
+        "aria-selected": ariaAttr(cellState.selected),
+        "data-selected": dataAttr(cellState.selected),
+        "aria-disabled": ariaAttr(!cellState.selectable),
+        "data-value": value
+      });
+    },
+    getYearTableCellTriggerProps(props22) {
+      const { value } = props22;
+      const cellState = getYearTableCellState(props22);
+      return normalize.element({
+        ...parts12.tableCellTrigger.attrs,
+        dir: prop("dir"),
+        role: "button",
+        id: getCellTriggerId(scope, value.toString()),
+        "data-selected": dataAttr(cellState.selected),
+        "data-focus": dataAttr(cellState.focused),
+        "data-in-range": dataAttr(cellState.inRange),
+        "aria-disabled": ariaAttr(!cellState.selectable),
+        "data-disabled": dataAttr(!cellState.selectable),
+        "aria-label": cellState.valueText,
+        "data-outside-range": dataAttr(cellState.outsideRange),
+        "data-value": value,
+        "data-view": "year",
+        tabIndex: cellState.focused ? 0 : -1,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!cellState.selectable) return;
+          send({ type: "CELL.CLICK", cell: "year", value });
+        },
+        onPointerMove: isRangePicker ? (event) => {
+          if (event.pointerType === "touch") return;
+          if (!cellState.selectable) return;
+          const focus = !scope.isActiveElement(event.currentTarget);
+          if (hoveredValue && cellState.value && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(cellState.value, hoveredValue)) return;
+          send({ type: "CELL.POINTER_MOVE", cell: "year", value: cellState.value, focus });
+        } : void 0
+      });
+    },
+    getNextTriggerProps(props22 = {}) {
+      const { view = "day" } = props22;
+      const isDisabled = disabled || !computed("isNextVisibleRangeValid");
+      return normalize.button({
+        ...parts12.nextTrigger.attrs,
+        dir: prop("dir"),
+        id: getNextTriggerId(scope, view),
+        type: "button",
+        "aria-label": translations.nextTrigger(view),
+        disabled: isDisabled,
+        "data-disabled": dataAttr(isDisabled),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "GOTO.NEXT", view });
+        }
+      });
+    },
+    getPrevTriggerProps(props22 = {}) {
+      const { view = "day" } = props22;
+      const isDisabled = disabled || !computed("isPrevVisibleRangeValid");
+      return normalize.button({
+        ...parts12.prevTrigger.attrs,
+        dir: prop("dir"),
+        id: getPrevTriggerId(scope, view),
+        type: "button",
+        "aria-label": translations.prevTrigger(view),
+        disabled: isDisabled,
+        "data-disabled": dataAttr(isDisabled),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "GOTO.PREV", view });
+        }
+      });
+    },
+    getClearTriggerProps() {
+      return normalize.button({
+        ...parts12.clearTrigger.attrs,
+        id: getClearTriggerId3(scope),
+        dir: prop("dir"),
+        type: "button",
+        "aria-label": translations.clearTrigger,
+        hidden: !selectedValue.length,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "VALUE.CLEAR" });
+        }
+      });
+    },
+    getTriggerProps() {
+      return normalize.button({
+        ...parts12.trigger.attrs,
+        id: getTriggerId6(scope),
+        dir: prop("dir"),
+        type: "button",
+        "data-placement": currentPlacement,
+        "aria-label": translations.trigger(open),
+        "aria-controls": getContentId6(scope),
+        "data-state": open ? "open" : "closed",
+        "data-placeholder-shown": dataAttr(empty),
+        "aria-haspopup": "grid",
+        disabled,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!interactive) return;
+          send({ type: "TRIGGER.CLICK" });
+        }
+      });
+    },
+    getViewProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.element({
+        ...parts12.view.attrs,
+        "data-view": view,
+        hidden: context.get("view") !== view
+      });
+    },
+    getViewTriggerProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.button({
+        ...parts12.viewTrigger.attrs,
+        "data-view": view,
+        dir: prop("dir"),
+        id: getViewTriggerId(scope, view),
+        type: "button",
+        disabled,
+        "aria-label": translations.viewTrigger(view),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!interactive) return;
+          send({ type: "VIEW.TOGGLE", src: "viewTrigger" });
+        }
+      });
+    },
+    getViewControlProps(props22 = {}) {
+      const { view = "day" } = props22;
+      return normalize.element({
+        ...parts12.viewControl.attrs,
+        "data-view": view,
+        dir: prop("dir")
+      });
+    },
+    getInputProps(props22 = {}) {
+      const { index = 0, fixOnBlur = true } = props22;
+      return normalize.input({
+        ...parts12.input.attrs,
+        id: getInputId3(scope, index),
+        autoComplete: "off",
+        autoCorrect: "off",
+        spellCheck: "false",
+        dir: prop("dir"),
+        name: prop("name"),
+        "data-index": index,
+        "data-state": open ? "open" : "closed",
+        "data-placeholder-shown": dataAttr(empty),
+        readOnly,
+        disabled,
+        required: prop("required"),
+        "aria-invalid": ariaAttr(invalid),
+        "data-invalid": dataAttr(invalid),
+        placeholder: prop("placeholder") || getInputPlaceholder(locale),
+        defaultValue: computed("valueAsString")[index],
+        onBeforeInput(event) {
+          const { data } = getNativeEvent(event);
+          if (!isValidCharacter(data, separator)) {
+            event.preventDefault();
+          }
+        },
+        onFocus() {
+          send({ type: "INPUT.FOCUS", index });
+        },
+        onBlur(event) {
+          const value = event.currentTarget.value.trim();
+          send({ type: "INPUT.BLUR", value, index, fixOnBlur });
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (!interactive) return;
+          const keyMap2 = {
+            Enter(event2) {
+              if (isComposingEvent(event2)) return;
+              if (isUnavailable(focusedValue)) return;
+              if (event2.currentTarget.value.trim() === "") return;
+              send({ type: "INPUT.ENTER", value: event2.currentTarget.value, index });
+            }
+          };
+          const exec = keyMap2[event.key];
+          if (exec) {
+            exec(event);
+            event.preventDefault();
+          }
+        },
+        onInput(event) {
+          const value = event.currentTarget.value;
+          send({ type: "INPUT.CHANGE", value: ensureValidCharacters(value, separator), index });
+        }
+      });
+    },
+    getMonthSelectProps() {
+      return normalize.select({
+        ...parts12.monthSelect.attrs,
+        id: getMonthSelectId(scope),
+        "aria-label": translations.monthSelect,
+        disabled,
+        dir: prop("dir"),
+        defaultValue: startValue.month,
+        onChange(event) {
+          focusMonth(Number(event.currentTarget.value));
+        }
+      });
+    },
+    getYearSelectProps() {
+      return normalize.select({
+        ...parts12.yearSelect.attrs,
+        id: getYearSelectId(scope),
+        disabled,
+        "aria-label": translations.yearSelect,
+        dir: prop("dir"),
+        defaultValue: startValue.year,
+        onChange(event) {
+          focusYear(Number(event.currentTarget.value));
+        }
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        id: getPositionerId4(scope),
+        ...parts12.positioner.attrs,
+        dir: prop("dir"),
+        style: popperStyles.floating
+      });
+    },
+    getPresetTriggerProps(props22) {
+      const value = Array.isArray(props22.value) ? props22.value : getDateRangePreset(props22.value, locale, timeZone);
+      const valueAsString = value.filter((item) => item != null).map((item) => item.toDate(timeZone).toDateString());
+      return normalize.button({
+        ...parts12.presetTrigger.attrs,
+        "aria-label": translations.presetTrigger(valueAsString),
+        type: "button",
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "PRESET.CLICK", value });
+        }
+      });
+    }
+  };
+}
+var { and: and6 } = createGuards();
+function isDateArrayEqual(a, b) {
+  if (a?.length !== b?.length) return false;
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    if (!isDateEqual(a[i], b[i])) return false;
+  }
+  return true;
+}
+function getValueAsString(value, prop) {
+  return value.map((date) => {
+    if (date == null) return "";
+    return prop("format")(date, { locale: prop("locale"), timeZone: prop("timeZone") });
+  });
+}
+var machine12 = createMachine({
+  props({ props: props22 }) {
+    const locale = props22.locale || "en-US";
+    const timeZone = props22.timeZone || "UTC";
+    const selectionMode = props22.selectionMode || "single";
+    const numOfMonths = props22.numOfMonths || 1;
+    const defaultValue = props22.defaultValue ? sortDates(props22.defaultValue).map((date) => constrainValue(date, props22.min, props22.max)) : void 0;
+    const value = props22.value ? sortDates(props22.value).map((date) => constrainValue(date, props22.min, props22.max)) : void 0;
+    let focusedValue = props22.focusedValue || props22.defaultFocusedValue || value?.[0] || defaultValue?.[0] || getTodayDate(timeZone);
+    focusedValue = constrainValue(focusedValue, props22.min, props22.max);
+    const minView = "day";
+    const maxView = "year";
+    const defaultView = clampView(props22.view || minView, minView, maxView);
+    return {
+      locale,
+      numOfMonths,
+      timeZone,
+      selectionMode,
+      defaultView,
+      minView,
+      maxView,
+      outsideDaySelectable: false,
+      closeOnSelect: true,
+      format(date, { locale: locale2, timeZone: timeZone2 }) {
+        const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale2, { timeZone: timeZone2, day: "2-digit", month: "2-digit", year: "numeric" });
+        return formatter.format(date.toDate(timeZone2));
+      },
+      parse(value2, { locale: locale2, timeZone: timeZone2 }) {
+        return parseDateString(value2, locale2, timeZone2);
+      },
+      ...props22,
+      focusedValue: typeof props22.focusedValue === "undefined" ? void 0 : focusedValue,
+      defaultFocusedValue: focusedValue,
+      value,
+      defaultValue: defaultValue ?? [],
+      positioning: {
+        placement: "bottom",
+        ...props22.positioning
+      }
+    };
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen") || prop("inline");
+    return open ? "open" : "idle";
+  },
+  refs() {
+    return {
+      announcer: void 0
+    };
+  },
+  context({ prop, bindable: bindable2, getContext }) {
+    return {
+      focusedValue: bindable2(() => ({
+        defaultValue: prop("defaultFocusedValue"),
+        value: prop("focusedValue"),
+        isEqual: isDateEqual,
+        hash: (v) => v.toString(),
+        sync: true,
+        onChange(focusedValue) {
+          const context = getContext();
+          const view = context.get("view");
+          const value = context.get("value");
+          const valueAsString = getValueAsString(value, prop);
+          prop("onFocusChange")?.({ value, valueAsString, view, focusedValue });
+        }
+      })),
+      value: bindable2(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        isEqual: isDateArrayEqual,
+        hash: (v) => v.map((date) => date?.toString() ?? "").join(","),
+        onChange(value) {
+          const context = getContext();
+          const valueAsString = getValueAsString(value, prop);
+          prop("onValueChange")?.({ value, valueAsString, view: context.get("view") });
+        }
+      })),
+      inputValue: bindable2(() => ({
+        defaultValue: ""
+      })),
+      activeIndex: bindable2(() => ({
+        defaultValue: 0,
+        sync: true
+      })),
+      hoveredValue: bindable2(() => ({
+        defaultValue: null,
+        isEqual: isDateEqual
+      })),
+      view: bindable2(() => ({
+        defaultValue: prop("defaultView"),
+        value: prop("view"),
+        onChange(value) {
+          prop("onViewChange")?.({ view: value });
+        }
+      })),
+      startValue: bindable2(() => {
+        const focusedValue = prop("focusedValue") || prop("defaultFocusedValue");
+        return {
+          defaultValue: alignDate(focusedValue, "start", { months: prop("numOfMonths") }, prop("locale")),
+          isEqual: isDateEqual,
+          hash: (v) => v.toString()
+        };
+      }),
+      currentPlacement: bindable2(() => ({
+        defaultValue: void 0
+      })),
+      restoreFocus: bindable2(() => ({
+        defaultValue: false
+      }))
+    };
+  },
+  computed: {
+    isInteractive: ({ prop }) => !prop("disabled") && !prop("readOnly"),
+    visibleDuration: ({ prop }) => ({ months: prop("numOfMonths") }),
+    endValue: ({ context, computed }) => getEndDate(context.get("startValue"), computed("visibleDuration")),
+    visibleRange: ({ context, computed }) => ({ start: context.get("startValue"), end: computed("endValue") }),
+    visibleRangeText: ({ context, prop, computed }) => getVisibleRangeText({
+      view: context.get("view"),
+      startValue: context.get("startValue"),
+      endValue: computed("endValue"),
+      locale: prop("locale"),
+      timeZone: prop("timeZone"),
+      selectionMode: prop("selectionMode")
+    }),
+    isPrevVisibleRangeValid: ({ context, prop }) => !isPreviousRangeInvalid(context.get("startValue"), prop("min"), prop("max")),
+    isNextVisibleRangeValid: ({ prop, computed }) => !isNextRangeInvalid(computed("endValue"), prop("min"), prop("max")),
+    valueAsString: ({ context, prop }) => getValueAsString(context.get("value"), prop)
+  },
+  effects: ["setupLiveRegion"],
+  watch({ track, prop, context, action, computed }) {
+    track([() => prop("locale")], () => {
+      action(["setStartValue", "syncInputElement"]);
+    });
+    track([() => context.hash("focusedValue")], () => {
+      action(["setStartValue", "focusActiveCellIfNeeded", "setHoveredValueIfKeyboard"]);
+    });
+    track([() => context.hash("startValue")], () => {
+      action(["syncMonthSelectElement", "syncYearSelectElement", "invokeOnVisibleRangeChange"]);
+    });
+    track([() => context.get("inputValue")], () => {
+      action(["syncInputValue"]);
+    });
+    track([() => context.hash("value")], () => {
+      action(["syncInputElement"]);
+    });
+    track([() => computed("valueAsString").toString()], () => {
+      action(["announceValueText"]);
+    });
+    track([() => context.get("view")], () => {
+      action(["focusActiveCell"]);
+    });
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+  },
+  on: {
+    "VALUE.SET": {
+      actions: ["setDateValue", "setFocusedDate"]
+    },
+    "VIEW.SET": {
+      actions: ["setView"]
+    },
+    "FOCUS.SET": {
+      actions: ["setFocusedDate"]
+    },
+    "VALUE.CLEAR": {
+      actions: ["clearDateValue", "clearFocusedDate", "focusFirstInputElement"]
+    },
+    "INPUT.CHANGE": [
+      {
+        guard: "isInputValueEmpty",
+        actions: ["setInputValue", "clearDateValue", "clearFocusedDate"]
+      },
+      {
+        actions: ["setInputValue", "focusParsedDate"]
+      }
+    ],
+    "INPUT.ENTER": {
+      actions: ["focusParsedDate", "selectFocusedDate"]
+    },
+    "INPUT.FOCUS": {
+      actions: ["setActiveIndex"]
+    },
+    "INPUT.BLUR": [
+      {
+        guard: "shouldFixOnBlur",
+        actions: ["setActiveIndexToStart", "selectParsedDate"]
+      },
+      {
+        actions: ["setActiveIndexToStart"]
+      }
+    ],
+    "PRESET.CLICK": [
+      {
+        guard: "isOpenControlled",
+        actions: ["setDateValue", "setFocusedDate", "invokeOnClose"]
+      },
+      {
+        target: "focused",
+        actions: ["setDateValue", "setFocusedDate", "focusInputElement"]
+      }
+    ],
+    "GOTO.NEXT": [
+      {
+        guard: "isYearView",
+        actions: ["focusNextDecade", "announceVisibleRange"]
+      },
+      {
+        guard: "isMonthView",
+        actions: ["focusNextYear", "announceVisibleRange"]
+      },
+      {
+        actions: ["focusNextPage"]
+      }
+    ],
+    "GOTO.PREV": [
+      {
+        guard: "isYearView",
+        actions: ["focusPreviousDecade", "announceVisibleRange"]
+      },
+      {
+        guard: "isMonthView",
+        actions: ["focusPreviousYear", "announceVisibleRange"]
+      },
+      {
+        actions: ["focusPreviousPage"]
+      }
+    ]
+  },
+  states: {
+    idle: {
+      tags: ["closed"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open",
+          actions: ["focusFirstSelectedDate", "focusActiveCell"]
+        },
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+          }
+        ],
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    focused: {
+      tags: ["closed"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open",
+          actions: ["focusFirstSelectedDate", "focusActiveCell"]
+        },
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+          }
+        ],
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["focusFirstSelectedDate", "focusActiveCell", "invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    open: {
+      tags: ["open"],
+      effects: ["trackDismissableElement", "trackPositioning"],
+      exit: ["clearHoveredDate", "resetView"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            guard: and6("shouldRestoreFocus", "isInteractOutsideEvent"),
+            target: "focused",
+            actions: ["focusTriggerElement"]
+          },
+          {
+            guard: "shouldRestoreFocus",
+            target: "focused",
+            actions: ["focusInputElement"]
+          },
+          {
+            target: "idle"
+          }
+        ],
+        "CELL.CLICK": [
+          {
+            guard: "isAboveMinView",
+            actions: ["setFocusedValueForView", "setPreviousView"]
+          },
+          {
+            guard: and6("isRangePicker", "hasSelectedRange"),
+            actions: ["setActiveIndexToStart", "resetSelection", "setActiveIndexToEnd"]
+          },
+          // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
+          {
+            guard: and6("isRangePicker", "isSelectingEndDate", "closeOnSelect", "isOpenControlled"),
+            actions: [
+              "setFocusedDate",
+              "setSelectedDate",
+              "setActiveIndexToStart",
+              "clearHoveredDate",
+              "invokeOnClose",
+              "setRestoreFocus"
+            ]
+          },
+          {
+            guard: and6("isRangePicker", "isSelectingEndDate", "closeOnSelect"),
+            target: "focused",
+            actions: [
+              "setFocusedDate",
+              "setSelectedDate",
+              "setActiveIndexToStart",
+              "clearHoveredDate",
+              "invokeOnClose",
+              "focusInputElement"
+            ]
+          },
+          {
+            guard: and6("isRangePicker", "isSelectingEndDate"),
+            actions: ["setFocusedDate", "setSelectedDate", "setActiveIndexToStart", "clearHoveredDate"]
+          },
+          // ===
+          {
+            guard: "isRangePicker",
+            actions: ["setFocusedDate", "setSelectedDate", "setActiveIndexToEnd"]
+          },
+          {
+            guard: "isMultiPicker",
+            actions: ["setFocusedDate", "toggleSelectedDate"]
+          },
+          // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
+          {
+            guard: and6("closeOnSelect", "isOpenControlled"),
+            actions: ["setFocusedDate", "setSelectedDate", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["setFocusedDate", "setSelectedDate", "invokeOnClose", "focusInputElement"]
+          },
+          {
+            actions: ["setFocusedDate", "setSelectedDate"]
+          }
+          // ===
+        ],
+        "CELL.POINTER_MOVE": {
+          guard: and6("isRangePicker", "isSelectingEndDate"),
+          actions: ["setHoveredDate", "setFocusedDate"]
+        },
+        "TABLE.POINTER_LEAVE": {
+          guard: "isRangePicker",
+          actions: ["clearHoveredDate"]
+        },
+        "TABLE.POINTER_DOWN": {
+          actions: ["disableTextSelection"]
+        },
+        "TABLE.POINTER_UP": {
+          actions: ["enableTextSelection"]
+        },
+        "TABLE.ESCAPE": [
+          {
+            guard: "isOpenControlled",
+            actions: ["focusFirstSelectedDate", "invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["focusFirstSelectedDate", "invokeOnClose", "focusTriggerElement"]
+          }
+        ],
+        "TABLE.ENTER": [
+          {
+            guard: "isAboveMinView",
+            actions: ["setPreviousView"]
+          },
+          {
+            guard: and6("isRangePicker", "hasSelectedRange"),
+            actions: ["setActiveIndexToStart", "clearDateValue", "setSelectedDate", "setActiveIndexToEnd"]
+          },
+          // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
+          {
+            guard: and6("isRangePicker", "isSelectingEndDate", "closeOnSelect", "isOpenControlled"),
+            actions: ["setSelectedDate", "setActiveIndexToStart", "clearHoveredDate", "invokeOnClose"]
+          },
+          {
+            guard: and6("isRangePicker", "isSelectingEndDate", "closeOnSelect"),
+            target: "focused",
+            actions: [
+              "setSelectedDate",
+              "setActiveIndexToStart",
+              "clearHoveredDate",
+              "invokeOnClose",
+              "focusInputElement"
+            ]
+          },
+          {
+            guard: and6("isRangePicker", "isSelectingEndDate"),
+            actions: ["setSelectedDate", "setActiveIndexToStart", "clearHoveredDate"]
+          },
+          // ===
+          {
+            guard: "isRangePicker",
+            actions: ["setSelectedDate", "setActiveIndexToEnd", "focusNextDay"]
+          },
+          {
+            guard: "isMultiPicker",
+            actions: ["toggleSelectedDate"]
+          },
+          // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
+          {
+            guard: and6("closeOnSelect", "isOpenControlled"),
+            actions: ["selectFocusedDate", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectFocusedDate", "invokeOnClose", "focusInputElement"]
+          },
+          {
+            actions: ["selectFocusedDate"]
+          }
+          // ===
+        ],
+        "TABLE.ARROW_RIGHT": [
+          {
+            guard: "isMonthView",
+            actions: ["focusNextMonth"]
+          },
+          {
+            guard: "isYearView",
+            actions: ["focusNextYear"]
+          },
+          {
+            actions: ["focusNextDay", "setHoveredDate"]
+          }
+        ],
+        "TABLE.ARROW_LEFT": [
+          {
+            guard: "isMonthView",
+            actions: ["focusPreviousMonth"]
+          },
+          {
+            guard: "isYearView",
+            actions: ["focusPreviousYear"]
+          },
+          {
+            actions: ["focusPreviousDay"]
+          }
+        ],
+        "TABLE.ARROW_UP": [
+          {
+            guard: "isMonthView",
+            actions: ["focusPreviousMonthColumn"]
+          },
+          {
+            guard: "isYearView",
+            actions: ["focusPreviousYearColumn"]
+          },
+          {
+            actions: ["focusPreviousWeek"]
+          }
+        ],
+        "TABLE.ARROW_DOWN": [
+          {
+            guard: "isMonthView",
+            actions: ["focusNextMonthColumn"]
+          },
+          {
+            guard: "isYearView",
+            actions: ["focusNextYearColumn"]
+          },
+          {
+            actions: ["focusNextWeek"]
+          }
+        ],
+        "TABLE.PAGE_UP": {
+          actions: ["focusPreviousSection"]
+        },
+        "TABLE.PAGE_DOWN": {
+          actions: ["focusNextSection"]
+        },
+        "TABLE.HOME": [
+          {
+            guard: "isMonthView",
+            actions: ["focusFirstMonth"]
+          },
+          {
+            guard: "isYearView",
+            actions: ["focusFirstYear"]
+          },
+          {
+            actions: ["focusSectionStart"]
+          }
+        ],
+        "TABLE.END": [
+          {
+            guard: "isMonthView",
+            actions: ["focusLastMonth"]
+          },
+          {
+            guard: "isYearView",
+            actions: ["focusLastYear"]
+          },
+          {
+            actions: ["focusSectionEnd"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "VIEW.TOGGLE": {
+          actions: ["setNextView"]
+        },
+        INTERACT_OUTSIDE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["setActiveIndexToStart", "invokeOnClose"]
+          },
+          {
+            guard: "shouldRestoreFocus",
+            target: "focused",
+            actions: ["setActiveIndexToStart", "invokeOnClose", "focusTriggerElement"]
+          },
+          {
+            target: "idle",
+            actions: ["setActiveIndexToStart", "invokeOnClose"]
+          }
+        ],
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["setActiveIndexToStart", "invokeOnClose"]
+          },
+          {
+            target: "idle",
+            actions: ["setActiveIndexToStart", "invokeOnClose"]
+          }
+        ]
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      isAboveMinView: ({ context, prop }) => isAboveMinView(context.get("view"), prop("minView")),
+      isDayView: ({ context, event }) => (event.view || context.get("view")) === "day",
+      isMonthView: ({ context, event }) => (event.view || context.get("view")) === "month",
+      isYearView: ({ context, event }) => (event.view || context.get("view")) === "year",
+      isRangePicker: ({ prop }) => prop("selectionMode") === "range",
+      hasSelectedRange: ({ context }) => context.get("value").length === 2,
+      isMultiPicker: ({ prop }) => prop("selectionMode") === "multiple",
+      shouldRestoreFocus: ({ context }) => !!context.get("restoreFocus"),
+      isSelectingEndDate: ({ context }) => context.get("activeIndex") === 1,
+      closeOnSelect: ({ prop }) => !!prop("closeOnSelect"),
+      isOpenControlled: ({ prop }) => prop("open") != void 0 || !!prop("inline"),
+      isInteractOutsideEvent: ({ event }) => event.previousEvent?.type === "INTERACT_OUTSIDE",
+      isInputValueEmpty: ({ event }) => event.value.trim() === "",
+      shouldFixOnBlur: ({ event }) => !!event.fixOnBlur
+    },
+    effects: {
+      trackPositioning({ context, prop, scope }) {
+        if (prop("inline")) return;
+        if (!context.get("currentPlacement")) {
+          context.set("currentPlacement", prop("positioning").placement);
+        }
+        const anchorEl = getControlEl2(scope);
+        const getPositionerEl22 = () => getPositionerEl4(scope);
+        return getPlacement(anchorEl, getPositionerEl22, {
+          ...prop("positioning"),
+          defer: true,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      setupLiveRegion({ scope, refs }) {
+        const doc = scope.getDoc();
+        refs.set("announcer", createLiveRegion({ level: "assertive", document: doc }));
+        return () => refs.get("announcer")?.destroy?.();
+      },
+      trackDismissableElement({ scope, send, context, prop }) {
+        if (prop("inline")) return;
+        const getContentEl22 = () => getContentEl6(scope);
+        return trackDismissableElement(getContentEl22, {
+          type: "popover",
+          defer: true,
+          exclude: [...getInputEls(scope), getTriggerEl5(scope), getClearTriggerEl3(scope)],
+          onInteractOutside(event) {
+            context.set("restoreFocus", !event.detail.focusable);
+          },
+          onDismiss() {
+            send({ type: "INTERACT_OUTSIDE" });
+          },
+          onEscapeKeyDown(event) {
+            event.preventDefault();
+            send({ type: "TABLE.ESCAPE", src: "dismissable" });
+          }
+        });
+      }
+    },
+    actions: {
+      setNextView({ context, prop }) {
+        const nextView = getNextView(context.get("view"), prop("minView"), prop("maxView"));
+        context.set("view", nextView);
+      },
+      setPreviousView({ context, prop }) {
+        const prevView = getPreviousView(context.get("view"), prop("minView"), prop("maxView"));
+        context.set("view", prevView);
+      },
+      setView({ context, event }) {
+        context.set("view", event.view);
+      },
+      setRestoreFocus({ context }) {
+        context.set("restoreFocus", true);
+      },
+      announceValueText({ context, prop, refs }) {
+        const value = context.get("value");
+        const locale = prop("locale");
+        const timeZone = prop("timeZone");
+        let announceText;
+        if (prop("selectionMode") === "range") {
+          const [startDate, endDate] = value;
+          if (startDate && endDate) {
+            announceText = formatSelectedDate(startDate, endDate, locale, timeZone);
+          } else if (startDate) {
+            announceText = formatSelectedDate(startDate, null, locale, timeZone);
+          } else if (endDate) {
+            announceText = formatSelectedDate(endDate, null, locale, timeZone);
+          } else {
+            announceText = "";
+          }
+        } else {
+          announceText = value.map((date) => formatSelectedDate(date, null, locale, timeZone)).filter(Boolean).join(",");
+        }
+        refs.get("announcer")?.announce(announceText, 3e3);
+      },
+      announceVisibleRange({ computed, refs }) {
+        const { formatted } = computed("visibleRangeText");
+        refs.get("announcer")?.announce(formatted);
+      },
+      disableTextSelection({ scope }) {
+        disableTextSelection({ target: getContentEl6(scope), doc: scope.getDoc() });
+      },
+      enableTextSelection({ scope }) {
+        restoreTextSelection({ doc: scope.getDoc(), target: getContentEl6(scope) });
+      },
+      focusFirstSelectedDate(params) {
+        const { context } = params;
+        if (!context.get("value").length) return;
+        setFocusedValue(params, context.get("value")[0]);
+      },
+      syncInputElement({ scope, computed }) {
+        raf(() => {
+          const inputEls = getInputEls(scope);
+          inputEls.forEach((inputEl, index) => {
+            setElementValue(inputEl, computed("valueAsString")[index] || "");
+          });
+        });
+      },
+      setFocusedDate(params) {
+        const { event } = params;
+        const value = Array.isArray(event.value) ? event.value[0] : event.value;
+        setFocusedValue(params, value);
+      },
+      setFocusedValueForView(params) {
+        const { context, event } = params;
+        setFocusedValue(params, context.get("focusedValue").set({ [context.get("view")]: event.value }));
+      },
+      focusNextMonth(params) {
+        const { context } = params;
+        setFocusedValue(params, context.get("focusedValue").add({ months: 1 }));
+      },
+      focusPreviousMonth(params) {
+        const { context } = params;
+        setFocusedValue(params, context.get("focusedValue").subtract({ months: 1 }));
+      },
+      setDateValue({ context, event, prop }) {
+        if (!Array.isArray(event.value)) return;
+        const value = event.value.map((date) => constrainValue(date, prop("min"), prop("max")));
+        context.set("value", value);
+      },
+      clearDateValue({ context }) {
+        context.set("value", []);
+      },
+      setSelectedDate(params) {
+        const { context, event } = params;
+        const values = Array.from(context.get("value"));
+        values[context.get("activeIndex")] = normalizeValue(params, event.value ?? context.get("focusedValue"));
+        context.set("value", adjustStartAndEndDate(values));
+      },
+      resetSelection(params) {
+        const { context, event } = params;
+        const value = normalizeValue(params, event.value ?? context.get("focusedValue"));
+        context.set("value", [value]);
+      },
+      toggleSelectedDate(params) {
+        const { context, event } = params;
+        const currentValue = normalizeValue(params, event.value ?? context.get("focusedValue"));
+        const index = context.get("value").findIndex((date) => isDateEqual(date, currentValue));
+        if (index === -1) {
+          const values = [...context.get("value"), currentValue];
+          context.set("value", sortDates(values));
+        } else {
+          const values = Array.from(context.get("value"));
+          values.splice(index, 1);
+          context.set("value", sortDates(values));
+        }
+      },
+      setHoveredDate({ context, event }) {
+        context.set("hoveredValue", event.value);
+      },
+      clearHoveredDate({ context }) {
+        context.set("hoveredValue", null);
+      },
+      selectFocusedDate({ context, computed }) {
+        const values = Array.from(context.get("value"));
+        const activeIndex = context.get("activeIndex");
+        values[activeIndex] = context.get("focusedValue").copy();
+        context.set("value", adjustStartAndEndDate(values));
+        const valueAsString = computed("valueAsString");
+        context.set("inputValue", valueAsString[activeIndex]);
+      },
+      focusPreviousDay(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").subtract({ days: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusNextDay(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").add({ days: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusPreviousWeek(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").subtract({ weeks: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusNextWeek(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").add({ weeks: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusNextPage(params) {
+        const { context, computed, prop } = params;
+        const nextPage = getNextPage(
+          context.get("focusedValue"),
+          context.get("startValue"),
+          computed("visibleDuration"),
+          prop("locale"),
+          prop("min"),
+          prop("max")
+        );
+        setAdjustedValue(params, nextPage);
+      },
+      focusPreviousPage(params) {
+        const { context, computed, prop } = params;
+        const previousPage = getPreviousPage(
+          context.get("focusedValue"),
+          context.get("startValue"),
+          computed("visibleDuration"),
+          prop("locale"),
+          prop("min"),
+          prop("max")
+        );
+        setAdjustedValue(params, previousPage);
+      },
+      focusSectionStart(params) {
+        const { context } = params;
+        setFocusedValue(params, context.get("startValue").copy());
+      },
+      focusSectionEnd(params) {
+        const { computed } = params;
+        setFocusedValue(params, computed("endValue").copy());
+      },
+      focusNextSection(params) {
+        const { context, event, computed, prop } = params;
+        const nextSection = getNextSection(
+          context.get("focusedValue"),
+          context.get("startValue"),
+          event.larger,
+          computed("visibleDuration"),
+          prop("locale"),
+          prop("min"),
+          prop("max")
+        );
+        if (!nextSection) return;
+        setAdjustedValue(params, nextSection);
+      },
+      focusPreviousSection(params) {
+        const { context, event, computed, prop } = params;
+        const previousSection = getPreviousSection(
+          context.get("focusedValue"),
+          context.get("startValue"),
+          event.larger,
+          computed("visibleDuration"),
+          prop("locale"),
+          prop("min"),
+          prop("max")
+        );
+        if (!previousSection) return;
+        setAdjustedValue(params, previousSection);
+      },
+      focusNextYear(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").add({ years: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusPreviousYear(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").subtract({ years: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusNextDecade(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").add({ years: 10 });
+        setFocusedValue(params, nextValue);
+      },
+      focusPreviousDecade(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").subtract({ years: 10 });
+        setFocusedValue(params, nextValue);
+      },
+      clearFocusedDate(params) {
+        const { prop } = params;
+        setFocusedValue(params, getTodayDate(prop("timeZone")));
+      },
+      focusPreviousMonthColumn(params) {
+        const { context, event } = params;
+        const nextValue = context.get("focusedValue").subtract({ months: event.columns });
+        setFocusedValue(params, nextValue);
+      },
+      focusNextMonthColumn(params) {
+        const { context, event } = params;
+        const nextValue = context.get("focusedValue").add({ months: event.columns });
+        setFocusedValue(params, nextValue);
+      },
+      focusPreviousYearColumn(params) {
+        const { context, event } = params;
+        const nextValue = context.get("focusedValue").subtract({ years: event.columns });
+        setFocusedValue(params, nextValue);
+      },
+      focusNextYearColumn(params) {
+        const { context, event } = params;
+        const nextValue = context.get("focusedValue").add({ years: event.columns });
+        setFocusedValue(params, nextValue);
+      },
+      focusFirstMonth(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").set({ month: 1 });
+        setFocusedValue(params, nextValue);
+      },
+      focusLastMonth(params) {
+        const { context } = params;
+        const nextValue = context.get("focusedValue").set({ month: 12 });
+        setFocusedValue(params, nextValue);
+      },
+      focusFirstYear(params) {
+        const { context } = params;
+        const range = getDecadeRange(context.get("focusedValue").year);
+        const nextValue = context.get("focusedValue").set({ year: range[0] });
+        setFocusedValue(params, nextValue);
+      },
+      focusLastYear(params) {
+        const { context } = params;
+        const range = getDecadeRange(context.get("focusedValue").year);
+        const nextValue = context.get("focusedValue").set({ year: range[range.length - 1] });
+        setFocusedValue(params, nextValue);
+      },
+      setActiveIndex({ context, event }) {
+        context.set("activeIndex", event.index);
+      },
+      setActiveIndexToEnd({ context }) {
+        context.set("activeIndex", 1);
+      },
+      setActiveIndexToStart({ context }) {
+        context.set("activeIndex", 0);
+      },
+      focusActiveCell({ scope, context }) {
+        raf(() => {
+          const view = context.get("view");
+          getFocusedCell(scope, view)?.focus({ preventScroll: true });
+        });
+      },
+      focusActiveCellIfNeeded({ scope, context, event }) {
+        if (!event.focus) return;
+        raf(() => {
+          const view = context.get("view");
+          getFocusedCell(scope, view)?.focus({ preventScroll: true });
+        });
+      },
+      setHoveredValueIfKeyboard({ context, event, prop }) {
+        if (!event.type.startsWith("TABLE.ARROW") || prop("selectionMode") !== "range" || context.get("activeIndex") === 0)
+          return;
+        context.set("hoveredValue", context.get("focusedValue").copy());
+      },
+      focusTriggerElement({ scope }) {
+        raf(() => {
+          getTriggerEl5(scope)?.focus({ preventScroll: true });
+        });
+      },
+      focusFirstInputElement({ scope }) {
+        raf(() => {
+          const [inputEl] = getInputEls(scope);
+          inputEl?.focus({ preventScroll: true });
+        });
+      },
+      focusInputElement({ scope }) {
+        raf(() => {
+          const inputEls = getInputEls(scope);
+          const lastIndexWithValue = inputEls.findLastIndex((inputEl2) => inputEl2.value !== "");
+          const indexToFocus = Math.max(lastIndexWithValue, 0);
+          const inputEl = inputEls[indexToFocus];
+          inputEl?.focus({ preventScroll: true });
+          inputEl?.setSelectionRange(inputEl.value.length, inputEl.value.length);
+        });
+      },
+      syncMonthSelectElement({ scope, context }) {
+        const monthSelectEl = getMonthSelectEl(scope);
+        setElementValue(monthSelectEl, context.get("startValue").month.toString());
+      },
+      syncYearSelectElement({ scope, context }) {
+        const yearSelectEl = getYearSelectEl(scope);
+        setElementValue(yearSelectEl, context.get("startValue").year.toString());
+      },
+      setInputValue({ context, event }) {
+        if (context.get("activeIndex") !== event.index) return;
+        context.set("inputValue", event.value);
+      },
+      syncInputValue({ scope, context, event }) {
+        queueMicrotask(() => {
+          const inputEls = getInputEls(scope);
+          const idx = event.index ?? context.get("activeIndex");
+          setElementValue(inputEls[idx], context.get("inputValue"));
+        });
+      },
+      focusParsedDate(params) {
+        const { event, prop } = params;
+        if (event.index == null) return;
+        const parse2 = prop("parse");
+        const date = parse2(event.value, { locale: prop("locale"), timeZone: prop("timeZone") });
+        if (!date || !isValidDate(date)) return;
+        setFocusedValue(params, date);
+      },
+      selectParsedDate({ context, event, prop }) {
+        if (event.index == null) return;
+        const parse2 = prop("parse");
+        let date = parse2(event.value, { locale: prop("locale"), timeZone: prop("timeZone") });
+        if (!date || !isValidDate(date)) {
+          if (event.value) {
+            date = context.get("focusedValue").copy();
+          }
+        }
+        if (!date) return;
+        date = constrainValue(date, prop("min"), prop("max"));
+        const values = Array.from(context.get("value"));
+        values[event.index] = date;
+        context.set("value", values);
+        const valueAsString = getValueAsString(values, prop);
+        context.set("inputValue", valueAsString[event.index]);
+      },
+      resetView({ context }) {
+        context.set("view", context.initial("view"));
+      },
+      setStartValue({ context, computed, prop }) {
+        const focusedValue = context.get("focusedValue");
+        const outside = isDateOutsideRange(focusedValue, context.get("startValue"), computed("endValue"));
+        if (!outside) return;
+        const startValue = alignDate(focusedValue, "start", { months: prop("numOfMonths") }, prop("locale"));
+        context.set("startValue", startValue);
+      },
+      invokeOnOpen({ prop, context }) {
+        if (prop("inline")) return;
+        prop("onOpenChange")?.({ open: true, value: context.get("value") });
+      },
+      invokeOnClose({ prop, context }) {
+        if (prop("inline")) return;
+        prop("onOpenChange")?.({ open: false, value: context.get("value") });
+      },
+      invokeOnVisibleRangeChange({ prop, context, computed }) {
+        prop("onVisibleRangeChange")?.({
+          view: context.get("view"),
+          visibleRange: computed("visibleRange")
+        });
+      },
+      toggleVisibility({ event, send, prop }) {
+        send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+      }
+    }
+  }
+});
+var normalizeValue = (ctx, value) => {
+  const { context, prop } = ctx;
+  const view = context.get("view");
+  let dateValue = typeof value === "number" ? context.get("focusedValue").set({ [view]: value }) : value;
+  eachView((view2) => {
+    if (isBelowMinView(view2, prop("minView"))) {
+      dateValue = dateValue.set({ [view2]: view2 === "day" ? 1 : 0 });
+    }
+  });
+  return dateValue;
+};
+function setFocusedValue(ctx, mixedValue) {
+  const { context, prop, computed } = ctx;
+  if (!mixedValue) return;
+  const value = normalizeValue(ctx, mixedValue);
+  if (isDateEqual(context.get("focusedValue"), value)) return;
+  const adjustFn = getAdjustedDateFn(computed("visibleDuration"), prop("locale"), prop("min"), prop("max"));
+  const adjustedValue = adjustFn({
+    focusedDate: value,
+    startDate: context.get("startValue")
+  });
+  context.set("startValue", adjustedValue.startDate);
+  context.set("focusedValue", adjustedValue.focusedDate);
+}
+function setAdjustedValue(ctx, value) {
+  const { context } = ctx;
+  context.set("startValue", value.startDate);
+  const focusedValue = context.get("focusedValue");
+  if (isDateEqual(focusedValue, value.focusedDate)) return;
+  context.set("focusedValue", value.focusedDate);
+}
+function parse(value) {
+  if (Array.isArray(value)) {
+    return value.map((v) => parse(v));
+  }
+  if (value instanceof Date) {
+    return new $35ea8db9cb2ccb90$export$99faa760c7908e4f(value.getFullYear(), value.getMonth() + 1, value.getDate());
+  }
+  return $fae977aafc393c5c$export$6b862160d295c8e(value);
+}
+var props11 = createProps()([
+  "closeOnSelect",
+  "dir",
+  "disabled",
+  "fixedWeeks",
+  "focusedValue",
+  "format",
+  "parse",
+  "placeholder",
+  "getRootNode",
+  "id",
+  "ids",
+  "inline",
+  "invalid",
+  "isDateUnavailable",
+  "locale",
+  "max",
+  "min",
+  "name",
+  "numOfMonths",
+  "onFocusChange",
+  "onOpenChange",
+  "onValueChange",
+  "onViewChange",
+  "onVisibleRangeChange",
+  "open",
+  "defaultOpen",
+  "positioning",
+  "readOnly",
+  "required",
+  "selectionMode",
+  "startOfWeek",
+  "timeZone",
+  "translations",
+  "value",
+  "defaultView",
+  "defaultValue",
+  "view",
+  "defaultFocusedValue",
+  "outsideDaySelectable",
+  "minView",
+  "maxView"
+]);
+var splitProps11 = createSplitProps(props11);
+var inputProps = createProps()(["index", "fixOnBlur"]);
+var splitInputProps = createSplitProps(inputProps);
+var presetTriggerProps = createProps()(["value"]);
+var splitPresetTriggerProps = createSplitProps(presetTriggerProps);
+var tableProps = createProps()(["columns", "id", "view"]);
+var splitTableProps = createSplitProps(tableProps);
+var tableCellProps = createProps()(["disabled", "value", "columns"]);
+var splitTableCellProps = createSplitProps(tableCellProps);
+var viewProps = createProps()(["view"]);
+var splitViewProps = createSplitProps(viewProps);
+
+// components/date-picker.ts
+var DatePicker = class extends Component {
+  initMachine(props12) {
+    return new VanillaMachine(machine12, {
+      ...props12
+    });
+  }
+  initApi() {
+    return connect12(this.machine.service, normalizeProps);
+  }
+  // View container helpers - these elements never get spreadProps called on them,
+  // so their data-part values remain stable across renders.
+  getDayView = () => this.el.querySelector('[data-part="day-view"]');
+  getMonthView = () => this.el.querySelector('[data-part="month-view"]');
+  getYearView = () => this.el.querySelector('[data-part="year-view"]');
+  syncWeekDays = () => {
+    const dayView = this.getDayView();
+    if (!dayView) return;
+    const headerRow = dayView.querySelector("thead tr");
+    if (!headerRow) return;
+    this.spreadProps(headerRow, this.api.getTableRowProps({ view: "day" }));
+    const existingCells = Array.from(headerRow.querySelectorAll("th"));
+    while (existingCells.length > this.api.weekDays.length) {
+      const cell = existingCells.pop();
+      if (cell) headerRow.removeChild(cell);
+    }
+    this.api.weekDays.forEach((day, index) => {
+      let cellEl = existingCells[index];
+      if (!cellEl) {
+        cellEl = this.doc.createElement("th");
+        cellEl.scope = "col";
+        headerRow.appendChild(cellEl);
+      }
+      cellEl.setAttribute("aria-label", day.long);
+      cellEl.textContent = day.narrow;
+    });
+  };
+  syncDayGrid = () => {
+    const dayView = this.getDayView();
+    if (!dayView) return;
+    const tbody = dayView.querySelector("tbody");
+    if (!tbody) return;
+    this.spreadProps(tbody, this.api.getTableBodyProps({ view: "day" }));
+    if (!this.api.weeks) return;
+    const existingRows = Array.from(tbody.querySelectorAll("tr"));
+    while (existingRows.length > this.api.weeks.length) {
+      const row = existingRows.pop();
+      if (row) tbody.removeChild(row);
+    }
+    this.api.weeks.forEach((week, rowIndex) => {
+      let rowEl = existingRows[rowIndex];
+      if (!rowEl) {
+        rowEl = this.doc.createElement("tr");
+        tbody.appendChild(rowEl);
+      }
+      this.spreadProps(rowEl, this.api.getTableRowProps({ view: "day" }));
+      const existingCells = Array.from(rowEl.querySelectorAll("td"));
+      while (existingCells.length > week.length) {
+        const cell = existingCells.pop();
+        if (cell) rowEl.removeChild(cell);
+      }
+      week.forEach((value, cellIndex) => {
+        let cellEl = existingCells[cellIndex];
+        if (!cellEl) {
+          cellEl = this.doc.createElement("td");
+          const triggerEl2 = this.doc.createElement("div");
+          cellEl.appendChild(triggerEl2);
+          rowEl.appendChild(cellEl);
+        }
+        this.spreadProps(cellEl, this.api.getDayTableCellProps({ value }));
+        const triggerEl = cellEl.querySelector("div");
+        if (triggerEl) {
+          this.spreadProps(
+            triggerEl,
+            this.api.getDayTableCellTriggerProps({ value })
+          );
+          triggerEl.textContent = String(value.day);
+        }
+      });
+    });
+  };
+  syncMonthGrid = () => {
+    const monthView = this.getMonthView();
+    if (!monthView) return;
+    const tbody = monthView.querySelector("tbody");
+    if (!tbody) return;
+    this.spreadProps(tbody, this.api.getTableBodyProps({ view: "month" }));
+    const monthsGrid = this.api.getMonthsGrid({ columns: 4, format: "short" });
+    const existingRows = Array.from(tbody.querySelectorAll("tr"));
+    while (existingRows.length > monthsGrid.length) {
+      const row = existingRows.pop();
+      if (row) tbody.removeChild(row);
+    }
+    monthsGrid.forEach((months, rowIndex) => {
+      let rowEl = existingRows[rowIndex];
+      if (!rowEl) {
+        rowEl = this.doc.createElement("tr");
+        tbody.appendChild(rowEl);
+      }
+      this.spreadProps(rowEl, this.api.getTableRowProps());
+      const existingCells = Array.from(rowEl.querySelectorAll("td"));
+      while (existingCells.length > months.length) {
+        const cell = existingCells.pop();
+        if (cell) rowEl.removeChild(cell);
+      }
+      months.forEach((month, cellIndex) => {
+        let cellEl = existingCells[cellIndex];
+        if (!cellEl) {
+          cellEl = this.doc.createElement("td");
+          const triggerEl2 = this.doc.createElement("div");
+          cellEl.appendChild(triggerEl2);
+          rowEl.appendChild(cellEl);
+        }
+        this.spreadProps(
+          cellEl,
+          this.api.getMonthTableCellProps({ ...month, columns: 4 })
+        );
+        const triggerEl = cellEl.querySelector("div");
+        if (triggerEl) {
+          this.spreadProps(
+            triggerEl,
+            this.api.getMonthTableCellTriggerProps({ ...month, columns: 4 })
+          );
+          triggerEl.textContent = month.label;
+        }
+      });
+    });
+  };
+  syncYearGrid = () => {
+    const yearView = this.getYearView();
+    if (!yearView) return;
+    const tbody = yearView.querySelector("tbody");
+    if (!tbody) return;
+    this.spreadProps(tbody, this.api.getTableBodyProps());
+    const yearsGrid = this.api.getYearsGrid({ columns: 4 });
+    const existingRows = Array.from(tbody.querySelectorAll("tr"));
+    while (existingRows.length > yearsGrid.length) {
+      const row = existingRows.pop();
+      if (row) tbody.removeChild(row);
+    }
+    yearsGrid.forEach((years, rowIndex) => {
+      let rowEl = existingRows[rowIndex];
+      if (!rowEl) {
+        rowEl = this.doc.createElement("tr");
+        tbody.appendChild(rowEl);
+      }
+      this.spreadProps(rowEl, this.api.getTableRowProps({ view: "year" }));
+      const existingCells = Array.from(rowEl.querySelectorAll("td"));
+      while (existingCells.length > years.length) {
+        const cell = existingCells.pop();
+        if (cell) rowEl.removeChild(cell);
+      }
+      years.forEach((year, cellIndex) => {
+        let cellEl = existingCells[cellIndex];
+        if (!cellEl) {
+          cellEl = this.doc.createElement("td");
+          const triggerEl2 = this.doc.createElement("div");
+          cellEl.appendChild(triggerEl2);
+          rowEl.appendChild(cellEl);
+        }
+        this.spreadProps(
+          cellEl,
+          this.api.getYearTableCellProps({ ...year, columns: 4 })
+        );
+        const triggerEl = cellEl.querySelector("div");
+        if (triggerEl) {
+          this.spreadProps(
+            triggerEl,
+            this.api.getYearTableCellTriggerProps({ ...year, columns: 4 })
+          );
+          triggerEl.textContent = year.label;
+        }
+      });
+    });
+  };
+  render() {
+    const root = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="root"]'
+    );
+    if (root) this.spreadProps(root, this.api.getRootProps());
+    const label = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="label"]'
+    );
+    if (label) this.spreadProps(label, this.api.getLabelProps());
+    const control = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="control"]'
+    );
+    if (control) this.spreadProps(control, this.api.getControlProps());
+    const input = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="input"]'
+    );
+    if (input) {
+      const inputProps2 = { ...this.api.getInputProps() };
+      const inputAriaLabel = this.el.dataset.inputAriaLabel;
+      if (inputAriaLabel) {
+        inputProps2["aria-label"] = inputAriaLabel;
+      }
+      this.spreadProps(input, inputProps2);
+    }
+    const trigger = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="trigger"]'
+    );
+    if (trigger) {
+      const triggerProps2 = { ...this.api.getTriggerProps() };
+      const ariaLabel = this.el.dataset.triggerAriaLabel;
+      if (ariaLabel) {
+        triggerProps2["aria-label"] = ariaLabel;
+      }
+      this.spreadProps(trigger, triggerProps2);
+    }
+    const positioner = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="positioner"]'
+    );
+    if (positioner) this.spreadProps(positioner, this.api.getPositionerProps());
+    const content = this.el.querySelector(
+      '[data-scope="date-picker"][data-part="content"]'
+    );
+    if (content) this.spreadProps(content, this.api.getContentProps());
+    const dayView = this.getDayView();
+    if (dayView) {
+      dayView.hidden = this.api.view !== "day";
+      const viewControl = dayView.querySelector(
+        '[data-part="view-control"]'
+      );
+      if (viewControl)
+        this.spreadProps(
+          viewControl,
+          this.api.getViewControlProps({ view: "year" })
+        );
+      const prevTrigger = dayView.querySelector(
+        '[data-part="prev-trigger"]'
+      );
+      if (prevTrigger)
+        this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+      const viewTrigger = dayView.querySelector(
+        '[data-part="view-trigger"]'
+      );
+      if (viewTrigger) {
+        this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
+        viewTrigger.textContent = this.api.visibleRangeText.start;
+      }
+      const nextTrigger = dayView.querySelector(
+        '[data-part="next-trigger"]'
+      );
+      if (nextTrigger)
+        this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+      const table = dayView.querySelector("table");
+      if (table)
+        this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+      const thead = dayView.querySelector("thead");
+      if (thead)
+        this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
+    }
+    this.syncWeekDays();
+    this.syncDayGrid();
+    const monthView = this.getMonthView();
+    if (monthView) {
+      monthView.hidden = this.api.view !== "month";
+      const viewControl = monthView.querySelector(
+        '[data-part="view-control"]'
+      );
+      if (viewControl)
+        this.spreadProps(
+          viewControl,
+          this.api.getViewControlProps({ view: "month" })
+        );
+      const prevTrigger = monthView.querySelector(
+        '[data-part="prev-trigger"]'
+      );
+      if (prevTrigger)
+        this.spreadProps(
+          prevTrigger,
+          this.api.getPrevTriggerProps({ view: "month" })
+        );
+      const viewTrigger = monthView.querySelector(
+        '[data-part="view-trigger"]'
+      );
+      if (viewTrigger) {
+        this.spreadProps(
+          viewTrigger,
+          this.api.getViewTriggerProps({ view: "month" })
+        );
+        viewTrigger.textContent = String(this.api.visibleRange.start.year);
+      }
+      const nextTrigger = monthView.querySelector(
+        '[data-part="next-trigger"]'
+      );
+      if (nextTrigger)
+        this.spreadProps(
+          nextTrigger,
+          this.api.getNextTriggerProps({ view: "month" })
+        );
+      const table = monthView.querySelector("table");
+      if (table)
+        this.spreadProps(
+          table,
+          this.api.getTableProps({ view: "month", columns: 4 })
+        );
+    }
+    this.syncMonthGrid();
+    const yearView = this.getYearView();
+    if (yearView) {
+      yearView.hidden = this.api.view !== "year";
+      const viewControl = yearView.querySelector(
+        '[data-part="view-control"]'
+      );
+      if (viewControl)
+        this.spreadProps(
+          viewControl,
+          this.api.getViewControlProps({ view: "year" })
+        );
+      const prevTrigger = yearView.querySelector(
+        '[data-part="prev-trigger"]'
+      );
+      if (prevTrigger)
+        this.spreadProps(
+          prevTrigger,
+          this.api.getPrevTriggerProps({ view: "year" })
+        );
+      const decadeText = yearView.querySelector(
+        '[data-part="decade"]'
+      );
+      if (decadeText) {
+        const decade = this.api.getDecade();
+        decadeText.textContent = `${decade.start} - ${decade.end}`;
+      }
+      const nextTrigger = yearView.querySelector(
+        '[data-part="next-trigger"]'
+      );
+      if (nextTrigger)
+        this.spreadProps(
+          nextTrigger,
+          this.api.getNextTriggerProps({ view: "year" })
+        );
+      const table = yearView.querySelector("table");
+      if (table)
+        this.spreadProps(
+          table,
+          this.api.getTableProps({ view: "year", columns: 4 })
+        );
+    }
+    this.syncYearGrid();
+  }
+};
+
+// hooks/date-picker.ts
+function toISOString(d) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.year}-${pad(d.month)}-${pad(d.day)}`;
+}
+var DatePickerHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const liveSocket = this.liveSocket;
+    const min3 = getString(el, "min");
+    const max3 = getString(el, "max");
+    const positioningJson = getString(el, "positioning");
+    const isControlled = getBoolean(el, "controlled");
+    const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
+    const parseOne = (v) => v ? parse(v) : void 0;
+    const initialValue = parseList(getStringList(el, isControlled ? "value" : "defaultValue"));
+    const datePickerInstance = new DatePicker(el, {
+      id: el.id,
+      defaultValue: initialValue,
+      defaultFocusedValue: parseOne(getString(el, "focusedValue")),
+      defaultView: getString(el, "defaultView", ["day", "month", "year"]),
+      defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      locale: getString(el, "locale"),
+      timeZone: getString(el, "timeZone"),
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      invalid: getBoolean(el, "invalid"),
+      outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      min: min3 ? parse(min3) : void 0,
+      max: max3 ? parse(max3) : void 0,
+      numOfMonths: getNumber(el, "numOfMonths"),
+      startOfWeek: getNumber(el, "startOfWeek"),
+      fixedWeeks: getBoolean(el, "fixedWeeks"),
+      selectionMode: getString(el, "selectionMode", ["single", "multiple", "range"]),
+      placeholder: getString(el, "placeholder"),
+      minView: getString(el, "minView", ["day", "month", "year"]),
+      maxView: getString(el, "maxView", ["day", "month", "year"]),
+      inline: getBoolean(el, "inline"),
+      positioning: positioningJson ? JSON.parse(positioningJson) : void 0,
+      onValueChange: (details) => {
+        const isoStr = details.value?.length ? details.value.map((d) => toISOString(d)).join(",") : "";
+        const hiddenInput = el.querySelector(
+          `#${el.id}-value`
+        );
+        if (hiddenInput && hiddenInput.value !== isoStr) {
+          hiddenInput.value = isoStr;
+          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        const eventName = getString(el, "onValueChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: isoStr || null
+          });
+        }
+      },
+      onFocusChange: (details) => {
+        const eventName = getString(el, "onFocusChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            focused: details.focused ?? false
+          });
+        }
+      },
+      onViewChange: (details) => {
+        const eventName = getString(el, "onViewChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            view: details.view
+          });
+        }
+      },
+      onVisibleRangeChange: (details) => {
+        const eventName = getString(el, "onVisibleRangeChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            start: details.start,
+            end: details.end
+          });
+        }
+      },
+      onOpenChange: (details) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            open: details.open
+          });
+        }
+      }
+    });
+    datePickerInstance.init();
+    this.datePicker = datePickerInstance;
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("date_picker_set_value", (payload) => {
+        const targetId = payload.date_picker_id;
+        if (targetId && targetId !== el.id) return;
+        datePickerInstance.api.setValue([parse(payload.value)]);
+      })
+    );
+    this.onSetValue = (event) => {
+      const value = event.detail?.value;
+      if (typeof value === "string") {
+        datePickerInstance.api.setValue([parse(value)]);
+      }
+    };
+    el.addEventListener("phx:date-picker:set-value", this.onSetValue);
+  },
+  updated() {
+    const el = this.el;
+    const min3 = getString(el, "min");
+    const max3 = getString(el, "max");
+    const positioningJson = getString(el, "positioning");
+    const isControlled = getBoolean(el, "controlled");
+    const focusedStr = getString(el, "focusedValue");
+    this.datePicker?.updateProps({
+      id: el.id,
+      defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
+      defaultView: getString(el, "defaultView", ["day", "month", "year"]),
+      defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
+      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      locale: getString(this.el, "locale"),
+      timeZone: getString(this.el, "timeZone"),
+      disabled: getBoolean(this.el, "disabled"),
+      readOnly: getBoolean(this.el, "readOnly"),
+      required: getBoolean(this.el, "required"),
+      invalid: getBoolean(this.el, "invalid"),
+      outsideDaySelectable: getBoolean(this.el, "outsideDaySelectable"),
+      closeOnSelect: getBoolean(this.el, "closeOnSelect"),
+      min: min3 ? parse(min3) : void 0,
+      max: max3 ? parse(max3) : void 0,
+      numOfMonths: getNumber(this.el, "numOfMonths"),
+      startOfWeek: getNumber(this.el, "startOfWeek"),
+      fixedWeeks: getBoolean(this.el, "fixedWeeks"),
+      selectionMode: getString(this.el, "selectionMode", ["single", "multiple", "range"]),
+      placeholder: getString(this.el, "placeholder"),
+      minView: getString(this.el, "minView", ["day", "month", "year"]),
+      maxView: getString(this.el, "maxView", ["day", "month", "year"]),
+      inline: getBoolean(this.el, "inline"),
+      positioning: positioningJson ? JSON.parse(positioningJson) : void 0
+    });
+    if (isControlled && this.datePicker) {
+      const serverValues = getStringList(el, "value");
+      const zagValue = this.datePicker.api.value;
+      const zagIso = zagValue?.length ? zagValue.map((d) => toISOString(d)).join(",") : "";
+      const serverIso = serverValues?.join(",") ?? "";
+      if (serverIso && serverIso !== zagIso) {
+        this.datePicker.api.setValue(serverValues.map((x) => parse(x)));
+      }
+    }
+  },
+  destroyed() {
+    if (this.onSetValue) {
+      this.el.removeEventListener("phx:date-picker:set-value", this.onSetValue);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.datePicker?.destroy();
+  }
+};
+
 // hooks/corex.ts
-var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook, Tabs: TabsHook };
+var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook, Tabs: TabsHook, Clipboard: ClipboardHook, Collapsible: CollapsibleHook, Dialog: DialogHook, DatePicker: DatePickerHook };
 var corex_default = Hooks;
 //# sourceMappingURL=corex.cjs.js.map
