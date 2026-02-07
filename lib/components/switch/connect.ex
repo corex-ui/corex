@@ -2,7 +2,6 @@ defmodule Corex.Switch.Connect do
   @moduledoc false
   alias Corex.Switch.Anatomy.{Props, Root, HiddenInput}
 
-  # Generic helper for boolean data attributes
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
   defp data_attr(nil), do: nil

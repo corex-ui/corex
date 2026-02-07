@@ -1,5 +1,5 @@
 defmodule Corex.Checkbox do
-  @moduledoc """
+  @moduledoc ~S'''
   Phoenix implementation of [Zag.js Checkbox](https://zagjs.com/components/react/checkbox).
 
   ## Examples
@@ -8,7 +8,7 @@ defmodule Corex.Checkbox do
   ### Minimal
 
   ```heex
-  <.checkbox id="my-checkbox">
+  <.checkbox class="checkbox">
     <:label>Accept terms</:label>
   </.checkbox>
   ```
@@ -52,12 +52,27 @@ defmodule Corex.Checkbox do
 
   ### Controller
 
+  ```elixir
+  defmodule MyAppWeb.PageController do
+  use MyAppWeb, :controller
+
+  def home(conn, params) do
+    form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
+    render(conn, :home, form: form)
+  end
+  end
+  ```
+
   ```heex
-  <.form :let={f} for={@changeset} id={get_form_id(@changeset)}>
-    <.checkbox field={f[:terms]} class="checkbox">
-      <:label>I accept the terms</:label>
-    </.checkbox>
-    <button type="submit">Submit</button>
+  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
+  <.checkbox field={f[:terms]} class="checkbox">
+    <:label>I accept the terms</:label>
+      <:error :let={msg}>
+    <.icon name="hero-exclamation-circle" class="icon" />
+    {msg}
+  </:error>
+  </.checkbox>
+  <button type="submit">Submit</button>
   </.form>
   ```
 
@@ -66,21 +81,94 @@ defmodule Corex.Checkbox do
 
   When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly
 
-  ```heex
-  <.form for={@form} id={get_form_id(@form)} phx-change="validate" phx-submit="save">
-    <.checkbox field={@form[:terms_accepted]} controlled>
-      <:label>I accept the terms and conditions</:label>
-      <:error :let={msg}>{msg}</:error>
+  ```elixir
+  defmodule MyAppWeb.CheckboxLive do
+  use MyAppWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    form = to_form(%{"terms" => "false"}, as: :user)
+    {:ok, socket |> assign(:form, form)}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.form as={:user} for={@form} id={get_form_id(@form)}>
+    <.checkbox field={@form[:terms]} class="checkbox">
+      <:label>I accept the terms</:label>
+        <:error :let={msg}>
+      <.icon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
     </.checkbox>
+    <button type="submit">Submit</button>
   </.form>
+    """
+  end
+  end
   ```
 
-  The `field` attribute automatically handles:
-  - Setting the `id` from the form field
-  - Setting the `name` for form submission
-  - Mapping the form value to the `checked` state
-  - Displaying validation errors
-  - Integration with Phoenix changesets
+  ### With Ecto changeset
+
+  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
+
+  This allows the Live View to be the source of truth and the component to be in sync accordingly
+
+  First lets create an embededed schema and changeset
+
+  ```elixir
+  defmodule MyApp.Account.User do
+  use Ecto.Schema
+  import Ecto.Changeset
+  alias MyApp.Account.User
+
+  embedded_schema do
+    field :term, :boolean, default: false
+  end
+
+
+  @doc false
+  def changeset(%User{} = user, attrs) do
+    user
+    |> cast(attrs, [:term])
+    |> validate_required([:term])
+    |> validate_acceptance(:terms)
+  end
+  end
+  ```
+
+  ```elixir
+  defmodule MyAppWeb.UserLive do
+  use MyAppWeb, :live_view
+  alias MyApp.Account.User
+
+  @impl true
+
+  def mount(_params, _session, socket) do
+    {:ok,  assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
+  end
+
+  @impl true
+  def handle_event("validate", %{"user" => user_params}, socket) do
+    changeset = User.changeset(%User{}, user_params)
+    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.checkbox field={@form[:terms]} class="checkbox" controlled>
+        <:label>I accept the terms</:label>
+        <:error :let={msg}>
+          <.icon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.checkbox>
+    </.form>
+    """
+  end
+  end
+  ```
 
   ## API Control
 
@@ -119,7 +207,24 @@ defmodule Corex.Checkbox do
   - `[data-disabled]` - When checkbox is disabled
   - `[data-readonly]` - When checkbox is read-only
   - `[data-invalid]` - When checkbox has validation errors
-  """
+
+  If you wish to use the default Corex styling, you can use the class `checkbox` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/checkbox.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.checkbox class="checkbox checkbox--accent checkbox--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/checkbox#modifiers)
+  '''
 
   @doc type: :component
   use Phoenix.Component

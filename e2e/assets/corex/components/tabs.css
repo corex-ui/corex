@@ -1,0 +1,78 @@
+@import "../main.css";
+
+@layer components {
+  .tabs [data-scope="tabs"][data-part="root"] {
+    @apply ui-root;
+
+    max-width: var(--container-ui);
+  }
+
+  .tabs [data-scope="tabs"][data-part="root"][data-orientation="vertical"] {
+    flex-direction: row;
+  }
+
+  .tabs [data-scope="tabs"][data-part="root"][data-orientation="horizontal"] {
+    flex-direction: column;
+  }
+
+  .tabs [data-scope="tabs"][data-part="list"] {
+    display: inline-flex;
+    background-color: var(--color-ui--border);
+    gap: 1px;
+    width: fit-content;
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+    overflow: hidden;
+  }
+
+  .tabs [data-scope="tabs"][data-part="list"][data-orientation="vertical"] {
+    flex-direction: column;
+    height: fit-content;
+    width: var(--container-micro);
+  }
+
+  .tabs [data-scope="tabs"][data-part="list"][data-orientation="horizontal"] {
+    flex-direction: row;
+  }
+
+  .tabs [data-scope="tabs"][data-part="content"] {
+    @apply ui-content;
+
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+    padding: var(--spacing-ui-padding);
+
+    & p {
+      margin-block: 0;
+    }
+  }
+
+  .tabs [data-scope="tabs"][data-part="trigger"] {
+    @apply ui-item;
+
+    width: auto;
+  }
+}
+
+@utility tabs--* {
+  [data-scope="tabs"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="tabs"][data-part="trigger"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+
+    &[data-selected] {
+      background-color: --value(--color-ui-*, [color]);
+      color: --value(--color-ui-* --text, [color]);
+    }
+  }
+
+  [data-scope="tabs"][data-part="content"] > p {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+}

@@ -13,7 +13,8 @@ export class Checkbox extends Component<Props, Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="checkbox"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="checkbox"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
     const inputEl = rootEl.querySelector<HTMLElement>(':scope > [data-scope="checkbox"][data-part="hidden-input"]');

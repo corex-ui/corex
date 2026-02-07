@@ -1,0 +1,38 @@
+<Layouts.app flash={@flash}>
+  <h1>Clipboard</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={Corex.Clipboard.set_value("my-clipboard", "Hello, World!")}
+      class="button button--sm"
+    >
+      Set to "Hello, World!"
+    </button>
+    <button
+      phx-click={Corex.Clipboard.set_value("my-clipboard", "info@netoum.com")}
+      class="button button--sm"
+    >
+      Set to "info@netoum.com"
+    </button>
+    <button
+      phx-click={Corex.Clipboard.copy("my-clipboard")}
+      class="button button--sm"
+    >
+      Copy
+    </button>
+  </div>
+  <.clipboard
+    id="my-clipboard"
+    value="info@netoum.com"
+    trigger_aria_label="Copy to clipboard"
+    input_aria_label="Value to copy"
+    class="clipboard"
+  >
+    <:label>Copy to clipboard</:label>
+    <:trigger>
+      <.icon name="hero-clipboard" class="icon data-copy" />
+      <.icon name="hero-check" class="icon data-copied" />
+    </:trigger>
+  </.clipboard>
+</Layouts.app>

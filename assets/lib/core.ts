@@ -14,6 +14,7 @@ interface ComponentInterface<Api> {
 
 export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   el: HTMLElement;
+  protected doc: Document;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   machine: VanillaMachine<any>;
   api: Api;
@@ -21,6 +22,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   constructor(el: HTMLElement | null, props: Props) {
     if (!el) throw new Error("Root element not found");
     this.el = el;
+    this.doc = document;
     this.machine = this.initMachine(props);
     this.api = this.initApi();
   }
@@ -44,7 +46,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   };
 
   spreadProps = (el: HTMLElement, props: Attrs) => {
-    spreadProps(el, props);
+    spreadProps(el, props, this.machine.scope.id);
   };
 
   updateProps = (props: Attrs) => {

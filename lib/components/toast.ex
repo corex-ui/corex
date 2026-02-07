@@ -4,15 +4,17 @@ defmodule Corex.Toast do
 
   ## Examples
 
+  You can add the toast group to each pages and or your App layout
+
   ```heex
-   <.toast_group flash={@flash}/>
+   <.toast_group/>
   ```
   ## API Control
 
   ***Client-side***
 
   ```heex
-  <button phx-click={Corex.Toast.push_toast("This is an info toast", "This is an info toast description", :info)} class="button">
+  <button phx-click={Corex.Toast.create_toast("This is an info toast", "This is an info toast description", :info)} class="button">
    Create Info Toast
   </button>
 
@@ -28,9 +30,10 @@ defmodule Corex.Toast do
   end
   ```
 
-  ### Flash Messages
+  ## Flash Messages
   You can use the `flash` attribute to display flash messages as toasts.
-
+  You can use `%Corex.Flash.Info{}' and `%Corex.Flash.Error{}' to configure the flash messages title, type and duration.
+  The descritpion will come from the Phoenix flash message
 
   ```heex
   <.toast_group
@@ -38,6 +41,32 @@ defmodule Corex.Toast do
   flash_info={%Corex.Flash.Info{title: "Success", type: :success, duration: 5000}}
   flash_error={%Corex.Flash.Error{title: "Error", type: :error, duration: :infinity}}/>
   ```
+
+  ## Styling
+
+  Use data attributes to target elements:
+  - `[data-scope="toast"][data-part="group"]` - Toast container
+  - `[data-scope="toast"][data-part="root"]` - Individual toast root
+  - `[data-scope="toast"][data-part="title"]` - Toast title
+  - `[data-scope="toast"][data-part="description"]` - Toast description
+  - `[data-scope="toast"][data-part="close-trigger"]` - Close button
+
+  If you wish to use the default Corex styling, you can use the class `toast` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/toast.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.toast_group class="toast toast--accent">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/toast#modifiers)
 
   """
   @doc type: :component
@@ -57,27 +86,19 @@ defmodule Corex.Toast do
 
   ```heex
    <.toast_group />
-   <div phx-disconnected={Corex.Toast.create_toast("We can't find the internet", "Attempting to reconnect", :loading, duration: :infinity)}></div>
   ```
-  ## API Control
 
-  ***Client-side***
+  ## Flash Messages
+  You can use the `flash` attribute to display flash messages as toasts.
+  You can use `%Corex.Flash.Info{}' and `%Corex.Flash.Error{}' to configure the flash messages title, type and duration.
+  The descritpion will come from the Phoenix flash message
 
   ```heex
-  <button phx-click={Corex.Toast.create_toast("This is an info toast", "This is an info toast description", :info)} class="button">
-   Create Info Toast
-  </button>
-
+  <.toast_group
+  flash={@flash}
+  flash_info={%Corex.Flash.Info{title: "Success", type: :success, duration: 5000}}
+  flash_error={%Corex.Flash.Error{title: "Error", type: :error, duration: :infinity}}/>
   ```
-
-  ***Server-side***
-
-  ```elixir
-  def handle_event("create_info_toast", _, socket) do
-    {:noreply, Corex.Toast.push_toast(socket, "This is an info toast", "This is an info toast description", :info)}
-  end
-  ```
-
 
   """
   attr(:id, :string, default: nil)

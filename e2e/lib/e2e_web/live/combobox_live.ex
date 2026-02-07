@@ -17,7 +17,7 @@ defmodule E2eWeb.ComboboxLive do
         <h1>Combobox</h1>
         <h2>Live View</h2>
       </div>
-      <h2>Minimal</h2>
+      <h3>Minimal</h3>
       <.combobox
         id="my-combobox"
         class="combobox"
@@ -39,7 +39,7 @@ defmodule E2eWeb.ComboboxLive do
         </:trigger>
       </.combobox>
 
-      <h2>Grouped</h2>
+      <h3>Grouped</h3>
       <.combobox
         class="combobox"
         placeholder="Select a country"
@@ -64,7 +64,7 @@ defmodule E2eWeb.ComboboxLive do
         </:trigger>
       </.combobox>
 
-      <h2>Extended</h2>
+      <h3>Extended</h3>
       <.combobox
         class="combobox"
         placeholder="Select a country"
@@ -92,7 +92,7 @@ defmodule E2eWeb.ComboboxLive do
         </:item_indicator>
       </.combobox>
 
-      <h2>Extended Grouped</h2>
+      <h3>Extended Grouped</h3>
       <.combobox
         class="combobox"
         placeholder="Select a country"

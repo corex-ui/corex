@@ -24,13 +24,11 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ToastHookState) {
     const el = this.el;
 
-    // Ensure element has an ID
     if (!el.id) {
       el.id = generateId(el, "toast");
     }
     this.groupId = el.id;
 
-    // Parse offsets helper
     const parseOffsets = (offsetsString?: string) => {
       if (!offsetsString) return undefined;
       try {
@@ -40,7 +38,6 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       }
     };
 
-    // Parse duration helper
     const parseDuration = (duration?: number | string): number | undefined => {
       if (duration === "Infinity" || duration === Infinity) {
         return Infinity;
@@ -51,7 +48,6 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       return duration;
     };
 
-    // Initialize toast group
     const placement = getString<Placement>(el, "placement", [
       "top-start", "top", "top-end",
       "bottom-start", "bottom", "bottom-end",
@@ -67,10 +63,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle"),
     });
 
-    // Setup event handlers
     this.handlers = [];
 
-    // Server-side event: toast-create
     this.handlers.push(
       this.handleEvent("toast-create", (payload: ToastPayload) => {
         const store = getToastStore(payload.groupId || this.groupId);
@@ -90,7 +84,6 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       })
     );
 
-    // Server-side event: toast-update
     this.handlers.push(
       this.handleEvent("toast-update", (payload: Omit<ToastPayload, "duration">) => {
         const store = getToastStore(payload.groupId || this.groupId);
@@ -108,7 +101,6 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       })
     );
 
-    // Server-side event: toast-dismiss
     this.handlers.push(
       this.handleEvent("toast-dismiss", (payload: { id: string; groupId?: string }) => {
         const store = getToastStore(payload.groupId || this.groupId);
@@ -122,7 +114,6 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       })
     );
 
-    // Client-side event: toast:create
     el.addEventListener("toast:create", ((event: CustomEvent<ToastPayload>) => {
       const { detail } = event;
       const store = getToastStore(detail.groupId || this.groupId);

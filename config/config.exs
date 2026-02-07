@@ -13,7 +13,7 @@ config :phoenix,
 if Mix.env() == :dev do
   esbuild = fn args ->
     [
-      args: ~w(./hooks/corex --metafile=meta.json --bundle) ++ args,
+      args: ~w(./hooks/corex --bundle) ++ args,
       cd: Path.expand("../assets", __DIR__),
       env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
     ]

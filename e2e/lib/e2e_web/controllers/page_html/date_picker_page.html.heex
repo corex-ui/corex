@@ -1,0 +1,36 @@
+<Layouts.app flash={@flash}>
+  <h1>Date Picker</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-01-15")}
+      class="button button--sm"
+    >
+      Set to 2024-01-15
+    </button>
+    <button
+      phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-12-25")}
+      class="button button--sm"
+    >
+      Set to 2024-12-25
+    </button>
+  </div>
+  <.date_picker
+    id="my-date-picker"
+    trigger_aria_label="Select date"
+    input_aria_label="Select date"
+    class="date-picker"
+  >
+    <:label>Select a date</:label>
+    <:trigger>
+      <.icon name="hero-calendar" class="icon" />
+    </:trigger>
+    <:prev_trigger>
+      <.icon name="hero-chevron-left" class="icon" />
+    </:prev_trigger>
+    <:next_trigger>
+      <.icon name="hero-chevron-right" class="icon" />
+    </:next_trigger>
+  </.date_picker>
+</Layouts.app>

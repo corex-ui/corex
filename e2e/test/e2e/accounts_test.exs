@@ -8,7 +8,7 @@ defmodule E2e.AccountsTest do
 
     import E2e.AccountsFixtures
 
-    @invalid_attrs %{name: nil, country: nil, terms: nil}
+    @invalid_attrs %{name: nil, country: nil, birth_date: nil, terms: nil}
 
     test "list_users/0 returns all users" do
       user = user_fixture()
@@ -21,11 +21,17 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_user/1 with valid data creates a user" do
-      valid_attrs = %{name: "some name", country: "some country", terms: true}
+      valid_attrs = %{
+        name: "some name",
+        country: "some country",
+        birth_date: "1990-01-15",
+        terms: true
+      }
 
       assert {:ok, %User{} = user} = Accounts.create_user(valid_attrs)
       assert user.name == "some name"
       assert user.country == "some country"
+      assert user.birth_date == ~D[1990-01-15]
       assert user.terms == true
     end
 
@@ -35,11 +41,18 @@ defmodule E2e.AccountsTest do
 
     test "update_user/2 with valid data updates the user" do
       user = user_fixture()
-      update_attrs = %{name: "some updated name", country: "some updated country", terms: true}
+
+      update_attrs = %{
+        name: "some updated name",
+        country: "some updated country",
+        birth_date: "1995-06-20",
+        terms: true
+      }
 
       assert {:ok, %User{} = user} = Accounts.update_user(user, update_attrs)
       assert user.name == "some updated name"
       assert user.country == "some updated country"
+      assert user.birth_date == ~D[1995-06-20]
       assert user.terms == true
     end
 
@@ -66,7 +79,7 @@ defmodule E2e.AccountsTest do
 
     import E2e.AccountsFixtures
 
-    @invalid_attrs %{name: nil, country: nil, terms: nil}
+    @invalid_attrs %{name: nil, country: nil, birth_date: nil, terms: nil}
 
     test "list_admins/0 returns all admins" do
       admin = admin_fixture()
@@ -79,11 +92,12 @@ defmodule E2e.AccountsTest do
     end
 
     test "create_admin/1 with valid data creates a admin" do
-      valid_attrs = %{name: "some name", country: :fra, terms: true}
+      valid_attrs = %{name: "some name", country: :fra, birth_date: "1990-01-15", terms: true}
 
       assert {:ok, %Admin{} = admin} = Accounts.create_admin(valid_attrs)
       assert admin.name == "some name"
       assert admin.country == :fra
+      assert admin.birth_date == ~D[1990-01-15]
       assert admin.terms == true
     end
 
@@ -93,11 +107,18 @@ defmodule E2e.AccountsTest do
 
     test "update_admin/2 with valid data updates the admin" do
       admin = admin_fixture()
-      update_attrs = %{name: "some updated name", country: :deu, terms: true}
+
+      update_attrs = %{
+        name: "some updated name",
+        country: :deu,
+        birth_date: "1995-06-20",
+        terms: true
+      }
 
       assert {:ok, %Admin{} = admin} = Accounts.update_admin(admin, update_attrs)
       assert admin.name == "some updated name"
       assert admin.country == :deu
+      assert admin.birth_date == ~D[1995-06-20]
       assert admin.terms == true
     end
 

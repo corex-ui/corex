@@ -106,6 +106,23 @@ defmodule Corex.ToggleGroup do
   Use data attributes to target elements:
   - `[data-scope="toggle-group"][data-part="root"]` - Container
   - `[data-scope="toggle-group"][data-part="item"]` - Item wrapper
+
+  If you wish to use the default Corex styling, you can use the class `toggle-group` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/toggle-group.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.toggle_group class="toggle-group toggle-group--accent toggle-group--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/toggle-group#modifiers)
   '''
 
   @doc type: :component

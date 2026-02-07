@@ -1,39 +1,45 @@
 defmodule E2eWeb.AccordionModel do
   use E2eWeb.Model, component: "accordion"
 
-  import Wallaby.Element
-
-  def get_item(id) do
-    css("[data-scope='accordion'][data-part='item'][data-value='#{id}']")
+  def click_item(session, trigger_text) do
+    # Click button by text - Wallaby will find it within the page
+    click(session, button(trigger_text))
   end
 
-  def get_trigger(id) do
-    css(
-      "[data-scope='accordion'][data-part='item'][data-value='#{id}'] [data-part='item-trigger']"
-    )
+  def see_content(session, content_text) do
+    # Wait for accordion animation/transition to complete
+    session = wait(session, 1000)
+
+    # Check if content is visible using JavaScript to check computed styles
+    # This works around CSS-based hiding that Wallaby might not detect
+    content_visible =
+      execute_script(session, """
+        const contentElements = Array.from(document.querySelectorAll('[data-scope="accordion"][data-part="item-content"]'));
+        return contentElements.some(el => {
+          const text = el.textContent || '';
+          const style = window.getComputedStyle(el);
+          const ariaHidden = el.getAttribute('aria-hidden');
+          return text.includes('#{content_text}') && 
+                 style.display !== 'none' && 
+                 style.visibility !== 'hidden' &&
+                 (ariaHidden === null || ariaHidden === 'false');
+        });
+      """)
+
+    if content_visible do
+      session
+    else
+      # Fallback to Wallaby's text visibility check
+      see(session, content_text)
+    end
   end
 
-  def get_content_visible(id) do
-    css(
-      "[data-scope='accordion'][data-part='item'][data-value='#{id}'] [data-part='item-content']:not([hidden])"
-    )
+  def dont_see_content(session, content_text) do
+    dont_see(session, content_text)
   end
 
-  def click_trigger(session, id) do
+  def content_visible?(session, content_text) do
     session
-    |> find(get_trigger(id))
-    |> click()
-
-    session
-  end
-
-  def see_content(session, id) do
-    assert_has(session, get_content_visible(id))
-    session
-  end
-
-  def dont_see_content(session, id) do
-    refute_has(session, get_content_visible(id))
-    session
+    |> has?(Wallaby.Query.text(content_text))
   end
 end

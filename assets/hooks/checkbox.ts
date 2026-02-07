@@ -20,11 +20,9 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     this.wasFocused = false;
     
-    // Handle indeterminate state - can be boolean or "indeterminate" string
     const indeterminateAttr = el.getAttribute("data-indeterminate");
     const indeterminate = indeterminateAttr !== null && indeterminateAttr !== "false";
     
-    // Handle checked/indeterminate state
     const checkedValue = getBoolean(el, "checked");
     const defaultCheckedValue = getBoolean(el, "defaultChecked");
     

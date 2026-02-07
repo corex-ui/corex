@@ -140,6 +140,23 @@ defmodule Corex.Combobox do
   - `[data-scope="combobox"][data-part="item"]` - Item wrapper
   - `[data-scope="combobox"][data-part="item-text"]` - Item text
   - `[data-scope="combobox"][data-part="item-indicator"]` - Optional indicator
+
+  If you wish to use the default Corex styling, you can use the class `combobox` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/combobox.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.combobox class="combobox combobox--accent combobox--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/combobox#modifiers)
   '''
 
   @doc type: :component
@@ -242,7 +259,10 @@ defmodule Corex.Combobox do
   )
 
   def combobox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = field.errors || []
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    raw_value = get_value(field.value)
+    value = normalize_value_to_ids(assigns.collection, raw_value)
+    selected_label = get_selected_label(assigns.collection, value)
 
     assigns
     |> assign(field: nil)
@@ -250,10 +270,8 @@ defmodule Corex.Combobox do
     |> assign_new(:id, fn -> field.id end)
     |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
-    |> assign(
-      :value,
-      if(field.value, do: [field.value], else: [])
-    )
+    |> assign(:value, value)
+    |> assign(:selected_label, selected_label)
     |> combobox()
   end
 
@@ -264,6 +282,10 @@ defmodule Corex.Combobox do
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
 
+    value = Map.get(assigns, :value, [])
+    value_list = get_value(value)
+    value_list = normalize_value_to_ids(assigns.collection, value_list)
+
     grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
 
     has_groups =
@@ -271,8 +293,15 @@ defmodule Corex.Combobox do
       |> Map.keys()
       |> Enum.any?(& &1)
 
-    assigns = assign(assigns, :grouped_items, grouped_items)
-    assigns = assign(assigns, :has_groups, has_groups)
+    selected_label = get_selected_label(assigns.collection, value_list)
+
+    assigns =
+      assigns
+      |> assign(:grouped_items, grouped_items)
+      |> assign(:has_groups, has_groups)
+      |> assign(:value, value_list)
+      |> assign(:selected_label, selected_label)
+      |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
     <div id={@id} phx-hook="Combobox" {@rest} {Connect.props(%Props{
@@ -285,12 +314,13 @@ defmodule Corex.Combobox do
       bubble: @bubble, disabled: @disabled
     })}>
       <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
+        <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="combobox" data-part="value-input" value={@value_for_hidden_input} />
+
         <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
         <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
-          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, value: @value, form: @form, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: @name, auto_focus: @auto_focus})} />
-
+          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
           <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
           </button>
@@ -342,4 +372,52 @@ defmodule Corex.Combobox do
     </div>
     """
   end
+
+  defp get_value(field_value) do
+    case field_value do
+      nil -> []
+      [] -> []
+      value when is_list(value) -> Enum.map(value, &to_string/1)
+      value -> [to_string(value)]
+    end
+  end
+
+  defp normalize_value_to_ids(collection, value_list) do
+    Enum.map(value_list, &resolve_value_id(collection, &1))
+  end
+
+  defp resolve_value_id(collection, val) do
+    by_id = Enum.find(collection, &(&1.id == val))
+    by_label = Enum.find(collection, &(&1.label == val))
+
+    cond do
+      by_id != nil -> val
+      by_label != nil -> by_label.id
+      true -> val
+    end
+  end
+
+  defp get_selected_label(collection, value) do
+    case value do
+      [] ->
+        nil
+
+      _ ->
+        value
+        |> Enum.map(fn val ->
+          collection
+          |> Enum.find(&(&1.id == val))
+        end)
+        |> Enum.filter(& &1)
+        |> Enum.map(& &1.label)
+        |> case do
+          [] -> nil
+          labels -> Enum.join(labels, ", ")
+        end
+    end
+  end
+
+  defp value_for_hidden_input(value_list, _multiple) when value_list == [], do: ""
+  defp value_for_hidden_input(value_list, false), do: List.first(value_list)
+  defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
 end

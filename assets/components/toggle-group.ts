@@ -14,7 +14,8 @@ export class ToggleGroup extends Component<toggleGroup.Props, toggleGroup.Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]') || this.el;
+    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="toggle-group"][data-part="root"]');
+    if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
     const items = this.el.querySelectorAll<HTMLElement>('[data-scope="toggle-group"][data-part="item"]');

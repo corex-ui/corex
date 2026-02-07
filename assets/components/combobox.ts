@@ -15,7 +15,6 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
   }
 
   private getCollection() {
-    // Ensure we always have an array
     const items = this.options || this.allOptions || [];
     
     if (this.hasGroups) {
@@ -45,23 +44,19 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
         return self.getCollection();
       },
       onOpenChange: (details: OpenChangeDetails) => {
-        // Reset to all items when opening
         if (details.open) {
           self.options = self.allOptions;
         }
-        // Call the original callback if it exists
         if (props.onOpenChange) {
           props.onOpenChange(details);
         }
       },
       onInputValueChange: (details: InputValueChangeDetails) => {
-        // Filter items based on input
         const filtered = self.allOptions.filter((item: any) =>
           item.label.toLowerCase().includes(details.inputValue.toLowerCase())
         );
         self.options = filtered.length > 0 ? filtered : self.allOptions;
         
-        // Call the original callback if it exists
         if (props.onInputValueChange) {
           props.onInputValueChange(details);
         }
@@ -134,7 +129,6 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
       );
       if (!groupContentEl) continue;
 
-      // Clear any template items that were cloned with the group template
       groupContentEl.innerHTML = "";
 
       for (const item of groupItems) {
@@ -198,7 +192,8 @@ export class Combobox extends Component<combobox.Props, combobox.Api> {
 
   render(): void {
     const root =
-      this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]') ?? this.el;
+      this.el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="root"]');
+    if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
 
     [

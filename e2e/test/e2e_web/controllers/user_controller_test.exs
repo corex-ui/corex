@@ -3,9 +3,19 @@ defmodule E2eWeb.UserControllerTest do
 
   import E2e.AccountsFixtures
 
-  @create_attrs %{name: "some name", country: "some country", terms: true}
-  @update_attrs %{name: "some updated name", country: "some updated country", terms: true}
-  @invalid_attrs %{name: nil, country: nil, terms: nil}
+  @create_attrs %{
+    name: "some name",
+    country: "some country",
+    birth_date: "1990-01-15",
+    terms: true
+  }
+  @update_attrs %{
+    name: "some updated name",
+    country: "some updated country",
+    birth_date: "1995-06-20",
+    terms: true
+  }
+  @invalid_attrs %{name: nil, country: nil, birth_date: nil, terms: nil}
 
   describe "index" do
     test "lists all users", %{conn: conn} do

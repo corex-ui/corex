@@ -8,7 +8,10 @@ defmodule E2eWeb.SelectLive do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}>
-      <h3>Minimal</h3>
+      <div class="layout__row">
+        <h1>Select</h1>
+        <h2>Live View</h2>
+      </div>
       <.select
         id="my-select"
         class="select"

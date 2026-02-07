@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.13"
+  @version "0.1.0-alpha.14"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -86,8 +86,14 @@ defmodule Corex.MixProject do
         Corex.Accordion,
         Corex.Checkbox,
         Corex.Combobox,
+        Corex.Clipboard,
+        Corex.Collapsible,
+        Corex.Combobox,
+        Corex.DatePicker,
+        Corex.Dialog,
         Corex.Select,
         Corex.Switch,
+        Corex.Tabs,
         Corex.Toast,
         Corex.ToggleGroup
       ],
@@ -95,8 +101,8 @@ defmodule Corex.MixProject do
         Corex.Form
       ],
       Structures: [
+        Corex.List.Item,
         Corex.Collection.Item,
-        Corex.Accordion.Item,
         Corex.Flash.Info,
         Corex.Flash.Error,
         Corex.Positioning

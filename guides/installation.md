@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.13"}
+    {:corex, "~> 0.1.0-alpha.14"}
   ]
 end
 ```
@@ -151,6 +151,8 @@ In your `app.css` add the following
 
 - Delete Daisy UI related css and plugin `app.css`
 
+If you don't see the styling, please run `mix assets.build`
+
 For more details see [Corex Design](Mix.Tasks.Corex.Design.html) mix task use
 
 ## Add your first component
@@ -171,15 +173,15 @@ Add the following Accordion example to your application
   <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus."
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
@@ -199,7 +201,7 @@ Add the following Accordion example to your application
     <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
@@ -207,14 +209,14 @@ Add the following Accordion example to your application
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "donec",
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
@@ -299,7 +301,7 @@ Add the following Accordion example to your application
 
   def render(assigns) do
     ~H"""
-    <.accordion value={@value} on_value_change="on_value_change" class="accordion">
+    <.accordion controlled value={@value} on_value_change="on_value_change" class="accordion">
       <:item :let={item} value="lorem">
         <.accordion_trigger item={item}>
           Lorem ipsum dolor sit amet
@@ -340,18 +342,18 @@ Add the following Accordion example to your application
         Process.sleep(1000)
 
         items = [
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "lorem",
             trigger: "Lorem ipsum dolor sit amet",
             content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
             disabled: true
           },
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "duis",
             trigger: "Duis dictum gravida odio ac pharetra?",
             content: "Nullam eget vestibulum ligula, at interdum tellus."
           },
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "donec",
             trigger: "Donec condimentum ex mi",
             content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
@@ -372,12 +374,6 @@ Add the following Accordion example to your application
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Async</h2>
-      </div>
-
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
           <.accordion_skeleton count={3} class="accordion" />
@@ -394,7 +390,6 @@ Add the following Accordion example to your application
           value={accordion.value}
         />
       </.async_result>
-    </Layouts.app>
     """
   end
   end
@@ -402,6 +397,27 @@ Add the following Accordion example to your application
   ```
   <!-- tabs-close -->
 
+
+## API Control
+
+In order to use the API, you must use and id on the component
+
+  ***Client-side***
+
+  ```heex
+  <button phx-click={Corex.Accordion.set_value("my-accordion", ["item-1"])}>
+    Open Item 1
+  </button>
+
+  ```
+
+  ***Server-side***
+
+  ```elixir
+  def handle_event("open_item", _, socket) do
+    {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["item-1"])}
+  end
+  ```
 
 ## Components
 

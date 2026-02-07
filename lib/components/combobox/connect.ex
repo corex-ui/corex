@@ -8,9 +8,6 @@ defmodule Corex.Combobox.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    # IO.inspect(assigns.value, label: "assigns.value")
-    # IO.inspect(assigns.controlled, label: "assigns.controlled")
-
     %{
       "id" => assigns.id,
       "data-collection" => Corex.Json.encode!(validate_collection!(assigns.collection)),
@@ -122,35 +119,30 @@ defmodule Corex.Combobox.Connect do
   def input(assigns) do
     base = %{
       "data-scope" => "combobox",
-      "data-part" => "input"
+      "data-part" => "input",
+      "phx-update" => "ignore"
     }
 
     if assigns.changed,
       do: base,
       else:
-        Map.merge(
-          base,
-          %{
-            "autoComplete" => "off",
-            "autoCorrect" => "off",
-            "autoCapitalize" => "off",
-            "spellCheck" => "false",
-            "type" => "text",
-            "role" => "combobox",
-            "dir" => assigns.dir,
-            "id" => "combobox:#{assigns.id}:input",
-            "data-disabled" => get_boolean(assigns.disabled),
-            "data-invalid" => get_boolean(assigns.invalid),
-            "aria-controls" => "combobox:#{assigns.id}:content",
-            "name" => assigns.name,
-            "placeholder" => assigns.placeholder,
-            "required" => get_boolean(assigns.required),
-            "autoFocus" => get_boolean(assigns.auto_focus),
-            "defaultValue" => Enum.at(assigns.value || [], 0),
-            "value" => Enum.at(assigns.value || [], 0),
-            "form" => assigns.form
-          }
-        )
+        base
+        |> Map.merge(%{
+          "autoComplete" => "off",
+          "autoCorrect" => "off",
+          "autoCapitalize" => "off",
+          "spellCheck" => "false",
+          "type" => "text",
+          "role" => "combobox",
+          "dir" => assigns.dir,
+          "id" => "combobox:#{assigns.id}:input",
+          "data-disabled" => get_boolean(assigns.disabled),
+          "data-invalid" => get_boolean(assigns.invalid),
+          "aria-controls" => "combobox:#{assigns.id}:content",
+          "placeholder" => assigns.placeholder,
+          "required" => get_boolean(assigns.required),
+          "autoFocus" => get_boolean(assigns.auto_focus)
+        })
   end
 
   @spec positioner(Positioner.t()) :: map()

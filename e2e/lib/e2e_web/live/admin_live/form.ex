@@ -45,6 +45,23 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.select>
 
+        <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
+          <:label>Select a date</:label>
+          <:trigger>
+            <.icon name="hero-calendar" class="icon" />
+          </:trigger>
+          <:prev_trigger>
+            <.icon name="hero-chevron-left" class="icon" />
+          </:prev_trigger>
+          <:next_trigger>
+            <.icon name="hero-chevron-right" class="icon" />
+          </:next_trigger>
+          <:error :let={msg}>
+            <.icon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.date_picker>
+
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>
             Accept the terms

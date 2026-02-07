@@ -8,7 +8,7 @@ defmodule Corex.Accordion do
 
   ### List
 
-  You must use `Corex.Accordion.Item` struct for items.
+  You must use `Corex.List.Item` struct for items.
 
   The value for each item is optional, useful for controlled mode and API to identify the item.
 
@@ -18,15 +18,15 @@ defmodule Corex.Accordion do
   <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus."
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
@@ -46,7 +46,7 @@ defmodule Corex.Accordion do
     <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
@@ -54,14 +54,14 @@ defmodule Corex.Accordion do
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "donec",
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
@@ -146,7 +146,7 @@ defmodule Corex.Accordion do
 
   def render(assigns) do
     ~H"""
-    <.accordion value={@value} on_value_change="on_value_change" class="accordion">
+    <.accordion controlled value={@value} on_value_change="on_value_change" class="accordion">
       <:item :let={item} value="lorem">
         <.accordion_trigger item={item}>
           Lorem ipsum dolor sit amet
@@ -187,18 +187,18 @@ defmodule Corex.Accordion do
         Process.sleep(1000)
 
         items = [
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "lorem",
             trigger: "Lorem ipsum dolor sit amet",
             content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
             disabled: true
           },
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "duis",
             trigger: "Duis dictum gravida odio ac pharetra?",
             content: "Nullam eget vestibulum ligula, at interdum tellus."
           },
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "donec",
             trigger: "Donec condimentum ex mi",
             content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
@@ -219,12 +219,6 @@ defmodule Corex.Accordion do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Async</h2>
-      </div>
-
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
           <.accordion_skeleton count={3} class="accordion" />
@@ -241,7 +235,6 @@ defmodule Corex.Accordion do
           value={accordion.value}
         />
       </.async_result>
-    </Layouts.app>
     """
   end
   end
@@ -250,6 +243,8 @@ defmodule Corex.Accordion do
   <!-- tabs-close -->
 
   ## API Control
+
+  In order to use the API, you must use and id on the component
 
   ***Client-side***
 
@@ -280,6 +275,22 @@ defmodule Corex.Accordion do
   [data-scope="accordion"][data-part="item-indicator"] {}
   ```
 
+  If you wish to use the default Corex styling, you can use the class `accordion` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/accordion.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.accordion class="accordion accordion--accent accordion--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/accordion#modifiers)
   '''
 
   @doc type: :component
@@ -294,9 +305,9 @@ defmodule Corex.Accordion do
 
   You can use either:
   - The `:item` slot for manual item definition with full control
-  - The `:items` attribute for programmatic item generation from a list of `%Corex.Accordion.Item{}` structs
+  - The `:items` attribute for programmatic item generation from a list of `%Corex.List.Item{}` structs
 
-  When using `:items`, each item MUST be a `%Corex.Accordion.Item{}` struct with:
+  When using `:items`, each item MUST be a `%Corex.List.Item{}` struct with:
   - `:value` (required) - unique identifier for the item
   - `:trigger` (required) - content for the trigger button
   - `:content` (optional, default: "") - content for the accordion panel
@@ -310,7 +321,7 @@ defmodule Corex.Accordion do
 
   attr(:items, :list,
     default: nil,
-    doc: "The items of the accordion, must be a list of %Corex.Accordion.Item{} structs"
+    doc: "The items of the accordion, must be a list of %Corex.List.Item{} structs"
   )
 
   attr(:value, :list,
@@ -509,13 +520,13 @@ defmodule Corex.Accordion do
 
   defp validate_items(%{items: items} = assigns) when is_list(items) do
     Enum.each(items, fn item ->
-      unless is_struct(item, Corex.Accordion.Item) do
+      unless is_struct(item, Corex.List.Item) do
         raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.Accordion.Item{} struct, got: #{inspect(item)}
+        Invalid item in :items attribute. Expected %Corex.List.Item{} struct, got: #{inspect(item)}
 
-        Please use the Corex.Accordion.Item struct:
+        Please use the Corex.List.Item struct:
 
-        %Corex.Accordion.Item{
+        %Corex.List.Item{
           value: "unique-id",
           trigger: "Trigger text",
           content: "Content text",

@@ -132,46 +132,64 @@ defmodule Corex.Select do
 
   ### Controller
 
+  ```elixir
+  defmodule MyAppWeb.PageController do
+    use MyAppWeb, :controller
+
+    def home(conn, params) do
+      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
+      render(conn, :home, form: form)
+    end
+  end
+  ```
+
   ```heex
-  <.form :let={f} for={@changeset} id={get_form_id(@changeset)}>
-     <.select
-    class="select"
-    field={f[:country]}
-    placeholder="Select a country"
-    collection={[
-      %{label: "France", id: "fra", disabled: true},
-      %{label: "Belgium", id: "bel"},
-      %{label: "Germany", id: "deu"},
-      %{label: "Netherlands", id: "nld"},
-      %{label: "Switzerland", id: "che"},
-      %{label: "Austria", id: "aut"}
-    ]}
-  >
-    <:label>
-      Your country of residence
-    </:label>
-    <:trigger>
-      <.icon name="hero-chevron-down" />
-    </:trigger>
-    <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
-  </.select>
+  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
+    <.select
+      field={f[:country]}
+      class="select"
+      placeholder="Select a country"
+      collection={[
+        %{label: "France", id: "fra", disabled: true},
+        %{label: "Belgium", id: "bel"},
+        %{label: "Germany", id: "deu"},
+        %{label: "Netherlands", id: "nld"},
+        %{label: "Switzerland", id: "che"},
+        %{label: "Austria", id: "aut"}
+      ]}
+    >
+      <:label>Your country of residence</:label>
+      <:trigger>
+        <.icon name="hero-chevron-down" />
+      </:trigger>
+      <:error :let={msg}>
+        <.icon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.select>
     <button type="submit">Submit</button>
   </.form>
   ```
 
-
   ### Live View
 
-  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly
+  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly.
 
-  ```heex
-  <.form for={@form} id={get_form_id(@form)} phx-change="validate" phx-submit="save">
-     <.select
-          class="select"
+  ```elixir
+  defmodule MyAppWeb.SelectLive do
+    use MyAppWeb, :live_view
+
+    def mount(_params, _session, socket) do
+      form = to_form(%{"country" => nil}, as: :user)
+      {:ok, assign(socket, :form, form)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.form as={:user} for={@form} id={get_form_id(@form)}>
+        <.select
           field={@form[:country]}
+          class="select"
           controlled
           placeholder="Select a country"
           collection={[
@@ -183,9 +201,7 @@ defmodule Corex.Select do
             %{label: "Austria", id: "aut"}
           ]}
         >
-          <:label>
-            Your country of residence
-          </:label>
+          <:label>Your country of residence</:label>
           <:trigger>
             <.icon name="hero-chevron-down" />
           </:trigger>
@@ -194,15 +210,82 @@ defmodule Corex.Select do
             {msg}
           </:error>
         </.select>
-  </.form>
+        <button type="submit">Submit</button>
+      </.form>
+      """
+    end
+  end
   ```
 
-  The `field` attribute automatically handles:
-  - Setting the `id` from the form field
-  - Setting the `name` for form submission
-  - Mapping the form value to the `select` value
-  - Displaying validation errors
-  - Integration with Phoenix changesets
+  ### With Ecto changeset
+
+  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
+
+  This allows the Live View to be the source of truth and the component to be in sync accordingly.
+
+  First create your schema and changeset:
+
+  ```elixir
+  defmodule MyApp.Accounts.User do
+    use Ecto.Schema
+    import Ecto.Changeset
+
+    schema "users" do
+      field :name, :string
+      field :country, :string
+      timestamps(type: :utc_datetime)
+    end
+
+    def changeset(user, attrs) do
+      user
+      |> cast(attrs, [:name, :country])
+      |> validate_required([:name, :country])
+    end
+  end
+  ```
+
+  ```elixir
+  defmodule MyAppWeb.UserLive do
+    use MyAppWeb, :live_view
+    alias MyApp.Accounts.User
+
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
+    end
+
+    def handle_event("validate", %{"user" => user_params}, socket) do
+      changeset = User.changeset(%User{}, user_params)
+      {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+        <.select
+          field={@form[:country]}
+          class="select"
+          controlled
+          placeholder="Select a country"
+          collection={[
+            %{label: "France", id: "fra"},
+            %{label: "Belgium", id: "bel"},
+            %{label: "Germany", id: "deu"}
+          ]}
+        >
+          <:label>Your country of residence</:label>
+          <:trigger>
+            <.icon name="hero-chevron-down" />
+          </:trigger>
+          <:error :let={msg}>
+            <.icon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.select>
+      </.form>
+      """
+    end
+  end
+  ```
 
   ## API Control
 
@@ -237,6 +320,23 @@ defmodule Corex.Select do
   - `[data-disabled]` - When select is disabled
   - `[data-readonly]` - When select is read-only
   - `[data-invalid]` - When select has validation errors
+
+  If you wish to use the default Corex styling, you can use the class `select` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/select.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.select class="select select--accent select--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/select#modifiers)
 
   '''
 
@@ -373,7 +473,7 @@ defmodule Corex.Select do
 
       <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
 
-      <select id="delse-id" phx-update="ignore" multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
+      <select multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
         <%= Phoenix.HTML.Form.options_for_select(
           @options_with_prompt,
           @selected_for_options,
@@ -450,24 +550,17 @@ defmodule Corex.Select do
 
     case Map.keys(grouped) do
       [nil] ->
-        # No groups, flat list
-        Enum.map(collection, fn item ->
-          {item.label, item.id}
-        end)
+        Enum.map(collection, &{&1.label, &1.id})
 
       _ ->
-        # Has groups
         grouped
         |> Enum.sort_by(fn {group, _} -> group || "" end)
-        |> Enum.flat_map(fn
-          {nil, items} ->
-            Enum.map(items, fn item -> {item.label, item.id} end)
-
-          {group, items} ->
-            [{group, Enum.map(items, fn item -> {item.label, item.id} end)}]
-        end)
+        |> Enum.flat_map(&group_to_options/1)
     end
   end
+
+  defp group_to_options({nil, items}), do: Enum.map(items, &{&1.label, &1.id})
+  defp group_to_options({group, items}), do: [{group, Enum.map(items, &{&1.label, &1.id})}]
 
   defp get_value(field_value) do
     case field_value do

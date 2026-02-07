@@ -9,14 +9,18 @@
 @import "../corex/components/accordion.css";
 @import "../corex/components/layout.css";
 @import "../corex/components/combobox.css";
+@import "../corex/components/date-picker.css";
 @import "../corex/components/select.css";
 @import "../corex/components/checkbox.css";
-
+@import "../corex/components/clipboard.css";
+@import "../corex/components/collapsible.css";
+@import "../corex/components/dialog.css";
 @import "../corex/components/icon.css";
 @import "../corex/components/link.css";
 @import "../corex/components/scrollbar.css";
 @import "../corex/components/switch.css";
 @import "../corex/components/toggle-group.css";
+@import "../corex/components/tabs.css";
 
 @import "../corex/components/toast.css";
 @import "../corex/components/button.css";

@@ -1,0 +1,44 @@
+<Layouts.app flash={@flash}>
+  <h1>Tabs</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <div class="layout__row">
+    <button
+      phx-click={Corex.Tabs.set_value("my-tabs", "lorem")}
+      class="button button--sm"
+    >
+      Open Item 1
+    </button>
+    <button
+      phx-click={Corex.Tabs.set_value("my-tabs", "duis")}
+      class="button button--sm"
+    >
+      Open Item 2
+    </button>
+    <button phx-click={Corex.Tabs.set_value("my-tabs", nil)} class="button button--sm">
+      Close all Items
+    </button>
+  </div>
+  <.tabs
+    id="my-tabs"
+    class="tabs"
+    value="lorem"
+    items={[
+      %Corex.List.Item{
+        value: "lorem",
+        trigger: "Lorem",
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+      },
+      %Corex.List.Item{
+        value: "duis",
+        trigger: "Duis",
+        content: "Nullam eget vestibulum ligula, at interdum tellus."
+      },
+      %Corex.List.Item{
+        value: "donec",
+        trigger: "Donec",
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+      }
+    ]}
+  />
+</Layouts.app>
