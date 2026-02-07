@@ -8,9 +8,6 @@ defmodule Corex.Combobox.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    # IO.inspect(assigns.value, label: "assigns.value")
-    # IO.inspect(assigns.controlled, label: "assigns.controlled")
-
     %{
       "id" => assigns.id,
       "data-collection" => Corex.Json.encode!(validate_collection!(assigns.collection)),

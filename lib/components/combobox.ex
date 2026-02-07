@@ -140,6 +140,23 @@ defmodule Corex.Combobox do
   - `[data-scope="combobox"][data-part="item"]` - Item wrapper
   - `[data-scope="combobox"][data-part="item-text"]` - Item text
   - `[data-scope="combobox"][data-part="item-indicator"]` - Optional indicator
+
+  If you wish to use the default Corex styling, you can use the class `combobox` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/combobox.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.combobox class="combobox combobox--accent combobox--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/combobox#modifiers)
   '''
 
   @doc type: :component
@@ -244,7 +261,6 @@ defmodule Corex.Combobox do
   def combobox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     raw_value = get_value(field.value)
-    # Normalize value: if it's a label, convert it to ID
     value = normalize_value_to_ids(assigns.collection, raw_value)
     selected_label = get_selected_label(assigns.collection, value)
 
@@ -268,7 +284,6 @@ defmodule Corex.Combobox do
 
     value = Map.get(assigns, :value, [])
     value_list = get_value(value)
-    # Normalize value: if it's a label, convert it to ID
     value_list = normalize_value_to_ids(assigns.collection, value_list)
 
     grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
@@ -369,11 +384,9 @@ defmodule Corex.Combobox do
 
   defp normalize_value_to_ids(collection, value_list) do
     Enum.map(value_list, fn val ->
-      # Check if val is already an ID (exists in collection with this ID)
       if Enum.any?(collection, &(&1.id == val)) do
         val
       else
-        # Try to find by label
         case Enum.find(collection, &(&1.label == val)) do
           nil -> val
           item -> item.id

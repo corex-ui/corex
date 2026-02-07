@@ -30,7 +30,6 @@ export class Select extends Component<select.Props, select.Api> {
   }
 
   getCollection(): any {
-    // Use the getter which ensures we always have an array
     const items = this.options;
 
     if (this.hasGroups) {

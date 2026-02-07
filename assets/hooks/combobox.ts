@@ -29,7 +29,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
-    // Get all items from the server
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item: any) => item.group !== undefined);
 
@@ -128,10 +127,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
             : details.value.length === 1
               ? String(details.value[0])
               : details.value.map(String).join(",");
-          // Set the value first
           valueInput.value = idValue;
           
-          // Find the form element
           const formId = valueInput.getAttribute("form");
           let form: HTMLFormElement | null = null;
           
@@ -141,28 +138,20 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
             form = valueInput.closest("form");
           }
           
-          // Trigger change event on the input first (this is what LiveView listens for)
-          // Use a native change event that will bubble to the form
           const changeEvent = new Event("change", { 
             bubbles: true, 
             cancelable: true 
           });
           valueInput.dispatchEvent(changeEvent);
           
-          // Also trigger input event for completeness
           const inputEvent = new Event("input", { 
             bubbles: true, 
             cancelable: true 
           });
           valueInput.dispatchEvent(inputEvent);
           
-          // If form has phx-change, ensure it's triggered
-          // LiveView will serialize all form inputs including our hidden input
-          if (form && form.hasAttribute("phx-change")) {
-            // Use requestAnimationFrame to ensure DOM is updated before LiveView serializes
+           if (form && form.hasAttribute("phx-change")) {
             requestAnimationFrame(() => {
-              // Trigger change on a form element to ensure phx-change fires
-              // LiveView serializes the entire form, so our hidden input will be included
               const formElement = form.querySelector('input, select, textarea') as HTMLElement;
               if (formElement) {
                 const formChangeEvent = new Event("change", { 
@@ -171,7 +160,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
                 });
                 formElement.dispatchEvent(formChangeEvent);
               } else {
-                // Fallback: trigger directly on form
                 const formChangeEvent = new Event("change", { 
                   bubbles: true, 
                   cancelable: true 
@@ -233,7 +221,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
             inputEl.value = inputValue;
           }
         }
-        // combobox.render();
       }
     }
 
@@ -252,8 +239,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         ...(getBoolean(this.el, "controlled")
           ? { value: getStringList(this.el, "value") }
           : { defaultValue: getStringList(this.el, "defaultValue") }),
-        // name: getString(this.el, "name"),
-        // form: getString(this.el, "form"),
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
         disabled: getBoolean(this.el, "disabled"),
         multiple: getBoolean(this.el, "multiple"),
         dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
@@ -262,7 +249,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         readOnly: getBoolean(this.el, "readOnly"),
       });
       
-      // Ensure visible input still doesn't have name/form attributes after update
       const inputEl = this.el.querySelector<HTMLInputElement>(
         '[data-scope="combobox"][data-part="input"]'
       );

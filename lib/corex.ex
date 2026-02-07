@@ -24,7 +24,8 @@ defmodule Corex do
        ]},
     form: {Corex.Form, [get_form_id: 1]},
     select: {Corex.Select, [select: 1]},
-    checkbox: {Corex.Checkbox, [checkbox: 1]}
+    checkbox: {Corex.Checkbox, [checkbox: 1]},
+    tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]}
   }
 
   defmacro __using__(opts \\ []) do

@@ -4,16 +4,9 @@ import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { generateId } from "../lib/util";
 
-/* -------------------------------------------------------------------------------------------------
- * Shared registries
- * -----------------------------------------------------------------------------------------------*/
-
 export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
-/* -------------------------------------------------------------------------------------------------
- * Toast item
- * -----------------------------------------------------------------------------------------------*/
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ToastItemProps<T = any> = toast.Props<T> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -99,7 +92,6 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
 
-    // Handle loading spinner vs progressbar based on duration
     const duration = this.duration;
     const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
     const toastGroup = this.el.closest('[phx-hook="Toast"]') as HTMLElement;
@@ -125,10 +117,6 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
     this.el.remove();
   };
 }
-
-/* -------------------------------------------------------------------------------------------------
- * Toast group
- * -----------------------------------------------------------------------------------------------*/
 
 export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
   private toastComponents = new Map<string, ToastItem>();
@@ -213,9 +201,6 @@ export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
   };
 }
 
-/* -------------------------------------------------------------------------------------------------
- * Public helpers
- * -----------------------------------------------------------------------------------------------*/
 
 export function createToastGroup(
   container: HTMLElement,

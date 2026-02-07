@@ -88,6 +88,7 @@ defmodule Corex.MixProject do
         Corex.Combobox,
         Corex.Select,
         Corex.Switch,
+        Corex.Tabs,
         Corex.Toast,
         Corex.ToggleGroup
       ],
@@ -95,8 +96,8 @@ defmodule Corex.MixProject do
         Corex.Form
       ],
       Structures: [
-        Corex.Collection.Item,
         Corex.List.Item,
+        Corex.Collection.Item,
         Corex.Flash.Info,
         Corex.Flash.Error,
         Corex.Positioning

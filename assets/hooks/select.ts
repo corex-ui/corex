@@ -145,8 +145,6 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
         readOnly: getBoolean(this.el, "readOnly"),
       } as Props);
       
-      // this.select.render();
-
       if (getBoolean(this.el, "controlled")) {
         if (this.wasFocused) {
           const trigger = this.el.querySelector('[data-scope="select"][data-part="trigger"]') as HTMLElement;

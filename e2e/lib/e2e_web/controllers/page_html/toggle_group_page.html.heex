@@ -1,19 +1,21 @@
 <Layouts.app flash={@flash}>
-  <h1>Toggle Group</h1>
-  <h2>Controller View</h2>
+  <div class="layout__row">
+    <h1>Toggle Group</h1>
+    <h2>Controller View</h2>
+  </div>
   <h3>Client Api</h3>
   <div class="layout__row">
     <button
-      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["a"])}
+      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem"])}
       class="button button--sm"
     >
-      Toggle Item 1
+      Toggle Lorem
     </button>
     <button
-      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["a", "b"])}
+      phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem", "donec"])}
       class="button button--sm"
     >
-      Toggle Item 1 and 2
+      Toggle Lorem and Donec
     </button>
     <button
       phx-click={Corex.ToggleGroup.set_value("my-toggle-group", [])}
@@ -23,15 +25,15 @@
     </button>
   </div>
   <.toggle_group id="my-toggle-group" class="toggle-group">
-    <:item value="a">
-      A
+    <:item value="lorem">
+      Lorem
     </:item>
 
-    <:item value="b">
-      B
+    <:item value="duis">
+      Duis
     </:item>
-    <:item value="c">
-      C
+    <:item value="donec">
+      Donec
     </:item>
   </.toggle_group>
 </Layouts.app>

@@ -2,7 +2,6 @@ defmodule Corex.Checkbox.Connect do
   @moduledoc false
   alias Corex.Checkbox.Anatomy.{Props, Root, HiddenInput, Indicator, Control, Label}
 
-  # Generic helper for boolean data attributes
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
   defp data_attr(nil), do: nil

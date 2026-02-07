@@ -91,6 +91,23 @@ defmodule Corex.Switch do
   - `[data-disabled]` - When switch is disabled
   - `[data-readonly]` - When switch is read-only
   - `[data-invalid]` - When switch has validation errors
+
+  If you wish to use the default Corex styling, you can use the class `switch` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/switch.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.switch class="switch switch--accent switch--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/switch#modifiers)
   """
 
   @doc type: :component

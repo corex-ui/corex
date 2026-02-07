@@ -275,6 +275,22 @@ defmodule Corex.Accordion do
   [data-scope="accordion"][data-part="item-indicator"] {}
   ```
 
+  If you wish to use the default Corex styling, you can use the class `accordion` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/accordion.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.accordion class="accordion accordion--accent accordion--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/accordion#modifiers)
   '''
 
   @doc type: :component

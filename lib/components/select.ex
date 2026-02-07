@@ -238,6 +238,23 @@ defmodule Corex.Select do
   - `[data-readonly]` - When select is read-only
   - `[data-invalid]` - When select has validation errors
 
+  If you wish to use the default Corex styling, you can use the class `select` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/select.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.select class="select select--accent select--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/select#modifiers)
+
   '''
 
   use Phoenix.Component
@@ -450,13 +467,11 @@ defmodule Corex.Select do
 
     case Map.keys(grouped) do
       [nil] ->
-        # No groups, flat list
         Enum.map(collection, fn item ->
           {item.label, item.id}
         end)
 
       _ ->
-        # Has groups
         grouped
         |> Enum.sort_by(fn {group, _} -> group || "" end)
         |> Enum.flat_map(fn

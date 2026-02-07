@@ -43,6 +43,9 @@ defmodule E2eWeb.Router do
     live "/admins/:id/edit", AdminLive.Form, :edit
     live_capture "/captures", E2eWeb.LiveCapture
     resources "/users", UserController
+    get "/tabs", PageController, :tabs_page
+    live "/live/tabs", TabsLive
+    live "/live/toggle-group", ToggleGroupLive
   end
 
   # Other scopes may use custom stacks.

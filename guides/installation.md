@@ -173,15 +173,15 @@ Add the following Accordion example to your application
   <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus."
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       }
@@ -201,7 +201,7 @@ Add the following Accordion example to your application
     <.accordion
     class="accordion"
     items={[
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
@@ -209,14 +209,14 @@ Add the following Accordion example to your application
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
         meta: %{
           indicator: "hero-chevron-right",
         }
       },
-      %Corex.Accordion.Item{
+      %Corex.List.Item{
         value: "donec",
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
@@ -342,18 +342,18 @@ Add the following Accordion example to your application
         Process.sleep(1000)
 
         items = [
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "lorem",
             trigger: "Lorem ipsum dolor sit amet",
             content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
             disabled: true
           },
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "duis",
             trigger: "Duis dictum gravida odio ac pharetra?",
             content: "Nullam eget vestibulum ligula, at interdum tellus."
           },
-          %Corex.Accordion.Item{
+          %Corex.List.Item{
             value: "donec",
             trigger: "Donec condimentum ex mi",
             content: "Congue molestie ipsum gravida a. Sed ac eros luctus."

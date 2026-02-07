@@ -59,4 +59,8 @@ defmodule E2eWeb.PageController do
   def select_page(conn, _params) do
     render(conn, :select_page)
   end
+
+  def tabs_page(conn, _params) do
+    render(conn, :tabs_page)
+  end
 end

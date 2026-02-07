@@ -207,6 +207,23 @@ defmodule Corex.Checkbox do
   - `[data-disabled]` - When checkbox is disabled
   - `[data-readonly]` - When checkbox is read-only
   - `[data-invalid]` - When checkbox has validation errors
+
+  If you wish to use the default Corex styling, you can use the class `checkbox` on the component.
+  This requires to install mix corex.design first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/checkbox.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.checkbox class="checkbox checkbox--accent checkbox--lg">
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/checkbox#modifiers)
   '''
 
   @doc type: :component

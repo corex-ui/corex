@@ -11337,8 +11337,8 @@ var Corex = (() => {
         this.combobox.hasGroups = hasGroups;
         this.combobox.setAllOptions(newCollection);
         this.combobox.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
-          // name: getString(this.el, "name"),
-          // form: getString(this.el, "form"),
+          name: getString(this.el, "name"),
+          form: getString(this.el, "form"),
           disabled: getBoolean(this.el, "disabled"),
           multiple: getBoolean(this.el, "multiple"),
           dir: getString(this.el, "dir", ["ltr", "rtl"]),
@@ -12366,15 +12366,24 @@ var Corex = (() => {
       const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]') || this.el;
       this.spreadProps(rootEl, this.api.getRootProps());
       const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]') || this.el;
-      this.spreadProps(rootEl, this.api.getRootProps());
+      this.spreadProps(listEl, this.api.getListProps());
+      const itemsData = this.el.getAttribute("data-items");
+      const items = itemsData ? JSON.parse(itemsData) : [];
       const triggers = listEl.querySelectorAll(
-        ':scope > [data-scope="tabs"][data-part="trigger"]'
+        '[data-scope="tabs"][data-part="trigger"]'
       );
-      for (let i = 0; i < triggers.length; i++) {
+      for (let i = 0; i < triggers.length && i < items.length; i++) {
         const triggerEl = triggers[i];
-        const value = triggerEl.dataset.value;
-        if (!value) continue;
-        this.spreadProps(triggerEl, this.api.getTriggerProps({ value }));
+        const item = items[i];
+        this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value }));
+      }
+      const contents = rootEl.querySelectorAll(
+        '[data-scope="tabs"][data-part="content"]'
+      );
+      for (let i = 0; i < contents.length && i < items.length; i++) {
+        const contentEl = contents[i];
+        const item = items[i];
+        this.spreadProps(contentEl, this.api.getContentProps({ value: item.value }));
       }
     }
   };

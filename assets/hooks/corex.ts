@@ -7,7 +7,6 @@ export { Combobox } from "./combobox";
 export { Checkbox } from "./checkbox";
 export { Tabs } from "./tabs";
 
-// Also export as default for convenience
 import { Accordion } from "./accordion";
 import { Toast } from "./toast";
 import { ToggleGroup } from "./toggle-group";

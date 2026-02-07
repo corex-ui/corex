@@ -17,18 +17,31 @@ export class Tabs extends Component<Props, Api> {
     this.spreadProps(rootEl, this.api.getRootProps());
 
     const listEl = rootEl.querySelector<HTMLElement>('[data-scope="tabs"][data-part="list"]') || this.el;
-    this.spreadProps(rootEl, this.api.getRootProps());
+    this.spreadProps(listEl, this.api.getListProps());
+
+    const itemsData = this.el.getAttribute('data-items');
+    const items: Array<{value: string, disabled: boolean}> = itemsData 
+      ? JSON.parse(itemsData)
+      : [];
 
     const triggers = listEl.querySelectorAll<HTMLElement>(
-      ':scope > [data-scope="tabs"][data-part="trigger"]'
+      '[data-scope="tabs"][data-part="trigger"]'
     );
     
-    for (let i = 0; i < triggers.length; i++) {
+    for (let i = 0; i < triggers.length && i < items.length; i++) {
       const triggerEl = triggers[i];
-      const value = triggerEl.dataset.value;
-      if (!value) continue;
+      const item = items[i];
+      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value }));
+    }
 
-      this.spreadProps(triggerEl, this.api.getTriggerProps({ value }));
+    const contents = rootEl.querySelectorAll<HTMLElement>(
+      '[data-scope="tabs"][data-part="content"]'
+    );
+
+    for (let i = 0; i < contents.length && i < items.length; i++) {
+      const contentEl = contents[i];
+      const item = items[i];
+      this.spreadProps(contentEl, this.api.getContentProps({ value: item.value }));
     }
   }
 }
