@@ -1,0 +1,63 @@
+@import "../main.css";
+
+@layer components {
+  .clipboard [data-scope="clipboard"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-ui-gap);
+    max-width: var(--container-ui);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] {
+    @apply ui-trigger;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="control"] {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    gap: var(--spacing-ui-gap);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"] {
+    @apply ui-input;
+
+    max-width: var(--container-mini);
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="input"][data-copied] {
+    background-color: var(--color-ui-success) !important;
+    color: var(--color-ui-success--text) !important;
+    border-color: var(--color-ui-success--border) !important;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] .data-copy {
+    display: inline-block;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] .data-copied {
+    display: none !important;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
+    background-color: var(--color-ui-success);
+    color: var(--color-ui-success--text);
+    outline-color: var(--color-ui-success--text);
+  }
+
+  .clipboard
+    [data-scope="clipboard"][data-part="trigger"][data-copied]
+    .data-copy {
+    display: none !important;
+  }
+
+  .clipboard
+    [data-scope="clipboard"][data-part="trigger"][data-copied]
+    .data-copied {
+    display: inline-block !important;
+  }
+}
