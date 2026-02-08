@@ -54,7 +54,7 @@ defmodule E2eWeb.Layouts do
           </a>
         </div>
         <div class="layout__row">
-        <.mode_toggle mode={@mode} />
+          <.mode_toggle mode={@mode} />
           <a
             href="https://github.com/corex-ui/corex"
             target="_blank"
@@ -167,7 +167,10 @@ defmodule E2eWeb.Layouts do
     """
   end
 
-  attr :mode, :string, default: "light", values: ["light", "dark"], doc: "the mode (dark or light) from cookie/session"
+  attr :mode, :string,
+    default: "light",
+    values: ["light", "dark"],
+    doc: "the mode (dark or light) from cookie/session"
 
   @doc """
   Provides dark vs light theme toggle using toggle_group.

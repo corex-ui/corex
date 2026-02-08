@@ -79,4 +79,8 @@ defmodule E2eWeb.PageController do
   def date_picker_page(conn, _params) do
     render(conn, :date_picker_page)
   end
+
+  def signature_page(conn, _params) do
+    render(conn, :signature_page)
+  end
 end

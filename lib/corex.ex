@@ -29,7 +29,8 @@ defmodule Corex do
     clipboard: {Corex.Clipboard, [clipboard: 1]},
     collapsible: {Corex.Collapsible, [collapsible: 1]},
     dialog: {Corex.Dialog, [dialog: 1]},
-    date_picker: {Corex.DatePicker, [date_picker: 1]}
+    date_picker: {Corex.DatePicker, [date_picker: 1]},
+    signature_pad: {Corex.SignaturePad, [signature_pad: 1]}
   }
 
   defmacro __using__(opts \\ []) do

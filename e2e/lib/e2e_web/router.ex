@@ -19,54 +19,56 @@ defmodule E2eWeb.Router do
   scope "/", E2eWeb do
     pipe_through :browser
 
-      get "/", PageController, :home
+    get "/", PageController, :home
 
-      get "/accordion", PageController, :accordion_page
-      live "/live/accordion", AccordionLive
-      live "/playground/accordion", AccordionPlayLive
-      live "/controlled/accordion", AccordionControlledLive
-      live "/async/accordion", AccordionAsyncLive
+    get "/accordion", PageController, :accordion_page
+    live "/live/accordion", AccordionLive
+    live "/playground/accordion", AccordionPlayLive
+    live "/controlled/accordion", AccordionControlledLive
+    live "/async/accordion", AccordionAsyncLive
 
-      get "/checkbox", PageController, :checkbox_page
-      live "/live/checkbox", CheckboxLive
+    get "/checkbox", PageController, :checkbox_page
+    live "/live/checkbox", CheckboxLive
 
-      get "/clipboard", PageController, :clipboard_page
-      live "/live/clipboard", ClipboardLive
+    get "/clipboard", PageController, :clipboard_page
+    live "/live/clipboard", ClipboardLive
 
-      get "/collapsible", PageController, :collapsible_page
-      live "/live/collapsible", CollapsibleLive
+    get "/collapsible", PageController, :collapsible_page
+    live "/live/collapsible", CollapsibleLive
 
-      get "/combobox", PageController, :combobox_page
-      live "/live/combobox", ComboboxLive
+    get "/combobox", PageController, :combobox_page
+    live "/live/combobox", ComboboxLive
 
-      get "/date-picker", PageController, :date_picker_page
-      live "/live/date-picker", DatePickerLive
+    get "/date-picker", PageController, :date_picker_page
+    live "/live/date-picker", DatePickerLive
 
-      get "/dialog", PageController, :dialog_page
-      live "/live/dialog", DialogLive
+    get "/dialog", PageController, :dialog_page
+    live "/live/dialog", DialogLive
 
-      get "/select", PageController, :select_page
-      live "/live/select", SelectLive
+    get "/select", PageController, :select_page
+    live "/live/select", SelectLive
 
-      get "/switch", PageController, :switch_page
-      live "/live/switch", SwitchLive
+    get "/signature", PageController, :signature_page
+    live "/live/signature", SignatureLive
+    get "/switch", PageController, :switch_page
+    live "/live/switch", SwitchLive
 
-      get "/tabs", PageController, :tabs_page
-      live "/live/tabs", TabsLive
+    get "/tabs", PageController, :tabs_page
+    live "/live/tabs", TabsLive
 
-      get "/toast", PageController, :toast_page
-      post "/toast", PageController, :create_toast
-      live "/live/toast", ToastLive
+    get "/toast", PageController, :toast_page
+    post "/toast", PageController, :create_toast
+    live "/live/toast", ToastLive
 
-      get "/toggle-group", PageController, :toggle_group_page
-      live "/live/toggle-group", ToggleGroupLive
+    get "/toggle-group", PageController, :toggle_group_page
+    live "/live/toggle-group", ToggleGroupLive
 
-      live "/admins", AdminLive.Index, :index
-      live "/admins/new", AdminLive.Form, :new
-      live "/admins/:id", AdminLive.Show, :show
-      live "/admins/:id/edit", AdminLive.Form, :edit
+    live "/admins", AdminLive.Index, :index
+    live "/admins/new", AdminLive.Form, :new
+    live "/admins/:id", AdminLive.Show, :show
+    live "/admins/:id/edit", AdminLive.Form, :edit
 
-      resources "/users", UserController
+    resources "/users", UserController
 
     live_capture "/captures", E2eWeb.LiveCapture
   end
