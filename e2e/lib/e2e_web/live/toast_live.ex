@@ -60,7 +60,7 @@ defmodule E2eWeb.ToastLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} mode={@mode}>
       <div class="layout__row">
         <h1>Toast</h1>
         <h2>Live View</h2>
@@ -72,7 +72,7 @@ defmodule E2eWeb.ToastLive do
         as={:toast}
         phx-submit="create_flash"
         id={get_form_id(@form)}
-        class="flex flex-col gap-ui max-w-md"
+
       >
         <.input
           field={@form[:title]}

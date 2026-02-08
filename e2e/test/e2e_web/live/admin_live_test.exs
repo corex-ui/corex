@@ -4,16 +4,29 @@ defmodule E2eWeb.AdminLiveTest do
   import Phoenix.LiveViewTest
   import E2e.AccountsFixtures
 
-  @create_attrs %{name: "some name", country: "fra", birth_date: "1990-01-15", terms: true}
+  @create_attrs %{
+    name: "some name",
+    country: "fra",
+    birth_date: "1990-01-15",
+    signature: "/path/to/signature.png",
+    terms: true
+  }
   @update_attrs %{
     name: "some updated name",
     country: "deu",
     birth_date: "1995-06-20",
+    signature: "/path/to/updated-signature.png",
     terms: true
   }
-  @invalid_attrs %{name: "", country: "", birth_date: nil, terms: false}
+  @invalid_attrs %{name: "", country: "", birth_date: nil, signature: "", terms: false}
   # On edit form, country select only allows current value ("fra"); keep it to trigger "can't be blank" on name only
-  @invalid_attrs_edit %{name: "", country: "fra", birth_date: "1990-01-15", terms: false}
+  @invalid_attrs_edit %{
+    name: "",
+    country: "fra",
+    birth_date: "1990-01-15",
+    signature: "",
+    terms: false
+  }
 
   defp create_admin(_) do
     admin = admin_fixture()
@@ -52,8 +65,7 @@ defmodule E2eWeb.AdminLiveTest do
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#admin", admin: @create_attrs)
-               |> render_submit()
+               |> render_submit("save", %{"admin" => @create_attrs})
                |> follow_redirect(conn, ~p"/admins")
 
       html = render(index_live)
@@ -82,8 +94,7 @@ defmodule E2eWeb.AdminLiveTest do
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#admin", admin: @update_attrs)
-               |> render_submit()
+               |> render_submit("save", %{"admin" => @update_attrs})
                |> follow_redirect(conn, ~p"/admins")
 
       html = render(index_live)
@@ -130,8 +141,7 @@ defmodule E2eWeb.AdminLiveTest do
 
       assert {:ok, show_live, _html} =
                form_live
-               |> form("#admin", admin: @update_attrs)
-               |> render_submit()
+               |> render_submit("save", %{"admin" => @update_attrs})
                |> follow_redirect(conn, ~p"/admins/#{admin}")
 
       html = render(show_live)

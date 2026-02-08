@@ -454,20 +454,15 @@ defmodule Corex.DatePicker do
     assigns
     |> assign(field: nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-    |> assign(
-      :id,
-      assigns[:id] || field.id || "date-picker-#{System.unique_integer([:positive])}"
-    )
+    |> assign(:id, field.id)
     |> assign(:name, field.name)
     |> assign(:value, normalize_date_value(field.value))
-    |> assign(:controlled, true)
     |> date_picker()
   end
 
   def date_picker(assigns) do
     assigns =
       assigns
-      |> assign_new(:id, fn -> "date-picker-#{System.unique_integer([:positive])}" end)
       |> assign(:id, assigns[:id] || "date-picker-#{System.unique_integer([:positive])}")
 
     ~H"""
@@ -517,7 +512,7 @@ defmodule Corex.DatePicker do
           {render_slot(@label)}
         </label>
         <div {Connect.control(%Anatomy.Control{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <input type="hidden" id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} />
+          <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} />
           <input
             {Connect.input(%Anatomy.Input{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}
             aria-label={@input_aria_label}

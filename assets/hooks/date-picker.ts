@@ -29,19 +29,16 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     const min = getString(el, "min");
     const max = getString(el, "max");
     const positioningJson = getString(el, "positioning");
-    const isControlled = getBoolean(el, "controlled");
     const parseList = (v: string[] | undefined) => (v ? v.map((x) => datePicker.parse(x)) : undefined);
     const parseOne = (v: string | undefined) => (v ? datePicker.parse(v) : undefined);
 
-    // Always use defaultValue (never Zag's strict controlled `value` prop).
-    // Zag's controlled mode resets the value on every render tick before the server
-    // can respond, causing a bounce-back to the stale value. Instead, we let Zag
-    // manage its own state and sync from the server in `updated()` via api.setValue().
-    const initialValue = parseList(getStringList(el, isControlled ? "value" : "defaultValue"));
 
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      defaultValue: initialValue,
+      // defaultValue: initialValue,
+      ...(getBoolean(el, "controlled")
+      ? { value: parseList(getStringList(el, "value") ) }
+      : { defaultValue: parseList(getStringList(el, "defaultValue") )}),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString<"day" | "month" | "year">(el, "defaultView", ["day", "month", "year"]),
       defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : undefined,
@@ -152,6 +149,9 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
+    const parseList = (v: string[] | undefined) => (v ? v.map((x) => datePicker.parse(x)) : undefined);
+
+
     const el = this.el;
     const min = getString(el, "min");
     const max = getString(el, "max");
@@ -160,7 +160,10 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     const focusedStr = getString(el, "focusedValue");
 
     this.datePicker?.updateProps({
-      id: el.id,
+      // id: el.id,
+      ...(getBoolean(el, "controlled")
+      ? { value: parseList(getStringList(el, "value") ) }
+      : { defaultValue: parseList(getStringList(el, "defaultValue") )}),
       defaultFocusedValue: focusedStr ? datePicker.parse(focusedStr) : undefined,
       defaultView: getString<"day" | "month" | "year">(el, "defaultView", ["day", "month", "year"]),
       defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : undefined,

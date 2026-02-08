@@ -303,7 +303,7 @@ defmodule E2eWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center w-full justify-between gap-6", "pb-4"]}>
+    <header class={[@actions != [] && "flex items-center w-full justify-between gap-6", "w-full pb-4"]}>
       <div>
         <h1>
           {render_slot(@inner_block)}
@@ -349,7 +349,7 @@ defmodule E2eWeb.CoreComponents do
       end
 
     ~H"""
-    <table class="table table-zebra">
+    <table>
       <thead>
         <tr>
           <th :for={col <- @col}>{col[:label]}</th>
@@ -397,11 +397,9 @@ defmodule E2eWeb.CoreComponents do
   def list(assigns) do
     ~H"""
     <ul class="list">
-      <li :for={item <- @item} class="list-row">
-        <div class="list-col-grow">
-          <div class="font-bold">{item.title}</div>
-          <div>{render_slot(item)}</div>
-        </div>
+      <li :for={item <- @item}>
+        <div class="ui-label">{item.title}</div>
+        <div>{render_slot(item)}</div>
       </li>
     </ul>
     """

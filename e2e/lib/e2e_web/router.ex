@@ -6,6 +6,7 @@ defmodule E2eWeb.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
+    plug E2eWeb.Plugs.Mode
     plug :put_root_layout, html: {E2eWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
@@ -47,6 +48,8 @@ defmodule E2eWeb.Router do
     get "/select", PageController, :select_page
     live "/live/select", SelectLive
 
+    get "/signature", PageController, :signature_page
+    live "/live/signature", SignatureLive
     get "/switch", PageController, :switch_page
     live "/live/switch", SwitchLive
 
@@ -65,8 +68,9 @@ defmodule E2eWeb.Router do
     live "/admins/:id", AdminLive.Show, :show
     live "/admins/:id/edit", AdminLive.Form, :edit
 
-    live_capture "/captures", E2eWeb.LiveCapture
     resources "/users", UserController
+
+    live_capture "/captures", E2eWeb.LiveCapture
   end
 
   # Other scopes may use custom stacks.

@@ -10,6 +10,7 @@ export { Clipboard } from "./clipboard";
 export { Collapsible } from "./collapsible";
 export { Dialog } from "./dialog";
 export { DatePicker } from "./date-picker";
+export { SignaturePad } from "./signature-pad";
 
 import { Accordion } from "./accordion";
 import { Toast } from "./toast";
@@ -23,6 +24,7 @@ import { Clipboard } from "./clipboard";
 import { Collapsible } from "./collapsible";
 import { Dialog } from "./dialog";
 import { DatePicker } from "./date-picker";
-const Hooks = { Accordion, ToggleGroup, Toast, Select, Switch, Combobox, Checkbox, Tabs, Clipboard, Collapsible, Dialog, DatePicker };
+import { SignaturePad } from "./signature-pad";
+const Hooks = { Accordion, ToggleGroup, Toast, Select, Switch, Combobox, Checkbox, Tabs, Clipboard, Collapsible, Dialog, DatePicker, SignaturePad };
 
 export default Hooks;

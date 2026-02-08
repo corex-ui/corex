@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.16"}
+    {:corex, "~> 0.1.0-alpha.17"}
   ]
 end
 ```
@@ -425,9 +425,14 @@ Now that Corex is installed, explore the component documentation:
 
 - [Accordion](Corex.Accordion.html)
 - [Checkbox](Corex.Checkbox.html)
+- [Clipboard](Corex.Clipboard.html)
+- [Collapsible](Corex.Collapsible.html)
 - [Combobox](Corex.Combobox.html)
+- [Date Picker](Corex.DatePicker.html)
+- [Dialog](Corex.Dialog.html)
 - [Select](Corex.Select.html)
 - [Switch](Corex.Switch.html)
+- [Tabs](Corex.Tabs.html)
 - [Toast](Corex.Toast.html)
 - [Toggle Group](Corex.ToggleGroup.html)
 

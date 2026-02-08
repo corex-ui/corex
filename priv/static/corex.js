@@ -13,18 +13,18 @@ var Corex = (() => {
     throw TypeError(msg);
   };
   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-  var __spreadValues = (a, b) => {
-    for (var prop in b || (b = {}))
-      if (__hasOwnProp.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
+  var __spreadValues = (a2, b2) => {
+    for (var prop in b2 || (b2 = {}))
+      if (__hasOwnProp.call(b2, prop))
+        __defNormalProp(a2, prop, b2[prop]);
     if (__getOwnPropSymbols)
-      for (var prop of __getOwnPropSymbols(b)) {
-        if (__propIsEnum.call(b, prop))
-          __defNormalProp(a, prop, b[prop]);
+      for (var prop of __getOwnPropSymbols(b2)) {
+        if (__propIsEnum.call(b2, prop))
+          __defNormalProp(a2, prop, b2[prop]);
       }
-    return a;
+    return a2;
   };
-  var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+  var __spreadProps = (a2, b2) => __defProps(a2, __getOwnPropDescs(b2));
   var __objRest = (source, exclude) => {
     var target = {};
     for (var prop in source)
@@ -56,18 +56,18 @@ var Corex = (() => {
       var fulfilled = (value) => {
         try {
           step(generator.next(value));
-        } catch (e) {
-          reject(e);
+        } catch (e2) {
+          reject(e2);
         }
       };
       var rejected = (value) => {
         try {
           step(generator.throw(value));
-        } catch (e) {
-          reject(e);
+        } catch (e2) {
+          reject(e2);
         }
       };
-      var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+      var step = (x2) => x2.done ? resolve(x2.value) : Promise.resolve(x2.value).then(fulfilled, rejected);
       step((generator = generator.apply(__this, __arguments)).next());
     });
   };
@@ -79,28 +79,28 @@ var Corex = (() => {
     var obj = value[__knownSymbol("asyncIterator")], isAwait = false, method, it = {};
     if (obj == null) {
       obj = value[__knownSymbol("iterator")]();
-      method = (k) => it[k] = (x) => obj[k](x);
+      method = (k2) => it[k2] = (x2) => obj[k2](x2);
     } else {
       obj = obj.call(value);
-      method = (k) => it[k] = (v) => {
+      method = (k2) => it[k2] = (v2) => {
         if (isAwait) {
           isAwait = false;
-          if (k === "throw") throw v;
-          return v;
+          if (k2 === "throw") throw v2;
+          return v2;
         }
         isAwait = true;
         return {
           done: false,
           value: new __await(new Promise((resolve) => {
-            var x = obj[k](v);
-            if (!(x instanceof Object)) __typeError("Object expected");
-            resolve(x);
+            var x2 = obj[k2](v2);
+            if (!(x2 instanceof Object)) __typeError("Object expected");
+            resolve(x2);
           }), 1)
         };
       };
     }
-    return it[__knownSymbol("iterator")] = () => it, method("next"), "throw" in obj ? method("throw") : it.throw = (x) => {
-      throw x;
+    return it[__knownSymbol("iterator")] = () => it, method("next"), "throw" in obj ? method("throw") : it.throw = (x2) => {
+      throw x2;
     }, "return" in obj && method("return"), it;
   };
 
@@ -115,6 +115,7 @@ var Corex = (() => {
     DatePicker: () => DatePickerHook,
     Dialog: () => DialogHook,
     Select: () => SelectHook,
+    SignaturePad: () => SignaturePadHook,
     Switch: () => SwitchHook,
     Tabs: () => TabsHook,
     Toast: () => ToastHook,
@@ -123,18 +124,18 @@ var Corex = (() => {
   });
 
   // ../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs
-  var createAnatomy = (name, parts13 = []) => ({
+  var createAnatomy = (name, parts14 = []) => ({
     parts: (...values) => {
-      if (isEmpty(parts13)) {
+      if (isEmpty(parts14)) {
         return createAnatomy(name, values);
       }
       throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
     },
-    extendWith: (...values) => createAnatomy(name, [...parts13, ...values]),
-    omit: (...values) => createAnatomy(name, parts13.filter((part) => !values.includes(part))),
-    rename: (newName) => createAnatomy(newName, parts13),
-    keys: () => parts13,
-    build: () => [...new Set(parts13)].reduce(
+    extendWith: (...values) => createAnatomy(name, [...parts14, ...values]),
+    omit: (...values) => createAnatomy(name, parts14.filter((part) => !values.includes(part))),
+    rename: (newName) => createAnatomy(newName, parts14),
+    keys: () => parts14,
+    build: () => [...new Set(parts14)].reduce(
       (prev, part) => Object.assign(prev, {
         [part]: {
           selector: [
@@ -148,7 +149,7 @@ var Corex = (() => {
     )
   });
   var toKebabCase = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
-  var isEmpty = (v) => v.length === 0;
+  var isEmpty = (v2) => v2.length === 0;
 
   // ../node_modules/.pnpm/@zag-js+dom-query@1.33.1/node_modules/@zag-js/dom-query/dist/index.mjs
   var __defProp2 = Object.defineProperty;
@@ -160,15 +161,16 @@ var Corex = (() => {
       if (input.ownerDocument.activeElement !== input) return;
       const len = input.value.length;
       input.setSelectionRange(len, len);
-    } catch (e) {
+    } catch (e2) {
     }
   }
-  var wrap = (v, idx) => {
-    return v.map((_, index) => v[(Math.max(idx, 0) + index) % v.length]);
+  var clamp = (value) => Math.max(0, Math.min(1, value));
+  var wrap = (v2, idx) => {
+    return v2.map((_2, index) => v2[(Math.max(idx, 0) + index) % v2.length]);
   };
   var pipe = (...fns) => (arg) => fns.reduce((acc, fn) => fn(acc), arg);
   var noop = () => void 0;
-  var isObject = (v) => typeof v === "object" && v !== null;
+  var isObject = (v2) => typeof v2 === "object" && v2 !== null;
   var MAX_Z_INDEX = 2147483647;
   var dataAttr = (guard) => guard ? "" : void 0;
   var ariaAttr = (guard) => guard ? "true" : void 0;
@@ -203,7 +205,7 @@ var Corex = (() => {
     if (el == null || !isHTMLElement(el)) return false;
     try {
       return isInputElement(el) && el.selectionStart != null || TEXTAREA_SELECT_REGEX.test(el.localName) || el.isContentEditable || el.getAttribute("contenteditable") === "true" || el.getAttribute("contenteditable") === "";
-    } catch (e) {
+    } catch (e2) {
       return false;
     }
   }
@@ -259,7 +261,7 @@ var Corex = (() => {
     try {
       result = node.getRootNode({ composed: true });
       if (isDocument(result) || isShadowRoot(result)) return result;
-    } catch (e) {
+    } catch (e2) {
     }
     return (_a = node.ownerDocument) != null ? _a : document;
   }
@@ -360,6 +362,44 @@ var Corex = (() => {
     const controller = rootNode.querySelector(selector);
     return Boolean(controller && isInteractiveContainerElement(element));
   }
+  function getDataUrl(svg, opts) {
+    const { type, quality = 0.92, background } = opts;
+    if (!svg) throw new Error("[zag-js > getDataUrl]: Could not find the svg element");
+    const win = getWindow(svg);
+    const doc = win.document;
+    const svgBounds = svg.getBoundingClientRect();
+    const svgClone = svg.cloneNode(true);
+    if (!svgClone.hasAttribute("viewBox")) {
+      svgClone.setAttribute("viewBox", `0 0 ${svgBounds.width} ${svgBounds.height}`);
+    }
+    const serializer = new win.XMLSerializer();
+    const source = '<?xml version="1.0" standalone="no"?>\r\n' + serializer.serializeToString(svgClone);
+    const svgString = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+    if (type === "image/svg+xml") {
+      return Promise.resolve(svgString).then((str) => {
+        svgClone.remove();
+        return str;
+      });
+    }
+    const dpr = win.devicePixelRatio || 1;
+    const canvas = doc.createElement("canvas");
+    const image = new win.Image();
+    image.src = svgString;
+    canvas.width = svgBounds.width * dpr;
+    canvas.height = svgBounds.height * dpr;
+    const context = canvas.getContext("2d");
+    if (type === "image/jpeg" || background) {
+      context.fillStyle = background || "white";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    return new Promise((resolve) => {
+      image.onload = () => {
+        context == null ? void 0 : context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL(type, quality));
+        svgClone.remove();
+      };
+    });
+  }
   var isDom = () => typeof document !== "undefined";
   function getPlatform() {
     var _a;
@@ -373,9 +413,9 @@ var Corex = (() => {
     }
     return navigator.userAgent;
   }
-  var pt = (v) => isDom() && v.test(getPlatform());
-  var ua = (v) => isDom() && v.test(getUserAgent());
-  var vn = (v) => isDom() && v.test(navigator.vendor);
+  var pt = (v2) => isDom() && v2.test(getPlatform());
+  var ua = (v2) => isDom() && v2.test(getUserAgent());
+  var vn = (v2) => isDom() && v2.test(navigator.vendor);
   var isTouchDevice = () => isDom() && !!navigator.maxTouchPoints;
   var isIPhone = () => pt(/^iPhone/i);
   var isIPad = () => pt(/^iPad/i) || isMac() && navigator.maxTouchPoints > 1;
@@ -416,21 +456,22 @@ var Corex = (() => {
   function isComposingEvent(event) {
     return getNativeEvent(event).isComposing || event.keyCode === 229;
   }
-  function isCtrlOrMetaKey(e) {
-    if (isMac()) return e.metaKey;
-    return e.ctrlKey;
+  function isCtrlOrMetaKey(e2) {
+    if (isMac()) return e2.metaKey;
+    return e2.ctrlKey;
   }
-  function isVirtualClick(e) {
-    if (e.pointerType === "" && e.isTrusted) return true;
-    if (isAndroid() && e.pointerType) {
-      return e.type === "click" && e.buttons === 1;
+  function isVirtualClick(e2) {
+    if (e2.pointerType === "" && e2.isTrusted) return true;
+    if (isAndroid() && e2.pointerType) {
+      return e2.type === "click" && e2.buttons === 1;
     }
-    return e.detail === 0 && !e.pointerType;
+    return e2.detail === 0 && !e2.pointerType;
   }
-  var isLeftClick = (e) => e.button === 0;
-  var isContextMenuEvent = (e) => {
-    return e.button === 2 || isMac() && e.ctrlKey && e.button === 0;
+  var isLeftClick = (e2) => e2.button === 0;
+  var isContextMenuEvent = (e2) => {
+    return e2.button === 2 || isMac() && e2.ctrlKey && e2.button === 0;
   };
+  var isModifierKey = (e2) => e2.ctrlKey || e2.altKey || e2.metaKey;
   var isTouchEvent = (event) => "touches" in event && event.touches.length > 0;
   var keyMap = {
     Up: "ArrowUp",
@@ -515,8 +556,8 @@ var Corex = (() => {
   function trackFormReset(el, callback) {
     if (!el) return;
     const form = getClosestForm(el);
-    const onReset = (e) => {
-      if (e.defaultPrevented) return;
+    const onReset = (e2) => {
+      if (e2.defaultPrevented) return;
       callback();
     };
     form == null ? void 0 : form.addEventListener("reset", onReset, { passive: true });
@@ -562,7 +603,7 @@ var Corex = (() => {
     const toProcess = [...elements];
     const processed = /* @__PURE__ */ new Set();
     const positionMap = /* @__PURE__ */ new Map();
-    elements.forEach((el, i) => positionMap.set(el, i));
+    elements.forEach((el, i2) => positionMap.set(el, i2));
     let processIndex = 0;
     while (processIndex < toProcess.length) {
       const element = toProcess[processIndex++];
@@ -575,17 +616,17 @@ var Corex = (() => {
         if (hostIndex !== void 0) {
           const insertPosition = hostIndex + 1;
           allElements.splice(insertPosition, 0, ...shadowElements);
-          shadowElements.forEach((el, i) => {
-            positionMap.set(el, insertPosition + i);
+          shadowElements.forEach((el, i2) => {
+            positionMap.set(el, insertPosition + i2);
           });
-          for (let i = insertPosition + shadowElements.length; i < allElements.length; i++) {
-            positionMap.set(allElements[i], i);
+          for (let i2 = insertPosition + shadowElements.length; i2 < allElements.length; i2++) {
+            positionMap.set(allElements[i2], i2);
           }
         } else {
           const insertPosition = allElements.length;
           allElements.push(...shadowElements);
-          shadowElements.forEach((el, i) => {
-            positionMap.set(el, insertPosition + i);
+          shadowElements.forEach((el, i2) => {
+            positionMap.set(el, insertPosition + i2);
           });
         }
         toProcess.push(...shadowElements);
@@ -764,7 +805,7 @@ var Corex = (() => {
   }
   function observeAttributes(nodeOrFn, options) {
     const { defer } = options;
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -786,7 +827,7 @@ var Corex = (() => {
   }
   function observeChildren(nodeOrFn, options) {
     const { defer } = options;
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -830,6 +871,21 @@ var Corex = (() => {
     if (!el || !rootEl) return;
     if (!isOverflowElement(rootEl) || !isScrollable(rootEl)) return;
     el.scrollIntoView(scrollOptions);
+  }
+  function getRelativePoint(point, element) {
+    const { left, top, width, height } = element.getBoundingClientRect();
+    const offset3 = { x: point.x - left, y: point.y - top };
+    const percent = { x: clamp(offset3.x / width), y: clamp(offset3.y / height) };
+    function getPercentValue(options = {}) {
+      const { dir = "ltr", orientation = "horizontal", inverted } = options;
+      const invertX = typeof inverted === "object" ? inverted.x : inverted;
+      const invertY = typeof inverted === "object" ? inverted.y : inverted;
+      if (orientation === "horizontal") {
+        return dir === "rtl" || invertX ? 1 - percent.x : percent.x;
+      }
+      return invertY ? 1 - percent.y : percent.y;
+    }
+    return { offset: offset3, percent, getPercentValue };
   }
   var state = "default";
   var userSelect = "";
@@ -883,7 +939,7 @@ var Corex = (() => {
   }
   function disableTextSelection(options = {}) {
     const _a = options, { defer, target } = _a, restOptions = __objRest(_a, ["defer", "target"]);
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -895,6 +951,34 @@ var Corex = (() => {
       cleanups.forEach((fn) => fn == null ? void 0 : fn());
     };
   }
+  function trackPointerMove(doc, handlers) {
+    const { onPointerMove, onPointerUp } = handlers;
+    const handleMove = (event) => {
+      const point = getEventPoint(event);
+      const distance = Math.sqrt(point.x ** 2 + point.y ** 2);
+      const moveBuffer = event.pointerType === "touch" ? 10 : 5;
+      if (distance < moveBuffer) return;
+      if (event.pointerType === "mouse" && event.buttons === 0) {
+        handleUp(event);
+        return;
+      }
+      onPointerMove({ point, event });
+    };
+    const handleUp = (event) => {
+      const point = getEventPoint(event);
+      onPointerUp({ point, event });
+    };
+    const cleanups = [
+      addDomEvent(doc, "pointermove", handleMove, false),
+      addDomEvent(doc, "pointerup", handleUp, false),
+      addDomEvent(doc, "pointercancel", handleUp, false),
+      addDomEvent(doc, "contextmenu", handleUp, false),
+      disableTextSelection({ doc })
+    ];
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }
   function trackPress(options) {
     const {
       pointerNode,
@@ -902,7 +986,7 @@ var Corex = (() => {
       onPress,
       onPressStart,
       onPressEnd,
-      isValidKey: isValidKey2 = (e) => e.key === "Enter"
+      isValidKey: isValidKey2 = (e2) => e2.key === "Enter"
     } = options;
     if (!pointerNode) return noop;
     const win = getWindow(pointerNode);
@@ -980,24 +1064,24 @@ var Corex = (() => {
     var _a;
     return (_a = root == null ? void 0 : root.querySelector(selector)) != null ? _a : null;
   }
-  var defaultItemToId = (v) => v.id;
-  function itemById(v, id, itemToId = defaultItemToId) {
-    return v.find((item) => itemToId(item) === id);
+  var defaultItemToId = (v2) => v2.id;
+  function itemById(v2, id, itemToId = defaultItemToId) {
+    return v2.find((item) => itemToId(item) === id);
   }
-  function indexOfId(v, id, itemToId = defaultItemToId) {
-    const item = itemById(v, id, itemToId);
-    return item ? v.indexOf(item) : -1;
+  function indexOfId(v2, id, itemToId = defaultItemToId) {
+    const item = itemById(v2, id, itemToId);
+    return item ? v2.indexOf(item) : -1;
   }
-  function nextById(v, id, loop = true) {
-    let idx = indexOfId(v, id);
-    idx = loop ? (idx + 1) % v.length : Math.min(idx + 1, v.length - 1);
-    return v[idx];
+  function nextById(v2, id, loop = true) {
+    let idx = indexOfId(v2, id);
+    idx = loop ? (idx + 1) % v2.length : Math.min(idx + 1, v2.length - 1);
+    return v2[idx];
   }
-  function prevById(v, id, loop = true) {
-    let idx = indexOfId(v, id);
-    if (idx === -1) return loop ? v[v.length - 1] : null;
-    idx = loop ? (idx - 1 + v.length) % v.length : Math.max(0, idx - 1);
-    return v[idx];
+  function prevById(v2, id, loop = true) {
+    let idx = indexOfId(v2, id);
+    if (idx === -1) return loop ? v2[v2.length - 1] : null;
+    idx = loop ? (idx - 1 + v2.length) % v2.length : Math.max(0, idx - 1);
+    return v2[idx];
   }
   function createSharedResizeObserver(options) {
     const listeners = /* @__PURE__ */ new WeakMap();
@@ -1059,20 +1143,20 @@ var Corex = (() => {
   var match = (valueText, query2) => {
     return valueText.trim().toLowerCase().startsWith(query2.toLowerCase());
   };
-  function getByText(v, text, currentId, itemToId = defaultItemToId) {
-    const index = currentId ? indexOfId(v, currentId, itemToId) : -1;
-    let items = currentId ? wrap(v, index) : v;
+  function getByText(v2, text, currentId, itemToId = defaultItemToId) {
+    const index = currentId ? indexOfId(v2, currentId, itemToId) : -1;
+    let items = currentId ? wrap(v2, index) : v2;
     const isSingleKey = text.length === 1;
     if (isSingleKey) {
       items = items.filter((item) => itemToId(item) !== currentId);
     }
     return items.find((item) => match(getValueText(item), text));
   }
-  function setAttribute(el, attr, v) {
+  function setAttribute(el, attr, v2) {
     const prev = el.getAttribute(attr);
     const exists = prev != null;
-    if (prev === v) return noop;
-    el.setAttribute(attr, v);
+    if (prev === v2) return noop;
+    el.setAttribute(attr, v2);
     return () => {
       if (!exists) {
         el.removeAttribute(attr);
@@ -1108,8 +1192,8 @@ var Corex = (() => {
       }
     };
   }
-  function isEqual(a, b) {
-    return Object.keys(a).every((key) => a[key] === b[key]);
+  function isEqual(a2, b2) {
+    return Object.keys(a2).every((key) => a2[key] === b2[key]);
   }
   function getByTypeaheadImpl(baseItems, options) {
     const { state: state2, activeId, key, timeout = 350, itemToId } = options;
@@ -1218,18 +1302,18 @@ var Corex = (() => {
   var __accessCheck = (obj, member, msg) => member.has(obj) || __typeError2("Cannot " + msg);
   var __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), member.get(obj));
   var __privateAdd = (obj, member, value) => member.has(obj) ? __typeError2("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-  function toArray(v) {
-    if (v == null) return [];
-    return Array.isArray(v) ? v : [v];
+  function toArray(v2) {
+    if (v2 == null) return [];
+    return Array.isArray(v2) ? v2 : [v2];
   }
-  var first = (v) => v[0];
-  var last = (v) => v[v.length - 1];
-  var has = (v, t) => v.indexOf(t) !== -1;
-  var add = (v, ...items) => v.concat(items);
-  var remove = (v, ...items) => v.filter((t) => !items.includes(t));
-  var addOrRemove = (v, item) => has(v, item) ? remove(v, item) : add(v, item);
-  function chunk(v, size3) {
-    return v.reduce((rows, value, index) => {
+  var first = (v2) => v2[0];
+  var last = (v2) => v2[v2.length - 1];
+  var has = (v2, t2) => v2.indexOf(t2) !== -1;
+  var add = (v2, ...items) => v2.concat(items);
+  var remove = (v2, ...items) => v2.filter((t2) => !items.includes(t2));
+  var addOrRemove = (v2, item) => has(v2, item) ? remove(v2, item) : add(v2, item);
+  function chunk(v2, size3) {
+    return v2.reduce((rows, value, index) => {
       var _a;
       if (index % size3 === 0) rows.push([value]);
       else (_a = last(rows)) == null ? void 0 : _a.push(value);
@@ -1237,69 +1321,69 @@ var Corex = (() => {
     }, []);
   }
   var isArrayLike = (value) => (value == null ? void 0 : value.constructor.name) === "Array";
-  var isArrayEqual = (a, b) => {
-    if (a.length !== b.length) return false;
-    for (let i = 0; i < a.length; i++) {
-      if (!isEqual2(a[i], b[i])) return false;
+  var isArrayEqual = (a2, b2) => {
+    if (a2.length !== b2.length) return false;
+    for (let i2 = 0; i2 < a2.length; i2++) {
+      if (!isEqual2(a2[i2], b2[i2])) return false;
     }
     return true;
   };
-  var isEqual2 = (a, b) => {
-    if (Object.is(a, b)) return true;
-    if (a == null && b != null || a != null && b == null) return false;
-    if (typeof (a == null ? void 0 : a.isEqual) === "function" && typeof (b == null ? void 0 : b.isEqual) === "function") {
-      return a.isEqual(b);
+  var isEqual2 = (a2, b2) => {
+    if (Object.is(a2, b2)) return true;
+    if (a2 == null && b2 != null || a2 != null && b2 == null) return false;
+    if (typeof (a2 == null ? void 0 : a2.isEqual) === "function" && typeof (b2 == null ? void 0 : b2.isEqual) === "function") {
+      return a2.isEqual(b2);
     }
-    if (typeof a === "function" && typeof b === "function") {
-      return a.toString() === b.toString();
+    if (typeof a2 === "function" && typeof b2 === "function") {
+      return a2.toString() === b2.toString();
     }
-    if (isArrayLike(a) && isArrayLike(b)) {
-      return isArrayEqual(Array.from(a), Array.from(b));
+    if (isArrayLike(a2) && isArrayLike(b2)) {
+      return isArrayEqual(Array.from(a2), Array.from(b2));
     }
-    if (!(typeof a === "object") || !(typeof b === "object")) return false;
-    const keys = Object.keys(b != null ? b : /* @__PURE__ */ Object.create(null));
+    if (!(typeof a2 === "object") || !(typeof b2 === "object")) return false;
+    const keys = Object.keys(b2 != null ? b2 : /* @__PURE__ */ Object.create(null));
     const length = keys.length;
-    for (let i = 0; i < length; i++) {
-      const hasKey = Reflect.has(a, keys[i]);
+    for (let i2 = 0; i2 < length; i2++) {
+      const hasKey = Reflect.has(a2, keys[i2]);
       if (!hasKey) return false;
     }
-    for (let i = 0; i < length; i++) {
-      const key = keys[i];
-      if (!isEqual2(a[key], b[key])) return false;
+    for (let i2 = 0; i2 < length; i2++) {
+      const key = keys[i2];
+      if (!isEqual2(a2[key], b2[key])) return false;
     }
     return true;
   };
-  var isArray = (v) => Array.isArray(v);
-  var isBoolean = (v) => v === true || v === false;
-  var isObjectLike = (v) => v != null && typeof v === "object";
-  var isObject2 = (v) => isObjectLike(v) && !isArray(v);
-  var isString = (v) => typeof v === "string";
-  var isFunction = (v) => typeof v === "function";
-  var isNull = (v) => v == null;
+  var isArray = (v2) => Array.isArray(v2);
+  var isBoolean = (v2) => v2 === true || v2 === false;
+  var isObjectLike = (v2) => v2 != null && typeof v2 === "object";
+  var isObject2 = (v2) => isObjectLike(v2) && !isArray(v2);
+  var isString = (v2) => typeof v2 === "string";
+  var isFunction = (v2) => typeof v2 === "function";
+  var isNull = (v2) => v2 == null;
   var hasProp = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-  var baseGetTag = (v) => Object.prototype.toString.call(v);
+  var baseGetTag = (v2) => Object.prototype.toString.call(v2);
   var fnToString = Function.prototype.toString;
   var objectCtorString = fnToString.call(Object);
-  var isPlainObject = (v) => {
-    if (!isObjectLike(v) || baseGetTag(v) != "[object Object]" || isFrameworkElement(v)) return false;
-    const proto = Object.getPrototypeOf(v);
+  var isPlainObject = (v2) => {
+    if (!isObjectLike(v2) || baseGetTag(v2) != "[object Object]" || isFrameworkElement(v2)) return false;
+    const proto = Object.getPrototypeOf(v2);
     if (proto === null) return true;
     const Ctor = hasProp(proto, "constructor") && proto.constructor;
     return typeof Ctor == "function" && Ctor instanceof Ctor && fnToString.call(Ctor) == objectCtorString;
   };
-  var isReactElement = (x) => typeof x === "object" && x !== null && "$$typeof" in x && "props" in x;
-  var isVueElement = (x) => typeof x === "object" && x !== null && "__v_isVNode" in x;
-  var isFrameworkElement = (x) => isReactElement(x) || isVueElement(x);
-  var runIfFn = (v, ...a) => {
-    const res = typeof v === "function" ? v(...a) : v;
+  var isReactElement = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
+  var isVueElement = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
+  var isFrameworkElement = (x2) => isReactElement(x2) || isVueElement(x2);
+  var runIfFn = (v2, ...a2) => {
+    const res = typeof v2 === "function" ? v2(...a2) : v2;
     return res != null ? res : void 0;
   };
-  var identity = (v) => v();
+  var identity = (v2) => v2();
   var noop2 = () => {
   };
-  var callAll = (...fns) => (...a) => {
+  var callAll = (...fns) => (...a2) => {
     fns.forEach(function(fn) {
-      fn == null ? void 0 : fn(...a);
+      fn == null ? void 0 : fn(...a2);
     });
   };
   var uuid = /* @__PURE__ */ (() => {
@@ -1320,16 +1404,16 @@ var Corex = (() => {
     throw error;
   }
   var { floor, abs, round, min, max, pow, sign } = Math;
-  var isNaN2 = (v) => Number.isNaN(v);
-  var nan = (v) => isNaN2(v) ? 0 : v;
-  var isValueWithinRange = (v, vmin, vmax) => {
-    const value = nan(v);
+  var isNaN2 = (v2) => Number.isNaN(v2);
+  var nan = (v2) => isNaN2(v2) ? 0 : v2;
+  var isValueWithinRange = (v2, vmin, vmax) => {
+    const value = nan(v2);
     const minCheck = vmin == null || value >= vmin;
     const maxCheck = vmax == null || value <= vmax;
     return minCheck && maxCheck;
   };
-  var clampValue = (v, vmin, vmax) => min(max(nan(v), vmin), vmax);
-  var toPx = (v) => typeof v === "number" ? `${v}px` : v;
+  var clampValue = (v2, vmin, vmax) => min(max(nan(v2), vmin), vmax);
+  var toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
   function compact(obj) {
     if (!isPlainObject(obj) || obj === void 0) return obj;
     const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
@@ -1342,23 +1426,23 @@ var Corex = (() => {
     }
     return filtered;
   }
-  function splitProps(props12, keys) {
+  function splitProps(props13, keys) {
     const rest = {};
     const result = {};
     const keySet = new Set(keys);
-    const ownKeys = Reflect.ownKeys(props12);
+    const ownKeys = Reflect.ownKeys(props13);
     for (const key of ownKeys) {
       if (keySet.has(key)) {
-        result[key] = props12[key];
+        result[key] = props13[key];
       } else {
-        rest[key] = props12[key];
+        rest[key] = props13[key];
       }
     }
     return [result, rest];
   }
   var createSplitProps = (keys) => {
-    return function split(props12) {
-      return splitProps(props12, keys);
+    return function split(props13) {
+      return splitProps(props13, keys);
     };
   };
   var currentTime = () => performance.now();
@@ -1428,20 +1512,20 @@ var Corex = (() => {
     timer.start();
     return () => timer.stop();
   }
-  function warn(...a) {
-    const m = a.length === 1 ? a[0] : a[1];
-    const c = a.length === 2 ? a[0] : true;
-    if (c && true) {
-      console.warn(m);
+  function warn(...a2) {
+    const m2 = a2.length === 1 ? a2[0] : a2[1];
+    const c2 = a2.length === 2 ? a2[0] : true;
+    if (c2 && true) {
+      console.warn(m2);
     }
   }
-  function ensure(c, m) {
-    if (c == null) throw new Error(m());
+  function ensure(c2, m2) {
+    if (c2 == null) throw new Error(m2());
   }
-  function ensureProps(props12, keys, scope) {
+  function ensureProps(props13, keys, scope) {
     let missingKeys = [];
     for (const key of keys) {
-      if (props12[key] == null) missingKeys.push(key);
+      if (props13[key] == null) missingKeys.push(key);
     }
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
@@ -1505,10 +1589,10 @@ var Corex = (() => {
     return MachineStatus2;
   })(MachineStatus || {});
   var INIT_STATE = "__init__";
-  function createScope(props12) {
+  function createScope(props13) {
     const getRootNode2 = () => {
       var _a, _b;
-      return (_b = (_a = props12.getRootNode) == null ? void 0 : _a.call(props12)) != null ? _b : document;
+      return (_b = (_a = props13.getRootNode) == null ? void 0 : _a.call(props13)) != null ? _b : document;
     };
     const getDoc = () => getDocument(getRootNode2());
     const getWin = () => {
@@ -1517,7 +1601,7 @@ var Corex = (() => {
     };
     const getActiveElementFn = () => getActiveElement(getRootNode2());
     const getById = (id) => getRootNode2().getElementById(id);
-    return __spreadProps(__spreadValues({}, props12), {
+    return __spreadProps(__spreadValues({}, props13), {
       getRootNode: getRootNode2,
       getDoc,
       getWin,
@@ -1532,14 +1616,14 @@ var Corex = (() => {
     return new Proxy({}, {
       get(_target, key) {
         if (key === "style")
-          return (props12) => {
-            return fn({ style: props12 }).style;
+          return (props13) => {
+            return fn({ style: props13 }).style;
           };
         return fn;
       }
     });
   }
-  var createProps = () => (props12) => Array.from(new Set(props12));
+  var createProps = () => (props13) => Array.from(new Set(props13));
 
   // ../node_modules/.pnpm/@zag-js+accordion@1.33.1/node_modules/@zag-js/accordion/dist/index.mjs
   var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -1884,18 +1968,18 @@ var Corex = (() => {
     if (typeof global !== "undefined") return global;
   }
   function globalRef(key, value) {
-    const g = glob();
-    if (!g) return value();
-    g[key] || (g[key] = value());
-    return g[key];
+    const g2 = glob();
+    if (!g2) return value();
+    g2[key] || (g2[key] = value());
+    return g2[key];
   }
   var refSet = globalRef("__zag__refSet", () => /* @__PURE__ */ new WeakSet());
-  var isReactElement2 = (x) => typeof x === "object" && x !== null && "$$typeof" in x && "props" in x;
-  var isVueElement2 = (x) => typeof x === "object" && x !== null && "__v_isVNode" in x;
-  var isDOMElement = (x) => typeof x === "object" && x !== null && "nodeType" in x && typeof x.nodeName === "string";
-  var isElement = (x) => isReactElement2(x) || isVueElement2(x) || isDOMElement(x);
-  var isObject3 = (x) => x !== null && typeof x === "object";
-  var canProxy = (x) => isObject3(x) && !refSet.has(x) && (Array.isArray(x) || !(Symbol.iterator in x)) && !isElement(x) && !(x instanceof WeakMap) && !(x instanceof WeakSet) && !(x instanceof Error) && !(x instanceof Number) && !(x instanceof Date) && !(x instanceof String) && !(x instanceof RegExp) && !(x instanceof ArrayBuffer) && !(x instanceof Promise) && !(x instanceof File) && !(x instanceof Blob) && !(x instanceof AbortController);
+  var isReactElement2 = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
+  var isVueElement2 = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
+  var isDOMElement = (x2) => typeof x2 === "object" && x2 !== null && "nodeType" in x2 && typeof x2.nodeName === "string";
+  var isElement = (x2) => isReactElement2(x2) || isVueElement2(x2) || isDOMElement(x2);
+  var isObject3 = (x2) => x2 !== null && typeof x2 === "object";
+  var canProxy = (x2) => isObject3(x2) && !refSet.has(x2) && (Array.isArray(x2) || !(Symbol.iterator in x2)) && !isElement(x2) && !(x2 instanceof WeakMap) && !(x2 instanceof WeakSet) && !(x2 instanceof Error) && !(x2 instanceof Number) && !(x2 instanceof Date) && !(x2 instanceof String) && !(x2 instanceof RegExp) && !(x2 instanceof ArrayBuffer) && !(x2 instanceof Promise) && !(x2 instanceof File) && !(x2 instanceof Blob) && !(x2 instanceof AbortController);
   var isDev = () => true;
   var proxyStateMap = globalRef("__zag__proxyStateMap", () => /* @__PURE__ */ new WeakMap());
   var buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => new Proxy(target, handler), snapCache = /* @__PURE__ */ new WeakMap(), createSnapshot = (target, version) => {
@@ -2131,8 +2215,8 @@ var Corex = (() => {
     }
     return string;
   };
-  var normalizeProps = createNormalizer((props12) => {
-    return Object.entries(props12).reduce((acc, [key, value]) => {
+  var normalizeProps = createNormalizer((props13) => {
+    return Object.entries(props13).reduce((acc, [key, value]) => {
       if (value === void 0) return acc;
       if (key in propMap) {
         key = propMap[key];
@@ -2177,11 +2261,11 @@ var Corex = (() => {
     }
     const oldAttrs = machineMap.get(scopeKey) || {};
     const attrKeys = Object.keys(attrs);
-    const addEvt = (e, f) => {
-      node.addEventListener(e.toLowerCase(), f);
+    const addEvt = (e2, f2) => {
+      node.addEventListener(e2.toLowerCase(), f2);
     };
-    const remEvt = (e, f) => {
-      node.removeEventListener(e.toLowerCase(), f);
+    const remEvt = (e2, f2) => {
+      node.removeEventListener(e2.toLowerCase(), f2);
     };
     const onEvents = (attr) => attr.startsWith("on");
     const others = (attr) => !attr.startsWith("on");
@@ -2242,40 +2326,40 @@ var Corex = (() => {
       }
     };
   }
-  function bindable(props12) {
+  function bindable(props13) {
     var _a, _b;
-    const initial = (_a = props12().value) != null ? _a : props12().defaultValue;
-    if (props12().debug) {
-      console.log(`[bindable > ${props12().debug}] initial`, initial);
+    const initial = (_a = props13().value) != null ? _a : props13().defaultValue;
+    if (props13().debug) {
+      console.log(`[bindable > ${props13().debug}] initial`, initial);
     }
-    const eq = (_b = props12().isEqual) != null ? _b : Object.is;
+    const eq = (_b = props13().isEqual) != null ? _b : Object.is;
     const store = proxy({ value: initial });
-    const controlled = () => props12().value !== void 0;
+    const controlled = () => props13().value !== void 0;
     return {
       initial,
       ref: store,
       get() {
-        return controlled() ? props12().value : store.value;
+        return controlled() ? props13().value : store.value;
       },
       set(nextValue) {
         var _a2, _b2;
         const prev = store.value;
         const next = isFunction(nextValue) ? nextValue(prev) : nextValue;
-        if (props12().debug) {
-          console.log(`[bindable > ${props12().debug}] setValue`, { next, prev });
+        if (props13().debug) {
+          console.log(`[bindable > ${props13().debug}] setValue`, { next, prev });
         }
         if (!controlled()) store.value = next;
         if (!eq(next, prev)) {
-          (_b2 = (_a2 = props12()).onChange) == null ? void 0 : _b2.call(_a2, next, prev);
+          (_b2 = (_a2 = props13()).onChange) == null ? void 0 : _b2.call(_a2, next, prev);
         }
       },
       invoke(nextValue, prevValue) {
         var _a2, _b2;
-        (_b2 = (_a2 = props12()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
+        (_b2 = (_a2 = props13()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
       },
       hash(value) {
         var _a2, _b2, _c;
-        return (_c = (_b2 = (_a2 = props12()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
+        return (_c = (_b2 = (_a2 = props13()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
       }
     };
   }
@@ -2321,9 +2405,9 @@ var Corex = (() => {
     return result;
   }
   var VanillaMachine = class {
-    constructor(machine13, userProps = {}) {
+    constructor(machine14, userProps = {}) {
       var _a, _b, _c;
-      this.machine = machine13;
+      this.machine = machine14;
       __publicField4(this, "scope");
       __publicField4(this, "context");
       __publicField4(this, "prop");
@@ -2386,10 +2470,10 @@ var Corex = (() => {
       __publicField4(this, "action", (keys) => {
         const strs = isFunction(keys) ? keys(this.getParams()) : keys;
         if (!strs) return;
-        const fns = strs.map((s) => {
+        const fns = strs.map((s2) => {
           var _a2, _b2;
-          const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.actions) == null ? void 0 : _b2[s];
-          if (!fn) warn(`[zag-js] No implementation found for action "${JSON.stringify(s)}"`);
+          const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.actions) == null ? void 0 : _b2[s2];
+          if (!fn) warn(`[zag-js] No implementation found for action "${JSON.stringify(s2)}"`);
           return fn;
         });
         for (const fn of fns) {
@@ -2404,10 +2488,10 @@ var Corex = (() => {
       __publicField4(this, "effect", (keys) => {
         const strs = isFunction(keys) ? keys(this.getParams()) : keys;
         if (!strs) return;
-        const fns = strs.map((s) => {
+        const fns = strs.map((s2) => {
           var _a2, _b2;
-          const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.effects) == null ? void 0 : _b2[s];
-          if (!fn) warn(`[zag-js] No implementation found for effect "${JSON.stringify(s)}"`);
+          const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.effects) == null ? void 0 : _b2[s2];
+          if (!fn) warn(`[zag-js] No implementation found for effect "${JSON.stringify(s2)}"`);
           return fn;
         });
         const cleanups = [];
@@ -2418,10 +2502,10 @@ var Corex = (() => {
         return () => cleanups.forEach((fn) => fn == null ? void 0 : fn());
       });
       __publicField4(this, "choose", (transitions) => {
-        return toArray(transitions).find((t) => {
-          let result = !t.guard;
-          if (isString(t.guard)) result = !!this.guard(t.guard);
-          else if (isFunction(t.guard)) result = t.guard(this.getParams());
+        return toArray(transitions).find((t2) => {
+          let result = !t2.guard;
+          if (isString(t2.guard)) result = !!this.guard(t2.guard);
+          else if (isFunction(t2.guard)) result = t2.guard(this.getParams());
           return result;
         });
       });
@@ -2475,11 +2559,11 @@ var Corex = (() => {
       const prop = (key) => {
         var _a2, _b2;
         const __props = runIfFn(this.userPropsRef.current);
-        const props12 = (_b2 = (_a2 = machine13.props) == null ? void 0 : _a2.call(machine13, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
-        return props12[key];
+        const props13 = (_b2 = (_a2 = machine14.props) == null ? void 0 : _a2.call(machine14, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+        return props13[key];
       };
       this.prop = prop;
-      const context = (_a = machine13.context) == null ? void 0 : _a.call(machine13, {
+      const context = (_a = machine14.context) == null ? void 0 : _a.call(machine14, {
         prop,
         bindable,
         scope: this.scope,
@@ -2521,7 +2605,7 @@ var Corex = (() => {
       this.context = ctx;
       const computed = (key) => {
         var _a2, _b2;
-        return (_b2 = (_a2 = machine13.computed) == null ? void 0 : _a2[key]({
+        return (_b2 = (_a2 = machine14.computed) == null ? void 0 : _a2[key]({
           context: ctx,
           event: this.getEvent(),
           prop,
@@ -2531,10 +2615,10 @@ var Corex = (() => {
         })) != null ? _b2 : {};
       };
       this.computed = computed;
-      const refs = createRefs((_c = (_b = machine13.refs) == null ? void 0 : _b.call(machine13, { prop, context: ctx })) != null ? _c : {});
+      const refs = createRefs((_c = (_b = machine14.refs) == null ? void 0 : _b.call(machine14, { prop, context: ctx })) != null ? _c : {});
       this.refs = refs;
       const state2 = bindable(() => ({
-        defaultValue: machine13.initialState({ prop }),
+        defaultValue: machine14.initialState({ prop }),
         onChange: (nextState, prevState) => {
           var _a2, _b2, _c2, _d;
           if (prevState) {
@@ -2549,8 +2633,8 @@ var Corex = (() => {
           const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
           if (cleanup) this.effects.set(nextState, cleanup);
           if (prevState === INIT_STATE) {
-            this.action(machine13.entry);
-            const cleanup2 = this.effect(machine13.effects);
+            this.action(machine14.entry);
+            const cleanup2 = this.effect(machine14.effects);
             if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
           }
           this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
@@ -2602,7 +2686,7 @@ var Corex = (() => {
 
   // lib/core.ts
   var Component = class {
-    constructor(el, props12) {
+    constructor(el, props13) {
       __publicField(this, "el");
       __publicField(this, "doc");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2619,16 +2703,16 @@ var Corex = (() => {
       __publicField(this, "destroy", () => {
         this.machine.stop();
       });
-      __publicField(this, "spreadProps", (el, props12) => {
-        spreadProps(el, props12, this.machine.scope.id);
+      __publicField(this, "spreadProps", (el, props13) => {
+        spreadProps(el, props13, this.machine.scope.id);
       });
-      __publicField(this, "updateProps", (props12) => {
-        this.machine.updateProps(props12);
+      __publicField(this, "updateProps", (props13) => {
+        this.machine.updateProps(props13);
       });
       if (!el) throw new Error("Root element not found");
       this.el = el;
       this.doc = document;
-      this.machine = this.initMachine(props12);
+      this.machine = this.initMachine(props13);
       this.api = this.initApi();
     }
   };
@@ -2636,8 +2720,8 @@ var Corex = (() => {
   // components/accordion.ts
   var Accordion = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine, props13);
     }
     initApi() {
       return connect(this.machine.service, normalizeProps);
@@ -2649,8 +2733,8 @@ var Corex = (() => {
       const items = rootEl.querySelectorAll(
         ':scope > [data-scope="accordion"][data-part="item"]'
       );
-      for (let i = 0; i < items.length; i++) {
-        const itemEl = items[i];
+      for (let i2 = 0; i2 < items.length; i2++) {
+        const itemEl = items[i2];
         const value = itemEl.dataset.value;
         if (!value) continue;
         const disabled = itemEl.hasAttribute("data-disabled");
@@ -2682,7 +2766,7 @@ var Corex = (() => {
   var getStringList = (element, attrName) => {
     const value = element.dataset[attrName];
     if (typeof value === "string") {
-      return value.split(",").map((v) => v.trim()).filter((v) => v.length > 0);
+      return value.split(",").map((v2) => v2.trim()).filter((v2) => v2.length > 0);
     }
     return void 0;
   };
@@ -2837,8 +2921,8 @@ var Corex = (() => {
     const frames = {
       each(cb) {
         var _a;
-        for (let i = 0; i < ((_a = win.frames) == null ? void 0 : _a.length); i += 1) {
-          const frame = win.frames[i];
+        for (let i2 = 0; i2 < ((_a = win.frames) == null ? void 0 : _a.length); i2 += 1) {
+          const frame = win.frames[i2];
           if (frame) cb(frame);
         }
       },
@@ -2846,13 +2930,13 @@ var Corex = (() => {
         frames.each((frame) => {
           try {
             frame.document.addEventListener(event, listener, options);
-          } catch (e) {
+          } catch (e2) {
           }
         });
         return () => {
           try {
             frames.removeEventListener(event, listener, options);
-          } catch (e) {
+          } catch (e2) {
           }
         };
       },
@@ -2860,7 +2944,7 @@ var Corex = (() => {
         frames.each((frame) => {
           try {
             frame.document.removeEventListener(event, listener, options);
-          } catch (e) {
+          } catch (e2) {
           }
         });
       }
@@ -2873,19 +2957,19 @@ var Corex = (() => {
       addEventListener: (event, listener, options) => {
         try {
           parent == null ? void 0 : parent.addEventListener(event, listener, options);
-        } catch (e) {
+        } catch (e2) {
         }
         return () => {
           try {
             parent == null ? void 0 : parent.removeEventListener(event, listener, options);
-          } catch (e) {
+          } catch (e2) {
           }
         };
       },
       removeEventListener: (event, listener, options) => {
         try {
           parent == null ? void 0 : parent.removeEventListener(event, listener, options);
-        } catch (e) {
+        } catch (e2) {
         }
       }
     };
@@ -2961,7 +3045,7 @@ var Corex = (() => {
     function onPointerDown(event) {
       function handler(clickEvent) {
         var _a, _b;
-        const func = defer && !isTouchDevice() ? raf : (v) => v();
+        const func = defer && !isTouchDevice() ? raf : (v2) => v2();
         const evt = clickEvent != null ? clickEvent : event;
         const composedPath = (_b = (_a = evt == null ? void 0 : evt.composedPath) == null ? void 0 : _a.call(evt)) != null ? _b : [evt == null ? void 0 : evt.target];
         func(() => {
@@ -2999,7 +3083,7 @@ var Corex = (() => {
       cleanups.add(frames.addEventListener("pointerdown", onPointerDown, true));
     }, 0);
     function onFocusin(event) {
-      const func = defer ? raf : (v) => v();
+      const func = defer ? raf : (v2) => v2();
       func(() => {
         var _a, _b;
         const composedPath = (_b = (_a = event == null ? void 0 : event.composedPath) == null ? void 0 : _a.call(event)) != null ? _b : [event == null ? void 0 : event.target];
@@ -3034,7 +3118,7 @@ var Corex = (() => {
   }
   function trackInteractOutside(nodeOrFn, options) {
     const { defer } = options;
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -3298,7 +3382,7 @@ var Corex = (() => {
   }
   function trackDismissableElement(nodeOrFn, options) {
     const { defer } = options;
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -3312,7 +3396,7 @@ var Corex = (() => {
   }
   function trackDismissableBranch(nodeOrFn, options = {}) {
     const { defer } = options;
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -3577,12 +3661,12 @@ var Corex = (() => {
   var { guards, createMachine: createMachine2 } = setup();
   var { and: and2 } = guards;
   var groupMachine = createMachine2({
-    props({ props: props12 }) {
+    props({ props: props13 }) {
       return __spreadProps(__spreadValues({
         dir: "ltr",
         id: uuid()
-      }, props12), {
-        store: props12.store
+      }, props13), {
+        store: props13.store
       });
     },
     initialState({ prop }) {
@@ -3602,7 +3686,7 @@ var Corex = (() => {
         toasts: bindable2(() => ({
           defaultValue: [],
           sync: true,
-          hash: (toasts) => toasts.map((t) => t.id).join(",")
+          hash: (toasts) => toasts.map((t2) => t2.id).join(",")
         })),
         heights: bindable2(() => ({
           defaultValue: [],
@@ -3703,11 +3787,11 @@ var Corex = (() => {
           context.set("toasts", store.getVisibleToasts());
           return store.subscribe((toast) => {
             if (toast.dismiss) {
-              context.set("toasts", (prev) => prev.filter((t) => t.id !== toast.id));
+              context.set("toasts", (prev) => prev.filter((t2) => t2.id !== toast.id));
               return;
             }
             context.set("toasts", (prev) => {
-              const index = prev.findIndex((t) => t.id === toast.id);
+              const index = prev.findIndex((t2) => t2.id === toast.id);
               if (index !== -1) {
                 return [...prev.slice(0, index), __spreadValues(__spreadValues({}, prev[index]), toast), ...prev.slice(index + 1)];
               }
@@ -3939,12 +4023,12 @@ var Corex = (() => {
   }
   var { not: not2 } = createGuards();
   var machine2 = createMachine({
-    props({ props: props12 }) {
-      ensureProps(props12, ["id", "type", "parent", "removeDelay"], "toast");
+    props({ props: props13 }) {
+      ensureProps(props13, ["id", "type", "parent", "removeDelay"], "toast");
       return __spreadProps(__spreadValues({
         closable: true
-      }, props12), {
-        duration: getToastDuration(props12.duration, props12.type)
+      }, props13), {
+        duration: getToastDuration(props13.duration, props13.type)
       });
     },
     initialState({ prop }) {
@@ -4180,19 +4264,19 @@ var Corex = (() => {
   function setHeight(parent, item) {
     const { id, height } = item;
     parent.context.set("heights", (prev) => {
-      const alreadyExists = prev.find((i) => i.id === id);
+      const alreadyExists = prev.find((i2) => i2.id === id);
       if (!alreadyExists) {
         return [{ id, height }, ...prev];
       } else {
-        return prev.map((i) => i.id === id ? __spreadProps(__spreadValues({}, i), { height }) : i);
+        return prev.map((i2) => i2.id === id ? __spreadProps(__spreadValues({}, i2), { height }) : i2);
       }
     });
   }
   var withDefaults = (options, defaults) => {
     return __spreadValues(__spreadValues({}, defaults), compact(options));
   };
-  function createToastStore(props12 = {}) {
-    const attrs = withDefaults(props12, {
+  function createToastStore(props13 = {}) {
+    const attrs = withDefaults(props13, {
       placement: "bottom",
       overlap: false,
       max: 24,
@@ -4416,15 +4500,15 @@ var Corex = (() => {
   var toastGroups = /* @__PURE__ */ new Map();
   var toastStores = /* @__PURE__ */ new Map();
   var ToastItem = class extends Component {
-    constructor(el, props12) {
-      super(el, props12);
+    constructor(el, props13) {
+      super(el, props13);
       __publicField(this, "parts");
       __publicField(this, "duration");
       __publicField(this, "destroy", () => {
         this.machine.stop();
         this.el.remove();
       });
-      this.duration = props12.duration;
+      this.duration = props13.duration;
       this.el.setAttribute("data-scope", "toast");
       this.el.setAttribute("data-part", "root");
       this.el.innerHTML = `
@@ -4456,8 +4540,8 @@ var Corex = (() => {
       };
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine2, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine2, props13);
     }
     initApi() {
       return connect2(this.machine.service, normalizeProps);
@@ -4496,9 +4580,9 @@ var Corex = (() => {
     }
   };
   var ToastGroup = class extends Component {
-    constructor(el, props12) {
+    constructor(el, props13) {
       var _a;
-      super(el, props12);
+      super(el, props13);
       __publicField(this, "toastComponents", /* @__PURE__ */ new Map());
       __publicField(this, "groupEl");
       __publicField(this, "store");
@@ -4509,26 +4593,26 @@ var Corex = (() => {
         this.toastComponents.clear();
         this.machine.stop();
       });
-      this.store = props12.store;
+      this.store = props13.store;
       this.groupEl = (_a = el.querySelector('[data-part="group"]')) != null ? _a : (() => {
-        const g = document.createElement("div");
-        g.setAttribute("data-scope", "toast");
-        g.setAttribute("data-part", "group");
-        el.appendChild(g);
-        return g;
+        const g2 = document.createElement("div");
+        g2.setAttribute("data-scope", "toast");
+        g2.setAttribute("data-part", "group");
+        el.appendChild(g2);
+        return g2;
       })();
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(group.machine, props12);
+    initMachine(props13) {
+      return new VanillaMachine(group.machine, props13);
     }
     initApi() {
       return group.connect(this.machine.service, normalizeProps);
     }
     render() {
       this.spreadProps(this.groupEl, this.api.getGroupProps());
-      const toasts = this.api.getToasts().filter((t) => typeof t.id === "string");
-      const nextIds = new Set(toasts.map((t) => t.id));
+      const toasts = this.api.getToasts().filter((t2) => typeof t2.id === "string");
+      const nextIds = new Set(toasts.map((t2) => t2.id));
       toasts.forEach((toastData, index) => {
         let item = this.toastComponents.get(toastData.id);
         if (!item) {
@@ -4598,7 +4682,7 @@ var Corex = (() => {
         if (!offsetsString) return void 0;
         try {
           return offsetsString.includes("{") ? JSON.parse(offsetsString) : offsetsString;
-        } catch (e) {
+        } catch (e2) {
           return offsetsString;
         }
       };
@@ -5044,8 +5128,8 @@ var Corex = (() => {
   // components/toggle-group.ts
   var ToggleGroup = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine3, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine3, props13);
     }
     initApi() {
       return connect3(this.machine.service, normalizeProps);
@@ -5055,8 +5139,8 @@ var Corex = (() => {
       if (!rootEl) return;
       this.spreadProps(rootEl, this.api.getRootProps());
       const items = this.el.querySelectorAll('[data-scope="toggle-group"][data-part="item"]');
-      for (let i = 0; i < items.length; i++) {
-        const itemEl = items[i];
+      for (let i2 = 0; i2 < items.length; i2++) {
+        const itemEl = items[i2];
         const value = getString(itemEl, "value");
         if (!value) continue;
         const disabled = getBoolean(itemEl, "disabled");
@@ -5070,7 +5154,7 @@ var Corex = (() => {
     mounted() {
       const el = this.el;
       const pushEvent = this.pushEvent.bind(this);
-      const props12 = __spreadProps(__spreadValues({
+      const props13 = __spreadProps(__spreadValues({
         id: el.id
       }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
         defaultValue: getStringList(el, "defaultValue"),
@@ -5103,7 +5187,7 @@ var Corex = (() => {
           }
         }
       });
-      const toggleGroup = new ToggleGroup(el, props12);
+      const toggleGroup = new ToggleGroup(el, props13);
       toggleGroup.init();
       this.toggleGroup = toggleGroup;
       this.onSetValue = (event) => {
@@ -5284,33 +5368,33 @@ var Corex = (() => {
         });
         let entries = Array.from(groups.entries());
         if (groupSort) {
-          entries.sort(([a], [b]) => {
-            if (typeof groupSort === "function") return groupSort(a, b);
+          entries.sort(([a2], [b2]) => {
+            if (typeof groupSort === "function") return groupSort(a2, b2);
             if (Array.isArray(groupSort)) {
-              const indexA = groupSort.indexOf(a);
-              const indexB = groupSort.indexOf(b);
+              const indexA = groupSort.indexOf(a2);
+              const indexB = groupSort.indexOf(b2);
               if (indexA === -1) return 1;
               if (indexB === -1) return -1;
               return indexA - indexB;
             }
-            if (groupSort === "asc") return a.localeCompare(b);
-            if (groupSort === "desc") return b.localeCompare(a);
+            if (groupSort === "asc") return a2.localeCompare(b2);
+            if (groupSort === "desc") return b2.localeCompare(a2);
             return 0;
           });
         }
         return entries;
       });
-      __publicField5(this, "getNextValue", (value, step = 1, clamp2 = false) => {
+      __publicField5(this, "getNextValue", (value, step = 1, clamp3 = false) => {
         let index = this.indexOf(value);
         if (index === -1) return null;
-        index = clamp2 ? Math.min(index + step, this.size - 1) : index + step;
+        index = clamp3 ? Math.min(index + step, this.size - 1) : index + step;
         while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
         return this.getItemValue(this.at(index));
       });
-      __publicField5(this, "getPreviousValue", (value, step = 1, clamp2 = false) => {
+      __publicField5(this, "getPreviousValue", (value, step = 1, clamp3 = false) => {
         let index = this.indexOf(value);
         if (index === -1) return null;
-        index = clamp2 ? Math.max(index - step, 0) : index - step;
+        index = clamp3 ? Math.max(index - step, 0) : index - step;
         while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
         return this.getItemValue(this.at(index));
       });
@@ -5339,8 +5423,8 @@ var Corex = (() => {
       __publicField5(this, "getByText", (text, current) => {
         const currentIndex = current != null ? this.indexOf(current) : -1;
         const isSingleKey = text.length === 1;
-        for (let i = 0; i < this.items.length; i++) {
-          const item = this.items[(currentIndex + i + 1) % this.items.length];
+        for (let i2 = 0; i2 < this.items.length; i2++) {
+          const item = this.items[(currentIndex + i2 + 1) % this.items.length];
           if (isSingleKey && this.getItemValue(item) === current) continue;
           if (this.getItemDisabled(item)) continue;
           if (match3(this.stringifyItem(item), text)) return item;
@@ -5433,21 +5517,21 @@ var Corex = (() => {
       __publicField5(this, "moveBefore", (value, ...values) => {
         let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
         if (toIndex === -1) return this;
-        let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a, b) => a - b);
+        let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
         return this.copy(move(this.items, indices, toIndex));
       });
       __publicField5(this, "moveAfter", (value, ...values) => {
         let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
         if (toIndex === -1) return this;
-        let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a, b) => a - b);
+        let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
         return this.copy(move(this.items, indices, toIndex + 1));
       });
       __publicField5(this, "reorder", (fromIndex, toIndex) => {
         return this.copy(move(this.items, [fromIndex], toIndex));
       });
-      __publicField5(this, "compareValue", (a, b) => {
-        const indexA = this.indexOf(a);
-        const indexB = this.indexOf(b);
+      __publicField5(this, "compareValue", (a2, b2) => {
+        const indexA = this.indexOf(a2);
+        const indexB = this.indexOf(b2);
         if (indexA < indexB) return -1;
         if (indexA > indexB) return 1;
         return 0;
@@ -5525,12 +5609,12 @@ var Corex = (() => {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
   function move(items, indices, toIndex) {
-    indices = [...indices].sort((a, b) => a - b);
-    const itemsToMove = indices.map((i) => items[i]);
-    for (let i = indices.length - 1; i >= 0; i--) {
-      items = [...items.slice(0, indices[i]), ...items.slice(indices[i] + 1)];
+    indices = [...indices].sort((a2, b2) => a2 - b2);
+    const itemsToMove = indices.map((i2) => items[i2]);
+    for (let i2 = indices.length - 1; i2 >= 0; i2--) {
+      items = [...items.slice(0, indices[i2]), ...items.slice(indices[i2] + 1)];
     }
-    toIndex = Math.max(0, toIndex - indices.filter((i) => i < toIndex).length);
+    toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
     return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
   }
 
@@ -5540,9 +5624,9 @@ var Corex = (() => {
   var max2 = Math.max;
   var round2 = Math.round;
   var floor2 = Math.floor;
-  var createCoords = (v) => ({
-    x: v,
-    y: v
+  var createCoords = (v2) => ({
+    x: v2,
+    y: v2
   });
   var oppositeSideMap = {
     left: "right",
@@ -5554,7 +5638,7 @@ var Corex = (() => {
     start: "end",
     end: "start"
   };
-  function clamp(start, value, end) {
+  function clamp2(start, value, end) {
     return max2(start, min2(value, end));
   }
   function evaluate(value, param) {
@@ -5648,20 +5732,20 @@ var Corex = (() => {
   }
   function rectToClientRect(rect) {
     const {
-      x,
-      y,
+      x: x2,
+      y: y2,
       width,
       height
     } = rect;
     return {
       width,
       height,
-      top: y,
-      left: x,
-      right: x + width,
-      bottom: y + height,
-      x,
-      y
+      top: y2,
+      left: x2,
+      right: x2 + width,
+      bottom: y2 + height,
+      x: x2,
+      y: y2
     };
   }
 
@@ -5728,8 +5812,8 @@ var Corex = (() => {
         options = {};
       }
       const {
-        x,
-        y,
+        x: x2,
+        y: y2,
         platform: platform2,
         rects,
         elements,
@@ -5752,8 +5836,8 @@ var Corex = (() => {
         strategy
       }));
       const rect = elementContext === "floating" ? {
-        x,
-        y,
+        x: x2,
+        y: y2,
         width: rects.floating.width,
         height: rects.floating.height
       } : rects.reference;
@@ -5794,26 +5878,26 @@ var Corex = (() => {
       strategy
     });
     let {
-      x,
-      y
+      x: x2,
+      y: y2
     } = computeCoordsFromPlacement(rects, placement, rtl);
     let statefulPlacement = placement;
     let middlewareData = {};
     let resetCount = 0;
-    for (let i = 0; i < validMiddleware.length; i++) {
+    for (let i2 = 0; i2 < validMiddleware.length; i2++) {
       var _platform$detectOverf;
       const {
         name,
         fn
-      } = validMiddleware[i];
+      } = validMiddleware[i2];
       const {
         x: nextX,
         y: nextY,
         data,
         reset
       } = yield fn({
-        x,
-        y,
+        x: x2,
+        y: y2,
         initialPlacement: placement,
         placement: statefulPlacement,
         strategy,
@@ -5827,8 +5911,8 @@ var Corex = (() => {
           floating
         }
       });
-      x = nextX != null ? nextX : x;
-      y = nextY != null ? nextY : y;
+      x2 = nextX != null ? nextX : x2;
+      y2 = nextY != null ? nextY : y2;
       middlewareData = __spreadProps(__spreadValues({}, middlewareData), {
         [name]: __spreadValues(__spreadValues({}, middlewareData[name]), data)
       });
@@ -5846,16 +5930,16 @@ var Corex = (() => {
             }) : reset.rects;
           }
           ({
-            x,
-            y
+            x: x2,
+            y: y2
           } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
         }
-        i = -1;
+        i2 = -1;
       }
     }
     return {
-      x,
-      y,
+      x: x2,
+      y: y2,
       placement: statefulPlacement,
       strategy,
       middlewareData
@@ -5867,8 +5951,8 @@ var Corex = (() => {
     fn(state2) {
       return __async(this, null, function* () {
         const {
-          x,
-          y,
+          x: x2,
+          y: y2,
           placement,
           rects,
           platform: platform2,
@@ -5884,8 +5968,8 @@ var Corex = (() => {
         }
         const paddingObject = getPaddingObject(padding);
         const coords = {
-          x,
-          y
+          x: x2,
+          y: y2
         };
         const axis = getAlignmentAxis(placement);
         const length = getAxisLength(axis);
@@ -5908,7 +5992,7 @@ var Corex = (() => {
         const min$1 = minPadding;
         const max3 = clientSize - arrowDimensions[length] - maxPadding;
         const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-        const offset3 = clamp(min$1, center, max3);
+        const offset3 = clamp2(min$1, center, max3);
         const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
         const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max3 : 0;
         return {
@@ -5992,7 +6076,7 @@ var Corex = (() => {
               const ignoreCrossAxisOverflow = checkCrossAxis === "alignment" ? initialSideAxis !== getSideAxis(nextPlacement) : false;
               if (!ignoreCrossAxisOverflow || // We leave the current main axis only if every placement on that axis
               // overflows the main axis.
-              overflowsData.every((d) => getSideAxis(d.placement) === initialSideAxis ? d.overflows[0] > 0 : true)) {
+              overflowsData.every((d2) => getSideAxis(d2.placement) === initialSideAxis ? d2.overflows[0] > 0 : true)) {
                 return {
                   data: {
                     index: nextIndex2,
@@ -6004,20 +6088,20 @@ var Corex = (() => {
                 };
               }
             }
-            let resetPlacement = (_overflowsData$filter = overflowsData.filter((d) => d.overflows[0] <= 0).sort((a, b) => a.overflows[1] - b.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
+            let resetPlacement = (_overflowsData$filter = overflowsData.filter((d2) => d2.overflows[0] <= 0).sort((a2, b2) => a2.overflows[1] - b2.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
             if (!resetPlacement) {
               switch (fallbackStrategy) {
                 case "bestFit": {
                   var _overflowsData$filter2;
-                  const placement2 = (_overflowsData$filter2 = overflowsData.filter((d) => {
+                  const placement2 = (_overflowsData$filter2 = overflowsData.filter((d2) => {
                     if (hasFallbackAxisSideDirection) {
-                      const currentSideAxis = getSideAxis(d.placement);
+                      const currentSideAxis = getSideAxis(d2.placement);
                       return currentSideAxis === initialSideAxis || // Create a bias to the `y` side axis due to horizontal
                       // reading directions favoring greater width.
                       currentSideAxis === "y";
                     }
                     return true;
-                  }).map((d) => [d.placement, d.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a, b) => a[1] - b[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
+                  }).map((d2) => [d2.placement, d2.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
                   if (placement2) {
                     resetPlacement = placement2;
                   }
@@ -6154,8 +6238,8 @@ var Corex = (() => {
         return __async(this, null, function* () {
           var _middlewareData$offse, _middlewareData$arrow;
           const {
-            x,
-            y,
+            x: x2,
+            y: y2,
             placement,
             middlewareData
           } = state2;
@@ -6164,8 +6248,8 @@ var Corex = (() => {
             return {};
           }
           return {
-            x: x + diffCoords.x,
-            y: y + diffCoords.y,
+            x: x2 + diffCoords.x,
+            y: y2 + diffCoords.y,
             data: __spreadProps(__spreadValues({}, diffCoords), {
               placement
             })
@@ -6184,8 +6268,8 @@ var Corex = (() => {
       fn(state2) {
         return __async(this, null, function* () {
           const {
-            x,
-            y,
+            x: x2,
+            y: y2,
             placement,
             platform: platform2
           } = state2;
@@ -6195,12 +6279,12 @@ var Corex = (() => {
             limiter = {
               fn: (_ref) => {
                 let {
-                  x: x2,
-                  y: y2
+                  x: x3,
+                  y: y3
                 } = _ref;
                 return {
-                  x: x2,
-                  y: y2
+                  x: x3,
+                  y: y3
                 };
               }
             }
@@ -6210,8 +6294,8 @@ var Corex = (() => {
             "limiter"
           ]);
           const coords = {
-            x,
-            y
+            x: x2,
+            y: y2
           };
           const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
           const crossAxis = getSideAxis(getSide(placement));
@@ -6223,14 +6307,14 @@ var Corex = (() => {
             const maxSide = mainAxis === "y" ? "bottom" : "right";
             const min3 = mainAxisCoord + overflow[minSide];
             const max3 = mainAxisCoord - overflow[maxSide];
-            mainAxisCoord = clamp(min3, mainAxisCoord, max3);
+            mainAxisCoord = clamp2(min3, mainAxisCoord, max3);
           }
           if (checkCrossAxis) {
             const minSide = crossAxis === "y" ? "top" : "left";
             const maxSide = crossAxis === "y" ? "bottom" : "right";
             const min3 = crossAxisCoord + overflow[minSide];
             const max3 = crossAxisCoord - overflow[maxSide];
-            crossAxisCoord = clamp(min3, crossAxisCoord, max3);
+            crossAxisCoord = clamp2(min3, crossAxisCoord, max3);
           }
           const limitedCoords = limiter.fn(__spreadProps(__spreadValues({}, state2), {
             [mainAxis]: mainAxisCoord,
@@ -6238,8 +6322,8 @@ var Corex = (() => {
           }));
           return __spreadProps(__spreadValues({}, limitedCoords), {
             data: {
-              x: limitedCoords.x - x,
-              y: limitedCoords.y - y,
+              x: limitedCoords.x - x2,
+              y: limitedCoords.y - y2,
               enabled: {
                 [mainAxis]: checkMainAxis,
                 [crossAxis]: checkCrossAxis
@@ -6258,8 +6342,8 @@ var Corex = (() => {
       options,
       fn(state2) {
         const {
-          x,
-          y,
+          x: x2,
+          y: y2,
           placement,
           rects,
           middlewareData
@@ -6270,8 +6354,8 @@ var Corex = (() => {
           crossAxis: checkCrossAxis = true
         } = evaluate(options, state2);
         const coords = {
-          x,
-          y
+          x: x2,
+          y: y2
         };
         const crossAxis = getSideAxis(placement);
         const mainAxis = getOppositeAxis(crossAxis);
@@ -6581,17 +6665,17 @@ var Corex = (() => {
       height,
       $
     } = getCssDimensions(domElement);
-    let x = ($ ? round2(rect.width) : rect.width) / width;
-    let y = ($ ? round2(rect.height) : rect.height) / height;
-    if (!x || !Number.isFinite(x)) {
-      x = 1;
+    let x2 = ($ ? round2(rect.width) : rect.width) / width;
+    let y2 = ($ ? round2(rect.height) : rect.height) / height;
+    if (!x2 || !Number.isFinite(x2)) {
+      x2 = 1;
     }
-    if (!y || !Number.isFinite(y)) {
-      y = 1;
+    if (!y2 || !Number.isFinite(y2)) {
+      y2 = 1;
     }
     return {
-      x,
-      y
+      x: x2,
+      y: y2
     };
   }
   var noOffsets = /* @__PURE__ */ createCoords(0);
@@ -6634,8 +6718,8 @@ var Corex = (() => {
       }
     }
     const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
-    let x = (clientRect.left + visualOffsets.x) / scale.x;
-    let y = (clientRect.top + visualOffsets.y) / scale.y;
+    let x2 = (clientRect.left + visualOffsets.x) / scale.x;
+    let y2 = (clientRect.top + visualOffsets.y) / scale.y;
     let width = clientRect.width / scale.x;
     let height = clientRect.height / scale.y;
     if (domElement) {
@@ -6649,12 +6733,12 @@ var Corex = (() => {
         const css = getComputedStyle3(currentIFrame);
         const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css.paddingLeft)) * iframeScale.x;
         const top = iframeRect.top + (currentIFrame.clientTop + parseFloat(css.paddingTop)) * iframeScale.y;
-        x *= iframeScale.x;
-        y *= iframeScale.y;
+        x2 *= iframeScale.x;
+        y2 *= iframeScale.y;
         width *= iframeScale.x;
         height *= iframeScale.y;
-        x += left;
-        y += top;
+        x2 += left;
+        y2 += top;
         currentWin = getWindow2(currentIFrame);
         currentIFrame = getFrameElement(currentWin);
       }
@@ -6662,8 +6746,8 @@ var Corex = (() => {
     return rectToClientRect({
       width,
       height,
-      x,
-      y
+      x: x2,
+      y: y2
     });
   }
   function getWindowScrollBarX(element, rect) {
@@ -6675,11 +6759,11 @@ var Corex = (() => {
   }
   function getHTMLOffset(documentElement, scroll) {
     const htmlRect = documentElement.getBoundingClientRect();
-    const x = htmlRect.left + scroll.scrollLeft - getWindowScrollBarX(documentElement, htmlRect);
-    const y = htmlRect.top + scroll.scrollTop;
+    const x2 = htmlRect.left + scroll.scrollLeft - getWindowScrollBarX(documentElement, htmlRect);
+    const y2 = htmlRect.top + scroll.scrollTop;
     return {
-      x,
-      y
+      x: x2,
+      y: y2
     };
   }
   function convertOffsetParentRelativeRectToViewportRelativeRect(_ref) {
@@ -6730,16 +6814,16 @@ var Corex = (() => {
     const body = element.ownerDocument.body;
     const width = max2(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
     const height = max2(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
-    let x = -scroll.scrollLeft + getWindowScrollBarX(element);
-    const y = -scroll.scrollTop;
+    let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
+    const y2 = -scroll.scrollTop;
     if (getComputedStyle3(body).direction === "rtl") {
-      x += max2(html.clientWidth, body.clientWidth) - width;
+      x2 += max2(html.clientWidth, body.clientWidth) - width;
     }
     return {
       width,
       height,
-      x,
-      y
+      x: x2,
+      y: y2
     };
   }
   var SCROLLBAR_MAX = 25;
@@ -6749,15 +6833,15 @@ var Corex = (() => {
     const visualViewport = win.visualViewport;
     let width = html.clientWidth;
     let height = html.clientHeight;
-    let x = 0;
-    let y = 0;
+    let x2 = 0;
+    let y2 = 0;
     if (visualViewport) {
       width = visualViewport.width;
       height = visualViewport.height;
       const visualViewportBased = isWebKit();
       if (!visualViewportBased || visualViewportBased && strategy === "fixed") {
-        x = visualViewport.offsetLeft;
-        y = visualViewport.offsetTop;
+        x2 = visualViewport.offsetLeft;
+        y2 = visualViewport.offsetTop;
       }
     }
     const windowScrollbarX = getWindowScrollBarX(html);
@@ -6776,8 +6860,8 @@ var Corex = (() => {
     return {
       width,
       height,
-      x,
-      y
+      x: x2,
+      y: y2
     };
   }
   var absoluteOrFixed = /* @__PURE__ */ new Set(["absolute", "fixed"]);
@@ -6788,13 +6872,13 @@ var Corex = (() => {
     const scale = isHTMLElement2(element) ? getScale(element) : createCoords(1);
     const width = element.clientWidth * scale.x;
     const height = element.clientHeight * scale.y;
-    const x = left * scale.x;
-    const y = top * scale.y;
+    const x2 = left * scale.x;
+    const y2 = top * scale.y;
     return {
       width,
       height,
-      x,
-      y
+      x: x2,
+      y: y2
     };
   }
   function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) {
@@ -6913,11 +6997,11 @@ var Corex = (() => {
       setLeftRTLScrollbarOffset();
     }
     const htmlOffset = documentElement && !isOffsetParentAnElement && !isFixed ? getHTMLOffset(documentElement, scroll) : createCoords(0);
-    const x = rect.left + scroll.scrollLeft - offsets.x - htmlOffset.x;
-    const y = rect.top + scroll.scrollTop - offsets.y - htmlOffset.y;
+    const x2 = rect.left + scroll.scrollLeft - offsets.x - htmlOffset.x;
+    const y2 = rect.top + scroll.scrollTop - offsets.y - htmlOffset.y;
     return {
-      x,
-      y,
+      x: x2,
+      y: y2,
       width: rect.width,
       height: rect.height
     };
@@ -6993,8 +7077,8 @@ var Corex = (() => {
     isElement: isElement2,
     isRTL
   };
-  function rectsAreEqual(a, b) {
-    return a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height;
+  function rectsAreEqual(a2, b2) {
+    return a2.x === b2.x && a2.y === b2.y && a2.width === b2.width && a2.height === b2.height;
   }
   function observeMove(element, onMove) {
     let io = null;
@@ -7158,26 +7242,26 @@ var Corex = (() => {
   };
 
   // ../node_modules/.pnpm/@zag-js+popper@1.33.1/node_modules/@zag-js/popper/dist/index.mjs
-  function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
+  function createDOMRect(x2 = 0, y2 = 0, width = 0, height = 0) {
     if (typeof DOMRect === "function") {
-      return new DOMRect(x, y, width, height);
+      return new DOMRect(x2, y2, width, height);
     }
     const rect = {
-      x,
-      y,
+      x: x2,
+      y: y2,
       width,
       height,
-      top: y,
-      right: x + width,
-      bottom: y + height,
-      left: x
+      top: y2,
+      right: x2 + width,
+      bottom: y2 + height,
+      left: x2
     };
     return __spreadProps(__spreadValues({}, rect), { toJSON: () => rect });
   }
   function getDOMRect(anchorRect) {
     if (!anchorRect) return createDOMRect();
-    const { x, y, width, height } = anchorRect;
-    return createDOMRect(x, y, width, height);
+    const { x: x2, y: y2, width, height } = anchorRect;
+    return createDOMRect(x2, y2, width, height);
   }
   function getAnchorElement(anchorElement, getAnchorRect) {
     return {
@@ -7206,7 +7290,7 @@ var Corex = (() => {
       name: "transformOrigin",
       fn(state2) {
         var _a, _b, _c, _d, _e;
-        const { elements, middlewareData, placement, rects, y } = state2;
+        const { elements, middlewareData, placement, rects, y: y2 } = state2;
         const side = placement.split("-")[0];
         const axis = getSideAxis2(side);
         const arrowX = ((_a = middlewareData.arrow) == null ? void 0 : _a.x) || 0;
@@ -7227,7 +7311,7 @@ var Corex = (() => {
           left: `calc(100% + ${sideOffsetValue}px) ${transformY}px`,
           right: `${-sideOffsetValue}px ${transformY}px`
         }[side];
-        const overlapTransformOrigin = `${transformX}px ${rects.reference.y + halfAnchorHeight - y}px`;
+        const overlapTransformOrigin = `${transformX}px ${rects.reference.y + halfAnchorHeight - y2}px`;
         const useOverlap = Boolean(opts.overlap) && axis === "y" && isOverlappingAnchor;
         elements.floating.style.setProperty(
           cssVars.transformOrigin.variable,
@@ -7255,11 +7339,11 @@ var Corex = (() => {
       name: "shiftArrow",
       fn({ placement, middlewareData }) {
         if (!middlewareData.arrow) return {};
-        const { x, y } = middlewareData.arrow;
+        const { x: x2, y: y2 } = middlewareData.arrow;
         const dir = placement.split("-")[0];
         Object.assign(arrowEl.style, {
-          left: x != null ? `${x}px` : "",
-          top: y != null ? `${y}px` : "",
+          left: x2 != null ? `${x2}px` : "",
+          top: y2 != null ? `${y2}px` : "",
           [dir]: `calc(100% + ${cssVars.arrowOffset.reference})`
         });
         return {};
@@ -7393,10 +7477,10 @@ var Corex = (() => {
       onComplete == null ? void 0 : onComplete(pos);
       onPositioned == null ? void 0 : onPositioned({ placed: true });
       const win = getWindow(floating);
-      const x = roundByDpr(win, pos.x);
-      const y = roundByDpr(win, pos.y);
-      floating.style.setProperty("--x", `${x}px`);
-      floating.style.setProperty("--y", `${y}px`);
+      const x2 = roundByDpr(win, pos.x);
+      const y2 = roundByDpr(win, pos.y);
+      floating.style.setProperty("--x", `${x2}px`);
+      floating.style.setProperty("--y", `${y2}px`);
       if (options.hideWhenDetached) {
         const isHidden = (_a2 = pos.middlewareData.hide) == null ? void 0 : _a2.referenceHidden;
         if (isHidden) {
@@ -7431,7 +7515,7 @@ var Corex = (() => {
   }
   function getPlacement(referenceOrFn, floatingOrFn, opts = {}) {
     const _a = opts, { defer } = _a, options = __objRest(_a, ["defer"]);
-    const func = defer ? raf : (v) => v();
+    const func = defer ? raf : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -8550,7 +8634,7 @@ var Corex = (() => {
           });
         },
         clearItem({ context, event }) {
-          context.set("value", (prev) => prev.filter((v) => v !== event.value));
+          context.set("value", (prev) => prev.filter((v2) => v2 !== event.value));
         },
         setSelectedItems({ context, event }) {
           context.set("value", event.value);
@@ -8653,8 +8737,8 @@ var Corex = (() => {
   });
   function restoreFocusFn(event) {
     var _a, _b;
-    const v = (_b = event.restoreFocus) != null ? _b : (_a = event.previousEvent) == null ? void 0 : _a.restoreFocus;
-    return v == null || !!v;
+    const v2 = (_b = event.restoreFocus) != null ? _b : (_a = event.previousEvent) == null ? void 0 : _a.restoreFocus;
+    return v2 == null || !!v2;
   }
   var props3 = createProps()([
     "closeOnSelect",
@@ -8699,8 +8783,8 @@ var Corex = (() => {
 
   // components/select.ts
   var Select = class extends Component {
-    constructor(el, props12) {
-      super(el, props12);
+    constructor(el, props13) {
+      super(el, props13);
       __publicField(this, "_options", []);
       __publicField(this, "hasGroups", false);
       __publicField(this, "placeholder", "");
@@ -8736,9 +8820,9 @@ var Corex = (() => {
         isItemDisabled: (item) => !!item.disabled
       });
     }
-    initMachine(props12) {
+    initMachine(props13) {
       const self2 = this;
-      return new VanillaMachine(machine4, __spreadProps(__spreadValues({}, props12), {
+      return new VanillaMachine(machine4, __spreadProps(__spreadValues({}, props13), {
         get collection() {
           return self2.getCollection();
         }
@@ -8862,7 +8946,7 @@ var Corex = (() => {
           `[data-scope="select"][data-part="${part}"]`
         );
         if (!el) return;
-        const method = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
+        const method = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
         this.spreadProps(el, this.api[method]());
       });
       const valueText = this.el.querySelector(
@@ -8898,7 +8982,7 @@ var Corex = (() => {
 
   // hooks/select.ts
   function snakeToCamel(str) {
-    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
   }
   function transformPositioningOptions(obj) {
     const result = {};
@@ -8938,7 +9022,7 @@ var Corex = (() => {
               try {
                 const parsed = JSON.parse(positioningJson);
                 return transformPositioningOptions(parsed);
-              } catch (e) {
+              } catch (e2) {
                 return void 0;
               }
             }
@@ -9027,15 +9111,15 @@ var Corex = (() => {
   };
 
   // ../node_modules/.pnpm/@zag-js+focus-visible@1.33.1/node_modules/@zag-js/focus-visible/dist/index.mjs
-  function isValidKey(e) {
-    return !(e.metaKey || !isMac() && e.altKey || e.ctrlKey || e.key === "Control" || e.key === "Shift" || e.key === "Meta");
+  function isValidKey(e2) {
+    return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
   var nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
-  function isKeyboardFocusEvent(isTextInput, modality, e) {
-    const target = e ? getEventTarget(e) : null;
+  function isKeyboardFocusEvent(isTextInput, modality, e2) {
+    const target = e2 ? getEventTarget(e2) : null;
     const win = getWindow(target);
     isTextInput = isTextInput || target instanceof win.HTMLInputElement && !nonTextInputTypes.has(target == null ? void 0 : target.type) || target instanceof win.HTMLTextAreaElement || target instanceof win.HTMLElement && target.isContentEditable;
-    return !(isTextInput && modality === "keyboard" && e instanceof win.KeyboardEvent && !Reflect.has(FOCUS_VISIBLE_INPUT_KEYS, e.key));
+    return !(isTextInput && modality === "keyboard" && e2 instanceof win.KeyboardEvent && !Reflect.has(FOCUS_VISIBLE_INPUT_KEYS, e2.key));
   }
   var currentModality = null;
   var changeHandlers = /* @__PURE__ */ new Set();
@@ -9046,39 +9130,39 @@ var Corex = (() => {
     Tab: true,
     Escape: true
   };
-  function triggerChangeHandlers(modality, e) {
+  function triggerChangeHandlers(modality, e2) {
     for (let handler of changeHandlers) {
-      handler(modality, e);
+      handler(modality, e2);
     }
   }
-  function handleKeyboardEvent(e) {
+  function handleKeyboardEvent(e2) {
     hasEventBeforeFocus = true;
-    if (isValidKey(e)) {
+    if (isValidKey(e2)) {
       currentModality = "keyboard";
-      triggerChangeHandlers("keyboard", e);
+      triggerChangeHandlers("keyboard", e2);
     }
   }
-  function handlePointerEvent(e) {
+  function handlePointerEvent(e2) {
     currentModality = "pointer";
-    if (e.type === "mousedown" || e.type === "pointerdown") {
+    if (e2.type === "mousedown" || e2.type === "pointerdown") {
       hasEventBeforeFocus = true;
-      triggerChangeHandlers("pointer", e);
+      triggerChangeHandlers("pointer", e2);
     }
   }
-  function handleClickEvent(e) {
-    if (isVirtualClick(e)) {
+  function handleClickEvent(e2) {
+    if (isVirtualClick(e2)) {
       hasEventBeforeFocus = true;
       currentModality = "virtual";
     }
   }
-  function handleFocusEvent(e) {
-    const target = getEventTarget(e);
+  function handleFocusEvent(e2) {
+    const target = getEventTarget(e2);
     if (target === getWindow(target) || target === getDocument(target)) {
       return;
     }
     if (!hasEventBeforeFocus && !hasBlurredWindowRecently) {
       currentModality = "virtual";
-      triggerChangeHandlers("virtual", e);
+      triggerChangeHandlers("virtual", e2);
     }
     hasEventBeforeFocus = false;
     hasBlurredWindowRecently = false;
@@ -9105,7 +9189,7 @@ var Corex = (() => {
         configurable: true,
         value: patchedFocus
       });
-    } catch (e) {
+    } catch (e2) {
     }
     doc.addEventListener("keydown", handleKeyboardEvent, true);
     doc.addEventListener("keyup", handleKeyboardEvent, true);
@@ -9142,7 +9226,7 @@ var Corex = (() => {
         configurable: true,
         value: listenerData.focus
       });
-    } catch (e) {
+    } catch (e2) {
     }
     doc.removeEventListener("keydown", handleKeyboardEvent, true);
     doc.removeEventListener("keyup", handleKeyboardEvent, true);
@@ -9163,12 +9247,12 @@ var Corex = (() => {
   function isFocusVisible() {
     return currentModality === "keyboard";
   }
-  function trackFocusVisible(props12 = {}) {
-    const { isTextInput, autoFocus, onChange, root } = props12;
+  function trackFocusVisible(props13 = {}) {
+    const { isTextInput, autoFocus, onChange, root } = props13;
     setupGlobalFocusEvents(root);
     onChange == null ? void 0 : onChange({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
-    const handler = (modality, e) => {
-      if (!isKeyboardFocusEvent(!!isTextInput, modality, e)) return;
+    const handler = (modality, e2) => {
+      if (!isKeyboardFocusEvent(!!isTextInput, modality, e2)) return;
       onChange == null ? void 0 : onChange({ isFocusVisible: isFocusVisible(), modality });
     };
     changeHandlers.add(handler);
@@ -9472,8 +9556,8 @@ var Corex = (() => {
   // components/switch.ts
   var Switch = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine5, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine5, props13);
     }
     initApi() {
       return connect5(this.machine.service, normalizeProps);
@@ -9881,7 +9965,7 @@ var Corex = (() => {
             if (!interactive) return;
             if (event2.ctrlKey || event2.shiftKey || isComposingEvent(event2)) return;
             const openOnKeyPress = prop("openOnKeyPress");
-            const isModifierKey = event2.ctrlKey || event2.metaKey || event2.shiftKey;
+            const isModifierKey2 = event2.ctrlKey || event2.metaKey || event2.shiftKey;
             const keypress = true;
             const keymap = {
               ArrowDown(event3) {
@@ -9895,14 +9979,14 @@ var Corex = (() => {
                 event2.preventDefault();
               },
               Home(event3) {
-                if (isModifierKey) return;
+                if (isModifierKey2) return;
                 send({ type: "INPUT.HOME", keypress });
                 if (open) {
                   event3.preventDefault();
                 }
               },
               End(event3) {
-                if (isModifierKey) return;
+                if (isModifierKey2) return;
                 send({ type: "INPUT.END", keypress });
                 if (open) {
                   event3.preventDefault();
@@ -10167,9 +10251,9 @@ var Corex = (() => {
             const context = getContext();
             const prevSelectedItems = context.get("selectedItems");
             const collection22 = prop("collection");
-            const nextItems = value.map((v) => {
-              const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === v);
-              return item || collection22.find(v);
+            const nextItems = value.map((v2) => {
+              const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === v2);
+              return item || collection22.find(v2);
             });
             context.set("selectedItems", nextItems);
             (_a = prop("onValueChange")) == null ? void 0 : _a({ value, items: nextItems });
@@ -11127,9 +11211,9 @@ var Corex = (() => {
             const { context, prop } = params;
             const collection22 = prop("collection");
             const value = context.get("value");
-            const selectedItems = value.map((v) => {
-              const item = context.get("selectedItems").find((item2) => collection22.getItemValue(item2) === v);
-              return item || collection22.find(v);
+            const selectedItems = value.map((v2) => {
+              const item = context.get("selectedItems").find((item2) => collection22.getItemValue(item2) === v2);
+              return item || collection22.find(v2);
             });
             context.set("selectedItems", selectedItems);
             const inputValue = match2(prop("selectionBehavior"), {
@@ -11239,9 +11323,9 @@ var Corex = (() => {
         isItemDisabled: (item) => item.disabled
       });
     }
-    initMachine(props12) {
+    initMachine(props13) {
       const self2 = this;
-      return new VanillaMachine(machine6, __spreadProps(__spreadValues({}, props12), {
+      return new VanillaMachine(machine6, __spreadProps(__spreadValues({}, props13), {
         get collection() {
           return self2.getCollection();
         },
@@ -11249,8 +11333,8 @@ var Corex = (() => {
           if (details.open) {
             self2.options = self2.allOptions;
           }
-          if (props12.onOpenChange) {
-            props12.onOpenChange(details);
+          if (props13.onOpenChange) {
+            props13.onOpenChange(details);
           }
         },
         onInputValueChange: (details) => {
@@ -11258,8 +11342,8 @@ var Corex = (() => {
             (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
           );
           self2.options = filtered.length > 0 ? filtered : self2.allOptions;
-          if (props12.onInputValueChange) {
-            props12.onInputValueChange(details);
+          if (props13.onInputValueChange) {
+            props13.onInputValueChange(details);
           }
         }
       }));
@@ -11360,7 +11444,7 @@ var Corex = (() => {
       ].forEach((part) => {
         const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
         if (!el) return;
-        const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
+        const apiMethod = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
         this.spreadProps(el, this.api[apiMethod]());
       });
       const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
@@ -11373,7 +11457,7 @@ var Corex = (() => {
 
   // hooks/combobox.ts
   function snakeToCamel2(str) {
-    return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
   }
   function transformPositioningOptions2(obj) {
     const result = {};
@@ -11389,7 +11473,7 @@ var Corex = (() => {
       const pushEvent = this.pushEvent.bind(this);
       const allItems = JSON.parse(el.dataset.collection || "[]");
       const hasGroups = allItems.some((item) => item.group !== void 0);
-      const props12 = __spreadProps(__spreadValues({
+      const props13 = __spreadProps(__spreadValues({
         id: el.id
       }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
         disabled: getBoolean(el, "disabled"),
@@ -11414,7 +11498,7 @@ var Corex = (() => {
             try {
               const parsed = JSON.parse(positioningJson);
               return transformPositioningOptions2(parsed);
-            } catch (e) {
+            } catch (e2) {
               return void 0;
             }
           }
@@ -11534,7 +11618,7 @@ var Corex = (() => {
           }
         }
       });
-      const combobox = new Combobox(el, props12);
+      const combobox = new Combobox(el, props13);
       combobox.hasGroups = hasGroups;
       combobox.setAllOptions(allItems);
       combobox.init();
@@ -11887,8 +11971,8 @@ var Corex = (() => {
   // components/checkbox.ts
   var Checkbox = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine7, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine7, props13);
     }
     initApi() {
       return connect7(this.machine.service, normalizeProps);
@@ -12587,8 +12671,8 @@ var Corex = (() => {
   // components/tabs.ts
   var Tabs = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine8, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine8, props13);
     }
     initApi() {
       return connect8(this.machine.service, normalizeProps);
@@ -12605,17 +12689,17 @@ var Corex = (() => {
       const triggers = listEl.querySelectorAll(
         '[data-scope="tabs"][data-part="trigger"]'
       );
-      for (let i = 0; i < triggers.length && i < items.length; i++) {
-        const triggerEl = triggers[i];
-        const item = items[i];
+      for (let i2 = 0; i2 < triggers.length && i2 < items.length; i2++) {
+        const triggerEl = triggers[i2];
+        const item = items[i2];
         this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value }));
       }
       const contents = rootEl.querySelectorAll(
         '[data-scope="tabs"][data-part="content"]'
       );
-      for (let i = 0; i < contents.length && i < items.length; i++) {
-        const contentEl = contents[i];
-        const item = items[i];
+      for (let i2 = 0; i2 < contents.length && i2 < items.length; i2++) {
+        const contentEl = contents[i2];
+        const item = items[i2];
         this.spreadProps(contentEl, this.api.getContentProps({ value: item.value }));
       }
     }
@@ -12970,8 +13054,8 @@ var Corex = (() => {
   // components/clipboard.ts
   var Clipboard = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine9, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine9, props13);
     }
     initApi() {
       return connect9(this.machine.service, normalizeProps);
@@ -13474,8 +13558,8 @@ var Corex = (() => {
   // components/collapsible.ts
   var Collapsible = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine10, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine10, props13);
     }
     initApi() {
       return connect10(this.machine.service, normalizeProps);
@@ -13588,7 +13672,7 @@ var Corex = (() => {
     }
     console.error("[zag-js > ariaHidden] target", target, "in not contained inside", parent, ". Doing nothing");
     return null;
-  }).filter((x) => Boolean(x));
+  }).filter((x2) => Boolean(x2));
   var ignoreableNodes = /* @__PURE__ */ new Set(["script", "output", "status", "next-route-announcer"]);
   var isIgnoredNode = (node) => {
     if (ignoreableNodes.has(node.localName)) return true;
@@ -13596,8 +13680,8 @@ var Corex = (() => {
     if (node.hasAttribute("aria-live")) return true;
     return node.matches("[data-live-announcer]");
   };
-  var walkTreeOutside = (originalTarget, props12) => {
-    const { parentNode, markerName, controlAttribute, followControlledElements = true } = props12;
+  var walkTreeOutside = (originalTarget, props13) => {
+    const { parentNode, markerName, controlAttribute, followControlledElements = true } = props13;
     const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
     markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
     const markerCounter = markerMap[markerName];
@@ -13643,8 +13727,8 @@ var Corex = (() => {
             if (!alreadyHidden) {
               node.setAttribute(controlAttribute, "true");
             }
-          } catch (e) {
-            console.error("[zag-js > ariaHidden] cannot operate on ", node, e);
+          } catch (e2) {
+            console.error("[zag-js > ariaHidden] cannot operate on ", node, e2);
           }
         }
       });
@@ -13696,7 +13780,7 @@ var Corex = (() => {
   };
   function ariaHidden(targetsOrFn, options = {}) {
     const { defer = true } = options;
-    const func = defer ? raf2 : (v) => v();
+    const func = defer ? raf2 : (v2) => v2();
     const cleanups = [];
     cleanups.push(
       func(() => {
@@ -13792,7 +13876,7 @@ var Corex = (() => {
                 }
               }
             } else {
-              if (!this.state.containerGroups.some((g) => g.tabbableNodes.some((n) => getTabIndex(n) > 0))) {
+              if (!this.state.containerGroups.some((g2) => g2.tabbableNodes.some((n2) => getTabIndex(n2) > 0))) {
                 navAcrossContainers = false;
               }
             }
@@ -13883,7 +13967,7 @@ var Corex = (() => {
                 if (hasControllerElements(element)) {
                   return true;
                 }
-                if (element.id && !this.state.containers.some((c) => c.contains(element))) {
+                if (element.id && !this.state.containers.some((c2) => c2.contains(element))) {
                   return isControlledByExpandedController(element);
                 }
                 return false;
@@ -14176,8 +14260,8 @@ var Corex = (() => {
         const firstDomTabbableNode = firstTabbableNode;
         const lastDomTabbableNode = lastTabbableNode;
         let posTabIndexesFound = false;
-        for (let i = 0; i < tabbableNodes.length; i++) {
-          if (getTabIndex(tabbableNodes[i]) > 0) {
+        for (let i2 = 0; i2 < tabbableNodes.length; i2++) {
+          if (getTabIndex(tabbableNodes[i2]) > 0) {
             posTabIndexesFound = true;
             break;
           }
@@ -14190,12 +14274,12 @@ var Corex = (() => {
           const focusableIdx = focusableNodes.indexOf(node);
           if (focusableIdx < 0) return void 0;
           if (forward) {
-            for (let i = focusableIdx + 1; i < focusableNodes.length; i++) {
-              if (isTabbable(focusableNodes[i])) return focusableNodes[i];
+            for (let i2 = focusableIdx + 1; i2 < focusableNodes.length; i2++) {
+              if (isTabbable(focusableNodes[i2])) return focusableNodes[i2];
             }
           } else {
-            for (let i = focusableIdx - 1; i >= 0; i--) {
-              if (isTabbable(focusableNodes[i])) return focusableNodes[i];
+            for (let i2 = focusableIdx - 1; i2 >= 0; i2--) {
+              if (isTabbable(focusableNodes[i2])) return focusableNodes[i2];
             }
           }
           return void 0;
@@ -14218,7 +14302,7 @@ var Corex = (() => {
           "Your focus-trap must have at least one container with at least one tabbable node in it at all times"
         );
       }
-      if (this.state.containerGroups.find((g) => g.posTabIndexesFound) && this.state.containerGroups.length > 1) {
+      if (this.state.containerGroups.find((g2) => g2.posTabIndexesFound) && this.state.containerGroups.length > 1) {
         throw new Error(
           "At least one node with a positive tabindex was found in one of your focus-trap's multiple containers. Positive tabindexes are only supported in single-container focus-traps."
         );
@@ -14278,8 +14362,8 @@ var Corex = (() => {
   };
   var isKeyboardEvent = (event) => event.type === "keydown";
   var isTabEvent = (event) => isKeyboardEvent(event) && (event == null ? void 0 : event.key) === "Tab";
-  var isKeyForward = (e) => isKeyboardEvent(e) && e.key === "Tab" && !(e == null ? void 0 : e.shiftKey);
-  var isKeyBackward = (e) => isKeyboardEvent(e) && e.key === "Tab" && (e == null ? void 0 : e.shiftKey);
+  var isKeyForward = (e2) => isKeyboardEvent(e2) && e2.key === "Tab" && !(e2 == null ? void 0 : e2.shiftKey);
+  var isKeyBackward = (e2) => isKeyboardEvent(e2) && e2.key === "Tab" && (e2 == null ? void 0 : e2.shiftKey);
   var valueOrHandler = (value, ...params) => typeof value === "function" ? value(...params) : value;
   var isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
   var delay = (fn) => setTimeout(fn, 0);
@@ -14288,7 +14372,7 @@ var Corex = (() => {
     let trap;
     const cleanup = raf(() => {
       const elements = Array.isArray(el) ? el : [el];
-      const resolvedElements = elements.map((e) => typeof e === "function" ? e() : e).filter((e) => e != null);
+      const resolvedElements = elements.map((e2) => typeof e2 === "function" ? e2() : e2).filter((e2) => e2 != null);
       if (resolvedElements.length === 0) return;
       const primaryEl = resolvedElements[0];
       trap = new FocusTrap(resolvedElements, __spreadProps(__spreadValues({
@@ -14303,7 +14387,7 @@ var Corex = (() => {
       }));
       try {
         trap.activate();
-      } catch (e) {
+      } catch (e2) {
       }
     });
     return function destroy() {
@@ -14722,8 +14806,8 @@ var Corex = (() => {
   // components/dialog.ts
   var Dialog = class extends Component {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initMachine(props12) {
-      return new VanillaMachine(machine11, props12);
+    initMachine(props13) {
+      return new VanillaMachine(machine11, props13);
     }
     initApi() {
       return connect11(this.machine.service, normalizeProps);
@@ -15072,35 +15156,35 @@ var Corex = (() => {
   };
 
   // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/queries.mjs
-  function $14e0f24ef4ac5c92$export$ea39ec197993aef0(a, b) {
-    b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
-    return a.era === b.era && a.year === b.year && a.month === b.month && a.day === b.day;
+  function $14e0f24ef4ac5c92$export$ea39ec197993aef0(a2, b2) {
+    b2 = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b2, a2.calendar);
+    return a2.era === b2.era && a2.year === b2.year && a2.month === b2.month && a2.day === b2.day;
   }
-  function $14e0f24ef4ac5c92$export$a18c89cbd24170ff(a, b) {
-    b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
-    a = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(a);
-    b = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(b);
-    return a.era === b.era && a.year === b.year && a.month === b.month;
+  function $14e0f24ef4ac5c92$export$a18c89cbd24170ff(a2, b2) {
+    b2 = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b2, a2.calendar);
+    a2 = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(a2);
+    b2 = $14e0f24ef4ac5c92$export$a5a3b454ada2268e(b2);
+    return a2.era === b2.era && a2.year === b2.year && a2.month === b2.month;
   }
-  function $14e0f24ef4ac5c92$export$5841f9eb9773f25f(a, b) {
-    b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
-    a = $14e0f24ef4ac5c92$export$f91e89d3d0406102(a);
-    b = $14e0f24ef4ac5c92$export$f91e89d3d0406102(b);
-    return a.era === b.era && a.year === b.year;
+  function $14e0f24ef4ac5c92$export$5841f9eb9773f25f(a2, b2) {
+    b2 = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b2, a2.calendar);
+    a2 = $14e0f24ef4ac5c92$export$f91e89d3d0406102(a2);
+    b2 = $14e0f24ef4ac5c92$export$f91e89d3d0406102(b2);
+    return a2.era === b2.era && a2.year === b2.year;
   }
-  function $14e0f24ef4ac5c92$export$91b62ebf2ba703ee(a, b) {
-    return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a.calendar, b.calendar) && $14e0f24ef4ac5c92$export$ea39ec197993aef0(a, b);
+  function $14e0f24ef4ac5c92$export$91b62ebf2ba703ee(a2, b2) {
+    return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a2.calendar, b2.calendar) && $14e0f24ef4ac5c92$export$ea39ec197993aef0(a2, b2);
   }
-  function $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(a, b) {
-    return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a.calendar, b.calendar) && $14e0f24ef4ac5c92$export$a18c89cbd24170ff(a, b);
+  function $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(a2, b2) {
+    return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a2.calendar, b2.calendar) && $14e0f24ef4ac5c92$export$a18c89cbd24170ff(a2, b2);
   }
-  function $14e0f24ef4ac5c92$export$ea840f5a6dda8147(a, b) {
-    return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a.calendar, b.calendar) && $14e0f24ef4ac5c92$export$5841f9eb9773f25f(a, b);
+  function $14e0f24ef4ac5c92$export$ea840f5a6dda8147(a2, b2) {
+    return $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a2.calendar, b2.calendar) && $14e0f24ef4ac5c92$export$5841f9eb9773f25f(a2, b2);
   }
-  function $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a, b) {
+  function $14e0f24ef4ac5c92$export$dbc69fd56b53d5e(a2, b2) {
     var _a_isEqual, _b_isEqual;
     var _a_isEqual1, _ref;
-    return (_ref = (_a_isEqual1 = (_a_isEqual = a.isEqual) === null || _a_isEqual === void 0 ? void 0 : _a_isEqual.call(a, b)) !== null && _a_isEqual1 !== void 0 ? _a_isEqual1 : (_b_isEqual = b.isEqual) === null || _b_isEqual === void 0 ? void 0 : _b_isEqual.call(b, a)) !== null && _ref !== void 0 ? _ref : a.identifier === b.identifier;
+    return (_ref = (_a_isEqual1 = (_a_isEqual = a2.isEqual) === null || _a_isEqual === void 0 ? void 0 : _a_isEqual.call(a2, b2)) !== null && _a_isEqual1 !== void 0 ? _a_isEqual1 : (_b_isEqual = b2.isEqual) === null || _b_isEqual === void 0 ? void 0 : _b_isEqual.call(b2, a2)) !== null && _ref !== void 0 ? _ref : a2.identifier === b2.identifier;
   }
   function $14e0f24ef4ac5c92$export$629b0a497aa65267(date, timeZone) {
     return $14e0f24ef4ac5c92$export$ea39ec197993aef0(date, $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
@@ -15127,14 +15211,14 @@ var Corex = (() => {
   function $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone) {
     return (0, $11d87f3f76e88657$export$93522d1a439f3617)($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
   }
-  function $14e0f24ef4ac5c92$export$68781ddf31c0090f(a, b) {
-    return a.calendar.toJulianDay(a) - b.calendar.toJulianDay(b);
+  function $14e0f24ef4ac5c92$export$68781ddf31c0090f(a2, b2) {
+    return a2.calendar.toJulianDay(a2) - b2.calendar.toJulianDay(b2);
   }
-  function $14e0f24ef4ac5c92$export$c19a80a9721b80f6(a, b) {
-    return $14e0f24ef4ac5c92$var$timeToMs(a) - $14e0f24ef4ac5c92$var$timeToMs(b);
+  function $14e0f24ef4ac5c92$export$c19a80a9721b80f6(a2, b2) {
+    return $14e0f24ef4ac5c92$var$timeToMs(a2) - $14e0f24ef4ac5c92$var$timeToMs(b2);
   }
-  function $14e0f24ef4ac5c92$var$timeToMs(a) {
-    return a.hour * 36e5 + a.minute * 6e4 + a.second * 1e3 + a.millisecond;
+  function $14e0f24ef4ac5c92$var$timeToMs(a2) {
+    return a2.hour * 36e5 + a2.minute * 6e4 + a2.second * 1e3 + a2.millisecond;
   }
   var $14e0f24ef4ac5c92$var$localTimeZone = null;
   function $14e0f24ef4ac5c92$export$aa8b41735afcabd2() {
@@ -15237,13 +15321,13 @@ var Corex = (() => {
     let days = date.calendar.getDaysInMonth(date);
     return Math.ceil(($14e0f24ef4ac5c92$export$2061056d06d7cdf7($14e0f24ef4ac5c92$export$a5a3b454ada2268e(date), locale, firstDayOfWeek) + days) / 7);
   }
-  function $14e0f24ef4ac5c92$export$5c333a116e949cdd(a, b) {
-    if (a && b) return a.compare(b) <= 0 ? a : b;
-    return a || b;
+  function $14e0f24ef4ac5c92$export$5c333a116e949cdd(a2, b2) {
+    if (a2 && b2) return a2.compare(b2) <= 0 ? a2 : b2;
+    return a2 || b2;
   }
-  function $14e0f24ef4ac5c92$export$a75f2bff57811055(a, b) {
-    if (a && b) return a.compare(b) >= 0 ? a : b;
-    return a || b;
+  function $14e0f24ef4ac5c92$export$a75f2bff57811055(a2, b2) {
+    if (a2 && b2) return a2.compare(b2) >= 0 ? a2 : b2;
+    return a2 || b2;
   }
   var $14e0f24ef4ac5c92$var$WEEKEND_DATA = {
     AF: [
@@ -15363,9 +15447,9 @@ var Corex = (() => {
       });
       $11d87f3f76e88657$var$formattersByTimeZone.set(timeZone, formatter);
     }
-    let parts13 = formatter.formatToParts(new Date(ms));
+    let parts14 = formatter.formatToParts(new Date(ms));
     let namedParts = {};
-    for (let part of parts13) if (part.type !== "literal") namedParts[part.type] = part.value;
+    for (let part of parts14) if (part.type !== "literal") namedParts[part.type] = part.value;
     return {
       // Firefox returns B instead of BC... https://bugzilla.mozilla.org/show_bug.cgi?id=1752253
       year: namedParts.era === "BC" || namedParts.era === "B" ? -namedParts.year + 1 : +namedParts.year,
@@ -15387,8 +15471,8 @@ var Corex = (() => {
     return found.filter((absolute) => $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute));
   }
   function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
-    let parts13 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
-    return date.year === parts13.year && date.month === parts13.month && date.day === parts13.day && date.hour === parts13.hour && date.minute === parts13.minute && date.second === parts13.second;
+    let parts14 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
+    return date.year === parts14.year && date.month === parts14.month && date.day === parts14.day && date.hour === parts14.hour && date.minute === parts14.minute && date.second === parts14.second;
   }
   function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
     let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
@@ -15601,9 +15685,9 @@ var Corex = (() => {
     time.minute = Math.max(0, Math.min(time.minute, 59));
     time.hour = Math.max(0, Math.min(time.hour, 23));
   }
-  function $735220c2d4774dd3$var$nonNegativeMod(a, b) {
-    let result = a % b;
-    if (result < 0) result += b;
+  function $735220c2d4774dd3$var$nonNegativeMod(a2, b2) {
+    let result = a2 % b2;
+    if (result < 0) result += b2;
     return result;
   }
   function $735220c2d4774dd3$var$addTimeFields(time, duration) {
@@ -15783,13 +15867,13 @@ var Corex = (() => {
     ...$fae977aafc393c5c$var$requiredDurationTimeGroups
   ];
   function $fae977aafc393c5c$export$6b862160d295c8e(value) {
-    let m = value.match($fae977aafc393c5c$var$DATE_RE);
-    if (!m) {
+    let m2 = value.match($fae977aafc393c5c$var$DATE_RE);
+    if (!m2) {
       if ($fae977aafc393c5c$var$ABSOLUTE_RE.test(value)) throw new Error(`Invalid ISO 8601 date string: ${value}. Use parseAbsolute() instead.`);
       throw new Error("Invalid ISO 8601 date string: " + value);
     }
-    let date = new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)($fae977aafc393c5c$var$parseNumber(m[1], 0, 9999), $fae977aafc393c5c$var$parseNumber(m[2], 1, 12), 1);
-    date.day = $fae977aafc393c5c$var$parseNumber(m[3], 1, date.calendar.getDaysInMonth(date));
+    let date = new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)($fae977aafc393c5c$var$parseNumber(m2[1], 0, 9999), $fae977aafc393c5c$var$parseNumber(m2[2], 1, 12), 1);
+    date.day = $fae977aafc393c5c$var$parseNumber(m2[3], 1, date.calendar.getDaysInMonth(date));
     return date;
   }
   function $fae977aafc393c5c$var$parseNumber(value, min3, max3) {
@@ -15892,8 +15976,8 @@ var Corex = (() => {
       return (0, $fae977aafc393c5c$export$60dfd74aa96791bd)(this);
     }
     /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
-    compare(b) {
-      return (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b);
+    compare(b2) {
+      return (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b2);
     }
     constructor(...args) {
       (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type, {
@@ -15952,9 +16036,9 @@ var Corex = (() => {
       return (0, $fae977aafc393c5c$export$4223de14708adc63)(this);
     }
     /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
-    compare(b) {
-      let res = (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b);
-      if (res === 0) return (0, $14e0f24ef4ac5c92$export$c19a80a9721b80f6)(this, (0, $11d87f3f76e88657$export$b21e0b124e224484)(b));
+    compare(b2) {
+      let res = (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b2);
+      if (res === 0) return (0, $14e0f24ef4ac5c92$export$c19a80a9721b80f6)(this, (0, $11d87f3f76e88657$export$b21e0b124e224484)(b2));
       return res;
     }
     constructor(...args) {
@@ -16014,8 +16098,8 @@ var Corex = (() => {
       return this.toDate().toISOString();
     }
     /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
-    compare(b) {
-      return this.toDate().getTime() - (0, $11d87f3f76e88657$export$84c95a83c799e074)(b, this.timeZone).toDate().getTime();
+    compare(b2) {
+      return this.toDate().getTime() - (0, $11d87f3f76e88657$export$84c95a83c799e074)(b2, this.timeZone).toDate().getTime();
     }
     constructor(...args) {
       (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type3, {
@@ -16066,7 +16150,7 @@ var Corex = (() => {
       let startParts = this.formatter.formatToParts(start);
       let endParts = this.formatter.formatToParts(end);
       return [
-        ...startParts.map((p) => __spreadProps(__spreadValues({}, p), {
+        ...startParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
           source: "startRange"
         })),
         {
@@ -16074,7 +16158,7 @@ var Corex = (() => {
           value: " \u2013 ",
           source: "shared"
         },
-        ...endParts.map((p) => __spreadProps(__spreadValues({}, p), {
+        ...endParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
           source: "endRange"
         }))
       ];
@@ -16110,7 +16194,7 @@ var Corex = (() => {
       options.hourCycle = pref !== null && pref !== void 0 ? pref : defaultHourCycle;
       delete options.hour12;
     }
-    let cacheKey = locale + (options ? Object.entries(options).sort((a, b) => a[0] < b[0] ? -1 : 1).join() : "");
+    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
     if ($fb18d541ea1ad717$var$formatterCache.has(cacheKey)) return $fb18d541ea1ad717$var$formatterCache.get(cacheKey);
     let numberFormatter = new Intl.DateTimeFormat(locale, options);
     $fb18d541ea1ad717$var$formatterCache.set(cacheKey, numberFormatter);
@@ -16140,8 +16224,8 @@ var Corex = (() => {
       timeZone: void 0
       // use local timezone
     }));
-    let min3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 0)).find((p) => p.type === "hour").value, 10);
-    let max3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 23)).find((p) => p.type === "hour").value, 10);
+    let min3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 0)).find((p2) => p2.type === "hour").value, 10);
+    let max3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 23)).find((p2) => p2.type === "hour").value, 10);
     if (min3 === 0 && max3 === 23) return "h23";
     if (min3 === 24 && max3 === 23) return "h24";
     if (min3 === 0 && max3 === 11) return "h11";
@@ -16176,17 +16260,17 @@ var Corex = (() => {
     return constrainStart(date, aligned, duration, locale, min3, max3);
   }
   function alignEnd(date, duration, locale, min3, max3) {
-    let d = __spreadValues({}, duration);
-    if (d.days) {
-      d.days--;
-    } else if (d.weeks) {
-      d.weeks--;
-    } else if (d.months) {
-      d.months--;
-    } else if (d.years) {
-      d.years--;
+    let d2 = __spreadValues({}, duration);
+    if (d2.days) {
+      d2.days--;
+    } else if (d2.weeks) {
+      d2.weeks--;
+    } else if (d2.months) {
+      d2.months--;
+    } else if (d2.years) {
+      d2.years--;
     }
-    let aligned = alignStart(date, duration, locale).subtract(d);
+    let aligned = alignStart(date, duration, locale).subtract(d2);
     return constrainStart(date, aligned, duration, locale, min3, max3);
   }
   function constrainStart(date, aligned, duration, locale, min3, max3) {
@@ -16275,23 +16359,23 @@ var Corex = (() => {
     });
   }
   function formatRange(startDate, endDate, formatter, toString, timeZone) {
-    let parts13 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
+    let parts14 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
     let separatorIndex = -1;
-    for (let i = 0; i < parts13.length; i++) {
-      let part = parts13[i];
+    for (let i2 = 0; i2 < parts14.length; i2++) {
+      let part = parts14[i2];
       if (part.source === "shared" && part.type === "literal") {
-        separatorIndex = i;
+        separatorIndex = i2;
       } else if (part.source === "endRange") {
         break;
       }
     }
     let start = "";
     let end = "";
-    for (let i = 0; i < parts13.length; i++) {
-      if (i < separatorIndex) {
-        start += parts13[i].value;
-      } else if (i > separatorIndex) {
-        end += parts13[i].value;
+    for (let i2 = 0; i2 < parts14.length; i2++) {
+      if (i2 < separatorIndex) {
+        start += parts14[i2].value;
+      } else if (i2 > separatorIndex) {
+        end += parts14[i2].value;
       }
     }
     return toString(start, end);
@@ -16355,7 +16439,7 @@ var Corex = (() => {
   function getMonthNames(locale, format = "long") {
     const date = new Date(2021, 0, 1);
     const monthNames = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i2 = 0; i2 < 12; i2++) {
       monthNames.push(date.toLocaleString(locale, { month: format }));
       date.setMonth(date.getMonth() + 1);
     }
@@ -16383,8 +16467,8 @@ var Corex = (() => {
     const chunkSize = (opts == null ? void 0 : opts.strict) ? 10 : 12;
     const computedYear = year - year % 10;
     const years = [];
-    for (let i = 0; i < chunkSize; i += 1) {
-      const value = computedYear + i;
+    for (let i2 = 0; i2 < chunkSize; i2 += 1) {
+      const value = computedYear + i2;
       years.push(value);
     }
     return years;
@@ -16524,8 +16608,8 @@ var Corex = (() => {
   }
   function createRegex(locale, timeZone) {
     const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone });
-    const parts13 = formatter.formatToParts(new Date(2e3, 11, 25));
-    return parts13.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
+    const parts14 = formatter.formatToParts(new Date(2e3, 11, 25));
+    return parts14.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
   }
   function extract(pattern, str) {
     var _a;
@@ -16741,7 +16825,7 @@ var Corex = (() => {
     return startDate.compare(date) <= 0 && endDate.compare(date) >= 0;
   }
   function sortDates(values) {
-    return values.slice().filter((date) => date != null).sort((a, b) => a.compare(b));
+    return values.slice().filter((date) => date != null).sort((a2, b2) => a2.compare(b2));
   }
   function getRoleDescription(view) {
     return match2(view, {
@@ -17607,11 +17691,11 @@ var Corex = (() => {
     };
   }
   var { and: and6 } = createGuards();
-  function isDateArrayEqual(a, b) {
-    if ((a == null ? void 0 : a.length) !== (b == null ? void 0 : b.length)) return false;
-    const len = Math.max(a.length, b.length);
-    for (let i = 0; i < len; i++) {
-      if (!isDateEqual(a[i], b[i])) return false;
+  function isDateArrayEqual(a2, b2) {
+    if ((a2 == null ? void 0 : a2.length) !== (b2 == null ? void 0 : b2.length)) return false;
+    const len = Math.max(a2.length, b2.length);
+    for (let i2 = 0; i2 < len; i2++) {
+      if (!isDateEqual(a2[i2], b2[i2])) return false;
     }
     return true;
   }
@@ -17676,7 +17760,7 @@ var Corex = (() => {
           defaultValue: prop("defaultFocusedValue"),
           value: prop("focusedValue"),
           isEqual: isDateEqual,
-          hash: (v) => v.toString(),
+          hash: (v2) => v2.toString(),
           sync: true,
           onChange(focusedValue) {
             var _a;
@@ -17691,7 +17775,7 @@ var Corex = (() => {
           defaultValue: prop("defaultValue"),
           value: prop("value"),
           isEqual: isDateArrayEqual,
-          hash: (v) => v.map((date) => {
+          hash: (v2) => v2.map((date) => {
             var _a;
             return (_a = date == null ? void 0 : date.toString()) != null ? _a : "";
           }).join(","),
@@ -17726,7 +17810,7 @@ var Corex = (() => {
           return {
             defaultValue: alignDate(focusedValue, "start", { months: prop("numOfMonths") }, prop("locale")),
             isEqual: isDateEqual,
-            hash: (v) => v.toString()
+            hash: (v2) => v2.toString()
           };
         }),
         currentPlacement: bindable2(() => ({
@@ -18695,7 +18779,7 @@ var Corex = (() => {
   }
   function parse(value) {
     if (Array.isArray(value)) {
-      return value.map((v) => parse(v));
+      return value.map((v2) => parse(v2));
     }
     if (value instanceof Date) {
       return new $35ea8db9cb2ccb90$export$99faa760c7908e4f(value.getFullYear(), value.getMonth() + 1, value.getDate());
@@ -18927,8 +19011,8 @@ var Corex = (() => {
         });
       });
     }
-    initMachine(props12) {
-      return new VanillaMachine(machine12, __spreadValues({}, props12));
+    initMachine(props13) {
+      return new VanillaMachine(machine12, __spreadValues({}, props13));
     }
     initApi() {
       return connect12(this.machine.service, normalizeProps);
@@ -19104,9 +19188,9 @@ var Corex = (() => {
   };
 
   // hooks/date-picker.ts
-  function toISOString(d) {
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${d.year}-${pad(d.month)}-${pad(d.day)}`;
+  function toISOString(d2) {
+    const pad = (n2) => String(n2).padStart(2, "0");
+    return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
   }
   var DatePickerHook = {
     mounted() {
@@ -19116,13 +19200,11 @@ var Corex = (() => {
       const min3 = getString(el, "min");
       const max3 = getString(el, "max");
       const positioningJson = getString(el, "positioning");
-      const isControlled = getBoolean(el, "controlled");
-      const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
-      const parseOne = (v) => v ? parse(v) : void 0;
-      const initialValue = parseList(getStringList(el, isControlled ? "value" : "defaultValue"));
-      const datePickerInstance = new DatePicker(el, {
-        id: el.id,
-        defaultValue: initialValue,
+      const parseList = (v2) => v2 ? v2.map((x2) => parse(x2)) : void 0;
+      const parseOne = (v2) => v2 ? parse(v2) : void 0;
+      const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues({
+        id: el.id
+      }, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
         defaultFocusedValue: parseOne(getString(el, "focusedValue")),
         defaultView: getString(el, "defaultView", ["day", "month", "year"]),
         defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
@@ -19148,7 +19230,7 @@ var Corex = (() => {
         positioning: positioningJson ? JSON.parse(positioningJson) : void 0,
         onValueChange: (details) => {
           var _a;
-          const isoStr = ((_a = details.value) == null ? void 0 : _a.length) ? details.value.map((d) => toISOString(d)).join(",") : "";
+          const isoStr = ((_a = details.value) == null ? void 0 : _a.length) ? details.value.map((d2) => toISOString(d2)).join(",") : "";
           const hiddenInput = el.querySelector(
             `#${el.id}-value`
           );
@@ -19203,7 +19285,7 @@ var Corex = (() => {
             });
           }
         }
-      });
+      }));
       datePickerInstance.init();
       this.datePicker = datePickerInstance;
       this.handlers = [];
@@ -19225,14 +19307,14 @@ var Corex = (() => {
     },
     updated() {
       var _a, _b;
+      const parseList = (v2) => v2 ? v2.map((x2) => parse(x2)) : void 0;
       const el = this.el;
       const min3 = getString(el, "min");
       const max3 = getString(el, "max");
       const positioningJson = getString(el, "positioning");
       const isControlled = getBoolean(el, "controlled");
       const focusedStr = getString(el, "focusedValue");
-      (_a = this.datePicker) == null ? void 0 : _a.updateProps({
-        id: el.id,
+      (_a = this.datePicker) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({}, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
         defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
         defaultView: getString(el, "defaultView", ["day", "month", "year"]),
         defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
@@ -19256,14 +19338,14 @@ var Corex = (() => {
         maxView: getString(this.el, "maxView", ["day", "month", "year"]),
         inline: getBoolean(this.el, "inline"),
         positioning: positioningJson ? JSON.parse(positioningJson) : void 0
-      });
+      }));
       if (isControlled && this.datePicker) {
         const serverValues = getStringList(el, "value");
         const zagValue = this.datePicker.api.value;
-        const zagIso = (zagValue == null ? void 0 : zagValue.length) ? zagValue.map((d) => toISOString(d)).join(",") : "";
+        const zagIso = (zagValue == null ? void 0 : zagValue.length) ? zagValue.map((d2) => toISOString(d2)).join(",") : "";
         const serverIso = (_b = serverValues == null ? void 0 : serverValues.join(",")) != null ? _b : "";
         if (serverIso && serverIso !== zagIso) {
-          this.datePicker.api.setValue(serverValues.map((x) => parse(x)));
+          this.datePicker.api.setValue(serverValues.map((x2) => parse(x2)));
         }
       }
     },
@@ -19281,8 +19363,737 @@ var Corex = (() => {
     }
   };
 
+  // ../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs
+  var { PI: e } = Math;
+  var t = e + 1e-4;
+  var n = 0.5;
+  var r = [1, 1];
+  function i(e2, t2, n2, r2 = (e3) => e3) {
+    return e2 * r2(0.5 - t2 * (0.5 - n2));
+  }
+  var { min: a } = Math;
+  function o(e2, t2, n2) {
+    let r2 = a(1, t2 / n2);
+    return a(1, e2 + (a(1, 1 - r2) - e2) * (r2 * 0.275));
+  }
+  function s(e2) {
+    return [-e2[0], -e2[1]];
+  }
+  function c(e2, t2) {
+    return [e2[0] + t2[0], e2[1] + t2[1]];
+  }
+  function l(e2, t2, n2) {
+    return e2[0] = t2[0] + n2[0], e2[1] = t2[1] + n2[1], e2;
+  }
+  function u(e2, t2) {
+    return [e2[0] - t2[0], e2[1] - t2[1]];
+  }
+  function d(e2, t2, n2) {
+    return e2[0] = t2[0] - n2[0], e2[1] = t2[1] - n2[1], e2;
+  }
+  function f(e2, t2) {
+    return [e2[0] * t2, e2[1] * t2];
+  }
+  function p(e2, t2, n2) {
+    return e2[0] = t2[0] * n2, e2[1] = t2[1] * n2, e2;
+  }
+  function m(e2, t2) {
+    return [e2[0] / t2, e2[1] / t2];
+  }
+  function h(e2) {
+    return [e2[1], -e2[0]];
+  }
+  function g(e2, t2) {
+    let n2 = t2[0];
+    return e2[0] = t2[1], e2[1] = -n2, e2;
+  }
+  function ee(e2, t2) {
+    return e2[0] * t2[0] + e2[1] * t2[1];
+  }
+  function _(e2, t2) {
+    return e2[0] === t2[0] && e2[1] === t2[1];
+  }
+  function v(e2) {
+    return Math.hypot(e2[0], e2[1]);
+  }
+  function y(e2, t2) {
+    let n2 = e2[0] - t2[0], r2 = e2[1] - t2[1];
+    return n2 * n2 + r2 * r2;
+  }
+  function b(e2) {
+    return m(e2, v(e2));
+  }
+  function x(e2, t2) {
+    return Math.hypot(e2[1] - t2[1], e2[0] - t2[0]);
+  }
+  function S(e2, t2, n2) {
+    let r2 = Math.sin(n2), i2 = Math.cos(n2), a2 = e2[0] - t2[0], o2 = e2[1] - t2[1], s2 = a2 * i2 - o2 * r2, c2 = a2 * r2 + o2 * i2;
+    return [s2 + t2[0], c2 + t2[1]];
+  }
+  function C(e2, t2, n2, r2) {
+    let i2 = Math.sin(r2), a2 = Math.cos(r2), o2 = t2[0] - n2[0], s2 = t2[1] - n2[1], c2 = o2 * a2 - s2 * i2, l2 = o2 * i2 + s2 * a2;
+    return e2[0] = c2 + n2[0], e2[1] = l2 + n2[1], e2;
+  }
+  function w(e2, t2, n2) {
+    return c(e2, f(u(t2, e2), n2));
+  }
+  function te(e2, t2, n2, r2) {
+    let i2 = n2[0] - t2[0], a2 = n2[1] - t2[1];
+    return e2[0] = t2[0] + i2 * r2, e2[1] = t2[1] + a2 * r2, e2;
+  }
+  function T(e2, t2, n2) {
+    return c(e2, f(t2, n2));
+  }
+  var E = [0, 0];
+  var D = [0, 0];
+  var O = [0, 0];
+  function k(e2, n2) {
+    let r2 = T(e2, b(h(u(e2, c(e2, [1, 1])))), -n2), i2 = [], a2 = 1 / 13;
+    for (let n3 = a2; n3 <= 1; n3 += a2) i2.push(S(r2, e2, t * 2 * n3));
+    return i2;
+  }
+  function A(e2, n2, r2) {
+    let i2 = [], a2 = 1 / r2;
+    for (let r3 = a2; r3 <= 1; r3 += a2) i2.push(S(n2, e2, t * r3));
+    return i2;
+  }
+  function j(e2, t2, n2) {
+    let r2 = u(t2, n2), i2 = f(r2, 0.5), a2 = f(r2, 0.51);
+    return [u(e2, i2), u(e2, a2), c(e2, a2), c(e2, i2)];
+  }
+  function M(e2, n2, r2, i2) {
+    let a2 = [], o2 = T(e2, n2, r2), s2 = 1 / i2;
+    for (let n3 = s2; n3 < 1; n3 += s2) a2.push(S(o2, e2, t * 3 * n3));
+    return a2;
+  }
+  function ne(e2, t2, n2) {
+    return [c(e2, f(t2, n2)), c(e2, f(t2, n2 * 0.99)), u(e2, f(t2, n2 * 0.99)), u(e2, f(t2, n2))];
+  }
+  function N(e2, t2, n2) {
+    return e2 === false || e2 === void 0 ? 0 : e2 === true ? Math.max(t2, n2) : e2;
+  }
+  function re(e2, t2, n2) {
+    return e2.slice(0, 10).reduce((e3, r2) => {
+      let i2 = r2.pressure;
+      return t2 && (i2 = o(e3, r2.distance, n2)), (e3 + i2) / 2;
+    }, e2[0].pressure);
+  }
+  function P(e2, n2 = {}) {
+    let { size: r2 = 16, smoothing: a2 = 0.5, thinning: f2 = 0.5, simulatePressure: m2 = true, easing: _2 = (e3) => e3, start: v2 = {}, end: b2 = {}, last: x2 = false } = n2, { cap: S2 = true, easing: w2 = (e3) => e3 * (2 - e3) } = v2, { cap: T2 = true, easing: P2 = (e3) => --e3 * e3 * e3 + 1 } = b2;
+    if (e2.length === 0 || r2 <= 0) return [];
+    let F2 = e2[e2.length - 1].runningLength, I2 = N(v2.taper, r2, F2), L2 = N(b2.taper, r2, F2), R2 = (r2 * a2) ** 2, z2 = [], B = [], V = re(e2, m2, r2), H = i(r2, f2, e2[e2.length - 1].pressure, _2), U, W = e2[0].vector, G = e2[0].point, K = G, q = G, J = K, Y = false;
+    for (let n3 = 0; n3 < e2.length; n3++) {
+      let { pressure: a3 } = e2[n3], { point: s2, vector: h2, distance: v3, runningLength: b3 } = e2[n3], x3 = n3 === e2.length - 1;
+      if (!x3 && F2 - b3 < 3) continue;
+      f2 ? (m2 && (a3 = o(V, v3, r2)), H = i(r2, f2, a3, _2)) : H = r2 / 2, U === void 0 && (U = H);
+      let S3 = b3 < I2 ? w2(b3 / I2) : 1, T3 = F2 - b3 < L2 ? P2((F2 - b3) / L2) : 1;
+      H = Math.max(0.01, H * Math.min(S3, T3));
+      let k2 = (x3 ? e2[n3] : e2[n3 + 1]).vector, A2 = x3 ? 1 : ee(h2, k2), j2 = ee(h2, W) < 0 && !Y, M2 = A2 !== null && A2 < 0;
+      if (j2 || M2) {
+        g(E, W), p(E, E, H);
+        for (let e3 = 0; e3 <= 1; e3 += 0.07692307692307693) d(D, s2, E), C(D, D, s2, t * e3), q = [D[0], D[1]], z2.push(q), l(O, s2, E), C(O, O, s2, t * -e3), J = [O[0], O[1]], B.push(J);
+        G = q, K = J, M2 && (Y = true);
+        continue;
+      }
+      if (Y = false, x3) {
+        g(E, h2), p(E, E, H), z2.push(u(s2, E)), B.push(c(s2, E));
+        continue;
+      }
+      te(E, k2, h2, A2), g(E, E), p(E, E, H), d(D, s2, E), q = [D[0], D[1]], (n3 <= 1 || y(G, q) > R2) && (z2.push(q), G = q), l(O, s2, E), J = [O[0], O[1]], (n3 <= 1 || y(K, J) > R2) && (B.push(J), K = J), V = a3, W = h2;
+    }
+    let X = [e2[0].point[0], e2[0].point[1]], Z = e2.length > 1 ? [e2[e2.length - 1].point[0], e2[e2.length - 1].point[1]] : c(e2[0].point, [1, 1]), Q = [], $ = [];
+    if (e2.length === 1) {
+      if (!(I2 || L2) || x2) return k(X, U || H);
+    } else {
+      I2 || L2 && e2.length === 1 || (S2 ? Q.push(...A(X, B[0], 13)) : Q.push(...j(X, z2[0], B[0])));
+      let t2 = h(s(e2[e2.length - 1].vector));
+      L2 || I2 && e2.length === 1 ? $.push(Z) : T2 ? $.push(...M(Z, t2, H, 29)) : $.push(...ne(Z, t2, H));
+    }
+    return z2.concat($, B.reverse(), Q);
+  }
+  var F = [0, 0];
+  function I(e2) {
+    return e2 != null && e2 >= 0;
+  }
+  function L(e2, t2 = {}) {
+    var _a;
+    let { streamline: i2 = 0.5, size: a2 = 16, last: o2 = false } = t2;
+    if (e2.length === 0) return [];
+    let s2 = 0.15 + (1 - i2) * 0.85, l2 = Array.isArray(e2[0]) ? e2 : e2.map(({ x: e3, y: t3, pressure: r2 = n }) => [e3, t3, r2]);
+    if (l2.length === 2) {
+      let e3 = l2[1];
+      l2 = l2.slice(0, -1);
+      for (let t3 = 1; t3 < 5; t3++) l2.push(w(l2[0], e3, t3 / 4));
+    }
+    l2.length === 1 && (l2 = [...l2, [...c(l2[0], r), ...l2[0].slice(2)]]);
+    let u2 = [{ point: [l2[0][0], l2[0][1]], pressure: I(l2[0][2]) ? l2[0][2] : 0.25, vector: [...r], distance: 0, runningLength: 0 }], f2 = false, p2 = 0, m2 = u2[0], h2 = l2.length - 1;
+    for (let e3 = 1; e3 < l2.length; e3++) {
+      let t3 = o2 && e3 === h2 ? [l2[e3][0], l2[e3][1]] : w(m2.point, l2[e3], s2);
+      if (_(m2.point, t3)) continue;
+      let r2 = x(t3, m2.point);
+      if (p2 += r2, e3 < h2 && !f2) {
+        if (p2 < a2) continue;
+        f2 = true;
+      }
+      d(F, m2.point, t3), m2 = { point: t3, pressure: I(l2[e3][2]) ? l2[e3][2] : n, vector: b(F), distance: r2, runningLength: p2 }, u2.push(m2);
+    }
+    return u2[0].vector = ((_a = u2[1]) == null ? void 0 : _a.vector) || [0, 0], u2;
+  }
+  function R(e2, t2 = {}) {
+    return P(L(e2, t2), t2);
+  }
+  var z = R;
+
+  // ../node_modules/.pnpm/@zag-js+signature-pad@1.33.1/node_modules/@zag-js/signature-pad/dist/index.mjs
+  var anatomy13 = createAnatomy("signature-pad").parts(
+    "root",
+    "control",
+    "segment",
+    "segmentPath",
+    "guide",
+    "clearTrigger",
+    "label"
+  );
+  var parts13 = anatomy13.build();
+  var getRootId12 = (ctx) => {
+    var _a, _b;
+    return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `signature-${ctx.id}`;
+  };
+  var getControlId6 = (ctx) => {
+    var _a, _b;
+    return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `signature-control-${ctx.id}`;
+  };
+  var getLabelId7 = (ctx) => {
+    var _a, _b;
+    return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `signature-label-${ctx.id}`;
+  };
+  var getHiddenInputId3 = (ctx) => {
+    var _a, _b;
+    return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenInput) != null ? _b : `signature-input-${ctx.id}`;
+  };
+  var getControlEl3 = (ctx) => ctx.getById(getControlId6(ctx));
+  var getSegmentEl = (ctx) => query(getControlEl3(ctx), "[data-part=segment]");
+  var getDataUrl2 = (ctx, options) => {
+    return getDataUrl(getSegmentEl(ctx), options);
+  };
+  function connect13(service, normalize) {
+    const { state: state2, send, prop, computed, context, scope } = service;
+    const drawing = state2.matches("drawing");
+    const empty = computed("isEmpty");
+    const interactive = computed("isInteractive");
+    const disabled = !!prop("disabled");
+    const required = !!prop("required");
+    const translations = prop("translations");
+    return {
+      empty,
+      drawing,
+      currentPath: context.get("currentPath"),
+      paths: context.get("paths"),
+      clear() {
+        send({ type: "CLEAR" });
+      },
+      getDataUrl(type, quality) {
+        if (computed("isEmpty")) return Promise.resolve("");
+        return getDataUrl2(scope, { type, quality });
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts13.label.attrs), {
+          id: getLabelId7(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-required": dataAttr(required),
+          htmlFor: getHiddenInputId3(scope),
+          onClick(event) {
+            if (!interactive) return;
+            if (event.defaultPrevented) return;
+            const controlEl = getControlEl3(scope);
+            controlEl == null ? void 0 : controlEl.focus({ preventScroll: true });
+          }
+        }));
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+          "data-disabled": dataAttr(disabled),
+          id: getRootId12(scope)
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.control.attrs), {
+          tabIndex: disabled ? void 0 : 0,
+          id: getControlId6(scope),
+          role: "application",
+          "aria-roledescription": "signature pad",
+          "aria-label": translations.control,
+          "aria-disabled": disabled,
+          "data-disabled": dataAttr(disabled),
+          onPointerDown(event) {
+            if (!isLeftClick(event)) return;
+            if (isModifierKey(event)) return;
+            if (!interactive) return;
+            const target = getEventTarget(event);
+            if (target == null ? void 0 : target.closest("[data-part=clear-trigger]")) return;
+            event.currentTarget.setPointerCapture(event.pointerId);
+            const point = { x: event.clientX, y: event.clientY };
+            const controlEl = getControlEl3(scope);
+            if (!controlEl) return;
+            const { offset: offset3 } = getRelativePoint(point, controlEl);
+            send({ type: "POINTER_DOWN", point: offset3, pressure: event.pressure });
+          },
+          onPointerUp(event) {
+            if (!interactive) return;
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }
+          },
+          style: {
+            position: "relative",
+            touchAction: "none",
+            userSelect: "none",
+            WebkitUserSelect: "none"
+          }
+        }));
+      },
+      getSegmentProps() {
+        return normalize.svg(__spreadProps(__spreadValues({}, parts13.segment.attrs), {
+          style: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+            fill: prop("drawing").fill
+          }
+        }));
+      },
+      getSegmentPathProps(props22) {
+        return normalize.path(__spreadProps(__spreadValues({}, parts13.segmentPath.attrs), {
+          d: props22.path
+        }));
+      },
+      getGuideProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.guide.attrs), {
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getClearTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts13.clearTrigger.attrs), {
+          type: "button",
+          "aria-label": translations.clearTrigger,
+          hidden: !context.get("paths").length || drawing,
+          disabled,
+          onClick() {
+            send({ type: "CLEAR" });
+          }
+        }));
+      },
+      getHiddenInputProps(props22) {
+        return normalize.input({
+          id: getHiddenInputId3(scope),
+          type: "text",
+          hidden: true,
+          disabled,
+          required: prop("required"),
+          readOnly: true,
+          name: prop("name"),
+          value: props22.value
+        });
+      }
+    };
+  }
+  var average = (a2, b2) => (a2 + b2) / 2;
+  function getSvgPathFromStroke(points, closed = true) {
+    const len = points.length;
+    if (len < 4) {
+      return "";
+    }
+    let a2 = points[0];
+    let b2 = points[1];
+    const c2 = points[2];
+    let result = `M${a2[0].toFixed(2)},${a2[1].toFixed(2)} Q${b2[0].toFixed(2)},${b2[1].toFixed(2)} ${average(b2[0], c2[0]).toFixed(2)},${average(
+      b2[1],
+      c2[1]
+    ).toFixed(2)} T`;
+    for (let i2 = 2, max3 = len - 1; i2 < max3; i2++) {
+      a2 = points[i2];
+      b2 = points[i2 + 1];
+      result += `${average(a2[0], b2[0]).toFixed(2)},${average(a2[1], b2[1]).toFixed(2)} `;
+    }
+    if (closed) {
+      result += "Z";
+    }
+    return result;
+  }
+  var machine13 = createMachine({
+    props({ props: props22 }) {
+      return __spreadProps(__spreadValues({
+        defaultPaths: []
+      }, props22), {
+        drawing: __spreadValues({
+          size: 2,
+          simulatePressure: false,
+          thinning: 0.7,
+          smoothing: 0.4,
+          streamline: 0.6
+        }, props22.drawing),
+        translations: __spreadValues({
+          control: "signature pad",
+          clearTrigger: "clear signature"
+        }, props22.translations)
+      });
+    },
+    initialState() {
+      return "idle";
+    },
+    context({ prop, bindable: bindable2 }) {
+      return {
+        paths: bindable2(() => ({
+          defaultValue: prop("defaultPaths"),
+          value: prop("paths"),
+          sync: true,
+          onChange(value) {
+            var _a;
+            (_a = prop("onDraw")) == null ? void 0 : _a({ paths: value });
+          }
+        })),
+        currentPoints: bindable2(() => ({
+          defaultValue: []
+        })),
+        currentPath: bindable2(() => ({
+          defaultValue: null
+        }))
+      };
+    },
+    computed: {
+      isInteractive: ({ prop }) => !(prop("disabled") || prop("readOnly")),
+      isEmpty: ({ context }) => context.get("paths").length === 0
+    },
+    on: {
+      CLEAR: {
+        actions: ["clearPoints", "invokeOnDrawEnd", "focusCanvasEl"]
+      }
+    },
+    states: {
+      idle: {
+        on: {
+          POINTER_DOWN: {
+            target: "drawing",
+            actions: ["addPoint"]
+          }
+        }
+      },
+      drawing: {
+        effects: ["trackPointerMove"],
+        on: {
+          POINTER_MOVE: {
+            actions: ["addPoint", "invokeOnDraw"]
+          },
+          POINTER_UP: {
+            target: "idle",
+            actions: ["endStroke", "invokeOnDrawEnd"]
+          }
+        }
+      }
+    },
+    implementations: {
+      effects: {
+        trackPointerMove({ scope, send }) {
+          const doc = scope.getDoc();
+          return trackPointerMove(doc, {
+            onPointerMove({ event, point }) {
+              const controlEl = getControlEl3(scope);
+              if (!controlEl) return;
+              const { offset: offset3 } = getRelativePoint(point, controlEl);
+              send({ type: "POINTER_MOVE", point: offset3, pressure: event.pressure });
+            },
+            onPointerUp() {
+              send({ type: "POINTER_UP" });
+            }
+          });
+        }
+      },
+      actions: {
+        addPoint({ context, event, prop }) {
+          const nextPoints = [...context.get("currentPoints"), event.point];
+          context.set("currentPoints", nextPoints);
+          const stroke = z(nextPoints, prop("drawing"));
+          context.set("currentPath", getSvgPathFromStroke(stroke));
+        },
+        endStroke({ context }) {
+          const nextPaths = [...context.get("paths"), context.get("currentPath")];
+          context.set("paths", nextPaths);
+          context.set("currentPoints", []);
+          context.set("currentPath", null);
+        },
+        clearPoints({ context }) {
+          context.set("currentPoints", []);
+          context.set("paths", []);
+          context.set("currentPath", null);
+        },
+        focusCanvasEl({ scope }) {
+          queueMicrotask(() => {
+            var _a;
+            (_a = scope.getActiveElement()) == null ? void 0 : _a.focus({ preventScroll: true });
+          });
+        },
+        invokeOnDraw({ context, prop }) {
+          var _a;
+          (_a = prop("onDraw")) == null ? void 0 : _a({
+            paths: [...context.get("paths"), context.get("currentPath")]
+          });
+        },
+        invokeOnDrawEnd({ context, prop, scope, computed }) {
+          var _a;
+          (_a = prop("onDrawEnd")) == null ? void 0 : _a({
+            paths: [...context.get("paths")],
+            getDataUrl(type, quality = 0.92) {
+              if (computed("isEmpty")) return Promise.resolve("");
+              return getDataUrl2(scope, { type, quality });
+            }
+          });
+        }
+      }
+    }
+  });
+  var props12 = createProps()([
+    "defaultPaths",
+    "dir",
+    "disabled",
+    "drawing",
+    "getRootNode",
+    "id",
+    "ids",
+    "name",
+    "onDraw",
+    "onDrawEnd",
+    "paths",
+    "readOnly",
+    "required",
+    "translations"
+  ]);
+  var splitProps12 = createSplitProps(props12);
+
+  // components/signature-pad.ts
+  var SignaturePad = class extends Component {
+    constructor() {
+      super(...arguments);
+      __publicField(this, "imageURL", "");
+      __publicField(this, "paths", []);
+      __publicField(this, "name");
+      __publicField(this, "syncPaths", () => {
+        const segment = this.el.querySelector('[data-scope="signature-pad"][data-part="segment"]');
+        if (!segment) return;
+        const totalPaths = this.api.paths.length + (this.api.currentPath ? 1 : 0);
+        if (totalPaths === 0) {
+          Array.from(segment.querySelectorAll("path")).forEach((path) => segment.removeChild(path));
+          this.imageURL = "";
+          this.paths = [];
+          const hiddenInput = this.el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+          if (hiddenInput) {
+            hiddenInput.value = "";
+          }
+          return;
+        }
+        const allPathElements = Array.from(
+          segment.querySelectorAll('[data-scope="signature-pad"][data-part="path"], [data-scope="signature-pad"][data-part="current-path"]')
+        );
+        const existingPaths = [];
+        const existingCurrentPath = [];
+        allPathElements.forEach((path) => {
+          (path.getAttribute("data-part") === "current-path" ? existingCurrentPath : existingPaths).push(path);
+        });
+        while (existingPaths.length > this.api.paths.length) {
+          const path = existingPaths.pop();
+          if (path) segment.removeChild(path);
+        }
+        this.api.paths.forEach((pathData, index) => {
+          let pathEl = existingPaths[index];
+          if (!pathEl) {
+            pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathEl.setAttribute("data-scope", "signature-pad");
+            pathEl.setAttribute("data-part", "path");
+            segment.appendChild(pathEl);
+          }
+          this.spreadProps(pathEl, this.api.getSegmentPathProps({ path: pathData }));
+        });
+        if (this.api.currentPath) {
+          let currentPathEl = existingCurrentPath[0];
+          if (!currentPathEl) {
+            currentPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            currentPathEl.setAttribute("data-scope", "signature-pad");
+            currentPathEl.setAttribute("data-part", "current-path");
+            segment.appendChild(currentPathEl);
+          }
+          this.spreadProps(currentPathEl, this.api.getSegmentPathProps({ path: this.api.currentPath }));
+        } else {
+          existingCurrentPath.forEach((path) => segment.removeChild(path));
+        }
+      });
+    }
+    initMachine(props13) {
+      this.name = props13.name;
+      return new VanillaMachine(machine13, props13);
+    }
+    setName(name) {
+      this.name = name;
+    }
+    setPaths(paths) {
+      this.paths = paths;
+    }
+    initApi() {
+      return connect13(this.machine.service, normalizeProps);
+    }
+    render() {
+      const rootEl = this.el.querySelector('[data-scope="signature-pad"][data-part="root"]');
+      if (!rootEl) return;
+      this.spreadProps(rootEl, this.api.getRootProps());
+      const label = rootEl.querySelector('[data-scope="signature-pad"][data-part="label"]');
+      if (label) this.spreadProps(label, this.api.getLabelProps());
+      const control = rootEl.querySelector('[data-scope="signature-pad"][data-part="control"]');
+      if (control) this.spreadProps(control, this.api.getControlProps());
+      const segment = rootEl.querySelector('[data-scope="signature-pad"][data-part="segment"]');
+      if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+      const guide = rootEl.querySelector('[data-scope="signature-pad"][data-part="guide"]');
+      if (guide) this.spreadProps(guide, this.api.getGuideProps());
+      const clearBtn = rootEl.querySelector('[data-scope="signature-pad"][data-part="clear-trigger"]');
+      if (clearBtn) {
+        this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+      }
+      const hiddenInput = rootEl.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        const pathsValue = this.paths.length > 0 ? JSON.stringify(this.paths) : "";
+        this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
+        if (this.name) {
+          hiddenInput.name = this.name;
+        }
+        hiddenInput.value = pathsValue;
+      }
+      this.syncPaths();
+    }
+  };
+
+  // hooks/signature-pad.ts
+  function getPaths(el, attr) {
+    const value = el.dataset[attr];
+    if (!value) return [];
+    try {
+      return JSON.parse(value);
+    } catch (e2) {
+      return [];
+    }
+  }
+  var SignaturePadHook = {
+    mounted() {
+      const el = this.el;
+      const pushEvent = this.pushEvent.bind(this);
+      const controlled = getBoolean(el, "controlled");
+      const paths = getPaths(el, "paths");
+      const defaultPaths = getPaths(el, "defaultPaths");
+      const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues(__spreadValues({
+        id: el.id,
+        name: getString(el, "name")
+      }, controlled && paths.length > 0 ? { paths } : void 0), !controlled && defaultPaths.length > 0 ? { defaultPaths } : void 0), {
+        drawing: {
+          fill: getString(el, "drawingFill"),
+          size: getNumber(el, "drawingSize"),
+          simulatePressure: getBoolean(el, "drawingSimulatePressure")
+        },
+        onDrawEnd: (details) => {
+          signaturePad.setPaths(details.paths);
+          const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+          if (hiddenInput) {
+            hiddenInput.value = JSON.stringify(details.paths);
+          }
+          details.getDataUrl("image/png").then((url) => {
+            signaturePad.imageURL = url;
+            const eventName = getString(el, "onDrawEnd");
+            if (eventName && this.liveSocket.main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                paths: details.paths,
+                url
+              });
+            }
+            const eventNameClient = getString(el, "onDrawEndClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    paths: details.paths,
+                    url
+                  }
+                })
+              );
+            }
+          });
+        }
+      }));
+      signaturePad.init();
+      this.signaturePad = signaturePad;
+      this.onClear = (event) => {
+        const { id: targetId } = event.detail;
+        if (targetId && targetId !== el.id) return;
+        signaturePad.api.clear();
+        signaturePad.imageURL = "";
+        signaturePad.setPaths([]);
+        const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+        if (hiddenInput) {
+          hiddenInput.value = "";
+        }
+      };
+      el.addEventListener("phx:signature-pad:clear", this.onClear);
+      this.handlers = [];
+      this.handlers.push(
+        this.handleEvent("signature_pad_clear", (payload) => {
+          const targetId = payload.signature_pad_id;
+          if (targetId && targetId !== el.id) return;
+          signaturePad.api.clear();
+          signaturePad.imageURL = "";
+          signaturePad.setPaths([]);
+          const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+          if (hiddenInput) {
+            hiddenInput.value = "";
+          }
+        })
+      );
+    },
+    updated() {
+      var _a, _b;
+      const controlled = getBoolean(this.el, "controlled");
+      const paths = getPaths(this.el, "paths");
+      const defaultPaths = getPaths(this.el, "defaultPaths");
+      const name = getString(this.el, "name");
+      if (name) {
+        (_a = this.signaturePad) == null ? void 0 : _a.setName(name);
+      }
+      (_b = this.signaturePad) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues(__spreadValues({
+        id: this.el.id,
+        name
+      }, controlled && paths.length > 0 ? { paths } : {}), !controlled && defaultPaths.length > 0 ? { defaultPaths } : {}), {
+        drawing: {
+          fill: getString(this.el, "drawingFill") || "black",
+          size: getNumber(this.el, "drawingSize") || 2,
+          simulatePressure: getBoolean(this.el, "drawingSimulatePressure")
+        }
+      }));
+    },
+    destroyed() {
+      var _a;
+      if (this.onClear) {
+        this.el.removeEventListener("phx:signature-pad:clear", this.onClear);
+      }
+      if (this.handlers) {
+        for (const handler of this.handlers) {
+          this.removeHandleEvent(handler);
+        }
+      }
+      (_a = this.signaturePad) == null ? void 0 : _a.destroy();
+    }
+  };
+
   // hooks/corex.ts
-  var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook, Tabs: TabsHook, Clipboard: ClipboardHook, Collapsible: CollapsibleHook, Dialog: DialogHook, DatePicker: DatePickerHook };
+  var Hooks = { Accordion: AccordionHook, ToggleGroup: ToggleGroupHook, Toast: ToastHook, Select: SelectHook, Switch: SwitchHook, Combobox: ComboboxHook, Checkbox: CheckboxHook, Tabs: TabsHook, Clipboard: ClipboardHook, Collapsible: CollapsibleHook, Dialog: DialogHook, DatePicker: DatePickerHook, SignaturePad: SignaturePadHook };
   var corex_default = Hooks;
   return __toCommonJS(corex_exports);
 })();

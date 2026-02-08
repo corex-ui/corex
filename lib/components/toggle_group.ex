@@ -187,6 +187,12 @@ defmodule Corex.ToggleGroup do
     )
 
     attr(:disabled, :boolean, doc: "Whether the item is disabled")
+    attr(:class, :string, doc: "The class of the item")
+
+    attr(:aria_label, :string,
+      doc:
+        "Accessibility label for the item button. If not provided, the value will be used as a fallback."
+    )
   end
 
   def toggle_group(assigns) do
@@ -216,9 +222,11 @@ defmodule Corex.ToggleGroup do
           changed: if(@__changed__, do: true, else: false),
           value: Map.get(item_entry, :value, "item-#{index}"),
           disabled: Map.get(item_entry, :disabled, false),
+          aria_label: Map.get(item_entry, :aria_label),
           values: @value, orientation: @orientation,
           dir: @dir,
-          disabled_root: @disabled})}>
+          disabled_root: @disabled})}
+          class={Map.get(item_entry, :class, nil)}>
         <%= render_slot(item_entry)%>
         </button>
       </div>

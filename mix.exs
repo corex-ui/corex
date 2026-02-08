@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.16"
+  @version "0.1.0-alpha.17"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -68,7 +68,7 @@ defmodule Corex.MixProject do
   defp docs do
     [
       main: "Corex",
-      extras: ["guides/installation.md"],
+      extras: ["guides/installation.md", "guides/dark_mode.md"],
       main: "installation",
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -92,6 +92,7 @@ defmodule Corex.MixProject do
         Corex.DatePicker,
         Corex.Dialog,
         Corex.Select,
+        Corex.SignaturePad,
         Corex.Switch,
         Corex.Tabs,
         Corex.Toast,

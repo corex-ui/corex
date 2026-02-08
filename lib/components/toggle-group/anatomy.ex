@@ -59,7 +59,8 @@ defmodule Corex.ToggleGroup.Anatomy do
       values: [],
       value: nil,
       disabled: false,
-      disabled_root: false
+      disabled_root: false,
+      aria_label: nil
     ]
 
     @type t :: %__MODULE__{
@@ -70,7 +71,8 @@ defmodule Corex.ToggleGroup.Anatomy do
             disabled: boolean(),
             changed: boolean(),
             values: list(String.t()),
-            disabled_root: boolean()
+            disabled_root: boolean(),
+            aria_label: String.t() | nil
           }
   end
 end

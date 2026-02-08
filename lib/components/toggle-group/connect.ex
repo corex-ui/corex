@@ -53,6 +53,7 @@ defmodule Corex.ToggleGroup.Connect do
   def item(assigns) do
     value = assigns.value
     data_state = if(value in assigns.values, do: "on", else: "off")
+    aria_label = assigns.aria_label || value
 
     base = %{
       "data-scope" => "toggle-group",
@@ -71,7 +72,8 @@ defmodule Corex.ToggleGroup.Connect do
           "data-ownedby" => "toggle-group:#{assigns.id}",
           "disabled" => assigns.disabled_root || assigns.disabled,
           "data-state" => data_state,
-          "id" => "toggle-group:#{assigns.id}:#{value}"
+          "id" => "toggle-group:#{assigns.id}:#{value}",
+          "aria-label" => aria_label
         })
   end
 
