@@ -192,26 +192,40 @@
     white-space: wrap;
   }
 
-  .typo ul,
-  .typo ol {
-    list-style-position: outside;
-  }
-
-  .typo li {
+  .typo .list {
+    width: 100%;
     font-size: var(--text-ui);
     line-height: var(--text-ui--line-height);
+    margin-block: 2em;
+    border-collapse: collapse;
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
   }
 
-  .typo ul {
-    list-style-type: disc;
+  .typo .list li {
+    text-align: left;
+    padding: var(--spacing-ui-padding);
+    border-bottom: 1px solid var(--color-ui--border);
+    white-space: normal;
+    color: var(--color-ui--text);
   }
 
-  .typo ol {
-    list-style-type: decimal;
+  .typo .list li:last-child {
+    border-bottom: none;
   }
 
-  .typo li::marker {
-    color: currentcolor;
+  .typo .list li:hover {
+    background: var(--color-layer);
+  }
+
+  .typo form {
+    width: var(--container-mini);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-ui-gap-lg);
   }
 
   .typo pre {

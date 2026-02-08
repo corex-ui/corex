@@ -5,7 +5,7 @@
     @apply ui-root;
 
     width: var(--container-mini);
-    gap: var(--spacing-mini-gap);
+    gap: var(--spacing-ui-gap);
   }
 
   [data-scope="signature-pad"][data-part="label"] {
@@ -63,5 +63,9 @@
       border-radius: var(--radius-ui);
       background-color: var(--color-root);
     }
+  }
+
+  .signature-pad [data-scope="signature-pad"][data-part="error"] {
+    @apply ui-error;
   }
 }

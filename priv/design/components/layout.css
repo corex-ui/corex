@@ -114,6 +114,8 @@
     padding: var(--spacing-ui-padding);
     color: var(--color-layer--text);
     border-radius: var(--radius-ui);
+    margin-inline: auto;
+    justify-items: center;
   }
 
   .layout .layout__row {
