@@ -143,7 +143,9 @@ defmodule E2eWeb.Layouts do
 
     <main class="layout__main">
       <div class="layout__content">
+      <div class="layout__article">
         {render_slot(@inner_block)}
+        </div>
       </div>
     </main>
 

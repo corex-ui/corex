@@ -7,9 +7,20 @@ import { normalizeProps, VanillaMachine } from "@zag-js/vanilla";
 
 export class SignaturePad extends Component<Props, Api> {
   imageURL: string = "";
+  paths: any[] = [];
+  name?: string;
 
   initMachine(props: Props): VanillaMachine<any> {
+    this.name = (props as any).name;
     return new VanillaMachine(machine, props);
+  }
+
+  setName(name: string) {
+    this.name = name;
+  }
+
+  setPaths(paths: any[]) {
+    this.paths = paths;
   }
 
   initApi() {
@@ -25,6 +36,12 @@ export class SignaturePad extends Component<Props, Api> {
     if (totalPaths === 0) {
       Array.from(segment.querySelectorAll("path")).forEach((path) => segment.removeChild(path));
       this.imageURL = "";
+      this.paths = [];
+      // Update hidden input when cleared
+      const hiddenInput = this.el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
       return;
     }
 
@@ -93,7 +110,15 @@ export class SignaturePad extends Component<Props, Api> {
 
     const hiddenInput = rootEl.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
     if (hiddenInput) {
-      this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: this.imageURL }));
+      // Store paths as JSON string in hidden input
+      const pathsValue = this.paths.length > 0 ? JSON.stringify(this.paths) : "";
+      this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
+      // Set name attribute for form submission
+      if (this.name) {
+        hiddenInput.name = this.name;
+      }
+      // Ensure value is set (spreadProps might override it)
+      hiddenInput.value = pathsValue;
     }
 
     this.syncPaths();

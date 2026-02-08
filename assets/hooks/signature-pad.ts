@@ -1,9 +1,19 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { SignaturePad } from "../components/signature-pad";
-import type { Props, DataUrlType } from "@zag-js/signature-pad";
+import type { Props } from "@zag-js/signature-pad";
 
 import { getString, getBoolean, getNumber } from "../lib/util";
+
+function getPaths(el: HTMLElement, attr: string): any[] {
+  const value = el.dataset[attr];
+  if (!value) return [];
+  try {
+    return JSON.parse(value);
+  } catch {
+    return [];
+  }
+}
 
 type SignaturePadHookState = {
   signaturePad?: SignaturePad;
@@ -16,14 +26,31 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
+    const controlled = getBoolean(el, "controlled");
+    const paths = getPaths(el, "paths");
+    const defaultPaths = getPaths(el, "defaultPaths");
+
     const signaturePad = new SignaturePad(el, {
       id: el.id,
+      name: getString(el, "name"),
+      ...(controlled && paths.length > 0 ? { paths: paths } : undefined),
+      ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : undefined),
       drawing: {
         fill: getString(el, "drawingFill"),
         size: getNumber(el, "drawingSize"),
         simulatePressure: getBoolean(el, "drawingSimulatePressure"),
       },
       onDrawEnd: (details) => {
+        // Store paths in component
+        signaturePad.setPaths(details.paths);
+        
+        // Store paths in hidden input (as JSON string)
+        const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+        if (hiddenInput) {
+          hiddenInput.value = JSON.stringify(details.paths);
+        }
+
+        // Get URL for events if needed
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
 
@@ -51,7 +78,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
           }
         });
       },
-    });
+    } as Props);
     signaturePad.init();
     this.signaturePad = signaturePad;
 
@@ -59,6 +86,13 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       const { id: targetId } = (event as CustomEvent<{ id: string }>).detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
+      signaturePad.imageURL = "";
+      signaturePad.setPaths([]);
+      // Clear the hidden input value
+      const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
     };
     el.addEventListener("phx:signature-pad:clear", this.onClear);
 
@@ -69,14 +103,33 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         const targetId = payload.signature_pad_id;
         if (targetId && targetId !== el.id) return;
         signaturePad.api.clear();
+        signaturePad.imageURL = "";
+        signaturePad.setPaths([]);
+        // Clear the hidden input value
+        const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+        if (hiddenInput) {
+          hiddenInput.value = "";
+        }
       })
     );
 
   },
 
   updated(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
+    const controlled = getBoolean(this.el, "controlled");
+    const paths = getPaths(this.el, "paths");
+    const defaultPaths = getPaths(this.el, "defaultPaths");
+    const name = getString(this.el, "name");
+    
+    if (name) {
+      this.signaturePad?.setName(name);
+    }
+    
     this.signaturePad?.updateProps({
       id: this.el.id,
+      name: name,
+      ...(controlled && paths.length > 0 ? { paths: paths } : {}),
+      ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : {}),
       drawing: {
         fill: getString(this.el, "drawingFill") || "black",
         size: getNumber(this.el, "drawingSize") || 2,

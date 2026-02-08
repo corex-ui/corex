@@ -1,24 +1,42 @@
 defmodule Corex.SignaturePad.Connect do
   @moduledoc false
   alias Corex.SignaturePad.Anatomy.{
+    ClearTrigger,
+    Control,
+    Guide,
+    HiddenInput,
+    Label,
     Props,
     Root,
-    Label,
-    Control,
-    Segment,
-    Guide,
-    ClearTrigger,
-    HiddenInput
+    Segment
   }
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
   defp data_attr(nil), do: nil
 
+  defp encode_paths(paths) when is_binary(paths), do: paths
+  defp encode_paths(paths) when is_list(paths), do: Corex.Json.encode!(paths)
+  defp encode_paths(_), do: nil
+
+  defp build_paths_attrs(controlled, paths) do
+    cond do
+      controlled && paths ->
+        %{"data-paths" => encode_paths(paths), "data-default-paths" => nil}
+
+      !controlled && paths ->
+        %{"data-paths" => nil, "data-default-paths" => encode_paths(paths)}
+
+      true ->
+        %{"data-paths" => nil, "data-default-paths" => nil}
+    end
+  end
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    %{
+    base_attrs = %{
       "id" => assigns.id,
+      "data-controlled" => data_attr(assigns.controlled),
       "data-drawing-fill" => assigns.drawing_fill,
       "data-drawing-size" => Integer.to_string(assigns.drawing_size),
       "data-drawing-simulate-pressure" => data_attr(assigns.drawing_simulate_pressure),
@@ -26,7 +44,16 @@ defmodule Corex.SignaturePad.Connect do
       "data-on-draw-end" => assigns.on_draw_end,
       "data-on-draw-end-client" => assigns.on_draw_end_client
     }
+
+    paths_attrs = build_paths_attrs(assigns.controlled, assigns.paths)
+
+    base_attrs
+    |> Map.merge(paths_attrs)
+    |> maybe_put_name(assigns.name)
   end
+
+  defp maybe_put_name(attrs, nil), do: attrs
+  defp maybe_put_name(attrs, name), do: Map.put(attrs, "data-name", name)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
@@ -135,13 +162,21 @@ defmodule Corex.SignaturePad.Connect do
       "data-part" => "hidden-input"
     }
 
+    attrs = %{
+      "type" => "hidden",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}:hidden-input"
+    }
+
+    attrs =
+      if assigns.name do
+        Map.put(attrs, "name", assigns.name)
+      else
+        attrs
+      end
+
     if assigns.changed,
       do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "hidden",
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}:hidden-input"
-        })
+      else: Map.merge(base, attrs)
   end
 end

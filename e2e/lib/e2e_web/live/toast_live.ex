@@ -72,7 +72,7 @@ defmodule E2eWeb.ToastLive do
         as={:toast}
         phx-submit="create_flash"
         id={get_form_id(@form)}
-        class="flex flex-col gap-ui max-w-md"
+
       >
         <.input
           field={@form[:title]}

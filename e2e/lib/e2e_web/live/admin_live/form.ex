@@ -18,7 +18,6 @@ defmodule E2eWeb.AdminLive.Form do
         id={get_form_id(@form)}
         phx-change="validate"
         phx-submit="save"
-        class="flex flex-col gap-ui"
       >
         <.input field={@form[:name]} type="text" label="Name" />
 
@@ -61,7 +60,16 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-
+        <.signature_pad field={@form[:signature]} class="signature-pad" controlled>
+        <:label>Sign here</:label>
+        <:clear_trigger>
+          <.icon name="hero-x-mark" />
+        </:clear_trigger>
+            <:error :let={msg}>
+          <.icon name="hero-exclamation-circle" class="icon" />
+          {msg}
+        </:error>
+      </.signature_pad>
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>
             Accept the terms

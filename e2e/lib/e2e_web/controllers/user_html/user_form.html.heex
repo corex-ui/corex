@@ -3,7 +3,6 @@
   for={@changeset}
   action={@action}
   id={get_form_id(@changeset)}
-  class="flex flex-col gap-ui"
 >
   <.input field={f[:name]} type="text" label="Name" />
   <.select
@@ -46,6 +45,16 @@
       {msg}
     </:error>
   </.date_picker>
+  <.signature_pad field={f[:signature]} class="signature-pad">
+    <:label>Sign here</:label>
+    <:clear_trigger>
+      <.icon name="hero-x-mark" />
+    </:clear_trigger>
+        <:error :let={msg}>
+      <.icon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
+  </.signature_pad>
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>
       Accept the terms

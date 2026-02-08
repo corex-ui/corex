@@ -4,6 +4,7 @@ defmodule E2e.Accounts.User do
 
   schema "users" do
     field :name, :string
+    field :signature, :string
     field :country, :string
     field :birth_date, :date
     field :terms, :boolean, default: false
@@ -14,8 +15,8 @@ defmodule E2e.Accounts.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :country, :birth_date, :terms])
-    |> validate_required([:name, :country, :birth_date, :terms])
+    |> cast(attrs, [:name, :signature, :country, :birth_date, :terms])
+    |> validate_required([:name, :signature, :country, :birth_date, :terms])
     |> validate_acceptance(:terms)
   end
 end

@@ -7,15 +7,17 @@ defmodule E2eWeb.UserControllerTest do
     name: "some name",
     country: "some country",
     birth_date: "1990-01-15",
+    signature: "/path/to/signature.png",
     terms: true
   }
   @update_attrs %{
     name: "some updated name",
     country: "some updated country",
     birth_date: "1995-06-20",
+    signature: "/path/to/updated-signature.png",
     terms: true
   }
-  @invalid_attrs %{name: nil, country: nil, birth_date: nil, terms: nil}
+  @invalid_attrs %{name: nil, country: nil, birth_date: nil, signature: nil, terms: nil}
 
   describe "index" do
     test "lists all users", %{conn: conn} do

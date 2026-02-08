@@ -92,6 +92,7 @@ defmodule Corex.MixProject do
         Corex.DatePicker,
         Corex.Dialog,
         Corex.Select,
+        Corex.SignaturePad,
         Corex.Switch,
         Corex.Tabs,
         Corex.Toast,

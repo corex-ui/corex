@@ -18779,13 +18779,12 @@ var DatePickerHook = {
     const min3 = getString(el, "min");
     const max3 = getString(el, "max");
     const positioningJson = getString(el, "positioning");
-    const isControlled = getBoolean(el, "controlled");
     const parseList = (v2) => v2 ? v2.map((x2) => parse(x2)) : void 0;
     const parseOne = (v2) => v2 ? parse(v2) : void 0;
-    const initialValue = parseList(getStringList(el, isControlled ? "value" : "defaultValue"));
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      defaultValue: initialValue,
+      // defaultValue: initialValue,
+      ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString(el, "defaultView", ["day", "month", "year"]),
       defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
@@ -18884,6 +18883,7 @@ var DatePickerHook = {
     el.addEventListener("phx:date-picker:set-value", this.onSetValue);
   },
   updated() {
+    const parseList = (v2) => v2 ? v2.map((x2) => parse(x2)) : void 0;
     const el = this.el;
     const min3 = getString(el, "min");
     const max3 = getString(el, "max");
@@ -18891,7 +18891,8 @@ var DatePickerHook = {
     const isControlled = getBoolean(el, "controlled");
     const focusedStr = getString(el, "focusedValue");
     this.datePicker?.updateProps({
-      id: el.id,
+      // id: el.id,
+      ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
       defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
       defaultView: getString(el, "defaultView", ["day", "month", "year"]),
       defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
@@ -19443,8 +19444,17 @@ var splitProps12 = createSplitProps(props12);
 // components/signature-pad.ts
 var SignaturePad = class extends Component {
   imageURL = "";
+  paths = [];
+  name;
   initMachine(props13) {
+    this.name = props13.name;
     return new VanillaMachine(machine13, props13);
+  }
+  setName(name) {
+    this.name = name;
+  }
+  setPaths(paths) {
+    this.paths = paths;
   }
   initApi() {
     return connect13(this.machine.service, normalizeProps);
@@ -19456,6 +19466,11 @@ var SignaturePad = class extends Component {
     if (totalPaths === 0) {
       Array.from(segment.querySelectorAll("path")).forEach((path) => segment.removeChild(path));
       this.imageURL = "";
+      this.paths = [];
+      const hiddenInput = this.el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
       return;
     }
     const allPathElements = Array.from(
@@ -19511,25 +19526,50 @@ var SignaturePad = class extends Component {
     }
     const hiddenInput = rootEl.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
     if (hiddenInput) {
-      this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: this.imageURL }));
+      const pathsValue = this.paths.length > 0 ? JSON.stringify(this.paths) : "";
+      this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
+      if (this.name) {
+        hiddenInput.name = this.name;
+      }
+      hiddenInput.value = pathsValue;
     }
     this.syncPaths();
   }
 };
 
 // hooks/signature-pad.ts
+function getPaths(el, attr) {
+  const value = el.dataset[attr];
+  if (!value) return [];
+  try {
+    return JSON.parse(value);
+  } catch {
+    return [];
+  }
+}
 var SignaturePadHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const controlled = getBoolean(el, "controlled");
+    const paths = getPaths(el, "paths");
+    const defaultPaths = getPaths(el, "defaultPaths");
     const signaturePad = new SignaturePad(el, {
       id: el.id,
+      name: getString(el, "name"),
+      ...controlled && paths.length > 0 ? { paths } : void 0,
+      ...!controlled && defaultPaths.length > 0 ? { defaultPaths } : void 0,
       drawing: {
         fill: getString(el, "drawingFill"),
         size: getNumber(el, "drawingSize"),
         simulatePressure: getBoolean(el, "drawingSimulatePressure")
       },
       onDrawEnd: (details) => {
+        signaturePad.setPaths(details.paths);
+        const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+        if (hiddenInput) {
+          hiddenInput.value = JSON.stringify(details.paths);
+        }
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
@@ -19562,6 +19602,12 @@ var SignaturePadHook = {
       const { id: targetId } = event.detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
+      signaturePad.imageURL = "";
+      signaturePad.setPaths([]);
+      const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
     };
     el.addEventListener("phx:signature-pad:clear", this.onClear);
     this.handlers = [];
@@ -19570,12 +19616,28 @@ var SignaturePadHook = {
         const targetId = payload.signature_pad_id;
         if (targetId && targetId !== el.id) return;
         signaturePad.api.clear();
+        signaturePad.imageURL = "";
+        signaturePad.setPaths([]);
+        const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+        if (hiddenInput) {
+          hiddenInput.value = "";
+        }
       })
     );
   },
   updated() {
+    const controlled = getBoolean(this.el, "controlled");
+    const paths = getPaths(this.el, "paths");
+    const defaultPaths = getPaths(this.el, "defaultPaths");
+    const name = getString(this.el, "name");
+    if (name) {
+      this.signaturePad?.setName(name);
+    }
     this.signaturePad?.updateProps({
       id: this.el.id,
+      name,
+      ...controlled && paths.length > 0 ? { paths } : {},
+      ...!controlled && defaultPaths.length > 0 ? { defaultPaths } : {},
       drawing: {
         fill: getString(this.el, "drawingFill") || "black",
         size: getNumber(this.el, "drawingSize") || 2,
