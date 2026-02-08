@@ -6,7 +6,7 @@ defmodule E2eWeb.AdminLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} mode={@mode}>
       <.header>
         Listing Admins
         <:actions>

@@ -11,7 +11,7 @@ defmodule E2eWeb.DatePickerLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} mode={@mode}>
       <div class="layout__row">
         <h1>Date Picker</h1>
         <h2>Live View</h2>

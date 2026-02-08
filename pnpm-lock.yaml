@@ -56,6 +56,9 @@ importers:
       '@zag-js/select':
         specifier: ^1.33.1
         version: 1.33.1
+      '@zag-js/signature-pad':
+        specifier: ^1.33.1
+        version: 1.33.1
       '@zag-js/switch':
         specifier: ^1.33.1
         version: 1.33.1
@@ -315,6 +318,9 @@ packages:
 
   '@zag-js/select@1.33.1':
     resolution: {integrity: sha512-eG+Ftdse0zvCAkXBMNZVBlM+KNvFRKHToxlxgid6wOd5QgRGwr4HaJuWaz908nBIZRYMFVvC+lLaygUVORHmGg==}
+
+  '@zag-js/signature-pad@1.33.1':
+    resolution: {integrity: sha512-bnTuG28F1A5Kdt+tsveBgNFhRG71vBBIoW8xVW+udph+9XhWfxsLC2j/O6QlnPgYEjOPUlG6/4wNT4LHzLQYUQ==}
 
   '@zag-js/store@1.33.1':
     resolution: {integrity: sha512-FYkrR9IskD5wyKjYUAHWwdGf/C3FmnactfHR9/6dm9YzNO/+jtWxYsFnHQB8dUm9/6VxAZHofw3FbuyPRJ/x3g==}
@@ -616,6 +622,9 @@ packages:
   path-key@3.1.1:
     resolution: {integrity: sha512-ojmeN0qd+y0jszEtoY48r0Peq5dwMEkIlCOu6Q5f41lfkswXuKtYrhgoTpLnyIcHm24Uhqx+5Tqm2InSwLhE6Q==}
     engines: {node: '>=8'}
+
+  perfect-freehand@1.2.3:
+    resolution: {integrity: sha512-bHZSfqDHGNlPpgH2yxXgPHlQSPpEbo+qg7li0M78J9vNAi2yjwLeA4x79BEQhX44lEWpCLSFCeRZwpw0niiXPA==}
 
   phoenix_live_view@1.1.22:
     resolution: {integrity: sha512-I1lhNA8Khr+janjKyruQCJ8UXrPzrwwXx9VnaUUzm13YQW9Go3BPuSFNwpTiI6IqfYI+BUESp6CW3Zj3piw9XA==}
@@ -1054,6 +1063,15 @@ snapshots:
       '@zag-js/types': 1.33.1
       '@zag-js/utils': 1.33.1
 
+  '@zag-js/signature-pad@1.33.1':
+    dependencies:
+      '@zag-js/anatomy': 1.33.1
+      '@zag-js/core': 1.33.1
+      '@zag-js/dom-query': 1.33.1
+      '@zag-js/types': 1.33.1
+      '@zag-js/utils': 1.33.1
+      perfect-freehand: 1.2.3
+
   '@zag-js/store@1.33.1':
     dependencies:
       proxy-compare: 3.0.1
@@ -1368,6 +1386,8 @@ snapshots:
   path-exists@4.0.0: {}
 
   path-key@3.1.1: {}
+
+  perfect-freehand@1.2.3: {}
 
   phoenix_live_view@1.1.22:
     dependencies:

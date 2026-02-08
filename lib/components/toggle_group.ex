@@ -187,6 +187,7 @@ defmodule Corex.ToggleGroup do
     )
 
     attr(:disabled, :boolean, doc: "Whether the item is disabled")
+    attr(:class, :string, doc: "The class of the item")
   end
 
   def toggle_group(assigns) do
@@ -218,7 +219,8 @@ defmodule Corex.ToggleGroup do
           disabled: Map.get(item_entry, :disabled, false),
           values: @value, orientation: @orientation,
           dir: @dir,
-          disabled_root: @disabled})}>
+          disabled_root: @disabled})}
+          class={Map.get(item_entry, :class, nil)}>
         <%= render_slot(item_entry)%>
         </button>
       </div>

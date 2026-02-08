@@ -7,7 +7,7 @@ defmodule E2eWeb.AdminLive.Form do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} mode={@mode}>
       <.header>
         {@page_title}
         <:subtitle>Use this form to manage admin records in your database.</:subtitle>

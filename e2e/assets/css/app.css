@@ -5,6 +5,7 @@
 
 @import "../corex/main.css";
 @import "../corex/tokens/themes/neo/light.css";
+@import "../corex/tokens/themes/neo/dark.css";
 @import "../corex/components/typo.css";
 @import "../corex/components/accordion.css";
 @import "../corex/components/layout.css";

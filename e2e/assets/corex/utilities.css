@@ -286,6 +286,7 @@
   & .indicator,
   & [data-part="item-indicator"] .indicator,
   & [data-part="branch-indicator"] .indicator,
+  & .icon,
   & img {
     @apply ui-icon;
   }

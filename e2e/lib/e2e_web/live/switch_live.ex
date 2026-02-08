@@ -7,7 +7,7 @@ defmodule E2eWeb.SwitchLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}>
+    <Layouts.app flash={@flash} mode={@mode}>
       <h1>Switch</h1>
       <h2>Live View</h2>
       <.switch class="switch">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="neo" data-mode="light">
+<html lang="en" data-theme="neo" data-mode={assigns[:mode] || "light"}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,6 +9,29 @@
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
+    </script>
+        <script>
+      (() => {
+        const getSystemMode = () =>
+          window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        const setMode = (mode) => {
+          const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
+          localStorage.setItem("phx:mode", resolved);
+          document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
+          document.documentElement.setAttribute("data-mode", resolved);
+        };
+
+        setMode(localStorage.getItem("phx:mode") || document.documentElement.getAttribute("data-mode") || getSystemMode());
+
+        window.addEventListener("storage", (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue));
+
+        window.addEventListener("phx:set-mode", (e) => {
+          const value = e.detail?.value;
+          const mode = Array.isArray(value) && value[0] ? value[0] : "light";
+          setMode(mode);
+        });
+      })();
     </script>
   </head>
   <body class="typo layout">

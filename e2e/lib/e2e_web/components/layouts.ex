@@ -5,8 +5,6 @@ defmodule E2eWeb.Layouts do
   """
   use E2eWeb, :html
 
-  alias Phoenix.LiveView.JS
-
   # Embed all files in layouts/* within this module.
   # The default root.html.heex file contains the HTML
   # skeleton of your application, namely HTML headers
@@ -22,12 +20,14 @@ defmodule E2eWeb.Layouts do
 
   ## Examples
 
-      <Layouts.app flash={@flash}>
+      <Layouts.app flash={@flash} mode={@mode}>
         <h1>Content</h1>
       </Layouts.app>
 
   """
   attr :flash, :map, required: true, doc: "the map of flash messages"
+
+  attr :mode, :string, default: "light", doc: "the mode (dark or light) from cookie/session"
 
   attr :current_scope, :map,
     default: nil,
@@ -54,6 +54,7 @@ defmodule E2eWeb.Layouts do
           </a>
         </div>
         <div class="layout__row">
+        <.mode_toggle mode={@mode} />
           <a
             href="https://github.com/corex-ui/corex"
             target="_blank"
@@ -166,83 +167,25 @@ defmodule E2eWeb.Layouts do
     """
   end
 
-  @doc """
-  Shows the flash group with standard titles and content.
-
-  ## Examples
-
-      <.flash_group flash={@flash} />
-  """
-  attr :flash, :map, required: true, doc: "the map of flash messages"
-  attr :id, :string, default: "flash-group", doc: "the optional id of flash container"
-
-  def flash_group(assigns) do
-    ~H"""
-    <div id={@id} aria-live="polite">
-      <.flash kind={:info} flash={@flash} />
-      <.flash kind={:error} flash={@flash} />
-
-      <.flash
-        id="client-error"
-        kind={:error}
-        title={gettext("We can't find the internet")}
-        phx-disconnected={show(".phx-client-error #client-error") |> JS.remove_attribute("hidden")}
-        phx-connected={hide("#client-error") |> JS.set_attribute({"hidden", ""})}
-        hidden
-      >
-        {gettext("Attempting to reconnect")}
-        <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
-      </.flash>
-
-      <.flash
-        id="server-error"
-        kind={:error}
-        title={gettext("Something went wrong!")}
-        phx-disconnected={show(".phx-server-error #server-error") |> JS.remove_attribute("hidden")}
-        phx-connected={hide("#server-error") |> JS.set_attribute({"hidden", ""})}
-        hidden
-      >
-        {gettext("Attempting to reconnect")}
-        <.icon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
-      </.flash>
-    </div>
-    """
-  end
+  attr :mode, :string, default: "light", values: ["light", "dark"], doc: "the mode (dark or light) from cookie/session"
 
   @doc """
-  Provides dark vs light theme toggle based on themes defined in app.css.
+  Provides dark vs light theme toggle using toggle_group.
 
-  See <head> in root.html.heex which applies the theme before page load.
   """
-  def theme_toggle(assigns) do
+  def mode_toggle(assigns) do
     ~H"""
-    <div class="card relative flex flex-row items-center border-2 border-base-300 bg-base-300 rounded-full">
-      <div class="absolute w-1/3 h-full rounded-full border-1 border-base-200 bg-base-100 brightness-200 left-0 [[data-theme=light]_&]:left-1/3 [[data-theme=dark]_&]:left-2/3 transition-[left]" />
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="system"
-      >
-        <.icon name="hero-computer-desktop-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="light"
-      >
-        <.icon name="hero-sun-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-
-      <button
-        class="flex p-2 cursor-pointer w-1/3"
-        phx-click={JS.dispatch("phx:set-theme")}
-        data-phx-theme="dark"
-      >
-        <.icon name="hero-moon-micro" class="size-4 opacity-75 hover:opacity-100" />
-      </button>
-    </div>
+    <.toggle_group
+      id="mode-switcher"
+      class="toggle-group toggle-group--sm toggle-group--circle toggle-group--inverted"
+      value={if @mode == "dark", do: ["dark"], else: []}
+      on_value_change_client="phx:set-mode"
+    >
+      <:item value="dark">
+        <.icon name="hero-sun" class="icon state-on" />
+        <.icon name="hero-moon" class="icon state-off" />
+      </:item>
+    </.toggle_group>
     """
   end
 end
