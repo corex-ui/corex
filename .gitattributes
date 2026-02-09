@@ -1,1 +1,2 @@
-priv/** linguist-generated=true
+priv/** linguist-vendored=true
+e2e/priv/** linguist-vendored=true
