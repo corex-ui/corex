@@ -11,24 +11,27 @@ permissions:
 
 jobs:
   build:
-
     name: Build and test
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-22.04
+    
     steps:
     - uses: actions/checkout@v4
+    
     - name: Set up Elixir
-      uses: erlef/setup-beam@61e01a43a562a89bfc54c7f9a378ff67b03e4a21 
+      uses: erlef/setup-beam@v1
       with:
         elixir-version: '1.15.2'
-        otp-version: '26.0' 
+        otp-version: '26.0'
+    
     - name: Restore dependencies cache
       uses: actions/cache@v3
       with:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+    
     - name: Install dependencies
       run: mix deps.get
+    
     - name: Run tests
       run: mix test
