@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: Build and test
+  unit-tests:
+    name: Unit tests
     runs-on: ubuntu-22.04
     
     steps:
@@ -34,4 +34,32 @@ jobs:
       run: mix deps.get
     
     - name: Run tests
+      run: mix test
+
+  e2e-tests:
+    name: E2E tests
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.15.2'
+        otp-version: '26.0'
+    
+    - name: Restore E2E dependencies cache
+      uses: actions/cache@v3
+      with:
+        path: e2e/deps
+        key: ${{ runner.os }}-mix-e2e-${{ hashFiles('e2e/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-e2e-
+    
+    - name: Install E2E dependencies
+      working-directory: e2e
+      run: mix deps.get
+    
+    - name: Run E2E tests
+      working-directory: e2e
       run: mix test
