@@ -41,4 +41,8 @@ config :phoenix_live_view,
 config :phoenix,
   sort_verified_routes_query_params: true
 
-config :wallaby, driver: Wallaby.Chrome, otp_app: :e2e
+  config :wallaby,
+  otp_app: :e2e,
+  driver: Wallaby.Chrome,
+  hackney_options: [timeout: :infinity, recv_timeout: :infinity],
+  max_wait_time: 5_000

@@ -1,0 +1,94 @@
+name: Elixir CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-22.04
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.15.2'
+        otp-version: '26.0'
+    
+    - name: Restore dependencies cache
+      uses: actions/cache@v3
+      with:
+        path: deps
+        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-
+    
+    - name: Install dependencies
+      run: mix deps.get
+      env:
+        MIX_ENV: test
+    
+    - name: Run tests
+      run: mix test
+      env:
+        MIX_ENV: test
+
+  e2e-tests:
+    name: E2E tests
+    runs-on: ubuntu-22.04
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: e2e_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.15.2'
+        otp-version: '26.0'
+    
+    - name: Restore E2E dependencies cache
+      uses: actions/cache@v3
+      with:
+        path: e2e/deps
+        key: ${{ runner.os }}-mix-e2e-${{ hashFiles('e2e/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-e2e-
+    
+    - name: Install E2E dependencies
+      working-directory: e2e
+      run: mix deps.get
+      env:
+        MIX_ENV: test
+    
+    - name: Setup database
+      working-directory: e2e
+      run: mix ecto.setup
+      env:
+        MIX_ENV: test
+    
+    - name: Run E2E tests
+      working-directory: e2e
+      run: mix test
+      env:
+        MIX_ENV: test

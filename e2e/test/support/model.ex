@@ -57,7 +57,7 @@ defmodule E2eWeb.Model do
       end
 
       def check_accessibility(session, selector \\ nil) do
-        session = wait(session, 200)
+        session = wait(session, 5000)
 
         case selector do
           nil -> A11yAudit.Wallaby.assert_no_violations(session)

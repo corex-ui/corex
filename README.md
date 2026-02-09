@@ -84,7 +84,7 @@ You can add individual components with:
 ```javascript
 import {Accordion, Checkbox} from "corex"
 
-hooks: {...colocatedHooks, Accordion, Checkbox }
+hooks: {...colocatedHooks, Accordion, Checkbox}
 ```
 
 ## Import Components
