@@ -485,7 +485,7 @@ defmodule Corex.Select do
           {render_slot(@label)}
         </div>
         <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button :if={!Enum.empty?(@trigger)} data-scope="select" data-part="trigger">
+          <button :if={!Enum.empty?(@trigger)}  aria-label={if @selected_label, do: @selected_label, else: @placeholder || "Select an option"}          data-scope="select" data-part="trigger">
             <span data-scope="select" data-part="item-text">
               {if @selected_label do @selected_label else @placeholder end}
             </span>
