@@ -32,9 +32,13 @@ jobs:
     
     - name: Install dependencies
       run: mix deps.get
+      env:
+        MIX_ENV: test
     
     - name: Run tests
       run: mix test
+      env:
+        MIX_ENV: test
 
   e2e-tests:
     name: E2E tests
@@ -59,7 +63,11 @@ jobs:
     - name: Install E2E dependencies
       working-directory: e2e
       run: mix deps.get
+      env:
+        MIX_ENV: test
     
     - name: Run E2E tests
       working-directory: e2e
       run: mix test
+      env:
+        MIX_ENV: test
