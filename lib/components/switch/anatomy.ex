@@ -44,12 +44,12 @@ defmodule Corex.Switch.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :checked, :changed]
+    defstruct [:id, :dir, :checked]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            checked: boolean(),
-            changed: boolean()
+            dir: String.t(),
+            checked: boolean()
           }
   end
 
@@ -63,7 +63,6 @@ defmodule Corex.Switch.Anatomy do
       :required,
       :invalid,
       :value,
-      :changed,
       controlled: false
     ]
 
@@ -75,44 +74,40 @@ defmodule Corex.Switch.Anatomy do
             required: boolean(),
             invalid: boolean(),
             value: String.t(),
-            changed: boolean(),
             controlled: boolean()
           }
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :checked, :changed]
+    defstruct [:id, :dir, :checked]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            checked: boolean(),
-            changed: boolean()
+            checked: boolean()
           }
   end
 
   defmodule Thumb do
     @moduledoc false
-    defstruct [:id, :dir, :checked, :changed]
+    defstruct [:id, :dir, :checked]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            checked: boolean(),
-            changed: boolean()
+            checked: boolean()
           }
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, :checked, :changed]
+    defstruct [:id, :dir, :checked]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            checked: boolean(),
-            changed: boolean()
+            checked: boolean()
           }
   end
 end

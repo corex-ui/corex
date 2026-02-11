@@ -1,95 +1,122 @@
-<Layouts.app flash={@flash} mode={@mode}>
-  <h1>Corex E2E tests</h1>
-  <ul class="list-none flex flex-col">
-    <.link navigate={~p"/accordion"} class="link">
-      Accordion
-    </.link>
-    <.link navigate={~p"/live/accordion"} class="link">
-      Accordion Live
-    </.link>
-    <.link navigate={~p"/playground/accordion"} class="link">
-      Accordion Playground
-    </.link>
-    <.link navigate={~p"/controlled/accordion"} class="link">
-      Accordion Controlled
-    </.link>
-    <.link navigate={~p"/async/accordion"} class="link">
-      Accordion Async
-    </.link>
-    <.link navigate={~p"/checkbox"} class="link">
-      Checkbox
-    </.link>
-    <.link navigate={~p"/live/checkbox"} class="link">
-      Checkbox Live
-    </.link>
-    <.link navigate={~p"/clipboard"} class="link">
-      Clipboard
-    </.link>
-    <.link navigate={~p"/live/clipboard"} class="link">
-      Clipboard Live
-    </.link>
-    <.link navigate={~p"/collapsible"} class="link">
-      Collapsible
-    </.link>
-    <.link navigate={~p"/live/collapsible"} class="link">
-      Collapsible Live
-    </.link>
-    <.link navigate={~p"/combobox"} class="link">
-      Combobox
-    </.link>
-    <.link navigate={~p"/live/combobox"} class="link">
-      Combobox Live
-    </.link>
-    <.link navigate={~p"/date-picker"} class="link">
-      Date Picker
-    </.link>
-    <.link navigate={~p"/dialog"} class="link">
-      Dialog
-    </.link>
-    <.link navigate={~p"/live/dialog"} class="link">
-      Dialog Live
-    </.link>
-    <.link navigate={~p"/admins"} class="link">
-      Phoenix Form Live
-    </.link>
-    <.link navigate={~p"/users"} class="link">
-      Phoenix Form
-    </.link>
-    <.link navigate={~p"/select"} class="link">
-      Select
-    </.link>
-    <.link navigate={~p"/live/select"} class="link">
-      Select Live
-    </.link>
-    <.link navigate={~p"/signature"} class="link">
-      Signature Pad
-    </.link>
-    <.link navigate={~p"/live/signature"} class="link">
-      Signature Pad Live
-    </.link>
-    <.link navigate={~p"/switch"} class="link">
-      Switch
-    </.link>
-    <.link navigate={~p"/live/switch"} class="link">
-      Switch Live
-    </.link>
-    <.link navigate={~p"/tabs"} class="link">
-      Tabs
-    </.link>
-    <.link navigate={~p"/live/tabs"} class="link">
-      Tabs Live
-    </.link>
-    <.link navigate={~p"/toast"} class="link">
-      Toast
-    </.link>
-    <.link navigate={~p"/live/toast"} class="link">
-      Toast Live
-    </.link>
-    <.link navigate={~p"/toggle-group"} class="link">
-      Toggle Group
-    </.link>
-    <.link navigate={~p"/live/toggle-group"} class="link">
-      Toggle Group Live
-    </.link>
-  </ul>
+<Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+  <div class="layout typo w-full px-ui-padding bg-root text-root--text">
+    <h1>Corex E2E tests</h1>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full max-w-6xl gap-ui-gap transition-shadow">
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Accordion</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/accordion"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/accordion"} class="link">Live</.link>
+          <.link navigate={~p"/#{@locale}/playground/accordion"} class="link">Playground</.link>
+          <.link navigate={~p"/#{@locale}/controlled/accordion"} class="link">Controlled</.link>
+          <.link navigate={~p"/#{@locale}/async/accordion"} class="link">Async</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Checkbox</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/checkbox"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/checkbox"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Clipboard</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/clipboard"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/clipboard"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Collapsible</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/collapsible"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/collapsible"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Combobox</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/combobox"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/combobox"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Date Picker</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/date-picker"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/date-picker"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Dialog</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/dialog"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/dialog"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Phoenix Forms</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/users"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/admins"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Select</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/select"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/select"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Signature Pad</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/signature"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/signature"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Switch</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/switch"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/switch"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Tabs</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/tabs"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/tabs"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Toast</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/toast"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/toast"} class="link">Live</.link>
+        </div>
+      </section>
+
+      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
+        <h2 class="font-semibold text-lg m-0">Toggle Group</h2>
+        <div class="flex flex-wrap gap-2">
+          <.link navigate={~p"/#{@locale}/toggle-group"} class="link">Controller</.link>
+          <.link navigate={~p"/#{@locale}/live/toggle-group"} class="link">Live</.link>
+        </div>
+      </section>
+    </div>
+  </div>
 </Layouts.app>

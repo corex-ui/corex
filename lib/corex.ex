@@ -30,7 +30,8 @@ defmodule Corex do
     collapsible: {Corex.Collapsible, [collapsible: 1]},
     dialog: {Corex.Dialog, [dialog: 1]},
     date_picker: {Corex.DatePicker, [date_picker: 1]},
-    signature_pad: {Corex.SignaturePad, [signature_pad: 1]}
+    signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
+    menu: {Corex.Menu, [menu: 1]}
   }
 
   defmacro __using__(opts \\ []) do

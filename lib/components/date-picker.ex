@@ -264,9 +264,10 @@ defmodule Corex.DatePicker do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the date picker"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the date picker. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_value_change, :string,
@@ -391,16 +392,6 @@ defmodule Corex.DatePicker do
     doc: "The maximum view of the calendar"
   )
 
-  attr(:default_open, :boolean,
-    default: nil,
-    doc: "The initial open state of the date picker when rendered"
-  )
-
-  attr(:inline, :boolean,
-    default: false,
-    doc: "Whether to render the date picker inline"
-  )
-
   attr(:positioning, Corex.Positioning,
     default: %Corex.Positioning{},
     doc: "Positioning options for the date picker content"
@@ -496,8 +487,6 @@ defmodule Corex.DatePicker do
         default_view: @default_view,
         min_view: @min_view,
         max_view: @max_view,
-        default_open: @default_open,
-        inline: @inline,
         positioning: @positioning,
         dir: @dir,
         on_value_change: @on_value_change,
@@ -507,19 +496,19 @@ defmodule Corex.DatePicker do
         on_open_change: @on_open_change
       })}
     >
-      <div {Connect.root(%Anatomy.Root{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <label :if={@label != []} {Connect.label(%Anatomy.Label{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <div {Connect.root(%Anatomy.Root{id: @id, dir: @dir})}>
+        <span :if={@label != []} {Connect.label(%Anatomy.Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
-        </label>
-        <div {Connect.control(%Anatomy.Control{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} />
+        </span>
+        <div {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
+          <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} aria-hidden="true" />
           <input
-            {Connect.input(%Anatomy.Input{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}
+            {Connect.input(%Anatomy.Input{id: @id, dir: @dir})}
             aria-label={@input_aria_label}
           />
           <button
             :if={@trigger != []}
-            {Connect.trigger(%Anatomy.Trigger{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}
+            {Connect.trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
             aria-label={@trigger_aria_label}
           >
             {render_slot(@trigger)}
@@ -528,24 +517,16 @@ defmodule Corex.DatePicker do
         <div :if={@error != []} :for={msg <- @errors} data-scope="date-picker" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <div {Connect.content(%Anatomy.Content{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-            <div phx-update="ignore" id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">
+        <div {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir})}>
+          <div {Connect.content(%Anatomy.Content{id: @id, dir: @dir})}>
+            <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">
               <div data-scope="date-picker" data-part="view-control" data-view="day">
                 <button data-scope="date-picker" data-part="prev-trigger">
-                  <%= if @prev_trigger != [] do %>
-                    {render_slot(@prev_trigger)}
-                  <% else %>
-                    Prev
-                  <% end %>
+                {render_slot(@prev_trigger)}
                 </button>
                 <button data-scope="date-picker" data-part="view-trigger"></button>
                 <button data-scope="date-picker" data-part="next-trigger">
-                  <%= if @next_trigger != [] do %>
-                    {render_slot(@next_trigger)}
-                  <% else %>
-                    Next
-                  <% end %>
+                {render_slot(@next_trigger)}
                 </button>
               </div>
               <table data-scope="date-picker" data-part="day-table">
@@ -561,19 +542,11 @@ defmodule Corex.DatePicker do
             <div data-scope="date-picker" data-part="month-view" hidden>
               <div data-scope="date-picker" data-part="view-control" data-view="month">
                 <button data-scope="date-picker" data-part="prev-trigger">
-                  <%= if @prev_trigger != [] do %>
-                    {render_slot(@prev_trigger)}
-                  <% else %>
-                    Prev
-                  <% end %>
+                {render_slot(@prev_trigger)}
                 </button>
                 <button data-scope="date-picker" data-part="view-trigger"></button>
                 <button data-scope="date-picker" data-part="next-trigger">
-                  <%= if @next_trigger != [] do %>
-                    {render_slot(@next_trigger)}
-                  <% else %>
-                    Next
-                  <% end %>
+                {render_slot(@next_trigger)}
                 </button>
               </div>
               <table data-scope="date-picker" data-part="month-table">
@@ -584,19 +557,11 @@ defmodule Corex.DatePicker do
             <div data-scope="date-picker" data-part="year-view" hidden>
               <div data-scope="date-picker" data-part="view-control" data-view="year">
                 <button data-scope="date-picker" data-part="prev-trigger">
-                  <%= if @prev_trigger != [] do %>
-                    {render_slot(@prev_trigger)}
-                  <% else %>
-                    Prev
-                  <% end %>
+                {render_slot(@prev_trigger)}
                 </button>
                 <span data-scope="date-picker" data-part="decade"></span>
                 <button data-scope="date-picker" data-part="next-trigger">
-                  <%= if @next_trigger != [] do %>
-                    {render_slot(@next_trigger)}
-                  <% else %>
-                    Next
-                  <% end %>
+                {render_slot(@next_trigger)}
                 </button>
               </div>
               <table data-scope="date-picker" data-part="year-table">

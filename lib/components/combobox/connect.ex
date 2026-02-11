@@ -51,154 +51,102 @@ defmodule Corex.Combobox.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "combobox",
-      "data-part" => "root"
+      "data-part" => "root",
+      "id" => "combobox:#{assigns.id}",
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-readonly" => get_boolean(assigns.read_only)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "id" => "combobox:#{assigns.id}",
-            "data-invalid" => get_boolean(assigns.invalid),
-            "data-readonly" => get_boolean(assigns.read_only)
-          }
-        )
   end
 
   @spec label(Label.t()) :: map()
   def label(assigns) do
-    base = %{
+    %{
       "data-scope" => "combobox",
-      "data-part" => "label"
+      "data-part" => "label",
+      "dir" => assigns.dir,
+      "id" => "combobox:#{assigns.id}:label",
+      "htmlFor" => "combobox:#{assigns.id}:input",
+      "for" => "combobox:#{assigns.id}:input",
+      "data-required" => get_boolean(assigns.required),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-readonly" => get_boolean(assigns.read_only)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "id" => "combobox:#{assigns.id}:label",
-            "htmlFor" => "combobox:#{assigns.id}:input",
-            "for" => "combobox:#{assigns.id}:input",
-            "data-required" => get_boolean(assigns.required),
-            "data-disabled" => get_boolean(assigns.disabled),
-            "data-invalid" => get_boolean(assigns.invalid),
-            "data-readonly" => get_boolean(assigns.read_only)
-          }
-        )
   end
 
   @spec control(Control.t()) :: map()
   def control(assigns) do
-    base = %{
+    %{
       "data-scope" => "combobox",
-      "data-part" => "control"
+      "data-part" => "control",
+      "dir" => assigns.dir,
+      "id" => "combobox:#{assigns.id}:control",
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "id" => "combobox:#{assigns.id}:control",
-            "data-disabled" => get_boolean(assigns.disabled),
-            "data-invalid" => get_boolean(assigns.invalid)
-          }
-        )
   end
 
   @spec input(Input.t()) :: map()
   def input(assigns) do
-    base = %{
+    %{
       "data-scope" => "combobox",
       "data-part" => "input",
-      "phx-update" => "ignore"
+      "phx-update" => "ignore",
+      "autoComplete" => "off",
+      "autoCorrect" => "off",
+      "autoCapitalize" => "off",
+      "spellCheck" => "false",
+      "type" => "text",
+      "role" => "combobox",
+      "dir" => assigns.dir,
+      "id" => "combobox:#{assigns.id}:input",
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "aria-controls" => "combobox:#{assigns.id}:content",
+      "placeholder" => assigns.placeholder,
+      "required" => get_boolean(assigns.required),
+      "autoFocus" => get_boolean(assigns.auto_focus)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        base
-        |> Map.merge(%{
-          "autoComplete" => "off",
-          "autoCorrect" => "off",
-          "autoCapitalize" => "off",
-          "spellCheck" => "false",
-          "type" => "text",
-          "role" => "combobox",
-          "dir" => assigns.dir,
-          "id" => "combobox:#{assigns.id}:input",
-          "data-disabled" => get_boolean(assigns.disabled),
-          "data-invalid" => get_boolean(assigns.invalid),
-          "aria-controls" => "combobox:#{assigns.id}:content",
-          "placeholder" => assigns.placeholder,
-          "required" => get_boolean(assigns.required),
-          "autoFocus" => get_boolean(assigns.auto_focus)
-        })
   end
 
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
-    base = %{
+    %{
       "data-scope" => "combobox",
-      "data-part" => "positioner"
+      "data-part" => "positioner",
+      "dir" => assigns.dir,
+      "style" => "display: none;",
+      "id" => "combobox:#{assigns.id}:positioner"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "style" => "display: none;",
-            "id" => "combobox:#{assigns.id}:positioner"
-          }
-        )
   end
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    base = %{
+    %{
       "data-scope" => "combobox",
-      "data-part" => "content"
+      "data-part" => "content",
+      "dir" => assigns.dir,
+      "id" => "combobox:#{assigns.id}:content",
+      "tabindex" => -1,
+      "role" => "listbox",
+      "hidden" => "true",
+      "aria-labelledby" => "combobox:#{assigns.id}:label"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "id" => "combobox:#{assigns.id}:content",
-            "tabindex" => -1,
-            "role" => "listbox",
-            "hidden" => "true",
-            "aria-labelledby" => "combobox:#{assigns.id}:label"
-          }
-        )
   end
 
   defp validate_collection!(items) when is_list(items) do
     Enum.map(items, fn
-      %Corex.Collection.Item{} = item ->
+      %Corex.List.Item{} = item ->
         item
 
       %{id: _, label: _} = map ->
-        struct(Corex.Collection.Item, map)
+        struct(Corex.List.Item, map)
 
       other ->
         raise ArgumentError, """
-        <.combobox> items must be Corex.Collection.Item or maps with :id and :label.
+        <.combobox> items must be Corex.List.Item or maps with :id and :label.
 
         Got:
         #{inspect(other)}

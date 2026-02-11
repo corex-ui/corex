@@ -20,7 +20,7 @@ defmodule E2eWeb.SignatureLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Signature Pad</h1>
         <h2>Live View</h2>

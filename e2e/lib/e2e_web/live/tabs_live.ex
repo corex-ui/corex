@@ -11,7 +11,7 @@ defmodule E2eWeb.TabsLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Tabs</h1>
         <h2>Live View</h2>
@@ -54,23 +54,25 @@ defmodule E2eWeb.TabsLive do
         id="my-tabs"
         class="tabs"
         value="lorem"
-        items={[
-          %Corex.List.Item{
-            value: "lorem",
-            trigger: "Lorem",
-            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-          },
-          %Corex.List.Item{
-            value: "duis",
-            trigger: "Duis",
-            content: "Nullam eget vestibulum ligula, at interdum tellus."
-          },
-          %Corex.List.Item{
-            value: "donec",
-            trigger: "Donec",
-            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-          }
-        ]}
+        items={
+          Corex.Content.new([
+            [
+              id: "lorem",
+              trigger: "Lorem",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+            ],
+            [
+              id: "duis",
+              trigger: "Duis",
+              content: "Nullam eget vestibulum ligula, at interdum tellus."
+            ],
+            [
+              id: "donec",
+              trigger: "Donec",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+            ]
+          ])
+        }
       />
     </Layouts.app>
     """

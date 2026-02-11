@@ -250,9 +250,10 @@ defmodule Corex.Switch do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the switch"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the switch. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:read_only, :boolean,
@@ -344,15 +345,15 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
-      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, changed: Map.get(assigns, :__changed__, nil) != nil})} />
-        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}></span>
+      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
+        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked})}>
+          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked})}></span>
         </span>
         <span
           :if={@label}
-          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}
+          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked})}
         >
           {render_slot(@label)}
         </span>

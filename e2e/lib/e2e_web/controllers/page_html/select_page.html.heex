@@ -1,4 +1,4 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <div class="layout__row">
     <h1>Select</h1>
     <h2>Live View</h2>
@@ -7,7 +7,7 @@
   <.select
     id="my-select"
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
@@ -25,7 +25,7 @@
   <h3>Grouped</h3>
   <.select
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
@@ -50,7 +50,7 @@
   <h3>Extended</h3>
   <.select
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
@@ -78,7 +78,7 @@
   <h3>Extended Grouped</h3>
   <.select
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},

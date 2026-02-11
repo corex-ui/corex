@@ -1,47 +1,62 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <h1>Accordion</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
-  <div class="layout__row">
-    <button
-      phx-click={Corex.Accordion.set_value("my-accordion", ["item-0"])}
-      class="button button--sm"
-    >
-      Open Item 1
-    </button>
-    <button
-      phx-click={Corex.Accordion.set_value("my-accordion", ["item-0", "item-1"])}
-      class="button button--sm"
-    >
-      Open Item 1 and 2
-    </button>
-    <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
-      Close all Items
-    </button>
-  </div>
-  <.accordion id="my-accordion" class="accordion">
+  <section class="layout__section">
+    <div class="layout__row">
+      <button
+        phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
+        class="button button--sm"
+      >
+        Open Lorem
+      </button>
+      <button
+        phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "donec"])}
+        class="button button--sm"
+      >
+        Open Lorem & Donec
+      </button>
+      <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
+        Close all Items
+      </button>
+    </div>
+  </section>
+  <.accordion
+    id="my-accordion"
+    class="accordion"
+    items={
+      Corex.Content.new([
+        [
+          id: "lorem",
+          trigger: "Lorem ipsum dolor sit amet",
+          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+          meta: %{indicator: "hero-chevron-right"}
+        ],
+        [
+          trigger: "Duis dictum gravida odio ac pharetra?",
+          content: "Nullam eget vestibulum ligula, at interdum tellus.",
+          meta: %{indicator: "hero-chevron-right"}
+        ],
+        [
+          id: "donec",
+          trigger: "Donec condimentum ex mi",
+          content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+          disabled: true,
+          meta: %{indicator: "hero-chevron-right"}
+        ]
+      ])
+    }
+  >
     <:item :let={item}>
       <.accordion_trigger item={item}>
-        Lorem ipsum dolor sit amet
+        {item.data.trigger}
+        <:indicator>
+          <.icon name={item.data.meta.indicator} />
+        </:indicator>
       </.accordion_trigger>
+
       <.accordion_content item={item}>
-        Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-      </.accordion_content>
-    </:item>
-    <:item :let={item}>
-      <.accordion_trigger item={item}>
-        Duis dictum gravida odio ac pharetra?
-      </.accordion_trigger>
-      <.accordion_content item={item}>
-        Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-      </.accordion_content>
-    </:item>
-    <:item :let={item}>
-      <.accordion_trigger item={item}>
-        Donec condimentum ex mi
-      </.accordion_trigger>
-      <.accordion_content item={item}>
-        Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.
+        {item.data.content}
       </.accordion_content>
     </:item>
   </.accordion>

@@ -7,7 +7,7 @@ defmodule E2eWeb.AdminLive.Form do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <.header>
         {@page_title}
         <:subtitle>Use this form to manage admin records in your database.</:subtitle>
@@ -25,7 +25,7 @@ defmodule E2eWeb.AdminLive.Form do
           class="select"
           field={@form[:country]}
           controlled
-          placeholder="Select a country"
+          placeholder_text="Select a country"
           collection={[
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
@@ -61,15 +61,15 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.date_picker>
         <.signature_pad field={@form[:signature]} class="signature-pad" controlled>
-        <:label>Sign here</:label>
-        <:clear_trigger>
-          <.icon name="hero-x-mark" />
-        </:clear_trigger>
-            <:error :let={msg}>
-          <.icon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.signature_pad>
+          <:label>Sign here</:label>
+          <:clear_trigger>
+            <.icon name="hero-x-mark" />
+          </:clear_trigger>
+          <:error :let={msg}>
+            <.icon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.signature_pad>
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>
             Accept the terms
@@ -84,7 +84,7 @@ defmodule E2eWeb.AdminLive.Form do
         </.checkbox>
 
         <footer class="flex w-full justify-between gap-ui-gap">
-          <.button navigate={return_path(@return_to, @admin)} class="button">Cancel</.button>
+          <.button navigate={return_path(@return_to, @admin, @locale)} class="button">Cancel</.button>
           <.button phx-disable-with="Saving..." class="button button--accent ">Save Admin</.button>
         </footer>
       </.form>
@@ -96,6 +96,7 @@ defmodule E2eWeb.AdminLive.Form do
   def mount(params, _session, socket) do
     {:ok,
      socket
+     |> assign(:locale, params["locale"])
      |> assign(:return_to, return_to(params["return_to"]))
      |> apply_action(socket.assigns.live_action, params)}
   end
@@ -137,7 +138,7 @@ defmodule E2eWeb.AdminLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Admin updated successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
+         |> push_navigate(to: return_path(socket.assigns.return_to, admin, socket.assigns.locale))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -150,13 +151,13 @@ defmodule E2eWeb.AdminLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Admin created successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
+         |> push_navigate(to: return_path(socket.assigns.return_to, admin, socket.assigns.locale))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 
-  defp return_path("index", _admin), do: ~p"/admins"
-  defp return_path("show", admin), do: ~p"/admins/#{admin}"
+  defp return_path("index", _admin, locale), do: ~p"/#{locale}/admins"
+  defp return_path("show", admin, locale), do: ~p"/#{locale}/admins/#{admin}"
 end

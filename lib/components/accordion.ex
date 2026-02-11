@@ -8,29 +8,20 @@ defmodule Corex.Accordion do
 
   ### List
 
-  You must use `Corex.List.Item` struct for items.
+  You can use `Corex.Content.new/1` to create a list of content items.
 
-  The value for each item is optional, useful for controlled mode and API to identify the item.
+  The `id` for each item is optional and will be auto-generated if not provided.
 
-  You can specify disabled for each item.
+  You can specify `disabled` for each item.
 
   ```heex
   <.accordion
     class="accordion"
-    items={[
-      %Corex.List.Item{
-        trigger: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-      },
-      %Corex.List.Item{
-        trigger: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
-      },
-      %Corex.List.Item{
-        trigger: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-      }
-    ]}
+    items={Corex.Content.new([
+      [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+      [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+      [trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    ])}
   />
   ```
 
@@ -38,39 +29,33 @@ defmodule Corex.Accordion do
 
   Similar to List but render a custom item slot that will be used for all items.
 
-  Use `{item.meta.trigger}` and `{item.meta.content}` to render the trigger and content for each item.
+  Use `{item.data.trigger}` and `{item.data.content}` to render the trigger and content for each item.
 
   This example assumes the import of `.icon` from `Core Components`
 
   ```heex
-    <.accordion
+  <.accordion
     class="accordion"
-    items={[
-      %Corex.List.Item{
-        value: "lorem",
+    items={Corex.Content.new([
+      [
+        id: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      },
-      %Corex.List.Item{
+        meta: %{indicator: "hero-chevron-right"}
+      ],
+      [
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      },
-      %Corex.List.Item{
-        value: "donec",
+        meta: %{indicator: "hero-chevron-right"}
+      ],
+      [
+        id: "donec",
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: true,
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      }
-    ]}
+        meta: %{indicator: "hero-chevron-right"}
+      ]
+    ])}
   >
     <:item :let={item}>
       <.accordion_trigger item={item}>
@@ -87,43 +72,6 @@ defmodule Corex.Accordion do
   </.accordion>
   ```
 
-  ### Custom
-
-  Render a custom item slot per accordion item manually.
-
-  Use let={item} to get the item data and pass it to the `accordion_trigger/1` and `accordion_content/1` components.
-
-  The trigger component takes an optional `:indicator` slot to render the indicator ico
-
-  This example assumes the import of `.icon` from `Core Components`
-
-  ```heex
-  <.accordion id="my-accordion" value={["duis"]} class="accordion">
-  <:item :let={item} value="lorem" disabled>
-    <.accordion_trigger item={item}>
-      Lorem ipsum dolor sit amet
-      <:indicator>
-       <.icon name="hero-chevron-right" />
-      </:indicator>
-    </.accordion_trigger>
-    <.accordion_content item={item}>
-      Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-    </.accordion_content>
-  </:item>
-  <:item :let={item} value="duis">
-    <.accordion_trigger item={item}>
-      Duis dictum gravida odio ac pharetra?
-      <:indicator>
-       <.icon name="hero-chevron-right" />
-      </:indicator>
-    </.accordion_trigger>
-    <.accordion_content item={item}>
-      Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-    </.accordion_content>
-  </:item>
-  </.accordion>
-  ```
-
   ### Controlled
 
   Render an accordion controlled by the server.
@@ -134,40 +82,31 @@ defmodule Corex.Accordion do
 
   ```elixir
   defmodule MyAppWeb.AccordionLive do
-  use MyAppWeb, :live_view
+    use MyAppWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :value, ["lorem"])}
-  end
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :value, ["lorem"])}
+    end
 
-  def handle_event("on_value_change", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :value, value)}
-  end
+    def handle_event("on_value_change", %{"value" => value}, socket) do
+      {:noreply, assign(socket, :value, value)}
+    end
 
-  def render(assigns) do
-    ~H"""
-    <.accordion controlled value={@value} on_value_change="on_value_change" class="accordion">
-      <:item :let={item} value="lorem">
-        <.accordion_trigger item={item}>
-          Lorem ipsum dolor sit amet
-        </.accordion_trigger>
-        <.accordion_content item={item}>
-          Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-        </.accordion_content>
-      </:item>
-      <:item :let={item} value="duis">
-        <.accordion_trigger item={item}>
-          Duis dictum gravida odio ac pharetra?
-        </.accordion_trigger>
-        <.accordion_content item={item}>
-          Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-        </.accordion_content>
-      </:item>
-    </.accordion>
-  """
+    def render(assigns) do
+      ~H"""
+      <.accordion
+        controlled
+        value={@value}
+        on_value_change="on_value_change"
+        class="accordion"
+        items={Corex.Content.new([
+          [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
+          [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
+        ])}
+      />
+      """
+    end
   end
-  end
-
   ```
 
   ### Async
@@ -178,47 +117,47 @@ defmodule Corex.Accordion do
 
   ```elixir
   defmodule MyAppWeb.AccordionAsyncLive do
-  use MyAppWeb, :live_view
+    use MyAppWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign_async(:accordion, fn ->
-        Process.sleep(1000)
+    def mount(_params, _session, socket) do
+      socket =
+        socket
+        |> assign_async(:accordion, fn ->
+          Process.sleep(1000)
 
-        items = [
-          %Corex.List.Item{
-            value: "lorem",
-            trigger: "Lorem ipsum dolor sit amet",
-            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-            disabled: true
-          },
-          %Corex.List.Item{
-            value: "duis",
-            trigger: "Duis dictum gravida odio ac pharetra?",
-            content: "Nullam eget vestibulum ligula, at interdum tellus."
-          },
-          %Corex.List.Item{
-            value: "donec",
-            trigger: "Donec condimentum ex mi",
-            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-          }
-        ]
+          items = Corex.Content.new([
+            [
+              id: "lorem",
+              trigger: "Lorem ipsum dolor sit amet",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+              disabled: true
+            ],
+            [
+              id: "duis",
+              trigger: "Duis dictum gravida odio ac pharetra?",
+              content: "Nullam eget vestibulum ligula, at interdum tellus."
+            ],
+            [
+              id: "donec",
+              trigger: "Donec condimentum ex mi",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+            ]
+          ])
 
-        {:ok,
-         %{
-           accordion: %{
-             items: items,
-             value: ["duis", "donec"]
-           }
-         }}
-      end)
+          {:ok,
+           %{
+             accordion: %{
+               items: items,
+               value: ["duis", "donec"]
+             }
+           }}
+        end)
 
-    {:ok, socket}
-  end
+      {:ok, socket}
+    end
 
-  def render(assigns) do
-    ~H"""
+    def render(assigns) do
+      ~H"""
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
           <.accordion_skeleton count={3} class="accordion" />
@@ -235,16 +174,15 @@ defmodule Corex.Accordion do
           value={accordion.value}
         />
       </.async_result>
-    """
+      """
+    end
   end
-  end
-
   ```
   <!-- tabs-close -->
 
   ## API Control
 
-  In order to use the API, you must use and id on the component
+  In order to use the API, you must use an id on the component
 
   ***Client-side***
 
@@ -252,7 +190,6 @@ defmodule Corex.Accordion do
   <button phx-click={Corex.Accordion.set_value("my-accordion", ["item-1"])}>
     Open Item 1
   </button>
-
   ```
 
   ***Server-side***
@@ -303,15 +240,14 @@ defmodule Corex.Accordion do
   @doc """
   Renders an accordion component.
 
-  You can use either:
-  - The `:item` slot for manual item definition with full control
-  - The `:items` attribute for programmatic item generation from a list of `%Corex.List.Item{}` structs
+  Pass `items` as a list of `%Corex.Content.Item{}` structs. Optionally provide an `:item` slot to customize how each item is rendered (trigger and content).
 
-  When using `:items`, each item MUST be a `%Corex.List.Item{}` struct with:
-  - `:value` (required) - unique identifier for the item
+  Each item MUST be a `%Corex.Content.Item{}` struct with:
+  - `:id` (optional, auto-generated) - unique identifier for the item
   - `:trigger` (required) - content for the trigger button
-  - `:content` (optional, default: "") - content for the accordion panel
+  - `:content` (required) - content for the accordion panel
   - `:disabled` (optional, default: false) - whether the item is disabled
+  - `:meta` (optional) - additional metadata for the item
   """
 
   attr(:id, :string,
@@ -320,8 +256,8 @@ defmodule Corex.Accordion do
   )
 
   attr(:items, :list,
-    default: nil,
-    doc: "The items of the accordion, must be a list of %Corex.List.Item{} structs"
+    required: true,
+    doc: "The items of the accordion, must be a list of %Corex.Content.Item{} structs"
   )
 
   attr(:value, :list,
@@ -336,7 +272,6 @@ defmodule Corex.Accordion do
   )
 
   attr(:collapsible, :boolean, default: true, doc: "Whether the accordion is collapsible")
-  attr(:disabled, :boolean, default: false, doc: "Whether the accordion is disabled")
 
   attr(:multiple, :boolean,
     default: true,
@@ -350,9 +285,10 @@ defmodule Corex.Accordion do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the accordion"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the accordion. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_value_change, :string,
@@ -377,13 +313,11 @@ defmodule Corex.Accordion do
 
   attr(:rest, :global)
 
-  slot :item, required: false do
-    attr(:value, :string,
-      doc: "The value of the item, useful in controlled mode and for API to identify the item"
-    )
-
-    attr(:disabled, :boolean, doc: "Whether the item is disabled")
-  end
+  slot(:item,
+    required: false,
+    doc:
+      "Optional slot to customize how each item is rendered. Receives the item (list entry) as argument."
+  )
 
   def accordion(assigns) do
     assigns =
@@ -392,13 +326,12 @@ defmodule Corex.Accordion do
       |> validate_items()
 
     ~H"""
-    <div id={@id} phx-hook="Accordion" {@rest}
+    <div id={@id} phx-hook="Accordion" data-items={items_data_json(@items)} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
       value: @value,
       collapsible: @collapsible,
-      disabled: @disabled,
       multiple: @multiple,
       orientation: @orientation,
       dir: @dir,
@@ -407,26 +340,22 @@ defmodule Corex.Accordion do
       on_focus_change: @on_focus_change,
       on_focus_change_client: @on_focus_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
-        <div :if={@items && @item == []} :for={{item_entry, index} <- Enum.with_index(@items || [])} {Connect.item(%Item{
+      <div phx-update="ignore" {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}>
+        <div :if={@item == []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
           id: @id,
-          changed: if(@__changed__, do: true, else: false),
-          value: item_entry.value || "item-#{index}",
+          value: item_entry.id || "item-#{index}",
           disabled: item_entry.disabled,
           values: @value,
           orientation: @orientation,
           dir: @dir,
-          disabled_root: @disabled
         })}>
           <.accordion_trigger item={%Item{
             id: @id,
-            changed: if(@__changed__, do: true, else: false),
-            value: item_entry.value || "item-#{index}",
+            value: item_entry.id || "item-#{index}",
             disabled: item_entry.disabled,
             values: @value,
             orientation: @orientation,
             dir: @dir,
-            disabled_root: @disabled,
             data: %{
               trigger: item_entry.trigger,
               content: item_entry.content,
@@ -437,13 +366,11 @@ defmodule Corex.Accordion do
           </.accordion_trigger>
           <.accordion_content item={%Item{
             id: @id,
-            changed: if(@__changed__, do: true, else: false),
-            value: item_entry.value || "item-#{index}",
+            value: item_entry.id || "item-#{index}",
             disabled: item_entry.disabled,
             values: @value,
             orientation: @orientation,
             dir: @dir,
-            disabled_root: @disabled,
             data: %{
               trigger: item_entry.trigger,
               content: item_entry.content,
@@ -454,84 +381,66 @@ defmodule Corex.Accordion do
           </.accordion_content>
         </div>
 
-        <div :if={@items && @item != []} :for={{item_entry, index} <- Enum.with_index(@items || [])} {Connect.item(%Item{
+        <div :if={@item != []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
           id: @id,
-          changed: if(@__changed__, do: true, else: false),
-          value: item_entry.value || "item-#{index}",
+          value: item_entry.id || "item-#{index}",
           disabled: item_entry.disabled,
           values: @value,
           orientation: @orientation,
           dir: @dir,
-          disabled_root: @disabled,
           data: %{
             trigger: item_entry.trigger,
             content: item_entry.content,
             meta: item_entry.meta
           }
         })}>
-
-        <div :for={item_slot <- @item || []}>
-
-        <%= render_slot(item_slot, %Item{
-          id: @id,
-          changed: if(@__changed__, do: true, else: false),
-          value: item_entry.value || "item-#{index}",
-          disabled: Map.get(item_entry, :disabled, false),
-          values: @value,
-          orientation: @orientation,
-          dir: @dir,
-          disabled_root: @disabled,
-          data: %{
-            trigger: item_entry.trigger,
-            content: item_entry.content,
-            meta: item_entry.meta
-          }
-          })
-          %>
-        </div>
-        </div>
-
-        <div :if={is_nil(@items)} :for={{item_entry, index} <- Enum.with_index(@item)}
-        {Connect.item(%Item{
-          id: @id,
-          changed: if(@__changed__, do: true, else: false),
-          value: Map.get(item_entry, :value, "item-#{index}"),
-          disabled: Map.get(item_entry, :disabled, false),
-          values: @value, orientation: @orientation,
-          dir: @dir,
-          disabled_root: @disabled})}>
-        <%= render_slot(item_entry, %Item{
-          id: @id,
-          changed: if(@__changed__, do: true, else: false),
-          value: Map.get(item_entry, :value, "item-#{index}"),
-          disabled: Map.get(item_entry, :disabled, false),
-          values: @value,
-          orientation: @orientation,
-          dir: @dir,
-          disabled_root: @disabled})
-          %>
+          <%= for item_slot <- @item || [] do %>
+            <%= render_slot(item_slot, %Item{
+              id: @id,
+              value: item_entry.id || "item-#{index}",
+              disabled: Map.get(item_entry, :disabled, false),
+              values: @value,
+              orientation: @orientation,
+              dir: @dir,
+              data: %{
+                trigger: item_entry.trigger,
+                content: item_entry.content,
+                meta: item_entry.meta
+              }
+            }) %>
+          <% end %>
         </div>
       </div>
     </div>
     """
   end
 
-  defp validate_items(%{items: nil} = assigns), do: assigns
+  defp validate_items(%{items: nil} = _assigns) do
+    raise ArgumentError, """
+    accordion requires :items to be a list of %Corex.Content.Item{} structs.
+
+    Example:
+
+        items = Corex.Content.new([
+          [trigger: "Trigger text", content: "Content text"],
+          [trigger: "Another trigger", content: "More content", disabled: true]
+        ])
+        <.accordion items={items} />
+    """
+  end
 
   defp validate_items(%{items: items} = assigns) when is_list(items) do
     Enum.each(items, fn item ->
-      unless is_struct(item, Corex.List.Item) do
+      unless is_struct(item, Corex.Content.Item) do
         raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.List.Item{} struct, got: #{inspect(item)}
+        Invalid item in :items attribute. Expected %Corex.Content.Item{} struct, got: #{inspect(item)}
 
-        Please use the Corex.List.Item struct:
+        Please use Corex.Content.new/1:
 
-        %Corex.List.Item{
-          value: "unique-id",
-          trigger: "Trigger text",
-          content: "Content text",
-          disabled: false  # optional, defaults to false
-        }
+        items = Corex.Content.new([
+          [trigger: "Trigger text", content: "Content text"],
+          [trigger: "Another trigger", content: "More content", disabled: true]
+        ])
         """
       end
     end)
@@ -540,6 +449,15 @@ defmodule Corex.Accordion do
   end
 
   defp validate_items(assigns), do: assigns
+
+  defp items_data_json(items) when is_list(items) do
+    items
+    |> Enum.with_index()
+    |> Enum.map(fn {item, i} ->
+      %{"value" => item.id || "item-#{i}", "disabled" => !!item.disabled}
+    end)
+    |> Jason.encode!()
+  end
 
   @doc type: :component
   @doc """

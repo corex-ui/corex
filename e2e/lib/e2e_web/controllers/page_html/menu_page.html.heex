@@ -1,0 +1,133 @@
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+  <h1>Menu</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+
+  <.menu
+    class="menu"
+    items={[
+      %Corex.Tree.Item{
+        id: "edit",
+        label: "Edit"
+      },
+      %Corex.Tree.Item{
+        id: "duplicate",
+        label: "Duplicate"
+      },
+      %Corex.Tree.Item{
+        id: "delete",
+        label: "Delete"
+      }
+    ]}
+  >
+    <:trigger>File</:trigger>
+    <:indicator>
+      <.icon name="hero-chevron-down" />
+    </:indicator>
+  </.menu>
+  <.menu
+    class="menu"
+    items={[
+      %Corex.Tree.Item{
+        id: "new-tab",
+        label: "New tab"
+      },
+      %Corex.Tree.Item{
+        id: "share",
+        label: "Share",
+        children: [
+          %Corex.Tree.Item{
+            id: "messages",
+            label: "Messages"
+          },
+          %Corex.Tree.Item{
+            id: "airdrop",
+            label: "Airdrop"
+          },
+          %Corex.Tree.Item{
+            id: "whatsapp",
+            label: "WhatsApp"
+          }
+        ]
+      },
+      %Corex.Tree.Item{
+        id: "print",
+        label: "Print..."
+      }
+    ]}
+  >
+    <:trigger>Menu</:trigger>
+    <:indicator>
+      <.icon name="hero-chevron-down" />
+    </:indicator>
+    <:nested_indicator>
+      <.icon name="hero-chevron-right" />
+    </:nested_indicator>
+  </.menu>
+
+  <.menu
+    class="menu"
+    items={[
+      %Corex.Tree.Item{
+        id: "edit",
+        label: "Edit",
+        group: "Actions"
+      },
+      %Corex.Tree.Item{
+        id: "duplicate",
+        label: "Duplicate",
+        group: "Actions"
+      },
+      %Corex.Tree.Item{
+        id: "account-1",
+        label: "Account 1",
+        group: "Accounts"
+      },
+      %Corex.Tree.Item{
+        id: "account-2",
+        label: "Account 2",
+        group: "Accounts"
+      }
+    ]}
+  >
+    <:trigger>Actions</:trigger>
+    <:indicator>
+      <.icon name="hero-chevron-down" />
+    </:indicator>
+  </.menu>
+
+  <.menu
+    class="menu"
+    redirect
+    items={[
+      %Corex.Tree.Item{
+        id: "accordion",
+        label: "Accordion",
+        group: "Components"
+      },
+      %Corex.Tree.Item{
+        id: "checkbox",
+        label: "Checkbox",
+        group: "Components"
+      },
+      %Corex.Tree.Item{
+        id: "users",
+        label: "Controller",
+        group: "Phoenix Form"
+      },
+      %Corex.Tree.Item{
+        id: "admins",
+        label: "Live View",
+        group: "Phoenix Form"
+      }
+    ]}
+  >
+    <:trigger>Corex</:trigger>
+    <:indicator>
+      <.icon name="hero-chevron-down" />
+    </:indicator>
+    <:item :let={item}>
+      {item.label}
+    </:item>
+  </.menu>
+</Layouts.app>

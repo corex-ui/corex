@@ -50,6 +50,9 @@ importers:
       '@zag-js/floating-panel':
         specifier: ^1.33.1
         version: 1.33.1
+      '@zag-js/menu':
+        specifier: ^1.33.1
+        version: 1.33.1
       '@zag-js/popper':
         specifier: ^1.33.1
         version: 1.33.1
@@ -306,6 +309,9 @@ packages:
 
   '@zag-js/live-region@1.33.1':
     resolution: {integrity: sha512-KbU2wUSMd01fY7dgc9WhvU2x07FxNHKSCrn+fFUnB+Qoy6iiVv0A729JDbzPUUcpBV0BFoQ3qNdBDVyBalbpaQ==}
+
+  '@zag-js/menu@1.33.1':
+    resolution: {integrity: sha512-QihwaFCgGcrPbJSoP73nt749/rlUANiIrCU//8WWfQTgv0NBJprBD7d3banDNlK9ZSGmvELcpyQ/fKU4cfn0GQ==}
 
   '@zag-js/popper@1.33.1':
     resolution: {integrity: sha512-DNKRh/SRXB2wcvVYK1wvcEufS4vfVXJOv23QUee761bTv4nrPNll5pZFsYEHatiCNkAmO0MRRYA2Sc6jk9nxNA==}
@@ -1039,6 +1045,17 @@ snapshots:
       '@zag-js/utils': 1.33.1
 
   '@zag-js/live-region@1.33.1': {}
+
+  '@zag-js/menu@1.33.1':
+    dependencies:
+      '@zag-js/anatomy': 1.33.1
+      '@zag-js/core': 1.33.1
+      '@zag-js/dismissable': 1.33.1
+      '@zag-js/dom-query': 1.33.1
+      '@zag-js/popper': 1.33.1
+      '@zag-js/rect-utils': 1.33.1
+      '@zag-js/types': 1.33.1
+      '@zag-js/utils': 1.33.1
 
   '@zag-js/popper@1.33.1':
     dependencies:

@@ -24,7 +24,9 @@ defmodule Corex.Select.Anatomy do
       required: false,
       on_value_change: nil,
       on_value_change_client: nil,
-      bubble: false,
+      on_value_change_js: nil,
+      redirect: false,
+      redirect_new_tab: false,
       positioning: nil
     ]
 
@@ -46,18 +48,18 @@ defmodule Corex.Select.Anatomy do
             required: boolean(),
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil,
-            bubble: boolean(),
+            on_value_change_js: String.t() | nil,
+            redirect: boolean(),
             positioning: Corex.Positioning.t() | nil
           }
   end
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, changed: false, invalid: false, read_only: false]
+    defstruct [:id, invalid: false, read_only: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             invalid: boolean(),
             read_only: boolean()
           }
@@ -67,7 +69,6 @@ defmodule Corex.Select.Anatomy do
     @moduledoc false
     defstruct [
       :id,
-      changed: false,
       invalid: false,
       read_only: false,
       required: false,
@@ -77,7 +78,6 @@ defmodule Corex.Select.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             invalid: boolean(),
             read_only: boolean(),
             required: boolean(),
@@ -88,47 +88,43 @@ defmodule Corex.Select.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :disabled, :changed, :invalid]
+    defstruct [:id, :dir, :disabled, :invalid]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             disabled: boolean(),
-            changed: boolean(),
             invalid: boolean()
           }
   end
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule HiddenSelect do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 end

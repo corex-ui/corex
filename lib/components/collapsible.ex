@@ -120,9 +120,10 @@ defmodule Corex.Collapsible do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the collapsible"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the collapsible. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_open_change, :string,
@@ -165,11 +166,11 @@ defmodule Corex.Collapsible do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <div {Connect.root(%Root{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir, open: @open})}>
+        <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
           {render_slot(@trigger)}
         </button>
-        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
           {render_slot(@content)}
         </div>
       </div>

@@ -164,9 +164,10 @@ defmodule Corex.ToggleGroup do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the toggle group"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the toggle group. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_value_change, :string,
@@ -215,11 +216,10 @@ defmodule Corex.ToggleGroup do
       on_value_change: @on_value_change,
       on_value_change_client: @on_value_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
+      <div {Connect.root(%Root{id: @id, disabled: @disabled, orientation: @orientation, dir: @dir})}>
         <button :for={{item_entry, index} <- Enum.with_index(@item)}
         {Connect.item(%Item{
           id: @id,
-          changed: if(@__changed__, do: true, else: false),
           value: Map.get(item_entry, :value, "item-#{index}"),
           disabled: Map.get(item_entry, :disabled, false),
           aria_label: Map.get(item_entry, :aria_label),
@@ -227,7 +227,7 @@ defmodule Corex.ToggleGroup do
           dir: @dir,
           disabled_root: @disabled})}
           class={Map.get(item_entry, :class, nil)}>
-        <%= render_slot(item_entry)%>
+        {render_slot(item_entry)}
         </button>
       </div>
     </div>

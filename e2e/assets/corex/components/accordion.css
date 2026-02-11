@@ -1,8 +1,16 @@
 @import "../main.css";
 
 @layer components {
+
+  .accordion {
+    @apply ui-root;
+    width: 100%;
+    max-width: var(--container-ui);
+
+  }
   .accordion [data-scope="accordion"][data-part="root"] {
     @apply ui-root;
+    
   }
 
   .accordion [data-scope="accordion"][data-part="item"] h3 {
@@ -21,6 +29,7 @@
     gap: var(--spacing-ui-gap);
     display: flex;
     flex-direction: column;
+    width: 100%;
   }
 
   .accordion [data-scope="accordion"][data-part="item-text"] {
@@ -41,13 +50,6 @@
 
   .accordion [data-scope="accordion"][data-part="item-content"] {
     @apply ui-content;
-
-    border: 1px solid var(--color-root--border);
-    padding: var(--spacing-ui-padding);
-
-    & p {
-      margin-block: 0;
-    }
   }
 
   .accordion [data-scope="accordion"][data-part="root"][data-loading] {

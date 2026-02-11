@@ -33,7 +33,7 @@ export class Tabs extends Component<Props, Api> {
     for (let i = 0; i < triggers.length && i < items.length; i++) {
       const triggerEl = triggers[i];
       const item = items[i];
-      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value }));
+      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value, disabled: item.disabled }));
     }
 
     const contents = rootEl.querySelectorAll<HTMLElement>(

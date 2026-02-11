@@ -1,11 +1,12 @@
 @import "../main.css";
 
 @layer components {
+
   .collapsible [data-scope="collapsible"][data-part="root"] {
     @apply ui-root;
 
-    width: var(--container-ui);
-    gap: var(--spacing-ui-gap);
+    /* max-width: var(--container-ui);
+    gap: var(--spacing-ui-gap); */
   }
 
   .collapsible [data-scope="collapsible"][data-part="trigger"] {
@@ -80,7 +81,7 @@
 
 @utility collapsible--* {
   [data-scope="collapsible"][data-part="root"] {
-    width: --value(--container-ui-*, [length]);
+    max-width: --value(--container-ui-*, [length]);
     gap: --value(--spacing-gap-ui-*, [length]);
   }
 

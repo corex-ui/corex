@@ -271,9 +271,10 @@ defmodule Corex.Checkbox do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the checkbox"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the checkbox. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:read_only, :boolean,
@@ -370,19 +371,19 @@ defmodule Corex.Checkbox do
       })}
     >
 
-      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
 
-      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value,  changed: Map.get(assigns, :__changed__, nil) != nil})} />
-      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked,  changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked,  changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
+      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked})}>
+          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked})}>
           {render_slot(@control)}
           </span>
       </div>
-      <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked,  changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked})}>
       {render_slot(@label)}
       </span>
-       </label>
+      </label>
       <div :if={@error} :for={msg <- @errors} data-scope="checkbox" data-part="error">
         {render_slot(@error, msg)}
       </div>

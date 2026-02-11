@@ -50,133 +50,106 @@ defmodule Corex.SignaturePad.Connect do
     base_attrs
     |> Map.merge(paths_attrs)
     |> maybe_put_name(assigns.name)
+    |> maybe_put_drawing_option("data-drawing-smoothing", assigns.drawing_smoothing, &to_string/1)
+    |> maybe_put_drawing_option("data-drawing-easing", assigns.drawing_easing, & &1)
+    |> maybe_put_drawing_option("data-drawing-thinning", assigns.drawing_thinning, &to_string/1)
+    |> maybe_put_drawing_option(
+      "data-drawing-streamline",
+      assigns.drawing_streamline,
+      &to_string/1
+    )
   end
+
+  defp maybe_put_drawing_option(attrs, _key, nil, _fun), do: attrs
+
+  defp maybe_put_drawing_option(attrs, key, value, fun) when value != nil,
+    do: Map.put(attrs, key, fun.(value))
 
   defp maybe_put_name(attrs, nil), do: attrs
   defp maybe_put_name(attrs, name), do: Map.put(attrs, "data-name", name)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "signature-pad",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}"
-        })
   end
 
   @spec label(Label.t()) :: map()
   def label(assigns) do
-    base = %{
+    %{
       "data-scope" => "signature-pad",
-      "data-part" => "label"
+      "data-part" => "label",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}:label"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}:label"
-        })
   end
 
   @spec control(Control.t()) :: map()
   def control(assigns) do
-    base = %{
+    %{
       "data-scope" => "signature-pad",
-      "data-part" => "control"
+      "data-part" => "control",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}:control"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}:control"
-        })
   end
 
   @spec segment(Segment.t()) :: map()
   def segment(assigns) do
-    base = %{
+    %{
       "data-scope" => "signature-pad",
-      "data-part" => "segment"
+      "data-part" => "segment",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}:segment"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}:segment"
-        })
   end
 
   @spec guide(Guide.t()) :: map()
   def guide(assigns) do
-    base = %{
+    %{
       "data-scope" => "signature-pad",
-      "data-part" => "guide"
+      "data-part" => "guide",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}:guide"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}:guide"
-        })
   end
 
   @spec clear_trigger(ClearTrigger.t()) :: map()
   def clear_trigger(assigns) do
     base = %{
       "data-scope" => "signature-pad",
-      "data-part" => "clear-trigger"
+      "data-part" => "clear-trigger",
+      "type" => "button",
+      "dir" => assigns.dir,
+      "id" => "signature-pad:#{assigns.id}:clear-trigger",
+      "aria-label" => assigns.aria_label || "Clear signature"
     }
 
-    aria_label = assigns.aria_label || "Clear signature"
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "button",
-          "dir" => assigns.dir,
-          "id" => "signature-pad:#{assigns.id}:clear-trigger",
-          "aria-label" => aria_label
-        })
+    if assigns.has_paths do
+      base
+    else
+      Map.put(base, "hidden", "true")
+    end
   end
 
   @spec hidden_input(HiddenInput.t()) :: map()
   def hidden_input(assigns) do
-    base = %{
-      "data-scope" => "signature-pad",
-      "data-part" => "hidden-input"
-    }
-
     attrs = %{
+      "data-scope" => "signature-pad",
+      "data-part" => "hidden-input",
       "type" => "hidden",
       "dir" => assigns.dir,
       "id" => "signature-pad:#{assigns.id}:hidden-input"
     }
 
-    attrs =
-      if assigns.name do
-        Map.put(attrs, "name", assigns.name)
-      else
-        attrs
-      end
-
-    if assigns.changed,
-      do: base,
-      else: Map.merge(base, attrs)
+    if assigns.name do
+      Map.put(attrs, "name", assigns.name)
+    else
+      attrs
+    end
   end
 end

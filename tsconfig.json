@@ -13,6 +13,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["assets/**/*.ts"],
+  "include": ["assets/**/*.ts", "assets/**/*.d.ts"],
   "exclude": ["priv", "node_modules"]
 }

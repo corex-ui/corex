@@ -1,7 +1,7 @@
 @utility ui-root {
   display: flex;
   flex-direction: column;
-  width: auto;
+  width: 100%;
   max-width: var(--container-ui);
   gap: var(--spacing-ui-gap);
 
@@ -36,6 +36,7 @@
   color: var(--color-ui--text);
   background-color: var(--color-ui);
   appearance: none;
+
 
   &:hover {
     background-color: var(--color-ui-hover);
@@ -139,10 +140,11 @@
   display: flex;
   flex-direction: column;
   width: auto;
-  padding-inline: var(--spacing-ui-padding);
+  padding: var(--spacing-ui-padding);
   border-radius: var(--radius-ui);
-  border: 1px solid var(--color-root--border);
-  background-color: var(--color-root);
+  border: 1px solid var(--color-layer--border);
+  background-color: var(--color-layer);
+  color: var(--color-layer--text);
 }
 
 @utility ui-label {

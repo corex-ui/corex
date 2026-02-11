@@ -24,68 +24,50 @@ defmodule Corex.Collapsible.Connect do
   def root(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "collapsible",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "id" => "collapsible:#{assigns.id}",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "collapsible:#{assigns.id}",
-          "data-state" => data_state
-        })
   end
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "collapsible",
-      "data-part" => "trigger"
+      "data-part" => "trigger",
+      "type" => "button",
+      "tabindex" => if(assigns.disabled, do: -1, else: 0),
+      "aria-expanded" => if(assigns.open, do: "true", else: "false"),
+      "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
+      "data-disabled" => assigns.disabled,
+      "disabled" => assigns.disabled,
+      "dir" => assigns.dir,
+      "data-state" => data_state,
+      "id" => "collapsible:#{assigns.id}:trigger",
+      "data-controls" => "collapsible:#{assigns.id}:content",
+      "aria-controls" => "collapsible:#{assigns.id}:content"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "button",
-          "tabindex" => if(assigns.disabled, do: -1, else: 0),
-          "aria-expanded" => if(assigns.open, do: "true", else: "false"),
-          "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
-          "data-disabled" => assigns.disabled,
-          "disabled" => assigns.disabled,
-          "dir" => assigns.dir,
-          "data-state" => data_state,
-          "id" => "collapsible:#{assigns.id}:trigger",
-          "data-controls" => "collapsible:#{assigns.id}:content",
-          "aria-controls" => "collapsible:#{assigns.id}:content"
-        })
   end
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "collapsible",
-      "data-part" => "content"
+      "data-part" => "content",
+      "data-state" => data_state,
+      "data-disabled" => assigns.disabled,
+      "dir" => assigns.dir,
+      "aria-labelledby" => "collapsible:#{assigns.id}:trigger",
+      "hidden" => !assigns.open,
+      "id" => "collapsible:#{assigns.id}:content"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "data-state" => data_state,
-          "data-disabled" => assigns.disabled,
-          "dir" => assigns.dir,
-          "aria-labelledby" => "collapsible:#{assigns.id}:trigger",
-          "hidden" => !assigns.open,
-          "id" => "collapsible:#{assigns.id}:content"
-        })
   end
 
   defp data_default_open(assigns) do

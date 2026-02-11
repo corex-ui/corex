@@ -1,12 +1,15 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <.header>
     User {@user.id}
     <:subtitle>This is a user record from your database.</:subtitle>
     <:actions>
-      <.button navigate={~p"/users"} class="button">
+      <.button navigate={~p"/#{@locale}/users"} class="button">
         <.icon name="hero-arrow-left" />
       </.button>
-      <.button navigate={~p"/users/#{@user}/edit?return_to=show"} class="button button--accent">
+      <.button
+        navigate={~p"/#{@locale}/users/#{@user}/edit?return_to=show"}
+        class="button button--accent"
+      >
         <.icon name="hero-pencil-square" /> Edit user
       </.button>
     </:actions>

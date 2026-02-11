@@ -32,57 +32,52 @@ defmodule Corex.Clipboard.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :dir, :value, changed: false]
+    defstruct [:id, :dir, :value]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            value: String.t() | nil,
-            changed: boolean()
+            value: String.t() | nil
           }
   end
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 end

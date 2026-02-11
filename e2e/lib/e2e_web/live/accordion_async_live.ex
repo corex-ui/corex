@@ -7,24 +7,24 @@ defmodule E2eWeb.AccordionAsyncLive do
       |> assign_async(:accordion, fn ->
         Process.sleep(1000)
 
-        items = [
-          %Corex.List.Item{
-            value: "lorem",
-            trigger: "Lorem ipsum dolor sit amet",
-            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-            disabled: true
-          },
-          %Corex.List.Item{
-            value: "duis",
-            trigger: "Duis dictum gravida odio ac pharetra?",
-            content: "Nullam eget vestibulum ligula, at interdum tellus."
-          },
-          %Corex.List.Item{
-            value: "donec",
-            trigger: "Donec condimentum ex mi",
-            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-          }
-        ]
+        items =
+          Corex.Content.new([
+            [
+              id: "lorem",
+              trigger: "Lorem ipsum dolor sit amet",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+            ],
+            [
+              id: "duis",
+              trigger: "Duis dictum gravida odio ac pharetra?",
+              content: "Nullam eget vestibulum ligula, at interdum tellus."
+            ],
+            [
+              id: "donec",
+              trigger: "Donec condimentum ex mi",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+            ]
+          ])
 
         {:ok,
          %{
@@ -40,7 +40,7 @@ defmodule E2eWeb.AccordionAsyncLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Accordion</h1>
         <h2>Async</h2>

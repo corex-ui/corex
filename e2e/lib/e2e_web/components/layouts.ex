@@ -20,7 +20,7 @@ defmodule E2eWeb.Layouts do
 
   ## Examples
 
-      <Layouts.app flash={@flash} mode={@mode}>
+      <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
         <h1>Content</h1>
       </Layouts.app>
 
@@ -32,6 +32,15 @@ defmodule E2eWeb.Layouts do
   attr :current_scope, :map,
     default: nil,
     doc: "the current [scope](https://hexdocs.pm/phoenix/scopes.html)"
+
+  attr :locale, :string,
+    default: nil,
+    doc: "current locale (from plug or LiveView assigns), used for the locale switcher"
+
+  attr :current_path, :string,
+    default: "/",
+    doc:
+      "current path without the locale segment (e.g. \"/accordion\"), from Phoenix.Controller.current_path(conn, %{}) then E2eWeb.Plugs.Locale.path_without_locale/2, or from LiveView handle_params URI; used so the locale switcher preserves the path"
 
   slot :inner_block, required: true
 
@@ -54,6 +63,7 @@ defmodule E2eWeb.Layouts do
           </a>
         </div>
         <div class="layout__row">
+          <.locale_switcher :if={@locale} locale={@locale} current_path={@current_path} />
           <.mode_toggle mode={@mode} />
           <a
             href="https://github.com/corex-ui/corex"
@@ -143,8 +153,8 @@ defmodule E2eWeb.Layouts do
 
     <main class="layout__main">
       <div class="layout__content">
-      <div class="layout__article">
-        {render_slot(@inner_block)}
+        <div class="layout__article">
+          {render_slot(@inner_block)}
         </div>
       </div>
     </main>
@@ -166,6 +176,49 @@ defmodule E2eWeb.Layouts do
       type={:error}
       duration={:infinity}
     />
+    """
+  end
+
+  attr :locale, :string, required: true, doc: "current locale"
+
+  attr :current_path, :string,
+    default: "/",
+    doc: "path without locale segment so switching language preserves the URL"
+
+  @doc """
+  Language switcher (English / Arabic) using the select component.
+
+  Uses the server event "locale_change" so the LiveView pushes navigate to /locale/path;
+  the plug runs and updates lang/dir. Pass current_path (e.g. from
+  `E2eWeb.Plugs.Locale.path_without_locale(conn.request_path, conn.assigns.locale)` or
+  from LiveView URI in handle_params) to preserve the path when switching.
+  """
+  def locale_switcher(assigns) do
+    ~H"""
+    <.select
+      id="locale-select"
+      class="select select--sm select--micro"
+      collection={[
+        %{id: "/en#{@current_path}", label: "English"},
+        %{id: "/ar#{@current_path}", label: "العربية"}
+      ]}
+      value={["/#{@locale}#{@current_path}"]}
+      redirect
+      on_value_change="locale_change"
+    >
+      <:label class="sr-only">
+        Language
+      </:label>
+      <:item :let={item}>
+        {item.label}
+      </:item>
+      <:trigger>
+        <.icon name="hero-language" />
+      </:trigger>
+      <:item_indicator>
+        <.icon name="hero-check" />
+      </:item_indicator>
+    </.select>
     """
   end
 

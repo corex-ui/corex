@@ -15,6 +15,17 @@ function getPaths(el: HTMLElement, attr: string): any[] {
   }
 }
 
+function buildDrawingOptions(el: HTMLElement): Props["drawing"] {
+  return {
+    fill: getString(el, "drawingFill") || "black",
+    size: getNumber(el, "drawingSize") ?? 2,
+    simulatePressure: getBoolean(el, "drawingSimulatePressure"),
+    smoothing: getNumber(el, "drawingSmoothing") ?? 0.5,
+    thinning: getNumber(el, "drawingThinning") ?? 0.7,
+    streamline: getNumber(el, "drawingStreamline") ?? 0.65,
+  };
+}
+
 type SignaturePadHookState = {
   signaturePad?: SignaturePad;
   handlers?: Array<CallbackRef>;
@@ -35,22 +46,14 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       name: getString(el, "name"),
       ...(controlled && paths.length > 0 ? { paths: paths } : undefined),
       ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : undefined),
-      drawing: {
-        fill: getString(el, "drawingFill"),
-        size: getNumber(el, "drawingSize"),
-        simulatePressure: getBoolean(el, "drawingSimulatePressure"),
-      },
+      drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
-        // Store paths in component
         signaturePad.setPaths(details.paths);
-        
-        // Store paths in hidden input (as JSON string)
         const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
         if (hiddenInput) {
           hiddenInput.value = JSON.stringify(details.paths);
         }
 
-        // Get URL for events if needed
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
 
@@ -88,7 +91,6 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       signaturePad.api.clear();
       signaturePad.imageURL = "";
       signaturePad.setPaths([]);
-      // Clear the hidden input value
       const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
       if (hiddenInput) {
         hiddenInput.value = "";
@@ -105,7 +107,6 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         signaturePad.api.clear();
         signaturePad.imageURL = "";
         signaturePad.setPaths([]);
-        // Clear the hidden input value
         const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
         if (hiddenInput) {
           hiddenInput.value = "";
@@ -130,11 +131,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       name: name,
       ...(controlled && paths.length > 0 ? { paths: paths } : {}),
       ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : {}),
-      drawing: {
-        fill: getString(this.el, "drawingFill") || "black",
-        size: getNumber(this.el, "drawingSize") || 2,
-        simulatePressure: getBoolean(this.el, "drawingSimulatePressure"),
-      },
+      drawing: buildDrawingOptions(this.el),
     } as Props);
   },
 

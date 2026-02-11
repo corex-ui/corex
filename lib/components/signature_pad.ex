@@ -283,10 +283,31 @@ defmodule Corex.SignaturePad do
     doc: "Whether to simulate pressure for drawing strokes"
   )
 
+  attr(:drawing_smoothing, :float,
+    default: 0.9,
+    doc: "Smoothing factor for drawing strokes (0–1, perfect-freehand option)"
+  )
+
+  attr(:drawing_easing, :string,
+    default: nil,
+    doc: "Easing function for drawing strokes (perfect-freehand option)"
+  )
+
+  attr(:drawing_thinning, :float,
+    default: nil,
+    doc: "Thinning factor for drawing strokes (perfect-freehand option)"
+  )
+
+  attr(:drawing_streamline, :float,
+    default: 0.1,
+    doc: "Streamline factor for drawing strokes (perfect-freehand option)"
+  )
+
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the signature pad"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the signature pad. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_draw_end, :string,
@@ -344,7 +365,6 @@ defmodule Corex.SignaturePad do
   def signature_pad(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
-    # Keep paths as string (JSON) from field value - JS will parse it
     paths_value =
       case field.value do
         nil -> nil
@@ -383,25 +403,29 @@ defmodule Corex.SignaturePad do
         drawing_fill: @drawing_fill,
         drawing_size: @drawing_size,
         drawing_simulate_pressure: @drawing_simulate_pressure,
+        drawing_smoothing: @drawing_smoothing,
+        drawing_easing: @drawing_easing,
+        drawing_thinning: @drawing_thinning,
+        drawing_streamline: @drawing_streamline,
         dir: @dir,
         on_draw_end: @on_draw_end,
         on_draw_end_client: @on_draw_end_client,
         name: @name
       })}
     >
-      <div {Connect.root(%Root{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir})}>
+        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
-        <div {Connect.control(%Control{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <svg {Connect.segment(%Segment{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+        <div {Connect.control(%Control{id: @id, dir: @dir})}>
+          <svg {Connect.segment(%Segment{id: @id, dir: @dir})}>
           </svg>
           <button
             :if={@clear_trigger != []}
             {Connect.clear_trigger(%ClearTrigger{
               id: @id,
               dir: @dir,
-              changed: Map.get(assigns, :__changed__, nil) != nil,
+              has_paths: has_paths?(@paths),
               aria_label: case @clear_trigger do
                 [entry | _] -> Map.get(entry, :aria_label)
                 _ -> nil
@@ -410,9 +434,9 @@ defmodule Corex.SignaturePad do
           >
             {render_slot(@clear_trigger)}
           </button>
-          <div {Connect.guide(%Guide{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})} />
+          <div {Connect.guide(%Guide{id: @id, dir: @dir})} />
         </div>
-        <input {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, changed: Map.get(assigns, :__changed__, nil) != nil})} />
+        <input {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name})} />
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="signature-pad" data-part="error">
           {render_slot(@error, msg)}
         </div>
@@ -455,4 +479,17 @@ defmodule Corex.SignaturePad do
       signature_pad_id: signature_pad_id
     })
   end
+
+  defp has_paths?(nil), do: false
+  defp has_paths?(""), do: false
+  defp has_paths?(paths) when is_list(paths), do: paths != []
+
+  defp has_paths?(paths) when is_binary(paths) do
+    case Corex.Json.encoder().decode(paths) do
+      {:ok, list} when is_list(list) -> list != []
+      _ -> false
+    end
+  end
+
+  defp has_paths?(_), do: false
 end

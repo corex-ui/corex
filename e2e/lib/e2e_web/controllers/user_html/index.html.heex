@@ -1,26 +1,26 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <.header>
     Listing Users
     <:actions>
-      <.button href={~p"/users/new"} class="button button--accent">
+      <.button href={~p"/#{@locale}/users/new"} class="button button--accent">
         <.icon name="hero-plus" /> New User
       </.button>
     </:actions>
   </.header>
 
-  <.table id="users" rows={@users} row_click={&JS.navigate(~p"/users/#{&1}")}>
+  <.table id="users" rows={@users} row_click={&JS.navigate(~p"/#{@locale}/users/#{&1}")}>
     <:col :let={user} label="Name">{user.name}</:col>
     <:col :let={user} label="Country">{user.country}</:col>
     <:col :let={user} label="Terms">{user.terms}</:col>
     <:action :let={user}>
       <div class="sr-only">
-        <.link navigate={~p"/users/#{user}"} class="link">Show</.link>
+        <.link navigate={~p"/#{@locale}/users/#{user}"} class="link">Show</.link>
       </div>
-      <.link navigate={~p"/users/#{user}/edit"} class="link">Edit</.link>
+      <.link navigate={~p"/#{@locale}/users/#{user}/edit"} class="link">Edit</.link>
     </:action>
     <:action :let={user}>
       <.link
-        href={~p"/users/#{user}"}
+        href={~p"/#{@locale}/users/#{user}"}
         method="delete"
         data-confirm="Are you sure?"
         class="link link--alert"

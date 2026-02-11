@@ -2,15 +2,14 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Accordion } from "../components/accordion";
 import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/accordion";
-import type { Direction, Orientation } from "@zag-js/types";
+import type { Orientation } from "@zag-js/types";
 
-import { getString, getBoolean, getStringList } from "../lib/util";
+import { getString, getBoolean, getStringList, getDir } from "../lib/util";
 
 type AccordionHookState = {
   accordion?: Accordion;
   handlers?: Array<CallbackRef>;
   onSetValue?: (event: Event) => void;
-  wasFocused?: string | null;
 };
 
 const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
@@ -26,10 +25,9 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
           ? { value: getStringList(el, "value") }
           : { defaultValue: getStringList(el, "defaultValue") }),
         collapsible: getBoolean(el, "collapsible"),
-        disabled: getBoolean(el, "disabled"),
         multiple: getBoolean(el, "multiple"),
         orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
-        dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+        dir: getDir(el),
         onValueChange: (details: ValueChangeDetails) => {
           const eventName = getString(el, "onValueChange");
           if (eventName && this.liveSocket.main.isConnected()) {
@@ -93,7 +91,10 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
         "accordion_set_value",
         (payload: { accordion_id?: string; value: string[] }) => {
           const targetId = payload.accordion_id;
-          if (targetId && targetId !== el.id) return;
+          if (targetId) {
+            const matches = el.id === targetId || el.id === `accordion:${targetId}`;
+            if (!matches) return;
+          }
           accordion.api.setValue(payload.value);
         }
       )
@@ -117,28 +118,20 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & AccordionHookState) {
+    const controlled = getBoolean(this.el, "controlled");
     this.accordion?.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
+      ...(controlled
         ? { value: getStringList(this.el, "value") }
-        : { defaultValue: getStringList(this.el, "defaultValue") }),
+        : {
+            defaultValue:
+              this.accordion?.api?.value ?? getStringList(this.el, "defaultValue"),
+          }),
       collapsible: getBoolean(this.el, "collapsible"),
-      disabled: getBoolean(this.el, "disabled"),
       multiple: getBoolean(this.el, "multiple"),
       orientation: getString<Orientation>(this.el, "orientation", ["horizontal", "vertical"]),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"])
+      dir: getDir(this.el)
     } as Props);
-
-    const wasFocused = this.accordion?.api?.focusedValue;
-    if (wasFocused) {
-        const triggerEl = this.el.querySelector(
-          `[data-scope="accordion"][data-part="item"][data-value="${wasFocused}"] [data-part="item-trigger"]`
-        ) as HTMLElement;
-        
-        if (triggerEl && document.activeElement !== triggerEl) {
-          triggerEl.focus();
-        }
-    }
   },
 
 

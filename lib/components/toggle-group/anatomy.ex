@@ -38,11 +38,10 @@ defmodule Corex.ToggleGroup.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, changed: false, orientation: "vertical", dir: "ltr", disabled: false]
+    defstruct [:id, orientation: "vertical", dir: "ltr", disabled: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             orientation: String.t(),
             dir: String.t(),
             disabled: boolean()
@@ -53,7 +52,6 @@ defmodule Corex.ToggleGroup.Anatomy do
     @moduledoc false
     defstruct [
       :id,
-      changed: false,
       orientation: "vertical",
       dir: "ltr",
       values: [],
@@ -69,7 +67,6 @@ defmodule Corex.ToggleGroup.Anatomy do
             dir: String.t(),
             value: String.t() | nil,
             disabled: boolean(),
-            changed: boolean(),
             values: list(String.t()),
             disabled_root: boolean(),
             aria_label: String.t() | nil

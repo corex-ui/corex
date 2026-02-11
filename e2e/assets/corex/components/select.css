@@ -7,6 +7,7 @@
     gap: var(--spacing-ui-gap);
   }
 
+  
   .select [data-scope="select"][data-part="label"] {
     @apply ui-label;
   }
@@ -75,7 +76,7 @@
 
 @utility select--* {
   [data-scope="select"][data-part="root"] {
-    width: --value(--container-mini-*, [length]);
+    width: --value(--container-*, [length]);
   }
 
   [data-scope="select"][data-part="label"] {

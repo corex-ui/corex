@@ -8,7 +8,7 @@
   <.select
     class="select"
     field={f[:country]}
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
@@ -50,7 +50,7 @@
     <:clear_trigger>
       <.icon name="hero-x-mark" />
     </:clear_trigger>
-        <:error :let={msg}>
+    <:error :let={msg}>
       <.icon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>

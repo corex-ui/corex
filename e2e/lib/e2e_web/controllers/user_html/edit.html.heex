@@ -1,8 +1,12 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <.header>
     Edit User {@user.id}
     <:subtitle>Use this form to manage user records in your database.</:subtitle>
   </.header>
 
-  <.user_form changeset={@changeset} action={~p"/users/#{@user}"} return_to={~p"/users"} />
+  <.user_form
+    changeset={@changeset}
+    action={~p"/#{@locale}/users/#{@user}"}
+    return_to={~p"/#{@locale}/users"}
+  />
 </Layouts.app>

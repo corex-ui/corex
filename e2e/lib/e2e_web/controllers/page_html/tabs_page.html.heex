@@ -1,4 +1,4 @@
-<Layouts.app flash={@flash}>
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <h1>Tabs</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
@@ -7,38 +7,40 @@
       phx-click={Corex.Tabs.set_value("my-tabs", "lorem")}
       class="button button--sm"
     >
-      Open Item 1
+      Open Lorem
     </button>
     <button
       phx-click={Corex.Tabs.set_value("my-tabs", "duis")}
       class="button button--sm"
     >
-      Open Item 2
+      Open Duis
     </button>
     <button phx-click={Corex.Tabs.set_value("my-tabs", nil)} class="button button--sm">
-      Close all Items
+      Close all Tabs
     </button>
   </div>
   <.tabs
     id="my-tabs"
     class="tabs"
     value="lorem"
-    items={[
-      %Corex.List.Item{
-        value: "lorem",
-        trigger: "Lorem",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-      },
-      %Corex.List.Item{
-        value: "duis",
-        trigger: "Duis",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
-      },
-      %Corex.List.Item{
-        value: "donec",
-        trigger: "Donec",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-      }
-    ]}
+    items={
+      Corex.Content.new([
+        [
+          id: "lorem",
+          trigger: "Lorem",
+          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+        ],
+        [
+          id: "duis",
+          trigger: "Duis",
+          content: "Nullam eget vestibulum ligula, at interdum tellus."
+        ],
+        [
+          id: "donec",
+          trigger: "Donec",
+          content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+        ]
+      ])
+    }
   />
 </Layouts.app>

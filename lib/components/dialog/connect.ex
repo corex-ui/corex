@@ -24,7 +24,7 @@ defmodule Corex.Dialog.Connect do
       "data-controlled" => data_attr(assigns.controlled),
       "data-modal" => data_attr(assigns.modal),
       "data-close-on-interact-outside" => data_attr(assigns.close_on_interact_outside),
-      "data-close-on-escape-key-down" => data_attr(assigns.close_on_escape_key_down),
+      "data-close-on-escape-key-down" => data_attr(assigns.close_on_escape),
       "data-prevent-scroll" => data_attr(assigns.prevent_scroll),
       "data-restore-focus" => data_attr(assigns.restore_focus),
       "data-dir" => assigns.dir,
@@ -37,127 +37,85 @@ defmodule Corex.Dialog.Connect do
   def trigger(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "dialog",
       "data-part" => "trigger",
-      "data-state" => data_state
+      "data-state" => data_state,
+      "type" => "button",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:trigger",
+      "aria-haspopup" => "dialog",
+      "aria-expanded" => if(assigns.open, do: "true", else: "false"),
+      "aria-controls" => "dialog:#{assigns.id}:content"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "button",
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:trigger",
-          "aria-haspopup" => "dialog",
-          "aria-expanded" => if(assigns.open, do: "true", else: "false"),
-          "aria-controls" => "dialog:#{assigns.id}:content"
-        })
   end
 
   @spec backdrop(Backdrop.t()) :: map()
   def backdrop(assigns) do
-    base = %{
+    %{
       "data-scope" => "dialog",
-      "data-part" => "backdrop"
+      "data-part" => "backdrop",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:backdrop"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:backdrop"
-        })
   end
 
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
-    base = %{
+    %{
       "data-scope" => "dialog",
-      "data-part" => "positioner"
+      "data-part" => "positioner",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:positioner"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:positioner"
-        })
   end
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "dialog",
       "data-part" => "content",
-      "data-state" => data_state
+      "data-state" => data_state,
+      "role" => "dialog",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:content",
+      "aria-labelledby" => "dialog:#{assigns.id}:title",
+      "aria-describedby" => "dialog:#{assigns.id}:description"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "role" => "dialog",
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:content",
-          "aria-labelledby" => "dialog:#{assigns.id}:title",
-          "aria-describedby" => "dialog:#{assigns.id}:description"
-        })
   end
 
   @spec title(Title.t()) :: map()
   def title(assigns) do
-    base = %{
+    %{
       "data-scope" => "dialog",
-      "data-part" => "title"
+      "data-part" => "title",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:title"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:title"
-        })
   end
 
   @spec description(Description.t()) :: map()
   def description(assigns) do
-    base = %{
+    %{
       "data-scope" => "dialog",
-      "data-part" => "description"
+      "data-part" => "description",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:description"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:description"
-        })
   end
 
   @spec close_trigger(CloseTrigger.t()) :: map()
   def close_trigger(assigns) do
-    base = %{
+    %{
       "data-scope" => "dialog",
-      "data-part" => "close-trigger"
+      "data-part" => "close-trigger",
+      "type" => "button",
+      "dir" => assigns.dir,
+      "id" => "dialog:#{assigns.id}:close-trigger",
+      "aria-label" => "Close"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "button",
-          "dir" => assigns.dir,
-          "id" => "dialog:#{assigns.id}:close-trigger",
-          "aria-label" => "Close"
-        })
   end
 
   defp data_default_open(assigns) do
