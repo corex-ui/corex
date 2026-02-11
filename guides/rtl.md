@@ -1,4 +1,4 @@
-# RTL (Right-to-Left)
+# RTL
 
 ## Introduction
 

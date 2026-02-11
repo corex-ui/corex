@@ -482,11 +482,11 @@ defmodule Corex.SignaturePad do
 
   defp has_paths?(nil), do: false
   defp has_paths?(""), do: false
-  defp has_paths?(paths) when is_list(paths), do: length(paths) > 0
+  defp has_paths?(paths) when is_list(paths), do: paths != []
 
   defp has_paths?(paths) when is_binary(paths) do
     case Corex.Json.encoder().decode(paths) do
-      {:ok, list} when is_list(list) -> length(list) > 0
+      {:ok, list} when is_list(list) -> list != []
       _ -> false
     end
   end
