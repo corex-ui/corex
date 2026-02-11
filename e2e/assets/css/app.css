@@ -15,6 +15,7 @@
 @import "../corex/components/checkbox.css";
 @import "../corex/components/clipboard.css";
 @import "../corex/components/collapsible.css";
+@import "../corex/components/menu.css";
 @import "../corex/components/dialog.css";
 @import "../corex/components/icon.css";
 @import "../corex/components/link.css";
@@ -27,6 +28,11 @@
 @import "../corex/components/toast.css";
 @import "../corex/components/button.css";
 
+#locale-select.select,
+#locale-select.select [data-scope="select"][data-part="root"],
+#locale-select.select [data-scope="select"][data-part="trigger"] {
+    width: auto;
+}
 
 @plugin "../vendor/heroicons";
 

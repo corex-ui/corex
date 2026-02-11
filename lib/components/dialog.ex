@@ -145,7 +145,7 @@ defmodule Corex.Dialog do
     doc: "Whether to close the dialog when clicking outside"
   )
 
-  attr(:close_on_escape_key_down, :boolean,
+  attr(:close_on_escape, :boolean,
     default: true,
     doc: "Whether to close the dialog when pressing Escape"
   )
@@ -161,9 +161,10 @@ defmodule Corex.Dialog do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the dialog"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the dialog. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_open_change, :string,
@@ -214,7 +215,7 @@ defmodule Corex.Dialog do
         open: @open,
         modal: @modal,
         close_on_interact_outside: @close_on_interact_outside,
-        close_on_escape_key_down: @close_on_escape_key_down,
+        close_on_escape: @close_on_escape,
         prevent_scroll: @prevent_scroll,
         restore_focus: @restore_focus,
         dir: @dir,

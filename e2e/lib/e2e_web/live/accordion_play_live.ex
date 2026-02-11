@@ -1,18 +1,48 @@
 defmodule E2eWeb.AccordionPlayLive do
   use E2eWeb, :live_view
 
-  @default_controls %{
-    disabled: false,
-    disabled_lorem: false,
-    orientation: "vertical",
-    collapsible: true,
-    multiple: true,
-    dir: "ltr"
-  }
+  defp accordion_items(controls) do
+    all_disabled = Map.get(controls, :disabled, false)
+
+    Corex.Content.new([
+      [
+        id: "lorem",
+        trigger: "Lorem ipsum dolor sit amet",
+        content: "Consectetur adipiscing elit.",
+        disabled: all_disabled || Map.get(controls, :disabled_lorem, false)
+      ],
+      [
+        id: "ipsum",
+        trigger: "Duis dictum gravida odio ac pharetra?",
+        content: "Nullam eget vestibulum ligula.",
+        disabled: all_disabled
+      ],
+      [
+        id: "dolor",
+        trigger: "Donec condimentum ex mi",
+        content: "Congue molestie ipsum gravida a.",
+        disabled: all_disabled
+      ]
+    ])
+  end
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, controls: @default_controls)}
+    controls = %{
+      disabled: false,
+      disabled_lorem: false,
+      orientation: "vertical",
+      collapsible: true,
+      multiple: true,
+      dir: "ltr"
+    }
+
+    socket =
+      socket
+      |> assign(:controls, controls)
+      |> assign(:items, accordion_items(controls))
+
+    {:ok, socket}
   end
 
   @impl true
@@ -33,11 +63,17 @@ defmodule E2eWeb.AccordionPlayLive do
   end
 
   defp update_control(socket, "disabled", checked) do
-    update(socket, :controls, &Map.put(&1, :disabled, checked))
+    new_controls = Map.put(socket.assigns.controls, :disabled, checked)
+    socket
+    |> assign(:controls, new_controls)
+    |> assign(:items, accordion_items(new_controls))
   end
 
   defp update_control(socket, "disabled_lorem", checked) do
-    update(socket, :controls, &Map.put(&1, :disabled_lorem, checked))
+    new_controls = Map.put(socket.assigns.controls, :disabled_lorem, checked)
+    socket
+    |> assign(:controls, new_controls)
+    |> assign(:items, accordion_items(new_controls))
   end
 
   defp update_control(socket, "orientation", value) do
@@ -53,7 +89,7 @@ defmodule E2eWeb.AccordionPlayLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Accordion</h1>
         <h2>Playground</h2>
@@ -82,7 +118,7 @@ defmodule E2eWeb.AccordionPlayLive do
           on_value_change="control_changed"
           multiple={false}
           deselectable={false}
-          value={["ltr"]}
+          value={[@controls.dir]}
         >
           <:item value="ltr">
             LTR
@@ -114,44 +150,20 @@ defmodule E2eWeb.AccordionPlayLive do
       <.accordion
         id="my-accordion"
         class="accordion"
-        disabled={@controls.disabled}
+        items={@items}
         multiple={false}
         orientation={@controls.orientation}
         dir={@controls.dir}
       >
-        <:item :let={item} value="lorem" disabled={@controls.disabled_lorem}>
+        <:item :let={item}>
           <.accordion_trigger item={item}>
-            Lorem ipsum dolor sit amet
+            {item.data.trigger}
             <:indicator>
               <.icon name="hero-chevron-right" />
             </:indicator>
           </.accordion_trigger>
           <.accordion_content item={item}>
-            Consectetur adipiscing elit.
-          </.accordion_content>
-        </:item>
-
-        <:item :let={item} value="ipsum">
-          <.accordion_trigger item={item}>
-            Duis dictum gravida odio ac pharetra?
-            <:indicator>
-              <.icon name="hero-chevron-right" />
-            </:indicator>
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Nullam eget vestibulum ligula.
-          </.accordion_content>
-        </:item>
-
-        <:item :let={item} value="dolor">
-          <.accordion_trigger item={item}>
-            Donec condimentum ex mi
-            <:indicator>
-              <.icon name="hero-chevron-right" />
-            </:indicator>
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Congue molestie ipsum gravida a.
+            {item.data.content}
           </.accordion_content>
         </:item>
       </.accordion>

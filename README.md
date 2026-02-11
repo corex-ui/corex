@@ -12,9 +12,10 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 - **No Node.js required** - Install directly from Hex and connect the Phoenix hooks
 
 
-> ***Alpha stage ***
+> **Alpha stage**
 > Corex is actively being developed and is currently in alpha stage. 
-> It's not recommended for production use at this time. 
+> It's not recommended for production use at this time. Component, strucutres and API can change at any new version.
+> Please start from a fresh project on every version as there is no backward compatibilty while in alpha
 > You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 
 
@@ -65,27 +66,22 @@ config :corex,
 
 ### Import Corex Hooks
 
-In your `assets/js/app.js`, import and register the Corex hooks:
+In your `assets/js/app.js`, import and register the Corex hooks.
 
 ```javascript
-import Hooks from "corex"
+import corex from "corex"
 ```
 
 ```javascript
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...Hooks}
+  hooks: {...colocatedHooks, ...corex}
 })
 ```
+Components are **lazy-loaded by default**: each hook’s script is fetched only when that component is first used on the page, so the initial bundle stays small on every page.
 
-You can add individual components with:
-
-```javascript
-import {Accordion, Checkbox} from "corex"
-
-hooks: {...colocatedHooks, Accordion, Checkbox}
-```
+Components also reuse shared chunks (e.g. the Zag.js vanilla machine), so no duplicate code between components.
 
 ## Import Components
 

@@ -13,8 +13,8 @@ defmodule E2eWeb.Model do
       def goto(session, mode \\ :static) do
         path =
           case mode do
-            :static -> "/#{@component}"
-            :live -> "/live/#{@component}"
+            :static -> "/en/#{@component}"
+            :live -> "/en/live/#{@component}"
             custom when is_binary(custom) -> custom
           end
 

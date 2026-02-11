@@ -250,9 +250,10 @@ defmodule Corex.Switch do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the switch"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the switch. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:read_only, :boolean,

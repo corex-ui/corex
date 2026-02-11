@@ -51,8 +51,6 @@ defmodule E2eWeb do
   def live_view do
     quote do
       use Phoenix.LiveView
-
-      on_mount E2eWeb.ModeLive
       unquote(html_helpers())
     end
   end

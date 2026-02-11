@@ -1,30 +1,59 @@
-export { Accordion } from "./accordion";
-export { Toast } from "./toast";
-export { ToggleGroup } from "./toggle-group";
-export { Select } from "./select";
-export { Switch } from "./switch";
-export { Combobox } from "./combobox";
-export { Checkbox } from "./checkbox";
-export { Tabs } from "./tabs";
-export { Clipboard } from "./clipboard";
-export { Collapsible } from "./collapsible";
-export { Dialog } from "./dialog";
-export { DatePicker } from "./date-picker";
-export { SignaturePad } from "./signature-pad";
+/**
+ * Main entry: lazy-loaded hooks. Default export and LazyHooks load each
+ * component chunk on first mount.
+ */
+import type { Hook } from "phoenix_live_view";
 
-import { Accordion } from "./accordion";
-import { Toast } from "./toast";
-import { ToggleGroup } from "./toggle-group";
-import { Select } from "./select";
-import { Switch } from "./switch";
-import { Combobox } from "./combobox";
-import { Checkbox } from "./checkbox";
-import { Tabs } from "./tabs";
-import { Clipboard } from "./clipboard";
-import { Collapsible } from "./collapsible";
-import { Dialog } from "./dialog";
-import { DatePicker } from "./date-picker";
-import { SignaturePad } from "./signature-pad";
-const Hooks = { Accordion, ToggleGroup, Toast, Select, Switch, Combobox, Checkbox, Tabs, Clipboard, Collapsible, Dialog, DatePicker, SignaturePad };
+type HookModule = Record<string, Hook | undefined>;
 
-export default Hooks;
+function lazyHook(
+  importFn: () => Promise<HookModule>,
+  exportName: string
+): Hook {
+  return {
+    async mounted() {
+      const mod = await importFn();
+      const real = mod[exportName];
+      (this as { _realHook?: Hook })._realHook = real;
+      if (real?.mounted) return real.mounted.call(this);
+    },
+    updated() {
+      (this as { _realHook?: Hook })._realHook?.updated?.call(this);
+    },
+    destroyed() {
+      (this as { _realHook?: Hook })._realHook?.destroyed?.call(this);
+    },
+    disconnected() {
+      (this as { _realHook?: Hook })._realHook?.disconnected?.call(this);
+    },
+    reconnected() {
+      (this as { _realHook?: Hook })._realHook?.reconnected?.call(this);
+    },
+    beforeUpdate() {
+      (this as { _realHook?: Hook })._realHook?.beforeUpdate?.call(this);
+    },
+  };
+}
+
+/** Lazy-loaded Corex hooks. Each hook loads its chunk only when first mounted. */
+export const LazyHooks = {
+  Accordion: lazyHook(() => import("corex/accordion"), "Accordion"),
+  Checkbox: lazyHook(() => import("corex/checkbox"), "Checkbox"),
+  Clipboard: lazyHook(() => import("corex/clipboard"), "Clipboard"),
+  Collapsible: lazyHook(() => import("corex/collapsible"), "Collapsible"),
+  Combobox: lazyHook(() => import("corex/combobox"), "Combobox"),
+  DatePicker: lazyHook(() => import("corex/date-picker"), "DatePicker"),
+  Dialog: lazyHook(() => import("corex/dialog"), "Dialog"),
+  Menu: lazyHook(() => import("corex/menu"), "Menu"),
+  Select: lazyHook(() => import("corex/select"), "Select"),
+  SignaturePad: lazyHook(() => import("corex/signature-pad"), "SignaturePad"),
+  Switch: lazyHook(() => import("corex/switch"), "Switch"),
+  Tabs: lazyHook(() => import("corex/tabs"), "Tabs"),
+  Toast: lazyHook(() => import("corex/toast"), "Toast"),
+  ToggleGroup: lazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
+};
+
+export { lazyHook };
+
+/** Default export: lazy-loaded hooks (each chunk loads on first mount). */
+export default LazyHooks;

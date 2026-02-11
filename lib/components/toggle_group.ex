@@ -164,9 +164,10 @@ defmodule Corex.ToggleGroup do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the toggle group"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the toggle group. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_value_change, :string,
@@ -227,7 +228,7 @@ defmodule Corex.ToggleGroup do
           dir: @dir,
           disabled_root: @disabled})}
           class={Map.get(item_entry, :class, nil)}>
-        <%= render_slot(item_entry)%>
+        {render_slot(item_entry)}
         </button>
       </div>
     </div>

@@ -62,26 +62,18 @@ config :corex,
 
 ### Import Corex Hooks
 
-In your `assets/js/app.js`, import and register the Corex hooks:
+In your `assets/js/app.js`, import and register the Corex hooks. Each component chunk loads when first mounted:
 
 ```javascript
-import Hooks from "corex"
+import corex from "corex"
 ```
 
 ```javascript
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...Hooks}
+  hooks: {...colocatedHooks, ...corex}
 })
-```
-
-You can add individual components with:
-
-```javascript
-import {Accordion, Checkbox} from "corex"
-
-hooks: {...colocatedHooks, Accordion, Checkbox }
 ```
 
 ## Import Components
@@ -157,35 +149,26 @@ For more details see [Corex Design](Mix.Tasks.Corex.Design.html) mix task use
 
 ## Add your first component
 
-Add the following Accordion example to your application
+Add the following Accordion example to your application.
 
 <!-- tabs-open -->
 
 ### List
 
-  You must use `Corex.Accordion.Item` struct for items.
+  You can use `Corex.Content.new/1` to create a list of content items.
 
-  The value for each item is optional, useful for controlled mode and API to identify the item.
+  The `id` for each item is optional and will be auto-generated if not provided.
 
-  You can specify disabled for each item.
+  You can specify `disabled` for each item.
 
   ```heex
   <.accordion
     class="accordion"
-    items={[
-      %Corex.List.Item{
-        trigger: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-      },
-      %Corex.List.Item{
-        trigger: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
-      },
-      %Corex.List.Item{
-        trigger: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-      }
-    ]}
+    items={Corex.Content.new([
+      [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+      [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+      [trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    ])}
   />
   ```
 
@@ -193,39 +176,33 @@ Add the following Accordion example to your application
 
   Similar to List but render a custom item slot that will be used for all items.
 
-  Use `{item.meta.trigger}` and `{item.meta.content}` to render the trigger and content for each item.
+  Use `{item.data.trigger}` and `{item.data.content}` to render the trigger and content for each item.
 
-  This example assumes the import of `.icon` from `Core Components`
+  This example assumes the import of `.icon` from Core Components.
 
   ```heex
-    <.accordion
+  <.accordion
     class="accordion"
-    items={[
-      %Corex.List.Item{
-        value: "lorem",
+    items={Corex.Content.new([
+      [
+        id: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
         content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      },
-      %Corex.List.Item{
+        meta: %{indicator: "hero-chevron-right"}
+      ],
+      [
         trigger: "Duis dictum gravida odio ac pharetra?",
         content: "Nullam eget vestibulum ligula, at interdum tellus.",
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      },
-      %Corex.List.Item{
-        value: "donec",
+        meta: %{indicator: "hero-chevron-right"}
+      ],
+      [
+        id: "donec",
         trigger: "Donec condimentum ex mi",
         content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
         disabled: true,
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      }
-    ]}
+        meta: %{indicator: "hero-chevron-right"}
+      ]
+    ])}
   >
     <:item :let={item}>
       <.accordion_trigger item={item}>
@@ -242,138 +219,89 @@ Add the following Accordion example to your application
   </.accordion>
   ```
 
-### Custom
-
-  Render a custom item slot per accordion item manually.
-
-  Use let={item} to get the item data and pass it to the `accordion_trigger/1` and `accordion_content/1` components.
-
-  The trigger component takes an optional `:indicator` slot to render the indicator ico
-
-  This example assumes the import of `.icon` from `Core Components`
-
-  ```heex
-  <.accordion id="my-accordion" value={["duis"]} class="accordion">
-  <:item :let={item} value="lorem" disabled>
-    <.accordion_trigger item={item}>
-      Lorem ipsum dolor sit amet
-      <:indicator>
-       <.icon name="hero-chevron-right" />
-      </:indicator>
-    </.accordion_trigger>
-    <.accordion_content item={item}>
-      Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-    </.accordion_content>
-  </:item>
-  <:item :let={item} value="duis">
-    <.accordion_trigger item={item}>
-      Duis dictum gravida odio ac pharetra?
-      <:indicator>
-       <.icon name="hero-chevron-right" />
-      </:indicator>
-    </.accordion_trigger>
-    <.accordion_content item={item}>
-      Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-    </.accordion_content>
-  </:item>
-  </.accordion>
-  ```
-
 ### Controlled
 
   Render an accordion controlled by the server.
 
-  You must use the `on_value_change` event to update the value on the server and pass the value as a list of strings.
-
-  The event will receive the value as a map with the key `value` and the id of the accordion.
+  Use the `on_value_change` event to update the value on the server and pass the value as a list of strings. The event receives a map with the key `value` and the id of the accordion.
 
   ```elixir
   defmodule MyAppWeb.AccordionLive do
-  use MyAppWeb, :live_view
+    use MyAppWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :value, ["lorem"])}
-  end
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, :value, ["lorem"])}
+    end
 
-  def handle_event("on_value_change", %{"value" => value}, socket) do
-    {:noreply, assign(socket, :value, value)}
-  end
+    def handle_event("on_value_change", %{"value" => value}, socket) do
+      {:noreply, assign(socket, :value, value)}
+    end
 
-  def render(assigns) do
-    ~H"""
-    <.accordion controlled value={@value} on_value_change="on_value_change" class="accordion">
-      <:item :let={item} value="lorem">
-        <.accordion_trigger item={item}>
-          Lorem ipsum dolor sit amet
-        </.accordion_trigger>
-        <.accordion_content item={item}>
-          Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-        </.accordion_content>
-      </:item>
-      <:item :let={item} value="duis">
-        <.accordion_trigger item={item}>
-          Duis dictum gravida odio ac pharetra?
-        </.accordion_trigger>
-        <.accordion_content item={item}>
-          Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-        </.accordion_content>
-      </:item>
-    </.accordion>
-  """
+    def render(assigns) do
+      ~H"""
+      <.accordion
+        controlled
+        value={@value}
+        on_value_change="on_value_change"
+        class="accordion"
+        items={Corex.Content.new([
+          [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
+          [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
+        ])}
+      />
+      """
+    end
   end
-  end
-
   ```
 
 ### Async
 
-  When the initial props are not available on mount, you can use the `Phoenix.LiveView.assign_async` function to assign the props asynchronously
-
-  You can use the optional `Corex.Accordion.accordion_skeleton/1` to render a loading or error state
+  When the initial props are not available on mount, use `Phoenix.LiveView.assign_async/3` to assign the props asynchronously. You can use `Corex.Accordion.accordion_skeleton/1` to render a loading or error state.
 
   ```elixir
   defmodule MyAppWeb.AccordionAsyncLive do
-  use MyAppWeb, :live_view
+    use MyAppWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    socket =
-      socket
-      |> assign_async(:accordion, fn ->
-        Process.sleep(1000)
+    def mount(_params, _session, socket) do
+      socket =
+        socket
+        |> assign_async(:accordion, fn ->
+          Process.sleep(1000)
 
-        items = [
-          %Corex.List.Item{
-            value: "lorem",
-            trigger: "Lorem ipsum dolor sit amet",
-            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-            disabled: true
-          },
-          %Corex.List.Item{
-            value: "duis",
-            trigger: "Duis dictum gravida odio ac pharetra?",
-            content: "Nullam eget vestibulum ligula, at interdum tellus."
-          },
-          %Corex.List.Item{
-            value: "donec",
-            trigger: "Donec condimentum ex mi",
-            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-          }
-        ]
+          items =
+            Corex.Content.new([
+              [
+                id: "lorem",
+                trigger: "Lorem ipsum dolor sit amet",
+                content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+                disabled: true
+              ],
+              [
+                id: "duis",
+                trigger: "Duis dictum gravida odio ac pharetra?",
+                content: "Nullam eget vestibulum ligula, at interdum tellus."
+              ],
+              [
+                id: "donec",
+                trigger: "Donec condimentum ex mi",
+                content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+              ]
+            ])
 
-        {:ok,
-         %{
-           accordion: %{
-             items: items,
-             value: ["duis", "donec"]
-           }
-         }}
-      end)
+          {:ok,
+           %{
+             accordion: %{
+               items: items,
+               value: ["duis", "donec"]
+             }
+           }}
+        end)
 
-    {:ok, socket}
-  end
+      {:ok, socket}
+    end
 
-  def render(assigns) do
-    ~H"""
+    def render(assigns) do
+      ~H"""
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>
           <.accordion_skeleton count={3} class="accordion" />
@@ -390,17 +318,16 @@ Add the following Accordion example to your application
           value={accordion.value}
         />
       </.async_result>
-    """
+      """
+    end
   end
-  end
-
   ```
   <!-- tabs-close -->
 
 
 ## API Control
 
-In order to use the API, you must use and id on the component
+In order to use the API, you must use an id on the component
 
   ***Client-side***
 

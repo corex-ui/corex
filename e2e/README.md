@@ -58,6 +58,25 @@ Then visit:
 http://localhost:4000
 ```
 
+## Try in production
+
+Build and run in prod mode locally (same DB as dev for a quick check):
+
+```bash
+# From the corex repo root: build Corex assets
+cd .. && mix assets.build && cd e2e
+
+# Set required prod env (use dev DB for local test)
+export SECRET_KEY_BASE=$(mix phx.gen.secret)
+export DATABASE_URL="ecto://postgres:postgres@localhost/e2e_dev"
+
+# Build digested assets and run
+MIX_ENV=prod mix assets.deploy
+MIX_ENV=prod mix phx.server
+```
+
+Then open `http://localhost:4000`. Prod uses digested, minified assets (smaller `app.js` and chunks).
+
 ## Purpose
 
 This project is **not a library**. It exists to:

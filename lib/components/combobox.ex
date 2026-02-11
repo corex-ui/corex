@@ -204,7 +204,12 @@ defmodule Corex.Combobox do
 
   attr(:auto_focus, :boolean, default: false, doc: "Whether to auto focus the combobox")
   attr(:close_on_select, :boolean, default: true, doc: "Whether to close the combobox on select")
-  attr(:dir, :string, default: "ltr", doc: "The direction of the combobox")
+
+  attr(:dir, :string,
+    default: nil,
+    doc:
+      "The direction of the combobox. When nil, derived from document (html lang + config :rtl_locales)"
+  )
 
   attr(:input_behavior, :string,
     default: "autohighlight",

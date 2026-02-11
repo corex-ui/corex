@@ -4,7 +4,7 @@ import { Tabs } from "../components/tabs";
 import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/tabs";
 import type { Direction, Orientation } from "@zag-js/types";
 
-import { getString, getBoolean, getStringList } from "../lib/util";
+import { getString, getBoolean } from "../lib/util";
 
 type TabsHookState = {
   tabs?: Tabs;

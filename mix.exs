@@ -46,7 +46,13 @@ defmodule Corex.MixProject do
 
   defp aliases do
     [
-      "assets.build": ["esbuild module", "esbuild cdn", "esbuild cdn_min", "esbuild main"],
+      "assets.build": [
+        "esbuild module",
+        "esbuild cdn",
+        "esbuild cdn_min",
+        "esbuild main",
+        "esbuild hooks_split"
+      ],
       "assets.watch": "esbuild module --watch"
     ]
   end
@@ -68,7 +74,7 @@ defmodule Corex.MixProject do
   defp docs do
     [
       main: "Corex",
-      extras: ["guides/installation.md", "guides/dark_mode.md"],
+      extras: ["guides/installation.md", "guides/dark_mode.md", "guides/production.md"],
       main: "installation",
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
@@ -88,9 +94,9 @@ defmodule Corex.MixProject do
         Corex.Combobox,
         Corex.Clipboard,
         Corex.Collapsible,
-        Corex.Combobox,
         Corex.DatePicker,
         Corex.Dialog,
+        Corex.Menu,
         Corex.Select,
         Corex.SignaturePad,
         Corex.Switch,
@@ -98,14 +104,26 @@ defmodule Corex.MixProject do
         Corex.Toast,
         Corex.ToggleGroup
       ],
-      Helpers: [
+      Form: [
         Corex.Form
       ],
-      Structures: [
-        Corex.List.Item,
-        Corex.Collection.Item,
+      Content: [
+        Corex.Content,
+        Corex.Content.Item
+      ],
+      List: [
+        Corex.List,
+        Corex.List.Item
+      ],
+      Tree: [
+        Corex.Tree,
+        Corex.Tree.Item
+      ],
+      Flash: [
         Corex.Flash.Info,
-        Corex.Flash.Error,
+        Corex.Flash.Error
+      ],
+      Positioning: [
         Corex.Positioning
       ]
     ]

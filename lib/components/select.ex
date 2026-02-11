@@ -5,6 +5,9 @@ defmodule Corex.Select do
   ## Examples
   <!-- tabs-open -->
 
+  The placeholder can be set via the `placeholder_text` attribute or via the optional `:placeholder` slot.
+  When both are provided, the slot content is shown (the slot overrides the attribute).
+
   ### Minimal
 
   This example assumes the import of `.icon` from `Core Components`, you are free to replace it
@@ -13,7 +16,7 @@ defmodule Corex.Select do
   <.select
     id="my-select"
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
@@ -36,7 +39,7 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
@@ -59,6 +62,26 @@ defmodule Corex.Select do
   </.select>
   ```
 
+  ### With custom placeholder slot
+
+  Use the `:placeholder` slot to fully customize the placeholder (e.g. icon + text):
+
+  ```heex
+  <.select
+    id="my-select"
+    class="select"
+    collection={[...]}
+  >
+    <:placeholder>
+      <.icon name="hero-globe-alt" class="opacity-60" />
+      <span>Choose a country</span>
+    </:placeholder>
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+  </.select>
+  ```
+
     ### Custom
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
@@ -67,7 +90,7 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
@@ -101,7 +124,7 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    placeholder="Select a country"
+    placeholder_text="Select a country"
     collection={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
@@ -148,7 +171,7 @@ defmodule Corex.Select do
     <.select
       field={f[:country]}
       class="select"
-      placeholder="Select a country"
+      placeholder_text="Select a country"
       collection={[
         %{label: "France", id: "fra", disabled: true},
         %{label: "Belgium", id: "bel"},
@@ -191,7 +214,7 @@ defmodule Corex.Select do
           field={@form[:country]}
           class="select"
           controlled
-          placeholder="Select a country"
+          placeholder_text="Select a country"
           collection={[
             %{label: "France", id: "fra", disabled: true},
             %{label: "Belgium", id: "bel"},
@@ -265,7 +288,7 @@ defmodule Corex.Select do
           field={@form[:country]}
           class="select"
           controlled
-          placeholder="Select a country"
+          placeholder_text="Select a country"
           collection={[
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
@@ -347,11 +370,22 @@ defmodule Corex.Select do
   attr(:id, :string, required: false)
   attr(:collection, :list, default: [])
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
-  attr(:placeholder, :string, default: nil, doc: "The placeholder of the select")
+
+  attr(:placeholder_text, :string,
+    default: nil,
+    doc: "The placeholder text of the select when no value is selected"
+  )
+
   attr(:value, :list, default: [], doc: "The value of the select")
   attr(:disabled, :boolean, default: false, doc: "Whether the select is disabled")
   attr(:close_on_select, :boolean, default: true, doc: "Whether to close the select on select")
-  attr(:dir, :string, default: "ltr", doc: "The direction of the select")
+
+  attr(:dir, :string,
+    default: nil,
+    doc:
+      "The direction of the select. When nil, derived from document (html lang + config :rtl_locales)"
+  )
+
   attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus the select")
   attr(:multiple, :boolean, default: false, doc: "Whether to allow multiple selection")
   attr(:invalid, :boolean, default: false, doc: "Whether the select is invalid")
@@ -363,15 +397,24 @@ defmodule Corex.Select do
 
   attr(:on_value_change, :string,
     default: nil,
-    doc: "The server event name to trigger on value change"
+    doc:
+      "Server event name to push on value change. Payload includes `value` (list), `path` (current path without locale), `id`, `items`. Use `Enum.at(value, 0)` for the first selected value."
   )
 
-  attr(:on_value_change_client, :string,
+  attr(:on_value_change_client, :any,
     default: nil,
-    doc: "The client event name to trigger on value change"
+    doc: """
+    Client-side only: either a string (CustomEvent name to dispatch) or a `Phoenix.LiveView.JS` command.
+    For JS commands, placeholders are replaced at run time: `__VALUE__` (selected value(s) as JSON array), `__VALUE_0__` (first value).
+    For redirect-on-select use `redirect` instead (no placeholders).
+    """
   )
 
-  attr(:bubble, :boolean, default: false, doc: "Whether the client events are bubbled")
+  attr(:redirect, :boolean,
+    default: false,
+    doc:
+      "When true, the first selected value is used as the destination URL. When not connected the hook sets window.location; when connected use on_value_change and redirect(socket, to: Enum.at(value, 0)) in your handler. Same approach as menu's redirect. Per item: set redirect: false on an item to disable redirect for that item; set new_tab: true to open that item's URL in a new tab."
+  )
 
   attr(:positioning, Corex.Positioning,
     default: %Corex.Positioning{},
@@ -380,8 +423,17 @@ defmodule Corex.Select do
 
   attr(:rest, :global)
 
-  slot(:label, required: false, doc: "The label content")
+  slot :label, required: false, doc: "The label content" do
+    attr(:class, :string, required: false)
+  end
+
   slot(:trigger, required: true, doc: "The trigger button content")
+
+  slot(:placeholder,
+    required: false,
+    doc: "Custom placeholder content. When provided, overrides the placeholder_text attribute"
+  )
+
   slot(:item_indicator, required: false, doc: "Optional indicator for selected items")
 
   slot :error, required: false do
@@ -451,6 +503,13 @@ defmodule Corex.Select do
 
     options_with_prompt = [{"", ""} | options]
 
+    {on_value_change_client_name, on_value_change_js_encoded} =
+      case assigns.on_value_change_client do
+        name when is_binary(name) -> {name, nil}
+        %Phoenix.LiveView.JS{} = js -> {nil, Phoenix.json_library().encode!(js.ops)}
+        _ -> {nil, nil}
+      end
+
     assigns =
       assigns
       |> assign(:grouped_items, grouped_items)
@@ -460,14 +519,17 @@ defmodule Corex.Select do
       |> assign(:selected_for_options, selected_for_options)
       |> assign(:disabled_values, get_disabled_values(assigns.collection))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
+      |> assign(:on_value_change_client_name, on_value_change_client_name)
+      |> assign(:on_value_change_js_encoded, on_value_change_js_encoded)
 
     ~H"""
     <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
-      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder, value: @value,
+      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder_text, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
-      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
-      bubble: @bubble, positioning: @positioning
+      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client_name, on_value_change_js: @on_value_change_js_encoded,
+      redirect: @redirect,
+      positioning: @positioning
     })}>
       <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
 
@@ -481,13 +543,21 @@ defmodule Corex.Select do
         ) %>
       </select>
 
-        <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
         <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button :if={!Enum.empty?(@trigger)}  aria-label={if @selected_label, do: @selected_label, else: @placeholder || "Select an option"}          data-scope="select" data-part="trigger">
+          <button :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
             <span data-scope="select" data-part="item-text">
-              {if @selected_label do @selected_label else @placeholder end}
+              <%= if @selected_label do %>
+                {@selected_label}
+              <% else %>
+                <%= if !Enum.empty?(@placeholder) do %>
+                  {render_slot(@placeholder)}
+                <% else %>
+                  {@placeholder_text || "Select an option"}
+                <% end %>
+              <% end %>
             </span>
             {render_slot(@trigger)}
           </button>

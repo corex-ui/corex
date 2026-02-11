@@ -29,7 +29,6 @@ function transformPositioningOptions(obj: any): PositioningOptions {
 const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SelectHookState) {
     const el = this.el;
-    const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item: any) => item.group !== undefined);
     let selectComponent: Select | undefined;
@@ -67,6 +66,21 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
           return undefined;
         })(),
         onValueChange: (details: ValueChangeDetails) => {
+          const redirect = getBoolean(el, "redirect");
+          const firstValue =
+            details.value.length > 0 ? String(details.value[0]) : null;
+          const firstItem = details.items?.length ? details.items[0] : null;
+          const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? (firstItem as { redirect?: boolean }).redirect : undefined;
+          const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? (firstItem as { new_tab?: boolean }).new_tab : undefined;
+          const doRedirect = redirect && firstValue && hook.liveSocket.main.isDead && itemRedirect !== false;
+          const openInNewTab = itemNewTab === true;
+          if (doRedirect) {
+            if (openInNewTab) {
+              window.open(firstValue, "_blank", "noopener,noreferrer");
+            } else {
+              window.location.href = firstValue;
+            }
+          }
           const valueInput = el.querySelector<HTMLInputElement>(
             '[data-scope="select"][data-part="value-input"]'
           );
@@ -81,31 +95,43 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
             valueInput.dispatchEvent(new Event("change", { bubbles: true }));
           }
 
-          const eventName = getString(el, "onValueChange");
+       
+
+          const payload: Record<string, unknown> = {
+            value: details.value,
+            items: details.items,
+            id: el.id,
+          };
+
+          const encodedJS = el.getAttribute("data-on-value-change-js");
+          if (encodedJS) {
+            let js = encodedJS;
+            const indexMatches = [...js.matchAll(/__VALUE_(\d+)__/g)].map((m) => parseInt(m[1], 10));
+            const uniqueIndices = [...new Set(indexMatches)].sort((a, b) => b - a);
+            for (const i of uniqueIndices) {
+              const val = details.value[i];
+              const str = val !== undefined && val !== null ? String(val) : "";
+              const escaped = JSON.stringify(str).slice(1, -1);
+              js = js.split(`__VALUE_${i}__`).join(escaped);
+            }
+            js = js.split("__VALUE__").join(JSON.stringify(details.value));
+            hook.liveSocket.execJS(el, js);
+          }
+
+          const clientEventName = getString(el, "onValueChangeClient");
+          if (clientEventName) {
+            el.dispatchEvent(
+              new CustomEvent(clientEventName, { bubbles: true, detail: payload })
+            );
+          }
+
+          const serverEventName = getString(el, "onValueChange");
           if (
-            eventName &&
+            serverEventName &&
             !hook.liveSocket.main.isDead &&
             hook.liveSocket.main.isConnected()
           ) {
-            pushEvent(eventName, {
-              value: details.value,
-              items: details.items,
-              id: el.id,
-            });
-          }
-
-          const eventNameClient = getString(el, "onValueChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: getBoolean(el, "bubble"),
-                detail: {
-                  value: details.value,
-                  items: details.items,
-                  id: el.id,
-                },
-              })
-            );
+            this.pushEvent(serverEventName, payload);
           }
         },
       } as Props

@@ -13,20 +13,21 @@ export class Accordion extends Component<Props, Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="accordion"][data-part="root"]');
-    if (!rootEl) return;
+    const rootEl =
+      this.el.querySelector<HTMLElement>('[data-scope="accordion"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const items = rootEl.querySelectorAll<HTMLElement>(
-      ':scope > [data-scope="accordion"][data-part="item"]'
+    const itemsList = this.getItemsList();
+    const itemEls = rootEl.querySelectorAll<HTMLElement>(
+      '[data-scope="accordion"][data-part="item"]'
     );
-    
-    for (let i = 0; i < items.length; i++) {
-      const itemEl = items[i];
-      const value = itemEl.dataset.value;
-      if (!value) continue;
 
-      const disabled = itemEl.hasAttribute('data-disabled');
+    for (let i = 0; i < itemEls.length; i++) {
+      const itemEl = itemEls[i];
+      const itemData = itemsList[i];
+      if (!itemData?.value) continue;
+
+      const { value, disabled } = itemData;
       this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
 
       const triggerEl = itemEl.querySelector<HTMLElement>('[data-scope="accordion"][data-part="item-trigger"]');
@@ -43,6 +44,16 @@ export class Accordion extends Component<Props, Api> {
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
       }
+    }
+  }
+
+  private getItemsList(): Array<{ value: string; disabled: boolean }> {
+    const raw = this.el.getAttribute("data-items");
+    if (!raw) return [];
+    try {
+      return JSON.parse(raw) as Array<{ value: string; disabled: boolean }>;
+    } catch {
+      return [];
     }
   }
 }

@@ -1,95 +1,150 @@
-<Layouts.app flash={@flash} mode={@mode}>
+<Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
   <h1>Corex E2E tests</h1>
   <ul class="list-none flex flex-col">
-    <.link navigate={~p"/accordion"} class="link">
-      Accordion
-    </.link>
-    <.link navigate={~p"/live/accordion"} class="link">
-      Accordion Live
-    </.link>
-    <.link navigate={~p"/playground/accordion"} class="link">
-      Accordion Playground
-    </.link>
-    <.link navigate={~p"/controlled/accordion"} class="link">
-      Accordion Controlled
-    </.link>
-    <.link navigate={~p"/async/accordion"} class="link">
-      Accordion Async
-    </.link>
-    <.link navigate={~p"/checkbox"} class="link">
-      Checkbox
-    </.link>
-    <.link navigate={~p"/live/checkbox"} class="link">
-      Checkbox Live
-    </.link>
-    <.link navigate={~p"/clipboard"} class="link">
-      Clipboard
-    </.link>
-    <.link navigate={~p"/live/clipboard"} class="link">
-      Clipboard Live
-    </.link>
-    <.link navigate={~p"/collapsible"} class="link">
-      Collapsible
-    </.link>
-    <.link navigate={~p"/live/collapsible"} class="link">
-      Collapsible Live
-    </.link>
-    <.link navigate={~p"/combobox"} class="link">
-      Combobox
-    </.link>
-    <.link navigate={~p"/live/combobox"} class="link">
-      Combobox Live
-    </.link>
-    <.link navigate={~p"/date-picker"} class="link">
-      Date Picker
-    </.link>
-    <.link navigate={~p"/dialog"} class="link">
-      Dialog
-    </.link>
-    <.link navigate={~p"/live/dialog"} class="link">
-      Dialog Live
-    </.link>
-    <.link navigate={~p"/admins"} class="link">
-      Phoenix Form Live
-    </.link>
-    <.link navigate={~p"/users"} class="link">
-      Phoenix Form
-    </.link>
-    <.link navigate={~p"/select"} class="link">
-      Select
-    </.link>
-    <.link navigate={~p"/live/select"} class="link">
-      Select Live
-    </.link>
-    <.link navigate={~p"/signature"} class="link">
-      Signature Pad
-    </.link>
-    <.link navigate={~p"/live/signature"} class="link">
-      Signature Pad Live
-    </.link>
-    <.link navigate={~p"/switch"} class="link">
-      Switch
-    </.link>
-    <.link navigate={~p"/live/switch"} class="link">
-      Switch Live
-    </.link>
-    <.link navigate={~p"/tabs"} class="link">
-      Tabs
-    </.link>
-    <.link navigate={~p"/live/tabs"} class="link">
-      Tabs Live
-    </.link>
-    <.link navigate={~p"/toast"} class="link">
-      Toast
-    </.link>
-    <.link navigate={~p"/live/toast"} class="link">
-      Toast Live
-    </.link>
-    <.link navigate={~p"/toggle-group"} class="link">
-      Toggle Group
-    </.link>
-    <.link navigate={~p"/live/toggle-group"} class="link">
-      Toggle Group Live
-    </.link>
+    <li>
+      <.link navigate={~p"/#{@locale}/accordion"} class="link">
+        Accordion
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/accordion"} class="link">
+        Accordion Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/playground/accordion"} class="link">
+        Accordion Playground
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/controlled/accordion"} class="link">
+        Accordion Controlled
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/async/accordion"} class="link">
+        Accordion Async
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/checkbox"} class="link">
+        Checkbox
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/checkbox"} class="link">
+        Checkbox Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/clipboard"} class="link">
+        Clipboard
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/clipboard"} class="link">
+        Clipboard Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/collapsible"} class="link">
+        Collapsible
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/collapsible"} class="link">
+        Collapsible Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/combobox"} class="link">
+        Combobox
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/combobox"} class="link">
+        Combobox Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/date-picker"} class="link">
+        Date Picker
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/dialog"} class="link">
+        Dialog
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/dialog"} class="link">
+        Dialog Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/admins"} class="link">
+        Phoenix Form Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/users"} class="link">
+        Phoenix Form
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/select"} class="link">
+        Select
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/select"} class="link">
+        Select Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/signature"} class="link">
+        Signature Pad
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/signature"} class="link">
+        Signature Pad Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/switch"} class="link">
+        Switch
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/switch"} class="link">
+        Switch Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/tabs"} class="link">
+        Tabs
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/toast"} class="link">
+        Toast
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/toast"} class="link">
+        Toast Live
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/toggle-group"} class="link">
+        Toggle Group
+      </.link>
+    </li>
+    <li>
+      <.link navigate={~p"/#{@locale}/live/toggle-group"} class="link">
+        Toggle Group Live
+      </.link>
+    </li>
   </ul>
 </Layouts.app>

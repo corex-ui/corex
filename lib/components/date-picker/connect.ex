@@ -148,6 +148,13 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "positioner"
     }
 
+    base =
+      if initially_open?(assigns.default_open) do
+        base
+      else
+        Map.put(base, "hidden", "true")
+      end
+
     if assigns.changed,
       do: base,
       else: base
@@ -157,12 +164,21 @@ defmodule Corex.DatePicker.Connect do
   def content(assigns) do
     base = %{
       "data-scope" => "date-picker",
-      "data-part" => "content",
-      "hidden" => "true"
+      "data-part" => "content"
     }
+
+    base =
+      if initially_open?(assigns.default_open) do
+        base
+      else
+        Map.put(base, "hidden", "true")
+      end
 
     if assigns.changed,
       do: base,
       else: base
   end
+
+  defp initially_open?(true), do: true
+  defp initially_open?(_), do: false
 end

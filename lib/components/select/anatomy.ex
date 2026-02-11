@@ -24,7 +24,9 @@ defmodule Corex.Select.Anatomy do
       required: false,
       on_value_change: nil,
       on_value_change_client: nil,
-      bubble: false,
+      on_value_change_js: nil,
+      redirect: false,
+      redirect_new_tab: false,
       positioning: nil
     ]
 
@@ -46,7 +48,8 @@ defmodule Corex.Select.Anatomy do
             required: boolean(),
             on_value_change: String.t() | nil,
             on_value_change_client: String.t() | nil,
-            bubble: boolean(),
+            on_value_change_js: String.t() | nil,
+            redirect: boolean(),
             positioning: Corex.Positioning.t() | nil
           }
   end

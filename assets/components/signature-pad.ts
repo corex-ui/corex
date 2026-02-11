@@ -32,57 +32,32 @@ export class SignaturePad extends Component<Props, Api> {
     if (!segment) return;
 
     const totalPaths = this.api.paths.length + (this.api.currentPath ? 1 : 0);
-    
+
     if (totalPaths === 0) {
-      Array.from(segment.querySelectorAll("path")).forEach((path) => segment.removeChild(path));
+      segment.innerHTML = "";
       this.imageURL = "";
       this.paths = [];
-      // Update hidden input when cleared
       const hiddenInput = this.el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
-      if (hiddenInput) {
-        hiddenInput.value = "";
-      }
+      if (hiddenInput) hiddenInput.value = "";
       return;
     }
 
-    const allPathElements = Array.from(
-      segment.querySelectorAll<SVGPathElement>('[data-scope="signature-pad"][data-part="path"], [data-scope="signature-pad"][data-part="current-path"]')
-    );
+    segment.innerHTML = "";
 
-    const existingPaths: SVGPathElement[] = [];
-    const existingCurrentPath: SVGPathElement[] = [];
-    
-    allPathElements.forEach((path) => {
-      (path.getAttribute("data-part") === "current-path" ? existingCurrentPath : existingPaths).push(path);
-    });
-
-    while (existingPaths.length > this.api.paths.length) {
-      const path = existingPaths.pop();
-      if (path) segment.removeChild(path);
-    }
-
-    this.api.paths.forEach((pathData, index) => {
-      let pathEl = existingPaths[index];
-      if (!pathEl) {
-        pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        pathEl.setAttribute("data-scope", "signature-pad");
-        pathEl.setAttribute("data-part", "path");
-        segment.appendChild(pathEl);
-      }
+    this.api.paths.forEach((pathData) => {
+      const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      pathEl.setAttribute("data-scope", "signature-pad");
+      pathEl.setAttribute("data-part", "path");
       this.spreadProps(pathEl, this.api.getSegmentPathProps({ path: pathData }));
+      segment.appendChild(pathEl);
     });
 
     if (this.api.currentPath) {
-      let currentPathEl = existingCurrentPath[0];
-      if (!currentPathEl) {
-        currentPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        currentPathEl.setAttribute("data-scope", "signature-pad");
-        currentPathEl.setAttribute("data-part", "current-path");
-        segment.appendChild(currentPathEl);
-      }
+      const currentPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      currentPathEl.setAttribute("data-scope", "signature-pad");
+      currentPathEl.setAttribute("data-part", "current-path");
       this.spreadProps(currentPathEl, this.api.getSegmentPathProps({ path: this.api.currentPath }));
-    } else {
-      existingCurrentPath.forEach((path) => segment.removeChild(path));
+      segment.appendChild(currentPathEl);
     }
   };
 
@@ -106,18 +81,17 @@ export class SignaturePad extends Component<Props, Api> {
     const clearBtn = rootEl.querySelector<HTMLElement>('[data-scope="signature-pad"][data-part="clear-trigger"]');
     if (clearBtn) {
       this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+      const hasPaths = this.api.paths.length > 0 || !!this.api.currentPath;
+      clearBtn.hidden = !hasPaths;
     }
 
     const hiddenInput = rootEl.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
     if (hiddenInput) {
-      // Store paths as JSON string in hidden input
       const pathsValue = this.paths.length > 0 ? JSON.stringify(this.paths) : "";
       this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
-      // Set name attribute for form submission
       if (this.name) {
         hiddenInput.name = this.name;
       }
-      // Ensure value is set (spreadProps might override it)
       hiddenInput.value = pathsValue;
     }
 

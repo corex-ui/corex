@@ -8,29 +8,20 @@ defmodule Corex.Tabs do
 
   ### List
 
-  You must use `Corex.List.Item` struct for items.
+  You can use `Corex.Content.new/1` to create a list of content items.
 
-  The value for each item is optional, useful for controlled mode and API to identify the item.
+  The `id` for each item is optional and will be auto-generated if not provided.
 
-  You can specify disabled for each item.
+  You can specify `disabled` for each item.
 
   ```heex
   <.tabs
     class="tabs"
-    items={[
-      %Corex.List.Item{
-        trigger: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-      },
-      %Corex.List.Item{
-        trigger: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus."
-      },
-      %Corex.List.Item{
-        trigger: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-      }
-    ]}
+    items={Corex.Content.new([
+      [trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
+      [trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+      [trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+    ])}
   />
   ```
 
@@ -44,29 +35,11 @@ defmodule Corex.Tabs do
           <.tabs
     class="tabs"
     value="lorem"
-    items={[
-      %Corex.List.Item{
-        value: "lorem",
-        trigger: "Lorem",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      },
-      %Corex.List.Item{
-        trigger: "Duis",
-        content: "Nullam eget vestibulum ligula, at interdum tellus.",
-        meta: %{
-          indicator: "hero-chevron-right",
-        }
-      },
-      %Corex.List.Item{
-        value: "donec",
-        trigger: "Donec",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-        disabled: true
-      }
-    ]}
+    items={Corex.Content.new([
+      [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", meta: %{indicator: "hero-chevron-right"}],
+      [trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus.", meta: %{indicator: "hero-chevron-right"}],
+      [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus.", disabled: true]
+    ])}
   >
     <:trigger :let={item}>
       {item.data.trigger}
@@ -165,24 +138,11 @@ defmodule Corex.Tabs do
       |> assign_async(:tabs, fn ->
         Process.sleep(1000)
 
-        items = [
-          %Corex.List.Item{
-            value: "lorem",
-            trigger: "Lorem ipsum dolor sit amet",
-            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-            disabled: true
-          },
-          %Corex.List.Item{
-            value: "duis",
-            trigger: "Duis dictum gravida odio ac pharetra?",
-            content: "Nullam eget vestibulum ligula, at interdum tellus."
-          },
-          %Corex.List.Item{
-            value: "donec",
-            trigger: "Donec condimentum ex mi",
-            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-          }
-        ]
+        items = Corex.Content.new([
+          [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", disabled: true],
+          [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
+          [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+        ])
 
         {:ok,
          %{
@@ -284,13 +244,9 @@ defmodule Corex.Tabs do
 
   You can use either:
   - The `:trigger` and `:content` slots for manual tab definition with full control
-  - The `:items` attribute for programmatic tab generation from a list of `%Corex.List.Item{}` structs
+  - The `:items` attribute for programmatic tab generation from a list of content items
 
-  When using `:items`, each item MUST be a `%Corex.List.Item{}` struct with:
-  - `:value` (optional) - unique identifier for the item
-  - `:trigger` (required) - content for the trigger button
-  - `:content` (optional, default: "") - content for the tabs panel
-  - `:disabled` (optional, default: false) - whether the item is disabled
+  Use `Corex.Content.new/1` to create items.
 
   When using `:trigger` and `:content` slots:
   - Each `:trigger` slot should have a `value` attribute to identify the tab
@@ -305,7 +261,7 @@ defmodule Corex.Tabs do
 
   attr(:items, :list,
     default: nil,
-    doc: "The items of the tabs, must be a list of %Corex.List.Item{} structs"
+    doc: "The items of the tabs, must be a list of content items"
   )
 
   attr(:value, :string,
@@ -333,9 +289,10 @@ defmodule Corex.Tabs do
   )
 
   attr(:dir, :string,
-    default: "ltr",
-    values: ["ltr", "rtl"],
-    doc: "The direction of the tabs"
+    default: nil,
+    values: [nil, "ltr", "rtl"],
+    doc:
+      "The direction of the tabs. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
   attr(:on_value_change, :string,
@@ -414,7 +371,7 @@ defmodule Corex.Tabs do
              {Connect.trigger(%Trigger{
               id: @id,
               changed: if(@__changed__, do: true, else: false),
-              value: item_entry.value || "item-#{index}",
+              value: item_entry.id || item_entry.value || "item-#{index}",
               disabled: item_entry.disabled || @disabled,
               values: @values,
               orientation: @orientation,
@@ -429,7 +386,7 @@ defmodule Corex.Tabs do
               <% item_data = %{
                 id: @id,
                 changed: if(@__changed__, do: true, else: false),
-                value: item_entry.value || "item-#{index}",
+                value: item_entry.id || item_entry.value || "item-#{index}",
                 disabled: item_entry.disabled || @disabled,
                 values: @values,
                 orientation: @orientation,
@@ -442,7 +399,7 @@ defmodule Corex.Tabs do
                 }
               } %>
               <.tabs_trigger item={item_data}>
-                <%= render_slot(trigger_slot, item_data) %>
+                {render_slot(trigger_slot, item_data)}
               </.tabs_trigger>
             </div>
           </div>
@@ -458,7 +415,7 @@ defmodule Corex.Tabs do
               dir: @dir,
               disabled_root: @disabled
             }}>
-              <%= render_slot(trigger_entry) %>
+              {render_slot(trigger_entry)}
             </.tabs_trigger>
           </div>
         </div>
@@ -466,7 +423,7 @@ defmodule Corex.Tabs do
         <div :if={@items && @content == []} :for={{item_entry, index} <- Enum.with_index(@items || [])} {Connect.content(%Content{
           id: @id,
           changed: if(@__changed__, do: true, else: false),
-          value: item_entry.value || "item-#{index}",
+          value: item_entry.id || item_entry.value || "item-#{index}",
           disabled: item_entry.disabled || @disabled,
           values: @values,
           orientation: @orientation,
@@ -481,7 +438,7 @@ defmodule Corex.Tabs do
             <% item_data = %{
               id: @id,
               changed: if(@__changed__, do: true, else: false),
-              value: item_entry.value || "item-#{index}",
+              value: item_entry.id || item_entry.value || "item-#{index}",
               disabled: item_entry.disabled || @disabled,
               values: @values,
               orientation: @orientation,
@@ -494,7 +451,7 @@ defmodule Corex.Tabs do
               }
             } %>
             <.tabs_content item={item_data}>
-              <%= render_slot(content_slot, item_data) %>
+              {render_slot(content_slot, item_data)}
             </.tabs_content>
           </div>
         </div>
@@ -510,7 +467,7 @@ defmodule Corex.Tabs do
             dir: @dir,
             disabled_root: @disabled
           }}>
-            <%= render_slot(content_entry) %>
+            {render_slot(content_entry)}
           </.tabs_content>
         </div>
       </div>
@@ -521,7 +478,7 @@ defmodule Corex.Tabs do
   defp build_items_list(%{items: items}) when is_list(items) do
     Enum.map(Enum.with_index(items), fn {item_entry, index} ->
       %{
-        value: item_entry.value || "item-#{index}",
+        value: item_entry.id || item_entry.value || "item-#{index}",
         disabled: Map.get(item_entry, :disabled, false)
       }
     end)
@@ -542,18 +499,16 @@ defmodule Corex.Tabs do
 
   defp validate_items(%{items: items} = assigns) when is_list(items) do
     Enum.each(items, fn item ->
-      unless is_struct(item, Corex.List.Item) do
+      unless is_map(item) do
         raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.List.Item{} struct, got: #{inspect(item)}
+        Invalid item in :items attribute. Expected a map, got: #{inspect(item)}
 
-        Please use the Corex.List.Item struct:
+        Please use Corex.Content.new/1:
 
-        %Corex.List.Item{
-          value: "unique-id",
-          trigger: "Trigger text",
-          content: "Content text",
-          disabled: false  # optional, defaults to false
-        }
+        items = Corex.Content.new([
+          [trigger: "Trigger text", content: "Content text"],
+          [trigger: "Another trigger", content: "More content", disabled: true]
+        ])
         """
       end
     end)

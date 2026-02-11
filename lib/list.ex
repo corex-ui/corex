@@ -1,89 +1,124 @@
 defmodule Corex.List do
-  @moduledoc false
+  @moduledoc """
+  List item structure for flat selectable items.
+  """
 
   defmodule Item do
     @moduledoc """
     List item structure.
 
-    Use it to create a list of items for
-    - [Accordion](Corex.Accordion.html)
-    - [Tabs](Corex.Tabs.html)
+    Use it to create flat lists of selectable items for:
+    - [Combobox](Corex.Combobox.html)
+    - [Select](Corex.Select.html)
 
     ## Fields
 
-    * `:trigger` - (required) Content to display in the trigger
-    * `:content` - (required) Content to display in the content
-    * `:value` - (optional) Unique identifier for the item
+    * `:id` - (optional) Unique identifier, auto-generated if not provided
+    * `:label` - (required) Display text
     * `:disabled` - (optional) Whether the item is disabled
+    * `:group` - (optional) Group identifier for grouping items
     * `:meta` - (optional) Additional metadata for the item
-
-    The fields are available in the item slot as `{item.trigger}`, `{item.content}`, `{item.meta.icon}` etc
-
-    ## Example
-
-    This example assumes the import of `.icon` from `Core Components`
-
-    ```heex
-    <.accordion
-      class="accordion"
-      items={[
-        %Corex.List.Item{
-          value: "lorem",
-          trigger: "Lorem ipsum dolor sit amet",
-          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-          meta: %{
-            indicator: "hero-chevron-right",
-          }
-        },
-        %Corex.List.Item{
-          trigger: "Duis dictum gravida odio ac pharetra?",
-          content: "Nullam eget vestibulum ligula, at interdum tellus.",
-          meta: %{
-            indicator: "hero-chevron-right",
-          }
-        },
-        %Corex.List.Item{
-          value: "donec",
-          trigger: "Donec condimentum ex mi",
-          content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-          disabled: true,
-          meta: %{
-            indicator: "hero-chevron-right",
-          }
-        }
-      ]}
-    >
-      <:item :let={item}>
-        <.accordion_trigger item={item}>
-          {item.meta.trigger}
-          <:indicator>
-            <.icon name={item.meta.indicator} />
-          </:indicator>
-        </.accordion_trigger>
-
-        <.accordion_content item={item}>
-          {item.meta.content}
-        </.accordion_content>
-      </:item>
-    </.accordion>
-    ```
+    * `:redirect` - (optional) When top-level redirect is true, set to false on an item to disable redirect for that item
+    * `:new_tab` - (optional) When redirect is used, set to true to open this item's URL in a new tab
     """
 
-    @enforce_keys [:trigger, :content]
+    @derive Jason.Encoder
+    @enforce_keys [:label]
     defstruct [
-      :value,
-      :trigger,
-      :content,
-      :meta,
-      disabled: false
+      :id,
+      :label,
+      disabled: false,
+      group: nil,
+      meta: %{},
+      redirect: nil,
+      new_tab: false
     ]
 
     @type t :: %__MODULE__{
-            value: String.t(),
-            trigger: String.t(),
-            content: String.t(),
+            id: String.t(),
+            label: String.t(),
+            disabled: boolean(),
+            group: String.t() | nil,
             meta: map(),
-            disabled: boolean()
+            redirect: boolean() | nil,
+            new_tab: boolean()
           }
+
+    @doc """
+    Creates a single List.Item with an auto-generated ID if not provided.
+
+    Raises `ArgumentError` if attrs is not a keyword list or map.
+    """
+    def new(attrs) when is_list(attrs) or is_map(attrs) do
+      attrs =
+        attrs
+        |> Enum.into([])
+        |> Keyword.put_new(:id, Corex.List.generate_id())
+
+      struct!(__MODULE__, attrs)
+    rescue
+      e in [KeyError, ArgumentError] ->
+        reraise ArgumentError,
+                """
+                Failed to create List.Item: #{Exception.message(e)}
+
+                Required fields: [:label]
+                Optional fields: [:id, :disabled, :group, :meta, :redirect, :new_tab]
+
+                Example:
+                  Corex.List.Item.new(label: "My Label")
+                """,
+                __STACKTRACE__
+    end
+
+    def new(attrs) do
+      raise ArgumentError, """
+      Expected a keyword list or map, got: #{inspect(attrs)}
+
+      Example:
+        Corex.List.Item.new(label: "My Label")
+        Corex.List.Item.new(%{label: "My Label"})
+      """
+    end
+  end
+
+  @doc """
+  Creates a list of List.Item structs from a list of attribute maps.
+
+  Raises `ArgumentError` if items is not a list or contains invalid items.
+  """
+  def new([]), do: []
+
+  def new([first | _rest] = items) when is_list(first) or is_map(first) do
+    Enum.map(items, &Item.new/1)
+  end
+
+  def new(items) when is_list(items) do
+    raise ArgumentError, """
+    Expected a list of keyword lists or maps, got invalid item format.
+
+    Example:
+      Corex.List.new([
+        [label: "Option 1"],
+        [label: "Option 2"]
+      ])
+    """
+  end
+
+  def new(items) do
+    raise ArgumentError, """
+    Expected a list, got: #{inspect(items)}
+
+    Example:
+      Corex.List.new([
+        [label: "Option 1"],
+        [label: "Option 2"]
+      ])
+    """
+  end
+
+  @doc false
+  def generate_id do
+    "list-#{System.unique_integer([:positive, :monotonic])}"
   end
 end

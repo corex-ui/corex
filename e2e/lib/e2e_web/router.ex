@@ -7,6 +7,7 @@ defmodule E2eWeb.Router do
     plug :fetch_session
     plug :fetch_live_flash
     plug E2eWeb.Plugs.Mode
+    plug E2eWeb.Plugs.Locale
     plug :put_root_layout, html: {E2eWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
@@ -18,55 +19,71 @@ defmodule E2eWeb.Router do
 
   scope "/", E2eWeb do
     pipe_through :browser
+    get "/", PageController, :home
+  end
+
+
+  scope "/:locale", E2eWeb do
+    pipe_through :browser
+
+    live_session :default, on_mount: [E2eWeb.ModeLive, E2eWeb.SharedEvents] do
+      live "/live/accordion", AccordionLive
+      live "/playground/accordion", AccordionPlayLive
+      live "/controlled/accordion", AccordionControlledLive
+      live "/async/accordion", AccordionAsyncLive
+      live "/live/checkbox", CheckboxLive
+      live "/live/clipboard", ClipboardLive
+      live "/live/collapsible", CollapsibleLive
+      live "/live/combobox", ComboboxLive
+      live "/live/date-picker", DatePickerLive
+      live "/live/dialog", DialogLive
+      live "/live/menu", MenuLive
+      live "/live/switch", SwitchLive
+      live "/live/tabs", TabsLive
+
+      live "/live/select", SelectLive
+      live "/live/signature", SignatureLive
+      live "/live/toast", ToastLive
+      live "/live/toggle-group", ToggleGroupLive
+
+
+    end
 
     get "/", PageController, :home
 
     get "/accordion", PageController, :accordion_page
-    live "/live/accordion", AccordionLive
-    live "/playground/accordion", AccordionPlayLive
-    live "/controlled/accordion", AccordionControlledLive
-    live "/async/accordion", AccordionAsyncLive
-
     get "/checkbox", PageController, :checkbox_page
-    live "/live/checkbox", CheckboxLive
 
     get "/clipboard", PageController, :clipboard_page
-    live "/live/clipboard", ClipboardLive
 
     get "/collapsible", PageController, :collapsible_page
-    live "/live/collapsible", CollapsibleLive
 
     get "/combobox", PageController, :combobox_page
-    live "/live/combobox", ComboboxLive
 
     get "/date-picker", PageController, :date_picker_page
-    live "/live/date-picker", DatePickerLive
 
     get "/dialog", PageController, :dialog_page
-    live "/live/dialog", DialogLive
 
     get "/select", PageController, :select_page
-    live "/live/select", SelectLive
 
     get "/signature", PageController, :signature_page
-    live "/live/signature", SignatureLive
+
+    get "/menu", PageController, :menu_page
     get "/switch", PageController, :switch_page
-    live "/live/switch", SwitchLive
 
     get "/tabs", PageController, :tabs_page
-    live "/live/tabs", TabsLive
 
     get "/toast", PageController, :toast_page
     post "/toast", PageController, :create_toast
-    live "/live/toast", ToastLive
 
     get "/toggle-group", PageController, :toggle_group_page
-    live "/live/toggle-group", ToggleGroupLive
 
-    live "/admins", AdminLive.Index, :index
-    live "/admins/new", AdminLive.Form, :new
-    live "/admins/:id", AdminLive.Show, :show
-    live "/admins/:id/edit", AdminLive.Form, :edit
+    live_session :browser, on_mount: [E2eWeb.ModeLive, E2eWeb.SharedEvents] do
+      live "/admins", AdminLive.Index, :index
+      live "/admins/new", AdminLive.Form, :new
+      live "/admins/:id", AdminLive.Show, :show
+      live "/admins/:id/edit", AdminLive.Form, :edit
+    end
 
     resources "/users", UserController
 

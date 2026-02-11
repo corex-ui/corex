@@ -19,7 +19,7 @@ defmodule E2eWeb.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User created successfully.")
-        |> redirect(to: ~p"/users/#{user}")
+        |> redirect(to: ~p"/#{conn.assigns[:locale]}/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new, changeset: changeset)
@@ -44,7 +44,7 @@ defmodule E2eWeb.UserController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "User updated successfully.")
-        |> redirect(to: ~p"/users/#{user}")
+        |> redirect(to: ~p"/#{conn.assigns[:locale]}/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :edit, user: user, changeset: changeset)
@@ -57,6 +57,6 @@ defmodule E2eWeb.UserController do
 
     conn
     |> put_flash(:info, "User deleted successfully.")
-    |> redirect(to: ~p"/users")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/users")
   end
 end

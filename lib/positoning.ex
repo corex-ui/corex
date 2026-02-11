@@ -9,7 +9,7 @@ defmodule Corex.Positioning do
   defstruct hide_when_detached: true,
             strategy: "fixed",
             placement: "bottom",
-            gutter: 0,
+            gutter: 8,
             shift: 0,
             overflow_padding: 0,
             arrow_padding: 4,

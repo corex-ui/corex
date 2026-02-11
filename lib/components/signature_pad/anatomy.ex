@@ -12,6 +12,10 @@ defmodule Corex.SignaturePad.Anatomy do
       drawing_fill: "black",
       drawing_size: 2,
       drawing_simulate_pressure: false,
+      drawing_smoothing: nil,
+      drawing_easing: nil,
+      drawing_thinning: nil,
+      drawing_streamline: nil,
       dir: "ltr",
       on_draw_end: nil,
       on_draw_end_client: nil,
@@ -25,6 +29,10 @@ defmodule Corex.SignaturePad.Anatomy do
             drawing_fill: String.t(),
             drawing_size: integer(),
             drawing_simulate_pressure: boolean(),
+            drawing_smoothing: integer() | float() | nil,
+            drawing_easing: String.t() | nil,
+            drawing_thinning: integer() | float() | nil,
+            drawing_streamline: integer() | float() | nil,
             dir: String.t(),
             on_draw_end: String.t() | nil,
             on_draw_end_client: String.t() | nil,
@@ -89,13 +97,14 @@ defmodule Corex.SignaturePad.Anatomy do
 
   defmodule ClearTrigger do
     @moduledoc false
-    defstruct [:id, :dir, changed: false, aria_label: nil]
+    defstruct [:id, :dir, changed: false, aria_label: nil, has_paths: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             changed: boolean(),
-            aria_label: String.t() | nil
+            aria_label: String.t() | nil,
+            has_paths: boolean()
           }
   end
 

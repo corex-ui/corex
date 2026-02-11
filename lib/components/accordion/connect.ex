@@ -24,33 +24,26 @@ defmodule Corex.Accordion.Connect do
         else
           nil
         end,
-      "data-disabled" => data_attr(assigns.disabled),
       "data-controlled" => data_attr(assigns.controlled),
       "data-multiple" => data_attr(assigns.multiple),
       "data-orientation" => assigns.orientation,
+      "data-dir" => assigns.dir,
       "data-on-value-change" => assigns.on_value_change,
       "data-on-value-change-client" => assigns.on_value_change_client,
       "data-on-focus-change" => assigns.on_focus_change,
-      "data-on-focus-change-client" => assigns.on_focus_change_client,
-      "data-dir" => assigns.dir
+      "data-on-focus-change-client" => assigns.on_focus_change_client
     }
   end
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "accordion",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "data-orientation" => assigns.orientation,
+      "id" => "accordion:#{assigns.id}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "data-orientation" => assigns.orientation,
-          "id" => "accordion:#{assigns.id}"
-        })
   end
 
   @spec item(Item.t()) :: map()
@@ -58,22 +51,16 @@ defmodule Corex.Accordion.Connect do
     value = assigns.value
     data_state = if(value in assigns.values, do: "open", else: "closed")
 
-    base = %{
+    %{
       "data-scope" => "accordion",
       "data-part" => "item",
       "data-value" => value,
-      "data-disabled" => assigns.disabled_root || assigns.disabled
+      "data-disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir,
+      "data-state" => data_state,
+      "id" => "accordion:#{assigns.id}:item:#{value}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "data-state" => data_state,
-          "id" => "accordion:#{assigns.id}:item:#{value}"
-        })
   end
 
   @spec trigger(Item.t()) :: map()
@@ -81,29 +68,23 @@ defmodule Corex.Accordion.Connect do
     expanded = assigns.value in assigns.values
     data_state = if expanded, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "accordion",
-      "data-part" => "item-trigger"
+      "data-part" => "item-trigger",
+      "type" => "button",
+      "tabindex" => if(assigns.disabled, do: -1, else: 0),
+      "aria-expanded" => if(expanded, do: "true", else: "false"),
+      "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
+      "data-disabled" => assigns.disabled,
+      "disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir,
+      "data-state" => data_state,
+      "id" => "accordion:#{assigns.id}:trigger:#{assigns.value}",
+      "data-controls" => "accordion:#{assigns.id}:content:#{assigns.value}",
+      "aria-controls" => "accordion:#{assigns.id}:content:#{assigns.value}",
+      "data-ownedby" => "accordion:#{assigns.id}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "button",
-          "tabindex" => if(assigns.disabled, do: -1, else: 0),
-          "aria-expanded" => if(expanded, do: "true", else: "false"),
-          "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
-          "data-disabled" => assigns.disabled,
-          "disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "data-state" => data_state,
-          "id" => "accordion:#{assigns.id}:trigger:#{assigns.value}",
-          "data-controls" => "accordion:#{assigns.id}:content:#{assigns.value}",
-          "aria-controls" => "accordion:#{assigns.id}:content:#{assigns.value}",
-          "data-ownedby" => "accordion:#{assigns.id}"
-        })
   end
 
   @spec content(Item.t()) :: map()
@@ -111,24 +92,18 @@ defmodule Corex.Accordion.Connect do
     expanded = assigns.value in assigns.values
     data_state = if expanded, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "accordion",
-      "data-part" => "item-content"
+      "data-part" => "item-content",
+      "role" => "region",
+      "data-state" => data_state,
+      "data-disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir,
+      "aria-labelledby" => "accordion:#{assigns.id}:trigger:#{assigns.value}",
+      "hidden" => !expanded,
+      "id" => "accordion:#{assigns.id}:content:#{assigns.value}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "role" => "region",
-          "data-state" => data_state,
-          "data-disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "aria-labelledby" => "accordion:#{assigns.id}:trigger:#{assigns.value}",
-          "hidden" => !expanded,
-          "id" => "accordion:#{assigns.id}:content:#{assigns.value}"
-        })
   end
 
   @spec indicator(Item.t()) :: map()
@@ -136,20 +111,14 @@ defmodule Corex.Accordion.Connect do
     expanded = assigns.value in assigns.values
     data_state = if expanded, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "accordion",
-      "data-part" => "item-indicator"
+      "data-part" => "item-indicator",
+      "aria-hidden" => true,
+      "data-state" => data_state,
+      "data-disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "aria-hidden" => true,
-          "data-state" => data_state,
-          "data-disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir
-        })
   end
 end

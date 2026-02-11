@@ -24,7 +24,7 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
         : { defaultOpen: getBoolean(el, "defaultOpen") }),
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-      closeOnEscapeKeyDown: getBoolean(el, "closeOnEscapeKeyDown"),
+      closeOnEscape: getBoolean(el, "closeOnEscape"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),

@@ -136,22 +136,24 @@ defmodule Corex.DatePicker.Anatomy do
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir, :default_open, changed: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
+            default_open: boolean() | nil,
             changed: boolean()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir, :default_open, changed: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
+            default_open: boolean() | nil,
             changed: boolean()
           }
   end

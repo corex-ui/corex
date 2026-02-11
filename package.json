@@ -11,7 +11,21 @@
     ".": {
       "import": "./priv/static/corex.mjs",
       "require": "./priv/static/corex.cjs.js"
-    }
+    },
+    "./accordion": "./priv/static/accordion.mjs",
+    "./checkbox": "./priv/static/checkbox.mjs",
+    "./clipboard": "./priv/static/clipboard.mjs",
+    "./collapsible": "./priv/static/collapsible.mjs",
+    "./combobox": "./priv/static/combobox.mjs",
+    "./date-picker": "./priv/static/date-picker.mjs",
+    "./dialog": "./priv/static/dialog.mjs",
+    "./menu": "./priv/static/menu.mjs",
+    "./select": "./priv/static/select.mjs",
+    "./signature-pad": "./priv/static/signature-pad.mjs",
+    "./switch": "./priv/static/switch.mjs",
+    "./tabs": "./priv/static/tabs.mjs",
+    "./toast": "./priv/static/toast.mjs",
+    "./toggle-group": "./priv/static/toggle-group.mjs"
   },
   "repository": {
     "type": "git",
@@ -47,6 +61,7 @@
     "@zag-js/date-picker": "^1.33.1",
     "@zag-js/dialog": "^1.33.1",
     "@zag-js/floating-panel": "^1.33.1",
+    "@zag-js/menu": "^1.33.1", 
     "@zag-js/popper": "^1.33.1",
     "@zag-js/select": "^1.33.1",
     "@zag-js/signature-pad": "^1.33.1",

@@ -24,7 +24,7 @@ defmodule Corex.Dialog.Connect do
       "data-controlled" => data_attr(assigns.controlled),
       "data-modal" => data_attr(assigns.modal),
       "data-close-on-interact-outside" => data_attr(assigns.close_on_interact_outside),
-      "data-close-on-escape-key-down" => data_attr(assigns.close_on_escape_key_down),
+      "data-close-on-escape-key-down" => data_attr(assigns.close_on_escape),
       "data-prevent-scroll" => data_attr(assigns.prevent_scroll),
       "data-restore-focus" => data_attr(assigns.restore_focus),
       "data-dir" => assigns.dir,

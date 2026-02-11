@@ -2,7 +2,20 @@ defmodule E2eWeb.AccordionControlledLive do
   use E2eWeb, :live_view
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :value, ["lorem"])}
+    socket =
+      socket
+      |> assign(:value, ["lorem"])
+      |> assign(:items, accordion_items())
+
+    {:ok, socket}
+  end
+
+  defp accordion_items do
+    Corex.Content.new([
+      [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
+      [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."],
+      [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum."]
+    ])
   end
 
   def handle_event("on_value_change", %{"id" => _id, "value" => value}, socket) do
@@ -19,7 +32,7 @@ defmodule E2eWeb.AccordionControlledLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Accordion</h1>
         <h2>Live View</h2>
@@ -27,13 +40,13 @@ defmodule E2eWeb.AccordionControlledLive do
       <h3>Client Api</h3>
       <div class="layout__row">
         <button
-          phx-click={Corex.Accordion.set_value("my-accordion", ["item-0"])}
+          phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
           class="button button--sm"
         >
           Open Item 1
         </button>
         <button
-          phx-click={Corex.Accordion.set_value("my-accordion", ["item-0", "item-1"])}
+          phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "duis"])}
           class="button button--sm"
         >
           Open Item 1 and 2
@@ -44,12 +57,12 @@ defmodule E2eWeb.AccordionControlledLive do
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value={Enum.join(["item-0"], ",")} class="button button--sm">
+        <button phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
           Open Item 1
         </button>
         <button
           phx-click="set_value"
-          value={Enum.join(["item-0", "item-1"], ",")}
+          value={Enum.join(["lorem", "duis"], ",")}
           class="button button--sm"
         >
           Open Item 1 and 2
@@ -59,35 +72,20 @@ defmodule E2eWeb.AccordionControlledLive do
         </button>
       </div>
       <.accordion
+        id="my-accordion"
+        class="accordion"
+        items={@items}
         value={@value}
         controlled
         on_value_change="on_value_change"
         on_focus_change="on_focus_change"
-        id="my-accordion"
-        class="accordion"
       >
         <:item :let={item}>
           <.accordion_trigger item={item}>
-            Lorem ipsum dolor sit amet
+            {item.data.trigger}
           </.accordion_trigger>
           <.accordion_content item={item}>
-            Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-          </.accordion_content>
-        </:item>
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            Duis dictum gravida odio ac pharetra?
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-          </.accordion_content>
-        </:item>
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            Donec condimentum ex mi
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.
+            {item.data.content}
           </.accordion_content>
         </:item>
       </.accordion>

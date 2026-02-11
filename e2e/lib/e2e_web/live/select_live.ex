@@ -7,7 +7,7 @@ defmodule E2eWeb.SelectLive do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Select</h1>
         <h2>Live View</h2>
@@ -15,7 +15,7 @@ defmodule E2eWeb.SelectLive do
       <.select
         id="my-select"
         class="select"
-        placeholder="Select a country"
+        placeholder_text="Select a country"
         collection={[
           %{label: "France", id: "fra", disabled: true},
           %{label: "Belgium", id: "bel"},
@@ -33,7 +33,7 @@ defmodule E2eWeb.SelectLive do
       <h3>Grouped</h3>
       <.select
         class="select"
-        placeholder="Select a country"
+        placeholder_text="Select a country"
         collection={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
@@ -58,7 +58,7 @@ defmodule E2eWeb.SelectLive do
       <h3>Extended</h3>
       <.select
         class="select"
-        placeholder="Select a country"
+        placeholder_text="Select a country"
         collection={[
           %{label: "France", id: "fra"},
           %{label: "Belgium", id: "bel"},
@@ -86,7 +86,7 @@ defmodule E2eWeb.SelectLive do
       <h3>Extended Grouped</h3>
       <.select
         class="select"
-        placeholder="Select a country"
+        placeholder_text="Select a country"
         collection={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},

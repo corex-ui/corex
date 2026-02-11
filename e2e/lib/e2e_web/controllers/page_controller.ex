@@ -83,4 +83,8 @@ defmodule E2eWeb.PageController do
   def signature_page(conn, _params) do
     render(conn, :signature_page)
   end
+
+  def menu_page(conn, _params) do
+    render(conn, :menu_page)
+  end
 end

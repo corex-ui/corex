@@ -6,11 +6,11 @@ defmodule E2eWeb.AdminLive.Index do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <.header>
         Listing Admins
         <:actions>
-          <.button class="button button--accent" navigate={~p"/admins/new"}>
+          <.button class="button button--accent" navigate={~p"/#{@locale}/admins/new"}>
             <.icon name="hero-plus" /> New Admin
           </.button>
         </:actions>
@@ -19,16 +19,16 @@ defmodule E2eWeb.AdminLive.Index do
       <.table
         id="admins"
         rows={@streams.admins}
-        row_click={fn {_id, admin} -> JS.navigate(~p"/admins/#{admin}") end}
+        row_click={fn {_id, admin} -> JS.navigate(~p"/#{@locale}/admins/#{admin}") end}
       >
         <:col :let={{_id, admin}} label="Name">{admin.name}</:col>
         <:col :let={{_id, admin}} label="Country">{admin.country}</:col>
         <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
         <:action :let={{_id, admin}}>
           <div class="sr-only">
-            <.link navigate={~p"/admins/#{admin}"} class="link">Show</.link>
+            <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
           </div>
-          <.link navigate={~p"/admins/#{admin}/edit"} class="link">Edit</.link>
+          <.link navigate={~p"/#{@locale}/admins/#{admin}/edit"} class="link">Edit</.link>
         </:action>
         <:action :let={{id, admin}}>
           <.link

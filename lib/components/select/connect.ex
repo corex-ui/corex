@@ -7,7 +7,7 @@ defmodule Corex.Select.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    %{
+    base = %{
       "id" => assigns.id,
       "data-collection" => Corex.Json.encode!(validate_collection!(assigns.collection)),
       "data-controlled" => get_boolean(assigns.controlled),
@@ -26,7 +26,6 @@ defmodule Corex.Select.Connect do
       "data-placeholder" => assigns.placeholder,
       "data-disabled" => get_boolean(assigns.disabled),
       "data-close-on-select" => get_boolean(assigns.close_on_select),
-      "data-dir" => assigns.dir,
       "data-loop-focus" => get_boolean(assigns.loop_focus),
       "data-multiple" => get_boolean(assigns.multiple),
       "data-invalid" => get_boolean(assigns.invalid),
@@ -34,9 +33,6 @@ defmodule Corex.Select.Connect do
       "data-form" => assigns.form,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-required" => get_boolean(assigns.required),
-      "data-on-value-change" => assigns.on_value_change,
-      "data-on-value-change-client" => assigns.on_value_change_client,
-      "data-bubble" => get_boolean(assigns.bubble),
       "data-positioning" =>
         if assigns.positioning do
           Corex.Json.encode!(assigns.positioning)
@@ -44,7 +40,16 @@ defmodule Corex.Select.Connect do
           nil
         end
     }
+
+    base
+    |> maybe_put("data-on-value-change", assigns.on_value_change)
+    |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
+    |> maybe_put("data-on-value-change-js", assigns.on_value_change_js)
+    |> maybe_put("data-redirect", get_boolean(assigns.redirect))
   end
+
+  defp maybe_put(map, _key, nil), do: map
+  defp maybe_put(map, key, value), do: Map.put(map, key, value)
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
@@ -155,15 +160,15 @@ defmodule Corex.Select.Connect do
 
   defp validate_collection!(items) when is_list(items) do
     Enum.map(items, fn
-      %Corex.Collection.Item{} = item ->
+      %Corex.List.Item{} = item ->
         item
 
       %{id: _, label: _} = map ->
-        struct(Corex.Collection.Item, map)
+        struct(Corex.List.Item, map)
 
       other ->
         raise ArgumentError, """
-        <.select> items must be Corex.Collection.Item or maps with :id and :label.
+        <.select> items must be Corex.List.Item or maps with :id and :label.
 
         Got:
         #{inspect(other)}

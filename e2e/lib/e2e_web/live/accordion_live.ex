@@ -2,6 +2,11 @@ defmodule E2eWeb.AccordionLive do
   use E2eWeb, :live_view
 
   def mount(_params, _session, socket) do
+    socket =
+      socket
+      |> assign(:accordion_value, nil)
+      |> assign(:accordion_focused_value, nil)
+
     {:ok, socket}
   end
 
@@ -9,9 +14,25 @@ defmodule E2eWeb.AccordionLive do
     {:noreply, Corex.Accordion.set_value(socket, "my-accordion", String.split(value, ","))}
   end
 
+  def handle_event("get_value", _params, socket) do
+    {:noreply, push_event(socket, "accordion_value", %{})}
+  end
+
+  def handle_event("get_focused_value", _params, socket) do
+    {:noreply, push_event(socket, "accordion_focused_value", %{})}
+  end
+
+  def handle_event("accordion_value_response", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :accordion_value, value)}
+  end
+
+  def handle_event("accordion_focused_value_response", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :accordion_focused_value, value)}
+  end
+
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode}>
+    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Accordion</h1>
         <h2>Live View</h2>
@@ -19,16 +40,16 @@ defmodule E2eWeb.AccordionLive do
       <h3>Client Api</h3>
       <div class="layout__row">
         <button
-          phx-click={Corex.Accordion.set_value("my-accordion", ["item-0"])}
+          phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
           class="button button--sm"
         >
-          Open Item 1
+          Open Lorem
         </button>
         <button
-          phx-click={Corex.Accordion.set_value("my-accordion", ["item-0", "item-1"])}
+          phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "donec"])}
           class="button button--sm"
         >
-          Open Item 1 and 2
+          Open Lorem & Donec
         </button>
         <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
           Close all Items
@@ -36,46 +57,71 @@ defmodule E2eWeb.AccordionLive do
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value={Enum.join(["item-0"], ",")} class="button button--sm">
-          Open Item 1
+        <button phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
+          Open Lorem
         </button>
         <button
           phx-click="set_value"
-          value={Enum.join(["item-0", "item-1"], ",")}
+          value={Enum.join(["lorem", "donec"], ",")}
           class="button button--sm"
         >
-          Open Item 1 and 2
+          Open Lorem & Donec
         </button>
         <button phx-click="set_value" value="" class="button button--sm">
           Close all Items
         </button>
+        <button phx-click="get_value" class="button button--sm">
+          Get current value
+        </button>
+        <button phx-click="get_focused_value" class="button button--sm">
+          Get focused value
+        </button>
       </div>
-      <.accordion id="my-accordion" class="accordion">
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            Lorem ipsum dolor sit amet
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-          </.accordion_content>
-        </:item>
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            Duis dictum gravida odio ac pharetra?
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex.
-          </.accordion_content>
-        </:item>
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            Donec condimentum ex mi
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum.
-          </.accordion_content>
-        </:item>
-      </.accordion>
+      <div :if={@accordion_value != nil || @accordion_focused_value != nil} class="layout__row">
+        <p :if={@accordion_value != nil}>
+          Current value: <code>{inspect(@accordion_value)}</code>
+        </p>
+        <p :if={@accordion_focused_value != nil}>
+          Focused value: <code>{inspect(@accordion_focused_value)}</code>
+        </p>
+      </div>
+      <.accordion
+      class="accordion"
+      id="my-accordion"
+      items={Corex.Content.new([
+        [
+          id: "lorem",
+          trigger: "Lorem ipsum dolor sit amet",
+          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+          meta: %{indicator: "hero-chevron-right"}
+        ],
+        [
+          trigger: "Duis dictum gravida odio ac pharetra?",
+          content: "Nullam eget vestibulum ligula, at interdum tellus.",
+          meta: %{indicator: "hero-chevron-right"}
+        ],
+        [
+          id: "donec",
+          trigger: "Donec condimentum ex mi",
+          content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+          disabled: true,
+          meta: %{indicator: "hero-chevron-right"}
+        ]
+      ])}
+    >
+      <:item :let={item}>
+        <.accordion_trigger item={item}>
+          {item.data.trigger}
+          <:indicator>
+            <.icon name={item.data.meta.indicator} />
+          </:indicator>
+        </.accordion_trigger>
+
+        <.accordion_content item={item}>
+          {item.data.content}
+        </.accordion_content>
+      </:item>
+    </.accordion>
     </Layouts.app>
     """
   end

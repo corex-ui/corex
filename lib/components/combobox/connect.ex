@@ -190,15 +190,15 @@ defmodule Corex.Combobox.Connect do
 
   defp validate_collection!(items) when is_list(items) do
     Enum.map(items, fn
-      %Corex.Collection.Item{} = item ->
+      %Corex.List.Item{} = item ->
         item
 
       %{id: _, label: _} = map ->
-        struct(Corex.Collection.Item, map)
+        struct(Corex.List.Item, map)
 
       other ->
         raise ArgumentError, """
-        <.combobox> items must be Corex.Collection.Item or maps with :id and :label.
+        <.combobox> items must be Corex.List.Item or maps with :id and :label.
 
         Got:
         #{inspect(other)}

@@ -153,7 +153,6 @@ defmodule Corex.AccordionTest do
         disabled: false,
         dir: "ltr",
         orientation: "vertical",
-        disabled_root: false,
         changed: nil
       }
 
@@ -173,7 +172,6 @@ defmodule Corex.AccordionTest do
         disabled: false,
         dir: "ltr",
         orientation: "vertical",
-        disabled_root: false,
         changed: nil
       }
 
@@ -194,28 +192,11 @@ defmodule Corex.AccordionTest do
         disabled: true,
         dir: "ltr",
         orientation: "vertical",
-        changed: nil,
-        disabled_root: false
+        changed: nil
       }
 
       result = Connect.item(assigns)
 
-      assert result["data-disabled"] == true
-    end
-
-    test "computes item data with disabled parent" do
-      assigns = %{
-        id: "test-accordion",
-        value: "item-1",
-        values: [],
-        disabled: false,
-        dir: "ltr",
-        orientation: "vertical",
-        changed: nil,
-        disabled_root: true
-      }
-
-      result = Connect.item(assigns)
       assert result["data-disabled"] == true
     end
 
@@ -227,8 +208,7 @@ defmodule Corex.AccordionTest do
         disabled: false,
         dir: "ltr",
         orientation: "vertical",
-        changed: nil,
-        disabled_root: false
+        changed: nil
       }
 
       result = Connect.item(assigns)
@@ -244,8 +224,7 @@ defmodule Corex.AccordionTest do
         disabled: false,
         dir: "ltr",
         orientation: "vertical",
-        changed: nil,
-        disabled_root: false
+        changed: nil
       }
 
       result = Connect.item(assigns)

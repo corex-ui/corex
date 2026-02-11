@@ -15,6 +15,18 @@ function getPaths(el: HTMLElement, attr: string): any[] {
   }
 }
 
+/** Build drawing options. Use Zag's defaults for smoothing/thinning/streamline when not set (smooth strokes). */
+function buildDrawingOptions(el: HTMLElement): Props["drawing"] {
+  return {
+    fill: getString(el, "drawingFill") || "black",
+    size: getNumber(el, "drawingSize") ?? 2,
+    simulatePressure: getBoolean(el, "drawingSimulatePressure"),
+    smoothing: getNumber(el, "drawingSmoothing") ?? 0.5,
+    thinning: getNumber(el, "drawingThinning") ?? 0.7,
+    streamline: getNumber(el, "drawingStreamline") ?? 0.65,
+  };
+}
+
 type SignaturePadHookState = {
   signaturePad?: SignaturePad;
   handlers?: Array<CallbackRef>;
@@ -35,11 +47,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       name: getString(el, "name"),
       ...(controlled && paths.length > 0 ? { paths: paths } : undefined),
       ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : undefined),
-      drawing: {
-        fill: getString(el, "drawingFill"),
-        size: getNumber(el, "drawingSize"),
-        simulatePressure: getBoolean(el, "drawingSimulatePressure"),
-      },
+      drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         // Store paths in component
         signaturePad.setPaths(details.paths);
@@ -130,11 +138,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       name: name,
       ...(controlled && paths.length > 0 ? { paths: paths } : {}),
       ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : {}),
-      drawing: {
-        fill: getString(this.el, "drawingFill") || "black",
-        size: getNumber(this.el, "drawingSize") || 2,
-        simulatePressure: getBoolean(this.el, "drawingSimulatePressure"),
-      },
+      drawing: buildDrawingOptions(this.el),
     } as Props);
   },
 
