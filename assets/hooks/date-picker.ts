@@ -35,13 +35,11 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      // defaultValue: initialValue,
       ...(getBoolean(el, "controlled")
       ? { value: parseList(getStringList(el, "value") ) }
       : { defaultValue: parseList(getStringList(el, "defaultValue") )}),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString<"day" | "month" | "year">(el, "defaultView", ["day", "month", "year"]),
-      defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : undefined,
       dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
@@ -160,13 +158,11 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     const focusedStr = getString(el, "focusedValue");
 
     this.datePicker?.updateProps({
-      // id: el.id,
       ...(getBoolean(el, "controlled")
       ? { value: parseList(getStringList(el, "value") ) }
       : { defaultValue: parseList(getStringList(el, "defaultValue") )}),
       defaultFocusedValue: focusedStr ? datePicker.parse(focusedStr) : undefined,
       defaultView: getString<"day" | "month" | "year">(el, "defaultView", ["day", "month", "year"]),
-      defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : undefined,
       dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
       locale: getString(this.el, "locale"),
       timeZone: getString(this.el, "timeZone"),

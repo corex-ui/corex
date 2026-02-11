@@ -22,7 +22,6 @@ defmodule Corex.Tabs.Connect do
         else
           nil
         end,
-      "data-disabled" => data_attr(assigns.disabled),
       "data-controlled" => data_attr(assigns.controlled),
       "data-orientation" => assigns.orientation,
       "data-on-value-change" => assigns.on_value_change,
@@ -35,68 +34,51 @@ defmodule Corex.Tabs.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "tabs",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "data-orientation" => assigns.orientation,
+      "id" => "tabs:#{assigns.id}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "data-orientation" => assigns.orientation,
-          "id" => "tabs:#{assigns.id}"
-        })
   end
 
   @spec list(List.t()) :: map()
   def list(assigns) do
-    base = %{
+    %{
       "data-scope" => "tabs",
-      "data-part" => "list"
+      "data-part" => "list",
+      "role" => "tablist",
+      "dir" => assigns.dir,
+      "data-orientation" => assigns.orientation,
+      "id" => "tabs:#{assigns.id}:list"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "role" => "tablist",
-          "dir" => assigns.dir,
-          "data-orientation" => assigns.orientation,
-          "id" => "tabs:#{assigns.id}:list"
-        })
   end
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
     expanded = assigns.value in assigns.values
 
-    base = %{
+    %{
       "data-scope" => "tabs",
-      "data-part" => "trigger"
+      "data-part" => "trigger",
+      "data-value" => assigns.value,
+      "type" => "button",
+      "tabindex" => if(assigns.disabled, do: -1, else: 0),
+      "aria-expanded" => if(expanded, do: "true", else: "false"),
+      "aria-selected" => if(expanded, do: "true", else: "false"),
+      "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
+      "data-disabled" => assigns.disabled,
+      "data-selected" => data_attr(expanded),
+      "disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir,
+      "id" => "tabs:#{assigns.id}:trigger:#{assigns.value}",
+      "data-controls" => "tabs:#{assigns.id}:content:#{assigns.value}",
+      "aria-controls" => "tabs:#{assigns.id}:content:#{assigns.value}",
+      "data-ownedby" => "tabs:#{assigns.id}",
+      "role" => "tab"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "button",
-          "tabindex" => if(assigns.disabled, do: -1, else: 0),
-          "aria-expanded" => if(expanded, do: "true", else: "false"),
-          "aria-selected" => if(expanded, do: "true", else: "false"),
-          "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
-          "data-disabled" => assigns.disabled,
-          "data-selected" => data_attr(expanded),
-          "disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "id" => "tabs:#{assigns.id}:trigger:#{assigns.value}",
-          "data-controls" => "tabs:#{assigns.id}:content:#{assigns.value}",
-          "aria-controls" => "tabs:#{assigns.id}:content:#{assigns.value}",
-          "data-ownedby" => "tabs:#{assigns.id}",
-          "role" => "tab"
-        })
   end
 
   @spec content(Content.t()) :: map()
@@ -104,23 +86,17 @@ defmodule Corex.Tabs.Connect do
     expanded = assigns.value in assigns.values
     data_state = if expanded, do: "open", else: "closed"
 
-    base = %{
+    %{
       "data-scope" => "tabs",
-      "data-part" => "content"
+      "data-part" => "content",
+      "role" => "region",
+      "data-state" => data_state,
+      "data-disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir,
+      "aria-labelledby" => "tabs:#{assigns.id}:trigger:#{assigns.value}",
+      "hidden" => !expanded,
+      "id" => "tabs:#{assigns.id}:content:#{assigns.value}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "role" => "region",
-          "data-state" => data_state,
-          "data-disabled" => assigns.disabled,
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "aria-labelledby" => "tabs:#{assigns.id}:trigger:#{assigns.value}",
-          "hidden" => !expanded,
-          "id" => "tabs:#{assigns.id}:content:#{assigns.value}"
-        })
   end
 end

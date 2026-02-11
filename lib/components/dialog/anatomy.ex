@@ -36,85 +36,78 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule Backdrop do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule Title do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule Description do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule CloseTrigger do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 end

@@ -72,7 +72,6 @@ defmodule E2eWeb.ToastLive do
         as={:toast}
         phx-submit="create_flash"
         id={get_form_id(@form)}
-
       >
         <.input
           field={@form[:title]}

@@ -13,6 +13,7 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
+  getDir,
   getEventTarget,
   getString,
   normalizeProps,
@@ -339,35 +340,14 @@ var CheckboxHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    this.wasFocused = false;
-    const indeterminateAttr = el.getAttribute("data-indeterminate");
-    const indeterminate = indeterminateAttr !== null && indeterminateAttr !== "false";
-    const checkedValue = getBoolean(el, "checked");
-    const defaultCheckedValue = getBoolean(el, "defaultChecked");
-    let checkedProp;
-    let defaultCheckedProp;
-    if (indeterminate) {
-      if (getBoolean(el, "controlled")) {
-        checkedProp = "indeterminate";
-      } else {
-        defaultCheckedProp = "indeterminate";
-      }
-    } else {
-      if (getBoolean(el, "controlled")) {
-        checkedProp = checkedValue;
-      } else {
-        defaultCheckedProp = defaultCheckedValue;
-      }
-    }
     const zagCheckbox = new Checkbox(el, {
       id: el.id,
-      ...checkedProp !== void 0 ? { checked: checkedProp } : {},
-      ...defaultCheckedProp !== void 0 ? { defaultChecked: defaultCheckedProp } : {},
+      ...getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") },
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
       value: getString(el, "value"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       readOnly: getBoolean(el, "readOnly"),
@@ -441,9 +421,6 @@ var CheckboxHook = {
       })
     );
   },
-  beforeUpdate() {
-    this.wasFocused = this.checkbox?.api.focused ?? false;
-  },
   updated() {
     this.checkbox?.updateProps({
       id: this.el.id,
@@ -452,18 +429,12 @@ var CheckboxHook = {
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
       value: getString(this.el, "value"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       readOnly: getBoolean(this.el, "readOnly"),
       label: getString(this.el, "label")
     });
-    if (getBoolean(this.el, "controlled")) {
-      if (this.wasFocused) {
-        const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
-        hiddenInput?.focus();
-      }
-    }
   },
   destroyed() {
     if (this.onSetChecked) {

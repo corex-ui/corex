@@ -15,7 +15,6 @@ function getPaths(el: HTMLElement, attr: string): any[] {
   }
 }
 
-/** Build drawing options. Use Zag's defaults for smoothing/thinning/streamline when not set (smooth strokes). */
 function buildDrawingOptions(el: HTMLElement): Props["drawing"] {
   return {
     fill: getString(el, "drawingFill") || "black",
@@ -49,16 +48,12 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : undefined),
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
-        // Store paths in component
         signaturePad.setPaths(details.paths);
-        
-        // Store paths in hidden input (as JSON string)
         const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
         if (hiddenInput) {
           hiddenInput.value = JSON.stringify(details.paths);
         }
 
-        // Get URL for events if needed
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
 
@@ -96,7 +91,6 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       signaturePad.api.clear();
       signaturePad.imageURL = "";
       signaturePad.setPaths([]);
-      // Clear the hidden input value
       const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
       if (hiddenInput) {
         hiddenInput.value = "";
@@ -113,7 +107,6 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         signaturePad.api.clear();
         signaturePad.imageURL = "";
         signaturePad.setPaths([]);
-        // Clear the hidden input value
         const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
         if (hiddenInput) {
           hiddenInput.value = "";

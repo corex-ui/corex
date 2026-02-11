@@ -223,21 +223,21 @@ defmodule Corex.Dialog do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})}>
         {render_slot(@trigger)}
       </button>
 
-      <div {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}></div>
-      <div {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <div {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open})}></div>
+      <div {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
+        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
+          <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
             {render_slot(@title)}
           </h2>
-          <p :if={@description != []} {Connect.description(%Description{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+          <p :if={@description != []} {Connect.description(%Description{id: @id, dir: @dir, open: @open})}>
             {render_slot(@description)}
           </p>
           {render_slot(@content)}
-          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open})}>
             {render_slot(@close_trigger)}
           </button>
         </div>

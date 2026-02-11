@@ -383,26 +383,25 @@ defmodule Corex.Menu do
       on_open_change: @on_open_change,
       on_open_change_client: @on_open_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir})}>
         <button {Connect.trigger(%Trigger{
           id: @id,
           disabled: @disabled,
-          dir: @dir,
-          changed: if(@__changed__, do: true, else: false)
+          dir: @dir
         })}>
           {render_slot(@trigger)}
-          <span :if={@indicator != []} {Connect.indicator(%Root{id: @id, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
+          <span :if={@indicator != []} {Connect.indicator(%Root{id: @id, dir: @dir})}>
             {render_slot(@indicator)}
           </span>
         </button>
 
-        <div {Connect.positioner(%Root{id: @id, dir: @dir, open: @open, changed: if(@__changed__, do: true, else: false)})}>
-          <div {Connect.content(%Root{id: @id, dir: @dir, open: @open, changed: if(@__changed__, do: true, else: false)})}>
+        <div {Connect.positioner(%Root{id: @id, dir: @dir, open: @open})}>
+          <div {Connect.content(%Root{id: @id, dir: @dir, open: @open})}>
             <%= for entry <- @menu_entries do %>
               <%= case entry do %>
                 <% {:group, group_id, group_label, group_items} -> %>
-                  <div {Connect.item_group(%Group{id: @id, group_id: group_id, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
-                    <div {Connect.item_group_label(%Group{id: @id, group_id: group_id, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
+                  <div {Connect.item_group(%Group{id: @id, group_id: group_id, dir: @dir})}>
+                    <div {Connect.item_group_label(%Group{id: @id, group_id: group_id, dir: @dir})}>
                       {group_label}
                     </div>
                     <li :for={item <- group_items} {Connect.item(%Item{
@@ -410,7 +409,6 @@ defmodule Corex.Menu do
                       value: item.id,
                       disabled: item.disabled,
                       dir: @dir,
-                      changed: if(@__changed__, do: true, else: false),
                       has_nested: item.children != [] && item.children != nil,
                       nested_menu_id: if(item.children != [] && item.children != nil, do: "#{String.replace_prefix(@id, "menu:", "")}:#{item.id}", else: nil),
                       redirect: Map.get(item, :redirect),
@@ -426,12 +424,12 @@ defmodule Corex.Menu do
                         {render_slot(@nested_indicator)}
                       </span>
                       <div :if={item.children != [] && item.children != nil}>
-                        <.menu_nested_items menu_id={@id} item={item} dir={@dir} changed={if(@__changed__, do: true, else: false)} nested_indicator={@nested_indicator} item_slot={@item} />
+                        <.menu_nested_items menu_id={@id} item={item} dir={@dir} nested_indicator={@nested_indicator} item_slot={@item} />
                       </div>
                     </li>
                   </div>
                 <% {:item, item} -> %>
-                  <li {entry_li_attrs(entry, @id, @dir, if(@__changed__, do: true, else: false))}>
+                  <li {entry_li_attrs(entry, @id, @dir)}>
                     <div :if={@item != []} data-scope="menu" data-part="item-text">
                       {render_slot(@item, item)}
                     </div>
@@ -442,7 +440,7 @@ defmodule Corex.Menu do
                       {render_slot(@nested_indicator)}
                     </span>
                     <div :if={item.children != [] && item.children != nil}>
-                      <.menu_nested_items menu_id={@id} item={item} dir={@dir} changed={if(@__changed__, do: true, else: false)} nested_indicator={@nested_indicator} item_slot={@item} />
+                      <.menu_nested_items menu_id={@id} item={item} dir={@dir} nested_indicator={@nested_indicator} item_slot={@item} />
                     </div>
                   </li>
               <% end %>
@@ -457,7 +455,6 @@ defmodule Corex.Menu do
   attr(:menu_id, :string, required: true)
   attr(:item, Corex.Tree.Item, required: true)
   attr(:dir, :string, required: true)
-  attr(:changed, :boolean, required: true)
   attr(:nested_indicator, :list, required: true)
   attr(:item_slot, :list, required: true)
 
@@ -467,7 +464,7 @@ defmodule Corex.Menu do
     assigns = assign(assigns, :nested_id, nested_id)
 
     ~H"""
-    <div phx-hook="Menu" {Connect.nested_menu(%Root{id: @nested_id, dir: @dir, changed: @changed})} {Connect.props(%Props{
+    <div phx-hook="Menu" {Connect.nested_menu(%Root{id: @nested_id, dir: @dir})} {Connect.props(%Props{
       id: @nested_id,
       open: false,
       controlled: false,
@@ -482,15 +479,14 @@ defmodule Corex.Menu do
       on_open_change: nil,
       on_open_change_client: nil
     })}>
-      <div {Connect.root(%Root{id: @nested_id, dir: @dir, changed: @changed})}>
-        <div {Connect.positioner(%Root{id: @nested_id, dir: @dir, open: false, changed: @changed})}>
-          <ul {Connect.content(%Root{id: @nested_id, dir: @dir, open: false, changed: @changed})}>
+      <div {Connect.root(%Root{id: @nested_id, dir: @dir})}>
+        <div {Connect.positioner(%Root{id: @nested_id, dir: @dir, open: false})}>
+          <ul {Connect.content(%Root{id: @nested_id, dir: @dir, open: false})}>
             <li :for={child <- @item.children} {Connect.item(%Item{
               id: @nested_id,
               value: child.id,
               disabled: child.disabled,
               dir: @dir,
-              changed: @changed,
               has_nested: false,
               nested_menu_id: nil,
               redirect: Map.get(child, :redirect),
@@ -510,13 +506,12 @@ defmodule Corex.Menu do
     """
   end
 
-  defp entry_li_attrs({:item, item}, menu_id, dir, changed) do
+  defp entry_li_attrs({:item, item}, menu_id, dir) do
     Connect.item(%Item{
       id: menu_id,
       value: item.id,
       disabled: item.disabled,
       dir: dir,
-      changed: changed,
       has_nested: item.children != [] && item.children != nil,
       nested_menu_id:
         if(item.children != [] && item.children != nil,

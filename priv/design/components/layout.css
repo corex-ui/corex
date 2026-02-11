@@ -10,6 +10,9 @@
     min-height: 100vh;
     color: var(--color-root--text);
     background: var(--color-root);
+    overflow-y: scroll;
+
+    scrollbar-gutter: stable both-edges;
   }
 
   .layout__header {
@@ -69,7 +72,9 @@
     max-width: var(--container-ui);
     width: auto;
     height: calc(100vh - var(--spacing-ui-lg));
-    overflow-y: auto;
+    overflow-y: scroll;
+    scrollbar-gutter: stable both-edges;
+
   }
 
   .layout__aside-mobile {
@@ -116,6 +121,10 @@
     border-radius: var(--radius-ui);
     margin-inline: auto;
     justify-items: center;
+    align-items: center;
+    gap: var(--spacing-ui-gap);
+    display: flex;
+    flex-direction: column;
   }
 
   .layout .layout__row {
@@ -123,7 +132,20 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
+    align-items: center;
     gap: var(--spacing-ui-gap);
+    width: auto
+
+  }
+
+  .layout .layout__section {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    gap: var(--spacing-ui-gap);
+    margin-block: var(--spacing-ui);
+    min-width: var(--container-ui)
   }
 
   .layout .layout__side,

@@ -54,12 +54,25 @@ defmodule E2eWeb.TabsLive do
         id="my-tabs"
         class="tabs"
         value="lorem"
-        items={Corex.Content.new([
-          [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-          [id: "duis", trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-          [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
-        ])}
-
+        items={
+          Corex.Content.new([
+            [
+              id: "lorem",
+              trigger: "Lorem",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+            ],
+            [
+              id: "duis",
+              trigger: "Duis",
+              content: "Nullam eget vestibulum ligula, at interdum tellus."
+            ],
+            [
+              id: "donec",
+              trigger: "Donec",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+            ]
+          ])
+        }
       />
     </Layouts.app>
     """

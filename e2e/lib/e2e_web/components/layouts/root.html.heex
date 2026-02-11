@@ -1,5 +1,16 @@
 <!DOCTYPE html>
-<html lang={assigns[:locale] || "en"} dir={assigns[:dir] || if(assigns[:locale] in Application.get_env(:corex, :rtl_locales, []), do: "rtl", else: "ltr")} data-theme="neo" data-mode={assigns[:mode]}>
+<html
+  lang={assigns[:locale] || "en"}
+  dir={
+    assigns[:dir] ||
+      if(assigns[:locale] in Application.get_env(:corex, :rtl_locales, []),
+        do: "rtl",
+        else: "ltr"
+      )
+  }
+  data-theme="neo"
+  data-mode={assigns[:mode]}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

@@ -552,7 +552,7 @@ var Tabs = class extends Component {
     for (let i = 0; i < triggers.length && i < items.length; i++) {
       const triggerEl = triggers[i];
       const item = items[i];
-      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value }));
+      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value, disabled: item.disabled }));
     }
     const contents = rootEl.querySelectorAll(
       '[data-scope="tabs"][data-part="content"]'
@@ -574,7 +574,6 @@ var TabsHook = {
       el,
       {
         id: el.id,
-        composite: true,
         ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
         orientation: getString(el, "orientation", ["horizontal", "vertical"]),
         dir: getString(el, "dir", ["ltr", "rtl"]),
@@ -662,15 +661,6 @@ var TabsHook = {
       orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
       dir: getString(this.el, "dir", ["ltr", "rtl"])
     });
-    const wasFocused = this.tabs?.api?.focusedValue;
-    if (wasFocused) {
-      const triggerEl = this.el.querySelector(
-        `[data-scope="tabs"][data-part="list"] [data-part="trigger"][data-value="${wasFocused}"]`
-      );
-      if (triggerEl && document.activeElement !== triggerEl) {
-        triggerEl.focus();
-      }
-    }
   },
   destroyed() {
     if (this.onSetValue) {

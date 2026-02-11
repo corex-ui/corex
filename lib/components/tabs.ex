@@ -275,7 +275,6 @@ defmodule Corex.Tabs do
   )
 
   attr(:collapsible, :boolean, default: true, doc: "Whether the tabs is collapsible")
-  attr(:disabled, :boolean, default: false, doc: "Whether the tabs is disabled")
 
   attr(:multiple, :boolean,
     default: true,
@@ -338,24 +337,19 @@ defmodule Corex.Tabs do
       assigns
       |> assign_new(:id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
       |> validate_items()
+      |> assign(:items_list, build_items_list(assigns))
       |> assign(
         :values,
-        if(is_binary(assigns.value), do: [assigns.value], else: assigns.value || [])
+        if(is_binary(assigns.value), do: [assigns.value], else: [])
       )
-      |> assign(
-        :value_for_props,
-        Enum.at(if(is_binary(assigns.value), do: [assigns.value], else: assigns.value || []), 0)
-      )
-      |> assign(:items_list, build_items_list(assigns))
 
     ~H"""
     <div id={@id} phx-hook="Tabs" data-items={Corex.Json.encode!(@items_list)} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
-      value: @value_for_props,
+      value: @value,
       collapsible: @collapsible,
-      disabled: @disabled,
       multiple: @multiple,
       orientation: @orientation,
       dir: @dir,
@@ -364,19 +358,17 @@ defmodule Corex.Tabs do
       on_focus_change: @on_focus_change,
       on_focus_change_client: @on_focus_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
-        <div {Connect.list(%List{id: @id, orientation: @orientation, dir: @dir, changed: if(@__changed__, do: true, else: false)})}>
+      <div {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}>
+        <div {Connect.list(%List{id: @id, orientation: @orientation, dir: @dir})}>
             <button
             :if={@items && @trigger == []} :for={{item_entry, index} <- Enum.with_index(@items || [])}
              {Connect.trigger(%Trigger{
               id: @id,
-              changed: if(@__changed__, do: true, else: false),
               value: item_entry.id || item_entry.value || "item-#{index}",
-              disabled: item_entry.disabled || @disabled,
+              disabled: item_entry.disabled,
               values: @values,
               orientation: @orientation,
-              dir: @dir,
-              disabled_root: @disabled
+              dir: @dir
             })}>
               {item_entry.trigger}
             </button>
@@ -385,13 +377,11 @@ defmodule Corex.Tabs do
             <div :for={trigger_slot <- @trigger || []}>
               <% item_data = %{
                 id: @id,
-                changed: if(@__changed__, do: true, else: false),
                 value: item_entry.id || item_entry.value || "item-#{index}",
-                disabled: item_entry.disabled || @disabled,
+                disabled: item_entry.disabled,
                 values: @values,
                 orientation: @orientation,
                 dir: @dir,
-                disabled_root: @disabled,
                 data: %{
                   trigger: Map.get(item_entry, :trigger, ""),
                   content: Map.get(item_entry, :content, ""),
@@ -407,13 +397,11 @@ defmodule Corex.Tabs do
           <div :if={@items == nil && @trigger != []} :for={{trigger_entry, index} <- Enum.with_index(@trigger)}>
             <.tabs_trigger item={%{
               id: @id,
-              changed: if(@__changed__, do: true, else: false),
               value: Map.get(trigger_entry, :value, "item-#{index}"),
               disabled: Map.get(trigger_entry, :disabled, false),
               values: @values,
               orientation: @orientation,
-              dir: @dir,
-              disabled_root: @disabled
+              dir: @dir
             }}>
               {render_slot(trigger_entry)}
             </.tabs_trigger>
@@ -422,13 +410,11 @@ defmodule Corex.Tabs do
 
         <div :if={@items && @content == []} :for={{item_entry, index} <- Enum.with_index(@items || [])} {Connect.content(%Content{
           id: @id,
-          changed: if(@__changed__, do: true, else: false),
           value: item_entry.id || item_entry.value || "item-#{index}",
-          disabled: item_entry.disabled || @disabled,
+          disabled: item_entry.disabled,
           values: @values,
           orientation: @orientation,
-          dir: @dir,
-          disabled_root: @disabled
+          dir: @dir
         })}>
           {item_entry.content}
         </div>
@@ -437,13 +423,11 @@ defmodule Corex.Tabs do
           <div :for={content_slot <- @content || []}>
             <% item_data = %{
               id: @id,
-              changed: if(@__changed__, do: true, else: false),
               value: item_entry.id || item_entry.value || "item-#{index}",
-              disabled: item_entry.disabled || @disabled,
+              disabled: item_entry.disabled,
               values: @values,
               orientation: @orientation,
               dir: @dir,
-              disabled_root: @disabled,
               data: %{
                 trigger: Map.get(item_entry, :trigger, ""),
                 content: Map.get(item_entry, :content, ""),
@@ -459,13 +443,11 @@ defmodule Corex.Tabs do
         <div :if={@items == nil && @content != []} :for={{content_entry, index} <- Enum.with_index(@content)}>
           <.tabs_content item={%{
             id: @id,
-            changed: if(@__changed__, do: true, else: false),
             value: Map.get(content_entry, :value, "item-#{index}"),
             disabled: Map.get(content_entry, :disabled, false),
             values: @values,
             orientation: @orientation,
-            dir: @dir,
-            disabled_root: @disabled
+            dir: @dir
           }}>
             {render_slot(content_entry)}
           </.tabs_content>
@@ -529,13 +511,11 @@ defmodule Corex.Tabs do
     ~H"""
       <button {Connect.trigger(%Trigger{
         id: @item.id,
-        changed: @item.changed,
         value: @item.value,
-        disabled: @item.disabled || @item.disabled_root,
+        disabled: @item.disabled,
         values: @item.values,
         orientation: @item.orientation,
-        dir: @item.dir,
-        disabled_root: @item.disabled_root
+        dir: @item.dir
       })}>
         {render_slot(@inner_block)}
       </button>
@@ -554,13 +534,11 @@ defmodule Corex.Tabs do
     ~H"""
     <div {Connect.content(%Content{
       id: @item.id,
-      changed: @item.changed,
       value: @item.value,
-      disabled: @item.disabled || @item.disabled_root,
+      disabled: @item.disabled,
       values: @item.values,
       orientation: @item.orientation,
-      dir: @item.dir,
-      disabled_root: @item.disabled_root
+      dir: @item.dir
     })}>
       {render_slot(@inner_block)}
     </div>

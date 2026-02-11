@@ -6,7 +6,10 @@
       <.button navigate={~p"/#{@locale}/users"} class="button">
         <.icon name="hero-arrow-left" />
       </.button>
-      <.button navigate={~p"/#{@locale}/users/#{@user}/edit?return_to=show"} class="button button--accent">
+      <.button
+        navigate={~p"/#{@locale}/users/#{@user}/edit?return_to=show"}
+        class="button button--accent"
+      >
         <.icon name="hero-pencil-square" /> Edit user
       </.button>
     </:actions>

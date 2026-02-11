@@ -106,8 +106,9 @@ defmodule E2eWeb.Plugs.Locale do
     Gettext.put_locale(@backend, locale)
     current_path = path_without_locale(conn.request_path, locale)
     dir = if locale in Application.get_env(:corex, :rtl_locales, []), do: "rtl", else: "ltr"
+
     conn
-    |> put_session(:locale, locale)
+    # |> put_session(:locale, locale)
     |> assign(:locale, locale)
     |> assign(:dir, dir)
     |> assign(:current_path, current_path)
@@ -131,7 +132,8 @@ defmodule E2eWeb.Plugs.Locale do
     end
 
     defp parse_language_option(string) do
-      captures = Regex.named_captures(~r/^\s?(?<tag>[\w\-]+)(?:;q=(?<quality>[\d\.]+))?$/i, string)
+      captures =
+        Regex.named_captures(~r/^\s?(?<tag>[\w\-]+)(?:;q=(?<quality>[\d\.]+))?$/i, string)
 
       quality =
         case Float.parse(captures["quality"] || "1.0") do

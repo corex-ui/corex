@@ -3914,8 +3914,6 @@ var DatePicker = class extends Component {
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
-  // View container helpers - these elements never get spreadProps called on them,
-  // so their data-part values remain stable across renders.
   getDayView = () => this.el.querySelector('[data-part="day-view"]');
   getMonthView = () => this.el.querySelector('[data-part="month-view"]');
   getYearView = () => this.el.querySelector('[data-part="year-view"]');
@@ -4266,11 +4264,9 @@ var DatePickerHook = {
     const parseOne = (v) => v ? parse(v) : void 0;
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
-      // defaultValue: initialValue,
       ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-      defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
       dir: getString(el, "dir", ["ltr", "rtl"]),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
@@ -4374,11 +4370,9 @@ var DatePickerHook = {
     const isControlled = getBoolean(el, "controlled");
     const focusedStr = getString(el, "focusedValue");
     this.datePicker?.updateProps({
-      // id: el.id,
       ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
       defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
       defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-      defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
       dir: getString(this.el, "dir", ["ltr", "rtl"]),
       locale: getString(this.el, "locale"),
       timeZone: getString(this.el, "timeZone"),

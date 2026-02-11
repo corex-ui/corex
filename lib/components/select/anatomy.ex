@@ -56,11 +56,10 @@ defmodule Corex.Select.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, changed: false, invalid: false, read_only: false]
+    defstruct [:id, invalid: false, read_only: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             invalid: boolean(),
             read_only: boolean()
           }
@@ -70,7 +69,6 @@ defmodule Corex.Select.Anatomy do
     @moduledoc false
     defstruct [
       :id,
-      changed: false,
       invalid: false,
       read_only: false,
       required: false,
@@ -80,7 +78,6 @@ defmodule Corex.Select.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             invalid: boolean(),
             read_only: boolean(),
             required: boolean(),
@@ -91,47 +88,43 @@ defmodule Corex.Select.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :disabled, :changed, :invalid]
+    defstruct [:id, :dir, :disabled, :invalid]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             disabled: boolean(),
-            changed: boolean(),
             invalid: boolean()
           }
   end
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule HiddenSelect do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 end

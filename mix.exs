@@ -74,7 +74,13 @@ defmodule Corex.MixProject do
   defp docs do
     [
       main: "Corex",
-      extras: ["guides/installation.md", "guides/dark_mode.md", "guides/production.md"],
+      extras: [
+        "guides/installation.md",
+        "guides/dark_mode.md",
+        "guides/locale.md",
+        "guides/rtl.md",
+        "guides/production.md"
+      ],
       main: "installation",
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),

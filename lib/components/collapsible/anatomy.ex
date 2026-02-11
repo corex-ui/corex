@@ -28,39 +28,36 @@ defmodule Corex.Collapsible.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :open, changed: false]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, :open, :disabled, changed: false]
+    defstruct [:id, :dir, :open, :disabled]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             open: boolean(),
-            disabled: boolean(),
-            changed: boolean()
+            disabled: boolean()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open, :disabled, changed: false]
+    defstruct [:id, :dir, :open, :disabled]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             open: boolean(),
-            disabled: boolean(),
-            changed: boolean()
+            disabled: boolean()
           }
   end
 end

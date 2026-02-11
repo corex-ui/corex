@@ -22,7 +22,6 @@ defmodule E2eWeb.Router do
     get "/", PageController, :home
   end
 
-
   scope "/:locale", E2eWeb do
     pipe_through :browser
 
@@ -45,8 +44,6 @@ defmodule E2eWeb.Router do
       live "/live/signature", SignatureLive
       live "/live/toast", ToastLive
       live "/live/toggle-group", ToggleGroupLive
-
-
     end
 
     get "/", PageController, :home

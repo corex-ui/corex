@@ -64,6 +64,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
   defp update_control(socket, "disabled", checked) do
     new_controls = Map.put(socket.assigns.controls, :disabled, checked)
+
     socket
     |> assign(:controls, new_controls)
     |> assign(:items, accordion_items(new_controls))
@@ -71,6 +72,7 @@ defmodule E2eWeb.AccordionPlayLive do
 
   defp update_control(socket, "disabled_lorem", checked) do
     new_controls = Map.put(socket.assigns.controls, :disabled_lorem, checked)
+
     socket
     |> assign(:controls, new_controls)
     |> assign(:items, accordion_items(new_controls))
@@ -151,7 +153,7 @@ defmodule E2eWeb.AccordionPlayLive do
         id="my-accordion"
         class="accordion"
         items={@items}
-        multiple={false}
+        multiple
         orientation={@controls.orientation}
         dir={@controls.dir}
       >

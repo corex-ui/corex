@@ -52,13 +52,6 @@ defmodule Corex.DatePicker.Connect do
       "data-default-view" => assigns.default_view,
       "data-min-view" => assigns.min_view,
       "data-max-view" => assigns.max_view,
-      "data-default-open" =>
-        if assigns.default_open != nil do
-          data_attr(assigns.default_open)
-        else
-          nil
-        end,
-      "data-inline" => data_attr(assigns.inline),
       "data-positioning" => encode_positioning(assigns.positioning),
       "data-dir" => assigns.dir,
       "data-on-value-change" => assigns.on_value_change,
@@ -83,102 +76,72 @@ defmodule Corex.DatePicker.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}"
     }
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
 
   @spec label(Label.t()) :: map()
   def label(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "label"
+      "data-part" => "label",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}:label:0",
+      "htmlFor" => "date-picker:#{assigns.id}:input:0"
     }
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
 
   @spec control(Control.t()) :: map()
   def control(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "control"
+      "data-part" => "control",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}:control"
     }
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
 
   @spec input(Input.t()) :: map()
   def input(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "input"
+      "data-part" => "input",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}:input"
     }
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "trigger"
+      "data-part" => "trigger",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}:trigger"
     }
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
 
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "positioner"
+      "data-part" => "positioner",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}:positioner"
     }
-
-    base =
-      if initially_open?(assigns.default_open) do
-        base
-      else
-        Map.put(base, "hidden", "true")
-      end
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    base = %{
+    %{
       "data-scope" => "date-picker",
-      "data-part" => "content"
+      "data-part" => "content",
+      "dir" => assigns.dir,
+      "id" => "date-picker:#{assigns.id}:content"
     }
-
-    base =
-      if initially_open?(assigns.default_open) do
-        base
-      else
-        Map.put(base, "hidden", "true")
-      end
-
-    if assigns.changed,
-      do: base,
-      else: base
   end
-
-  defp initially_open?(true), do: true
-  defp initially_open?(_), do: false
 end

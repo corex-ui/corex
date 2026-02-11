@@ -413,19 +413,18 @@ defmodule Corex.SignaturePad do
         name: @name
       })}
     >
-      <div {Connect.root(%Root{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir})}>
+        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
-        <div {Connect.control(%Control{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-          <svg {Connect.segment(%Segment{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+        <div {Connect.control(%Control{id: @id, dir: @dir})}>
+          <svg {Connect.segment(%Segment{id: @id, dir: @dir})}>
           </svg>
           <button
             :if={@clear_trigger != []}
             {Connect.clear_trigger(%ClearTrigger{
               id: @id,
               dir: @dir,
-              changed: Map.get(assigns, :__changed__, nil) != nil,
               has_paths: has_paths?(@paths),
               aria_label: case @clear_trigger do
                 [entry | _] -> Map.get(entry, :aria_label)
@@ -435,9 +434,9 @@ defmodule Corex.SignaturePad do
           >
             {render_slot(@clear_trigger)}
           </button>
-          <div {Connect.guide(%Guide{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})} />
+          <div {Connect.guide(%Guide{id: @id, dir: @dir})} />
         </div>
-        <input {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name, changed: Map.get(assigns, :__changed__, nil) != nil})} />
+        <input {Connect.hidden_input(%HiddenInput{id: @id, dir: @dir, name: @name})} />
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="signature-pad" data-part="error">
           {render_slot(@error, msg)}
         </div>

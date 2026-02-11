@@ -531,7 +531,7 @@ defmodule Corex.Select do
       redirect: @redirect,
       positioning: @positioning
     })}>
-      <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
+      <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
 
       <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
 
@@ -543,10 +543,10 @@ defmodule Corex.Select do
         ) %>
       </select>
 
-        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, dir: @dir, disabled: @disabled})}>
+        <div {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
           <button :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
             <span data-scope="select" data-part="item-text">
               <%= if @selected_label do %>
@@ -565,8 +565,8 @@ defmodule Corex.Select do
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="select" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Positioner{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir})}>
-          <ul {Connect.content(%Content{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir})}>
+        <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
+          <ul {Connect.content(%Content{id: @id, dir: @dir})}>
           </ul>
 
           <div style="display: none;" data-templates="select">

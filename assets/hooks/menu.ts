@@ -100,13 +100,11 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     menu.init();
     this.menu = menu;
 
-    // Setup nested menus
     this.nestedMenus = new Map();
     const nestedMenuElements = el.querySelectorAll<HTMLElement>(
       '[data-scope="menu"][data-nested="menu"]'
     );
     
-    // Create and initialize all nested menus
     const nestedMenuInstances: Menu[] = [];
     nestedMenuElements.forEach((nestedEl) => {
       const nestedId = nestedEl.id;
@@ -127,8 +125,6 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       }
     });
     
-    // Set up parent-child relationships after all menus are initialized
-    // Then re-init APIs and render so the DOM reflects the relationships
     setTimeout(() => {
       nestedMenuInstances.forEach((nestedMenu) => {
         if (this.menu) {
@@ -137,9 +133,6 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
         }
       });
 
-      // Re-init APIs after relationships are established so that
-      // getContentProps() includes data-has-nested and data-nested correctly,
-      // and positioner visibility is properly managed
       if (this.menu) {
         this.menu.api = this.menu.initApi();
         this.menu.render();

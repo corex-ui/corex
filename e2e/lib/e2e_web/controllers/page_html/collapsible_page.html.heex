@@ -2,30 +2,28 @@
   <h1>Collapsible</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
-    <section class="layout__section">
-
-  <div class="layout__row">
-    <button
-      phx-click={Corex.Collapsible.set_open("my-collapsible", true)}
-      class="button button--sm"
-    >
-      Open
-    </button>
-    <button
-      phx-click={Corex.Collapsible.set_open("my-collapsible", false)}
-      class="button button--sm"
-    >
-      Close
-    </button>
-  </div>
+  <section class="layout__section">
+    <div class="layout__row">
+      <button
+        phx-click={Corex.Collapsible.set_open("my-collapsible", true)}
+        class="button button--sm"
+      >
+        Open
+      </button>
+      <button
+        phx-click={Corex.Collapsible.set_open("my-collapsible", false)}
+        class="button button--sm"
+      >
+        Close
+      </button>
+    </div>
   </section>
-    <section class="layout__section">
-
-  <.collapsible id="my-collapsible" class="collapsible">
-    <:trigger>Toggle Content</:trigger>
-    <:content>
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-    </:content>
-  </.collapsible>
+  <section class="layout__section">
+    <.collapsible id="my-collapsible" class="collapsible">
+      <:trigger>Toggle Content</:trigger>
+      <:content>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
+      </:content>
+    </.collapsible>
   </section>
 </Layouts.app>

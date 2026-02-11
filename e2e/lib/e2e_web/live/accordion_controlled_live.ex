@@ -12,9 +12,24 @@ defmodule E2eWeb.AccordionControlledLive do
 
   defp accordion_items do
     Corex.Content.new([
-      [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
-      [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."],
-      [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum."]
+      [
+        id: "lorem",
+        trigger: "Lorem ipsum dolor sit amet",
+        content:
+          "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."
+      ],
+      [
+        id: "duis",
+        trigger: "Duis dictum gravida odio ac pharetra?",
+        content:
+          "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."
+      ],
+      [
+        id: "donec",
+        trigger: "Donec condimentum ex mi",
+        content:
+          "Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis non, pellentesque elit. Pellentesque sagittis fermentum."
+      ]
     ])
   end
 

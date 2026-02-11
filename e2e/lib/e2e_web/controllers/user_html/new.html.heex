@@ -4,5 +4,9 @@
     <:subtitle>Use this form to manage user records in your database.</:subtitle>
   </.header>
 
-  <.user_form changeset={@changeset} action={~p"/#{@locale}/users"} return_to={~p"/#{@locale}/users"} />
+  <.user_form
+    changeset={@changeset}
+    action={~p"/#{@locale}/users"}
+    return_to={~p"/#{@locale}/users"}
+  />
 </Layouts.app>

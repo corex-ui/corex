@@ -42,11 +42,10 @@ defmodule Corex.Menu.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, changed: false, dir: "ltr", open: false]
+    defstruct [:id, dir: "ltr", open: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             dir: String.t(),
             open: boolean()
           }
@@ -56,14 +55,12 @@ defmodule Corex.Menu.Anatomy do
     @moduledoc false
     defstruct [
       :id,
-      changed: false,
       disabled: false,
       dir: "ltr"
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             disabled: boolean(),
             dir: String.t()
           }
@@ -74,7 +71,6 @@ defmodule Corex.Menu.Anatomy do
     defstruct [
       :id,
       :value,
-      changed: false,
       disabled: false,
       dir: "ltr",
       has_nested: false,
@@ -86,7 +82,6 @@ defmodule Corex.Menu.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             value: String.t() | nil,
-            changed: boolean(),
             disabled: boolean(),
             dir: String.t(),
             has_nested: boolean(),
@@ -101,14 +96,12 @@ defmodule Corex.Menu.Anatomy do
     defstruct [
       :id,
       :group_id,
-      changed: false,
       dir: "ltr"
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
             group_id: String.t(),
-            changed: boolean(),
             dir: String.t()
           }
   end

@@ -86,42 +86,44 @@ defmodule E2eWeb.AccordionLive do
         </p>
       </div>
       <.accordion
-      class="accordion"
-      id="my-accordion"
-      items={Corex.Content.new([
-        [
-          id: "lorem",
-          trigger: "Lorem ipsum dolor sit amet",
-          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-          meta: %{indicator: "hero-chevron-right"}
-        ],
-        [
-          trigger: "Duis dictum gravida odio ac pharetra?",
-          content: "Nullam eget vestibulum ligula, at interdum tellus.",
-          meta: %{indicator: "hero-chevron-right"}
-        ],
-        [
-          id: "donec",
-          trigger: "Donec condimentum ex mi",
-          content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-          disabled: true,
-          meta: %{indicator: "hero-chevron-right"}
-        ]
-      ])}
-    >
-      <:item :let={item}>
-        <.accordion_trigger item={item}>
-          {item.data.trigger}
-          <:indicator>
-            <.icon name={item.data.meta.indicator} />
-          </:indicator>
-        </.accordion_trigger>
+        class="accordion"
+        id="my-accordion"
+        items={
+          Corex.Content.new([
+            [
+              id: "lorem",
+              trigger: "Lorem ipsum dolor sit amet",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+              meta: %{indicator: "hero-chevron-right"}
+            ],
+            [
+              trigger: "Duis dictum gravida odio ac pharetra?",
+              content: "Nullam eget vestibulum ligula, at interdum tellus.",
+              meta: %{indicator: "hero-chevron-right"}
+            ],
+            [
+              id: "donec",
+              trigger: "Donec condimentum ex mi",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+              disabled: true,
+              meta: %{indicator: "hero-chevron-right"}
+            ]
+          ])
+        }
+      >
+        <:item :let={item}>
+          <.accordion_trigger item={item}>
+            {item.data.trigger}
+            <:indicator>
+              <.icon name={item.data.meta.indicator} />
+            </:indicator>
+          </.accordion_trigger>
 
-        <.accordion_content item={item}>
-          {item.data.content}
-        </.accordion_content>
-      </:item>
-    </.accordion>
+          <.accordion_content item={item}>
+            {item.data.content}
+          </.accordion_content>
+        </:item>
+      </.accordion>
     </Layouts.app>
     """
   end

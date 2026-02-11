@@ -13,8 +13,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     return datePicker.connect(this.machine.service, normalizeProps);
   }
 
-  // View container helpers - these elements never get spreadProps called on them,
-  // so their data-part values remain stable across renders.
   private getDayView = () =>
     this.el.querySelector<HTMLElement>('[data-part="day-view"]');
   private getMonthView = () =>
@@ -26,7 +24,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     const dayView = this.getDayView();
     if (!dayView) return;
 
-    // Use structural selector - data-part on <tr> gets overridden by spreadProps
     const headerRow = dayView.querySelector<HTMLElement>("thead tr");
     if (!headerRow) return;
 
@@ -57,7 +54,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     const dayView = this.getDayView();
     if (!dayView) return;
 
-    // Use structural selector - data-part on <tbody> gets overridden by spreadProps
     const tbody = dayView.querySelector<HTMLElement>("tbody");
     if (!tbody) return;
 
@@ -117,7 +113,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     const monthView = this.getMonthView();
     if (!monthView) return;
 
-    // Use structural selector - data-part on <tbody> gets overridden by spreadProps
     const tbody = monthView.querySelector<HTMLElement>("tbody");
     if (!tbody) return;
 
@@ -179,7 +174,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     const yearView = this.getYearView();
     if (!yearView) return;
 
-    // Use structural selector - data-part on <tbody> gets overridden by spreadProps
     const tbody = yearView.querySelector<HTMLElement>("tbody");
     if (!tbody) return;
 
@@ -238,7 +232,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
   };
 
   render(): void {
-    // Control
     const root = this.el.querySelector<HTMLElement>(
       '[data-scope="date-picker"][data-part="root"]',
     );
@@ -278,7 +271,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
       this.spreadProps(trigger, triggerProps);
     }
 
-    // Positioner and content
     const positioner = this.el.querySelector<HTMLElement>(
       '[data-scope="date-picker"][data-part="positioner"]',
     );
@@ -289,7 +281,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     );
     if (content) this.spreadProps(content, this.api.getContentProps());
 
-    // === Day view ===
     const dayView = this.getDayView();
     if (dayView) {
       dayView.hidden = this.api.view !== "day";
@@ -323,7 +314,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
       if (nextTrigger)
         this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
 
-      // Use structural selectors for table elements (their data-part gets overridden by zag)
       const table = dayView.querySelector<HTMLElement>("table");
       if (table)
         this.spreadProps(table, this.api.getTableProps({ view: "day" }));
@@ -336,7 +326,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
     this.syncWeekDays();
     this.syncDayGrid();
 
-    // === Month view ===
     const monthView = this.getMonthView();
     if (monthView) {
       monthView.hidden = this.api.view !== "month";
@@ -389,7 +378,6 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
 
     this.syncMonthGrid();
 
-    // === Year view ===
     const yearView = this.getYearView();
     if (yearView) {
       yearView.hidden = this.api.view !== "year";

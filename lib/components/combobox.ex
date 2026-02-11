@@ -318,14 +318,14 @@ defmodule Corex.Combobox do
       open: @open, positioning: @positioning,
       bubble: @bubble, disabled: @disabled
     })}>
-      <div {Connect.root(%Root{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only})}>
+      <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
         <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="combobox" data-part="value-input" value={@value_for_hidden_input} />
 
-        <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, changed: if(@__changed__, do: true, else: false), invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+        <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.control(%Control{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
-          <input {Connect.input(%Input{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
+        <div {Connect.control(%Control{id: @id, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
+          <input {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
           <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
           </button>
@@ -336,8 +336,8 @@ defmodule Corex.Combobox do
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Positioner{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir})}>
-          <ul {Connect.content(%Content{id: @id, changed: Map.get(assigns, :__changed__, nil) != nil, dir: @dir, open: @open})}>
+        <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
+          <ul {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
           </ul>
 
           <div style="display: none;" data-templates="combobox">

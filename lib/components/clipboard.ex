@@ -192,18 +192,18 @@ defmodule Corex.Clipboard do
         input_aria_label: @input_aria_label
       })}
     >
-      <div {Connect.root(%Root{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir})}>
+        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
         </label>
-        <div {Connect.control(%Control{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}>
+        <div {Connect.control(%Control{id: @id, dir: @dir})}>
           <input
-            {Connect.input(%Input{id: @id, dir: @dir, value: @value, changed: Map.get(assigns, :__changed__, nil) != nil})}
+            {Connect.input(%Input{id: @id, dir: @dir, value: @value})}
             aria-label={@input_aria_label}
           />
           <button
             :if={@trigger != []}
-            {Connect.trigger(%Trigger{id: @id, dir: @dir, changed: Map.get(assigns, :__changed__, nil) != nil})}
+            {Connect.trigger(%Trigger{id: @id, dir: @dir})}
             aria-label={@trigger_aria_label}
           >
             {render_slot(@trigger)}

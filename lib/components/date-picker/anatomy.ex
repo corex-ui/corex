@@ -33,8 +33,6 @@ defmodule Corex.DatePicker.Anatomy do
       default_view: nil,
       min_view: nil,
       max_view: nil,
-      default_open: nil,
-      inline: false,
       dir: "ltr",
       on_value_change: nil,
       on_focus_change: nil,
@@ -68,8 +66,6 @@ defmodule Corex.DatePicker.Anatomy do
             default_view: String.t() | nil,
             min_view: String.t() | nil,
             max_view: String.t() | nil,
-            default_open: boolean() | nil,
-            inline: boolean(),
             dir: String.t(),
             on_value_change: String.t() | nil,
             on_focus_change: String.t() | nil,
@@ -81,80 +77,71 @@ defmodule Corex.DatePicker.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir, :default_open, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            default_open: boolean() | nil,
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :default_open, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            default_open: boolean() | nil,
-            changed: boolean()
+            dir: String.t()
           }
   end
 end

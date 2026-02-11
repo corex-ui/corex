@@ -10,7 +10,6 @@ type TabsHookState = {
   tabs?: Tabs;
   handlers?: Array<CallbackRef>;
   onSetValue?: (event: Event) => void;
-  wasFocused?: string | null;
 };
 
 const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
@@ -22,7 +21,6 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
     const tabs = new Tabs(el, 
       {
         id: el.id,
-        composite: true,
         ...(getBoolean(el, "controlled")
           ? { value: getString(el, "value") }
           : { defaultValue: getString(el, "defaultValue") }),
@@ -123,17 +121,6 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
       orientation: getString<Orientation>(this.el, "orientation", ["horizontal", "vertical"]),
       dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"])
     } as Props);
-
-    const wasFocused = this.tabs?.api?.focusedValue;
-    if (wasFocused) {
-        const triggerEl = this.el.querySelector(
-          `[data-scope="tabs"][data-part="list"] [data-part="trigger"][data-value="${wasFocused}"]`
-        ) as HTMLElement;
-        
-        if (triggerEl && document.activeElement !== triggerEl) {
-          triggerEl.focus();
-        }
-    }
   },
 
 

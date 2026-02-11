@@ -29,28 +29,22 @@ defmodule Corex.Checkbox.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    data_state = data_state(assigns)
+    data_state = data_state(assigns.checked)
 
-    base = %{
+    %{
       "data-scope" => "checkbox",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "id" => "checkbox:#{assigns.id}",
+      "htmlFor" => "checkbox:#{assigns.id}:input",
+      "for" => "checkbox:#{assigns.id}:input",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "checkbox:#{assigns.id}",
-          "htmlFor" => "checkbox:#{assigns.id}:input",
-          "for" => "checkbox:#{assigns.id}:input",
-          "data-state" => data_state
-        })
   end
 
   @spec hidden_input(HiddenInput.t()) :: map()
   def hidden_input(assigns) do
-    base = %{
+    %{
       "data-scope" => "checkbox",
       "data-part" => "hidden-input",
       "id" => "checkbox:#{assigns.id}:input",
@@ -58,86 +52,56 @@ defmodule Corex.Checkbox.Connect do
       "checked" => data_attr(assigns.checked),
       "value" => "true",
       "name" => assigns.name,
-      "phx-update" => "ignore"
+      "required" => data_attr(assigns.required),
+      "disabled" => data_attr(assigns.disabled),
+      "aria-labelledby" => "checkbox:#{assigns.id}:label",
+      "aria-invalid" => if(assigns.invalid, do: "true", else: "false"),
+      "style" =>
+        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "required" => data_attr(assigns.required),
-          "disabled" => data_attr(assigns.disabled),
-          "aria-labelledby" => "checkbox:#{assigns.id}:label",
-          "aria-invalid" => if(assigns.invalid, do: "true", else: "false"),
-          "style" =>
-            "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
-        })
   end
 
-  @spec props(Control.t()) :: map()
-
+  @spec control(Control.t()) :: map()
   def control(assigns) do
-    data_state = data_state(assigns)
+    data_state = data_state(assigns.checked)
 
-    base = %{
+    %{
       "data-scope" => "checkbox",
       "data-part" => "control",
-      "aria-hidden" => "true"
+      "aria-hidden" => "true",
+      "dir" => assigns.dir,
+      "id" => "checkbox:#{assigns.id}:control",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "checkbox:#{assigns.id}:control",
-          "data-state" => data_state
-        })
   end
 
-  @spec props(Label.t()) :: map()
-
+  @spec label(Label.t()) :: map()
   def label(assigns) do
-    data_state = data_state(assigns)
+    data_state = data_state(assigns.checked)
 
-    base = %{
+    %{
       "data-scope" => "checkbox",
-      "data-part" => "label"
+      "data-part" => "label",
+      "dir" => assigns.dir,
+      "id" => "checkbox:#{assigns.id}:label",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "checkbox:#{assigns.id}:label",
-          "data-state" => data_state
-        })
   end
 
-  @spec props(Indicator.t()) :: map()
-
+  @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
-    data_state = data_state(assigns)
+    data_state = data_state(assigns.checked)
 
-    base = %{
+    %{
       "data-scope" => "checkbox",
-      "data-part" => "indicator"
+      "data-part" => "indicator",
+      "dir" => assigns.dir,
+      "id" => "checkbox:#{assigns.id}:indicator",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "checkbox:#{assigns.id}:indicator",
-          "data-state" => data_state
-        })
   end
 
-  defp data_state(assigns) do
-    if assigns.checked, do: "checked", else: "unchecked"
-  end
+  defp data_state(checked), do: if(checked, do: "checked", else: "unchecked")
 
   defp data_default_checked(assigns) do
     if !assigns.controlled && assigns.checked, do: "", else: nil

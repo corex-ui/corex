@@ -65,11 +65,10 @@ defmodule Corex.Combobox.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, changed: false, invalid: false, read_only: false]
+    defstruct [:id, invalid: false, read_only: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             invalid: boolean(),
             read_only: boolean()
           }
@@ -79,7 +78,6 @@ defmodule Corex.Combobox.Anatomy do
     @moduledoc false
     defstruct [
       :id,
-      changed: false,
       invalid: false,
       read_only: false,
       required: false,
@@ -89,7 +87,6 @@ defmodule Corex.Combobox.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            changed: boolean(),
             invalid: boolean(),
             read_only: boolean(),
             required: boolean(),
@@ -100,13 +97,12 @@ defmodule Corex.Combobox.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :disabled, :changed, :invalid, :open]
+    defstruct [:id, :dir, :disabled, :invalid, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             disabled: boolean(),
-            changed: boolean(),
             invalid: boolean(),
             open: boolean()
           }
@@ -118,7 +114,6 @@ defmodule Corex.Combobox.Anatomy do
       :id,
       :dir,
       :disabled,
-      :changed,
       :invalid,
       :open,
       :required,
@@ -134,7 +129,6 @@ defmodule Corex.Combobox.Anatomy do
             id: String.t(),
             dir: String.t(),
             disabled: boolean(),
-            changed: boolean(),
             invalid: boolean(),
             open: boolean(),
             required: boolean(),
@@ -149,24 +143,22 @@ defmodule Corex.Combobox.Anatomy do
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir, :changed]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open, :changed]
+    defstruct [:id, :dir, :open]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean(),
-            changed: boolean()
+            open: boolean()
           }
   end
 end

@@ -35,100 +35,55 @@ defmodule Corex.Clipboard.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "clipboard",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "id" => "clipboard:#{assigns.id}"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            # "dir" => assigns.dir,
-            # "id" => "clipboard:#{assigns.id}"
-          }
-        )
   end
 
   @spec label(Label.t()) :: map()
   def label(assigns) do
-    base = %{
+    %{
       "data-scope" => "clipboard",
-      "data-part" => "label"
+      "data-part" => "label",
+      "dir" => assigns.dir,
+      "id" => "clipboard:#{assigns.id}:label"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            # "dir" => assigns.dir,
-            # "id" => "clipboard:#{assigns.id}:label"
-          }
-        )
   end
 
   @spec control(Control.t()) :: map()
   def control(assigns) do
-    base = %{
+    %{
       "data-scope" => "clipboard",
-      "data-part" => "control"
+      "data-part" => "control",
+      "dir" => assigns.dir,
+      "id" => "clipboard:#{assigns.id}:control"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            # "dir" => assigns.dir,
-            # "id" => "clipboard:#{assigns.id}:control"
-          }
-        )
   end
 
   @spec input(Input.t()) :: map()
   def input(assigns) do
-    base = %{
+    %{
       "data-scope" => "clipboard",
-      "data-part" => "input"
+      "data-part" => "input",
+      "type" => "text",
+      "readonly" => "",
+      "dir" => assigns.dir,
+      "id" => "clipboard:#{assigns.id}:input",
+      "value" => assigns.value || ""
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            # "type" => "text",
-            # "readonly" => "",
-            # "dir" => assigns.dir,
-            # "id" => "clipboard:#{assigns.id}:input",
-            # "value" => assigns.value || ""
-          }
-        )
   end
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
-    base = %{
+    %{
       "data-scope" => "clipboard",
-      "data-part" => "trigger"
+      "data-part" => "trigger",
+      "type" => "button",
+      "dir" => assigns.dir,
+      "id" => "clipboard:#{assigns.id}:trigger"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            # "type" => "button",
-            # "dir" => assigns.dir,
-            # "id" => "clipboard:#{assigns.id}:trigger"
-          }
-        )
   end
 end

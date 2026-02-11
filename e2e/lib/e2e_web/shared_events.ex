@@ -17,6 +17,7 @@ defmodule E2eWeb.SharedEvents do
   defp assign_locale_and_dir(socket, params) do
     locale = params["locale"] || "en"
     dir = if locale in Application.get_env(:corex, :rtl_locales, []), do: "rtl", else: "ltr"
+
     socket
     |> assign(:locale, locale)
     |> assign(:dir, dir)
@@ -59,12 +60,14 @@ defmodule E2eWeb.SharedEvents do
     value = params["value"] || params[:value] || []
     path = params["path"] || params[:path] || socket.assigns[:current_path] || "/"
     first = List.first(value)
+
     to =
       if first && String.starts_with?(first, "/") do
         first
       else
         "/#{first || "en"}#{path}"
       end
+
     {:halt, redirect(socket, to: to)}
   end
 

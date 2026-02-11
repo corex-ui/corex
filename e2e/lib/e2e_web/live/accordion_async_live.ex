@@ -9,9 +9,21 @@ defmodule E2eWeb.AccordionAsyncLive do
 
         items =
           Corex.Content.new([
-            [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
-            [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus."],
-            [id: "donec", trigger: "Donec condimentum ex mi", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
+            [
+              id: "lorem",
+              trigger: "Lorem ipsum dolor sit amet",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+            ],
+            [
+              id: "duis",
+              trigger: "Duis dictum gravida odio ac pharetra?",
+              content: "Nullam eget vestibulum ligula, at interdum tellus."
+            ],
+            [
+              id: "donec",
+              trigger: "Donec condimentum ex mi",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+            ]
           ])
 
         {:ok,

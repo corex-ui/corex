@@ -3474,34 +3474,14 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          this.wasFocused = false;
-          const indeterminateAttr = el.getAttribute("data-indeterminate");
-          const indeterminate = indeterminateAttr !== null && indeterminateAttr !== "false";
-          const checkedValue = getBoolean(el, "checked");
-          const defaultCheckedValue = getBoolean(el, "defaultChecked");
-          let checkedProp;
-          let defaultCheckedProp;
-          if (indeterminate) {
-            if (getBoolean(el, "controlled")) {
-              checkedProp = "indeterminate";
-            } else {
-              defaultCheckedProp = "indeterminate";
-            }
-          } else {
-            if (getBoolean(el, "controlled")) {
-              checkedProp = checkedValue;
-            } else {
-              defaultCheckedProp = defaultCheckedValue;
-            }
-          }
-          const zagCheckbox = new Checkbox(el, __spreadProps(__spreadValues(__spreadValues({
+          const zagCheckbox = new Checkbox(el, __spreadProps(__spreadValues({
             id: el.id
-          }, checkedProp !== void 0 ? { checked: checkedProp } : {}), defaultCheckedProp !== void 0 ? { defaultChecked: defaultCheckedProp } : {}), {
+          }, getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") }), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
             value: getString(el, "value"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             readOnly: getBoolean(el, "readOnly"),
@@ -3575,10 +3555,6 @@ var Corex = (() => {
             })
           );
         },
-        beforeUpdate() {
-          var _a, _b;
-          this.wasFocused = (_b = (_a = this.checkbox) == null ? void 0 : _a.api.focused) != null ? _b : false;
-        },
         updated() {
           var _a;
           (_a = this.checkbox) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
@@ -3588,18 +3564,12 @@ var Corex = (() => {
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
             value: getString(this.el, "value"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"]),
+            dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
             readOnly: getBoolean(this.el, "readOnly"),
             label: getString(this.el, "label")
           }));
-          if (getBoolean(this.el, "controlled")) {
-            if (this.wasFocused) {
-              const hiddenInput = this.el.querySelector('[data-part="hidden-input"]');
-              hiddenInput == null ? void 0 : hiddenInput.focus();
-            }
-          }
         },
         destroyed() {
           var _a;
@@ -13191,8 +13161,6 @@ var Corex = (() => {
       DatePicker = class extends Component {
         constructor() {
           super(...arguments);
-          // View container helpers - these elements never get spreadProps called on them,
-          // so their data-part values remain stable across renders.
           __publicField(this, "getDayView", () => this.el.querySelector('[data-part="day-view"]'));
           __publicField(this, "getMonthView", () => this.el.querySelector('[data-part="month-view"]'));
           __publicField(this, "getYearView", () => this.el.querySelector('[data-part="year-view"]'));
@@ -13547,7 +13515,6 @@ var Corex = (() => {
           }, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
             defaultFocusedValue: parseOne(getString(el, "focusedValue")),
             defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-            defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
             dir: getString(el, "dir", ["ltr", "rtl"]),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
@@ -13657,7 +13624,6 @@ var Corex = (() => {
           (_a = this.datePicker) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({}, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
             defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
             defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-            defaultOpen: el.hasAttribute("data-default-open") ? getBoolean(el, "defaultOpen") : void 0,
             dir: getString(this.el, "dir", ["ltr", "rtl"]),
             locale: getString(this.el, "locale"),
             timeZone: getString(this.el, "timeZone"),
@@ -20035,7 +20001,7 @@ var Corex = (() => {
           for (let i2 = 0; i2 < triggers.length && i2 < items.length; i2++) {
             const triggerEl = triggers[i2];
             const item = items[i2];
-            this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value }));
+            this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value, disabled: item.disabled }));
           }
           const contents = rootEl.querySelectorAll(
             '[data-scope="tabs"][data-part="content"]'
@@ -20054,8 +20020,7 @@ var Corex = (() => {
           const tabs = new Tabs(
             el,
             __spreadProps(__spreadValues({
-              id: el.id,
-              composite: true
+              id: el.id
             }, getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") }), {
               orientation: getString(el, "orientation", ["horizontal", "vertical"]),
               dir: getString(el, "dir", ["ltr", "rtl"]),
@@ -20139,22 +20104,13 @@ var Corex = (() => {
           );
         },
         updated() {
-          var _a, _b, _c;
+          var _a;
           (_a = this.tabs) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
           }, getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") }), {
             orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
             dir: getString(this.el, "dir", ["ltr", "rtl"])
           }));
-          const wasFocused = (_c = (_b = this.tabs) == null ? void 0 : _b.api) == null ? void 0 : _c.focusedValue;
-          if (wasFocused) {
-            const triggerEl = this.el.querySelector(
-              `[data-scope="tabs"][data-part="list"] [data-part="trigger"][data-value="${wasFocused}"]`
-            );
-            if (triggerEl && document.activeElement !== triggerEl) {
-              triggerEl.focus();
-            }
-          }
         },
         destroyed() {
           var _a;

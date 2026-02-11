@@ -1,6 +1,6 @@
 defmodule Corex.Switch.Connect do
   @moduledoc false
-  alias Corex.Switch.Anatomy.{Props, Root, HiddenInput}
+  alias Corex.Switch.Anatomy.{Props, Root, HiddenInput, Control, Thumb, Label}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
@@ -31,21 +31,15 @@ defmodule Corex.Switch.Connect do
   def root(assigns) do
     data_state = if assigns.checked, do: "checked", else: "unchecked"
 
-    base = %{
+    %{
       "data-scope" => "switch",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "id" => "switch:#{assigns.id}",
+      "htmlFor" => "switch:#{assigns.id}:input",
+      "for" => "switch:#{assigns.id}:input",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "switch:#{assigns.id}",
-          "htmlFor" => "switch:#{assigns.id}:input",
-          "for" => "switch:#{assigns.id}:input",
-          "data-state" => data_state
-        })
   end
 
   @spec hidden_input(HiddenInput.t()) :: map()
@@ -57,84 +51,63 @@ defmodule Corex.Switch.Connect do
         nil
       end
 
-    base = %{
+    %{
       "data-scope" => "switch",
-      "data-part" => "hidden-input"
+      "data-part" => "hidden-input",
+      "type" => "checkbox",
+      "id" => "switch:#{assigns.id}:input",
+      "checked" => checked,
+      "name" => assigns.name,
+      "required" => data_attr(assigns.required),
+      "disabled" => data_attr(assigns.disabled),
+      "aria-labelledby" => "switch:#{assigns.id}:label",
+      "value" => assigns.value,
+      "aria-invalid" => if(assigns.invalid, do: "true", else: "false"),
+      "style" =>
+        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "type" => "checkbox",
-          "id" => "switch:#{assigns.id}:input",
-          "checked" => checked,
-          "name" => assigns.name,
-          "required" => data_attr(assigns.required),
-          "disabled" => data_attr(assigns.disabled),
-          "aria-labelledby" => "switch:#{assigns.id}:label",
-          "value" => assigns.value,
-          "aria-invalid" => if(assigns.invalid, do: "true", else: "false"),
-          "style" =>
-            "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
-        })
   end
 
+  @spec control(Control.t()) :: map()
   def control(assigns) do
     data_state = if assigns.checked, do: "checked", else: "unchecked"
 
-    base = %{
+    %{
       "data-scope" => "switch",
       "data-part" => "control",
-      "aria-hidden" => "true"
+      "aria-hidden" => "true",
+      "dir" => assigns.dir,
+      "id" => "switch:#{assigns.id}:control",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "switch:#{assigns.id}:control",
-          "data-state" => data_state
-        })
   end
 
+  @spec thumb(Thumb.t()) :: map()
   def thumb(assigns) do
     data_state = if assigns.checked, do: "checked", else: "unchecked"
 
-    base = %{
+    %{
       "data-scope" => "switch",
       "data-part" => "thumb",
-      "aria-hidden" => "true"
+      "aria-hidden" => "true",
+      "dir" => assigns.dir,
+      "id" => "switch:#{assigns.id}:thumb",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "switch:#{assigns.id}:thumb",
-          "data-state" => data_state
-        })
   end
 
+  @spec label(Label.t()) :: map()
   def label(assigns) do
     data_state = if assigns.checked, do: "checked", else: "unchecked"
 
-    base = %{
+    %{
       "data-scope" => "switch",
       "data-part" => "label",
-      "aria-hidden" => "true"
+      "aria-hidden" => "true",
+      "dir" => assigns.dir,
+      "id" => "switch:#{assigns.id}:label",
+      "data-state" => data_state
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "id" => "switch:#{assigns.id}:label",
-          "data-state" => data_state
-        })
   end
 
   defp data_default_checked(assigns) do

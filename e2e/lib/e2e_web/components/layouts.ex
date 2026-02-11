@@ -39,7 +39,8 @@ defmodule E2eWeb.Layouts do
 
   attr :current_path, :string,
     default: "/",
-    doc: "current path without the locale segment (e.g. \"/accordion\"), from Phoenix.Controller.current_path(conn, %{}) then E2eWeb.Plugs.Locale.path_without_locale/2, or from LiveView handle_params URI; used so the locale switcher preserves the path"
+    doc:
+      "current path without the locale segment (e.g. \"/accordion\"), from Phoenix.Controller.current_path(conn, %{}) then E2eWeb.Plugs.Locale.path_without_locale/2, or from LiveView handle_params URI; used so the locale switcher preserves the path"
 
   slot :inner_block, required: true
 
@@ -60,32 +61,6 @@ defmodule E2eWeb.Layouts do
             </svg>
             Corex
           </a>
-          <.menu
-            id="navigation-menu"
-            class="menu"
-            on_select="handle_menu"
-            redirect
-            items={[
-              %Corex.Tree.Item{
-                id: "/#{@locale}/accordion",
-                label: "Accordion",
-                group: "Controller"
-              },
-              %Corex.Tree.Item{
-                id: "/#{@locale}/live/accordion",
-                label: "Checkbox",
-                group: "LiveView"
-              }
-            ]}
-          >
-            <:trigger>Corex</:trigger>
-            <:indicator>
-              <.icon name="hero-chevron-down" />
-            </:indicator>
-            <:item :let={item}>
-              {item.label}
-            </:item>
-          </.menu>
         </div>
         <div class="layout__row">
           <.locale_switcher :if={@locale} locale={@locale} current_path={@current_path} />
@@ -178,8 +153,8 @@ defmodule E2eWeb.Layouts do
 
     <main class="layout__main">
       <div class="layout__content">
-      <div class="layout__article">
-        {render_slot(@inner_block)}
+        <div class="layout__article">
+          {render_slot(@inner_block)}
         </div>
       </div>
     </main>
@@ -205,7 +180,10 @@ defmodule E2eWeb.Layouts do
   end
 
   attr :locale, :string, required: true, doc: "current locale"
-  attr :current_path, :string, default: "/", doc: "path without locale segment so switching language preserves the URL"
+
+  attr :current_path, :string,
+    default: "/",
+    doc: "path without locale segment so switching language preserves the URL"
 
   @doc """
   Language switcher (English / Arabic) using the select component.
@@ -228,18 +206,18 @@ defmodule E2eWeb.Layouts do
       redirect
       on_value_change="locale_change"
     >
-    <:label class="sr-only">
-      Language
-    </:label>
-    <:item :let={item}>
-      {item.label}
-    </:item>
-    <:trigger>
-    <.icon name="hero-language" />
-    </:trigger>
-    <:item_indicator>
-      <.icon name="hero-check" />
-    </:item_indicator>
+      <:label class="sr-only">
+        Language
+      </:label>
+      <:item :let={item}>
+        {item.label}
+      </:item>
+      <:trigger>
+        <.icon name="hero-language" />
+      </:trigger>
+      <:item_indicator>
+        <.icon name="hero-check" />
+      </:item_indicator>
     </.select>
     """
   end

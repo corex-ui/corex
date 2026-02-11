@@ -14,7 +14,10 @@ defmodule E2eWeb.AdminLive.Show do
           <.button class="button" navigate={~p"/#{@locale}/admins"}>
             <.icon name="hero-arrow-left" />
           </.button>
-          <.button class="button button--accent" navigate={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}>
+          <.button
+            class="button button--accent"
+            navigate={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}
+          >
             <.icon name="hero-pencil-square" /> Edit admin
           </.button>
         </:actions>

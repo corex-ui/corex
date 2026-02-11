@@ -237,8 +237,6 @@ defmodule Corex.Accordion do
   alias Corex.Accordion.Connect
   import Corex.Helpers, only: [validate_value!: 1]
 
-  alias Phoenix.LiveView.JS
-
   @doc """
   Renders an accordion component.
 
@@ -343,7 +341,7 @@ defmodule Corex.Accordion do
       on_focus_change_client: @on_focus_change_client
     })}>
       <div phx-update="ignore" {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}>
-        <div :if={@item == []} :for={{item_entry, index} <- Enum.with_index(@items)} phx-mounted={JS.ignore_attributes(["data-state"])} {Connect.item(%Item{
+        <div :if={@item == []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
           id: @id,
           value: item_entry.id || "item-#{index}",
           disabled: item_entry.disabled,
@@ -383,7 +381,7 @@ defmodule Corex.Accordion do
           </.accordion_content>
         </div>
 
-        <div :if={@item != []} :for={{item_entry, index} <- Enum.with_index(@items)} phx-mounted={JS.ignore_attributes(["data-state"])} {Connect.item(%Item{
+        <div :if={@item != []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
           id: @id,
           value: item_entry.id || "item-#{index}",
           disabled: item_entry.disabled,

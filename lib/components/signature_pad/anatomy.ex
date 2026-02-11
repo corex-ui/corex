@@ -42,67 +42,61 @@ defmodule Corex.SignaturePad.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Segment do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule Guide do
     @moduledoc false
-    defstruct [:id, :dir, changed: false]
+    defstruct [:id, :dir]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
-            changed: boolean()
+            dir: String.t()
           }
   end
 
   defmodule ClearTrigger do
     @moduledoc false
-    defstruct [:id, :dir, changed: false, aria_label: nil, has_paths: false]
+    defstruct [:id, :dir, aria_label: nil, has_paths: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            changed: boolean(),
             aria_label: String.t() | nil,
             has_paths: boolean()
           }
@@ -110,13 +104,12 @@ defmodule Corex.SignaturePad.Anatomy do
 
   defmodule HiddenInput do
     @moduledoc false
-    defstruct [:id, :dir, :name, changed: false]
+    defstruct [:id, :dir, :name]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            name: String.t() | nil,
-            changed: boolean()
+            name: String.t() | nil
           }
   end
 end

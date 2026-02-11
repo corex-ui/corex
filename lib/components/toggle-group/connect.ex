@@ -32,21 +32,15 @@ defmodule Corex.ToggleGroup.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "toggle-group",
-      "data-part" => "root"
+      "data-part" => "root",
+      "dir" => assigns.dir,
+      "data-orientation" => assigns.orientation,
+      "id" => "toggle-group:#{assigns.id}",
+      "data-disabled" => assigns.disabled,
+      "style" => "outline: none;"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "dir" => assigns.dir,
-          "data-orientation" => assigns.orientation,
-          "id" => "toggle-group:#{assigns.id}",
-          "data-disabled" => assigns.disabled,
-          "style" => "outline: none;"
-        })
   end
 
   @spec item(Item.t()) :: map()
@@ -55,26 +49,20 @@ defmodule Corex.ToggleGroup.Connect do
     data_state = if(value in assigns.values, do: "on", else: "off")
     aria_label = assigns.aria_label || value
 
-    base = %{
+    %{
       "data-scope" => "toggle-group",
       "data-part" => "item",
-      "data-value" => value
+      "data-value" => value,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir,
+      "type" => "button",
+      "data-disabled" => assigns.disabled_root || assigns.disabled,
+      "data-ownedby" => "toggle-group:#{assigns.id}",
+      "disabled" => assigns.disabled_root || assigns.disabled,
+      "data-state" => data_state,
+      "id" => "toggle-group:#{assigns.id}:#{value}",
+      "aria-label" => aria_label
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(base, %{
-          "data-orientation" => assigns.orientation,
-          "dir" => assigns.dir,
-          "type" => "button",
-          "data-disabled" => assigns.disabled_root || assigns.disabled,
-          "data-ownedby" => "toggle-group:#{assigns.id}",
-          "disabled" => assigns.disabled_root || assigns.disabled,
-          "data-state" => data_state,
-          "id" => "toggle-group:#{assigns.id}:#{value}",
-          "aria-label" => aria_label
-        })
   end
 
   def validate_value!([]), do: []

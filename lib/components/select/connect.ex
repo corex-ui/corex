@@ -53,109 +53,64 @@ defmodule Corex.Select.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    base = %{
+    %{
       "data-scope" => "select",
-      "data-part" => "root"
+      "data-part" => "root",
+      "id" => "select:#{assigns.id}",
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-readonly" => get_boolean(assigns.read_only)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "id" => "select:#{assigns.id}",
-            "data-invalid" => get_boolean(assigns.invalid),
-            "data-readonly" => get_boolean(assigns.read_only)
-          }
-        )
   end
 
   @spec label(Label.t()) :: map()
   def label(assigns) do
-    base = %{
+    %{
       "data-scope" => "select",
-      "data-part" => "label"
+      "data-part" => "label",
+      "dir" => assigns.dir,
+      "id" => "select:#{assigns.id}:label",
+      "data-required" => get_boolean(assigns.required),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-readonly" => get_boolean(assigns.read_only)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "id" => "select:#{assigns.id}:label",
-            "data-required" => get_boolean(assigns.required),
-            "data-disabled" => get_boolean(assigns.disabled),
-            "data-invalid" => get_boolean(assigns.invalid),
-            "data-readonly" => get_boolean(assigns.read_only)
-          }
-        )
   end
 
   @spec control(Control.t()) :: map()
   def control(assigns) do
-    base = %{
+    %{
       "data-scope" => "select",
-      "data-part" => "control"
+      "data-part" => "control",
+      "dir" => assigns.dir,
+      "id" => "select:#{assigns.id}:control",
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid)
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "id" => "select:#{assigns.id}:control",
-            "data-disabled" => get_boolean(assigns.disabled),
-            "data-invalid" => get_boolean(assigns.invalid)
-          }
-        )
   end
 
   @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
-    base = %{
+    %{
       "data-scope" => "select",
-      "data-part" => "positioner"
+      "data-part" => "positioner",
+      "dir" => assigns.dir,
+      "style" => "display: none;",
+      "id" => "select:#{assigns.id}:positioner"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "style" => "display: none;",
-            "id" => "select:#{assigns.id}:positioner"
-          }
-        )
   end
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    base = %{
+    %{
       "data-scope" => "select",
-      "data-part" => "content"
+      "data-part" => "content",
+      "dir" => assigns.dir,
+      "id" => "select:#{assigns.id}:content",
+      "tabindex" => -1,
+      "role" => "listbox",
+      "hidden" => "true",
+      "aria-labelledby" => "select:#{assigns.id}:label"
     }
-
-    if assigns.changed,
-      do: base,
-      else:
-        Map.merge(
-          base,
-          %{
-            "dir" => assigns.dir,
-            "id" => "select:#{assigns.id}:content",
-            "tabindex" => -1,
-            "role" => "listbox",
-            "hidden" => "true",
-            "aria-labelledby" => "select:#{assigns.id}:label"
-          }
-        )
   end
 
   defp validate_collection!(items) when is_list(items) do
