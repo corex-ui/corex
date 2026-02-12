@@ -40,8 +40,7 @@ defmodule Corex.MixProject do
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: :dev},
       {:makeup_eex, "~> 2.0", only: :dev},
       {:makeup_syntect, "~> 0.1.0", only: :dev},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:jason, "~> 1.0"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
