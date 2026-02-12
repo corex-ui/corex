@@ -8,7 +8,6 @@ import * as datePicker from "@zag-js/date-picker";
 
 import { getString, getBoolean, getStringList, getNumber } from "../lib/util";
 
-/** Convert DateValue (year, month, day) to ISO date string YYYY-MM-DD for Ecto/form submission */
 function toISOString(d: { year: number; month: number; day: number }): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${d.year}-${pad(d.month)}-${pad(d.day)}`;
@@ -127,6 +126,11 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
 
+    const inputWrapper = el.querySelector<HTMLElement>(
+      '[data-scope="date-picker"][data-part="input-wrapper"]',
+    );
+    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
+
     this.handlers = [];
 
     this.handlers.push(
@@ -147,10 +151,13 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
-    const parseList = (v: string[] | undefined) => (v ? v.map((x) => datePicker.parse(x)) : undefined);
-
-
     const el = this.el;
+    const inputWrapper = el.querySelector<HTMLElement>(
+      '[data-scope="date-picker"][data-part="input-wrapper"]',
+    );
+    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
+
+    const parseList = (v: string[] | undefined) => (v ? v.map((x) => datePicker.parse(x)) : undefined);
     const min = getString(el, "min");
     const max = getString(el, "max");
     const positioningJson = getString(el, "positioning");

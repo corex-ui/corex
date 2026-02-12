@@ -18,13 +18,13 @@
 
   .date-picker [data-scope="date-picker"][data-part="control"] {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     place-items: center;
     padding: 0;
     width: var(--container-mini);
     overflow: hidden;
     gap: var(--spacing-mini-gap);
-    justify-content: center;
+    justify-content: flex-start;
     border-radius: var(--radius-ui);
   }
 
@@ -38,12 +38,72 @@
     position: relative;
   }
 
-  .date-picker [data-scope="date-picker"][data-part="input"] {
-    @apply ui-input;
-    
+  .date-picker [data-scope="date-picker"][data-part="input-wrapper"] {
+    position: relative;
+    display: flex;
     min-width: 0;
     flex: 1 1 0%;
+    min-height: var(--spacing-ui);
+    overflow: hidden;
+    border-radius: var(--radius-ui);
+  }
 
+  .date-picker [data-scope="date-picker"][data-part="input"] {
+    @apply ui-input;
+
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 0%;
+  }
+
+  .date-picker [data-scope="date-picker"][data-part="input-skeleton"] {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(
+      90deg,
+      var(--color-root) 0%,
+      var(--color-root) 20%,
+      var(--color-root) 40%,
+      var(--color-root) 60%
+    );
+    background-size: 200% 100%;
+    opacity: 0.35;
+    transition: opacity 0.15s ease-out;
+  }
+
+  .date-picker [data-scope="date-picker"][data-part="input-wrapper"][data-loading="true"]
+    [data-scope="date-picker"][data-part="input-skeleton"] {
+    animation: date-picker-skeleton-shimmer 1.2s ease-in-out infinite;
+  }
+
+  .date-picker [data-scope="date-picker"][data-part="input-wrapper"][data-loading="true"]
+    [data-scope="date-picker"][data-part="input"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .date-picker [data-scope="date-picker"][data-part="input-wrapper"]:not([data-loading])
+    [data-scope="date-picker"][data-part="input-skeleton"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @keyframes date-picker-skeleton-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  .date-picker [data-scope="date-picker"][data-part="positioner"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
   }
 
   .date-picker [data-scope="date-picker"][data-part="content"] {

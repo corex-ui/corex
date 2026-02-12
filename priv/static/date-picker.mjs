@@ -3917,164 +3917,101 @@ var DatePicker = class extends Component {
   getDayView = () => this.el.querySelector('[data-part="day-view"]');
   getMonthView = () => this.el.querySelector('[data-part="month-view"]');
   getYearView = () => this.el.querySelector('[data-part="year-view"]');
-  syncWeekDays = () => {
+  renderDayTableHeader = () => {
     const dayView = this.getDayView();
-    if (!dayView) return;
-    const headerRow = dayView.querySelector("thead tr");
-    if (!headerRow) return;
-    this.spreadProps(headerRow, this.api.getTableRowProps({ view: "day" }));
-    const existingCells = Array.from(headerRow.querySelectorAll("th"));
-    while (existingCells.length > this.api.weekDays.length) {
-      const cell = existingCells.pop();
-      if (cell) headerRow.removeChild(cell);
-    }
-    this.api.weekDays.forEach((day, index) => {
-      let cellEl = existingCells[index];
-      if (!cellEl) {
-        cellEl = this.doc.createElement("th");
-        cellEl.scope = "col";
-        headerRow.appendChild(cellEl);
-      }
-      cellEl.setAttribute("aria-label", day.long);
-      cellEl.textContent = day.narrow;
+    const thead = dayView?.querySelector("thead");
+    if (!thead || !this.api.weekDays) return;
+    const tr = this.doc.createElement("tr");
+    this.spreadProps(tr, this.api.getTableRowProps({ view: "day" }));
+    this.api.weekDays.forEach((day) => {
+      const th = this.doc.createElement("th");
+      th.scope = "col";
+      th.setAttribute("aria-label", day.long);
+      th.textContent = day.narrow;
+      tr.appendChild(th);
     });
+    thead.innerHTML = "";
+    thead.appendChild(tr);
   };
-  syncDayGrid = () => {
+  renderDayTableBody = () => {
     const dayView = this.getDayView();
-    if (!dayView) return;
-    const tbody = dayView.querySelector("tbody");
+    const tbody = dayView?.querySelector("tbody");
     if (!tbody) return;
     this.spreadProps(tbody, this.api.getTableBodyProps({ view: "day" }));
     if (!this.api.weeks) return;
-    const existingRows = Array.from(tbody.querySelectorAll("tr"));
-    while (existingRows.length > this.api.weeks.length) {
-      const row = existingRows.pop();
-      if (row) tbody.removeChild(row);
-    }
-    this.api.weeks.forEach((week, rowIndex) => {
-      let rowEl = existingRows[rowIndex];
-      if (!rowEl) {
-        rowEl = this.doc.createElement("tr");
-        tbody.appendChild(rowEl);
-      }
-      this.spreadProps(rowEl, this.api.getTableRowProps({ view: "day" }));
-      const existingCells = Array.from(rowEl.querySelectorAll("td"));
-      while (existingCells.length > week.length) {
-        const cell = existingCells.pop();
-        if (cell) rowEl.removeChild(cell);
-      }
-      week.forEach((value, cellIndex) => {
-        let cellEl = existingCells[cellIndex];
-        if (!cellEl) {
-          cellEl = this.doc.createElement("td");
-          const triggerEl2 = this.doc.createElement("div");
-          cellEl.appendChild(triggerEl2);
-          rowEl.appendChild(cellEl);
-        }
-        this.spreadProps(cellEl, this.api.getDayTableCellProps({ value }));
-        const triggerEl = cellEl.querySelector("div");
-        if (triggerEl) {
-          this.spreadProps(
-            triggerEl,
-            this.api.getDayTableCellTriggerProps({ value })
-          );
-          triggerEl.textContent = String(value.day);
-        }
+    tbody.innerHTML = "";
+    this.api.weeks.forEach((week) => {
+      const tr = this.doc.createElement("tr");
+      this.spreadProps(tr, this.api.getTableRowProps({ view: "day" }));
+      week.forEach((value) => {
+        const td = this.doc.createElement("td");
+        this.spreadProps(td, this.api.getDayTableCellProps({ value }));
+        const trigger = this.doc.createElement("div");
+        this.spreadProps(
+          trigger,
+          this.api.getDayTableCellTriggerProps({ value })
+        );
+        trigger.textContent = String(value.day);
+        td.appendChild(trigger);
+        tr.appendChild(td);
       });
+      tbody.appendChild(tr);
     });
   };
-  syncMonthGrid = () => {
+  renderMonthTableBody = () => {
     const monthView = this.getMonthView();
-    if (!monthView) return;
-    const tbody = monthView.querySelector("tbody");
+    const tbody = monthView?.querySelector("tbody");
     if (!tbody) return;
     this.spreadProps(tbody, this.api.getTableBodyProps({ view: "month" }));
     const monthsGrid = this.api.getMonthsGrid({ columns: 4, format: "short" });
-    const existingRows = Array.from(tbody.querySelectorAll("tr"));
-    while (existingRows.length > monthsGrid.length) {
-      const row = existingRows.pop();
-      if (row) tbody.removeChild(row);
-    }
-    monthsGrid.forEach((months, rowIndex) => {
-      let rowEl = existingRows[rowIndex];
-      if (!rowEl) {
-        rowEl = this.doc.createElement("tr");
-        tbody.appendChild(rowEl);
-      }
-      this.spreadProps(rowEl, this.api.getTableRowProps());
-      const existingCells = Array.from(rowEl.querySelectorAll("td"));
-      while (existingCells.length > months.length) {
-        const cell = existingCells.pop();
-        if (cell) rowEl.removeChild(cell);
-      }
-      months.forEach((month, cellIndex) => {
-        let cellEl = existingCells[cellIndex];
-        if (!cellEl) {
-          cellEl = this.doc.createElement("td");
-          const triggerEl2 = this.doc.createElement("div");
-          cellEl.appendChild(triggerEl2);
-          rowEl.appendChild(cellEl);
-        }
+    tbody.innerHTML = "";
+    monthsGrid.forEach((months) => {
+      const tr = this.doc.createElement("tr");
+      this.spreadProps(tr, this.api.getTableRowProps());
+      months.forEach((month) => {
+        const td = this.doc.createElement("td");
         this.spreadProps(
-          cellEl,
+          td,
           this.api.getMonthTableCellProps({ ...month, columns: 4 })
         );
-        const triggerEl = cellEl.querySelector("div");
-        if (triggerEl) {
-          this.spreadProps(
-            triggerEl,
-            this.api.getMonthTableCellTriggerProps({ ...month, columns: 4 })
-          );
-          triggerEl.textContent = month.label;
-        }
+        const trigger = this.doc.createElement("div");
+        this.spreadProps(
+          trigger,
+          this.api.getMonthTableCellTriggerProps({ ...month, columns: 4 })
+        );
+        trigger.textContent = month.label;
+        td.appendChild(trigger);
+        tr.appendChild(td);
       });
+      tbody.appendChild(tr);
     });
   };
-  syncYearGrid = () => {
+  renderYearTableBody = () => {
     const yearView = this.getYearView();
-    if (!yearView) return;
-    const tbody = yearView.querySelector("tbody");
+    const tbody = yearView?.querySelector("tbody");
     if (!tbody) return;
     this.spreadProps(tbody, this.api.getTableBodyProps());
     const yearsGrid = this.api.getYearsGrid({ columns: 4 });
-    const existingRows = Array.from(tbody.querySelectorAll("tr"));
-    while (existingRows.length > yearsGrid.length) {
-      const row = existingRows.pop();
-      if (row) tbody.removeChild(row);
-    }
-    yearsGrid.forEach((years, rowIndex) => {
-      let rowEl = existingRows[rowIndex];
-      if (!rowEl) {
-        rowEl = this.doc.createElement("tr");
-        tbody.appendChild(rowEl);
-      }
-      this.spreadProps(rowEl, this.api.getTableRowProps({ view: "year" }));
-      const existingCells = Array.from(rowEl.querySelectorAll("td"));
-      while (existingCells.length > years.length) {
-        const cell = existingCells.pop();
-        if (cell) rowEl.removeChild(cell);
-      }
-      years.forEach((year, cellIndex) => {
-        let cellEl = existingCells[cellIndex];
-        if (!cellEl) {
-          cellEl = this.doc.createElement("td");
-          const triggerEl2 = this.doc.createElement("div");
-          cellEl.appendChild(triggerEl2);
-          rowEl.appendChild(cellEl);
-        }
+    tbody.innerHTML = "";
+    yearsGrid.forEach((years) => {
+      const tr = this.doc.createElement("tr");
+      this.spreadProps(tr, this.api.getTableRowProps({ view: "year" }));
+      years.forEach((year) => {
+        const td = this.doc.createElement("td");
         this.spreadProps(
-          cellEl,
+          td,
           this.api.getYearTableCellProps({ ...year, columns: 4 })
         );
-        const triggerEl = cellEl.querySelector("div");
-        if (triggerEl) {
-          this.spreadProps(
-            triggerEl,
-            this.api.getYearTableCellTriggerProps({ ...year, columns: 4 })
-          );
-          triggerEl.textContent = year.label;
-        }
+        const trigger = this.doc.createElement("div");
+        this.spreadProps(
+          trigger,
+          this.api.getYearTableCellTriggerProps({ ...year, columns: 4 })
+        );
+        trigger.textContent = year.label;
+        td.appendChild(trigger);
+        tr.appendChild(td);
       });
+      tbody.appendChild(tr);
     });
   };
   render() {
@@ -4120,130 +4057,133 @@ var DatePicker = class extends Component {
       '[data-scope="date-picker"][data-part="content"]'
     );
     if (content) this.spreadProps(content, this.api.getContentProps());
-    const dayView = this.getDayView();
-    if (dayView) {
-      dayView.hidden = this.api.view !== "day";
-      const viewControl = dayView.querySelector(
-        '[data-part="view-control"]'
-      );
-      if (viewControl)
-        this.spreadProps(
-          viewControl,
-          this.api.getViewControlProps({ view: "year" })
+    if (this.api.open) {
+      const dayView = this.getDayView();
+      const monthView = this.getMonthView();
+      const yearView = this.getYearView();
+      if (dayView) dayView.hidden = this.api.view !== "day";
+      if (monthView) monthView.hidden = this.api.view !== "month";
+      if (yearView) yearView.hidden = this.api.view !== "year";
+      if (this.api.view === "day" && dayView) {
+        const viewControl = dayView.querySelector(
+          '[data-part="view-control"]'
         );
-      const prevTrigger = dayView.querySelector(
-        '[data-part="prev-trigger"]'
-      );
-      if (prevTrigger)
-        this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-      const viewTrigger = dayView.querySelector(
-        '[data-part="view-trigger"]'
-      );
-      if (viewTrigger) {
-        this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
-        viewTrigger.textContent = this.api.visibleRangeText.start;
+        if (viewControl)
+          this.spreadProps(
+            viewControl,
+            this.api.getViewControlProps({ view: "year" })
+          );
+        const prevTrigger = dayView.querySelector(
+          '[data-part="prev-trigger"]'
+        );
+        if (prevTrigger)
+          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+        const viewTrigger = dayView.querySelector(
+          '[data-part="view-trigger"]'
+        );
+        if (viewTrigger) {
+          this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
+          viewTrigger.textContent = this.api.visibleRangeText.start;
+        }
+        const nextTrigger = dayView.querySelector(
+          '[data-part="next-trigger"]'
+        );
+        if (nextTrigger)
+          this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+        const table = dayView.querySelector("table");
+        if (table)
+          this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+        const thead = dayView.querySelector("thead");
+        if (thead)
+          this.spreadProps(
+            thead,
+            this.api.getTableHeaderProps({ view: "day" })
+          );
+        this.renderDayTableHeader();
+        this.renderDayTableBody();
+      } else if (this.api.view === "month" && monthView) {
+        const viewControl = monthView.querySelector(
+          '[data-part="view-control"]'
+        );
+        if (viewControl)
+          this.spreadProps(
+            viewControl,
+            this.api.getViewControlProps({ view: "month" })
+          );
+        const prevTrigger = monthView.querySelector(
+          '[data-part="prev-trigger"]'
+        );
+        if (prevTrigger)
+          this.spreadProps(
+            prevTrigger,
+            this.api.getPrevTriggerProps({ view: "month" })
+          );
+        const viewTrigger = monthView.querySelector(
+          '[data-part="view-trigger"]'
+        );
+        if (viewTrigger) {
+          this.spreadProps(
+            viewTrigger,
+            this.api.getViewTriggerProps({ view: "month" })
+          );
+          viewTrigger.textContent = String(this.api.visibleRange.start.year);
+        }
+        const nextTrigger = monthView.querySelector(
+          '[data-part="next-trigger"]'
+        );
+        if (nextTrigger)
+          this.spreadProps(
+            nextTrigger,
+            this.api.getNextTriggerProps({ view: "month" })
+          );
+        const table = monthView.querySelector("table");
+        if (table)
+          this.spreadProps(
+            table,
+            this.api.getTableProps({ view: "month", columns: 4 })
+          );
+        this.renderMonthTableBody();
+      } else if (this.api.view === "year" && yearView) {
+        const viewControl = yearView.querySelector(
+          '[data-part="view-control"]'
+        );
+        if (viewControl)
+          this.spreadProps(
+            viewControl,
+            this.api.getViewControlProps({ view: "year" })
+          );
+        const prevTrigger = yearView.querySelector(
+          '[data-part="prev-trigger"]'
+        );
+        if (prevTrigger)
+          this.spreadProps(
+            prevTrigger,
+            this.api.getPrevTriggerProps({ view: "year" })
+          );
+        const decadeText = yearView.querySelector(
+          '[data-part="decade"]'
+        );
+        if (decadeText) {
+          const decade = this.api.getDecade();
+          decadeText.textContent = `${decade.start} - ${decade.end}`;
+        }
+        const nextTrigger = yearView.querySelector(
+          '[data-part="next-trigger"]'
+        );
+        if (nextTrigger)
+          this.spreadProps(
+            nextTrigger,
+            this.api.getNextTriggerProps({ view: "year" })
+          );
+        const table = yearView.querySelector("table");
+        if (table)
+          this.spreadProps(
+            table,
+            this.api.getTableProps({ view: "year", columns: 4 })
+          );
+        this.renderYearTableBody();
       }
-      const nextTrigger = dayView.querySelector(
-        '[data-part="next-trigger"]'
-      );
-      if (nextTrigger)
-        this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
-      const table = dayView.querySelector("table");
-      if (table)
-        this.spreadProps(table, this.api.getTableProps({ view: "day" }));
-      const thead = dayView.querySelector("thead");
-      if (thead)
-        this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
     }
-    this.syncWeekDays();
-    this.syncDayGrid();
-    const monthView = this.getMonthView();
-    if (monthView) {
-      monthView.hidden = this.api.view !== "month";
-      const viewControl = monthView.querySelector(
-        '[data-part="view-control"]'
-      );
-      if (viewControl)
-        this.spreadProps(
-          viewControl,
-          this.api.getViewControlProps({ view: "month" })
-        );
-      const prevTrigger = monthView.querySelector(
-        '[data-part="prev-trigger"]'
-      );
-      if (prevTrigger)
-        this.spreadProps(
-          prevTrigger,
-          this.api.getPrevTriggerProps({ view: "month" })
-        );
-      const viewTrigger = monthView.querySelector(
-        '[data-part="view-trigger"]'
-      );
-      if (viewTrigger) {
-        this.spreadProps(
-          viewTrigger,
-          this.api.getViewTriggerProps({ view: "month" })
-        );
-        viewTrigger.textContent = String(this.api.visibleRange.start.year);
-      }
-      const nextTrigger = monthView.querySelector(
-        '[data-part="next-trigger"]'
-      );
-      if (nextTrigger)
-        this.spreadProps(
-          nextTrigger,
-          this.api.getNextTriggerProps({ view: "month" })
-        );
-      const table = monthView.querySelector("table");
-      if (table)
-        this.spreadProps(
-          table,
-          this.api.getTableProps({ view: "month", columns: 4 })
-        );
-    }
-    this.syncMonthGrid();
-    const yearView = this.getYearView();
-    if (yearView) {
-      yearView.hidden = this.api.view !== "year";
-      const viewControl = yearView.querySelector(
-        '[data-part="view-control"]'
-      );
-      if (viewControl)
-        this.spreadProps(
-          viewControl,
-          this.api.getViewControlProps({ view: "year" })
-        );
-      const prevTrigger = yearView.querySelector(
-        '[data-part="prev-trigger"]'
-      );
-      if (prevTrigger)
-        this.spreadProps(
-          prevTrigger,
-          this.api.getPrevTriggerProps({ view: "year" })
-        );
-      const decadeText = yearView.querySelector(
-        '[data-part="decade"]'
-      );
-      if (decadeText) {
-        const decade = this.api.getDecade();
-        decadeText.textContent = `${decade.start} - ${decade.end}`;
-      }
-      const nextTrigger = yearView.querySelector(
-        '[data-part="next-trigger"]'
-      );
-      if (nextTrigger)
-        this.spreadProps(
-          nextTrigger,
-          this.api.getNextTriggerProps({ view: "year" })
-        );
-      const table = yearView.querySelector("table");
-      if (table)
-        this.spreadProps(
-          table,
-          this.api.getTableProps({ view: "year", columns: 4 })
-        );
-    }
-    this.syncYearGrid();
   }
 };
 
@@ -4345,6 +4285,10 @@ var DatePickerHook = {
     });
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
+    const inputWrapper = el.querySelector(
+      '[data-scope="date-picker"][data-part="input-wrapper"]'
+    );
+    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("date_picker_set_value", (payload) => {
@@ -4362,8 +4306,12 @@ var DatePickerHook = {
     el.addEventListener("phx:date-picker:set-value", this.onSetValue);
   },
   updated() {
-    const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
     const el = this.el;
+    const inputWrapper = el.querySelector(
+      '[data-scope="date-picker"][data-part="input-wrapper"]'
+    );
+    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
+    const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
     const min = getString(el, "min");
     const max = getString(el, "max");
     const positioningJson = getString(el, "positioning");

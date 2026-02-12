@@ -22,7 +22,6 @@ defmodule Corex.List do
     * `:new_tab` - (optional) When redirect is used, set to true to open this item's URL in a new tab
     """
 
-    @derive Jason.Encoder
     @enforce_keys [:label]
     defstruct [
       :id,

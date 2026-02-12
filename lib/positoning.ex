@@ -5,7 +5,6 @@ defmodule Corex.Positioning do
   Maps to Zag.js PositioningOptions interface.
   """
 
-  @derive Jason.Encoder
   defstruct hide_when_detached: true,
             strategy: "fixed",
             placement: "bottom",

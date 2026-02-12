@@ -586,7 +586,11 @@ var SignaturePad = class extends Component {
     }
     const hiddenInput = rootEl.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
     if (hiddenInput) {
-      const pathsValue = this.paths.length > 0 ? JSON.stringify(this.paths) : "";
+      const pathsForValue = this.paths.length > 0 ? this.paths : this.api.paths;
+      if (this.paths.length === 0 && this.api.paths.length > 0) {
+        this.paths = [...this.api.paths];
+      }
+      const pathsValue = pathsForValue.length > 0 ? JSON.stringify(pathsForValue) : "";
       this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
       if (this.name) {
         hiddenInput.name = this.name;
@@ -664,6 +668,14 @@ var SignaturePadHook = {
     });
     signaturePad.init();
     this.signaturePad = signaturePad;
+    const initialPaths = controlled ? paths : defaultPaths;
+    if (initialPaths.length > 0) {
+      const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
     this.onClear = (event) => {
       const { id: targetId } = event.detail;
       if (targetId && targetId !== el.id) return;
