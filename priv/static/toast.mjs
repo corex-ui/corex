@@ -1313,13 +1313,46 @@ var ToastHook = {
       offsets: parseOffsets(getString(el, "offset")),
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
     });
+    const store = getToastStore(this.groupId);
+    const flashInfo = el.getAttribute("data-flash-info");
+    const flashInfoTitle = el.getAttribute("data-flash-info-title");
+    const flashError = el.getAttribute("data-flash-error");
+    const flashErrorTitle = el.getAttribute("data-flash-error-title");
+    const flashInfoDuration = el.getAttribute("data-flash-info-duration");
+    const flashErrorDuration = el.getAttribute("data-flash-error-duration");
+    if (store && flashInfo) {
+      try {
+        store.create({
+          title: flashInfoTitle || "Success",
+          description: flashInfo,
+          type: "info",
+          id: generateId(void 0, "toast"),
+          duration: parseDuration(flashInfoDuration ?? void 0)
+        });
+      } catch (error) {
+        console.error("Failed to create flash info toast:", error);
+      }
+    }
+    if (store && flashError) {
+      try {
+        store.create({
+          title: flashErrorTitle || "Error",
+          description: flashError,
+          type: "error",
+          id: generateId(void 0, "toast"),
+          duration: parseDuration(flashErrorDuration ?? void 0)
+        });
+      } catch (error) {
+        console.error("Failed to create flash error toast:", error);
+      }
+    }
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("toast-create", (payload) => {
-        const store = getToastStore(payload.groupId || this.groupId);
-        if (!store) return;
+        const store2 = getToastStore(payload.groupId || this.groupId);
+        if (!store2) return;
         try {
-          store.create({
+          store2.create({
             title: payload.title,
             description: payload.description,
             type: payload.type || "info",
@@ -1333,10 +1366,10 @@ var ToastHook = {
     );
     this.handlers.push(
       this.handleEvent("toast-update", (payload) => {
-        const store = getToastStore(payload.groupId || this.groupId);
-        if (!store) return;
+        const store2 = getToastStore(payload.groupId || this.groupId);
+        if (!store2) return;
         try {
-          store.update(payload.id, {
+          store2.update(payload.id, {
             title: payload.title,
             description: payload.description,
             type: payload.type
@@ -1348,10 +1381,10 @@ var ToastHook = {
     );
     this.handlers.push(
       this.handleEvent("toast-dismiss", (payload) => {
-        const store = getToastStore(payload.groupId || this.groupId);
-        if (!store) return;
+        const store2 = getToastStore(payload.groupId || this.groupId);
+        if (!store2) return;
         try {
-          store.dismiss(payload.id);
+          store2.dismiss(payload.id);
         } catch (error) {
           console.error("Failed to dismiss toast:", error);
         }
@@ -1359,10 +1392,10 @@ var ToastHook = {
     );
     el.addEventListener("toast:create", (event) => {
       const { detail } = event;
-      const store = getToastStore(detail.groupId || this.groupId);
-      if (!store) return;
+      const store2 = getToastStore(detail.groupId || this.groupId);
+      if (!store2) return;
       try {
-        store.create({
+        store2.create({
           title: detail.title,
           description: detail.description,
           type: detail.type || "info",

@@ -131,8 +131,7 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "positioner",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:positioner",
-      "style" => "display: none;"
+      "id" => "date-picker:#{assigns.id}:positioner"
     }
   end
 

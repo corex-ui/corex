@@ -3906,6 +3906,10 @@ var splitViewProps = createSplitProps(viewProps);
 
 // components/date-picker.ts
 var DatePicker = class extends Component {
+  _lastView = null;
+  _lastDayRangeKey = "";
+  _lastMonthYear = null;
+  _lastYearDecade = "";
   initMachine(props2) {
     return new VanillaMachine(machine, {
       ...props2
@@ -4344,11 +4348,12 @@ var DatePickerHook = {
     });
     if (isControlled && this.datePicker) {
       const serverValues = getStringList(el, "value");
+      const serverIso = serverValues?.join(",") ?? "";
       const zagValue = this.datePicker.api.value;
       const zagIso = zagValue?.length ? zagValue.map((d) => toISOString(d)).join(",") : "";
-      const serverIso = serverValues?.join(",") ?? "";
-      if (serverIso && serverIso !== zagIso) {
-        this.datePicker.api.setValue(serverValues.map((x) => parse(x)));
+      if (serverIso !== zagIso) {
+        const parsed = serverValues?.length ? serverValues.map((x) => parse(x)) : [];
+        this.datePicker.api.setValue(parsed);
       }
     }
   },

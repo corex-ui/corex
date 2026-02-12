@@ -115,6 +115,7 @@
 
   .layout__article {
     width: 100%;
+    min-width: 0;
     max-width: var(--breakpoint-lg);
     padding: var(--spacing-ui-padding);
     color: var(--color-layer--text);

@@ -18,6 +18,12 @@
   <.list>
     <:item title="Name">{@user.name}</:item>
     <:item title="Country">{@user.country}</:item>
-    <:item title="Terms">{@user.terms}</:item>
+    <:item title="Birth date">
+      <%= if @user.birth_date, do: Calendar.strftime(@user.birth_date, "%d %b %Y"), else: "—" %>
+    </:item>
+    <:item title="Signature">
+      <.signature_preview signature={@user.signature} />
+    </:item>
+    <:item title="Terms"><%= if @user.terms, do: "Yes", else: "No" %></:item>
   </.list>
 </Layouts.app>

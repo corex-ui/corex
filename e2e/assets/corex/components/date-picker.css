@@ -103,12 +103,12 @@
     }
   }
 
-  .date-picker [data-scope="date-picker"][data-part="positioner"] {
+  /* .date-picker [data-scope="date-picker"][data-part="positioner"] {
     position: absolute;
     width: 0;
     height: 0;
     overflow: hidden;
-  }
+  } */
 
   .date-picker [data-scope="date-picker"][data-part="content"] {
     @apply ui-content;

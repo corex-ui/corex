@@ -13161,6 +13161,10 @@ var Corex = (() => {
       DatePicker = class extends Component {
         constructor() {
           super(...arguments);
+          __publicField(this, "_lastView", null);
+          __publicField(this, "_lastDayRangeKey", "");
+          __publicField(this, "_lastMonthYear", null);
+          __publicField(this, "_lastYearDecade", "");
           __publicField(this, "getDayView", () => this.el.querySelector('[data-part="day-view"]'));
           __publicField(this, "getMonthView", () => this.el.querySelector('[data-part="month-view"]'));
           __publicField(this, "getYearView", () => this.el.querySelector('[data-part="year-view"]'));
@@ -13557,7 +13561,7 @@ var Corex = (() => {
           el.addEventListener("phx:date-picker:set-value", this.onSetValue);
         },
         updated() {
-          var _a, _b;
+          var _a;
           const el = this.el;
           const inputWrapper = el.querySelector(
             '[data-scope="date-picker"][data-part="input-wrapper"]'
@@ -13595,12 +13599,8 @@ var Corex = (() => {
           }));
           if (isControlled && this.datePicker) {
             const serverValues = getStringList(el, "value");
-            const zagValue = this.datePicker.api.value;
-            const zagIso = (zagValue == null ? void 0 : zagValue.length) ? zagValue.map((d2) => toISOString(d2)).join(",") : "";
-            const serverIso = (_b = serverValues == null ? void 0 : serverValues.join(",")) != null ? _b : "";
-            if (serverIso && serverIso !== zagIso) {
-              this.datePicker.api.setValue(serverValues.map((x2) => parse(x2)));
-            }
+            const parsed = (serverValues == null ? void 0 : serverValues.length) ? serverValues.map((x2) => parse(x2)) : [];
+            this.datePicker.api.setValue(parsed);
           }
         },
         destroyed() {
@@ -21390,13 +21390,46 @@ var Corex = (() => {
             offsets: parseOffsets(getString(el, "offset")),
             pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
           });
+          const store = getToastStore(this.groupId);
+          const flashInfo = el.getAttribute("data-flash-info");
+          const flashInfoTitle = el.getAttribute("data-flash-info-title");
+          const flashError = el.getAttribute("data-flash-error");
+          const flashErrorTitle = el.getAttribute("data-flash-error-title");
+          const flashInfoDuration = el.getAttribute("data-flash-info-duration");
+          const flashErrorDuration = el.getAttribute("data-flash-error-duration");
+          if (store && flashInfo) {
+            try {
+              store.create({
+                title: flashInfoTitle || "Success",
+                description: flashInfo,
+                type: "info",
+                id: generateId(void 0, "toast"),
+                duration: parseDuration(flashInfoDuration != null ? flashInfoDuration : void 0)
+              });
+            } catch (error) {
+              console.error("Failed to create flash info toast:", error);
+            }
+          }
+          if (store && flashError) {
+            try {
+              store.create({
+                title: flashErrorTitle || "Error",
+                description: flashError,
+                type: "error",
+                id: generateId(void 0, "toast"),
+                duration: parseDuration(flashErrorDuration != null ? flashErrorDuration : void 0)
+              });
+            } catch (error) {
+              console.error("Failed to create flash error toast:", error);
+            }
+          }
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("toast-create", (payload) => {
-              const store = getToastStore(payload.groupId || this.groupId);
-              if (!store) return;
+              const store2 = getToastStore(payload.groupId || this.groupId);
+              if (!store2) return;
               try {
-                store.create({
+                store2.create({
                   title: payload.title,
                   description: payload.description,
                   type: payload.type || "info",
@@ -21410,10 +21443,10 @@ var Corex = (() => {
           );
           this.handlers.push(
             this.handleEvent("toast-update", (payload) => {
-              const store = getToastStore(payload.groupId || this.groupId);
-              if (!store) return;
+              const store2 = getToastStore(payload.groupId || this.groupId);
+              if (!store2) return;
               try {
-                store.update(payload.id, {
+                store2.update(payload.id, {
                   title: payload.title,
                   description: payload.description,
                   type: payload.type
@@ -21425,10 +21458,10 @@ var Corex = (() => {
           );
           this.handlers.push(
             this.handleEvent("toast-dismiss", (payload) => {
-              const store = getToastStore(payload.groupId || this.groupId);
-              if (!store) return;
+              const store2 = getToastStore(payload.groupId || this.groupId);
+              if (!store2) return;
               try {
-                store.dismiss(payload.id);
+                store2.dismiss(payload.id);
               } catch (error) {
                 console.error("Failed to dismiss toast:", error);
               }
@@ -21436,10 +21469,10 @@ var Corex = (() => {
           );
           el.addEventListener("toast:create", (event) => {
             const { detail } = event;
-            const store = getToastStore(detail.groupId || this.groupId);
-            if (!store) return;
+            const store2 = getToastStore(detail.groupId || this.groupId);
+            if (!store2) return;
             try {
-              store.create({
+              store2.create({
                 title: detail.title,
                 description: detail.description,
                 type: detail.type || "info",

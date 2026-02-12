@@ -5,6 +5,7 @@ defmodule E2eWeb.Router do
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
+    plug :fetch_flash
     plug :fetch_live_flash
     plug E2eWeb.Plugs.Mode
     plug E2eWeb.Plugs.Locale

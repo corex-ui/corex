@@ -134,7 +134,7 @@ defmodule Corex.Toast do
 
     flash_info =
       Map.get(assigns, :flash_info) ||
-        %Flash.Info{title: gettext("Success"), type: :success, duration: 5000}
+        %Flash.Info{title: gettext("Info"), type: :info, duration: 5000}
 
     flash_error =
       Map.get(assigns, :flash_error) ||
@@ -157,6 +157,12 @@ defmodule Corex.Toast do
       data-gap={@gap}
       data-offset={@offset}
       data-overlap={@overlap}
+      data-flash-info={@info_flash}
+      data-flash-info-title={@flash_info.title}
+      data-flash-error={@error_flash}
+      data-flash-error-title={@flash_error.title}
+      data-flash-info-duration={@flash_info.duration}
+      data-flash-error-duration={@flash_error.duration}
     >
       <div data-scope="toast" data-part="group">
 

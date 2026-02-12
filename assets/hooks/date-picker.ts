@@ -194,14 +194,16 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     if (isControlled && this.datePicker) {
       const serverValues = getStringList(el, "value");
+      const serverIso = serverValues?.join(",") ?? "";
       const zagValue = this.datePicker.api.value;
       const zagIso = zagValue?.length
         ? zagValue.map((d: { year: number; month: number; day: number }) => toISOString(d)).join(",")
         : "";
-      const serverIso = serverValues?.join(",") ?? "";
-
-      if (serverIso && serverIso !== zagIso) {
-        this.datePicker.api.setValue(serverValues!.map((x) => datePicker.parse(x)));
+      if (serverIso !== zagIso) {
+        const parsed = serverValues?.length
+          ? serverValues.map((x) => datePicker.parse(x))
+          : [];
+        this.datePicker.api.setValue(parsed);
       }
     }
   },

@@ -3,6 +3,11 @@ import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
+  private _lastView: "day" | "month" | "year" | null = null;
+  private _lastDayRangeKey = "";
+  private _lastMonthYear: number | null = null;
+  private _lastYearDecade = "";
+
   initMachine(props: datePicker.Props): VanillaMachine<any> {
     return new VanillaMachine(datePicker.machine, {
       ...props,
