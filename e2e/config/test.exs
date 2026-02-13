@@ -21,7 +21,6 @@ config :e2e, E2eWeb.Endpoint,
   server: true,
   code_reloader: false
 
-
 # In test we don't send emails
 config :e2e, E2e.Mailer, adapter: Swoosh.Adapters.Test
 
