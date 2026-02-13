@@ -7,6 +7,9 @@ defmodule Corex.TreeView.Connect do
   defp data_attr(false), do: nil
   defp data_attr(nil), do: nil
 
+  defp depth_style(index_path) when is_list(index_path), do: "--depth: #{length(index_path)}"
+  defp depth_style(_), do: "--depth: 0"
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
@@ -83,12 +86,15 @@ defmodule Corex.TreeView.Connect do
       "data-path" => encode_index_path(assigns.index_path),
       "data-disabled" => data_attr(assigns.disabled),
       "dir" => assigns.dir,
-      "id" => "tree-view:#{assigns.id}:item:#{assigns.value}"
+      "id" => "tree-view:#{assigns.id}:item:#{assigns.value}",
+      "style" => depth_style(assigns.index_path)
     }
 
     base = if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
     base = if assigns.redirect == false, do: Map.put(base, "data-redirect", "false"), else: base
-    if assigns.new_tab, do: Map.put(base, "data-new-tab", ""), else: base
+    base = if assigns.new_tab, do: Map.put(base, "data-new-tab", ""), else: base
+    base = if Map.get(assigns, :selected), do: Map.put(base, "data-selected", ""), else: base
+    if Map.get(assigns, :focused), do: Map.put(base, "data-focus", ""), else: base
   end
 
   @spec branch(Branch.t()) :: map()
@@ -106,29 +112,35 @@ defmodule Corex.TreeView.Connect do
       "id" => "tree-view:#{assigns.id}:branch:#{assigns.value}"
     }
 
-    if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
+    base = if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
+    base = if Map.get(assigns, :selected), do: Map.put(base, "data-selected", ""), else: base
+    if Map.get(assigns, :focused), do: Map.put(base, "data-focus", ""), else: base
   end
 
   @spec branch_trigger(Branch.t()) :: map()
   def branch_trigger(assigns) do
     state = if assigns.expanded, do: "open", else: "closed"
 
-    %{
+    base = %{
       "data-scope" => "tree-view",
       "data-part" => "branch-control",
       "data-value" => assigns.value,
       "data-path" => encode_index_path(assigns.index_path),
       "data-state" => state,
       "data-disabled" => data_attr(assigns.disabled),
-      "dir" => assigns.dir
+      "dir" => assigns.dir,
+      "style" => depth_style(assigns.index_path)
     }
+
+    base = if Map.get(assigns, :selected), do: Map.put(base, "data-selected", ""), else: base
+    if Map.get(assigns, :focused), do: Map.put(base, "data-focus", ""), else: base
   end
 
   @spec branch_content(Branch.t()) :: map()
   def branch_content(assigns) do
     state = if assigns.expanded, do: "open", else: "closed"
 
-    %{
+    base = %{
       "data-scope" => "tree-view",
       "data-part" => "branch-content",
       "data-value" => assigns.value,
@@ -136,6 +148,8 @@ defmodule Corex.TreeView.Connect do
       "data-state" => state,
       "dir" => assigns.dir
     }
+
+    if assigns.expanded, do: base, else: Map.put(base, "hidden", "")
   end
 
   @spec branch_indicator(Branch.t()) :: map()

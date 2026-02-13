@@ -57,7 +57,9 @@ defmodule Corex.TreeView.Anatomy do
       disabled: false,
       data: %{},
       redirect: nil,
-      new_tab: false
+      new_tab: false,
+      selected: false,
+      focused: false
     ]
 
     @type t :: %__MODULE__{
@@ -69,7 +71,9 @@ defmodule Corex.TreeView.Anatomy do
             disabled: boolean(),
             data: map(),
             redirect: boolean() | nil,
-            new_tab: boolean()
+            new_tab: boolean(),
+            selected: boolean(),
+            focused: boolean()
           }
   end
 
@@ -83,7 +87,9 @@ defmodule Corex.TreeView.Anatomy do
       dir: "ltr",
       disabled: false,
       data: %{},
-      expanded: false
+      expanded: false,
+      selected: false,
+      focused: false
     ]
 
     @type t :: %__MODULE__{
@@ -94,7 +100,9 @@ defmodule Corex.TreeView.Anatomy do
             dir: String.t(),
             disabled: boolean(),
             data: map(),
-            expanded: boolean()
+            expanded: boolean(),
+            selected: boolean(),
+            focused: boolean()
           }
   end
 end

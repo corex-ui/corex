@@ -60,7 +60,7 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
         if (eventName && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
             id: el.id,
-            value: details,
+            value: { ...details, isItem: isItem ?? false },
           });
         }
       },

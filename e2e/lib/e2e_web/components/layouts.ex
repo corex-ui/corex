@@ -82,33 +82,33 @@ defmodule E2eWeb.Layouts do
                 </div>
               </div>
               <div class="scrollbar scrollbar--sm overflow-y-auto">
-              <.tree_view
-                id="components-menu"
-                on_selection_change="handle_menu"
-                class="tree-view navigation px-ui-padding "
-                redirect
-                value={[@current_path |> String.split("/") |> List.last()]}
-                items={@menu}
-              >
-                <:label>Corex Components</:label>
-                <:indicator>
-                  <.icon name="hero-chevron-right" />
-                </:indicator>
-              </.tree_view>
+                <.tree_view
+                  id="components-menu"
+                  on_selection_change="handle_menu"
+                  class="tree-view navigation px-ui-padding "
+                  redirect
+                  value={[@current_path |> String.split("/") |> List.last()]}
+                  items={@menu}
+                >
+                  <:label>Corex Components</:label>
+                  <:indicator>
+                    <.icon name="hero-chevron-right" />
+                  </:indicator>
+                </.tree_view>
 
-              <.tree_view
-                id="form-menu"
-                class="tree-view navigation px-ui-padding"
-                on_selection_change="handle_menu"
-                redirect
-                value={[@current_path |> String.split("/") |> List.last()]}
-                items={@form_menu}
-              >
-                <:label>Phoenix Form</:label>
-                <:indicator>
-                  <.icon name="hero-chevron-right" />
-                </:indicator>
-              </.tree_view>
+                <.tree_view
+                  id="form-menu"
+                  class="tree-view navigation px-ui-padding"
+                  on_selection_change="handle_menu"
+                  redirect
+                  value={[@current_path |> String.split("/") |> List.last()]}
+                  items={@form_menu}
+                >
+                  <:label>Phoenix Form</:label>
+                  <:indicator>
+                    <.icon name="hero-chevron-right" />
+                  </:indicator>
+                </.tree_view>
               </div>
             </:content>
           </.dialog>
@@ -171,7 +171,7 @@ defmodule E2eWeb.Layouts do
         </div>
       </main>
     </div>
-    <.footer/>
+    <.footer />
 
     <Corex.Toast.toast_group id="layout-toast" flash={@flash}>
       <:loading>

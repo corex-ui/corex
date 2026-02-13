@@ -155,6 +155,8 @@ defmodule Corex.TreeView do
               item={item}
               index_path={[i]}
               expanded_value={@expanded_value}
+              value={@value}
+              focused_value={if i == 0, do: item.id, else: nil}
             >
               <:indicator><%= render_slot(@indicator) %></:indicator>
             </.tree_node>
@@ -170,12 +172,16 @@ defmodule Corex.TreeView do
   attr(:item, :any, required: true)
   attr(:index_path, :list, required: true)
   attr(:expanded_value, :list, default: [])
+  attr(:value, :list, default: [])
+  attr(:focused_value, :string, default: nil)
   slot(:indicator, doc: "Indicator content for branches")
 
   defp tree_node(assigns) do
     item = assigns.item
     index_path = assigns.index_path
     expanded = item.id in List.wrap(assigns.expanded_value)
+    selected = item.id in List.wrap(assigns.value)
+    focused = assigns.focused_value != nil and item.id == assigns.focused_value
     name = String.capitalize(item.label)
 
     branch_assigns = %Branch{
@@ -184,7 +190,9 @@ defmodule Corex.TreeView do
       index_path: index_path,
       name: name,
       dir: assigns.dir,
-      expanded: expanded
+      expanded: expanded,
+      selected: selected,
+      focused: focused
     }
 
     item_assigns = %Item{
@@ -194,7 +202,9 @@ defmodule Corex.TreeView do
       name: name,
       dir: assigns.dir,
       redirect: item.redirect,
-      new_tab: item.new_tab
+      new_tab: item.new_tab,
+      selected: selected,
+      focused: focused
     }
 
     assigns =
@@ -220,6 +230,8 @@ defmodule Corex.TreeView do
               item={child}
               index_path={@index_path ++ [j]}
               expanded_value={@expanded_value}
+              value={@value}
+              focused_value={@focused_value}
             >
               <:indicator><%= render_slot(@indicator) %></:indicator>
             </.tree_node>

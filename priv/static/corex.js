@@ -13878,10 +13878,6 @@ var Corex = (() => {
       DatePicker = class extends Component {
         constructor() {
           super(...arguments);
-          __publicField(this, "_lastView", null);
-          __publicField(this, "_lastDayRangeKey", "");
-          __publicField(this, "_lastMonthYear", null);
-          __publicField(this, "_lastYearDecade", "");
           __publicField(this, "getDayView", () => this.el.querySelector('[data-part="day-view"]'));
           __publicField(this, "getMonthView", () => this.el.querySelector('[data-part="month-view"]'));
           __publicField(this, "getYearView", () => this.el.querySelector('[data-part="year-view"]'));
@@ -14006,23 +14002,13 @@ var Corex = (() => {
             '[data-scope="date-picker"][data-part="input"]'
           );
           if (input) {
-            const inputProps2 = __spreadValues({}, this.api.getInputProps());
-            const inputAriaLabel = this.el.dataset.inputAriaLabel;
-            if (inputAriaLabel) {
-              inputProps2["aria-label"] = inputAriaLabel;
-            }
-            this.spreadProps(input, inputProps2);
+            this.spreadProps(input, this.api.getInputProps());
           }
           const trigger = this.el.querySelector(
             '[data-scope="date-picker"][data-part="trigger"]'
           );
           if (trigger) {
-            const triggerProps2 = __spreadValues({}, this.api.getTriggerProps());
-            const ariaLabel = this.el.dataset.triggerAriaLabel;
-            if (ariaLabel) {
-              triggerProps2["aria-label"] = ariaLabel;
-            }
-            this.spreadProps(trigger, triggerProps2);
+            this.spreadProps(trigger, this.api.getTriggerProps());
           }
           const positioner = this.el.querySelector(
             '[data-scope="date-picker"][data-part="positioner"]'
@@ -15497,43 +15483,21 @@ var Corex = (() => {
         initApi() {
           return connect7(this.machine.service, normalizeProps);
         }
-        getPart(part) {
-          const rootEl = this.el;
-          const inRoot = rootEl.querySelector(
-            `[data-scope="dialog"][data-part="${part}"]`
-          );
-          if (inRoot) return inRoot;
-          const byId = this.doc.getElementById(`dialog:${rootEl.id}:${part}`);
-          if (byId) return byId;
-          const portalWrap = this.doc.getElementById(
-            `_lv_portal_wrap_dialog:${rootEl.id}:portal`
-          );
-          if (portalWrap) {
-            const inWrap = portalWrap.querySelector(
-              `[data-scope="dialog"][data-part="${part}"]`
-            );
-            if (inWrap) return inWrap;
-          }
-          return null;
-        }
         render() {
-          const triggerEl = this.getPart("trigger");
+          const rootEl = this.el;
+          const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
           if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-          const backdropEl = this.getPart("backdrop");
+          const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
           if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
-          const positionerEl = this.getPart("positioner");
-          if (positionerEl) {
-            this.spreadProps(positionerEl, this.api.getPositionerProps());
-            positionerEl.hidden = !this.api.open;
-            positionerEl.dataset.state = this.api.open ? "open" : "closed";
-          }
-          const contentEl = this.getPart("content");
+          const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
+          if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+          const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
           if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
-          const titleEl = this.getPart("title");
+          const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
           if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
-          const descriptionEl = this.getPart("description");
+          const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
           if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-          const closeTriggerEl = this.getPart("close-trigger");
+          const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
@@ -15574,12 +15538,6 @@ var Corex = (() => {
           }));
           dialog.init();
           this.dialog = dialog;
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              var _a;
-              (_a = this.dialog) == null ? void 0 : _a.render();
-            });
-          });
           this.onSetOpen = (event) => {
             const { open } = event.detail;
             dialog.api.setOpen(open);
@@ -24145,7 +24103,7 @@ var Corex = (() => {
               if (eventName && this.liveSocket.main.isConnected()) {
                 pushEvent(eventName, {
                   id: el.id,
-                  value: details
+                  value: __spreadProps(__spreadValues({}, details), { isItem: isItem != null ? isItem : false })
                 });
               }
             },

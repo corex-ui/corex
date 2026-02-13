@@ -42,7 +42,11 @@ defmodule E2eWeb.SharedEvents do
   defp path_from_uri(%URI{path: path}), do: path
 
   defp handle_menu_event("handle_menu", %{"id" => _id, "value" => value}, socket) do
-    {:halt, push_navigate(socket, to: Enum.at(value["selectedValue"], 0))}
+    if value["isItem"] do
+      {:halt, push_navigate(socket, to: Enum.at(value["selectedValue"], 0))}
+    else
+      {:halt, socket}
+    end
   end
 
   defp handle_menu_event(_event, _params, socket) do
