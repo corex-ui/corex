@@ -202,7 +202,7 @@ defmodule Corex.TreeView do
       |> assign(:branch_assigns, branch_assigns)
       |> assign(:item_assigns, item_assigns)
 
-    if item.children && length(item.children) > 0 do
+    if item.children && !Enum.empty?(item.children) do
       ~H"""
       <div {Connect.branch(@branch_assigns)}>
         <div {Connect.branch_trigger(@branch_assigns)}>

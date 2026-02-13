@@ -15575,8 +15575,10 @@ var Corex = (() => {
           dialog.init();
           this.dialog = dialog;
           requestAnimationFrame(() => {
-            var _a;
-            (_a = this.dialog) == null ? void 0 : _a.render();
+            requestAnimationFrame(() => {
+              var _a;
+              (_a = this.dialog) == null ? void 0 : _a.render();
+            });
           });
           this.onSetOpen = (event) => {
             const { open } = event.detail;

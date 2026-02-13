@@ -3,10 +3,6 @@ import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
-  private _lastView: "day" | "month" | "year" | null = null;
-  private _lastDayRangeKey = "";
-  private _lastMonthYear: number | null = null;
-  private _lastYearDecade = "";
 
   initMachine(props: datePicker.Props): VanillaMachine<any> {
     return new VanillaMachine(datePicker.machine, {
@@ -146,24 +142,14 @@ export class DatePicker extends Component<datePicker.Props, datePicker.Api> {
       '[data-scope="date-picker"][data-part="input"]',
     );
     if (input) {
-      const inputProps = { ...this.api.getInputProps() };
-      const inputAriaLabel = this.el.dataset.inputAriaLabel;
-      if (inputAriaLabel) {
-        inputProps["aria-label"] = inputAriaLabel;
-      }
-      this.spreadProps(input, inputProps);
+      this.spreadProps(input, this.api.getInputProps());
     }
 
     const trigger = this.el.querySelector<HTMLElement>(
       '[data-scope="date-picker"][data-part="trigger"]',
     );
     if (trigger) {
-      const triggerProps = { ...this.api.getTriggerProps() };
-      const ariaLabel = this.el.dataset.triggerAriaLabel;
-      if (ariaLabel) {
-        triggerProps["aria-label"] = ariaLabel;
-      }
-      this.spreadProps(trigger, triggerProps);
+      this.spreadProps(trigger, this.api.getTriggerProps());
     }
 
     const positioner = this.el.querySelector<HTMLElement>(

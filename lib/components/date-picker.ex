@@ -502,13 +502,10 @@ defmodule Corex.DatePicker do
         </span>
         <div {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
           <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} aria-hidden="true" />
-          <div data-scope="date-picker" data-part="input-wrapper" data-loading="true" class="date-picker-input-wrapper">
             <input
               {Connect.input(%Anatomy.Input{id: @id, dir: @dir})}
               aria-label={@input_aria_label}
             />
-            <span data-scope="date-picker" data-part="input-skeleton" class="date-picker-input-skeleton" aria-hidden="true"></span>
-          </div>
           <button
             :if={@trigger != []}
             {Connect.trigger(%Anatomy.Trigger{id: @id, dir: @dir})}
@@ -520,7 +517,7 @@ defmodule Corex.DatePicker do
         <div :if={@error != []} :for={msg <- @errors} data-scope="date-picker" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir})}>
+        <div {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir})} style="position:fixed;isolation:isolate;min-width:max-content;pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);z-index:var(--z-index);">
           <div {Connect.content(%Anatomy.Content{id: @id, dir: @dir})}>
             <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">
               <div data-scope="date-picker" data-part="view-control" data-view="day">

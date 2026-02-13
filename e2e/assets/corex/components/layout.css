@@ -64,6 +64,8 @@
     @apply scrollbar scrollbar--sm;
 
     position: sticky;
+    display: flex;
+    flex-direction: column;
     top: calc(var(--spacing-ui-lg));
     align-self: flex-start;
     background: var(--color-layer);

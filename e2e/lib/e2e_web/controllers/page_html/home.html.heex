@@ -6,21 +6,22 @@
       and <span class="text-root--success">interactive</span>
       websites
       <span class="whitespace-nowrap">
-        with <span class="text-root--brand rounded-full whitespace-nowrap">Corex UI</span>
+        with <span class="text-root--brand rounded-full whitespace-nowrap">Corex</span>
       </span>
     </h1>
 
     <p class="md:text-ui-lg my-0">
       From design tokens to accessible, interactive components, <br />
-      Corex UI provides a complete foundation for creating <br />
+      Corex provides a complete foundation for creating <br />
       beautiful, scalable, and performant websites.
     </p>
     <div class="gap-ui-gap p-ui-padding flex flex-wrap justify-start">
       <a
-        href="/installation/introduction"
+        href="https://hexdocs.pm/corex"
+        target="_blank"
         class="button button--brand md:button--lg w-full md:w-auto"
       >
-        Get Started
+        Hex Documentation
         <svg
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
@@ -37,8 +38,11 @@
           </path>
         </svg>
       </a>
-      <a href="/components/accordion" class="button md:button--lg w-full md:w-auto">
-        30+ Components
+      <button
+        phx-click={Corex.Dialog.set_open("menu-dialog", true)}
+        class="button md:button--lg w-full md:w-auto"
+      >
+        Examples
         <svg
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
@@ -54,7 +58,7 @@
           >
           </path>
         </svg>
-      </a>
+      </button>
     </div>
   </section>
 </Layouts.app>

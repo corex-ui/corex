@@ -3906,10 +3906,6 @@ var splitViewProps = createSplitProps(viewProps);
 
 // components/date-picker.ts
 var DatePicker = class extends Component {
-  _lastView = null;
-  _lastDayRangeKey = "";
-  _lastMonthYear = null;
-  _lastYearDecade = "";
   initMachine(props2) {
     return new VanillaMachine(machine, {
       ...props2
@@ -4035,23 +4031,13 @@ var DatePicker = class extends Component {
       '[data-scope="date-picker"][data-part="input"]'
     );
     if (input) {
-      const inputProps2 = { ...this.api.getInputProps() };
-      const inputAriaLabel = this.el.dataset.inputAriaLabel;
-      if (inputAriaLabel) {
-        inputProps2["aria-label"] = inputAriaLabel;
-      }
-      this.spreadProps(input, inputProps2);
+      this.spreadProps(input, this.api.getInputProps());
     }
     const trigger = this.el.querySelector(
       '[data-scope="date-picker"][data-part="trigger"]'
     );
     if (trigger) {
-      const triggerProps = { ...this.api.getTriggerProps() };
-      const ariaLabel = this.el.dataset.triggerAriaLabel;
-      if (ariaLabel) {
-        triggerProps["aria-label"] = ariaLabel;
-      }
-      this.spreadProps(trigger, triggerProps);
+      this.spreadProps(trigger, this.api.getTriggerProps());
     }
     const positioner = this.el.querySelector(
       '[data-scope="date-picker"][data-part="positioner"]'

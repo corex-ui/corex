@@ -13,7 +13,8 @@ config :e2e,
 
 config :corex,
   json_library: Jason,
-  gettext_backend: E2eWeb.Gettext
+  gettext_backend: E2eWeb.Gettext,
+  rtl_locales: ["ar"]
 
 # Configure the endpoint
 config :e2e, E2eWeb.Endpoint,

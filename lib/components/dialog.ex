@@ -205,6 +205,7 @@ defmodule Corex.Dialog do
 
   slot :trigger, required: true do
     attr(:class, :string, required: false)
+    attr(:aria_label, :string, required: false)
   end
 
   slot :content, required: true do
@@ -247,7 +248,7 @@ defmodule Corex.Dialog do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <button phx-update="ignore" {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})} class={Map.get(List.first(@trigger), :class, nil)}>
+      <button phx-update="ignore" aria-label={Map.get(List.first(@trigger), :aria_label, nil)} {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})} class={Map.get(List.first(@trigger), :class, nil)}>
         {render_slot(@trigger)}
       </button>
 
