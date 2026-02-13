@@ -43,7 +43,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.19"}
+    {:corex, "~> 0.1.0-alpha.21"}
   ]
 end
 ```
@@ -355,22 +355,43 @@ In order to use the API, you must use an id on the component
   end
   ```
 
-## Components
+## Performance
 
-Now that Corex is installed, explore the component documentation:
+By default Phoenix esbuild is set to bundle all the JS into a single file.
 
-- [Accordion](https://hexdocs.pm/corex/Corex.Accordion.html)
-- [Checkbox](https://hexdocs.pm/corex/Corex.Checkbox.html)
-- [Clipboard](https://hexdocs.pm/corex/Corex.Clipboard.html)
-- [Collapsible](https://hexdocs.pm/corex/Corex.Collapsible.html)
-- [Combobox](https://hexdocs.pm/corex/Corex.Combobox.html)
-- [Date Picker](https://hexdocs.pm/corex/Corex.DatePicker.html)
-- [Dialog](https://hexdocs.pm/corex/Corex.Dialog.html)
-- [Select](https://hexdocs.pm/corex/Corex.Select.html)
-- [Switch](https://hexdocs.pm/corex/Corex.Switch.html)
-- [Tabs](https://hexdocs.pm/corex/Corex.Tabs.html)
-- [Toast](https://hexdocs.pm/corex/Corex.Toast.html)
-- [Toggle Group](https://hexdocs.pm/corex/Corex.ToggleGroup.html)
+### 1.Enable splitting
+
+In order to enable splitting add the following `--format=esm --splitting` to your esbuild config
+
+```elixir
+config :esbuild,
+  version: "0.25.4",
+  e2e: [
+    args:
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+Run `mix assets.build` and see the magic happening
+
+### 2.Enable gzip for Plug.Static
+
+In your `endpoint.ex` enable gzip for developement also
+
+```elexir
+  plug Plug.Static,
+    at: "/",
+    from: :e2e,
+    gzip: true,
+    only: E2eWeb.static_paths(),
+    raise_on_missing_only: code_reloading?
+```
+
+See the [Production guide](https://hexdocs.pm/corex/production.html) for the final build in production environnement
+
+## Documentation
 
 Full Hex Documentation is available at [http://hexdocs.pm/corex](http://hexdocs.pm/corex)
 
