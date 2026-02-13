@@ -8,14 +8,38 @@ defmodule Corex.Dialog do
 
   ### Basic Usage
 
+  With top-level slots:
+
   ```heex
-  <.dialog id="my-dialog">
+  <.dialog id="my-dialog" class="dialog">
+    <:trigger>Open Dialog</:trigger>
+    <:title>Dialog Title</:title>
+    <:description>
+      This is a dialog description that explains what the dialog is about.
+    </:description>
+    <:content>
+      <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
+    </:content>
+    <:close_trigger>
+      <.icon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+  </.dialog>
+  ```
+
+  With title, description, and close trigger inside content (use the same id as the dialog):
+
+  ```heex
+  <.dialog id="my-dialog" class="dialog">
     <:trigger>Open Dialog</:trigger>
     <:content>
-      <:title>Dialog Title</:title>
-      <:description>Dialog description goes here.</:description>
-      <p>Dialog content</p>
-      <:close_trigger>Close</:close_trigger>
+      <.dialog_title id="my-dialog">Dialog Title</.dialog_title>
+      <.dialog_description id="my-dialog">
+        This is a dialog description that explains what the dialog is about.
+      </.dialog_description>
+      <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
+      <.dialog_close_trigger id="my-dialog">
+        <.icon name="hero-x-mark" class="icon" />
+      </.dialog_close_trigger>
     </:content>
   </.dialog>
   ```
@@ -136,7 +160,7 @@ defmodule Corex.Dialog do
   )
 
   attr(:modal, :boolean,
-    default: true,
+    default: false,
     doc: "Whether the dialog is modal"
   )
 
@@ -223,13 +247,13 @@ defmodule Corex.Dialog do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})}>
+      <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})} class={Map.get(List.first(@trigger), :class, nil)}>
         {render_slot(@trigger)}
       </button>
 
-      <div {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open})}></div>
-      <div {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
-        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
+      <div phx-update="ignore" {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open})}></div>
+      <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
+        <div phx-update="ignore" {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
           <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
             {render_slot(@title)}
           </h2>
@@ -243,6 +267,51 @@ defmodule Corex.Dialog do
         </div>
       </div>
     </div>
+    """
+  end
+
+  @doc type: :component
+  @doc "Renders the dialog title. Use inside `<:content>` when not using the top-level `<:title>` slot. Pass the same id as the parent dialog."
+  attr(:id, :string, required: true)
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  def dialog_title(assigns) do
+    ~H"""
+    <h2 {Connect.title(%Title{id: @id, dir: @dir, open: false})} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </h2>
+    """
+  end
+
+  @doc type: :component
+  @doc "Renders the dialog description. Use inside `<:content>` when not using the top-level `<:description>` slot. Pass the same id as the parent dialog."
+  attr(:id, :string, required: true)
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  def dialog_description(assigns) do
+    ~H"""
+    <p {Connect.description(%Description{id: @id, dir: @dir, open: false})} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </p>
+    """
+  end
+
+  @doc type: :component
+  @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
+  attr(:id, :string, required: true)
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  def dialog_close_trigger(assigns) do
+    ~H"""
+    <button {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false})} {@rest}>
+      <%= render_slot(@inner_block) %>
+    </button>
     """
   end
 

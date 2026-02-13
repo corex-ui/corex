@@ -1,0 +1,80 @@
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+  <h1>Tree View</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <section class="layout__section">
+    <div class="layout__row">
+      <button
+        phx-click={Corex.TreeView.set_expanded_value("my-tree", ["node_modules", "src"])}
+        class="button button--sm"
+      >
+        Expand node_modules & src
+      </button>
+      <button
+        phx-click={Corex.TreeView.set_expanded_value("my-tree", [])}
+        class="button button--sm"
+      >
+        Collapse all
+      </button>
+      <button
+        phx-click={Corex.TreeView.set_selected_value("my-tree", ["package.json"])}
+        class="button button--sm"
+      >
+        Select package.json
+      </button>
+      <button
+        phx-click={Corex.TreeView.set_selected_value("my-tree", [])}
+        class="button button--sm"
+      >
+        Clear selection
+      </button>
+    </div>
+  </section>
+  <.tree_view
+    id="my-tree"
+    class="tree-view"
+    redirect
+    items={
+      Corex.Tree.new([
+        [
+          label: "Accordion",
+          id: "accordion",
+          children: [
+            [label: "Controller", id: "/#{@locale}/accordion"],
+            [label: "Live", id: "/#{@locale}/live/accordion"],
+            [
+              label: "More",
+              id: "accordion-more",
+              children: [
+                [label: "Playground", id: "/#{@locale}/playground/accordion"],
+                [label: "Controlled", id: "/#{@locale}/controlled/accordion"],
+                [label: "Async", id: "/#{@locale}/async/accordion"]
+              ]
+            ]
+          ]
+        ],
+        [
+          label: "Checkbox",
+          id: "checkbox",
+          children: [
+            [label: "Controller", id: "/#{@locale}/checkbox"],
+            [label: "Live", id: "/#{@locale}/live/checkbox"]
+          ]
+        ],
+        [
+          label: "Tree view",
+          id: "tree-view",
+          children: [
+            [label: "Controller", id: "/#{@locale}/tree-view"],
+            [label: "Live", id: "/#{@locale}/live/tree-view"]
+          ]
+        ]
+      ])
+    }
+  >
+    <:label>Corex Components</:label>
+    <:indicator>
+      <.icon name="hero-chevron-right" />
+    </:indicator>
+  </.tree_view>
+</Layouts.app>

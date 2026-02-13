@@ -1,12 +1,8 @@
-/**
- * Main entry: lazy-loaded hooks. Default export and LazyHooks load each
- * component chunk on first mount.
- */
 import type { Hook } from "phoenix_live_view";
 
-type HookModule = Record<string, Hook | undefined>;
+type HookModule = Record<string, Hook<any, any> | undefined>;
 
-function lazyHook(
+function hooks(
   importFn: () => Promise<HookModule>,
   exportName: string
 ): Hook {
@@ -35,25 +31,24 @@ function lazyHook(
   };
 }
 
-/** Lazy-loaded Corex hooks. Each hook loads its chunk only when first mounted. */
-export const LazyHooks = {
-  Accordion: lazyHook(() => import("corex/accordion"), "Accordion"),
-  Checkbox: lazyHook(() => import("corex/checkbox"), "Checkbox"),
-  Clipboard: lazyHook(() => import("corex/clipboard"), "Clipboard"),
-  Collapsible: lazyHook(() => import("corex/collapsible"), "Collapsible"),
-  Combobox: lazyHook(() => import("corex/combobox"), "Combobox"),
-  DatePicker: lazyHook(() => import("corex/date-picker"), "DatePicker"),
-  Dialog: lazyHook(() => import("corex/dialog"), "Dialog"),
-  Menu: lazyHook(() => import("corex/menu"), "Menu"),
-  Select: lazyHook(() => import("corex/select"), "Select"),
-  SignaturePad: lazyHook(() => import("corex/signature-pad"), "SignaturePad"),
-  Switch: lazyHook(() => import("corex/switch"), "Switch"),
-  Tabs: lazyHook(() => import("corex/tabs"), "Tabs"),
-  Toast: lazyHook(() => import("corex/toast"), "Toast"),
-  ToggleGroup: lazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
+export const Hooks = {
+  Accordion: hooks(() => import("corex/accordion"), "Accordion"),
+  Checkbox: hooks(() => import("corex/checkbox"), "Checkbox"),
+  Clipboard: hooks(() => import("corex/clipboard"), "Clipboard"),
+  Collapsible: hooks(() => import("corex/collapsible"), "Collapsible"),
+  Combobox: hooks(() => import("corex/combobox"), "Combobox"),
+  DatePicker: hooks(() => import("corex/date-picker"), "DatePicker"),
+  Dialog: hooks(() => import("corex/dialog"), "Dialog"),
+  Menu: hooks(() => import("corex/menu"), "Menu"),
+  Select: hooks(() => import("corex/select"), "Select"),
+  SignaturePad: hooks(() => import("corex/signature-pad"), "SignaturePad"),
+  Switch: hooks(() => import("corex/switch"), "Switch"),
+  Tabs: hooks(() => import("corex/tabs"), "Tabs"),
+  Toast: hooks(() => import("corex/toast"), "Toast"),
+  ToggleGroup: hooks(() => import("corex/toggle-group"), "ToggleGroup"),
+  TreeView: hooks(() => import("corex/tree-view"), "TreeView"),
 };
 
-export { lazyHook };
+export { hooks };
 
-/** Default export: lazy-loaded hooks (each chunk loads on first mount). */
-export default LazyHooks;
+export default Hooks;

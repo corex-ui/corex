@@ -9,34 +9,34 @@
   </.header>
 
   <div class="table-scroll">
-  <.table id="users" rows={@users} row_click={&JS.navigate(~p"/#{@locale}/users/#{&1}")}>
-    <:col :let={user} label="Name">{user.name}</:col>
-    <:col :let={user} label="Country">{user.country}</:col>
-    <:col :let={user} label="Birth date">
-      <%= if user.birth_date, do: Calendar.strftime(user.birth_date, "%d %b %Y"), else: "—" %>
-    </:col>
-    <:col :let={user} label="Signature">
-      <.signature_preview signature={user.signature} />
-    </:col>
-    <:col :let={user} label="Terms">
-      <%= if user.terms, do: "Yes", else: "No" %>
-    </:col>
-    <:action :let={user}>
-      <div class="sr-only">
-        <.link navigate={~p"/#{@locale}/users/#{user}"} class="link">Show</.link>
-      </div>
-      <.link navigate={~p"/#{@locale}/users/#{user}/edit"} class="link">Edit</.link>
-    </:action>
-    <:action :let={user}>
-      <.link
-        href={~p"/#{@locale}/users/#{user}"}
-        method="delete"
-        data-confirm="Are you sure?"
-        class="link link--alert"
-      >
-        Delete
-      </.link>
-    </:action>
-  </.table>
+    <.table id="users" rows={@users} row_click={&JS.navigate(~p"/#{@locale}/users/#{&1}")}>
+      <:col :let={user} label="Name">{user.name}</:col>
+      <:col :let={user} label="Country">{user.country}</:col>
+      <:col :let={user} label="Birth date">
+        {if user.birth_date, do: Calendar.strftime(user.birth_date, "%d %b %Y"), else: "—"}
+      </:col>
+      <:col :let={user} label="Signature">
+        <.signature_preview signature={user.signature} />
+      </:col>
+      <:col :let={user} label="Terms">
+        {if user.terms, do: "Yes", else: "No"}
+      </:col>
+      <:action :let={user}>
+        <div class="sr-only">
+          <.link navigate={~p"/#{@locale}/users/#{user}"} class="link">Show</.link>
+        </div>
+        <.link navigate={~p"/#{@locale}/users/#{user}/edit"} class="link">Edit</.link>
+      </:action>
+      <:action :let={user}>
+        <.link
+          href={~p"/#{@locale}/users/#{user}"}
+          method="delete"
+          data-confirm="Are you sure?"
+          class="link link--alert"
+        >
+          Delete
+        </.link>
+      </:action>
+    </.table>
   </div>
 </Layouts.app>

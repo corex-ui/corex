@@ -45,6 +45,7 @@ defmodule E2eWeb.Router do
       live "/live/signature", SignatureLive
       live "/live/toast", ToastLive
       live "/live/toggle-group", ToggleGroupLive
+      live "/live/tree-view", TreeViewLive
     end
 
     get "/", PageController, :home
@@ -75,6 +76,7 @@ defmodule E2eWeb.Router do
     post "/toast", PageController, :create_toast
 
     get "/toggle-group", PageController, :toggle_group_page
+    get "/tree-view", PageController, :tree_view_page
 
     live_session :browser, on_mount: [E2eWeb.ModeLive, E2eWeb.SharedEvents] do
       live "/admins", AdminLive.Index, :index

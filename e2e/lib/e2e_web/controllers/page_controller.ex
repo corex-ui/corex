@@ -90,4 +90,8 @@ defmodule E2eWeb.PageController do
   def menu_page(conn, _params) do
     render(conn, :menu_page)
   end
+
+  def tree_view_page(conn, _params) do
+    render(conn, :tree_view_page)
+  end
 end

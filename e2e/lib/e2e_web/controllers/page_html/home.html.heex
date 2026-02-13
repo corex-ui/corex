@@ -1,122 +1,60 @@
 <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
-  <div class="w-full px-ui-padding bg-root text-root--text">
-    <h1>Corex E2E tests</h1>
+  <section class="gap-ui-sm sm:gap-ui md:gap-ui-lg py-ui sm:py-ui-lg md:py-ui-xl px-ui-padding-xl relative mx-auto flex max-w-(--container-ui-xl) flex-col justify-between">
+    <h1 class="my-0 text-4xl md:text-6xl">
+      Build <span class="text-root--success">fast</span>,
+      <span class="text-root--success">accessible</span>
+      and <span class="text-root--success">interactive</span>
+      websites
+      <span class="whitespace-nowrap">
+        with <span class="text-root--brand rounded-full whitespace-nowrap">Corex UI</span>
+      </span>
+    </h1>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 w-full max-w-6xl gap-ui-gap transition-shadow">
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Accordion</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/accordion"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/accordion"} class="link">Live</.link>
-          <.link navigate={~p"/#{@locale}/playground/accordion"} class="link">Playground</.link>
-          <.link navigate={~p"/#{@locale}/controlled/accordion"} class="link">Controlled</.link>
-          <.link navigate={~p"/#{@locale}/async/accordion"} class="link">Async</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Checkbox</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/checkbox"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/checkbox"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Clipboard</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/clipboard"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/clipboard"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Collapsible</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/collapsible"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/collapsible"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Combobox</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/combobox"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/combobox"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Date Picker</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/date-picker"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/date-picker"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Dialog</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/dialog"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/dialog"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Phoenix Forms</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/users"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/admins"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Select</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/select"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/select"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Signature Pad</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/signature"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/signature"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Switch</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/switch"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/switch"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Tabs</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/tabs"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/tabs"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Toast</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/toast"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/toast"} class="link">Live</.link>
-        </div>
-      </section>
-
-      <section class="flex flex-col border border-layer--border rounded-ui p-ui-padding gap-ui-gap bg-layer text-layer--text transition-shadow hover:shadow-md">
-        <h2 class="font-semibold text-lg m-0">Toggle Group</h2>
-        <div class="flex flex-wrap gap-2">
-          <.link navigate={~p"/#{@locale}/toggle-group"} class="link">Controller</.link>
-          <.link navigate={~p"/#{@locale}/live/toggle-group"} class="link">Live</.link>
-        </div>
-      </section>
+    <p class="md:text-ui-lg my-0">
+      From design tokens to accessible, interactive components, <br />
+      Corex UI provides a complete foundation for creating <br />
+      beautiful, scalable, and performant websites.
+    </p>
+    <div class="gap-ui-gap p-ui-padding flex flex-wrap justify-start">
+      <a
+        href="/installation/introduction"
+        class="button button--brand md:button--lg w-full md:w-auto"
+      >
+        Get Started
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+          >
+          </path>
+        </svg>
+      </a>
+      <a href="/components/accordion" class="button md:button--lg w-full md:w-auto">
+        30+ Components
+        <svg
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+          >
+          </path>
+        </svg>
+      </a>
     </div>
-  </div>
+  </section>
 </Layouts.app>

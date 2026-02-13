@@ -52,12 +52,13 @@ defmodule Corex.Dialog.Connect do
 
   @spec backdrop(Backdrop.t()) :: map()
   def backdrop(assigns) do
-    %{
+    base = %{
       "data-scope" => "dialog",
       "data-part" => "backdrop",
       "dir" => assigns.dir,
       "id" => "dialog:#{assigns.id}:backdrop"
     }
+    if assigns.open, do: base, else: Map.put(base, "hidden", "")
   end
 
   @spec positioner(Positioner.t()) :: map()
@@ -73,8 +74,7 @@ defmodule Corex.Dialog.Connect do
   @spec content(Content.t()) :: map()
   def content(assigns) do
     data_state = if assigns.open, do: "open", else: "closed"
-
-    %{
+    base = %{
       "data-scope" => "dialog",
       "data-part" => "content",
       "data-state" => data_state,
@@ -84,6 +84,7 @@ defmodule Corex.Dialog.Connect do
       "aria-labelledby" => "dialog:#{assigns.id}:title",
       "aria-describedby" => "dialog:#{assigns.id}:description"
     }
+    if assigns.open, do: base, else: Map.put(base, "hidden", "")
   end
 
   @spec title(Title.t()) :: map()

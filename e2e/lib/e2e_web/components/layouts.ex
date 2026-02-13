@@ -49,6 +49,180 @@ defmodule E2eWeb.Layouts do
     <header class="layout__header">
       <div class="layout__header__content">
         <div class="layout__row">
+          <.dialog id="menu-dialog" class="dialog dialog--side">
+            <:trigger class="button button--sm button--circle rounded-full">
+              <.icon name="hero-bars-3" class="icon" />
+            </:trigger>
+
+            <:content>
+              <div class="layout__header">
+                <div class="layout__header__content">
+                  <div class="layout__row">
+                    <a
+                      href="/"
+                      class="link md:link--md lg:link--lg link--brand gap-mini-gap font-ui-xl flex flex-nowrap uppercase after:content-none"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136">
+                        <path
+                          d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624"
+                          fill="var(--color-layer--brand)"
+                        />
+                      </svg>
+                      Corex
+                    </a>
+                    <.dialog_close_trigger id="menu-dialog">
+                      <.icon name="hero-x-mark" class="icon" />
+                    </.dialog_close_trigger>
+                  </div>
+                </div>
+              </div>
+              <.tree_view
+                id="side-menu"
+                class="tree-view navigation scrollbar scrollbar--sm px-ui-padding"
+                redirect
+                value={[String.trim(@current_path, "/")]}
+                items={
+                  Corex.Tree.new([
+                    [
+                      label: "Accordion",
+                      id: "accordion",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/accordion"],
+                        [label: "Live", id: "/#{@locale}/live/accordion"],
+                        [
+                          label: "More",
+                          id: "accordion-more",
+                          children: [
+                            [label: "Playground", id: "/#{@locale}/playground/accordion"],
+                            [label: "Controlled", id: "/#{@locale}/controlled/accordion"],
+                            [label: "Async", id: "/#{@locale}/async/accordion"]
+                          ]
+                        ]
+                      ]
+                    ],
+                    [
+                      label: "Checkbox",
+                      id: "checkbox",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/checkbox"],
+                        [label: "Live", id: "/#{@locale}/live/checkbox"]
+                      ]
+                    ],
+                    [
+                      label: "Clipboard",
+                      id: "clipboard",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/clipboard"],
+                        [label: "Live", id: "/#{@locale}/live/clipboard"]
+                      ]
+                    ],
+                    [
+                      label: "Collapsible",
+                      id: "collapsible",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/collapsible"],
+                        [label: "Live", id: "/#{@locale}/live/collapsible"]
+                      ]
+                    ],
+                    [
+                      label: "Combobox",
+                      id: "combobox",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/combobox"],
+                        [label: "Live", id: "/#{@locale}/live/combobox"]
+                      ]
+                    ],
+                    [
+                      label: "Date Picker",
+                      id: "date-picker",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/date-picker"],
+                        [label: "Live", id: "/#{@locale}/live/date-picker"]
+                      ]
+                    ],
+                    [
+                      label: "Dialog",
+                      id: "dialog",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/dialog"],
+                        [label: "Live", id: "/#{@locale}/live/dialog"]
+                      ]
+                    ],
+                    [
+                      label: "Menu",
+                      id: "menu",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/menu"],
+                        [label: "Live", id: "/#{@locale}/live/menu"]
+                      ]
+                    ],
+                    [
+                      label: "Select",
+                      id: "select",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/select"],
+                        [label: "Live", id: "/#{@locale}/live/select"]
+                      ]
+                    ],
+                    [
+                      label: "Signature",
+                      id: "signature",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/signature"],
+                        [label: "Live", id: "/#{@locale}/live/signature"]
+                      ]
+                    ],
+                    [
+                      label: "Switch",
+                      id: "switch",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/switch"],
+                        [label: "Live", id: "/#{@locale}/live/switch"]
+                      ]
+                    ],
+                    [
+                      label: "Tabs",
+                      id: "tabs",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/tabs"],
+                        [label: "Live", id: "/#{@locale}/live/tabs"]
+                      ]
+                    ],
+                    [
+                      label: "Toast",
+                      id: "toast",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/toast"],
+                        [label: "Live", id: "/#{@locale}/live/toast"]
+                      ]
+                    ],
+                    [
+                      label: "Toggle Group",
+                      id: "toggle-group",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/toggle-group"],
+                        [label: "Live", id: "/#{@locale}/live/toggle-group"]
+                      ]
+                    ],
+                    [
+                      label: "Tree view",
+                      id: "tree-view",
+                      children: [
+                        [label: "Controller", id: "/#{@locale}/tree-view"],
+                        [label: "Live", id: "/#{@locale}/live/tree-view"]
+                      ]
+                    ]
+                  ])
+                }
+              >
+                <:label>Corex Components</:label>
+                <:indicator>
+                  <.icon name="hero-chevron-right" />
+                </:indicator>
+              </.tree_view>
+            </:content>
+          </.dialog>
+
           <a
             href="/"
             class="link md:link--md lg:link--lg link--brand gap-mini-gap font-ui-xl flex flex-nowrap uppercase after:content-none"

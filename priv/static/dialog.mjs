@@ -1,6 +1,6 @@
 import {
   trackDismissableElement
-} from "./chunk-N455IPSM.mjs";
+} from "./chunk-BPSX7Z7Y.mjs";
 import {
   Component,
   VanillaMachine,
@@ -32,7 +32,7 @@ import {
   raf,
   setStyle,
   setStyleProperty
-} from "./chunk-AG6DB4N6.mjs";
+} from "./chunk-GFGFZBBD.mjs";
 
 // ../node_modules/.pnpm/@zag-js+aria-hidden@1.33.1/node_modules/@zag-js/aria-hidden/dist/index.mjs
 var counterMap = /* @__PURE__ */ new WeakMap();
@@ -1166,34 +1166,21 @@ var Dialog = class extends Component {
     return connect(this.machine.service, normalizeProps);
   }
   render() {
-    const triggerEl = this.el.querySelector('[data-scope="dialog"][data-part="trigger"]');
-    if (triggerEl) {
-      this.spreadProps(triggerEl, this.api.getTriggerProps());
-    }
-    const backdropEl = this.el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
-    if (backdropEl) {
-      this.spreadProps(backdropEl, this.api.getBackdropProps());
-    }
-    const positionerEl = this.el.querySelector('[data-scope="dialog"][data-part="positioner"]');
-    if (positionerEl) {
-      this.spreadProps(positionerEl, this.api.getPositionerProps());
-    }
-    const contentEl = this.el.querySelector('[data-scope="dialog"][data-part="content"]');
-    if (contentEl) {
-      this.spreadProps(contentEl, this.api.getContentProps());
-    }
-    const titleEl = this.el.querySelector('[data-scope="dialog"][data-part="title"]');
-    if (titleEl) {
-      this.spreadProps(titleEl, this.api.getTitleProps());
-    }
-    const descriptionEl = this.el.querySelector('[data-scope="dialog"][data-part="description"]');
-    if (descriptionEl) {
-      this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-    }
-    const closeTriggerEl = this.el.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
-    if (closeTriggerEl) {
-      this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
-    }
+    const rootEl = this.el;
+    const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
+    if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+    const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+    if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
+    const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
+    if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+    const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+    if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
+    const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
+    if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
+    const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+    if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
   }
 };
 
@@ -1207,7 +1194,7 @@ var DialogHook = {
       ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
       modal: getBoolean(el, "modal"),
       closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-      closeOnEscape: getBoolean(el, "closeOnEscape"),
+      closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getString(el, "dir", ["ltr", "rtl"]),
@@ -1262,7 +1249,7 @@ var DialogHook = {
       ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
       modal: getBoolean(this.el, "modal"),
       closeOnInteractOutside: getBoolean(this.el, "closeOnInteractOutside"),
-      closeOnEscapeKeyDown: getBoolean(this.el, "closeOnEscapeKeyDown"),
+      closeOnEscape: getBoolean(this.el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(this.el, "preventScroll"),
       restoreFocus: getBoolean(this.el, "restoreFocus"),
       dir: getString(this.el, "dir", ["ltr", "rtl"])

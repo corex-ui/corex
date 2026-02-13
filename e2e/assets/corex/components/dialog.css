@@ -8,22 +8,8 @@
   .dialog [data-scope="dialog"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--circle ui-trigger--sm;
 
-    position: absolute;
-    top: var(--spacing-ui-padding);
-    right: var(--spacing-ui-padding);
     flex-shrink: 0;
-    min-height: var(--spacing-ui-sm);
-    width: var(--spacing-ui-sm);
-    padding: 0;
-
-    & .icon,
-    & svg {
-      @apply ui-icon;
-      display: inline-block;
-      height: 1em !important;
-      width: 1em !important;
-      font-size: var(--text-ui);
-    }
+    height: fit-content;
   }
 
   .dialog [data-scope="dialog"][data-part="backdrop"] {
@@ -49,16 +35,11 @@
   .dialog [data-scope="dialog"][data-part="content"] {
     @apply ui-content;
 
-    position: relative;
     max-width: var(--container-ui);
     margin: var(--spacing-ui-padding);
     padding: var(--spacing-ui-padding);
   }
 
-  .dialog [data-scope="dialog"][data-part="backdrop"]:not([data-state="open"]),
-  .dialog [data-scope="dialog"][data-part="content"]:not([data-state="open"]) {
-    display: none;
-  }
 
   .dialog [data-part="row"] {
     display: inline-flex;

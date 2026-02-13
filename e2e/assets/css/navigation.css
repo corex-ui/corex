@@ -1,0 +1,130 @@
+@import "../corex/main.css";
+
+@layer components {
+  .navigation.tree-view [data-scope="tree-view"][data-part="root"] {
+    gap: 0;
+    padding: var(--spacing-ui-padding);
+    place-self: center;
+    align-self: center;
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="tree"] {
+    gap: 0;
+
+    &:focus-visible {
+      outline: none;
+      pointer-events: none;
+    }
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="branch"] {
+    gap: 0;
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"],
+  .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"] {
+    border-start-end-radius: var(--radius-ui);
+    border-end-end-radius: var(--radius-ui);
+    border: 0;
+    border-inline-start: 3px solid transparent;
+    border-inline-start-width: 3px;
+    min-height: var(--spacing-ui-sm);
+    border-radius: 0;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
+  }
+
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-content"]
+    [data-scope="tree-view"][data-part="item"],
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-content"]
+    [data-scope="tree-view"][data-part="branch-control"] {
+    border-inline-start-width: calc(var(--depth) * 3px);
+  }
+
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-control"][data-disabled] {
+    color: var(--color-ui--text);
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"] {
+    border-radius: 0;
+    gap: var(--spacing-ui-gap-sm);
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"]:hover,
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-control"]:hover {
+    border-inline-start-color: var(--color-ui-brand);
+    background-color: transparent;
+    color: var(--color-layer--text);
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"][data-focus],
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"]:focus,
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-control"][data-focus],
+  .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"]:focus {
+    border-inline-start-color: var(--color-ui-brand);
+    background-color: transparent;
+    color: var(--color-layer--text);
+    border-inline-start-width: calc(var(--depth) * 3px);
+
+    outline: none;
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"]:focus-visible,
+  .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"]:focus-visible,
+  .navigation.tree-view [data-scope="tree-view"][data-part="item"][data-focus],
+  .navigation.tree-view [data-scope="tree-view"][data-part="branch-control"][data-focus] {
+    border-inline-start-color: var(--color-ui-brand);
+    background-color: transparent;
+    color: var(--color-layer--text);
+    border-inline-start-width: calc(var(--depth) * 3px);
+
+    outline: none;
+  }
+  
+
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="item"][data-selected],
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-control"][data-selected] {
+    border-inline-start-color: var(--color-ui-brand);
+    background-color: var(--color-ui-brand);
+    color: var(--color-ui-brand--text);
+  }
+
+  .navigation.tree-view
+    [data-scope="tree-view"][data-part="branch-control"][data-state="open"] {
+    cursor: default;
+    pointer-events: none;
+    background: transparent;
+    opacity: 1;
+    color: var(--color-ui--text);
+  }
+
+  .navigation.tree-view [data-scope="tree-view"][data-part="branch-content"] {
+    padding-block: 1px;
+    padding-inline: 0;
+    gap: 0;
+    border-start-end-radius: var(--radius-ui);
+    border-end-end-radius: var(--radius-ui);
+    overflow: hidden;
+  }
+
+  .navigation.tree-view
+    [data-part="branch-content"]:not([dir="rtl"])
+    [data-part="branch-indent-guide"] {
+    border-left: 3px solid var(--color-ui--border);
+  }
+
+  .navigation.tree-view
+    [data-part="branch-content"][dir="rtl"]
+    [data-part="branch-indent-guide"] {
+    border-right: 3px solid var(--color-ui--border);
+  }
+}

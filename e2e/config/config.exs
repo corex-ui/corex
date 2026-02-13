@@ -13,8 +13,7 @@ config :e2e,
 
 config :corex,
   json_library: Jason,
-  gettext_backend: E2eWeb.Gettext,
-  rtl_locales: ["ar"]
+  gettext_backend: E2eWeb.Gettext
 
 # Configure the endpoint
 config :e2e, E2eWeb.Endpoint,
@@ -37,26 +36,11 @@ config :e2e, E2eWeb.Endpoint,
 config :e2e, E2e.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
-#
-# How Corex and shared parts are included:
-# - JS: app.js does `import Hooks from "corex"`. NODE_PATH includes deps/ and build path,
-#   so "corex" resolves to the corex dependency (path: "../"); esbuild bundles corex's
-#   entry (priv/static/corex.mjs), which pulls in all component hooks. That yields a
-#   large app.js (~1MB) and is expected.
-# - CSS: app.css @imports from assets/corex/ (main.css, tokens, component CSS). Those
-#   files live under e2e/assets/corex/ and are built with Tailwind.
-#
-# To exclude Corex from the bundle (smaller app.js, load Corex separately):
-# - Add --external:corex to the args below.
-# - Copy deps/corex/priv/static/corex.min.js to priv/static/assets/js/ (or serve it
-#   from corex's priv/static) and add <script src="/assets/js/corex.min.js"> before
-#   app.js in root.html.heex. Corex's build must expose Hooks globally (e.g. window.Corex)
-#   and app.js would use that instead of `import Hooks from "corex"`.
 config :esbuild,
   version: "0.25.4",
   e2e: [
     args:
-      ~w(js/app.js --bundle --target=es2022 --format=esm --splitting --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
   ]

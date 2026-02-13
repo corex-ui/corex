@@ -24,7 +24,13 @@ defmodule E2eWeb.UserHTML do
       class="inline-block w-12 h-6 border border-muted rounded"
       aria-hidden="true"
     >
-      <g fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <g
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <path :for={d <- @path_d_values} d={d} />
       </g>
     </svg>

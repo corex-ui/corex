@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-AG6DB4N6.mjs
+  // ../priv/static/chunk-GFGFZBBD.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -572,14 +572,14 @@ var Corex = (() => {
     return node.tabIndex;
   }
   function getInitialFocus(options) {
-    const { root, getInitialEl, filter, enabled = true } = options;
+    const { root, getInitialEl, filter: filter2, enabled = true } = options;
     if (!enabled) return;
     let node = null;
     node || (node = typeof getInitialEl === "function" ? getInitialEl() : getInitialEl);
     node || (node = root == null ? void 0 : root.querySelector("[data-autofocus],[autofocus]"));
     if (!node) {
       const tabbables = getTabbables(root);
-      node = filter ? tabbables.filter(filter)[0] : tabbables[0];
+      node = filter2 ? tabbables.filter(filter2)[0] : tabbables[0];
     }
     return node || root || void 0;
   }
@@ -1116,6 +1116,16 @@ var Corex = (() => {
       return rows;
     }, []);
   }
+  function partition(arr, fn) {
+    return arr.reduce(
+      ([pass, fail], value) => {
+        if (fn(value)) pass.push(value);
+        else fail.push(value);
+        return [pass, fail];
+      },
+      [[], []]
+    );
+  }
   function match2(key, record, ...args) {
     var _a;
     if (key in record) {
@@ -1138,16 +1148,16 @@ var Corex = (() => {
     }
     return filtered;
   }
-  function splitProps(props14, keys) {
+  function splitProps(props15, keys) {
     const rest = {};
     const result = {};
     const keySet = new Set(keys);
-    const ownKeys = Reflect.ownKeys(props14);
+    const ownKeys = Reflect.ownKeys(props15);
     for (const key of ownKeys) {
       if (keySet.has(key)) {
-        result[key] = props14[key];
+        result[key] = props15[key];
       } else {
-        rest[key] = props14[key];
+        rest[key] = props15[key];
       }
     }
     return [result, rest];
@@ -1172,41 +1182,41 @@ var Corex = (() => {
   function ensure(c2, m2) {
     if (c2 == null) throw new Error(m2());
   }
-  function ensureProps(props14, keys, scope) {
+  function ensureProps(props15, keys, scope) {
     let missingKeys = [];
     for (const key of keys) {
-      if (props14[key] == null) missingKeys.push(key);
+      if (props15[key] == null) missingKeys.push(key);
     }
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
   function mergeProps(...args) {
     let result = {};
-    for (let props14 of args) {
-      if (!props14) continue;
+    for (let props15 of args) {
+      if (!props15) continue;
       for (let key in result) {
-        if (key.startsWith("on") && typeof result[key] === "function" && typeof props14[key] === "function") {
-          result[key] = callAll(props14[key], result[key]);
+        if (key.startsWith("on") && typeof result[key] === "function" && typeof props15[key] === "function") {
+          result[key] = callAll(props15[key], result[key]);
           continue;
         }
         if (key === "className" || key === "class") {
-          result[key] = clsx(result[key], props14[key]);
+          result[key] = clsx(result[key], props15[key]);
           continue;
         }
         if (key === "style") {
-          result[key] = css(result[key], props14[key]);
+          result[key] = css(result[key], props15[key]);
           continue;
         }
-        result[key] = props14[key] !== void 0 ? props14[key] : result[key];
+        result[key] = props15[key] !== void 0 ? props15[key] : result[key];
       }
-      for (let key in props14) {
+      for (let key in props15) {
         if (result[key] === void 0) {
-          result[key] = props14[key];
+          result[key] = props15[key];
         }
       }
-      const symbols = Object.getOwnPropertySymbols(props14);
+      const symbols = Object.getOwnPropertySymbols(props15);
       for (let symbol of symbols) {
-        result[symbol] = props14[symbol];
+        result[symbol] = props15[symbol];
       }
     }
     return result;
@@ -1261,10 +1271,10 @@ var Corex = (() => {
       }
     };
   }
-  function createScope(props14) {
+  function createScope(props15) {
     const getRootNode2 = () => {
       var _a, _b;
-      return (_b = (_a = props14.getRootNode) == null ? void 0 : _a.call(props14)) != null ? _b : document;
+      return (_b = (_a = props15.getRootNode) == null ? void 0 : _a.call(props15)) != null ? _b : document;
     };
     const getDoc = () => getDocument(getRootNode2());
     const getWin = () => {
@@ -1273,7 +1283,7 @@ var Corex = (() => {
     };
     const getActiveElementFn = () => getActiveElement(getRootNode2());
     const getById = (id) => getRootNode2().getElementById(id);
-    return __spreadProps(__spreadValues({}, props14), {
+    return __spreadProps(__spreadValues({}, props15), {
       getRootNode: getRootNode2,
       getDoc,
       getWin,
@@ -1286,8 +1296,8 @@ var Corex = (() => {
     return new Proxy({}, {
       get(_target, key) {
         if (key === "style")
-          return (props14) => {
-            return fn({ style: props14 }).style;
+          return (props15) => {
+            return fn({ style: props15 }).style;
           };
         return fn;
       }
@@ -1421,40 +1431,40 @@ var Corex = (() => {
       }
     };
   }
-  function bindable(props14) {
+  function bindable(props15) {
     var _a, _b;
-    const initial = (_a = props14().value) != null ? _a : props14().defaultValue;
-    if (props14().debug) {
-      console.log(`[bindable > ${props14().debug}] initial`, initial);
+    const initial = (_a = props15().value) != null ? _a : props15().defaultValue;
+    if (props15().debug) {
+      console.log(`[bindable > ${props15().debug}] initial`, initial);
     }
-    const eq = (_b = props14().isEqual) != null ? _b : Object.is;
+    const eq = (_b = props15().isEqual) != null ? _b : Object.is;
     const store = proxy({ value: initial });
-    const controlled = () => props14().value !== void 0;
+    const controlled = () => props15().value !== void 0;
     return {
       initial,
       ref: store,
       get() {
-        return controlled() ? props14().value : store.value;
+        return controlled() ? props15().value : store.value;
       },
       set(nextValue) {
         var _a2, _b2;
         const prev2 = store.value;
         const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
-        if (props14().debug) {
-          console.log(`[bindable > ${props14().debug}] setValue`, { next: next2, prev: prev2 });
+        if (props15().debug) {
+          console.log(`[bindable > ${props15().debug}] setValue`, { next: next2, prev: prev2 });
         }
         if (!controlled()) store.value = next2;
         if (!eq(next2, prev2)) {
-          (_b2 = (_a2 = props14()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
+          (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
         }
       },
       invoke(nextValue, prevValue) {
         var _a2, _b2;
-        (_b2 = (_a2 = props14()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
+        (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
       },
       hash(value) {
         var _a2, _b2, _c;
-        return (_c = (_b2 = (_a2 = props14()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
+        return (_c = (_b2 = (_a2 = props15()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
       }
     };
   }
@@ -1488,9 +1498,9 @@ var Corex = (() => {
     }
     return result;
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, isValueWithinRange, clampValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
-  var init_chunk_AG6DB4N6 = __esm({
-    "../priv/static/chunk-AG6DB4N6.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, isValueWithinRange, clampValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
+  var init_chunk_GFGFZBBD = __esm({
+    "../priv/static/chunk-GFGFZBBD.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1523,18 +1533,18 @@ var Corex = (() => {
         if (element == null ? void 0 : element.id) return element.id;
         return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
       };
-      createAnatomy = (name, parts15 = []) => ({
+      createAnatomy = (name, parts16 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts15)) {
+          if (isEmpty(parts16)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts15, ...values]),
-        omit: (...values) => createAnatomy(name, parts15.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts15),
-        keys: () => parts15,
-        build: () => [...new Set(parts15)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts16, ...values]),
+        omit: (...values) => createAnatomy(name, parts16.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts16),
+        keys: () => parts16,
+        build: () => [...new Set(parts16)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -1738,6 +1748,11 @@ var Corex = (() => {
       has = (v2, t2) => v2.indexOf(t2) !== -1;
       add = (v2, ...items) => v2.concat(items);
       remove = (v2, ...items) => v2.filter((t2) => !items.includes(t2));
+      uniq = (v2) => Array.from(new Set(v2));
+      diff = (a2, b2) => {
+        const set = new Set(b2);
+        return a2.filter((t2) => !set.has(t2));
+      };
       addOrRemove = (v2, item) => has(v2, item) ? remove(v2, item) : add(v2, item);
       isArrayLike = (value) => (value == null ? void 0 : value.constructor.name) === "Array";
       isArrayEqual = (a2, b2) => {
@@ -1825,8 +1840,8 @@ var Corex = (() => {
       clampValue = (v2, vmin, vmax) => min(max(nan(v2), vmin), vmax);
       toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
       createSplitProps = (keys) => {
-        return function split(props14) {
-          return splitProps(props14, keys);
+        return function split(props15) {
+          return splitProps(props15, keys);
         };
       };
       currentTime = () => performance.now();
@@ -1914,7 +1929,7 @@ var Corex = (() => {
         return MachineStatus2;
       })(MachineStatus || {});
       INIT_STATE = "__init__";
-      createProps = () => (props14) => Array.from(new Set(props14));
+      createProps = () => (props15) => Array.from(new Set(props15));
       TRACK_MEMO_SYMBOL = Symbol();
       GET_ORIGINAL_SYMBOL = Symbol();
       getProto = Object.getPrototypeOf;
@@ -1998,8 +2013,8 @@ var Corex = (() => {
             throw new Error("prop listener already exists");
           }
           if (listeners.size) {
-            const remove2 = propProxyState[3](createPropListener(prop));
-            propProxyStates.set(prop, [propProxyState, remove2]);
+            const remove22 = propProxyState[3](createPropListener(prop));
+            propProxyStates.set(prop, [propProxyState, remove22]);
           } else {
             propProxyStates.set(prop, [propProxyState]);
           }
@@ -2019,16 +2034,16 @@ var Corex = (() => {
               if (isDev() && prevRemove) {
                 throw new Error("remove already exists");
               }
-              const remove2 = propProxyState[3](createPropListener(prop));
-              propProxyStates.set(prop, [propProxyState, remove2]);
+              const remove22 = propProxyState[3](createPropListener(prop));
+              propProxyStates.set(prop, [propProxyState, remove22]);
             });
           }
           const removeListener = () => {
             listeners.delete(listener);
             if (listeners.size === 0) {
-              propProxyStates.forEach(([propProxyState, remove2], prop) => {
-                if (remove2) {
-                  remove2();
+              propProxyStates.forEach(([propProxyState, remove22], prop) => {
+                if (remove22) {
+                  remove22();
                   propProxyStates.set(prop, [propProxyState]);
                 }
               });
@@ -2127,8 +2142,8 @@ var Corex = (() => {
         }
         return string;
       };
-      normalizeProps = createNormalizer((props14) => {
-        return Object.entries(props14).reduce((acc, [key, value]) => {
+      normalizeProps = createNormalizer((props15) => {
+        return Object.entries(props15).reduce((acc, [key, value]) => {
           if (value === void 0) return acc;
           if (key in propMap) {
             key = propMap[key];
@@ -2176,9 +2191,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine15, userProps = {}) {
+        constructor(machine16, userProps = {}) {
           var _a, _b, _c;
-          this.machine = machine15;
+          this.machine = machine16;
           __publicField3(this, "scope");
           __publicField3(this, "context");
           __publicField3(this, "prop");
@@ -2330,11 +2345,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a2, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props14 = (_b2 = (_a2 = machine15.props) == null ? void 0 : _a2.call(machine15, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
-            return props14[key];
+            const props15 = (_b2 = (_a2 = machine16.props) == null ? void 0 : _a2.call(machine16, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            return props15[key];
           };
           this.prop = prop;
-          const context = (_a = machine15.context) == null ? void 0 : _a.call(machine15, {
+          const context = (_a = machine16.context) == null ? void 0 : _a.call(machine16, {
             prop,
             bindable,
             scope: this.scope,
@@ -2376,7 +2391,7 @@ var Corex = (() => {
           this.context = ctx;
           const computed = (key) => {
             var _a2, _b2;
-            return (_b2 = (_a2 = machine15.computed) == null ? void 0 : _a2[key]({
+            return (_b2 = (_a2 = machine16.computed) == null ? void 0 : _a2[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2386,10 +2401,10 @@ var Corex = (() => {
             })) != null ? _b2 : {};
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine15.refs) == null ? void 0 : _b.call(machine15, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine16.refs) == null ? void 0 : _b.call(machine16, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: machine15.initialState({ prop }),
+            defaultValue: machine16.initialState({ prop }),
             onChange: (nextState, prevState) => {
               var _a2, _b2, _c2, _d;
               if (prevState) {
@@ -2404,8 +2419,8 @@ var Corex = (() => {
               const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
               if (cleanup) this.effects.set(nextState, cleanup);
               if (prevState === INIT_STATE) {
-                this.action(machine15.entry);
-                const cleanup2 = this.effect(machine15.effects);
+                this.action(machine16.entry);
+                const cleanup2 = this.effect(machine16.effects);
                 if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
               }
               this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
@@ -2455,7 +2470,7 @@ var Corex = (() => {
         }
       };
       Component = class {
-        constructor(el, props14) {
+        constructor(el, props15) {
           __publicField(this, "el");
           __publicField(this, "doc");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2472,16 +2487,16 @@ var Corex = (() => {
           __publicField(this, "destroy", () => {
             this.machine.stop();
           });
-          __publicField(this, "spreadProps", (el, props14) => {
-            spreadProps(el, props14, this.machine.scope.id);
+          __publicField(this, "spreadProps", (el, props15) => {
+            spreadProps(el, props15, this.machine.scope.id);
           });
-          __publicField(this, "updateProps", (props14) => {
-            this.machine.updateProps(props14);
+          __publicField(this, "updateProps", (props15) => {
+            this.machine.updateProps(props15);
           });
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
-          this.machine = this.initMachine(props14);
+          this.machine = this.initMachine(props15);
           this.api = this.initApi();
         }
       };
@@ -2636,7 +2651,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2986,7 +3001,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-Y7H7IIWI.mjs
+  // ../priv/static/chunk-EAMC7PNF.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -3083,8 +3098,8 @@ var Corex = (() => {
   function isFocusVisible() {
     return currentModality === "keyboard";
   }
-  function trackFocusVisible(props14 = {}) {
-    const { isTextInput, autoFocus, onChange, root } = props14;
+  function trackFocusVisible(props15 = {}) {
+    const { isTextInput, autoFocus, onChange, root } = props15;
     setupGlobalFocusEvents(root);
     onChange == null ? void 0 : onChange({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
     const handler = (modality, e2) => {
@@ -3097,10 +3112,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_Y7H7IIWI = __esm({
-    "../priv/static/chunk-Y7H7IIWI.mjs"() {
+  var init_chunk_EAMC7PNF = __esm({
+    "../priv/static/chunk-EAMC7PNF.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -3265,8 +3280,8 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_Y7H7IIWI();
-      init_chunk_AG6DB4N6();
+      init_chunk_EAMC7PNF();
+      init_chunk_GFGFZBBD();
       anatomy2 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts2 = anatomy2.build();
       getRootId2 = (ctx) => {
@@ -3702,7 +3717,7 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       anatomy3 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4051,7 +4066,7 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       anatomy4 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts4 = anatomy4.build();
       getRootId4 = (ctx) => {
@@ -4433,7 +4448,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-7YU4FQ53.mjs
+  // ../priv/static/chunk-2DWEYSRA.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -4446,11 +4461,339 @@ var Corex = (() => {
     toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
     return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
   }
-  var __defProp4, __defNormalProp4, __publicField4, fallback, ListCollection, match3;
-  var init_chunk_7YU4FQ53 = __esm({
-    "../priv/static/chunk-7YU4FQ53.mjs"() {
+  function access(node, indexPath, options) {
+    for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
+    return node;
+  }
+  function ancestorIndexPaths(indexPaths) {
+    const sortedPaths = sortIndexPaths(indexPaths);
+    const result = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (const indexPath of sortedPaths) {
+      const key = indexPath.join();
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(indexPath);
+      }
+    }
+    return result;
+  }
+  function compareIndexPaths(a2, b2) {
+    for (let i2 = 0; i2 < Math.min(a2.length, b2.length); i2++) {
+      if (a2[i2] < b2[i2]) return -1;
+      if (a2[i2] > b2[i2]) return 1;
+    }
+    return a2.length - b2.length;
+  }
+  function sortIndexPaths(indexPaths) {
+    return indexPaths.sort(compareIndexPaths);
+  }
+  function find(node, options) {
+    let found;
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) {
+          found = child;
+          return "stop";
+        }
+      }
+    }));
+    return found;
+  }
+  function findAll(node, options) {
+    const found = [];
+    visit(node, {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) found.push(child);
+      },
+      getChildren: options.getChildren
+    });
+    return found;
+  }
+  function findIndexPath(node, options) {
+    let found;
+    visit(node, {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) {
+          found = [...indexPath];
+          return "stop";
+        }
+      },
+      getChildren: options.getChildren
+    });
+    return found;
+  }
+  function reduce(node, options) {
+    let result = options.initialResult;
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onEnter: (child, indexPath) => {
+        result = options.nextResult(result, child, indexPath);
+      }
+    }));
+    return result;
+  }
+  function flatMap(node, options) {
+    return reduce(node, __spreadProps(__spreadValues({}, options), {
+      initialResult: [],
+      nextResult: (result, child, indexPath) => {
+        result.push(...options.transform(child, indexPath));
+        return result;
+      }
+    }));
+  }
+  function filter(node, options) {
+    const { predicate, create, getChildren } = options;
+    const filterRecursive = (node2, indexPath) => {
+      const children = getChildren(node2, indexPath);
+      const filteredChildren = [];
+      children.forEach((child, index) => {
+        const childIndexPath = [...indexPath, index];
+        const filteredChild = filterRecursive(child, childIndexPath);
+        if (filteredChild) filteredChildren.push(filteredChild);
+      });
+      const isRoot = indexPath.length === 0;
+      const nodeMatches = predicate(node2, indexPath);
+      const hasFilteredChildren = filteredChildren.length > 0;
+      if (isRoot || nodeMatches || hasFilteredChildren) {
+        return create(node2, filteredChildren, indexPath);
+      }
+      return null;
+    };
+    return filterRecursive(node, []) || create(node, [], []);
+  }
+  function flatten(rootNode, options) {
+    const nodes = [];
+    let idx = 0;
+    const idxMap = /* @__PURE__ */ new Map();
+    const parentMap = /* @__PURE__ */ new Map();
+    visit(rootNode, {
+      getChildren: options.getChildren,
+      onEnter: (node, indexPath) => {
+        if (!idxMap.has(node)) {
+          idxMap.set(node, idx++);
+        }
+        const children = options.getChildren(node, indexPath);
+        children.forEach((child) => {
+          if (!parentMap.has(child)) {
+            parentMap.set(child, node);
+          }
+          if (!idxMap.has(child)) {
+            idxMap.set(child, idx++);
+          }
+        });
+        const _children = children.length > 0 ? children.map((child) => idxMap.get(child)) : void 0;
+        const parent = parentMap.get(node);
+        const _parent = parent ? idxMap.get(parent) : void 0;
+        const _index = idxMap.get(node);
+        nodes.push(__spreadProps(__spreadValues({}, node), { _children, _parent, _index }));
+      }
+    });
+    return nodes;
+  }
+  function insertOperation(index, nodes) {
+    return { type: "insert", index, nodes };
+  }
+  function removeOperation(indexes) {
+    return { type: "remove", indexes };
+  }
+  function replaceOperation() {
+    return { type: "replace" };
+  }
+  function splitIndexPath(indexPath) {
+    return [indexPath.slice(0, -1), indexPath[indexPath.length - 1]];
+  }
+  function getInsertionOperations(indexPath, nodes, operations = /* @__PURE__ */ new Map()) {
+    var _a;
+    const [parentIndexPath, index] = splitIndexPath(indexPath);
+    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
+      const parentKey = parentIndexPath.slice(0, i2).join();
+      switch ((_a = operations.get(parentKey)) == null ? void 0 : _a.type) {
+        case "remove":
+          continue;
+      }
+      operations.set(parentKey, replaceOperation());
+    }
+    const operation = operations.get(parentIndexPath.join());
+    switch (operation == null ? void 0 : operation.type) {
+      case "remove":
+        operations.set(parentIndexPath.join(), {
+          type: "removeThenInsert",
+          removeIndexes: operation.indexes,
+          insertIndex: index,
+          insertNodes: nodes
+        });
+        break;
+      default:
+        operations.set(parentIndexPath.join(), insertOperation(index, nodes));
+    }
+    return operations;
+  }
+  function getRemovalOperations(indexPaths) {
+    var _a;
+    const operations = /* @__PURE__ */ new Map();
+    const indexesToRemove = /* @__PURE__ */ new Map();
+    for (const indexPath of indexPaths) {
+      const parentKey = indexPath.slice(0, -1).join();
+      const value = (_a = indexesToRemove.get(parentKey)) != null ? _a : [];
+      value.push(indexPath[indexPath.length - 1]);
+      indexesToRemove.set(
+        parentKey,
+        value.sort((a2, b2) => a2 - b2)
+      );
+    }
+    for (const indexPath of indexPaths) {
+      for (let i2 = indexPath.length - 2; i2 >= 0; i2--) {
+        const parentKey = indexPath.slice(0, i2).join();
+        if (!operations.has(parentKey)) {
+          operations.set(parentKey, replaceOperation());
+        }
+      }
+    }
+    for (const [parentKey, indexes] of indexesToRemove) {
+      operations.set(parentKey, removeOperation(indexes));
+    }
+    return operations;
+  }
+  function getReplaceOperations(indexPath, node) {
+    const operations = /* @__PURE__ */ new Map();
+    const [parentIndexPath, index] = splitIndexPath(indexPath);
+    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
+      const parentKey = parentIndexPath.slice(0, i2).join();
+      operations.set(parentKey, replaceOperation());
+    }
+    operations.set(parentIndexPath.join(), {
+      type: "removeThenInsert",
+      removeIndexes: [index],
+      insertIndex: index,
+      insertNodes: [node]
+    });
+    return operations;
+  }
+  function mutate(node, operations, options) {
+    return map(node, __spreadProps(__spreadValues({}, options), {
+      getChildren: (node2, indexPath) => {
+        const key = indexPath.join();
+        const operation = operations.get(key);
+        switch (operation == null ? void 0 : operation.type) {
+          case "replace":
+          case "remove":
+          case "removeThenInsert":
+          case "insert":
+            return options.getChildren(node2, indexPath);
+          default:
+            return [];
+        }
+      },
+      transform: (node2, children, indexPath) => {
+        const key = indexPath.join();
+        const operation = operations.get(key);
+        switch (operation == null ? void 0 : operation.type) {
+          case "remove":
+            return options.create(
+              node2,
+              children.filter((_2, index) => !operation.indexes.includes(index)),
+              indexPath
+            );
+          case "removeThenInsert":
+            const updatedChildren = children.filter((_2, index) => !operation.removeIndexes.includes(index));
+            const adjustedIndex = operation.removeIndexes.reduce(
+              (index, removedIndex) => removedIndex < index ? index - 1 : index,
+              operation.insertIndex
+            );
+            return options.create(node2, splice(updatedChildren, adjustedIndex, 0, ...operation.insertNodes), indexPath);
+          case "insert":
+            return options.create(node2, splice(children, operation.index, 0, ...operation.nodes), indexPath);
+          case "replace":
+            return options.create(node2, children, indexPath);
+          default:
+            return node2;
+        }
+      }
+    }));
+  }
+  function splice(array, start, deleteCount, ...items) {
+    return [...array.slice(0, start), ...items, ...array.slice(start + deleteCount)];
+  }
+  function map(node, options) {
+    const childrenMap = {};
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onLeave: (child, indexPath) => {
+        var _a, _b;
+        const keyIndexPath = [0, ...indexPath];
+        const key = keyIndexPath.join();
+        const transformed = options.transform(child, (_a = childrenMap[key]) != null ? _a : [], indexPath);
+        const parentKey = keyIndexPath.slice(0, -1).join();
+        const parentChildren = (_b = childrenMap[parentKey]) != null ? _b : [];
+        parentChildren.push(transformed);
+        childrenMap[parentKey] = parentChildren;
+      }
+    }));
+    return childrenMap[""][0];
+  }
+  function insert2(node, options) {
+    const { nodes, at } = options;
+    if (at.length === 0) throw new Error(`Can't insert nodes at the root`);
+    const state2 = getInsertionOperations(at, nodes);
+    return mutate(node, state2, options);
+  }
+  function replace(node, options) {
+    if (options.at.length === 0) return options.node;
+    const operations = getReplaceOperations(options.at, options.node);
+    return mutate(node, operations, options);
+  }
+  function remove2(node, options) {
+    if (options.indexPaths.length === 0) return node;
+    for (const indexPath of options.indexPaths) {
+      if (indexPath.length === 0) throw new Error(`Can't remove the root node`);
+    }
+    const operations = getRemovalOperations(options.indexPaths);
+    return mutate(node, operations, options);
+  }
+  function move2(node, options) {
+    if (options.indexPaths.length === 0) return node;
+    for (const indexPath of options.indexPaths) {
+      if (indexPath.length === 0) throw new Error(`Can't move the root node`);
+    }
+    if (options.to.length === 0) throw new Error(`Can't move nodes to the root`);
+    const _ancestorIndexPaths = ancestorIndexPaths(options.indexPaths);
+    const nodesToInsert = _ancestorIndexPaths.map((indexPath) => access(node, indexPath, options));
+    const operations = getInsertionOperations(options.to, nodesToInsert, getRemovalOperations(_ancestorIndexPaths));
+    return mutate(node, operations, options);
+  }
+  function visit(node, options) {
+    const { onEnter, onLeave, getChildren } = options;
+    let indexPath = [];
+    let stack = [{ node }];
+    const getIndexPath = options.reuseIndexPath ? () => indexPath : () => indexPath.slice();
+    while (stack.length > 0) {
+      let wrapper = stack[stack.length - 1];
+      if (wrapper.state === void 0) {
+        const enterResult = onEnter == null ? void 0 : onEnter(wrapper.node, getIndexPath());
+        if (enterResult === "stop") return;
+        wrapper.state = enterResult === "skip" ? -1 : 0;
+      }
+      const children = wrapper.children || getChildren(wrapper.node, getIndexPath());
+      wrapper.children || (wrapper.children = children);
+      if (wrapper.state !== -1) {
+        if (wrapper.state < children.length) {
+          let currentIndex = wrapper.state;
+          indexPath.push(currentIndex);
+          stack.push({ node: children[currentIndex] });
+          wrapper.state = currentIndex + 1;
+          continue;
+        }
+        const leaveResult = onLeave == null ? void 0 : onLeave(wrapper.node, getIndexPath());
+        if (leaveResult === "stop") return;
+      }
+      indexPath.pop();
+      stack.pop();
+    }
+  }
+  var __defProp4, __defNormalProp4, __publicField4, fallback, ListCollection, match3, TreeCollection, fallbackMethods;
+  var init_chunk_2DWEYSRA = __esm({
+    "../priv/static/chunk-2DWEYSRA.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -4815,10 +5158,384 @@ var Corex = (() => {
       match3 = (label, query2) => {
         return !!(label == null ? void 0 : label.toLowerCase().startsWith(query2.toLowerCase()));
       };
+      TreeCollection = class _TreeCollection {
+        constructor(options) {
+          this.options = options;
+          __publicField4(this, "rootNode");
+          __publicField4(this, "isEqual", (other) => {
+            return isEqual2(this.rootNode, other.rootNode);
+          });
+          __publicField4(this, "getNodeChildren", (node) => {
+            var _a, _b, _c, _d;
+            return (_d = (_c = (_b = (_a = this.options).nodeToChildren) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
+          });
+          __publicField4(this, "resolveIndexPath", (valueOrIndexPath) => {
+            return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
+          });
+          __publicField4(this, "resolveNode", (valueOrIndexPath) => {
+            const indexPath = this.resolveIndexPath(valueOrIndexPath);
+            return indexPath ? this.at(indexPath) : void 0;
+          });
+          __publicField4(this, "getNodeChildrenCount", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
+          });
+          __publicField4(this, "getNodeValue", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).nodeToValue) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToValue(node);
+          });
+          __publicField4(this, "getNodeDisabled", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
+          });
+          __publicField4(this, "stringify", (value) => {
+            const node = this.findNode(value);
+            if (!node) return null;
+            return this.stringifyNode(node);
+          });
+          __publicField4(this, "stringifyNode", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).nodeToString) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToString(node);
+          });
+          __publicField4(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
+            let firstChild;
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isSameNode(node, rootNode)) return;
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
+                if (!firstChild && indexPath.length > 0 && !this.getNodeDisabled(node)) {
+                  firstChild = node;
+                  return "stop";
+                }
+              }
+            });
+            return firstChild;
+          });
+          __publicField4(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
+            let lastChild;
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isSameNode(node, rootNode)) return;
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
+                if (indexPath.length > 0 && !this.getNodeDisabled(node)) {
+                  lastChild = node;
+                }
+              }
+            });
+            return lastChild;
+          });
+          __publicField4(this, "at", (indexPath) => {
+            return access(this.rootNode, indexPath, {
+              getChildren: this.getNodeChildren
+            });
+          });
+          __publicField4(this, "findNode", (value, rootNode = this.rootNode) => {
+            return find(rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+          });
+          __publicField4(this, "findNodes", (values, rootNode = this.rootNode) => {
+            const v2 = new Set(values.filter((v22) => v22 != null));
+            return findAll(rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => v2.has(this.getNodeValue(node))
+            });
+          });
+          __publicField4(this, "sort", (values) => {
+            return values.reduce((acc, value) => {
+              const indexPath = this.getIndexPath(value);
+              if (indexPath) acc.push({ value, indexPath });
+              return acc;
+            }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
+          });
+          __publicField4(this, "getIndexPath", (value) => {
+            return findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+          });
+          __publicField4(this, "getValue", (indexPath) => {
+            const node = this.at(indexPath);
+            return node ? this.getNodeValue(node) : void 0;
+          });
+          __publicField4(this, "getValuePath", (indexPath) => {
+            if (!indexPath) return [];
+            const valuePath = [];
+            let currentPath = [...indexPath];
+            while (currentPath.length > 0) {
+              const node = this.at(currentPath);
+              if (node) valuePath.unshift(this.getNodeValue(node));
+              currentPath.pop();
+            }
+            return valuePath;
+          });
+          __publicField4(this, "getDepth", (value) => {
+            var _a;
+            const indexPath = findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+            return (_a = indexPath == null ? void 0 : indexPath.length) != null ? _a : 0;
+          });
+          __publicField4(this, "isSameNode", (node, other) => {
+            return this.getNodeValue(node) === this.getNodeValue(other);
+          });
+          __publicField4(this, "isRootNode", (node) => {
+            return this.isSameNode(node, this.rootNode);
+          });
+          __publicField4(this, "contains", (parentIndexPath, valueIndexPath) => {
+            if (!parentIndexPath || !valueIndexPath) return false;
+            return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
+          });
+          __publicField4(this, "getNextNode", (value, opts = {}) => {
+            let found = false;
+            let nextNode;
+            visit(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isRootNode(node)) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) {
+                  if (nodeValue === value) {
+                    found = true;
+                  }
+                  return "skip";
+                }
+                if (found && !this.getNodeDisabled(node)) {
+                  nextNode = node;
+                  return "stop";
+                }
+                if (nodeValue === value) {
+                  found = true;
+                }
+              }
+            });
+            return nextNode;
+          });
+          __publicField4(this, "getPreviousNode", (value, opts = {}) => {
+            let previousNode;
+            let found = false;
+            visit(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isRootNode(node)) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) {
+                  return "skip";
+                }
+                if (nodeValue === value) {
+                  found = true;
+                  return "stop";
+                }
+                if (!this.getNodeDisabled(node)) {
+                  previousNode = node;
+                }
+              }
+            });
+            return found ? previousNode : void 0;
+          });
+          __publicField4(this, "getParentNodes", (valueOrIndexPath) => {
+            var _a;
+            const indexPath = (_a = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a.slice();
+            if (!indexPath) return [];
+            const result = [];
+            while (indexPath.length > 0) {
+              indexPath.pop();
+              const parentNode = this.at(indexPath);
+              if (parentNode && !this.isRootNode(parentNode)) {
+                result.unshift(parentNode);
+              }
+            }
+            return result;
+          });
+          __publicField4(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
+            const parentNode = this.resolveNode(valueOrIndexPath);
+            if (!parentNode) return [];
+            const result = [];
+            visit(parentNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, nodeIndexPath) => {
+                if (nodeIndexPath.length === 0) return;
+                if (!(options2 == null ? void 0 : options2.withBranch) && this.isBranchNode(node)) return;
+                result.push(node);
+              }
+            });
+            return result;
+          });
+          __publicField4(this, "getDescendantValues", (valueOrIndexPath, options2) => {
+            const children = this.getDescendantNodes(valueOrIndexPath, options2);
+            return children.map((child) => this.getNodeValue(child));
+          });
+          __publicField4(this, "getParentIndexPath", (indexPath) => {
+            return indexPath.slice(0, -1);
+          });
+          __publicField4(this, "getParentNode", (valueOrIndexPath) => {
+            const indexPath = this.resolveIndexPath(valueOrIndexPath);
+            return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
+          });
+          __publicField4(this, "visit", (opts) => {
+            const _a = opts, { skip } = _a, rest = __objRest(_a, ["skip"]);
+            visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a2;
+                if (this.isRootNode(node)) return;
+                if (skip == null ? void 0 : skip({ value: this.getNodeValue(node), node, indexPath })) return "skip";
+                return (_a2 = rest.onEnter) == null ? void 0 : _a2.call(rest, node, indexPath);
+              }
+            }));
+          });
+          __publicField4(this, "getPreviousSibling", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const siblings = this.getNodeChildren(parentNode);
+            let idx = indexPath[indexPath.length - 1];
+            while (--idx >= 0) {
+              const sibling = siblings[idx];
+              if (!this.getNodeDisabled(sibling)) return sibling;
+            }
+            return;
+          });
+          __publicField4(this, "getNextSibling", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const siblings = this.getNodeChildren(parentNode);
+            let idx = indexPath[indexPath.length - 1];
+            while (++idx < siblings.length) {
+              const sibling = siblings[idx];
+              if (!this.getNodeDisabled(sibling)) return sibling;
+            }
+            return;
+          });
+          __publicField4(this, "getSiblingNodes", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            return parentNode ? this.getNodeChildren(parentNode) : [];
+          });
+          __publicField4(this, "getValues", (rootNode = this.rootNode) => {
+            const values = flatMap(rootNode, {
+              getChildren: this.getNodeChildren,
+              transform: (node) => [this.getNodeValue(node)]
+            });
+            return values.slice(1);
+          });
+          __publicField4(this, "isValidDepth", (indexPath, depth) => {
+            if (depth == null) return true;
+            if (typeof depth === "function") return depth(indexPath.length);
+            return indexPath.length === depth;
+          });
+          __publicField4(this, "isBranchNode", (node) => {
+            return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
+          });
+          __publicField4(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
+            let values = [];
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (indexPath.length === 0) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) return "skip";
+                if (this.isBranchNode(node) && this.isValidDepth(indexPath, opts.depth)) {
+                  values.push(this.getNodeValue(node));
+                }
+              }
+            });
+            return values;
+          });
+          __publicField4(this, "flatten", (rootNode = this.rootNode) => {
+            return flatten(rootNode, { getChildren: this.getNodeChildren });
+          });
+          __publicField4(this, "_create", (node, children) => {
+            if (this.getNodeChildren(node).length > 0 || children.length > 0) {
+              return __spreadProps(__spreadValues({}, node), { children });
+            }
+            return __spreadValues({}, node);
+          });
+          __publicField4(this, "_insert", (rootNode, indexPath, nodes) => {
+            return this.copy(
+              insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
+            );
+          });
+          __publicField4(this, "copy", (rootNode) => {
+            return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
+          });
+          __publicField4(this, "_replace", (rootNode, indexPath, node) => {
+            return this.copy(
+              replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
+            );
+          });
+          __publicField4(this, "_move", (rootNode, indexPaths, to) => {
+            return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
+          });
+          __publicField4(this, "_remove", (rootNode, indexPaths) => {
+            return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
+          });
+          __publicField4(this, "replace", (indexPath, node) => {
+            return this._replace(this.rootNode, indexPath, node);
+          });
+          __publicField4(this, "remove", (indexPaths) => {
+            return this._remove(this.rootNode, indexPaths);
+          });
+          __publicField4(this, "insertBefore", (indexPath, nodes) => {
+            const parentNode = this.getParentNode(indexPath);
+            return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
+          });
+          __publicField4(this, "insertAfter", (indexPath, nodes) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
+            return this._insert(this.rootNode, nextIndex2, nodes);
+          });
+          __publicField4(this, "move", (fromIndexPaths, toIndexPath) => {
+            return this._move(this.rootNode, fromIndexPaths, toIndexPath);
+          });
+          __publicField4(this, "filter", (predicate) => {
+            const filteredRoot = filter(this.rootNode, {
+              predicate,
+              getChildren: this.getNodeChildren,
+              create: this._create
+            });
+            return this.copy(filteredRoot);
+          });
+          __publicField4(this, "toJSON", () => {
+            return this.getValues(this.rootNode);
+          });
+          this.rootNode = options.rootNode;
+        }
+      };
+      fallbackMethods = {
+        nodeToValue(node) {
+          if (typeof node === "string") return node;
+          if (isObject2(node) && hasProp(node, "value")) return node.value;
+          return "";
+        },
+        nodeToString(node) {
+          if (typeof node === "string") return node;
+          if (isObject2(node) && hasProp(node, "label")) return node.label;
+          return fallbackMethods.nodeToValue(node);
+        },
+        isNodeDisabled(node) {
+          if (isObject2(node) && hasProp(node, "disabled")) return !!node.disabled;
+          return false;
+        },
+        nodeToChildren(node) {
+          return node.children;
+        },
+        nodeToChildrenCount(node) {
+          if (isObject2(node) && hasProp(node, "childrenCount")) return node.childrenCount;
+        }
+      };
     }
   });
 
-  // ../priv/static/chunk-IALMHMPM.mjs
+  // ../priv/static/chunk-GRHV6R4F.mjs
   function clamp2(start, value, end) {
     return max2(start, min2(value, end));
   }
@@ -6068,10 +6785,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_IALMHMPM = __esm({
-    "../priv/static/chunk-IALMHMPM.mjs"() {
+  var init_chunk_GRHV6R4F = __esm({
+    "../priv/static/chunk-GRHV6R4F.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -6774,7 +7491,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-N455IPSM.mjs
+  // ../priv/static/chunk-BPSX7Z7Y.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -7148,10 +7865,10 @@ var Corex = (() => {
     };
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent, LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_N455IPSM = __esm({
-    "../priv/static/chunk-N455IPSM.mjs"() {
+  var init_chunk_BPSX7Z7Y = __esm({
+    "../priv/static/chunk-BPSX7Z7Y.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
@@ -7701,10 +8418,10 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_7YU4FQ53();
-      init_chunk_IALMHMPM();
-      init_chunk_N455IPSM();
-      init_chunk_AG6DB4N6();
+      init_chunk_2DWEYSRA();
+      init_chunk_GRHV6R4F();
+      init_chunk_BPSX7Z7Y();
+      init_chunk_GFGFZBBD();
       anatomy5 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -11328,9 +12045,9 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_IALMHMPM();
-      init_chunk_N455IPSM();
-      init_chunk_AG6DB4N6();
+      init_chunk_GRHV6R4F();
+      init_chunk_BPSX7Z7Y();
+      init_chunk_GFGFZBBD();
       $3b62074eb05584b2$var$EPOCH = 1721426;
       $3b62074eb05584b2$var$daysInMonth = {
         standard: [
@@ -13561,7 +14278,7 @@ var Corex = (() => {
           el.addEventListener("phx:date-picker:set-value", this.onSetValue);
         },
         updated() {
-          var _a;
+          var _a, _b;
           const el = this.el;
           const inputWrapper = el.querySelector(
             '[data-scope="date-picker"][data-part="input-wrapper"]'
@@ -13599,8 +14316,13 @@ var Corex = (() => {
           }));
           if (isControlled && this.datePicker) {
             const serverValues = getStringList(el, "value");
-            const parsed = (serverValues == null ? void 0 : serverValues.length) ? serverValues.map((x2) => parse(x2)) : [];
-            this.datePicker.api.setValue(parsed);
+            const serverIso = (_b = serverValues == null ? void 0 : serverValues.join(",")) != null ? _b : "";
+            const zagValue = this.datePicker.api.value;
+            const zagIso = (zagValue == null ? void 0 : zagValue.length) ? zagValue.map((d2) => toISOString(d2)).join(",") : "";
+            if (serverIso !== zagIso) {
+              const parsed = (serverValues == null ? void 0 : serverValues.length) ? serverValues.map((x2) => parse(x2)) : [];
+              this.datePicker.api.setValue(parsed);
+            }
           }
         },
         destroyed() {
@@ -13813,8 +14535,8 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_N455IPSM();
-      init_chunk_AG6DB4N6();
+      init_chunk_BPSX7Z7Y();
+      init_chunk_GFGFZBBD();
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -14776,71 +15498,63 @@ var Corex = (() => {
           return connect7(this.machine.service, normalizeProps);
         }
         render() {
-          const triggerEl = this.el.querySelector('[data-scope="dialog"][data-part="trigger"]');
-          if (triggerEl) {
-            this.spreadProps(triggerEl, this.api.getTriggerProps());
-          }
-          const backdropEl = this.el.querySelector('[data-scope="dialog"][data-part="backdrop"]');
-          if (backdropEl) {
-            this.spreadProps(backdropEl, this.api.getBackdropProps());
-          }
-          const positionerEl = this.el.querySelector('[data-scope="dialog"][data-part="positioner"]');
+          const rootEl = this.el;
+          const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
+          if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+          const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+          if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
+          const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
           if (positionerEl) {
             this.spreadProps(positionerEl, this.api.getPositionerProps());
+            positionerEl.hidden = !this.api.open;
           }
-          const contentEl = this.el.querySelector('[data-scope="dialog"][data-part="content"]');
-          if (contentEl) {
-            this.spreadProps(contentEl, this.api.getContentProps());
-          }
-          const titleEl = this.el.querySelector('[data-scope="dialog"][data-part="title"]');
-          if (titleEl) {
-            this.spreadProps(titleEl, this.api.getTitleProps());
-          }
-          const descriptionEl = this.el.querySelector('[data-scope="dialog"][data-part="description"]');
-          if (descriptionEl) {
-            this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-          }
-          const closeTriggerEl = this.el.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
-          if (closeTriggerEl) {
-            this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
-          }
+          const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+          if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
+          const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
+          if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
+          const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+          if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
       DialogHook = {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const dialog = new Dialog(el, __spreadProps(__spreadValues({
+          const dialog = new Dialog(el, {
             id: el.id
-          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
-            modal: getBoolean(el, "modal"),
-            closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-            closeOnEscape: getBoolean(el, "closeOnEscape"),
-            preventScroll: getBoolean(el, "preventScroll"),
-            restoreFocus: getBoolean(el, "restoreFocus"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
-            onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  open: details.open
-                });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      open: details.open
-                    }
-                  })
-                );
-              }
-            }
-          }));
+            // ...(getBoolean(el, "controlled")
+            //   ? { open: getBoolean(el, "open") }
+            //   : { defaultOpen: getBoolean(el, "defaultOpen") }),
+            // modal: getBoolean(el, "modal"),
+            // closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+            // closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
+            // preventScroll: getBoolean(el, "preventScroll"),
+            // restoreFocus: getBoolean(el, "restoreFocus"),
+            // dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+            // onOpenChange: (details: OpenChangeDetails) => {
+            //   const eventName = getString(el, "onOpenChange");
+            //   if (eventName && this.liveSocket.main.isConnected()) {
+            //     pushEvent(eventName, {
+            //       id: el.id,
+            //       open: details.open,
+            //     });
+            //   }
+            //   const eventNameClient = getString(el, "onOpenChangeClient");
+            //   if (eventNameClient) {
+            //     el.dispatchEvent(
+            //       new CustomEvent(eventNameClient, {
+            //         bubbles: true,
+            //         detail: {
+            //           id: el.id,
+            //           open: details.open,
+            //         },
+            //       })
+            //     );
+            //   }
+            // },
+          });
           dialog.init();
           this.dialog = dialog;
           this.onSetOpen = (event) => {
@@ -14871,7 +15585,7 @@ var Corex = (() => {
           }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
             modal: getBoolean(this.el, "modal"),
             closeOnInteractOutside: getBoolean(this.el, "closeOnInteractOutside"),
-            closeOnEscapeKeyDown: getBoolean(this.el, "closeOnEscapeKeyDown"),
+            closeOnEscape: getBoolean(this.el, "closeOnEscapeKeyDown"),
             preventScroll: getBoolean(this.el, "preventScroll"),
             restoreFocus: getBoolean(this.el, "restoreFocus"),
             dir: getString(this.el, "dir", ["ltr", "rtl"])
@@ -15377,9 +16091,9 @@ var Corex = (() => {
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_IALMHMPM();
-      init_chunk_N455IPSM();
-      init_chunk_AG6DB4N6();
+      init_chunk_GRHV6R4F();
+      init_chunk_BPSX7Z7Y();
+      init_chunk_GFGFZBBD();
       createPoint = (x2, y2) => ({ x: x2, y: y2 });
       ({ min: min3, max: max3 } = Math);
       ({ sign: sign2, abs: abs2, min: min22 } = Math);
@@ -17084,10 +17798,10 @@ var Corex = (() => {
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_7YU4FQ53();
-      init_chunk_IALMHMPM();
-      init_chunk_N455IPSM();
-      init_chunk_AG6DB4N6();
+      init_chunk_2DWEYSRA();
+      init_chunk_GRHV6R4F();
+      init_chunk_BPSX7Z7Y();
+      init_chunk_GFGFZBBD();
       anatomy9 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -18569,7 +19283,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       ({ PI: e } = Math);
       t = e + 1e-4;
       n = 0.5;
@@ -19072,8 +19786,8 @@ var Corex = (() => {
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_Y7H7IIWI();
-      init_chunk_AG6DB4N6();
+      init_chunk_EAMC7PNF();
+      init_chunk_GFGFZBBD();
       anatomy11 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts11 = anatomy11.build();
       getRootId9 = (ctx) => {
@@ -19604,7 +20318,7 @@ var Corex = (() => {
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       anatomy12 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts12 = anatomy12.build();
       getRootId10 = (ctx) => {
@@ -20430,8 +21144,8 @@ var Corex = (() => {
       }
     });
   }
-  function createToastStore(props14 = {}) {
-    const attrs = withDefaults(props14, {
+  function createToastStore(props15 = {}) {
+    const attrs = withDefaults(props15, {
       placement: "bottom",
       overlap: false,
       max: 24,
@@ -20498,7 +21212,7 @@ var Corex = (() => {
       }
       return id;
     };
-    const remove2 = (id) => {
+    const remove3 = (id) => {
       dismissedToasts.add(id);
       if (!id) {
         toasts.forEach((toast) => {
@@ -20566,7 +21280,7 @@ var Corex = (() => {
       })).finally(() => {
         var _a;
         if (removable) {
-          remove2(id);
+          remove3(id);
         }
         (_a = options.finally) == null ? void 0 : _a.call(options);
       });
@@ -20625,7 +21339,7 @@ var Corex = (() => {
       subscribe: subscribe2,
       create,
       update,
-      remove: remove2,
+      remove: remove3,
       dismiss,
       error,
       success,
@@ -20673,8 +21387,8 @@ var Corex = (() => {
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_N455IPSM();
-      init_chunk_AG6DB4N6();
+      init_chunk_BPSX7Z7Y();
+      init_chunk_GFGFZBBD();
       anatomy13 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -20702,12 +21416,12 @@ var Corex = (() => {
       ({ guards: guards2, createMachine: createMachine22 } = setup());
       ({ and: and6 } = guards2);
       groupMachine = createMachine22({
-        props({ props: props14 }) {
+        props({ props: props15 }) {
           return __spreadProps(__spreadValues({
             dir: "ltr",
             id: uuid()
-          }, props14), {
-            store: props14.store
+          }, props15), {
+            store: props15.store
           });
         },
         initialState({ prop }) {
@@ -20955,12 +21669,12 @@ var Corex = (() => {
       });
       ({ not: not7 } = createGuards());
       machine13 = createMachine({
-        props({ props: props14 }) {
-          ensureProps(props14, ["id", "type", "parent", "removeDelay"], "toast");
+        props({ props: props15 }) {
+          ensureProps(props15, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
             closable: true
-          }, props14), {
-            duration: getToastDuration(props14.duration, props14.type)
+          }, props15), {
+            duration: getToastDuration(props15.duration, props15.type)
           });
         },
         initialState({ prop }) {
@@ -21206,15 +21920,15 @@ var Corex = (() => {
       toastGroups = /* @__PURE__ */ new Map();
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
-        constructor(el, props14) {
-          super(el, props14);
+        constructor(el, props15) {
+          super(el, props15);
           __publicField(this, "parts");
           __publicField(this, "duration");
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
-          this.duration = props14.duration;
+          this.duration = props15.duration;
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.innerHTML = `
@@ -21246,8 +21960,8 @@ var Corex = (() => {
           };
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props14) {
-          return new VanillaMachine(machine13, props14);
+        initMachine(props15) {
+          return new VanillaMachine(machine13, props15);
         }
         initApi() {
           return connect13(this.machine.service, normalizeProps);
@@ -21286,9 +22000,9 @@ var Corex = (() => {
         }
       };
       ToastGroup = class extends Component {
-        constructor(el, props14) {
+        constructor(el, props15) {
           var _a;
-          super(el, props14);
+          super(el, props15);
           __publicField(this, "toastComponents", /* @__PURE__ */ new Map());
           __publicField(this, "groupEl");
           __publicField(this, "store");
@@ -21299,7 +22013,7 @@ var Corex = (() => {
             this.toastComponents.clear();
             this.machine.stop();
           });
-          this.store = props14.store;
+          this.store = props15.store;
           this.groupEl = (_a = el.querySelector('[data-part="group"]')) != null ? _a : (() => {
             const g2 = document.createElement("div");
             g2.setAttribute("data-scope", "toast");
@@ -21309,8 +22023,8 @@ var Corex = (() => {
           })();
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props14) {
-          return new VanillaMachine(group.machine, props14);
+        initMachine(props15) {
+          return new VanillaMachine(group.machine, props15);
         }
         initApi() {
           return group.connect(this.machine.service, normalizeProps);
@@ -21629,7 +22343,7 @@ var Corex = (() => {
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_AG6DB4N6();
+      init_chunk_GFGFZBBD();
       anatomy14 = createAnatomy("toggle-group").parts("root", "item");
       parts14 = anatomy14.build();
       getRootId12 = (ctx) => {
@@ -21960,14 +22674,1551 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/tree-view.mjs
+  var tree_view_exports = {};
+  __export(tree_view_exports, {
+    TreeView: () => TreeViewHook
+  });
+  function getCheckedState(collection22, node, checkedValue) {
+    const value = collection22.getNodeValue(node);
+    if (!collection22.isBranchNode(node)) {
+      return checkedValue.includes(value);
+    }
+    const childValues = collection22.getDescendantValues(value);
+    const allChecked = childValues.every((v2) => checkedValue.includes(v2));
+    const someChecked = childValues.some((v2) => checkedValue.includes(v2));
+    return allChecked ? true : someChecked ? "indeterminate" : false;
+  }
+  function toggleBranchChecked(collection22, value, checkedValue) {
+    const childValues = collection22.getDescendantValues(value);
+    const allChecked = childValues.every((child) => checkedValue.includes(child));
+    return uniq(allChecked ? remove(checkedValue, ...childValues) : add(checkedValue, ...childValues));
+  }
+  function getCheckedValueMap(collection22, checkedValue) {
+    const map2 = /* @__PURE__ */ new Map();
+    collection22.visit({
+      onEnter: (node) => {
+        const value = collection22.getNodeValue(node);
+        const isBranch = collection22.isBranchNode(node);
+        const checked = getCheckedState(collection22, node, checkedValue);
+        map2.set(value, {
+          type: isBranch ? "branch" : "leaf",
+          checked
+        });
+      }
+    });
+    return map2;
+  }
+  function connect15(service, normalize) {
+    const { context, scope, computed, prop, send } = service;
+    const collection22 = prop("collection");
+    const expandedValue = Array.from(context.get("expandedValue"));
+    const selectedValue = Array.from(context.get("selectedValue"));
+    const checkedValue = Array.from(context.get("checkedValue"));
+    const isTypingAhead = computed("isTypingAhead");
+    const focusedValue = context.get("focusedValue");
+    const loadingStatus = context.get("loadingStatus");
+    const renamingValue = context.get("renamingValue");
+    const skip = ({ indexPath }) => {
+      const paths = collection22.getValuePath(indexPath).slice(0, -1);
+      return paths.some((value) => !expandedValue.includes(value));
+    };
+    const firstNode = collection22.getFirstNode(void 0, { skip });
+    const firstNodeValue = firstNode ? collection22.getNodeValue(firstNode) : null;
+    function getNodeState(props22) {
+      const { node, indexPath } = props22;
+      const value = collection22.getNodeValue(node);
+      return {
+        id: getNodeId(scope, value),
+        value,
+        indexPath,
+        valuePath: collection22.getValuePath(indexPath),
+        disabled: Boolean(node.disabled),
+        focused: focusedValue == null ? firstNodeValue === value : focusedValue === value,
+        selected: selectedValue.includes(value),
+        expanded: expandedValue.includes(value),
+        loading: loadingStatus[value] === "loading",
+        depth: indexPath.length,
+        isBranch: collection22.isBranchNode(node),
+        renaming: renamingValue === value,
+        get checked() {
+          return getCheckedState(collection22, node, checkedValue);
+        }
+      };
+    }
+    return {
+      collection: collection22,
+      expandedValue,
+      selectedValue,
+      checkedValue,
+      toggleChecked(value, isBranch) {
+        send({ type: "CHECKED.TOGGLE", value, isBranch });
+      },
+      setChecked(value) {
+        send({ type: "CHECKED.SET", value });
+      },
+      clearChecked() {
+        send({ type: "CHECKED.CLEAR" });
+      },
+      getCheckedMap() {
+        return getCheckedValueMap(collection22, checkedValue);
+      },
+      expand(value) {
+        send({ type: value ? "BRANCH.EXPAND" : "EXPANDED.ALL", value });
+      },
+      collapse(value) {
+        send({ type: value ? "BRANCH.COLLAPSE" : "EXPANDED.CLEAR", value });
+      },
+      deselect(value) {
+        send({ type: value ? "NODE.DESELECT" : "SELECTED.CLEAR", value });
+      },
+      select(value) {
+        send({ type: value ? "NODE.SELECT" : "SELECTED.ALL", value, isTrusted: false });
+      },
+      getVisibleNodes() {
+        return computed("visibleNodes");
+      },
+      focus(value) {
+        focusNode(scope, value);
+      },
+      selectParent(value) {
+        const parentNode = collection22.getParentNode(value);
+        if (!parentNode) return;
+        const _selectedValue = add(selectedValue, collection22.getNodeValue(parentNode));
+        send({ type: "SELECTED.SET", value: _selectedValue, src: "select.parent" });
+      },
+      expandParent(value) {
+        const parentNode = collection22.getParentNode(value);
+        if (!parentNode) return;
+        const _expandedValue = add(expandedValue, collection22.getNodeValue(parentNode));
+        send({ type: "EXPANDED.SET", value: _expandedValue, src: "expand.parent" });
+      },
+      setExpandedValue(value) {
+        const _expandedValue = uniq(value);
+        send({ type: "EXPANDED.SET", value: _expandedValue });
+      },
+      setSelectedValue(value) {
+        const _selectedValue = uniq(value);
+        send({ type: "SELECTED.SET", value: _selectedValue });
+      },
+      startRenaming(value) {
+        send({ type: "NODE.RENAME", value });
+      },
+      submitRenaming(value, label) {
+        send({ type: "RENAME.SUBMIT", value, label });
+      },
+      cancelRenaming() {
+        send({ type: "RENAME.CANCEL" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.root.attrs), {
+          id: getRootId13(scope),
+          dir: prop("dir")
+        }));
+      },
+      getLabelProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.label.attrs), {
+          id: getLabelId8(scope),
+          dir: prop("dir")
+        }));
+      },
+      getTreeProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.tree.attrs), {
+          id: getTreeId(scope),
+          dir: prop("dir"),
+          role: "tree",
+          "aria-label": "Tree View",
+          "aria-labelledby": getLabelId8(scope),
+          "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
+          tabIndex: -1,
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const target = getEventTarget(event);
+            if (isEditableElement(target)) return;
+            const node = target == null ? void 0 : target.closest("[data-part=branch-control], [data-part=item]");
+            if (!node) return;
+            const nodeId = node.dataset.value;
+            if (nodeId == null) {
+              console.warn(`[zag-js/tree-view] Node id not found for node`, node);
+              return;
+            }
+            const isBranchNode = node.matches("[data-part=branch-control]");
+            const keyMap2 = {
+              ArrowDown(event2) {
+                if (isModifierKey(event2)) return;
+                event2.preventDefault();
+                send({ type: "NODE.ARROW_DOWN", id: nodeId, shiftKey: event2.shiftKey });
+              },
+              ArrowUp(event2) {
+                if (isModifierKey(event2)) return;
+                event2.preventDefault();
+                send({ type: "NODE.ARROW_UP", id: nodeId, shiftKey: event2.shiftKey });
+              },
+              ArrowLeft(event2) {
+                if (isModifierKey(event2) || node.dataset.disabled) return;
+                event2.preventDefault();
+                send({ type: isBranchNode ? "BRANCH_NODE.ARROW_LEFT" : "NODE.ARROW_LEFT", id: nodeId });
+              },
+              ArrowRight(event2) {
+                if (!isBranchNode || node.dataset.disabled) return;
+                event2.preventDefault();
+                send({ type: "BRANCH_NODE.ARROW_RIGHT", id: nodeId });
+              },
+              Home(event2) {
+                if (isModifierKey(event2)) return;
+                event2.preventDefault();
+                send({ type: "NODE.HOME", id: nodeId, shiftKey: event2.shiftKey });
+              },
+              End(event2) {
+                if (isModifierKey(event2)) return;
+                event2.preventDefault();
+                send({ type: "NODE.END", id: nodeId, shiftKey: event2.shiftKey });
+              },
+              Space(event2) {
+                var _a;
+                if (node.dataset.disabled) return;
+                if (isTypingAhead) {
+                  send({ type: "TREE.TYPEAHEAD", key: event2.key });
+                } else {
+                  (_a = keyMap2.Enter) == null ? void 0 : _a.call(keyMap2, event2);
+                }
+              },
+              Enter(event2) {
+                if (node.dataset.disabled) return;
+                if (isAnchorElement(target) && isModifierKey(event2)) return;
+                send({ type: isBranchNode ? "BRANCH_NODE.CLICK" : "NODE.CLICK", id: nodeId, src: "keyboard" });
+                if (!isAnchorElement(target)) {
+                  event2.preventDefault();
+                }
+              },
+              "*"(event2) {
+                if (node.dataset.disabled) return;
+                event2.preventDefault();
+                send({ type: "SIBLINGS.EXPAND", id: nodeId });
+              },
+              a(event2) {
+                if (!event2.metaKey || node.dataset.disabled) return;
+                event2.preventDefault();
+                send({ type: "SELECTED.ALL", moveFocus: true });
+              },
+              F2(event2) {
+                if (node.dataset.disabled) return;
+                const canRenameFn = prop("canRename");
+                if (!canRenameFn) return;
+                const indexPath = collection22.getIndexPath(nodeId);
+                if (indexPath) {
+                  const node2 = collection22.at(indexPath);
+                  if (node2 && !canRenameFn(node2, indexPath)) {
+                    return;
+                  }
+                }
+                event2.preventDefault();
+                send({ type: "NODE.RENAME", value: nodeId });
+              }
+            };
+            const key = getEventKey(event, { dir: prop("dir") });
+            const exec = keyMap2[key];
+            if (exec) {
+              exec(event);
+              return;
+            }
+            if (!getByTypeahead.isValidEvent(event)) return;
+            send({ type: "TREE.TYPEAHEAD", key: event.key, id: nodeId });
+            event.preventDefault();
+          }
+        }));
+      },
+      getNodeState,
+      getItemProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.item.attrs), {
+          id: nodeState.id,
+          dir: prop("dir"),
+          "data-ownedby": getTreeId(scope),
+          "data-path": props22.indexPath.join("/"),
+          "data-value": nodeState.value,
+          tabIndex: nodeState.focused ? 0 : -1,
+          "data-focus": dataAttr(nodeState.focused),
+          role: "treeitem",
+          "aria-current": nodeState.selected ? "true" : void 0,
+          "aria-selected": nodeState.disabled ? void 0 : nodeState.selected,
+          "data-selected": dataAttr(nodeState.selected),
+          "aria-disabled": ariaAttr(nodeState.disabled),
+          "data-disabled": dataAttr(nodeState.disabled),
+          "data-renaming": dataAttr(nodeState.renaming),
+          "aria-level": nodeState.depth,
+          "data-depth": nodeState.depth,
+          style: {
+            "--depth": nodeState.depth
+          },
+          onFocus(event) {
+            event.stopPropagation();
+            send({ type: "NODE.FOCUS", id: nodeState.value });
+          },
+          onClick(event) {
+            if (nodeState.disabled) return;
+            if (!isLeftClick(event)) return;
+            if (isAnchorElement(event.currentTarget) && isModifierKey(event)) return;
+            const isMetaKey = event.metaKey || event.ctrlKey;
+            send({ type: "NODE.CLICK", id: nodeState.value, shiftKey: event.shiftKey, ctrlKey: isMetaKey });
+            event.stopPropagation();
+            if (!isAnchorElement(event.currentTarget)) {
+              event.preventDefault();
+            }
+          }
+        }));
+      },
+      getItemTextProps(props22) {
+        const itemState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemText.attrs), {
+          "data-disabled": dataAttr(itemState.disabled),
+          "data-selected": dataAttr(itemState.selected),
+          "data-focus": dataAttr(itemState.focused)
+        }));
+      },
+      getItemIndicatorProps(props22) {
+        const itemState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemIndicator.attrs), {
+          "aria-hidden": true,
+          "data-disabled": dataAttr(itemState.disabled),
+          "data-selected": dataAttr(itemState.selected),
+          "data-focus": dataAttr(itemState.focused),
+          hidden: !itemState.selected
+        }));
+      },
+      getBranchProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branch.attrs), {
+          "data-depth": nodeState.depth,
+          dir: prop("dir"),
+          "data-branch": nodeState.value,
+          role: "treeitem",
+          "data-ownedby": getTreeId(scope),
+          "data-value": nodeState.value,
+          "aria-level": nodeState.depth,
+          "aria-selected": nodeState.disabled ? void 0 : nodeState.selected,
+          "data-path": props22.indexPath.join("/"),
+          "data-selected": dataAttr(nodeState.selected),
+          "aria-expanded": nodeState.expanded,
+          "data-state": nodeState.expanded ? "open" : "closed",
+          "aria-disabled": ariaAttr(nodeState.disabled),
+          "data-disabled": dataAttr(nodeState.disabled),
+          "data-loading": dataAttr(nodeState.loading),
+          "aria-busy": ariaAttr(nodeState.loading),
+          style: {
+            "--depth": nodeState.depth
+          }
+        }));
+      },
+      getBranchIndicatorProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchIndicator.attrs), {
+          "aria-hidden": true,
+          "data-state": nodeState.expanded ? "open" : "closed",
+          "data-disabled": dataAttr(nodeState.disabled),
+          "data-selected": dataAttr(nodeState.selected),
+          "data-focus": dataAttr(nodeState.focused),
+          "data-loading": dataAttr(nodeState.loading)
+        }));
+      },
+      getBranchTriggerProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchTrigger.attrs), {
+          role: "button",
+          dir: prop("dir"),
+          "data-disabled": dataAttr(nodeState.disabled),
+          "data-state": nodeState.expanded ? "open" : "closed",
+          "data-value": nodeState.value,
+          "data-loading": dataAttr(nodeState.loading),
+          disabled: nodeState.loading,
+          onClick(event) {
+            if (nodeState.disabled || nodeState.loading) return;
+            send({ type: "BRANCH_TOGGLE.CLICK", id: nodeState.value });
+            event.stopPropagation();
+          }
+        }));
+      },
+      getBranchControlProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchControl.attrs), {
+          role: "button",
+          id: nodeState.id,
+          dir: prop("dir"),
+          tabIndex: nodeState.focused ? 0 : -1,
+          "data-path": props22.indexPath.join("/"),
+          "data-state": nodeState.expanded ? "open" : "closed",
+          "data-disabled": dataAttr(nodeState.disabled),
+          "data-selected": dataAttr(nodeState.selected),
+          "data-focus": dataAttr(nodeState.focused),
+          "data-renaming": dataAttr(nodeState.renaming),
+          "data-value": nodeState.value,
+          "data-depth": nodeState.depth,
+          "data-loading": dataAttr(nodeState.loading),
+          "aria-busy": ariaAttr(nodeState.loading),
+          onFocus(event) {
+            send({ type: "NODE.FOCUS", id: nodeState.value });
+            event.stopPropagation();
+          },
+          onClick(event) {
+            if (nodeState.disabled) return;
+            if (nodeState.loading) return;
+            if (!isLeftClick(event)) return;
+            if (isAnchorElement(event.currentTarget) && isModifierKey(event)) return;
+            const isMetaKey = event.metaKey || event.ctrlKey;
+            send({ type: "BRANCH_NODE.CLICK", id: nodeState.value, shiftKey: event.shiftKey, ctrlKey: isMetaKey });
+            event.stopPropagation();
+          }
+        }));
+      },
+      getBranchTextProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(nodeState.disabled),
+          "data-state": nodeState.expanded ? "open" : "closed",
+          "data-loading": dataAttr(nodeState.loading)
+        }));
+      },
+      getBranchContentProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchContent.attrs), {
+          role: "group",
+          dir: prop("dir"),
+          "data-state": nodeState.expanded ? "open" : "closed",
+          "data-depth": nodeState.depth,
+          "data-path": props22.indexPath.join("/"),
+          "data-value": nodeState.value,
+          hidden: !nodeState.expanded
+        }));
+      },
+      getBranchIndentGuideProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchIndentGuide.attrs), {
+          "data-depth": nodeState.depth
+        }));
+      },
+      getNodeCheckboxProps(props22) {
+        const nodeState = getNodeState(props22);
+        const checkedState = nodeState.checked;
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.nodeCheckbox.attrs), {
+          tabIndex: -1,
+          role: "checkbox",
+          "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
+          "aria-checked": checkedState === true ? "true" : checkedState === false ? "false" : "mixed",
+          "data-disabled": dataAttr(nodeState.disabled),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (nodeState.disabled) return;
+            if (!isLeftClick(event)) return;
+            send({ type: "CHECKED.TOGGLE", value: nodeState.value, isBranch: nodeState.isBranch });
+            event.stopPropagation();
+            const node = event.currentTarget.closest("[role=treeitem]");
+            node == null ? void 0 : node.focus({ preventScroll: true });
+          }
+        }));
+      },
+      getNodeRenameInputProps(props22) {
+        const nodeState = getNodeState(props22);
+        return normalize.input(__spreadProps(__spreadValues({}, parts15.nodeRenameInput.attrs), {
+          id: getRenameInputId(scope, nodeState.value),
+          type: "text",
+          "aria-label": "Rename tree item",
+          hidden: !nodeState.renaming,
+          onKeyDown(event) {
+            if (isComposingEvent(event)) return;
+            if (event.key === "Escape") {
+              send({ type: "RENAME.CANCEL" });
+              event.preventDefault();
+            }
+            if (event.key === "Enter") {
+              send({ type: "RENAME.SUBMIT", label: event.currentTarget.value });
+              event.preventDefault();
+            }
+            event.stopPropagation();
+          },
+          onBlur(event) {
+            send({ type: "RENAME.SUBMIT", label: event.currentTarget.value });
+          }
+        }));
+      }
+    };
+  }
+  function expandBranches(params, values) {
+    const { context, prop, refs } = params;
+    if (!prop("loadChildren")) {
+      context.set("expandedValue", (prev2) => uniq(add(prev2, ...values)));
+      return;
+    }
+    const loadingStatus = context.get("loadingStatus");
+    const [loadedValues, loadingValues] = partition(values, (value) => loadingStatus[value] === "loaded");
+    if (loadedValues.length > 0) {
+      context.set("expandedValue", (prev2) => uniq(add(prev2, ...loadedValues)));
+    }
+    if (loadingValues.length === 0) return;
+    const collection22 = prop("collection");
+    const [nodeWithChildren, nodeWithoutChildren] = partition(loadingValues, (id) => {
+      const node = collection22.findNode(id);
+      return collection22.getNodeChildren(node).length > 0;
+    });
+    if (nodeWithChildren.length > 0) {
+      context.set("expandedValue", (prev2) => uniq(add(prev2, ...nodeWithChildren)));
+    }
+    if (nodeWithoutChildren.length === 0) return;
+    context.set("loadingStatus", (prev2) => __spreadValues(__spreadValues({}, prev2), nodeWithoutChildren.reduce((acc, id) => __spreadProps(__spreadValues({}, acc), { [id]: "loading" }), {})));
+    const nodesToLoad = nodeWithoutChildren.map((id) => {
+      const indexPath = collection22.getIndexPath(id);
+      const valuePath = collection22.getValuePath(indexPath);
+      const node = collection22.findNode(id);
+      return { id, indexPath, valuePath, node };
+    });
+    const pendingAborts = refs.get("pendingAborts");
+    const loadChildren = prop("loadChildren");
+    ensure(loadChildren, () => "[zag-js/tree-view] `loadChildren` is required for async expansion");
+    const proms = nodesToLoad.map(({ id, indexPath, valuePath, node }) => {
+      const existingAbort = pendingAborts.get(id);
+      if (existingAbort) {
+        existingAbort.abort();
+        pendingAborts.delete(id);
+      }
+      const abortController = new AbortController();
+      pendingAborts.set(id, abortController);
+      return loadChildren({
+        valuePath,
+        indexPath,
+        node,
+        signal: abortController.signal
+      });
+    });
+    Promise.allSettled(proms).then((results) => {
+      var _a, _b;
+      const loadedValues2 = [];
+      const nodeWithErrors = [];
+      const nextLoadingStatus = context.get("loadingStatus");
+      let collection32 = prop("collection");
+      results.forEach((result, index) => {
+        const { id, indexPath, node, valuePath } = nodesToLoad[index];
+        if (result.status === "fulfilled") {
+          nextLoadingStatus[id] = "loaded";
+          loadedValues2.push(id);
+          collection32 = collection32.replace(indexPath, __spreadProps(__spreadValues({}, node), { children: result.value }));
+        } else {
+          pendingAborts.delete(id);
+          Reflect.deleteProperty(nextLoadingStatus, id);
+          nodeWithErrors.push({ node, error: result.reason, indexPath, valuePath });
+        }
+      });
+      context.set("loadingStatus", nextLoadingStatus);
+      if (loadedValues2.length) {
+        context.set("expandedValue", (prev2) => uniq(add(prev2, ...loadedValues2)));
+        (_a = prop("onLoadChildrenComplete")) == null ? void 0 : _a({ collection: collection32 });
+      }
+      if (nodeWithErrors.length) {
+        (_b = prop("onLoadChildrenError")) == null ? void 0 : _b({ nodes: nodeWithErrors });
+      }
+    });
+  }
+  function skipFn(params) {
+    const { prop, context } = params;
+    return function skip({ indexPath }) {
+      const paths = prop("collection").getValuePath(indexPath).slice(0, -1);
+      return paths.some((value) => !context.get("expandedValue").includes(value));
+    };
+  }
+  function scrollToNode(params, value) {
+    const { prop, scope, computed } = params;
+    const scrollToIndexFn = prop("scrollToIndexFn");
+    if (!scrollToIndexFn) return false;
+    const collection22 = prop("collection");
+    const visibleNodes = computed("visibleNodes");
+    for (let i2 = 0; i2 < visibleNodes.length; i2++) {
+      const { node, indexPath } = visibleNodes[i2];
+      if (collection22.getNodeValue(node) !== value) continue;
+      scrollToIndexFn({
+        index: i2,
+        node,
+        indexPath,
+        getElement: () => scope.getById(getNodeId(scope, value))
+      });
+      return true;
+    }
+    return false;
+  }
+  function buildTreeFromDOM(rootEl) {
+    var _a;
+    const selector = '[data-scope="tree-view"][data-part="branch"], [data-scope="tree-view"][data-part="item"]';
+    const elements = rootEl.querySelectorAll(selector);
+    const nodes = [];
+    for (const el of elements) {
+      const pathRaw = el.getAttribute("data-path");
+      const value = el.getAttribute("data-value");
+      if (pathRaw == null || value == null) continue;
+      const pathArr = pathRaw.split("/").map((s2) => parseInt(s2, 10));
+      if (pathArr.some(Number.isNaN)) continue;
+      const name = (_a = el.getAttribute("data-name")) != null ? _a : value;
+      const isBranch = el.getAttribute("data-part") === "branch";
+      nodes.push({ pathArr, id: value, name, isBranch });
+    }
+    nodes.sort((a2, b2) => {
+      const len = Math.min(a2.pathArr.length, b2.pathArr.length);
+      for (let i2 = 0; i2 < len; i2++) {
+        if (a2.pathArr[i2] !== b2.pathArr[i2]) return a2.pathArr[i2] - b2.pathArr[i2];
+      }
+      return a2.pathArr.length - b2.pathArr.length;
+    });
+    const root = { id: "ROOT", name: "", children: [] };
+    for (const { pathArr, id, name, isBranch } of nodes) {
+      let parent = root;
+      for (let i2 = 0; i2 < pathArr.length - 1; i2++) {
+        const idx = pathArr[i2];
+        if (!parent.children) parent.children = [];
+        parent = parent.children[idx];
+      }
+      const lastIdx = pathArr[pathArr.length - 1];
+      if (!parent.children) parent.children = [];
+      parent.children[lastIdx] = isBranch ? { id, name, children: [] } : { id, name };
+    }
+    return root;
+  }
+  var anatomy15, parts15, collection3, getRootId13, getLabelId8, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and8, machine15, props14, splitProps14, itemProps6, splitItemProps6, TreeView, TreeViewHook;
+  var init_tree_view = __esm({
+    "../priv/static/tree-view.mjs"() {
+      "use strict";
+      init_chunk_2DWEYSRA();
+      init_chunk_GFGFZBBD();
+      anatomy15 = createAnatomy("tree-view").parts(
+        "branch",
+        "branchContent",
+        "branchControl",
+        "branchIndentGuide",
+        "branchIndicator",
+        "branchText",
+        "branchTrigger",
+        "item",
+        "itemIndicator",
+        "itemText",
+        "label",
+        "nodeCheckbox",
+        "nodeRenameInput",
+        "root",
+        "tree"
+      );
+      parts15 = anatomy15.build();
+      collection3 = (options) => {
+        return new TreeCollection(options);
+      };
+      collection3.empty = () => {
+        return new TreeCollection({ rootNode: { children: [] } });
+      };
+      getRootId13 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `tree:${ctx.id}:root`;
+      };
+      getLabelId8 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `tree:${ctx.id}:label`;
+      };
+      getNodeId = (ctx, value) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.node) == null ? void 0 : _b.call(_a, value)) != null ? _c : `tree:${ctx.id}:node:${value}`;
+      };
+      getTreeId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.tree) != null ? _b : `tree:${ctx.id}:tree`;
+      };
+      focusNode = (ctx, value) => {
+        var _a;
+        if (value == null) return;
+        (_a = ctx.getById(getNodeId(ctx, value))) == null ? void 0 : _a.focus();
+      };
+      getRenameInputId = (ctx, value) => `tree:${ctx.id}:rename-input:${value}`;
+      getRenameInputEl = (ctx, value) => {
+        return ctx.getById(getRenameInputId(ctx, value));
+      };
+      ({ and: and8 } = createGuards());
+      machine15 = createMachine({
+        props({ props: props22 }) {
+          return __spreadValues({
+            selectionMode: "single",
+            collection: collection3.empty(),
+            typeahead: true,
+            expandOnClick: true,
+            defaultExpandedValue: [],
+            defaultSelectedValue: []
+          }, props22);
+        },
+        initialState() {
+          return "idle";
+        },
+        context({ prop, bindable: bindable2, getContext }) {
+          return {
+            expandedValue: bindable2(() => ({
+              defaultValue: prop("defaultExpandedValue"),
+              value: prop("expandedValue"),
+              isEqual: isEqual2,
+              onChange(expandedValue) {
+                var _a;
+                const ctx = getContext();
+                const focusedValue = ctx.get("focusedValue");
+                (_a = prop("onExpandedChange")) == null ? void 0 : _a({
+                  expandedValue,
+                  focusedValue,
+                  get expandedNodes() {
+                    return prop("collection").findNodes(expandedValue);
+                  }
+                });
+              }
+            })),
+            selectedValue: bindable2(() => ({
+              defaultValue: prop("defaultSelectedValue"),
+              value: prop("selectedValue"),
+              isEqual: isEqual2,
+              onChange(selectedValue) {
+                var _a;
+                const ctx = getContext();
+                const focusedValue = ctx.get("focusedValue");
+                (_a = prop("onSelectionChange")) == null ? void 0 : _a({
+                  selectedValue,
+                  focusedValue,
+                  get selectedNodes() {
+                    return prop("collection").findNodes(selectedValue);
+                  }
+                });
+              }
+            })),
+            focusedValue: bindable2(() => ({
+              defaultValue: prop("defaultFocusedValue") || null,
+              value: prop("focusedValue"),
+              onChange(focusedValue) {
+                var _a;
+                (_a = prop("onFocusChange")) == null ? void 0 : _a({
+                  focusedValue,
+                  get focusedNode() {
+                    return focusedValue ? prop("collection").findNode(focusedValue) : null;
+                  }
+                });
+              }
+            })),
+            loadingStatus: bindable2(() => ({
+              defaultValue: {}
+            })),
+            checkedValue: bindable2(() => ({
+              defaultValue: prop("defaultCheckedValue") || [],
+              value: prop("checkedValue"),
+              isEqual: isEqual2,
+              onChange(value) {
+                var _a;
+                (_a = prop("onCheckedChange")) == null ? void 0 : _a({ checkedValue: value });
+              }
+            })),
+            renamingValue: bindable2(() => ({
+              sync: true,
+              defaultValue: null
+            }))
+          };
+        },
+        refs() {
+          return {
+            typeaheadState: __spreadValues({}, getByTypeahead.defaultOptions),
+            pendingAborts: /* @__PURE__ */ new Map()
+          };
+        },
+        computed: {
+          isMultipleSelection: ({ prop }) => prop("selectionMode") === "multiple",
+          isTypingAhead: ({ refs }) => refs.get("typeaheadState").keysSoFar.length > 0,
+          visibleNodes: ({ prop, context }) => {
+            const nodes = [];
+            prop("collection").visit({
+              skip: skipFn({ prop, context }),
+              onEnter: (node, indexPath) => {
+                nodes.push({ node, indexPath });
+              }
+            });
+            return nodes;
+          }
+        },
+        on: {
+          "EXPANDED.SET": {
+            actions: ["setExpanded"]
+          },
+          "EXPANDED.CLEAR": {
+            actions: ["clearExpanded"]
+          },
+          "EXPANDED.ALL": {
+            actions: ["expandAllBranches"]
+          },
+          "BRANCH.EXPAND": {
+            actions: ["expandBranches"]
+          },
+          "BRANCH.COLLAPSE": {
+            actions: ["collapseBranches"]
+          },
+          "SELECTED.SET": {
+            actions: ["setSelected"]
+          },
+          "SELECTED.ALL": [
+            {
+              guard: and8("isMultipleSelection", "moveFocus"),
+              actions: ["selectAllNodes", "focusTreeLastNode"]
+            },
+            {
+              guard: "isMultipleSelection",
+              actions: ["selectAllNodes"]
+            }
+          ],
+          "SELECTED.CLEAR": {
+            actions: ["clearSelected"]
+          },
+          "NODE.SELECT": {
+            actions: ["selectNode"]
+          },
+          "NODE.DESELECT": {
+            actions: ["deselectNode"]
+          },
+          "CHECKED.TOGGLE": {
+            actions: ["toggleChecked"]
+          },
+          "CHECKED.SET": {
+            actions: ["setChecked"]
+          },
+          "CHECKED.CLEAR": {
+            actions: ["clearChecked"]
+          },
+          "NODE.FOCUS": {
+            actions: ["setFocusedNode"]
+          },
+          "NODE.ARROW_DOWN": [
+            {
+              guard: and8("isShiftKey", "isMultipleSelection"),
+              actions: ["focusTreeNextNode", "extendSelectionToNextNode"]
+            },
+            {
+              actions: ["focusTreeNextNode"]
+            }
+          ],
+          "NODE.ARROW_UP": [
+            {
+              guard: and8("isShiftKey", "isMultipleSelection"),
+              actions: ["focusTreePrevNode", "extendSelectionToPrevNode"]
+            },
+            {
+              actions: ["focusTreePrevNode"]
+            }
+          ],
+          "NODE.ARROW_LEFT": {
+            actions: ["focusBranchNode"]
+          },
+          "BRANCH_NODE.ARROW_LEFT": [
+            {
+              guard: "isBranchExpanded",
+              actions: ["collapseBranch"]
+            },
+            {
+              actions: ["focusBranchNode"]
+            }
+          ],
+          "BRANCH_NODE.ARROW_RIGHT": [
+            {
+              guard: and8("isBranchFocused", "isBranchExpanded"),
+              actions: ["focusBranchFirstNode"]
+            },
+            {
+              actions: ["expandBranch"]
+            }
+          ],
+          "SIBLINGS.EXPAND": {
+            actions: ["expandSiblingBranches"]
+          },
+          "NODE.HOME": [
+            {
+              guard: and8("isShiftKey", "isMultipleSelection"),
+              actions: ["extendSelectionToFirstNode", "focusTreeFirstNode"]
+            },
+            {
+              actions: ["focusTreeFirstNode"]
+            }
+          ],
+          "NODE.END": [
+            {
+              guard: and8("isShiftKey", "isMultipleSelection"),
+              actions: ["extendSelectionToLastNode", "focusTreeLastNode"]
+            },
+            {
+              actions: ["focusTreeLastNode"]
+            }
+          ],
+          "NODE.CLICK": [
+            {
+              guard: and8("isCtrlKey", "isMultipleSelection"),
+              actions: ["toggleNodeSelection"]
+            },
+            {
+              guard: and8("isShiftKey", "isMultipleSelection"),
+              actions: ["extendSelectionToNode"]
+            },
+            {
+              actions: ["selectNode"]
+            }
+          ],
+          "BRANCH_NODE.CLICK": [
+            {
+              guard: and8("isCtrlKey", "isMultipleSelection"),
+              actions: ["toggleNodeSelection"]
+            },
+            {
+              guard: and8("isShiftKey", "isMultipleSelection"),
+              actions: ["extendSelectionToNode"]
+            },
+            {
+              guard: "expandOnClick",
+              actions: ["selectNode", "toggleBranchNode"]
+            },
+            {
+              actions: ["selectNode"]
+            }
+          ],
+          "BRANCH_TOGGLE.CLICK": {
+            actions: ["toggleBranchNode"]
+          },
+          "TREE.TYPEAHEAD": {
+            actions: ["focusMatchedNode"]
+          }
+        },
+        exit: ["clearPendingAborts"],
+        states: {
+          idle: {
+            on: {
+              "NODE.RENAME": {
+                target: "renaming",
+                actions: ["setRenamingValue"]
+              }
+            }
+          },
+          renaming: {
+            entry: ["syncRenameInput", "focusRenameInput"],
+            on: {
+              "RENAME.SUBMIT": {
+                guard: "isRenameLabelValid",
+                target: "idle",
+                actions: ["submitRenaming"]
+              },
+              "RENAME.CANCEL": {
+                target: "idle",
+                actions: ["cancelRenaming"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isBranchFocused: ({ context, event }) => context.get("focusedValue") === event.id,
+            isBranchExpanded: ({ context, event }) => context.get("expandedValue").includes(event.id),
+            isShiftKey: ({ event }) => event.shiftKey,
+            isCtrlKey: ({ event }) => event.ctrlKey,
+            hasSelectedItems: ({ context }) => context.get("selectedValue").length > 0,
+            isMultipleSelection: ({ prop }) => prop("selectionMode") === "multiple",
+            moveFocus: ({ event }) => !!event.moveFocus,
+            expandOnClick: ({ prop }) => !!prop("expandOnClick"),
+            isRenameLabelValid: ({ event }) => event.label.trim() !== ""
+          },
+          actions: {
+            selectNode({ context, event }) {
+              const value = event.id || event.value;
+              context.set("selectedValue", (prev2) => {
+                if (value == null) return prev2;
+                if (!event.isTrusted && isArray(value)) return prev2.concat(...value);
+                return [isArray(value) ? last(value) : value].filter(Boolean);
+              });
+            },
+            deselectNode({ context, event }) {
+              const value = toArray(event.id || event.value);
+              context.set("selectedValue", (prev2) => remove(prev2, ...value));
+            },
+            setFocusedNode({ context, event }) {
+              context.set("focusedValue", event.id);
+            },
+            clearFocusedNode({ context }) {
+              context.set("focusedValue", null);
+            },
+            clearSelectedItem({ context }) {
+              context.set("selectedValue", []);
+            },
+            toggleBranchNode({ context, event, action }) {
+              const isExpanded = context.get("expandedValue").includes(event.id);
+              action(isExpanded ? ["collapseBranch"] : ["expandBranch"]);
+            },
+            expandBranch(params) {
+              const { event } = params;
+              expandBranches(params, [event.id]);
+            },
+            expandBranches(params) {
+              const { context, event } = params;
+              const valuesToExpand = toArray(event.value);
+              expandBranches(params, diff(valuesToExpand, context.get("expandedValue")));
+            },
+            collapseBranch({ context, event }) {
+              context.set("expandedValue", (prev2) => remove(prev2, event.id));
+            },
+            collapseBranches(params) {
+              const { context, event } = params;
+              const value = toArray(event.value);
+              context.set("expandedValue", (prev2) => remove(prev2, ...value));
+            },
+            setExpanded({ context, event }) {
+              if (!isArray(event.value)) return;
+              context.set("expandedValue", event.value);
+            },
+            clearExpanded({ context }) {
+              context.set("expandedValue", []);
+            },
+            setSelected({ context, event }) {
+              if (!isArray(event.value)) return;
+              context.set("selectedValue", event.value);
+            },
+            clearSelected({ context }) {
+              context.set("selectedValue", []);
+            },
+            focusTreeFirstNode(params) {
+              const { prop, scope } = params;
+              const collection22 = prop("collection");
+              const firstNode = collection22.getFirstNode(void 0, { skip: skipFn(params) });
+              if (!firstNode) return;
+              const firstValue = collection22.getNodeValue(firstNode);
+              const scrolled = scrollToNode(params, firstValue);
+              if (scrolled) raf(() => focusNode(scope, firstValue));
+              else focusNode(scope, firstValue);
+            },
+            focusTreeLastNode(params) {
+              const { prop, scope } = params;
+              const collection22 = prop("collection");
+              const lastNode = collection22.getLastNode(void 0, { skip: skipFn(params) });
+              const lastValue = collection22.getNodeValue(lastNode);
+              const scrolled = scrollToNode(params, lastValue);
+              if (scrolled) raf(() => focusNode(scope, lastValue));
+              else focusNode(scope, lastValue);
+            },
+            focusBranchFirstNode(params) {
+              const { event, prop, scope } = params;
+              const collection22 = prop("collection");
+              const branchNode = collection22.findNode(event.id);
+              const firstNode = collection22.getFirstNode(branchNode, { skip: skipFn(params) });
+              if (!firstNode) return;
+              const firstValue = collection22.getNodeValue(firstNode);
+              const scrolled = scrollToNode(params, firstValue);
+              if (scrolled) raf(() => focusNode(scope, firstValue));
+              else focusNode(scope, firstValue);
+            },
+            focusTreeNextNode(params) {
+              const { event, prop, scope } = params;
+              const collection22 = prop("collection");
+              const nextNode = collection22.getNextNode(event.id, { skip: skipFn(params) });
+              if (!nextNode) return;
+              const nextValue = collection22.getNodeValue(nextNode);
+              const scrolled = scrollToNode(params, nextValue);
+              if (scrolled) raf(() => focusNode(scope, nextValue));
+              else focusNode(scope, nextValue);
+            },
+            focusTreePrevNode(params) {
+              const { event, prop, scope } = params;
+              const collection22 = prop("collection");
+              const prevNode = collection22.getPreviousNode(event.id, { skip: skipFn(params) });
+              if (!prevNode) return;
+              const prevValue = collection22.getNodeValue(prevNode);
+              const scrolled = scrollToNode(params, prevValue);
+              if (scrolled) raf(() => focusNode(scope, prevValue));
+              else focusNode(scope, prevValue);
+            },
+            focusBranchNode(params) {
+              const { event, prop, scope } = params;
+              const collection22 = prop("collection");
+              const parentNode = collection22.getParentNode(event.id);
+              const parentValue = parentNode ? collection22.getNodeValue(parentNode) : void 0;
+              if (!parentValue) return;
+              const scrolled = scrollToNode(params, parentValue);
+              if (scrolled) raf(() => focusNode(scope, parentValue));
+              else focusNode(scope, parentValue);
+            },
+            selectAllNodes({ context, prop }) {
+              context.set("selectedValue", prop("collection").getValues());
+            },
+            focusMatchedNode(params) {
+              const { context, prop, refs, event, scope, computed } = params;
+              const nodes = computed("visibleNodes");
+              const elements = nodes.map(({ node: node2 }) => ({
+                textContent: prop("collection").stringifyNode(node2),
+                id: prop("collection").getNodeValue(node2)
+              }));
+              const node = getByTypeahead(elements, {
+                state: refs.get("typeaheadState"),
+                activeId: context.get("focusedValue"),
+                key: event.key
+              });
+              if (!(node == null ? void 0 : node.id)) return;
+              const scrolled = scrollToNode(params, node.id);
+              if (scrolled) raf(() => focusNode(scope, node.id));
+              else focusNode(scope, node.id);
+            },
+            toggleNodeSelection({ context, event }) {
+              const selectedValue = addOrRemove(context.get("selectedValue"), event.id);
+              context.set("selectedValue", selectedValue);
+            },
+            expandAllBranches(params) {
+              const { context, prop } = params;
+              const branchValues = prop("collection").getBranchValues();
+              const valuesToExpand = diff(branchValues, context.get("expandedValue"));
+              expandBranches(params, valuesToExpand);
+            },
+            expandSiblingBranches(params) {
+              const { context, event, prop } = params;
+              const collection22 = prop("collection");
+              const indexPath = collection22.getIndexPath(event.id);
+              if (!indexPath) return;
+              const nodes = collection22.getSiblingNodes(indexPath);
+              const values = nodes.map((node) => collection22.getNodeValue(node));
+              const valuesToExpand = diff(values, context.get("expandedValue"));
+              expandBranches(params, valuesToExpand);
+            },
+            extendSelectionToNode(params) {
+              const { context, event, prop, computed } = params;
+              const collection22 = prop("collection");
+              const anchorValue = first(context.get("selectedValue")) || collection22.getNodeValue(collection22.getFirstNode());
+              const targetValue = event.id;
+              let values = [anchorValue, targetValue];
+              let hits = 0;
+              const visibleNodes = computed("visibleNodes");
+              visibleNodes.forEach(({ node }) => {
+                const nodeValue = collection22.getNodeValue(node);
+                if (hits === 1) values.push(nodeValue);
+                if (nodeValue === anchorValue || nodeValue === targetValue) hits++;
+              });
+              context.set("selectedValue", uniq(values));
+            },
+            extendSelectionToNextNode(params) {
+              const { context, event, prop } = params;
+              const collection22 = prop("collection");
+              const nextNode = collection22.getNextNode(event.id, { skip: skipFn(params) });
+              if (!nextNode) return;
+              const values = new Set(context.get("selectedValue"));
+              const nextValue = collection22.getNodeValue(nextNode);
+              if (nextValue == null) return;
+              if (values.has(event.id) && values.has(nextValue)) {
+                values.delete(event.id);
+              } else if (!values.has(nextValue)) {
+                values.add(nextValue);
+              }
+              context.set("selectedValue", Array.from(values));
+            },
+            extendSelectionToPrevNode(params) {
+              const { context, event, prop } = params;
+              const collection22 = prop("collection");
+              const prevNode = collection22.getPreviousNode(event.id, { skip: skipFn(params) });
+              if (!prevNode) return;
+              const values = new Set(context.get("selectedValue"));
+              const prevValue = collection22.getNodeValue(prevNode);
+              if (prevValue == null) return;
+              if (values.has(event.id) && values.has(prevValue)) {
+                values.delete(event.id);
+              } else if (!values.has(prevValue)) {
+                values.add(prevValue);
+              }
+              context.set("selectedValue", Array.from(values));
+            },
+            extendSelectionToFirstNode(params) {
+              const { context, prop } = params;
+              const collection22 = prop("collection");
+              const currentSelection = first(context.get("selectedValue"));
+              const values = [];
+              collection22.visit({
+                skip: skipFn(params),
+                onEnter: (node) => {
+                  const nodeValue = collection22.getNodeValue(node);
+                  values.push(nodeValue);
+                  if (nodeValue === currentSelection) {
+                    return "stop";
+                  }
+                }
+              });
+              context.set("selectedValue", values);
+            },
+            extendSelectionToLastNode(params) {
+              const { context, prop } = params;
+              const collection22 = prop("collection");
+              const currentSelection = first(context.get("selectedValue"));
+              const values = [];
+              let current = false;
+              collection22.visit({
+                skip: skipFn(params),
+                onEnter: (node) => {
+                  const nodeValue = collection22.getNodeValue(node);
+                  if (nodeValue === currentSelection) current = true;
+                  if (current) values.push(nodeValue);
+                }
+              });
+              context.set("selectedValue", values);
+            },
+            clearPendingAborts({ refs }) {
+              const aborts = refs.get("pendingAborts");
+              aborts.forEach((abort) => abort.abort());
+              aborts.clear();
+            },
+            toggleChecked({ context, event, prop }) {
+              const collection22 = prop("collection");
+              context.set(
+                "checkedValue",
+                (prev2) => event.isBranch ? toggleBranchChecked(collection22, event.value, prev2) : addOrRemove(prev2, event.value)
+              );
+            },
+            setChecked({ context, event }) {
+              context.set("checkedValue", event.value);
+            },
+            clearChecked({ context }) {
+              context.set("checkedValue", []);
+            },
+            setRenamingValue({ context, event, prop }) {
+              context.set("renamingValue", event.value);
+              const onRenameStartFn = prop("onRenameStart");
+              if (onRenameStartFn) {
+                const collection22 = prop("collection");
+                const indexPath = collection22.getIndexPath(event.value);
+                if (indexPath) {
+                  const node = collection22.at(indexPath);
+                  if (node) {
+                    onRenameStartFn({
+                      value: event.value,
+                      node,
+                      indexPath
+                    });
+                  }
+                }
+              }
+            },
+            submitRenaming({ context, event, prop, scope }) {
+              var _a;
+              const renamingValue = context.get("renamingValue");
+              if (!renamingValue) return;
+              const collection22 = prop("collection");
+              const indexPath = collection22.getIndexPath(renamingValue);
+              if (!indexPath) return;
+              const trimmedLabel = event.label.trim();
+              const onBeforeRenameFn = prop("onBeforeRename");
+              if (onBeforeRenameFn) {
+                const details = {
+                  value: renamingValue,
+                  label: trimmedLabel,
+                  indexPath
+                };
+                const shouldRename = onBeforeRenameFn(details);
+                if (!shouldRename) {
+                  context.set("renamingValue", null);
+                  focusNode(scope, renamingValue);
+                  return;
+                }
+              }
+              (_a = prop("onRenameComplete")) == null ? void 0 : _a({
+                value: renamingValue,
+                label: trimmedLabel,
+                indexPath
+              });
+              context.set("renamingValue", null);
+              focusNode(scope, renamingValue);
+            },
+            cancelRenaming({ context, scope }) {
+              const renamingValue = context.get("renamingValue");
+              context.set("renamingValue", null);
+              if (renamingValue) {
+                focusNode(scope, renamingValue);
+              }
+            },
+            syncRenameInput({ context, scope, prop }) {
+              const renamingValue = context.get("renamingValue");
+              if (!renamingValue) return;
+              const collection22 = prop("collection");
+              const node = collection22.findNode(renamingValue);
+              if (!node) return;
+              const label = collection22.stringifyNode(node);
+              const inputEl = getRenameInputEl(scope, renamingValue);
+              setElementValue(inputEl, label);
+            },
+            focusRenameInput({ context, scope }) {
+              const renamingValue = context.get("renamingValue");
+              if (!renamingValue) return;
+              const inputEl = getRenameInputEl(scope, renamingValue);
+              if (!inputEl) return;
+              inputEl.focus();
+              inputEl.select();
+            }
+          }
+        }
+      });
+      props14 = createProps()([
+        "ids",
+        "collection",
+        "dir",
+        "expandedValue",
+        "expandOnClick",
+        "defaultFocusedValue",
+        "focusedValue",
+        "getRootNode",
+        "id",
+        "onExpandedChange",
+        "onFocusChange",
+        "onSelectionChange",
+        "checkedValue",
+        "selectedValue",
+        "selectionMode",
+        "typeahead",
+        "defaultExpandedValue",
+        "defaultSelectedValue",
+        "defaultCheckedValue",
+        "onCheckedChange",
+        "onLoadChildrenComplete",
+        "onLoadChildrenError",
+        "loadChildren",
+        "canRename",
+        "onRenameStart",
+        "onBeforeRename",
+        "onRenameComplete",
+        "scrollToIndexFn"
+      ]);
+      splitProps14 = createSplitProps(props14);
+      itemProps6 = createProps()(["node", "indexPath"]);
+      splitItemProps6 = createSplitProps(itemProps6);
+      TreeView = class extends Component {
+        constructor(el, props22) {
+          var _a;
+          const treeData = (_a = props22.treeData) != null ? _a : buildTreeFromDOM(el);
+          const collection22 = collection3({
+            nodeToValue: (node) => node.id,
+            nodeToString: (node) => node.name,
+            rootNode: treeData
+          });
+          super(el, __spreadProps(__spreadValues({}, props22), { collection: collection22 }));
+          __publicField(this, "collection");
+          __publicField(this, "syncTree", () => {
+            const treeEl = this.el.querySelector(
+              '[data-scope="tree-view"][data-part="tree"]'
+            );
+            if (!treeEl) return;
+            this.spreadProps(treeEl, this.api.getTreeProps());
+            this.updateExistingTree(treeEl);
+          });
+          this.collection = collection22;
+        }
+        initMachine(props22) {
+          return new VanillaMachine(machine15, __spreadValues({}, props22));
+        }
+        initApi() {
+          return connect15(this.machine.service, normalizeProps);
+        }
+        getNodeAt(indexPath) {
+          var _a;
+          if (indexPath.length === 0) return void 0;
+          let current = this.collection.rootNode;
+          for (const i2 of indexPath) {
+            current = (_a = current == null ? void 0 : current.children) == null ? void 0 : _a[i2];
+            if (!current) return void 0;
+          }
+          return current;
+        }
+        updateExistingTree(treeEl) {
+          this.spreadProps(treeEl, this.api.getTreeProps());
+          const branches = treeEl.querySelectorAll(
+            '[data-scope="tree-view"][data-part="branch"]'
+          );
+          for (const branchEl of branches) {
+            const pathRaw = branchEl.getAttribute("data-path");
+            if (pathRaw == null) continue;
+            const indexPath = pathRaw.split("/").map((s2) => parseInt(s2, 10));
+            const node = this.getNodeAt(indexPath);
+            if (!node) continue;
+            const nodeProps = { indexPath, node };
+            this.spreadProps(branchEl, this.api.getBranchProps(nodeProps));
+            const controlEl = branchEl.querySelector(
+              '[data-scope="tree-view"][data-part="branch-control"]'
+            );
+            if (controlEl) this.spreadProps(controlEl, this.api.getBranchControlProps(nodeProps));
+            const textEl = branchEl.querySelector(
+              '[data-scope="tree-view"][data-part="branch-text"]'
+            );
+            if (textEl) this.spreadProps(textEl, this.api.getBranchTextProps(nodeProps));
+            const indicatorEl = branchEl.querySelector(
+              '[data-scope="tree-view"][data-part="branch-indicator"]'
+            );
+            if (indicatorEl)
+              this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
+            const contentEl = branchEl.querySelector(
+              '[data-scope="tree-view"][data-part="branch-content"]'
+            );
+            if (contentEl) this.spreadProps(contentEl, this.api.getBranchContentProps(nodeProps));
+            const indentGuideEl = branchEl.querySelector(
+              '[data-scope="tree-view"][data-part="branch-indent-guide"]'
+            );
+            if (indentGuideEl)
+              this.spreadProps(indentGuideEl, this.api.getBranchIndentGuideProps(nodeProps));
+          }
+          const items = treeEl.querySelectorAll(
+            '[data-scope="tree-view"][data-part="item"]'
+          );
+          for (const itemEl of items) {
+            const pathRaw = itemEl.getAttribute("data-path");
+            if (pathRaw == null) continue;
+            const indexPath = pathRaw.split("/").map((s2) => parseInt(s2, 10));
+            const node = this.getNodeAt(indexPath);
+            if (!node) continue;
+            const nodeProps = { indexPath, node };
+            this.spreadProps(itemEl, this.api.getItemProps(nodeProps));
+          }
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector(
+            '[data-scope="tree-view"][data-part="root"]'
+          )) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const label = this.el.querySelector(
+            '[data-scope="tree-view"][data-part="label"]'
+          );
+          if (label) this.spreadProps(label, this.api.getLabelProps());
+          this.syncTree();
+        }
+      };
+      TreeViewHook = {
+        mounted() {
+          var _a;
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const treeView = new TreeView(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, getBoolean(el, "controlled") ? {
+            expandedValue: getStringList(el, "expandedValue"),
+            selectedValue: getStringList(el, "selectedValue")
+          } : {
+            defaultExpandedValue: getStringList(el, "defaultExpandedValue"),
+            defaultSelectedValue: getStringList(el, "defaultSelectedValue")
+          }), {
+            selectionMode: (_a = getString(el, "selectionMode", ["single", "multiple"])) != null ? _a : "single",
+            dir: getDir(el),
+            onSelectionChange: (details) => {
+              var _a2;
+              const redirect = getBoolean(el, "redirect");
+              const value = ((_a2 = details.selectedValue) == null ? void 0 : _a2.length) ? details.selectedValue[0] : void 0;
+              const itemEl = [
+                ...el.querySelectorAll(
+                  '[data-scope="tree-view"][data-part="item"], [data-scope="tree-view"][data-part="branch"]'
+                )
+              ].find((node) => node.getAttribute("data-value") === value);
+              const isItem = (itemEl == null ? void 0 : itemEl.getAttribute("data-part")) === "item";
+              const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
+              const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
+              const doRedirect = redirect && value && isItem && this.liveSocket.main.isDead && itemRedirect !== "false";
+              if (doRedirect) {
+                if (itemNewTab) {
+                  window.open(value, "_blank", "noopener,noreferrer");
+                } else {
+                  window.location.href = value;
+                }
+              }
+              const eventName = getString(el, "onSelectionChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  value: details
+                });
+              }
+            },
+            onExpandedChange: (details) => {
+              const eventName = getString(el, "onExpandedChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  value: details
+                });
+              }
+            }
+          }));
+          treeView.init();
+          this.treeView = treeView;
+          this.onSetExpandedValue = (event) => {
+            const { value } = event.detail;
+            treeView.api.setExpandedValue(value);
+          };
+          el.addEventListener("phx:tree-view:set-expanded-value", this.onSetExpandedValue);
+          this.onSetSelectedValue = (event) => {
+            const { value } = event.detail;
+            treeView.api.setSelectedValue(value);
+          };
+          el.addEventListener("phx:tree-view:set-selected-value", this.onSetSelectedValue);
+          this.handlers = [];
+          this.handlers.push(
+            this.handleEvent(
+              "tree_view_set_expanded_value",
+              (payload) => {
+                const targetId = payload.tree_view_id;
+                if (targetId && el.id !== targetId && el.id !== `tree-view:${targetId}`) return;
+                treeView.api.setExpandedValue(payload.value);
+              }
+            )
+          );
+          this.handlers.push(
+            this.handleEvent(
+              "tree_view_set_selected_value",
+              (payload) => {
+                const targetId = payload.tree_view_id;
+                if (targetId && el.id !== targetId && el.id !== `tree-view:${targetId}`) return;
+                treeView.api.setSelectedValue(payload.value);
+              }
+            )
+          );
+          this.handlers.push(
+            this.handleEvent("tree_view_expanded_value", () => {
+              pushEvent("tree_view_expanded_value_response", {
+                value: treeView.api.expandedValue
+              });
+            })
+          );
+          this.handlers.push(
+            this.handleEvent("tree_view_selected_value", () => {
+              pushEvent("tree_view_selected_value_response", {
+                value: treeView.api.selectedValue
+              });
+            })
+          );
+        },
+        updated() {
+          var _a;
+          if (!getBoolean(this.el, "controlled")) return;
+          (_a = this.treeView) == null ? void 0 : _a.updateProps({
+            expandedValue: getStringList(this.el, "expandedValue"),
+            selectedValue: getStringList(this.el, "selectedValue")
+          });
+        },
+        destroyed() {
+          var _a;
+          if (this.onSetExpandedValue) {
+            this.el.removeEventListener("phx:tree-view:set-expanded-value", this.onSetExpandedValue);
+          }
+          if (this.onSetSelectedValue) {
+            this.el.removeEventListener("phx:tree-view:set-selected-value", this.onSetSelectedValue);
+          }
+          if (this.handlers) {
+            for (const handler of this.handlers) {
+              this.removeHandleEvent(handler);
+            }
+          }
+          (_a = this.treeView) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
   // hooks/corex.ts
   var corex_exports = {};
   __export(corex_exports, {
-    LazyHooks: () => LazyHooks,
+    Hooks: () => Hooks,
     default: () => corex_default,
-    lazyHook: () => lazyHook
+    hooks: () => hooks
   });
-  function lazyHook(importFn, exportName) {
+  function hooks(importFn, exportName) {
     return {
       mounted() {
         return __async(this, null, function* () {
@@ -21999,22 +24250,23 @@ var Corex = (() => {
       }
     };
   }
-  var LazyHooks = {
-    Accordion: lazyHook(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
-    Checkbox: lazyHook(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
-    Clipboard: lazyHook(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
-    Collapsible: lazyHook(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
-    Combobox: lazyHook(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
-    DatePicker: lazyHook(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
-    Dialog: lazyHook(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
-    Menu: lazyHook(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
-    Select: lazyHook(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
-    SignaturePad: lazyHook(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
-    Switch: lazyHook(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
-    Tabs: lazyHook(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
-    Toast: lazyHook(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
-    ToggleGroup: lazyHook(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup")
+  var Hooks = {
+    Accordion: hooks(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
+    Checkbox: hooks(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
+    Clipboard: hooks(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
+    Collapsible: hooks(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
+    Combobox: hooks(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
+    DatePicker: hooks(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
+    Dialog: hooks(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
+    Menu: hooks(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
+    Select: hooks(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
+    SignaturePad: hooks(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
+    Switch: hooks(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
+    Tabs: hooks(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
+    Toast: hooks(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
+    ToggleGroup: hooks(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
+    TreeView: hooks(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
   };
-  var corex_default = LazyHooks;
+  var corex_default = Hooks;
   return __toCommonJS(corex_exports);
 })();
