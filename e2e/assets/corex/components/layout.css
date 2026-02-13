@@ -64,6 +64,8 @@
     @apply scrollbar scrollbar--sm;
 
     position: sticky;
+    display: flex;
+    flex-direction: column;
     top: calc(var(--spacing-ui-lg));
     align-self: flex-start;
     background: var(--color-layer);
@@ -90,6 +92,7 @@
     min-width: 0;
     width: 100%;
     margin-inline: auto;
+    margin-block-end: var(--container-micro);
     position: relative;
   }
 
@@ -115,6 +118,7 @@
 
   .layout__article {
     width: 100%;
+    min-width: 0;
     max-width: var(--breakpoint-lg);
     padding: var(--spacing-ui-padding);
     color: var(--color-layer--text);

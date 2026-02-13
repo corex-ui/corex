@@ -18,7 +18,8 @@ config :e2e, E2e.Repo,
 config :e2e, E2eWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "+b68KqBcqGHqVRw8vfymJ0DZMbVUbGkYgE9E8X45TmMWvqBW4zsqPuo8LI/KWOVL",
-  server: true
+  server: true,
+  code_reloader: false
 
 # In test we don't send emails
 config :e2e, E2e.Mailer, adapter: Swoosh.Adapters.Test

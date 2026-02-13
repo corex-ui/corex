@@ -6,6 +6,8 @@ defmodule E2eWeb.PageControllerTest do
     assert redirected_to(conn, 302) == ~p"/en"
 
     conn = get(conn, ~p"/en")
-    assert html_response(conn, 200) =~ "Corex E2E tests"
+    assert html_response(conn, 200) =~ "Build"
+    assert html_response(conn, 200) =~ "websites"
+    assert html_response(conn, 200) =~ "Corex"
   end
 end

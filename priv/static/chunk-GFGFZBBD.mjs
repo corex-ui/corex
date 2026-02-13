@@ -1211,6 +1211,11 @@ var last = (v) => v[v.length - 1];
 var has = (v, t) => v.indexOf(t) !== -1;
 var add = (v, ...items) => v.concat(items);
 var remove = (v, ...items) => v.filter((t) => !items.includes(t));
+var uniq = (v) => Array.from(new Set(v));
+var diff = (a, b) => {
+  const set = new Set(b);
+  return a.filter((t) => !set.has(t));
+};
 var addOrRemove = (v, item) => has(v, item) ? remove(v, item) : add(v, item);
 function nextIndex(v, idx, opts = {}) {
   const { step = 1, loop = true } = opts;
@@ -1238,6 +1243,16 @@ function chunk(v, size) {
     else last(rows)?.push(value);
     return rows;
   }, []);
+}
+function partition(arr, fn) {
+  return arr.reduce(
+    ([pass, fail], value) => {
+      if (fn(value)) pass.push(value);
+      else fail.push(value);
+      return [pass, fail];
+    },
+    [[], []]
+  );
 }
 var isArrayLike = (value) => value?.constructor.name === "Array";
 var isArrayEqual = (a, b) => {
@@ -2419,14 +2434,18 @@ export {
   getByTypeahead,
   visuallyHiddenStyle,
   waitForElement,
+  toArray,
   first,
   last,
   add,
   remove,
+  uniq,
+  diff,
   addOrRemove,
   next,
   prev,
   chunk,
+  partition,
   isEqual2 as isEqual,
   isArray,
   isBoolean,

@@ -1,0 +1,77 @@
+@import "../main.css";
+
+@layer components {
+  .tree-view [data-scope="tree-view"][data-part="root"] {
+    @apply ui-root;
+
+    max-width: var(--container-mini);
+    gap: var(--spacing-ui-gap);
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="tree"] {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--spacing-ui-gap);
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="branch"] {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: var(--spacing-ui-gap-sm);
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="item"],
+  .tree-view [data-scope="tree-view"][data-part="branch-control"] {
+    @apply ui-item;
+
+    border: 1px solid var(--color-ui--border);
+    border-radius: 0 var(--radius-ui) var(--radius-ui) 0;
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="item-text"],
+  .tree-view [data-scope="tree-view"][data-part="branch-text"] {
+    width: 100%;
+    text-align: start;
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="branch-content"] {
+    margin-inline-start: var(--spacing-ui-gap);
+    gap: var(--spacing-ui-gap-sm);
+  }
+
+  .tree-view
+    [data-scope="tree-view"][data-part="branch-content"][data-state="open"] {
+    visibility: visible;
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tree-view [data-scope="tree-view"][data-part="branch-label"] {
+    @apply ui-label;
+  }
+
+  .tree-view
+    [data-part="branch-content"]:not([dir="rtl"])
+    [data-part="branch-indent-guide"] {
+    position: absolute;
+    border-left: 2px solid var(--color-ui--border);
+    height: 100%;
+    left: 0;
+    pointer-events: none;
+  }
+
+  .tree-view
+    [data-part="branch-content"][dir="rtl"]
+    [data-part="branch-indent-guide"] {
+    border-right: 2px solid var(--color-ui--border);
+    right: 0;
+  }
+}

@@ -18,13 +18,13 @@
 
   .date-picker [data-scope="date-picker"][data-part="control"] {
     display: flex;
-    flex-flow: row wrap;
+    flex-flow: row nowrap;
     place-items: center;
     padding: 0;
     width: var(--container-mini);
     overflow: hidden;
     gap: var(--spacing-mini-gap);
-    justify-content: center;
+    justify-content: flex-start;
     border-radius: var(--radius-ui);
   }
 
@@ -38,13 +38,23 @@
     position: relative;
   }
 
+  
   .date-picker [data-scope="date-picker"][data-part="input"] {
     @apply ui-input;
-    
+
+    width: 100%;
     min-width: 0;
     flex: 1 1 0%;
-
   }
+
+
+
+  /* .date-picker [data-scope="date-picker"][data-part="positioner"] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  } */
 
   .date-picker [data-scope="date-picker"][data-part="content"] {
     @apply ui-content;

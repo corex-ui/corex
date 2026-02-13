@@ -85,6 +85,15 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     signaturePad.init();
     this.signaturePad = signaturePad;
 
+    const initialPaths = controlled ? paths : defaultPaths;
+    if (initialPaths.length > 0) {
+      const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+      if (hiddenInput) {
+        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+
     this.onClear = (event: Event) => {
       const { id: targetId } = (event as CustomEvent<{ id: string }>).detail;
       if (targetId && targetId !== el.id) return;

@@ -1,6 +1,6 @@
 {
   "name": "corex",
-  "version": "0.1.0-alpha.18",
+  "version": "0.1.0-alpha.19",
   "description": "The official JavaScript client for the Corex Phoenix Hooks.",
   "license": "MIT",
   "module": "./priv/static/corex.mjs",
@@ -25,7 +25,8 @@
     "./switch": "./priv/static/switch.mjs",
     "./tabs": "./priv/static/tabs.mjs",
     "./toast": "./priv/static/toast.mjs",
-    "./toggle-group": "./priv/static/toggle-group.mjs"
+    "./toggle-group": "./priv/static/toggle-group.mjs",
+    "./tree-view": "./priv/static/tree-view.mjs"
   },
   "repository": {
     "type": "git",
@@ -69,6 +70,7 @@
     "@zag-js/tabs": "^1.33.1",
     "@zag-js/toast": "^1.33.1",
     "@zag-js/toggle-group": "^1.33.1",
+    "@zag-js/tree-view": "^1.33.1",
     "@zag-js/types": "^1.33.1",
     "@zag-js/vanilla": "^1.33.1",
     "eslint": "^9.39.2",

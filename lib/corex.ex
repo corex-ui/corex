@@ -28,10 +28,12 @@ defmodule Corex do
     tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]},
     clipboard: {Corex.Clipboard, [clipboard: 1]},
     collapsible: {Corex.Collapsible, [collapsible: 1]},
-    dialog: {Corex.Dialog, [dialog: 1]},
+    dialog:
+      {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
     date_picker: {Corex.DatePicker, [date_picker: 1]},
     signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
-    menu: {Corex.Menu, [menu: 1]}
+    menu: {Corex.Menu, [menu: 1]},
+    tree_view: {Corex.TreeView, [tree_view: 1, tree_item: 1, tree_branch: 1]}
   }
 
   defmacro __using__(opts \\ []) do

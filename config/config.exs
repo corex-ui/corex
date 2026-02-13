@@ -11,9 +11,8 @@ config :phoenix,
   sort_verified_routes_query_params: true
 
 if Mix.env() == :dev do
-  # Keep LazyHooks dynamic imports as runtime imports (do not bundle subpath modules).
   corex_externals =
-    ~w(accordion checkbox clipboard collapsible combobox date-picker dialog menu select signature-pad switch tabs toast toggle-group)
+    ~w(accordion checkbox clipboard collapsible combobox date-picker dialog menu select signature-pad switch tabs toast toggle-group tree-view)
     |> Enum.map(fn name -> "--external:corex/#{name}" end)
 
   esbuild = fn args ->
@@ -24,7 +23,6 @@ if Mix.env() == :dev do
     ]
   end
 
-  # Per-component entry points for code splitting (shared chunks extracted automatically).
   hooks_entries =
     ~w(
       ./hooks/accordion.ts
@@ -41,9 +39,10 @@ if Mix.env() == :dev do
       ./hooks/tabs.ts
       ./hooks/toast.ts
       ./hooks/toggle-group.ts
+      ./hooks/tree-view.ts
     )
 
-  hooks_split_args =
+  hooks_args =
     hooks_entries ++
       ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs)
 
@@ -63,8 +62,8 @@ if Mix.env() == :dev do
       esbuild.(
         ~w(--target=es2016 --format=iife --global-name=Corex --minify --outfile=../priv/static/corex.min.js)
       ),
-    hooks_split: [
-      args: hooks_split_args,
+    hooks: [
+      args: hooks_args,
       cd: Path.expand("../assets", __DIR__),
       env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
     ]

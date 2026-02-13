@@ -46,3 +46,6 @@ declare module "corex/toast" {
 declare module "corex/toggle-group" {
   export const ToggleGroup: CorexHook;
 }
+declare module "corex/tree-view" {
+  export const TreeView: CorexHook;
+}

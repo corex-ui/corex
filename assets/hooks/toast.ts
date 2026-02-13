@@ -63,6 +63,42 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle"),
     });
 
+    const store = getToastStore(this.groupId);
+    const flashInfo = el.getAttribute("data-flash-info");
+    const flashInfoTitle = el.getAttribute("data-flash-info-title");
+    const flashError = el.getAttribute("data-flash-error");
+    const flashErrorTitle = el.getAttribute("data-flash-error-title");
+    const flashInfoDuration = el.getAttribute("data-flash-info-duration");
+    const flashErrorDuration = el.getAttribute("data-flash-error-duration");
+
+    if (store && flashInfo) {
+      try {
+        store.create({
+          title: flashInfoTitle || "Success",
+          description: flashInfo,
+          type: "info",
+          id: generateId(undefined, "toast"),
+          duration: parseDuration(flashInfoDuration ?? undefined),
+        });
+      } catch (error) {
+        console.error("Failed to create flash info toast:", error);
+      }
+    }
+
+    if (store && flashError) {
+      try {
+        store.create({
+          title: flashErrorTitle || "Error",
+          description: flashError,
+          type: "error",
+          id: generateId(undefined, "toast"),
+          duration: parseDuration(flashErrorDuration ?? undefined),
+        });
+      } catch (error) {
+        console.error("Failed to create flash error toast:", error);
+      }
+    }
+
     this.handlers = [];
 
     this.handlers.push(

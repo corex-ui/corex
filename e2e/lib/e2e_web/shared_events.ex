@@ -41,15 +41,12 @@ defmodule E2eWeb.SharedEvents do
   defp path_from_uri(uri) when is_binary(uri), do: URI.parse(uri).path
   defp path_from_uri(%URI{path: path}), do: path
 
-  defp handle_menu_event("handle_menu", %{"id" => id, "value" => value}, socket) do
-    to =
-      cond do
-        id == "navigation-menu" -> value
-        String.starts_with?(value, "/") -> value
-        true -> "/#{value}"
-      end
-
-    {:halt, push_navigate(socket, to: to)}
+  defp handle_menu_event("handle_menu", %{"id" => _id, "value" => value}, socket) do
+    if value["isItem"] do
+      {:halt, push_navigate(socket, to: Enum.at(value["selectedValue"], 0))}
+    else
+      {:halt, socket}
+    end
   end
 
   defp handle_menu_event(_event, _params, socket) do

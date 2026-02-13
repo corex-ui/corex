@@ -24,9 +24,13 @@
 @import "../corex/components/switch.css";
 @import "../corex/components/toggle-group.css";
 @import "../corex/components/tabs.css";
-
+@import "../corex/components/tree-view.css";
 @import "../corex/components/toast.css";
 @import "../corex/components/button.css";
+@import "../corex/components/badge.css";
+
+@import "./navigation.css";
+
 
 
 #locale-select.select,

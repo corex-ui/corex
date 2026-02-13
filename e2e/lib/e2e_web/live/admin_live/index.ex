@@ -16,30 +16,32 @@ defmodule E2eWeb.AdminLive.Index do
         </:actions>
       </.header>
 
-      <.table
-        id="admins"
-        rows={@streams.admins}
-        row_click={fn {_id, admin} -> JS.navigate(~p"/#{@locale}/admins/#{admin}") end}
-      >
-        <:col :let={{_id, admin}} label="Name">{admin.name}</:col>
-        <:col :let={{_id, admin}} label="Country">{admin.country}</:col>
-        <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
-        <:action :let={{_id, admin}}>
-          <div class="sr-only">
-            <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
-          </div>
-          <.link navigate={~p"/#{@locale}/admins/#{admin}/edit"} class="link">Edit</.link>
-        </:action>
-        <:action :let={{id, admin}}>
-          <.link
-            phx-click={JS.push("delete", value: %{id: admin.id}) |> hide("##{id}")}
-            data-confirm="Are you sure?"
-            class="link link--alert"
-          >
-            Delete
-          </.link>
-        </:action>
-      </.table>
+      <div class="table-scroll">
+        <.table
+          id="admins"
+          rows={@streams.admins}
+          row_click={fn {_id, admin} -> JS.navigate(~p"/#{@locale}/admins/#{admin}") end}
+        >
+          <:col :let={{_id, admin}} label="Name">{admin.name}</:col>
+          <:col :let={{_id, admin}} label="Country">{admin.country}</:col>
+          <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
+          <:action :let={{_id, admin}}>
+            <div class="sr-only">
+              <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
+            </div>
+            <.link navigate={~p"/#{@locale}/admins/#{admin}/edit"} class="link">Edit</.link>
+          </:action>
+          <:action :let={{id, admin}}>
+            <.link
+              phx-click={JS.push("delete", value: %{id: admin.id}) |> hide("##{id}")}
+              data-confirm="Are you sure?"
+              class="link link--alert"
+            >
+              Delete
+            </.link>
+          </:action>
+        </.table>
+      </div>
     </Layouts.app>
     """
   end

@@ -171,6 +171,64 @@
     margin-top: 1em;
   }
 
+  .table-scroll {
+    margin-block: 2em;
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table-scroll table {
+    width: 100%;
+    min-width: max-content;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    border-collapse: collapse;
+    table-layout: auto;
+  }
+
+  .table-scroll table th,
+  .table-scroll table td {
+    min-width: min-content;
+    text-align: left;
+    padding: 1em;
+    border-bottom: 1px solid var(--color-ui--border);
+  }
+
+  .table-scroll table th:not(:last-child),
+  .table-scroll table td:not(:last-child) {
+    padding-inline-end: 1.75em;
+  }
+
+  .table-scroll table a {
+    white-space: nowrap;
+  }
+
+  .table-scroll [data-clickable="row"] {
+    cursor: pointer;
+  }
+
+  .table-scroll [data-cell="action"] {
+    width: 1%;
+    min-width: max-content;
+    white-space: nowrap;
+    text-align: right;
+  }
+
+  .table-scroll [data-cell="action"] > div {
+    display: inline-flex;
+    gap: var(--spacing-ui-gap);
+    flex-shrink: 0;
+    justify-content: flex-end;
+    margin-inline-start: auto;
+  }
+
+  .table-scroll [data-cell="action"] > div > * {
+    flex-shrink: 0;
+    min-width: min-content;
+  }
+
   .typo table {
     display: block;
     width: 100%;

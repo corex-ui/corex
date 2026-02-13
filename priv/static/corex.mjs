@@ -1,5 +1,5 @@
 // hooks/corex.ts
-function lazyHook(importFn, exportName) {
+function hooks(importFn, exportName) {
   return {
     async mounted() {
       const mod = await importFn();
@@ -24,26 +24,27 @@ function lazyHook(importFn, exportName) {
     }
   };
 }
-var LazyHooks = {
-  Accordion: lazyHook(() => import("corex/accordion"), "Accordion"),
-  Checkbox: lazyHook(() => import("corex/checkbox"), "Checkbox"),
-  Clipboard: lazyHook(() => import("corex/clipboard"), "Clipboard"),
-  Collapsible: lazyHook(() => import("corex/collapsible"), "Collapsible"),
-  Combobox: lazyHook(() => import("corex/combobox"), "Combobox"),
-  DatePicker: lazyHook(() => import("corex/date-picker"), "DatePicker"),
-  Dialog: lazyHook(() => import("corex/dialog"), "Dialog"),
-  Menu: lazyHook(() => import("corex/menu"), "Menu"),
-  Select: lazyHook(() => import("corex/select"), "Select"),
-  SignaturePad: lazyHook(() => import("corex/signature-pad"), "SignaturePad"),
-  Switch: lazyHook(() => import("corex/switch"), "Switch"),
-  Tabs: lazyHook(() => import("corex/tabs"), "Tabs"),
-  Toast: lazyHook(() => import("corex/toast"), "Toast"),
-  ToggleGroup: lazyHook(() => import("corex/toggle-group"), "ToggleGroup")
+var Hooks = {
+  Accordion: hooks(() => import("corex/accordion"), "Accordion"),
+  Checkbox: hooks(() => import("corex/checkbox"), "Checkbox"),
+  Clipboard: hooks(() => import("corex/clipboard"), "Clipboard"),
+  Collapsible: hooks(() => import("corex/collapsible"), "Collapsible"),
+  Combobox: hooks(() => import("corex/combobox"), "Combobox"),
+  DatePicker: hooks(() => import("corex/date-picker"), "DatePicker"),
+  Dialog: hooks(() => import("corex/dialog"), "Dialog"),
+  Menu: hooks(() => import("corex/menu"), "Menu"),
+  Select: hooks(() => import("corex/select"), "Select"),
+  SignaturePad: hooks(() => import("corex/signature-pad"), "SignaturePad"),
+  Switch: hooks(() => import("corex/switch"), "Switch"),
+  Tabs: hooks(() => import("corex/tabs"), "Tabs"),
+  Toast: hooks(() => import("corex/toast"), "Toast"),
+  ToggleGroup: hooks(() => import("corex/toggle-group"), "ToggleGroup"),
+  TreeView: hooks(() => import("corex/tree-view"), "TreeView")
 };
-var corex_default = LazyHooks;
+var corex_default = Hooks;
 export {
-  LazyHooks,
+  Hooks,
   corex_default as default,
-  lazyHook
+  hooks
 };
 //# sourceMappingURL=corex.mjs.map

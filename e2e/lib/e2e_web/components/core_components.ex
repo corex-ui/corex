@@ -303,7 +303,7 @@ defmodule E2eWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center w-full justify-between gap-6", "w-full pb-4"]}>
+    <header class={[@actions != [] && "flex items-center w-full justify-between gap-6", "pb-4"]}>
       <div>
         <h1>
           {render_slot(@inner_block)}
@@ -363,12 +363,12 @@ defmodule E2eWeb.CoreComponents do
           <td
             :for={col <- @col}
             phx-click={@row_click && @row_click.(row)}
-            class={@row_click && "hover:cursor-pointer"}
+            data-clickable={@row_click && "row"}
           >
             {render_slot(col, @row_item.(row))}
           </td>
-          <td :if={@action != []} class="flex justify-end">
-            <div class="flex gap-ui-gap">
+          <td :if={@action != []} data-cell="action">
+            <div>
               <%= for action <- @action do %>
                 {render_slot(action, @row_item.(row))}
               <% end %>

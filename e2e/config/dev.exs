@@ -21,11 +21,11 @@ config :e2e, E2eWeb.Endpoint,
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}],
   check_origin: false,
-  code_reloader: true,
+  code_reloader: false,
   debug_errors: true,
   secret_key_base: "JQ3bjpj3drUYoLh2G4QBZr8KpmxWvAJGLV6DZzv9mIRqOkQqhpZwtu9np9fwDeSX",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch)]},
+    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap --watch)]},
     tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch)]}
   ]
 

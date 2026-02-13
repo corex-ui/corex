@@ -50,7 +50,10 @@ defmodule E2eWeb.PageController do
 
       conn
       |> put_flash(flash_type, toast_params["message"])
-      |> redirect(to: ~p"/toast?message=#{toast_params["message"]}&type=#{toast_params["type"]}")
+      |> redirect(
+        to:
+          ~p"/#{conn.assigns[:locale]}/toast?message=#{toast_params["message"]}&type=#{toast_params["type"]}"
+      )
     else
       render(conn, :toast_page, changeset: changeset)
     end
@@ -86,5 +89,9 @@ defmodule E2eWeb.PageController do
 
   def menu_page(conn, _params) do
     render(conn, :menu_page)
+  end
+
+  def tree_view_page(conn, _params) do
+    render(conn, :tree_view_page)
   end
 end

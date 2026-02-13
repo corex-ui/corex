@@ -74,6 +74,9 @@ importers:
       '@zag-js/toggle-group':
         specifier: ^1.33.1
         version: 1.33.1
+      '@zag-js/tree-view':
+        specifier: ^1.33.1
+        version: 1.33.1
       '@zag-js/types':
         specifier: ^1.33.1
         version: 1.33.1
@@ -342,6 +345,9 @@ packages:
 
   '@zag-js/toggle-group@1.33.1':
     resolution: {integrity: sha512-KZaMFN5u26d8elAcdu6LDC7byltpzeoemXHMMa7H/1upS3/98ESKUzx1VlA5SSTAinU4t9+rXoR3VTtP2RJbTw==}
+
+  '@zag-js/tree-view@1.33.1':
+    resolution: {integrity: sha512-5SiwSGdcqiGoCQl46pvEAgGkM5gTsPpLLPXB2Eqfojm2fm2oev73+1gWsZt1/sX/qsIQ1hH3a2h44rXW1W2IWg==}
 
   '@zag-js/types@1.33.1':
     resolution: {integrity: sha512-huJdwaeyptKDuZqhhFQRWNiMAJEdei4fTAQ3xIBw07GW27zKwust4Bn0y+8PYlnVVQn2auH4lpIXXwPccFRclQ==}
@@ -1122,6 +1128,15 @@ snapshots:
   '@zag-js/toggle-group@1.33.1':
     dependencies:
       '@zag-js/anatomy': 1.33.1
+      '@zag-js/core': 1.33.1
+      '@zag-js/dom-query': 1.33.1
+      '@zag-js/types': 1.33.1
+      '@zag-js/utils': 1.33.1
+
+  '@zag-js/tree-view@1.33.1':
+    dependencies:
+      '@zag-js/anatomy': 1.33.1
+      '@zag-js/collection': 1.33.1
       '@zag-js/core': 1.33.1
       '@zag-js/dom-query': 1.33.1
       '@zag-js/types': 1.33.1

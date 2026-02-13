@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.18"
+  @version "0.1.0-alpha.19"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -51,7 +51,7 @@ defmodule Corex.MixProject do
         "esbuild cdn",
         "esbuild cdn_min",
         "esbuild main",
-        "esbuild hooks_split"
+        "esbuild hooks"
       ],
       "assets.watch": "esbuild module --watch"
     ]
@@ -108,7 +108,8 @@ defmodule Corex.MixProject do
         Corex.Switch,
         Corex.Tabs,
         Corex.Toast,
-        Corex.ToggleGroup
+        Corex.ToggleGroup,
+        Corex.TreeView
       ],
       Form: [
         Corex.Form
