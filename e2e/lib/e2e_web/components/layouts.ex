@@ -133,7 +133,7 @@ defmodule E2eWeb.Layouts do
       </div>
     </header>
     <div class="layout__wrapper">
-      <div class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto">
+      <aside class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto">
         <.tree_view
           id="components-menu-side"
           on_selection_change="handle_menu"
@@ -161,7 +161,7 @@ defmodule E2eWeb.Layouts do
             <.icon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
-      </div>
+      </aside>
 
       <main class="layout__main">
         <div class="layout__content">
