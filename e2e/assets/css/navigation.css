@@ -27,7 +27,7 @@
     border-end-end-radius: var(--radius-ui);
     border: 0;
     border-inline-start: 3px solid transparent;
-    border-inline-start-width: 3px;
+    border-inline-start-width: calc(var(--depth) * 3px);
     min-height: var(--spacing-ui-sm);
     border-radius: 0;
     transition:

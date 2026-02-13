@@ -42,7 +42,7 @@ if Mix.env() == :dev do
       ./hooks/tree-view.ts
     )
 
-    hooks_args =
+  hooks_args =
     hooks_entries ++
       ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs)
 

@@ -48,7 +48,17 @@ defmodule Corex.TreeView.Anatomy do
 
   defmodule Item do
     @moduledoc false
-    defstruct [:id, :value, :index_path, :name, dir: "ltr", disabled: false, data: %{}, redirect: nil, new_tab: false]
+    defstruct [
+      :id,
+      :value,
+      :index_path,
+      :name,
+      dir: "ltr",
+      disabled: false,
+      data: %{},
+      redirect: nil,
+      new_tab: false
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -65,7 +75,16 @@ defmodule Corex.TreeView.Anatomy do
 
   defmodule Branch do
     @moduledoc false
-    defstruct [:id, :value, :index_path, :name, dir: "ltr", disabled: false, data: %{}, expanded: false]
+    defstruct [
+      :id,
+      :value,
+      :index_path,
+      :name,
+      dir: "ltr",
+      disabled: false,
+      data: %{},
+      expanded: false
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),

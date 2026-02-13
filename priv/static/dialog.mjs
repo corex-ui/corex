@@ -1165,21 +1165,43 @@ var Dialog = class extends Component {
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
-  render() {
+  getPart(part) {
     const rootEl = this.el;
-    const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
+    const inRoot = rootEl.querySelector(
+      `[data-scope="dialog"][data-part="${part}"]`
+    );
+    if (inRoot) return inRoot;
+    const byId = this.doc.getElementById(`dialog:${rootEl.id}:${part}`);
+    if (byId) return byId;
+    const portalWrap = this.doc.getElementById(
+      `_lv_portal_wrap_dialog:${rootEl.id}:portal`
+    );
+    if (portalWrap) {
+      const inWrap = portalWrap.querySelector(
+        `[data-scope="dialog"][data-part="${part}"]`
+      );
+      if (inWrap) return inWrap;
+    }
+    return null;
+  }
+  render() {
+    const triggerEl = this.getPart("trigger");
     if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-    const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+    const backdropEl = this.getPart("backdrop");
     if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
-    const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
-    if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
-    const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+    const positionerEl = this.getPart("positioner");
+    if (positionerEl) {
+      this.spreadProps(positionerEl, this.api.getPositionerProps());
+      positionerEl.hidden = !this.api.open;
+      positionerEl.dataset.state = this.api.open ? "open" : "closed";
+    }
+    const contentEl = this.getPart("content");
     if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
-    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    const titleEl = this.getPart("title");
     if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
-    const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
+    const descriptionEl = this.getPart("description");
     if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-    const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+    const closeTriggerEl = this.getPart("close-trigger");
     if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
   }
 };
@@ -1222,6 +1244,11 @@ var DialogHook = {
     });
     dialog.init();
     this.dialog = dialog;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.dialog?.render();
+      });
+    });
     this.onSetOpen = (event) => {
       const { open } = event.detail;
       dialog.api.setOpen(open);

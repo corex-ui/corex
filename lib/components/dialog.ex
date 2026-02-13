@@ -247,13 +247,13 @@ defmodule Corex.Dialog do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})} class={Map.get(List.first(@trigger), :class, nil)}>
+      <button phx-update="ignore" {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open})} class={Map.get(List.first(@trigger), :class, nil)}>
         {render_slot(@trigger)}
       </button>
 
       <div phx-update="ignore" {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open})}></div>
       <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
-        <div phx-update="ignore" {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
+        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
           <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
             {render_slot(@title)}
           </h2>

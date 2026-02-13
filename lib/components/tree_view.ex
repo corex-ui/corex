@@ -66,7 +66,8 @@ defmodule Corex.TreeView do
 
   attr(:redirect, :boolean,
     default: false,
-    doc: "When true and not in LiveView, selection navigates to the item value (URL). Use item redirect: false to disable per item, new_tab: true to open in new tab."
+    doc:
+      "When true and not in LiveView, selection navigates to the item value (URL). Use item redirect: false to disable per item, new_tab: true to open in new tab."
   )
 
   attr(:value, :list,
@@ -109,7 +110,11 @@ defmodule Corex.TreeView do
   attr(:rest, :global)
 
   slot(:label, doc: "Optional label slot")
-  slot(:indicator, doc: "Content shown in each branch indicator (e.g. chevron icon). Rendered in each branch on the server.")
+
+  slot(:indicator,
+    doc:
+      "Content shown in each branch indicator (e.g. chevron icon). Rendered in each branch on the server."
+  )
 
   def tree_view(assigns) do
     assigns =
@@ -172,6 +177,7 @@ defmodule Corex.TreeView do
     index_path = assigns.index_path
     expanded = item.id in List.wrap(assigns.expanded_value)
     name = String.capitalize(item.label)
+
     branch_assigns = %Branch{
       id: assigns.id,
       value: item.id,
@@ -180,6 +186,7 @@ defmodule Corex.TreeView do
       dir: assigns.dir,
       expanded: expanded
     }
+
     item_assigns = %Item{
       id: assigns.id,
       value: item.id,
@@ -189,6 +196,7 @@ defmodule Corex.TreeView do
       redirect: item.redirect,
       new_tab: item.new_tab
     }
+
     assigns =
       assigns
       |> assign(:branch_assigns, branch_assigns)

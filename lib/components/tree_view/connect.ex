@@ -85,6 +85,7 @@ defmodule Corex.TreeView.Connect do
       "dir" => assigns.dir,
       "id" => "tree-view:#{assigns.id}:item:#{assigns.value}"
     }
+
     base = if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
     base = if assigns.redirect == false, do: Map.put(base, "data-redirect", "false"), else: base
     if assigns.new_tab, do: Map.put(base, "data-new-tab", ""), else: base
@@ -93,6 +94,7 @@ defmodule Corex.TreeView.Connect do
   @spec branch(Branch.t()) :: map()
   def branch(assigns) do
     state = if assigns.expanded, do: "open", else: "closed"
+
     base = %{
       "data-scope" => "tree-view",
       "data-part" => "branch",
@@ -103,12 +105,14 @@ defmodule Corex.TreeView.Connect do
       "dir" => assigns.dir,
       "id" => "tree-view:#{assigns.id}:branch:#{assigns.value}"
     }
+
     if Map.get(assigns, :name), do: Map.put(base, "data-name", assigns.name), else: base
   end
 
   @spec branch_trigger(Branch.t()) :: map()
   def branch_trigger(assigns) do
     state = if assigns.expanded, do: "open", else: "closed"
+
     %{
       "data-scope" => "tree-view",
       "data-part" => "branch-control",
@@ -123,6 +127,7 @@ defmodule Corex.TreeView.Connect do
   @spec branch_content(Branch.t()) :: map()
   def branch_content(assigns) do
     state = if assigns.expanded, do: "open", else: "closed"
+
     %{
       "data-scope" => "tree-view",
       "data-part" => "branch-content",
@@ -136,6 +141,7 @@ defmodule Corex.TreeView.Connect do
   @spec branch_indicator(Branch.t()) :: map()
   def branch_indicator(assigns) do
     state = if assigns.expanded, do: "open", else: "closed"
+
     %{
       "data-scope" => "tree-view",
       "data-part" => "branch-indicator",

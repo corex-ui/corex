@@ -15497,24 +15497,43 @@ var Corex = (() => {
         initApi() {
           return connect7(this.machine.service, normalizeProps);
         }
-        render() {
+        getPart(part) {
           const rootEl = this.el;
-          const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
+          const inRoot = rootEl.querySelector(
+            `[data-scope="dialog"][data-part="${part}"]`
+          );
+          if (inRoot) return inRoot;
+          const byId = this.doc.getElementById(`dialog:${rootEl.id}:${part}`);
+          if (byId) return byId;
+          const portalWrap = this.doc.getElementById(
+            `_lv_portal_wrap_dialog:${rootEl.id}:portal`
+          );
+          if (portalWrap) {
+            const inWrap = portalWrap.querySelector(
+              `[data-scope="dialog"][data-part="${part}"]`
+            );
+            if (inWrap) return inWrap;
+          }
+          return null;
+        }
+        render() {
+          const triggerEl = this.getPart("trigger");
           if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-          const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+          const backdropEl = this.getPart("backdrop");
           if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
-          const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
+          const positionerEl = this.getPart("positioner");
           if (positionerEl) {
             this.spreadProps(positionerEl, this.api.getPositionerProps());
             positionerEl.hidden = !this.api.open;
+            positionerEl.dataset.state = this.api.open ? "open" : "closed";
           }
-          const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+          const contentEl = this.getPart("content");
           if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
-          const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+          const titleEl = this.getPart("title");
           if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
-          const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
+          const descriptionEl = this.getPart("description");
           if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-          const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+          const closeTriggerEl = this.getPart("close-trigger");
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
@@ -15522,41 +15541,43 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const dialog = new Dialog(el, {
+          const dialog = new Dialog(el, __spreadProps(__spreadValues({
             id: el.id
-            // ...(getBoolean(el, "controlled")
-            //   ? { open: getBoolean(el, "open") }
-            //   : { defaultOpen: getBoolean(el, "defaultOpen") }),
-            // modal: getBoolean(el, "modal"),
-            // closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
-            // closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
-            // preventScroll: getBoolean(el, "preventScroll"),
-            // restoreFocus: getBoolean(el, "restoreFocus"),
-            // dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-            // onOpenChange: (details: OpenChangeDetails) => {
-            //   const eventName = getString(el, "onOpenChange");
-            //   if (eventName && this.liveSocket.main.isConnected()) {
-            //     pushEvent(eventName, {
-            //       id: el.id,
-            //       open: details.open,
-            //     });
-            //   }
-            //   const eventNameClient = getString(el, "onOpenChangeClient");
-            //   if (eventNameClient) {
-            //     el.dispatchEvent(
-            //       new CustomEvent(eventNameClient, {
-            //         bubbles: true,
-            //         detail: {
-            //           id: el.id,
-            //           open: details.open,
-            //         },
-            //       })
-            //     );
-            //   }
-            // },
-          });
+          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+            modal: getBoolean(el, "modal"),
+            closeOnInteractOutside: getBoolean(el, "closeOnInteractOutside"),
+            closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
+            preventScroll: getBoolean(el, "preventScroll"),
+            restoreFocus: getBoolean(el, "restoreFocus"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            onOpenChange: (details) => {
+              const eventName = getString(el, "onOpenChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  open: details.open
+                });
+              }
+              const eventNameClient = getString(el, "onOpenChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      open: details.open
+                    }
+                  })
+                );
+              }
+            }
+          }));
           dialog.init();
           this.dialog = dialog;
+          requestAnimationFrame(() => {
+            var _a;
+            (_a = this.dialog) == null ? void 0 : _a.render();
+          });
           this.onSetOpen = (event) => {
             const { open } = event.detail;
             dialog.api.setOpen(open);
