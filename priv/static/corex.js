@@ -107,16 +107,40 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-GFGFZBBD.mjs
-  function getDir(element) {
-    const fromEl = element.dataset.dir;
-    if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
-      return fromEl;
+  // ../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs
+  var createAnatomy, toKebabCase, isEmpty;
+  var init_dist = __esm({
+    "../node_modules/.pnpm/@zag-js+anatomy@1.33.1/node_modules/@zag-js/anatomy/dist/index.mjs"() {
+      createAnatomy = (name, parts16 = []) => ({
+        parts: (...values) => {
+          if (isEmpty(parts16)) {
+            return createAnatomy(name, values);
+          }
+          throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
+        },
+        extendWith: (...values) => createAnatomy(name, [...parts16, ...values]),
+        omit: (...values) => createAnatomy(name, parts16.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts16),
+        keys: () => parts16,
+        build: () => [...new Set(parts16)].reduce(
+          (prev2, part) => Object.assign(prev2, {
+            [part]: {
+              selector: [
+                `&[data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`,
+                `& [data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`
+              ].join(", "),
+              attrs: { "data-scope": toKebabCase(name), "data-part": toKebabCase(part) }
+            }
+          }),
+          {}
+        )
+      });
+      toKebabCase = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
+      isEmpty = (v2) => v2.length === 0;
     }
-    const fromDoc = document.documentElement.getAttribute("dir");
-    if (fromDoc === "ltr" || fromDoc === "rtl") return fromDoc;
-    return "ltr";
-  }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+dom-query@1.33.1/node_modules/@zag-js/dom-query/dist/index.mjs
   function setCaretToEnd(input) {
     if (!input) return;
     try {
@@ -1084,481 +1108,9 @@ var Corex = (() => {
       timeout
     );
   }
-  function toArray(v2) {
-    if (v2 == null) return [];
-    return Array.isArray(v2) ? v2 : [v2];
-  }
-  function nextIndex(v2, idx, opts = {}) {
-    const { step = 1, loop = true } = opts;
-    const next2 = idx + step;
-    const len = v2.length;
-    const last2 = len - 1;
-    if (idx === -1) return step > 0 ? 0 : last2;
-    if (next2 < 0) return loop ? last2 : 0;
-    if (next2 >= len) return loop ? 0 : idx > len ? len : idx;
-    return next2;
-  }
-  function next(v2, idx, opts = {}) {
-    return v2[nextIndex(v2, idx, opts)];
-  }
-  function prevIndex(v2, idx, opts = {}) {
-    const { step = 1, loop = true } = opts;
-    return nextIndex(v2, idx, { step: -step, loop });
-  }
-  function prev(v2, index, opts = {}) {
-    return v2[prevIndex(v2, index, opts)];
-  }
-  function chunk(v2, size3) {
-    return v2.reduce((rows, value, index) => {
-      var _a;
-      if (index % size3 === 0) rows.push([value]);
-      else (_a = last(rows)) == null ? void 0 : _a.push(value);
-      return rows;
-    }, []);
-  }
-  function partition(arr, fn) {
-    return arr.reduce(
-      ([pass, fail], value) => {
-        if (fn(value)) pass.push(value);
-        else fail.push(value);
-        return [pass, fail];
-      },
-      [[], []]
-    );
-  }
-  function match2(key, record, ...args) {
-    var _a;
-    if (key in record) {
-      const fn = record[key];
-      return isFunction(fn) ? fn(...args) : fn;
-    }
-    const error = new Error(`No matching key: ${JSON.stringify(key)} in ${JSON.stringify(Object.keys(record))}`);
-    (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, match2);
-    throw error;
-  }
-  function compact(obj) {
-    if (!isPlainObject(obj) || obj === void 0) return obj;
-    const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
-    const filtered = {};
-    for (const key of keys) {
-      const value = obj[key];
-      if (value !== void 0) {
-        filtered[key] = compact(value);
-      }
-    }
-    return filtered;
-  }
-  function splitProps(props15, keys) {
-    const rest = {};
-    const result = {};
-    const keySet = new Set(keys);
-    const ownKeys = Reflect.ownKeys(props15);
-    for (const key of ownKeys) {
-      if (keySet.has(key)) {
-        result[key] = props15[key];
-      } else {
-        rest[key] = props15[key];
-      }
-    }
-    return [result, rest];
-  }
-  function setRafTimeout(fn, delayMs) {
-    const timer = new Timer(({ deltaMs }) => {
-      if (deltaMs >= delayMs) {
-        fn();
-        return false;
-      }
-    });
-    timer.start();
-    return () => timer.stop();
-  }
-  function warn(...a2) {
-    const m2 = a2.length === 1 ? a2[0] : a2[1];
-    const c2 = a2.length === 2 ? a2[0] : true;
-    if (c2 && true) {
-      console.warn(m2);
-    }
-  }
-  function ensure(c2, m2) {
-    if (c2 == null) throw new Error(m2());
-  }
-  function ensureProps(props15, keys, scope) {
-    let missingKeys = [];
-    for (const key of keys) {
-      if (props15[key] == null) missingKeys.push(key);
-    }
-    if (missingKeys.length > 0)
-      throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
-  }
-  function mergeProps(...args) {
-    let result = {};
-    for (let props15 of args) {
-      if (!props15) continue;
-      for (let key in result) {
-        if (key.startsWith("on") && typeof result[key] === "function" && typeof props15[key] === "function") {
-          result[key] = callAll(props15[key], result[key]);
-          continue;
-        }
-        if (key === "className" || key === "class") {
-          result[key] = clsx(result[key], props15[key]);
-          continue;
-        }
-        if (key === "style") {
-          result[key] = css(result[key], props15[key]);
-          continue;
-        }
-        result[key] = props15[key] !== void 0 ? props15[key] : result[key];
-      }
-      for (let key in props15) {
-        if (result[key] === void 0) {
-          result[key] = props15[key];
-        }
-      }
-      const symbols = Object.getOwnPropertySymbols(props15);
-      for (let symbol of symbols) {
-        result[symbol] = props15[symbol];
-      }
-    }
-    return result;
-  }
-  function memo(getDeps, fn, opts) {
-    let deps = [];
-    let result;
-    return (depArgs) => {
-      var _a;
-      const newDeps = getDeps(depArgs);
-      const depsChanged = newDeps.length !== deps.length || newDeps.some((dep, index) => !isEqual2(deps[index], dep));
-      if (!depsChanged) return result;
-      deps = newDeps;
-      result = fn(newDeps, depArgs);
-      (_a = opts == null ? void 0 : opts.onChange) == null ? void 0 : _a.call(opts, result);
-      return result;
-    };
-  }
-  function createGuards() {
-    return {
-      and: (...guards3) => {
-        return function andGuard(params) {
-          return guards3.every((str) => params.guard(str));
-        };
-      },
-      or: (...guards3) => {
-        return function orGuard(params) {
-          return guards3.some((str) => params.guard(str));
-        };
-      },
-      not: (guard) => {
-        return function notGuard(params) {
-          return !params.guard(guard);
-        };
-      }
-    };
-  }
-  function createMachine(config) {
-    return config;
-  }
-  function setup() {
-    return {
-      guards: createGuards(),
-      createMachine: (config) => {
-        return createMachine(config);
-      },
-      choose: (transitions) => {
-        return function chooseFn({ choose: choose2 }) {
-          var _a;
-          return (_a = choose2(transitions)) == null ? void 0 : _a.actions;
-        };
-      }
-    };
-  }
-  function createScope(props15) {
-    const getRootNode2 = () => {
-      var _a, _b;
-      return (_b = (_a = props15.getRootNode) == null ? void 0 : _a.call(props15)) != null ? _b : document;
-    };
-    const getDoc = () => getDocument(getRootNode2());
-    const getWin = () => {
-      var _a;
-      return (_a = getDoc().defaultView) != null ? _a : window;
-    };
-    const getActiveElementFn = () => getActiveElement(getRootNode2());
-    const getById = (id) => getRootNode2().getElementById(id);
-    return __spreadProps(__spreadValues({}, props15), {
-      getRootNode: getRootNode2,
-      getDoc,
-      getWin,
-      getActiveElement: getActiveElementFn,
-      isActiveElement,
-      getById
-    });
-  }
-  function createNormalizer(fn) {
-    return new Proxy({}, {
-      get(_target, key) {
-        if (key === "style")
-          return (props15) => {
-            return fn({ style: props15 }).style;
-          };
-        return fn;
-      }
-    });
-  }
-  function glob() {
-    if (typeof globalThis !== "undefined") return globalThis;
-    if (typeof self !== "undefined") return self;
-    if (typeof window !== "undefined") return window;
-    if (typeof global !== "undefined") return global;
-  }
-  function globalRef(key, value) {
-    const g2 = glob();
-    if (!g2) return value();
-    g2[key] || (g2[key] = value());
-    return g2[key];
-  }
-  function proxy(initialObject = {}) {
-    return proxyFunction(initialObject);
-  }
-  function subscribe(proxyObject, callback, notifyInSync) {
-    const proxyState = proxyStateMap.get(proxyObject);
-    if (isDev() && !proxyState) {
-      console.warn("Please use proxy object");
-    }
-    let promise;
-    const ops = [];
-    const addListener = proxyState[3];
-    let isListenerActive = false;
-    const listener = (op) => {
-      ops.push(op);
-      if (notifyInSync) {
-        callback(ops.splice(0));
-        return;
-      }
-      if (!promise) {
-        promise = Promise.resolve().then(() => {
-          promise = void 0;
-          if (isListenerActive) {
-            callback(ops.splice(0));
-          }
-        });
-      }
-    };
-    const removeListener = addListener(listener);
-    isListenerActive = true;
-    return () => {
-      isListenerActive = false;
-      removeListener();
-    };
-  }
-  function snapshot(proxyObject) {
-    const proxyState = proxyStateMap.get(proxyObject);
-    if (isDev() && !proxyState) {
-      console.warn("Please use proxy object");
-    }
-    const [target, ensureVersion, createSnapshot] = proxyState;
-    return createSnapshot(target, ensureVersion());
-  }
-  function spreadProps(node, attrs, machineId) {
-    const scopeKey = machineId || "default";
-    let machineMap = prevAttrsMap.get(node);
-    if (!machineMap) {
-      machineMap = /* @__PURE__ */ new Map();
-      prevAttrsMap.set(node, machineMap);
-    }
-    const oldAttrs = machineMap.get(scopeKey) || {};
-    const attrKeys = Object.keys(attrs);
-    const addEvt = (e2, f2) => {
-      node.addEventListener(e2.toLowerCase(), f2);
-    };
-    const remEvt = (e2, f2) => {
-      node.removeEventListener(e2.toLowerCase(), f2);
-    };
-    const onEvents = (attr) => attr.startsWith("on");
-    const others = (attr) => !attr.startsWith("on");
-    const setup2 = (attr) => addEvt(attr.substring(2), attrs[attr]);
-    const teardown = (attr) => remEvt(attr.substring(2), attrs[attr]);
-    const apply = (attrName) => {
-      const value = attrs[attrName];
-      const oldValue = oldAttrs[attrName];
-      if (value === oldValue) return;
-      if (attrName === "class") {
-        node.className = value != null ? value : "";
-        return;
-      }
-      if (assignableProps.has(attrName)) {
-        node[attrName] = value != null ? value : "";
-        return;
-      }
-      if (typeof value === "boolean" && !attrName.includes("aria-")) {
-        node.toggleAttribute(getAttributeName(node, attrName), value);
-        return;
-      }
-      if (attrName === "children") {
-        node.innerHTML = value;
-        return;
-      }
-      if (value != null) {
-        node.setAttribute(getAttributeName(node, attrName), value);
-        return;
-      }
-      node.removeAttribute(getAttributeName(node, attrName));
-    };
-    for (const key in oldAttrs) {
-      if (attrs[key] == null) {
-        if (key === "class") {
-          node.className = "";
-        } else if (assignableProps.has(key)) {
-          node[key] = "";
-        } else {
-          node.removeAttribute(getAttributeName(node, key));
-        }
-      }
-    }
-    const oldEvents = Object.keys(oldAttrs).filter(onEvents);
-    oldEvents.forEach((evt) => {
-      remEvt(evt.substring(2), oldAttrs[evt]);
-    });
-    attrKeys.filter(onEvents).forEach(setup2);
-    attrKeys.filter(others).forEach(apply);
-    machineMap.set(scopeKey, attrs);
-    return function cleanup() {
-      attrKeys.filter(onEvents).forEach(teardown);
-      const currentMachineMap = prevAttrsMap.get(node);
-      if (currentMachineMap) {
-        currentMachineMap.delete(scopeKey);
-        if (currentMachineMap.size === 0) {
-          prevAttrsMap.delete(node);
-        }
-      }
-    };
-  }
-  function bindable(props15) {
-    var _a, _b;
-    const initial = (_a = props15().value) != null ? _a : props15().defaultValue;
-    if (props15().debug) {
-      console.log(`[bindable > ${props15().debug}] initial`, initial);
-    }
-    const eq = (_b = props15().isEqual) != null ? _b : Object.is;
-    const store = proxy({ value: initial });
-    const controlled = () => props15().value !== void 0;
-    return {
-      initial,
-      ref: store,
-      get() {
-        return controlled() ? props15().value : store.value;
-      },
-      set(nextValue) {
-        var _a2, _b2;
-        const prev2 = store.value;
-        const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
-        if (props15().debug) {
-          console.log(`[bindable > ${props15().debug}] setValue`, { next: next2, prev: prev2 });
-        }
-        if (!controlled()) store.value = next2;
-        if (!eq(next2, prev2)) {
-          (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
-        }
-      },
-      invoke(nextValue, prevValue) {
-        var _a2, _b2;
-        (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
-      },
-      hash(value) {
-        var _a2, _b2, _c;
-        return (_c = (_b2 = (_a2 = props15()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
-      }
-    };
-  }
-  function createRefs(refs) {
-    const ref = { current: refs };
-    return {
-      get(key) {
-        return ref.current[key];
-      },
-      set(key, value) {
-        ref.current[key] = value;
-      }
-    };
-  }
-  function mergeMachineProps(prev2, next2) {
-    if (!isPlainObject(prev2) || !isPlainObject(next2)) {
-      return next2 === void 0 ? prev2 : next2;
-    }
-    const result = __spreadValues({}, prev2);
-    for (const key of Object.keys(next2)) {
-      const nextValue = next2[key];
-      const prevValue = prev2[key];
-      if (nextValue === void 0) {
-        continue;
-      }
-      if (isPlainObject(prevValue) && isPlainObject(nextValue)) {
-        result[key] = mergeMachineProps(prevValue, nextValue);
-      } else {
-        result[key] = nextValue;
-      }
-    }
-    return result;
-  }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, isValueWithinRange, clampValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
-  var init_chunk_GFGFZBBD = __esm({
-    "../priv/static/chunk-GFGFZBBD.mjs"() {
-      "use strict";
-      DIR_VALUES = ["ltr", "rtl"];
-      getString = (element, attrName, validValues) => {
-        const value = element.dataset[attrName];
-        if (value !== void 0 && (!validValues || validValues.includes(value))) {
-          return value;
-        }
-        return void 0;
-      };
-      getStringList = (element, attrName) => {
-        const value = element.dataset[attrName];
-        if (typeof value === "string") {
-          return value.split(",").map((v2) => v2.trim()).filter((v2) => v2.length > 0);
-        }
-        return void 0;
-      };
-      getNumber = (element, attrName, validValues) => {
-        const raw = element.dataset[attrName];
-        if (raw === void 0) return void 0;
-        const parsed = Number(raw);
-        if (Number.isNaN(parsed)) return void 0;
-        if (validValues && !validValues.includes(parsed)) return 0;
-        return parsed;
-      };
-      getBoolean = (element, attrName) => {
-        const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
-        return element.hasAttribute(`data-${dashName}`);
-      };
-      generateId = (element, fallbackId = "element") => {
-        if (element == null ? void 0 : element.id) return element.id;
-        return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
-      };
-      createAnatomy = (name, parts16 = []) => ({
-        parts: (...values) => {
-          if (isEmpty(parts16)) {
-            return createAnatomy(name, values);
-          }
-          throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
-        },
-        extendWith: (...values) => createAnatomy(name, [...parts16, ...values]),
-        omit: (...values) => createAnatomy(name, parts16.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts16),
-        keys: () => parts16,
-        build: () => [...new Set(parts16)].reduce(
-          (prev2, part) => Object.assign(prev2, {
-            [part]: {
-              selector: [
-                `&[data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`,
-                `& [data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`
-              ].join(", "),
-              attrs: { "data-scope": toKebabCase(name), "data-part": toKebabCase(part) }
-            }
-          }),
-          {}
-        )
-      });
-      toKebabCase = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
-      isEmpty = (v2) => v2.length === 0;
+  var __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle;
+  var init_dist2 = __esm({
+    "../node_modules/.pnpm/@zag-js+dom-query@1.33.1/node_modules/@zag-js/dom-query/dist/index.mjs"() {
       __defProp2 = Object.defineProperty;
       __defNormalProp2 = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField2 = (obj, key, value) => __defNormalProp2(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -1734,12 +1286,125 @@ var Corex = (() => {
         whiteSpace: "nowrap",
         wordWrap: "normal"
       };
-      __defProp22 = Object.defineProperty;
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+utils@1.33.1/node_modules/@zag-js/utils/dist/index.mjs
+  function toArray(v2) {
+    if (v2 == null) return [];
+    return Array.isArray(v2) ? v2 : [v2];
+  }
+  function nextIndex(v2, idx, opts = {}) {
+    const { step = 1, loop = true } = opts;
+    const next2 = idx + step;
+    const len = v2.length;
+    const last2 = len - 1;
+    if (idx === -1) return step > 0 ? 0 : last2;
+    if (next2 < 0) return loop ? last2 : 0;
+    if (next2 >= len) return loop ? 0 : idx > len ? len : idx;
+    return next2;
+  }
+  function next(v2, idx, opts = {}) {
+    return v2[nextIndex(v2, idx, opts)];
+  }
+  function prevIndex(v2, idx, opts = {}) {
+    const { step = 1, loop = true } = opts;
+    return nextIndex(v2, idx, { step: -step, loop });
+  }
+  function prev(v2, index, opts = {}) {
+    return v2[prevIndex(v2, index, opts)];
+  }
+  function chunk(v2, size3) {
+    return v2.reduce((rows, value, index) => {
+      var _a;
+      if (index % size3 === 0) rows.push([value]);
+      else (_a = last(rows)) == null ? void 0 : _a.push(value);
+      return rows;
+    }, []);
+  }
+  function partition(arr, fn) {
+    return arr.reduce(
+      ([pass, fail], value) => {
+        if (fn(value)) pass.push(value);
+        else fail.push(value);
+        return [pass, fail];
+      },
+      [[], []]
+    );
+  }
+  function match2(key, record, ...args) {
+    var _a;
+    if (key in record) {
+      const fn = record[key];
+      return isFunction(fn) ? fn(...args) : fn;
+    }
+    const error = new Error(`No matching key: ${JSON.stringify(key)} in ${JSON.stringify(Object.keys(record))}`);
+    (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, match2);
+    throw error;
+  }
+  function compact(obj) {
+    if (!isPlainObject(obj) || obj === void 0) return obj;
+    const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
+    const filtered = {};
+    for (const key of keys) {
+      const value = obj[key];
+      if (value !== void 0) {
+        filtered[key] = compact(value);
+      }
+    }
+    return filtered;
+  }
+  function splitProps(props15, keys) {
+    const rest = {};
+    const result = {};
+    const keySet = new Set(keys);
+    const ownKeys = Reflect.ownKeys(props15);
+    for (const key of ownKeys) {
+      if (keySet.has(key)) {
+        result[key] = props15[key];
+      } else {
+        rest[key] = props15[key];
+      }
+    }
+    return [result, rest];
+  }
+  function setRafTimeout(fn, delayMs) {
+    const timer = new Timer(({ deltaMs }) => {
+      if (deltaMs >= delayMs) {
+        fn();
+        return false;
+      }
+    });
+    timer.start();
+    return () => timer.stop();
+  }
+  function warn(...a2) {
+    const m2 = a2.length === 1 ? a2[0] : a2[1];
+    const c2 = a2.length === 2 ? a2[0] : true;
+    if (c2 && true) {
+      console.warn(m2);
+    }
+  }
+  function ensure(c2, m2) {
+    if (c2 == null) throw new Error(m2());
+  }
+  function ensureProps(props15, keys, scope) {
+    let missingKeys = [];
+    for (const key of keys) {
+      if (props15[key] == null) missingKeys.push(key);
+    }
+    if (missingKeys.length > 0)
+      throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
+  }
+  var __defProp3, __typeError2, __defNormalProp3, __publicField3, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, isValueWithinRange, clampValue, toPx, createSplitProps, currentTime, _tick, Timer;
+  var init_dist3 = __esm({
+    "../node_modules/.pnpm/@zag-js+utils@1.33.1/node_modules/@zag-js/utils/dist/index.mjs"() {
+      __defProp3 = Object.defineProperty;
       __typeError2 = (msg) => {
         throw TypeError(msg);
       };
-      __defNormalProp22 = (obj, key, value) => key in obj ? __defProp22(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField22 = (obj, key, value) => __defNormalProp22(obj, typeof key !== "symbol" ? key + "" : key, value);
+      __defNormalProp3 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField3 = (obj, key, value) => __defNormalProp3(obj, typeof key !== "symbol" ? key + "" : key, value);
       __accessCheck = (obj, member, msg) => member.has(obj) || __typeError2("Cannot " + msg);
       __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), member.get(obj));
       __privateAdd = (obj, member, value) => member.has(obj) ? __typeError2("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
@@ -1848,18 +1513,18 @@ var Corex = (() => {
       Timer = class {
         constructor(onTick) {
           this.onTick = onTick;
-          __publicField22(this, "frameId", null);
-          __publicField22(this, "pausedAtMs", null);
-          __publicField22(this, "context");
-          __publicField22(this, "cancelFrame", () => {
+          __publicField3(this, "frameId", null);
+          __publicField3(this, "pausedAtMs", null);
+          __publicField3(this, "context");
+          __publicField3(this, "cancelFrame", () => {
             if (this.frameId === null) return;
             cancelAnimationFrame(this.frameId);
             this.frameId = null;
           });
-          __publicField22(this, "setStartMs", (startMs) => {
+          __publicField3(this, "setStartMs", (startMs) => {
             this.context.startMs = startMs;
           });
-          __publicField22(this, "start", () => {
+          __publicField3(this, "start", () => {
             if (this.frameId !== null) return;
             const now = currentTime();
             if (this.pausedAtMs !== null) {
@@ -1870,12 +1535,12 @@ var Corex = (() => {
             }
             this.frameId = requestAnimationFrame(__privateGet(this, _tick));
           });
-          __publicField22(this, "pause", () => {
+          __publicField3(this, "pause", () => {
             if (this.frameId === null) return;
             this.cancelFrame();
             this.pausedAtMs = currentTime();
           });
-          __publicField22(this, "stop", () => {
+          __publicField3(this, "stop", () => {
             if (this.frameId === null) return;
             this.cancelFrame();
             this.pausedAtMs = null;
@@ -1900,6 +1565,117 @@ var Corex = (() => {
         }
       };
       _tick = /* @__PURE__ */ new WeakMap();
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+core@1.33.1/node_modules/@zag-js/core/dist/index.mjs
+  function mergeProps(...args) {
+    let result = {};
+    for (let props15 of args) {
+      if (!props15) continue;
+      for (let key in result) {
+        if (key.startsWith("on") && typeof result[key] === "function" && typeof props15[key] === "function") {
+          result[key] = callAll(props15[key], result[key]);
+          continue;
+        }
+        if (key === "className" || key === "class") {
+          result[key] = clsx(result[key], props15[key]);
+          continue;
+        }
+        if (key === "style") {
+          result[key] = css(result[key], props15[key]);
+          continue;
+        }
+        result[key] = props15[key] !== void 0 ? props15[key] : result[key];
+      }
+      for (let key in props15) {
+        if (result[key] === void 0) {
+          result[key] = props15[key];
+        }
+      }
+      const symbols = Object.getOwnPropertySymbols(props15);
+      for (let symbol of symbols) {
+        result[symbol] = props15[symbol];
+      }
+    }
+    return result;
+  }
+  function memo(getDeps, fn, opts) {
+    let deps = [];
+    let result;
+    return (depArgs) => {
+      var _a;
+      const newDeps = getDeps(depArgs);
+      const depsChanged = newDeps.length !== deps.length || newDeps.some((dep, index) => !isEqual2(deps[index], dep));
+      if (!depsChanged) return result;
+      deps = newDeps;
+      result = fn(newDeps, depArgs);
+      (_a = opts == null ? void 0 : opts.onChange) == null ? void 0 : _a.call(opts, result);
+      return result;
+    };
+  }
+  function createGuards() {
+    return {
+      and: (...guards3) => {
+        return function andGuard(params) {
+          return guards3.every((str) => params.guard(str));
+        };
+      },
+      or: (...guards3) => {
+        return function orGuard(params) {
+          return guards3.some((str) => params.guard(str));
+        };
+      },
+      not: (guard) => {
+        return function notGuard(params) {
+          return !params.guard(guard);
+        };
+      }
+    };
+  }
+  function createMachine(config) {
+    return config;
+  }
+  function setup() {
+    return {
+      guards: createGuards(),
+      createMachine: (config) => {
+        return createMachine(config);
+      },
+      choose: (transitions) => {
+        return function chooseFn({ choose: choose2 }) {
+          var _a;
+          return (_a = choose2(transitions)) == null ? void 0 : _a.actions;
+        };
+      }
+    };
+  }
+  function createScope(props15) {
+    const getRootNode2 = () => {
+      var _a, _b;
+      return (_b = (_a = props15.getRootNode) == null ? void 0 : _a.call(props15)) != null ? _b : document;
+    };
+    const getDoc = () => getDocument(getRootNode2());
+    const getWin = () => {
+      var _a;
+      return (_a = getDoc().defaultView) != null ? _a : window;
+    };
+    const getActiveElementFn = () => getActiveElement(getRootNode2());
+    const getById = (id) => getRootNode2().getElementById(id);
+    return __spreadProps(__spreadValues({}, props15), {
+      getRootNode: getRootNode2,
+      getDoc,
+      getWin,
+      getActiveElement: getActiveElementFn,
+      isActiveElement,
+      getById
+    });
+  }
+  var clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE;
+  var init_dist4 = __esm({
+    "../node_modules/.pnpm/@zag-js+core@1.33.1/node_modules/@zag-js/core/dist/index.mjs"() {
+      init_dist3();
+      init_dist2();
       clsx = (...args) => args.map((str) => {
         var _a;
         return (_a = str == null ? void 0 : str.trim) == null ? void 0 : _a.call(str);
@@ -1907,9 +1683,9 @@ var Corex = (() => {
       CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
       serialize = (style) => {
         const res = {};
-        let match32;
-        while (match32 = CSS_REGEX.exec(style)) {
-          res[match32[1]] = match32[2];
+        let match4;
+        while (match4 = CSS_REGEX.exec(style)) {
+          res[match4[1]] = match4[2];
         }
         return res;
       };
@@ -1929,585 +1705,29 @@ var Corex = (() => {
         return MachineStatus2;
       })(MachineStatus || {});
       INIT_STATE = "__init__";
-      createProps = () => (props15) => Array.from(new Set(props15));
-      TRACK_MEMO_SYMBOL = Symbol();
-      GET_ORIGINAL_SYMBOL = Symbol();
-      getProto = Object.getPrototypeOf;
-      objectsToTrack = /* @__PURE__ */ new WeakMap();
-      isObjectToTrack = (obj) => obj && (objectsToTrack.has(obj) ? objectsToTrack.get(obj) : getProto(obj) === Object.prototype || getProto(obj) === Array.prototype);
-      getUntracked = (obj) => {
-        if (isObjectToTrack(obj)) {
-          return obj[GET_ORIGINAL_SYMBOL] || null;
-        }
-        return null;
-      };
-      markToTrack = (obj, mark = true) => {
-        objectsToTrack.set(obj, mark);
-      };
-      refSet = globalRef("__zag__refSet", () => /* @__PURE__ */ new WeakSet());
-      isReactElement2 = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
-      isVueElement2 = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
-      isDOMElement = (x2) => typeof x2 === "object" && x2 !== null && "nodeType" in x2 && typeof x2.nodeName === "string";
-      isElement = (x2) => isReactElement2(x2) || isVueElement2(x2) || isDOMElement(x2);
-      isObject3 = (x2) => x2 !== null && typeof x2 === "object";
-      canProxy = (x2) => isObject3(x2) && !refSet.has(x2) && (Array.isArray(x2) || !(Symbol.iterator in x2)) && !isElement(x2) && !(x2 instanceof WeakMap) && !(x2 instanceof WeakSet) && !(x2 instanceof Error) && !(x2 instanceof Number) && !(x2 instanceof Date) && !(x2 instanceof String) && !(x2 instanceof RegExp) && !(x2 instanceof ArrayBuffer) && !(x2 instanceof Promise) && !(x2 instanceof File) && !(x2 instanceof Blob) && !(x2 instanceof AbortController);
-      isDev = () => true;
-      proxyStateMap = globalRef("__zag__proxyStateMap", () => /* @__PURE__ */ new WeakMap());
-      buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => new Proxy(target, handler), snapCache = /* @__PURE__ */ new WeakMap(), createSnapshot = (target, version) => {
-        const cache = snapCache.get(target);
-        if ((cache == null ? void 0 : cache[0]) === version) {
-          return cache[1];
-        }
-        const snap = Array.isArray(target) ? [] : Object.create(Object.getPrototypeOf(target));
-        markToTrack(snap, true);
-        snapCache.set(target, [version, snap]);
-        Reflect.ownKeys(target).forEach((key) => {
-          const value = Reflect.get(target, key);
-          if (refSet.has(value)) {
-            markToTrack(value, false);
-            snap[key] = value;
-          } else if (proxyStateMap.has(value)) {
-            snap[key] = snapshot(value);
-          } else {
-            snap[key] = value;
-          }
-        });
-        return Object.freeze(snap);
-      }, proxyCache = /* @__PURE__ */ new WeakMap(), versionHolder = [1, 1], proxyFunction2 = (initialObject) => {
-        if (!isObject3(initialObject)) {
-          throw new Error("object required");
-        }
-        const found = proxyCache.get(initialObject);
-        if (found) {
-          return found;
-        }
-        let version = versionHolder[0];
-        const listeners = /* @__PURE__ */ new Set();
-        const notifyUpdate = (op, nextVersion = ++versionHolder[0]) => {
-          if (version !== nextVersion) {
-            version = nextVersion;
-            listeners.forEach((listener) => listener(op, nextVersion));
-          }
-        };
-        let checkVersion = versionHolder[1];
-        const ensureVersion = (nextCheckVersion = ++versionHolder[1]) => {
-          if (checkVersion !== nextCheckVersion && !listeners.size) {
-            checkVersion = nextCheckVersion;
-            propProxyStates.forEach(([propProxyState]) => {
-              const propVersion = propProxyState[1](nextCheckVersion);
-              if (propVersion > version) {
-                version = propVersion;
-              }
-            });
-          }
-          return version;
-        };
-        const createPropListener = (prop) => (op, nextVersion) => {
-          const newOp = [...op];
-          newOp[1] = [prop, ...newOp[1]];
-          notifyUpdate(newOp, nextVersion);
-        };
-        const propProxyStates = /* @__PURE__ */ new Map();
-        const addPropListener = (prop, propProxyState) => {
-          if (isDev() && propProxyStates.has(prop)) {
-            throw new Error("prop listener already exists");
-          }
-          if (listeners.size) {
-            const remove22 = propProxyState[3](createPropListener(prop));
-            propProxyStates.set(prop, [propProxyState, remove22]);
-          } else {
-            propProxyStates.set(prop, [propProxyState]);
-          }
-        };
-        const removePropListener = (prop) => {
-          var _a;
-          const entry = propProxyStates.get(prop);
-          if (entry) {
-            propProxyStates.delete(prop);
-            (_a = entry[1]) == null ? void 0 : _a.call(entry);
-          }
-        };
-        const addListener = (listener) => {
-          listeners.add(listener);
-          if (listeners.size === 1) {
-            propProxyStates.forEach(([propProxyState, prevRemove], prop) => {
-              if (isDev() && prevRemove) {
-                throw new Error("remove already exists");
-              }
-              const remove22 = propProxyState[3](createPropListener(prop));
-              propProxyStates.set(prop, [propProxyState, remove22]);
-            });
-          }
-          const removeListener = () => {
-            listeners.delete(listener);
-            if (listeners.size === 0) {
-              propProxyStates.forEach(([propProxyState, remove22], prop) => {
-                if (remove22) {
-                  remove22();
-                  propProxyStates.set(prop, [propProxyState]);
-                }
-              });
-            }
-          };
-          return removeListener;
-        };
-        const baseObject = Array.isArray(initialObject) ? [] : Object.create(Object.getPrototypeOf(initialObject));
-        const handler = {
-          deleteProperty(target, prop) {
-            const prevValue = Reflect.get(target, prop);
-            removePropListener(prop);
-            const deleted = Reflect.deleteProperty(target, prop);
-            if (deleted) {
-              notifyUpdate(["delete", [prop], prevValue]);
-            }
-            return deleted;
-          },
-          set(target, prop, value, receiver) {
-            var _a;
-            const hasPrevValue = Reflect.has(target, prop);
-            const prevValue = Reflect.get(target, prop, receiver);
-            if (hasPrevValue && (objectIs(prevValue, value) || proxyCache.has(value) && objectIs(prevValue, proxyCache.get(value)))) {
-              return true;
-            }
-            removePropListener(prop);
-            if (isObject3(value)) {
-              value = getUntracked(value) || value;
-            }
-            let nextValue = value;
-            if ((_a = Object.getOwnPropertyDescriptor(target, prop)) == null ? void 0 : _a.set) ;
-            else {
-              if (!proxyStateMap.has(value) && canProxy(value)) {
-                nextValue = proxy(value);
-              }
-              const childProxyState = !refSet.has(nextValue) && proxyStateMap.get(nextValue);
-              if (childProxyState) {
-                addPropListener(prop, childProxyState);
-              }
-            }
-            Reflect.set(target, prop, nextValue, receiver);
-            notifyUpdate(["set", [prop], value, prevValue]);
-            return true;
-          }
-        };
-        const proxyObject = newProxy(baseObject, handler);
-        proxyCache.set(initialObject, proxyObject);
-        const proxyState = [baseObject, ensureVersion, createSnapshot, addListener];
-        proxyStateMap.set(proxyObject, proxyState);
-        Reflect.ownKeys(initialObject).forEach((key) => {
-          const desc = Object.getOwnPropertyDescriptor(initialObject, key);
-          if (desc.get || desc.set) {
-            Object.defineProperty(baseObject, key, desc);
-          } else {
-            proxyObject[key] = initialObject[key];
-          }
-        });
-        return proxyObject;
-      }) => [
-        // public functions
-        proxyFunction2,
-        // shared state
-        proxyStateMap,
-        refSet,
-        // internal things
-        objectIs,
-        newProxy,
-        canProxy,
-        snapCache,
-        createSnapshot,
-        proxyCache,
-        versionHolder
-      ];
-      [proxyFunction] = buildProxyFunction();
-      __defProp3 = Object.defineProperty;
-      __defNormalProp3 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField3 = (obj, key, value) => __defNormalProp3(obj, typeof key !== "symbol" ? key + "" : key, value);
-      propMap = {
-        onFocus: "onFocusin",
-        onBlur: "onFocusout",
-        onChange: "onInput",
-        onDoubleClick: "onDblclick",
-        htmlFor: "for",
-        className: "class",
-        defaultValue: "value",
-        defaultChecked: "checked"
-      };
-      caseSensitiveSvgAttrs = /* @__PURE__ */ new Set(["viewBox", "preserveAspectRatio"]);
-      toStyleString = (style) => {
-        let string = "";
-        for (let key in style) {
-          const value = style[key];
-          if (value === null || value === void 0) continue;
-          if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match32) => `-${match32.toLowerCase()}`);
-          string += `${key}:${value};`;
-        }
-        return string;
-      };
-      normalizeProps = createNormalizer((props15) => {
-        return Object.entries(props15).reduce((acc, [key, value]) => {
-          if (value === void 0) return acc;
-          if (key in propMap) {
-            key = propMap[key];
-          }
-          if (key === "style" && typeof value === "object") {
-            acc.style = toStyleString(value);
-            return acc;
-          }
-          const normalizedKey = caseSensitiveSvgAttrs.has(key) ? key : key.toLowerCase();
-          acc[normalizedKey] = value;
-          return acc;
-        }, {});
-      });
-      prevAttrsMap = /* @__PURE__ */ new WeakMap();
-      assignableProps = /* @__PURE__ */ new Set(["value", "checked", "selected"]);
-      caseSensitiveSvgAttrs2 = /* @__PURE__ */ new Set([
-        "viewBox",
-        "preserveAspectRatio",
-        "clipPath",
-        "clipRule",
-        "fillRule",
-        "strokeWidth",
-        "strokeLinecap",
-        "strokeLinejoin",
-        "strokeDasharray",
-        "strokeDashoffset",
-        "strokeMiterlimit"
-      ]);
-      isSvgElement = (node) => {
-        return node.tagName === "svg" || node.namespaceURI === "http://www.w3.org/2000/svg";
-      };
-      getAttributeName = (node, attrName) => {
-        const shouldPreserveCase = isSvgElement(node) && caseSensitiveSvgAttrs2.has(attrName);
-        return shouldPreserveCase ? attrName : attrName.toLowerCase();
-      };
-      bindable.cleanup = (_fn) => {
-      };
-      bindable.ref = (defaultValue) => {
-        let value = defaultValue;
-        return {
-          get: () => value,
-          set: (next2) => {
-            value = next2;
-          }
-        };
-      };
-      VanillaMachine = class {
-        constructor(machine16, userProps = {}) {
-          var _a, _b, _c;
-          this.machine = machine16;
-          __publicField3(this, "scope");
-          __publicField3(this, "context");
-          __publicField3(this, "prop");
-          __publicField3(this, "state");
-          __publicField3(this, "refs");
-          __publicField3(this, "computed");
-          __publicField3(this, "event", { type: "" });
-          __publicField3(this, "previousEvent", { type: "" });
-          __publicField3(this, "effects", /* @__PURE__ */ new Map());
-          __publicField3(this, "transition", null);
-          __publicField3(this, "cleanups", []);
-          __publicField3(this, "subscriptions", []);
-          __publicField3(this, "userPropsRef");
-          __publicField3(this, "getEvent", () => __spreadProps(__spreadValues({}, this.event), {
-            current: () => this.event,
-            previous: () => this.previousEvent
-          }));
-          __publicField3(this, "getStateConfig", (state3) => {
-            return this.machine.states[state3];
-          });
-          __publicField3(this, "getState", () => __spreadProps(__spreadValues({}, this.state), {
-            matches: (...values) => values.includes(this.state.get()),
-            hasTag: (tag) => {
-              var _a2, _b2;
-              return !!((_b2 = (_a2 = this.getStateConfig(this.state.get())) == null ? void 0 : _a2.tags) == null ? void 0 : _b2.includes(tag));
-            }
-          }));
-          __publicField3(this, "debug", (...args) => {
-            if (this.machine.debug) console.log(...args);
-          });
-          __publicField3(this, "notify", () => {
-            this.publish();
-          });
-          __publicField3(this, "send", (event) => {
-            if (this.status !== MachineStatus.Started) return;
-            queueMicrotask(() => {
-              var _a2, _b2, _c2, _d, _e;
-              if (!event) return;
-              this.previousEvent = this.event;
-              this.event = event;
-              this.debug("send", event);
-              let currentState = this.state.get();
-              const eventType = event.type;
-              const transitions = (_d = (_b2 = (_a2 = this.getStateConfig(currentState)) == null ? void 0 : _a2.on) == null ? void 0 : _b2[eventType]) != null ? _d : (_c2 = this.machine.on) == null ? void 0 : _c2[eventType];
-              const transition = this.choose(transitions);
-              if (!transition) return;
-              this.transition = transition;
-              const target = (_e = transition.target) != null ? _e : currentState;
-              this.debug("transition", transition);
-              const changed = target !== currentState;
-              if (changed) {
-                this.state.set(target);
-              } else if (transition.reenter && !changed) {
-                this.state.invoke(currentState, currentState);
-              } else {
-                this.action(transition.actions);
-              }
-            });
-          });
-          __publicField3(this, "action", (keys) => {
-            const strs = isFunction(keys) ? keys(this.getParams()) : keys;
-            if (!strs) return;
-            const fns = strs.map((s2) => {
-              var _a2, _b2;
-              const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.actions) == null ? void 0 : _b2[s2];
-              if (!fn) warn(`[zag-js] No implementation found for action "${JSON.stringify(s2)}"`);
-              return fn;
-            });
-            for (const fn of fns) {
-              fn == null ? void 0 : fn(this.getParams());
-            }
-          });
-          __publicField3(this, "guard", (str) => {
-            var _a2, _b2;
-            if (isFunction(str)) return str(this.getParams());
-            return (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.guards) == null ? void 0 : _b2[str](this.getParams());
-          });
-          __publicField3(this, "effect", (keys) => {
-            const strs = isFunction(keys) ? keys(this.getParams()) : keys;
-            if (!strs) return;
-            const fns = strs.map((s2) => {
-              var _a2, _b2;
-              const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.effects) == null ? void 0 : _b2[s2];
-              if (!fn) warn(`[zag-js] No implementation found for effect "${JSON.stringify(s2)}"`);
-              return fn;
-            });
-            const cleanups = [];
-            for (const fn of fns) {
-              const cleanup = fn == null ? void 0 : fn(this.getParams());
-              if (cleanup) cleanups.push(cleanup);
-            }
-            return () => cleanups.forEach((fn) => fn == null ? void 0 : fn());
-          });
-          __publicField3(this, "choose", (transitions) => {
-            return toArray(transitions).find((t2) => {
-              let result = !t2.guard;
-              if (isString(t2.guard)) result = !!this.guard(t2.guard);
-              else if (isFunction(t2.guard)) result = t2.guard(this.getParams());
-              return result;
-            });
-          });
-          __publicField3(this, "subscribe", (fn) => {
-            this.subscriptions.push(fn);
-            return () => {
-              const index = this.subscriptions.indexOf(fn);
-              if (index > -1) this.subscriptions.splice(index, 1);
-            };
-          });
-          __publicField3(this, "status", MachineStatus.NotStarted);
-          __publicField3(this, "publish", () => {
-            this.callTrackers();
-            this.subscriptions.forEach((fn) => fn(this.service));
-          });
-          __publicField3(this, "trackers", []);
-          __publicField3(this, "setupTrackers", () => {
-            var _a2, _b2;
-            (_b2 = (_a2 = this.machine).watch) == null ? void 0 : _b2.call(_a2, this.getParams());
-          });
-          __publicField3(this, "callTrackers", () => {
-            this.trackers.forEach(({ deps, fn }) => {
-              const next2 = deps.map((dep) => dep());
-              if (!isEqual2(fn.prev, next2)) {
-                fn();
-                fn.prev = next2;
-              }
-            });
-          });
-          __publicField3(this, "getParams", () => ({
-            state: this.getState(),
-            context: this.context,
-            event: this.getEvent(),
-            prop: this.prop,
-            send: this.send,
-            action: this.action,
-            guard: this.guard,
-            track: (deps, fn) => {
-              fn.prev = deps.map((dep) => dep());
-              this.trackers.push({ deps, fn });
-            },
-            refs: this.refs,
-            computed: this.computed,
-            flush: identity,
-            scope: this.scope,
-            choose: this.choose
-          }));
-          this.userPropsRef = { current: userProps };
-          const { id, ids, getRootNode: getRootNode2 } = runIfFn(userProps);
-          this.scope = createScope({ id, ids, getRootNode: getRootNode2 });
-          const prop = (key) => {
-            var _a2, _b2;
-            const __props = runIfFn(this.userPropsRef.current);
-            const props15 = (_b2 = (_a2 = machine16.props) == null ? void 0 : _a2.call(machine16, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
-            return props15[key];
-          };
-          this.prop = prop;
-          const context = (_a = machine16.context) == null ? void 0 : _a.call(machine16, {
-            prop,
-            bindable,
-            scope: this.scope,
-            flush(fn) {
-              queueMicrotask(fn);
-            },
-            getContext() {
-              return ctx;
-            },
-            getComputed() {
-              return computed;
-            },
-            getRefs() {
-              return refs;
-            },
-            getEvent: this.getEvent.bind(this)
-          });
-          if (context) {
-            Object.values(context).forEach((item) => {
-              const unsub = subscribe(item.ref, () => this.notify());
-              this.cleanups.push(unsub);
-            });
-          }
-          const ctx = {
-            get(key) {
-              return context == null ? void 0 : context[key].get();
-            },
-            set(key, value) {
-              context == null ? void 0 : context[key].set(value);
-            },
-            initial(key) {
-              return context == null ? void 0 : context[key].initial;
-            },
-            hash(key) {
-              const current = context == null ? void 0 : context[key].get();
-              return context == null ? void 0 : context[key].hash(current);
-            }
-          };
-          this.context = ctx;
-          const computed = (key) => {
-            var _a2, _b2;
-            return (_b2 = (_a2 = machine16.computed) == null ? void 0 : _a2[key]({
-              context: ctx,
-              event: this.getEvent(),
-              prop,
-              refs: this.refs,
-              scope: this.scope,
-              computed
-            })) != null ? _b2 : {};
-          };
-          this.computed = computed;
-          const refs = createRefs((_c = (_b = machine16.refs) == null ? void 0 : _b.call(machine16, { prop, context: ctx })) != null ? _c : {});
-          this.refs = refs;
-          const state2 = bindable(() => ({
-            defaultValue: machine16.initialState({ prop }),
-            onChange: (nextState, prevState) => {
-              var _a2, _b2, _c2, _d;
-              if (prevState) {
-                const exitEffects = this.effects.get(prevState);
-                exitEffects == null ? void 0 : exitEffects();
-                this.effects.delete(prevState);
-              }
-              if (prevState) {
-                this.action((_a2 = this.getStateConfig(prevState)) == null ? void 0 : _a2.exit);
-              }
-              this.action((_b2 = this.transition) == null ? void 0 : _b2.actions);
-              const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
-              if (cleanup) this.effects.set(nextState, cleanup);
-              if (prevState === INIT_STATE) {
-                this.action(machine16.entry);
-                const cleanup2 = this.effect(machine16.effects);
-                if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
-              }
-              this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
-            }
-          }));
-          this.state = state2;
-          this.cleanups.push(subscribe(this.state.ref, () => this.notify()));
-        }
-        updateProps(newProps) {
-          const prevSource = this.userPropsRef.current;
-          this.userPropsRef.current = () => {
-            const prev2 = runIfFn(prevSource);
-            const next2 = runIfFn(newProps);
-            return mergeMachineProps(prev2, next2);
-          };
-          this.notify();
-        }
-        start() {
-          this.status = MachineStatus.Started;
-          this.debug("initializing...");
-          this.state.invoke(this.state.initial, INIT_STATE);
-          this.setupTrackers();
-        }
-        stop() {
-          this.effects.forEach((fn) => fn == null ? void 0 : fn());
-          this.effects.clear();
-          this.transition = null;
-          this.action(this.machine.exit);
-          this.cleanups.forEach((unsub) => unsub());
-          this.cleanups = [];
-          this.subscriptions = [];
-          this.status = MachineStatus.Stopped;
-          this.debug("unmounting...");
-        }
-        get service() {
-          return {
-            state: this.getState(),
-            send: this.send,
-            context: this.context,
-            prop: this.prop,
-            scope: this.scope,
-            refs: this.refs,
-            computed: this.computed,
-            event: this.getEvent(),
-            getStatus: () => this.status
-          };
-        }
-      };
-      Component = class {
-        constructor(el, props15) {
-          __publicField(this, "el");
-          __publicField(this, "doc");
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          __publicField(this, "machine");
-          __publicField(this, "api");
-          __publicField(this, "init", () => {
-            this.render();
-            this.machine.subscribe(() => {
-              this.api = this.initApi();
-              this.render();
-            });
-            this.machine.start();
-          });
-          __publicField(this, "destroy", () => {
-            this.machine.stop();
-          });
-          __publicField(this, "spreadProps", (el, props15) => {
-            spreadProps(el, props15, this.machine.scope.id);
-          });
-          __publicField(this, "updateProps", (props15) => {
-            this.machine.updateProps(props15);
-          });
-          if (!el) throw new Error("Root element not found");
-          this.el = el;
-          this.doc = document;
-          this.machine = this.initMachine(props15);
-          this.api = this.initApi();
-        }
-      };
     }
   });
 
-  // ../priv/static/accordion.mjs
-  var accordion_exports = {};
-  __export(accordion_exports, {
-    Accordion: () => AccordionHook
+  // ../node_modules/.pnpm/@zag-js+types@1.33.1/node_modules/@zag-js/types/dist/index.mjs
+  function createNormalizer(fn) {
+    return new Proxy({}, {
+      get(_target, key) {
+        if (key === "style")
+          return (props15) => {
+            return fn({ style: props15 }).style;
+          };
+        return fn;
+      }
+    });
+  }
+  var createProps;
+  var init_dist5 = __esm({
+    "../node_modules/.pnpm/@zag-js+types@1.33.1/node_modules/@zag-js/types/dist/index.mjs"() {
+      createProps = () => (props15) => Array.from(new Set(props15));
+    }
   });
+
+  // ../node_modules/.pnpm/@zag-js+accordion@1.33.1/node_modules/@zag-js/accordion/dist/index.mjs
   function connect(service, normalize) {
     const { send, context, prop, scope, computed } = service;
     const focusedValue = context.get("focusedValue");
@@ -2647,11 +1867,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, props, splitProps2, itemProps, splitItemProps, Accordion, AccordionHook;
-  var init_accordion = __esm({
-    "../priv/static/accordion.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
+  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, props, splitProps2, itemProps, splitItemProps;
+  var init_dist6 = __esm({
+    "../node_modules/.pnpm/@zag-js+accordion@1.33.1/node_modules/@zag-js/accordion/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist3();
+      init_dist4();
+      init_dist5();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2830,10 +2053,821 @@ var Corex = (() => {
       splitProps2 = createSplitProps(props);
       itemProps = createProps()(["value", "disabled"]);
       splitItemProps = createSplitProps(itemProps);
+    }
+  });
+
+  // ../node_modules/.pnpm/proxy-compare@3.0.1/node_modules/proxy-compare/dist/index.js
+  var TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack;
+  var init_dist7 = __esm({
+    "../node_modules/.pnpm/proxy-compare@3.0.1/node_modules/proxy-compare/dist/index.js"() {
+      TRACK_MEMO_SYMBOL = Symbol();
+      GET_ORIGINAL_SYMBOL = Symbol();
+      getProto = Object.getPrototypeOf;
+      objectsToTrack = /* @__PURE__ */ new WeakMap();
+      isObjectToTrack = (obj) => obj && (objectsToTrack.has(obj) ? objectsToTrack.get(obj) : getProto(obj) === Object.prototype || getProto(obj) === Array.prototype);
+      getUntracked = (obj) => {
+        if (isObjectToTrack(obj)) {
+          return obj[GET_ORIGINAL_SYMBOL] || null;
+        }
+        return null;
+      };
+      markToTrack = (obj, mark = true) => {
+        objectsToTrack.set(obj, mark);
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+store@1.33.1/node_modules/@zag-js/store/dist/index.mjs
+  function glob() {
+    if (typeof globalThis !== "undefined") return globalThis;
+    if (typeof self !== "undefined") return self;
+    if (typeof window !== "undefined") return window;
+    if (typeof global !== "undefined") return global;
+  }
+  function globalRef(key, value) {
+    const g2 = glob();
+    if (!g2) return value();
+    g2[key] || (g2[key] = value());
+    return g2[key];
+  }
+  function proxy(initialObject = {}) {
+    return proxyFunction(initialObject);
+  }
+  function subscribe(proxyObject, callback, notifyInSync) {
+    const proxyState = proxyStateMap.get(proxyObject);
+    if (isDev() && !proxyState) {
+      console.warn("Please use proxy object");
+    }
+    let promise;
+    const ops = [];
+    const addListener = proxyState[3];
+    let isListenerActive = false;
+    const listener = (op) => {
+      ops.push(op);
+      if (notifyInSync) {
+        callback(ops.splice(0));
+        return;
+      }
+      if (!promise) {
+        promise = Promise.resolve().then(() => {
+          promise = void 0;
+          if (isListenerActive) {
+            callback(ops.splice(0));
+          }
+        });
+      }
+    };
+    const removeListener = addListener(listener);
+    isListenerActive = true;
+    return () => {
+      isListenerActive = false;
+      removeListener();
+    };
+  }
+  function snapshot(proxyObject) {
+    const proxyState = proxyStateMap.get(proxyObject);
+    if (isDev() && !proxyState) {
+      console.warn("Please use proxy object");
+    }
+    const [target, ensureVersion, createSnapshot] = proxyState;
+    return createSnapshot(target, ensureVersion());
+  }
+  var refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction;
+  var init_dist8 = __esm({
+    "../node_modules/.pnpm/@zag-js+store@1.33.1/node_modules/@zag-js/store/dist/index.mjs"() {
+      init_dist7();
+      refSet = globalRef("__zag__refSet", () => /* @__PURE__ */ new WeakSet());
+      isReactElement2 = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
+      isVueElement2 = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
+      isDOMElement = (x2) => typeof x2 === "object" && x2 !== null && "nodeType" in x2 && typeof x2.nodeName === "string";
+      isElement = (x2) => isReactElement2(x2) || isVueElement2(x2) || isDOMElement(x2);
+      isObject3 = (x2) => x2 !== null && typeof x2 === "object";
+      canProxy = (x2) => isObject3(x2) && !refSet.has(x2) && (Array.isArray(x2) || !(Symbol.iterator in x2)) && !isElement(x2) && !(x2 instanceof WeakMap) && !(x2 instanceof WeakSet) && !(x2 instanceof Error) && !(x2 instanceof Number) && !(x2 instanceof Date) && !(x2 instanceof String) && !(x2 instanceof RegExp) && !(x2 instanceof ArrayBuffer) && !(x2 instanceof Promise) && !(x2 instanceof File) && !(x2 instanceof Blob) && !(x2 instanceof AbortController);
+      isDev = () => true;
+      proxyStateMap = globalRef("__zag__proxyStateMap", () => /* @__PURE__ */ new WeakMap());
+      buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => new Proxy(target, handler), snapCache = /* @__PURE__ */ new WeakMap(), createSnapshot = (target, version) => {
+        const cache = snapCache.get(target);
+        if ((cache == null ? void 0 : cache[0]) === version) {
+          return cache[1];
+        }
+        const snap = Array.isArray(target) ? [] : Object.create(Object.getPrototypeOf(target));
+        markToTrack(snap, true);
+        snapCache.set(target, [version, snap]);
+        Reflect.ownKeys(target).forEach((key) => {
+          const value = Reflect.get(target, key);
+          if (refSet.has(value)) {
+            markToTrack(value, false);
+            snap[key] = value;
+          } else if (proxyStateMap.has(value)) {
+            snap[key] = snapshot(value);
+          } else {
+            snap[key] = value;
+          }
+        });
+        return Object.freeze(snap);
+      }, proxyCache = /* @__PURE__ */ new WeakMap(), versionHolder = [1, 1], proxyFunction2 = (initialObject) => {
+        if (!isObject3(initialObject)) {
+          throw new Error("object required");
+        }
+        const found = proxyCache.get(initialObject);
+        if (found) {
+          return found;
+        }
+        let version = versionHolder[0];
+        const listeners = /* @__PURE__ */ new Set();
+        const notifyUpdate = (op, nextVersion = ++versionHolder[0]) => {
+          if (version !== nextVersion) {
+            version = nextVersion;
+            listeners.forEach((listener) => listener(op, nextVersion));
+          }
+        };
+        let checkVersion = versionHolder[1];
+        const ensureVersion = (nextCheckVersion = ++versionHolder[1]) => {
+          if (checkVersion !== nextCheckVersion && !listeners.size) {
+            checkVersion = nextCheckVersion;
+            propProxyStates.forEach(([propProxyState]) => {
+              const propVersion = propProxyState[1](nextCheckVersion);
+              if (propVersion > version) {
+                version = propVersion;
+              }
+            });
+          }
+          return version;
+        };
+        const createPropListener = (prop) => (op, nextVersion) => {
+          const newOp = [...op];
+          newOp[1] = [prop, ...newOp[1]];
+          notifyUpdate(newOp, nextVersion);
+        };
+        const propProxyStates = /* @__PURE__ */ new Map();
+        const addPropListener = (prop, propProxyState) => {
+          if (isDev() && propProxyStates.has(prop)) {
+            throw new Error("prop listener already exists");
+          }
+          if (listeners.size) {
+            const remove3 = propProxyState[3](createPropListener(prop));
+            propProxyStates.set(prop, [propProxyState, remove3]);
+          } else {
+            propProxyStates.set(prop, [propProxyState]);
+          }
+        };
+        const removePropListener = (prop) => {
+          var _a;
+          const entry = propProxyStates.get(prop);
+          if (entry) {
+            propProxyStates.delete(prop);
+            (_a = entry[1]) == null ? void 0 : _a.call(entry);
+          }
+        };
+        const addListener = (listener) => {
+          listeners.add(listener);
+          if (listeners.size === 1) {
+            propProxyStates.forEach(([propProxyState, prevRemove], prop) => {
+              if (isDev() && prevRemove) {
+                throw new Error("remove already exists");
+              }
+              const remove3 = propProxyState[3](createPropListener(prop));
+              propProxyStates.set(prop, [propProxyState, remove3]);
+            });
+          }
+          const removeListener = () => {
+            listeners.delete(listener);
+            if (listeners.size === 0) {
+              propProxyStates.forEach(([propProxyState, remove3], prop) => {
+                if (remove3) {
+                  remove3();
+                  propProxyStates.set(prop, [propProxyState]);
+                }
+              });
+            }
+          };
+          return removeListener;
+        };
+        const baseObject = Array.isArray(initialObject) ? [] : Object.create(Object.getPrototypeOf(initialObject));
+        const handler = {
+          deleteProperty(target, prop) {
+            const prevValue = Reflect.get(target, prop);
+            removePropListener(prop);
+            const deleted = Reflect.deleteProperty(target, prop);
+            if (deleted) {
+              notifyUpdate(["delete", [prop], prevValue]);
+            }
+            return deleted;
+          },
+          set(target, prop, value, receiver) {
+            var _a;
+            const hasPrevValue = Reflect.has(target, prop);
+            const prevValue = Reflect.get(target, prop, receiver);
+            if (hasPrevValue && (objectIs(prevValue, value) || proxyCache.has(value) && objectIs(prevValue, proxyCache.get(value)))) {
+              return true;
+            }
+            removePropListener(prop);
+            if (isObject3(value)) {
+              value = getUntracked(value) || value;
+            }
+            let nextValue = value;
+            if ((_a = Object.getOwnPropertyDescriptor(target, prop)) == null ? void 0 : _a.set) ;
+            else {
+              if (!proxyStateMap.has(value) && canProxy(value)) {
+                nextValue = proxy(value);
+              }
+              const childProxyState = !refSet.has(nextValue) && proxyStateMap.get(nextValue);
+              if (childProxyState) {
+                addPropListener(prop, childProxyState);
+              }
+            }
+            Reflect.set(target, prop, nextValue, receiver);
+            notifyUpdate(["set", [prop], value, prevValue]);
+            return true;
+          }
+        };
+        const proxyObject = newProxy(baseObject, handler);
+        proxyCache.set(initialObject, proxyObject);
+        const proxyState = [baseObject, ensureVersion, createSnapshot, addListener];
+        proxyStateMap.set(proxyObject, proxyState);
+        Reflect.ownKeys(initialObject).forEach((key) => {
+          const desc = Object.getOwnPropertyDescriptor(initialObject, key);
+          if (desc.get || desc.set) {
+            Object.defineProperty(baseObject, key, desc);
+          } else {
+            proxyObject[key] = initialObject[key];
+          }
+        });
+        return proxyObject;
+      }) => [
+        // public functions
+        proxyFunction2,
+        // shared state
+        proxyStateMap,
+        refSet,
+        // internal things
+        objectIs,
+        newProxy,
+        canProxy,
+        snapCache,
+        createSnapshot,
+        proxyCache,
+        versionHolder
+      ];
+      [proxyFunction] = buildProxyFunction();
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+vanilla@1.33.1/node_modules/@zag-js/vanilla/dist/index.mjs
+  function spreadProps(node, attrs, machineId) {
+    const scopeKey = machineId || "default";
+    let machineMap = prevAttrsMap.get(node);
+    if (!machineMap) {
+      machineMap = /* @__PURE__ */ new Map();
+      prevAttrsMap.set(node, machineMap);
+    }
+    const oldAttrs = machineMap.get(scopeKey) || {};
+    const attrKeys = Object.keys(attrs);
+    const addEvt = (e2, f2) => {
+      node.addEventListener(e2.toLowerCase(), f2);
+    };
+    const remEvt = (e2, f2) => {
+      node.removeEventListener(e2.toLowerCase(), f2);
+    };
+    const onEvents = (attr) => attr.startsWith("on");
+    const others = (attr) => !attr.startsWith("on");
+    const setup2 = (attr) => addEvt(attr.substring(2), attrs[attr]);
+    const teardown = (attr) => remEvt(attr.substring(2), attrs[attr]);
+    const apply = (attrName) => {
+      const value = attrs[attrName];
+      const oldValue = oldAttrs[attrName];
+      if (value === oldValue) return;
+      if (attrName === "class") {
+        node.className = value != null ? value : "";
+        return;
+      }
+      if (assignableProps.has(attrName)) {
+        node[attrName] = value != null ? value : "";
+        return;
+      }
+      if (typeof value === "boolean" && !attrName.includes("aria-")) {
+        node.toggleAttribute(getAttributeName(node, attrName), value);
+        return;
+      }
+      if (attrName === "children") {
+        node.innerHTML = value;
+        return;
+      }
+      if (value != null) {
+        node.setAttribute(getAttributeName(node, attrName), value);
+        return;
+      }
+      node.removeAttribute(getAttributeName(node, attrName));
+    };
+    for (const key in oldAttrs) {
+      if (attrs[key] == null) {
+        if (key === "class") {
+          node.className = "";
+        } else if (assignableProps.has(key)) {
+          node[key] = "";
+        } else {
+          node.removeAttribute(getAttributeName(node, key));
+        }
+      }
+    }
+    const oldEvents = Object.keys(oldAttrs).filter(onEvents);
+    oldEvents.forEach((evt) => {
+      remEvt(evt.substring(2), oldAttrs[evt]);
+    });
+    attrKeys.filter(onEvents).forEach(setup2);
+    attrKeys.filter(others).forEach(apply);
+    machineMap.set(scopeKey, attrs);
+    return function cleanup() {
+      attrKeys.filter(onEvents).forEach(teardown);
+      const currentMachineMap = prevAttrsMap.get(node);
+      if (currentMachineMap) {
+        currentMachineMap.delete(scopeKey);
+        if (currentMachineMap.size === 0) {
+          prevAttrsMap.delete(node);
+        }
+      }
+    };
+  }
+  function bindable(props15) {
+    var _a, _b;
+    const initial = (_a = props15().value) != null ? _a : props15().defaultValue;
+    if (props15().debug) {
+      console.log(`[bindable > ${props15().debug}] initial`, initial);
+    }
+    const eq = (_b = props15().isEqual) != null ? _b : Object.is;
+    const store = proxy({ value: initial });
+    const controlled = () => props15().value !== void 0;
+    return {
+      initial,
+      ref: store,
+      get() {
+        return controlled() ? props15().value : store.value;
+      },
+      set(nextValue) {
+        var _a2, _b2;
+        const prev2 = store.value;
+        const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
+        if (props15().debug) {
+          console.log(`[bindable > ${props15().debug}] setValue`, { next: next2, prev: prev2 });
+        }
+        if (!controlled()) store.value = next2;
+        if (!eq(next2, prev2)) {
+          (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
+        }
+      },
+      invoke(nextValue, prevValue) {
+        var _a2, _b2;
+        (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
+      },
+      hash(value) {
+        var _a2, _b2, _c;
+        return (_c = (_b2 = (_a2 = props15()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
+      }
+    };
+  }
+  function createRefs(refs) {
+    const ref = { current: refs };
+    return {
+      get(key) {
+        return ref.current[key];
+      },
+      set(key, value) {
+        ref.current[key] = value;
+      }
+    };
+  }
+  function mergeMachineProps(prev2, next2) {
+    if (!isPlainObject(prev2) || !isPlainObject(next2)) {
+      return next2 === void 0 ? prev2 : next2;
+    }
+    const result = __spreadValues({}, prev2);
+    for (const key of Object.keys(next2)) {
+      const nextValue = next2[key];
+      const prevValue = prev2[key];
+      if (nextValue === void 0) {
+        continue;
+      }
+      if (isPlainObject(prevValue) && isPlainObject(nextValue)) {
+        result[key] = mergeMachineProps(prevValue, nextValue);
+      } else {
+        result[key] = nextValue;
+      }
+    }
+    return result;
+  }
+  var __defProp4, __defNormalProp4, __publicField4, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine;
+  var init_dist9 = __esm({
+    "../node_modules/.pnpm/@zag-js+vanilla@1.33.1/node_modules/@zag-js/vanilla/dist/index.mjs"() {
+      init_dist4();
+      init_dist5();
+      init_dist8();
+      init_dist3();
+      __defProp4 = Object.defineProperty;
+      __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
+      propMap = {
+        onFocus: "onFocusin",
+        onBlur: "onFocusout",
+        onChange: "onInput",
+        onDoubleClick: "onDblclick",
+        htmlFor: "for",
+        className: "class",
+        defaultValue: "value",
+        defaultChecked: "checked"
+      };
+      caseSensitiveSvgAttrs = /* @__PURE__ */ new Set(["viewBox", "preserveAspectRatio"]);
+      toStyleString = (style) => {
+        let string = "";
+        for (let key in style) {
+          const value = style[key];
+          if (value === null || value === void 0) continue;
+          if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match4) => `-${match4.toLowerCase()}`);
+          string += `${key}:${value};`;
+        }
+        return string;
+      };
+      normalizeProps = createNormalizer((props15) => {
+        return Object.entries(props15).reduce((acc, [key, value]) => {
+          if (value === void 0) return acc;
+          if (key in propMap) {
+            key = propMap[key];
+          }
+          if (key === "style" && typeof value === "object") {
+            acc.style = toStyleString(value);
+            return acc;
+          }
+          const normalizedKey = caseSensitiveSvgAttrs.has(key) ? key : key.toLowerCase();
+          acc[normalizedKey] = value;
+          return acc;
+        }, {});
+      });
+      prevAttrsMap = /* @__PURE__ */ new WeakMap();
+      assignableProps = /* @__PURE__ */ new Set(["value", "checked", "selected"]);
+      caseSensitiveSvgAttrs2 = /* @__PURE__ */ new Set([
+        "viewBox",
+        "preserveAspectRatio",
+        "clipPath",
+        "clipRule",
+        "fillRule",
+        "strokeWidth",
+        "strokeLinecap",
+        "strokeLinejoin",
+        "strokeDasharray",
+        "strokeDashoffset",
+        "strokeMiterlimit"
+      ]);
+      isSvgElement = (node) => {
+        return node.tagName === "svg" || node.namespaceURI === "http://www.w3.org/2000/svg";
+      };
+      getAttributeName = (node, attrName) => {
+        const shouldPreserveCase = isSvgElement(node) && caseSensitiveSvgAttrs2.has(attrName);
+        return shouldPreserveCase ? attrName : attrName.toLowerCase();
+      };
+      bindable.cleanup = (_fn) => {
+      };
+      bindable.ref = (defaultValue) => {
+        let value = defaultValue;
+        return {
+          get: () => value,
+          set: (next2) => {
+            value = next2;
+          }
+        };
+      };
+      VanillaMachine = class {
+        constructor(machine16, userProps = {}) {
+          var _a, _b, _c;
+          this.machine = machine16;
+          __publicField4(this, "scope");
+          __publicField4(this, "context");
+          __publicField4(this, "prop");
+          __publicField4(this, "state");
+          __publicField4(this, "refs");
+          __publicField4(this, "computed");
+          __publicField4(this, "event", { type: "" });
+          __publicField4(this, "previousEvent", { type: "" });
+          __publicField4(this, "effects", /* @__PURE__ */ new Map());
+          __publicField4(this, "transition", null);
+          __publicField4(this, "cleanups", []);
+          __publicField4(this, "subscriptions", []);
+          __publicField4(this, "userPropsRef");
+          __publicField4(this, "getEvent", () => __spreadProps(__spreadValues({}, this.event), {
+            current: () => this.event,
+            previous: () => this.previousEvent
+          }));
+          __publicField4(this, "getStateConfig", (state3) => {
+            return this.machine.states[state3];
+          });
+          __publicField4(this, "getState", () => __spreadProps(__spreadValues({}, this.state), {
+            matches: (...values) => values.includes(this.state.get()),
+            hasTag: (tag) => {
+              var _a2, _b2;
+              return !!((_b2 = (_a2 = this.getStateConfig(this.state.get())) == null ? void 0 : _a2.tags) == null ? void 0 : _b2.includes(tag));
+            }
+          }));
+          __publicField4(this, "debug", (...args) => {
+            if (this.machine.debug) console.log(...args);
+          });
+          __publicField4(this, "notify", () => {
+            this.publish();
+          });
+          __publicField4(this, "send", (event) => {
+            if (this.status !== MachineStatus.Started) return;
+            queueMicrotask(() => {
+              var _a2, _b2, _c2, _d, _e;
+              if (!event) return;
+              this.previousEvent = this.event;
+              this.event = event;
+              this.debug("send", event);
+              let currentState = this.state.get();
+              const eventType = event.type;
+              const transitions = (_d = (_b2 = (_a2 = this.getStateConfig(currentState)) == null ? void 0 : _a2.on) == null ? void 0 : _b2[eventType]) != null ? _d : (_c2 = this.machine.on) == null ? void 0 : _c2[eventType];
+              const transition = this.choose(transitions);
+              if (!transition) return;
+              this.transition = transition;
+              const target = (_e = transition.target) != null ? _e : currentState;
+              this.debug("transition", transition);
+              const changed = target !== currentState;
+              if (changed) {
+                this.state.set(target);
+              } else if (transition.reenter && !changed) {
+                this.state.invoke(currentState, currentState);
+              } else {
+                this.action(transition.actions);
+              }
+            });
+          });
+          __publicField4(this, "action", (keys) => {
+            const strs = isFunction(keys) ? keys(this.getParams()) : keys;
+            if (!strs) return;
+            const fns = strs.map((s2) => {
+              var _a2, _b2;
+              const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.actions) == null ? void 0 : _b2[s2];
+              if (!fn) warn(`[zag-js] No implementation found for action "${JSON.stringify(s2)}"`);
+              return fn;
+            });
+            for (const fn of fns) {
+              fn == null ? void 0 : fn(this.getParams());
+            }
+          });
+          __publicField4(this, "guard", (str) => {
+            var _a2, _b2;
+            if (isFunction(str)) return str(this.getParams());
+            return (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.guards) == null ? void 0 : _b2[str](this.getParams());
+          });
+          __publicField4(this, "effect", (keys) => {
+            const strs = isFunction(keys) ? keys(this.getParams()) : keys;
+            if (!strs) return;
+            const fns = strs.map((s2) => {
+              var _a2, _b2;
+              const fn = (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.effects) == null ? void 0 : _b2[s2];
+              if (!fn) warn(`[zag-js] No implementation found for effect "${JSON.stringify(s2)}"`);
+              return fn;
+            });
+            const cleanups = [];
+            for (const fn of fns) {
+              const cleanup = fn == null ? void 0 : fn(this.getParams());
+              if (cleanup) cleanups.push(cleanup);
+            }
+            return () => cleanups.forEach((fn) => fn == null ? void 0 : fn());
+          });
+          __publicField4(this, "choose", (transitions) => {
+            return toArray(transitions).find((t2) => {
+              let result = !t2.guard;
+              if (isString(t2.guard)) result = !!this.guard(t2.guard);
+              else if (isFunction(t2.guard)) result = t2.guard(this.getParams());
+              return result;
+            });
+          });
+          __publicField4(this, "subscribe", (fn) => {
+            this.subscriptions.push(fn);
+            return () => {
+              const index = this.subscriptions.indexOf(fn);
+              if (index > -1) this.subscriptions.splice(index, 1);
+            };
+          });
+          __publicField4(this, "status", MachineStatus.NotStarted);
+          __publicField4(this, "publish", () => {
+            this.callTrackers();
+            this.subscriptions.forEach((fn) => fn(this.service));
+          });
+          __publicField4(this, "trackers", []);
+          __publicField4(this, "setupTrackers", () => {
+            var _a2, _b2;
+            (_b2 = (_a2 = this.machine).watch) == null ? void 0 : _b2.call(_a2, this.getParams());
+          });
+          __publicField4(this, "callTrackers", () => {
+            this.trackers.forEach(({ deps, fn }) => {
+              const next2 = deps.map((dep) => dep());
+              if (!isEqual2(fn.prev, next2)) {
+                fn();
+                fn.prev = next2;
+              }
+            });
+          });
+          __publicField4(this, "getParams", () => ({
+            state: this.getState(),
+            context: this.context,
+            event: this.getEvent(),
+            prop: this.prop,
+            send: this.send,
+            action: this.action,
+            guard: this.guard,
+            track: (deps, fn) => {
+              fn.prev = deps.map((dep) => dep());
+              this.trackers.push({ deps, fn });
+            },
+            refs: this.refs,
+            computed: this.computed,
+            flush: identity,
+            scope: this.scope,
+            choose: this.choose
+          }));
+          this.userPropsRef = { current: userProps };
+          const { id, ids, getRootNode: getRootNode2 } = runIfFn(userProps);
+          this.scope = createScope({ id, ids, getRootNode: getRootNode2 });
+          const prop = (key) => {
+            var _a2, _b2;
+            const __props = runIfFn(this.userPropsRef.current);
+            const props15 = (_b2 = (_a2 = machine16.props) == null ? void 0 : _a2.call(machine16, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            return props15[key];
+          };
+          this.prop = prop;
+          const context = (_a = machine16.context) == null ? void 0 : _a.call(machine16, {
+            prop,
+            bindable,
+            scope: this.scope,
+            flush(fn) {
+              queueMicrotask(fn);
+            },
+            getContext() {
+              return ctx;
+            },
+            getComputed() {
+              return computed;
+            },
+            getRefs() {
+              return refs;
+            },
+            getEvent: this.getEvent.bind(this)
+          });
+          if (context) {
+            Object.values(context).forEach((item) => {
+              const unsub = subscribe(item.ref, () => this.notify());
+              this.cleanups.push(unsub);
+            });
+          }
+          const ctx = {
+            get(key) {
+              return context == null ? void 0 : context[key].get();
+            },
+            set(key, value) {
+              context == null ? void 0 : context[key].set(value);
+            },
+            initial(key) {
+              return context == null ? void 0 : context[key].initial;
+            },
+            hash(key) {
+              const current = context == null ? void 0 : context[key].get();
+              return context == null ? void 0 : context[key].hash(current);
+            }
+          };
+          this.context = ctx;
+          const computed = (key) => {
+            var _a2, _b2;
+            return (_b2 = (_a2 = machine16.computed) == null ? void 0 : _a2[key]({
+              context: ctx,
+              event: this.getEvent(),
+              prop,
+              refs: this.refs,
+              scope: this.scope,
+              computed
+            })) != null ? _b2 : {};
+          };
+          this.computed = computed;
+          const refs = createRefs((_c = (_b = machine16.refs) == null ? void 0 : _b.call(machine16, { prop, context: ctx })) != null ? _c : {});
+          this.refs = refs;
+          const state2 = bindable(() => ({
+            defaultValue: machine16.initialState({ prop }),
+            onChange: (nextState, prevState) => {
+              var _a2, _b2, _c2, _d;
+              if (prevState) {
+                const exitEffects = this.effects.get(prevState);
+                exitEffects == null ? void 0 : exitEffects();
+                this.effects.delete(prevState);
+              }
+              if (prevState) {
+                this.action((_a2 = this.getStateConfig(prevState)) == null ? void 0 : _a2.exit);
+              }
+              this.action((_b2 = this.transition) == null ? void 0 : _b2.actions);
+              const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
+              if (cleanup) this.effects.set(nextState, cleanup);
+              if (prevState === INIT_STATE) {
+                this.action(machine16.entry);
+                const cleanup2 = this.effect(machine16.effects);
+                if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
+              }
+              this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
+            }
+          }));
+          this.state = state2;
+          this.cleanups.push(subscribe(this.state.ref, () => this.notify()));
+        }
+        updateProps(newProps) {
+          const prevSource = this.userPropsRef.current;
+          this.userPropsRef.current = () => {
+            const prev2 = runIfFn(prevSource);
+            const next2 = runIfFn(newProps);
+            return mergeMachineProps(prev2, next2);
+          };
+          this.notify();
+        }
+        start() {
+          this.status = MachineStatus.Started;
+          this.debug("initializing...");
+          this.state.invoke(this.state.initial, INIT_STATE);
+          this.setupTrackers();
+        }
+        stop() {
+          this.effects.forEach((fn) => fn == null ? void 0 : fn());
+          this.effects.clear();
+          this.transition = null;
+          this.action(this.machine.exit);
+          this.cleanups.forEach((unsub) => unsub());
+          this.cleanups = [];
+          this.subscriptions = [];
+          this.status = MachineStatus.Stopped;
+          this.debug("unmounting...");
+        }
+        get service() {
+          return {
+            state: this.getState(),
+            send: this.send,
+            context: this.context,
+            prop: this.prop,
+            scope: this.scope,
+            refs: this.refs,
+            computed: this.computed,
+            event: this.getEvent(),
+            getStatus: () => this.status
+          };
+        }
+      };
+    }
+  });
+
+  // lib/core.ts
+  var Component;
+  var init_core = __esm({
+    "lib/core.ts"() {
+      "use strict";
+      init_dist9();
+      Component = class {
+        constructor(el, props15) {
+          __publicField(this, "el");
+          __publicField(this, "doc");
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          __publicField(this, "machine");
+          __publicField(this, "api");
+          __publicField(this, "init", () => {
+            this.render();
+            this.machine.subscribe(() => {
+              this.api = this.initApi();
+              this.render();
+            });
+            this.machine.start();
+          });
+          __publicField(this, "destroy", () => {
+            this.machine.stop();
+          });
+          __publicField(this, "spreadProps", (el, props15) => {
+            spreadProps(el, props15, this.machine.scope.id);
+          });
+          __publicField(this, "updateProps", (props15) => {
+            this.machine.updateProps(props15);
+          });
+          if (!el) throw new Error("Root element not found");
+          this.el = el;
+          this.doc = document;
+          this.machine = this.initMachine(props15);
+          this.api = this.initApi();
+        }
+      };
+    }
+  });
+
+  // components/accordion.ts
+  var Accordion;
+  var init_accordion = __esm({
+    "components/accordion.ts"() {
+      "use strict";
+      init_dist6();
+      init_dist9();
+      init_core();
       Accordion = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine, props15);
         }
         initApi() {
           return connect(this.machine.service, normalizeProps);
@@ -2876,6 +2910,68 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // lib/util.ts
+  function getDir(element) {
+    const fromEl = element.dataset.dir;
+    if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
+      return fromEl;
+    }
+    const fromDoc = document.documentElement.getAttribute("dir");
+    if (fromDoc === "ltr" || fromDoc === "rtl") return fromDoc;
+    return "ltr";
+  }
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId;
+  var init_util = __esm({
+    "lib/util.ts"() {
+      "use strict";
+      DIR_VALUES = ["ltr", "rtl"];
+      getString = (element, attrName, validValues) => {
+        const value = element.dataset[attrName];
+        if (value !== void 0 && (!validValues || validValues.includes(value))) {
+          return value;
+        }
+        return void 0;
+      };
+      getStringList = (element, attrName) => {
+        const value = element.dataset[attrName];
+        if (typeof value === "string") {
+          return value.split(",").map((v2) => v2.trim()).filter((v2) => v2.length > 0);
+        }
+        return void 0;
+      };
+      getNumber = (element, attrName, validValues) => {
+        const raw = element.dataset[attrName];
+        if (raw === void 0) return void 0;
+        const parsed = Number(raw);
+        if (Number.isNaN(parsed)) return void 0;
+        if (validValues && !validValues.includes(parsed)) return 0;
+        return parsed;
+      };
+      getBoolean = (element, attrName) => {
+        const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
+        return element.hasAttribute(`data-${dashName}`);
+      };
+      generateId = (element, fallbackId = "element") => {
+        if (element == null ? void 0 : element.id) return element.id;
+        return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
+      };
+    }
+  });
+
+  // hooks/accordion.ts
+  var accordion_exports = {};
+  __export(accordion_exports, {
+    Accordion: () => AccordionHook
+  });
+  var AccordionHook;
+  var init_accordion2 = __esm({
+    "hooks/accordion.ts"() {
+      "use strict";
+      init_accordion();
+      init_util();
       AccordionHook = {
         mounted() {
           const el = this.el;
@@ -3001,7 +3097,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-EAMC7PNF.mjs
+  // ../node_modules/.pnpm/@zag-js+focus-visible@1.33.1/node_modules/@zag-js/focus-visible/dist/index.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -3112,10 +3208,9 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_EAMC7PNF = __esm({
-    "../priv/static/chunk-EAMC7PNF.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
+  var init_dist10 = __esm({
+    "../node_modules/.pnpm/@zag-js+focus-visible@1.33.1/node_modules/@zag-js/focus-visible/dist/index.mjs"() {
+      init_dist2();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -3159,11 +3254,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/checkbox.mjs
-  var checkbox_exports = {};
-  __export(checkbox_exports, {
-    Checkbox: () => CheckboxHook
-  });
+  // ../node_modules/.pnpm/@zag-js+checkbox@1.33.1/node_modules/@zag-js/checkbox/dist/index.mjs
   function connect2(service, normalize) {
     const { send, context, prop, computed, scope } = service;
     const disabled = !!prop("disabled");
@@ -3276,12 +3367,15 @@ var Corex = (() => {
   function isChecked(checked) {
     return isIndeterminate(checked) ? false : !!checked;
   }
-  var anatomy2, parts2, getRootId2, getLabelId, getControlId, getHiddenInputId, getRootEl2, getHiddenInputEl, not2, machine2, props2, splitProps3, Checkbox, CheckboxHook;
-  var init_checkbox = __esm({
-    "../priv/static/checkbox.mjs"() {
-      "use strict";
-      init_chunk_EAMC7PNF();
-      init_chunk_GFGFZBBD();
+  var anatomy2, parts2, getRootId2, getLabelId, getControlId, getHiddenInputId, getRootEl2, getHiddenInputEl, not2, machine2, props2, splitProps3;
+  var init_dist11 = __esm({
+    "../node_modules/.pnpm/@zag-js+checkbox@1.33.1/node_modules/@zag-js/checkbox/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist10();
+      init_dist4();
+      init_dist5();
+      init_dist3();
       anatomy2 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts2 = anatomy2.build();
       getRootId2 = (ctx) => {
@@ -3455,10 +3549,21 @@ var Corex = (() => {
         "value"
       ]);
       splitProps3 = createSplitProps(props2);
+    }
+  });
+
+  // components/checkbox.ts
+  var Checkbox;
+  var init_checkbox = __esm({
+    "components/checkbox.ts"() {
+      "use strict";
+      init_dist11();
+      init_dist9();
+      init_core();
       Checkbox = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine2, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine2, props15);
         }
         initApi() {
           return connect2(this.machine.service, normalizeProps);
@@ -3485,6 +3590,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/checkbox.ts
+  var checkbox_exports = {};
+  __export(checkbox_exports, {
+    Checkbox: () => CheckboxHook
+  });
+  var CheckboxHook;
+  var init_checkbox2 = __esm({
+    "hooks/checkbox.ts"() {
+      "use strict";
+      init_checkbox();
+      init_util();
       CheckboxHook = {
         mounted() {
           const el = this.el;
@@ -3605,11 +3724,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/clipboard.mjs
-  var clipboard_exports = {};
-  __export(clipboard_exports, {
-    Clipboard: () => ClipboardHook
-  });
+  // ../node_modules/.pnpm/@zag-js+clipboard@1.33.1/node_modules/@zag-js/clipboard/dist/index.mjs
   function createNode(doc, text) {
     const node = doc.createElement("pre");
     Object.assign(node.style, {
@@ -3713,11 +3828,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy3, parts3, getRootId3, getInputId, getLabelId2, getInputEl, writeToClipboard, machine3, props3, contextProps, indicatorProps, splitIndicatorProps, Clipboard, ClipboardHook;
-  var init_clipboard = __esm({
-    "../priv/static/clipboard.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
+  var anatomy3, parts3, getRootId3, getInputId, getLabelId2, getInputEl, writeToClipboard, machine3, props3, contextProps, indicatorProps, splitIndicatorProps;
+  var init_dist12 = __esm({
+    "../node_modules/.pnpm/@zag-js+clipboard@1.33.1/node_modules/@zag-js/clipboard/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist4();
+      init_dist3();
+      init_dist5();
       anatomy3 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -3835,10 +3953,21 @@ var Corex = (() => {
       contextProps = createSplitProps(props3);
       indicatorProps = createProps()(["copied"]);
       splitIndicatorProps = createSplitProps(indicatorProps);
+    }
+  });
+
+  // components/clipboard.ts
+  var Clipboard;
+  var init_clipboard = __esm({
+    "components/clipboard.ts"() {
+      "use strict";
+      init_dist12();
+      init_dist9();
+      init_core();
       Clipboard = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine3, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine3, props15);
         }
         initApi() {
           return connect3(this.machine.service, normalizeProps);
@@ -3876,6 +4005,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/clipboard.ts
+  var clipboard_exports = {};
+  __export(clipboard_exports, {
+    Clipboard: () => ClipboardHook
+  });
+  var ClipboardHook;
+  var init_clipboard2 = __esm({
+    "hooks/clipboard.ts"() {
+      "use strict";
+      init_clipboard();
+      init_util();
       ClipboardHook = {
         mounted() {
           const el = this.el;
@@ -3975,11 +4118,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/collapsible.mjs
-  var collapsible_exports = {};
-  __export(collapsible_exports, {
-    Collapsible: () => CollapsibleHook
-  });
+  // ../node_modules/.pnpm/@zag-js+collapsible@1.33.1/node_modules/@zag-js/collapsible/dist/index.mjs
   function connect4(service, normalize) {
     const { state: state2, send, context, scope, prop } = service;
     const visible = state2.matches("open") || state2.matches("closing");
@@ -4062,11 +4201,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy4, parts4, getRootId4, getContentId, getTriggerId, getContentEl, machine4, props4, splitProps4, Collapsible, CollapsibleHook;
-  var init_collapsible = __esm({
-    "../priv/static/collapsible.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
+  var anatomy4, parts4, getRootId4, getContentId, getTriggerId, getContentEl, machine4, props4, splitProps4;
+  var init_dist13 = __esm({
+    "../node_modules/.pnpm/@zag-js+collapsible@1.33.1/node_modules/@zag-js/collapsible/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist3();
+      init_dist4();
+      init_dist5();
       anatomy4 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts4 = anatomy4.build();
       getRootId4 = (ctx) => {
@@ -4346,10 +4488,21 @@ var Corex = (() => {
         "open"
       ]);
       splitProps4 = createSplitProps(props4);
+    }
+  });
+
+  // components/collapsible.ts
+  var Collapsible;
+  var init_collapsible = __esm({
+    "components/collapsible.ts"() {
+      "use strict";
+      init_dist13();
+      init_dist9();
+      init_core();
       Collapsible = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine4, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine4, props15);
         }
         initApi() {
           return connect4(this.machine.service, normalizeProps);
@@ -4369,6 +4522,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/collapsible.ts
+  var collapsible_exports = {};
+  __export(collapsible_exports, {
+    Collapsible: () => CollapsibleHook
+  });
+  var CollapsibleHook;
+  var init_collapsible2 = __esm({
+    "hooks/collapsible.ts"() {
+      "use strict";
+      init_collapsible();
+      init_util();
       CollapsibleHook = {
         mounted() {
           const el = this.el;
@@ -4448,7 +4615,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-2DWEYSRA.mjs
+  // ../node_modules/.pnpm/@zag-js+collection@1.33.1/node_modules/@zag-js/collection/dist/index.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -4789,14 +4956,13 @@ var Corex = (() => {
       stack.pop();
     }
   }
-  var __defProp4, __defNormalProp4, __publicField4, fallback, ListCollection, match3, TreeCollection, fallbackMethods;
-  var init_chunk_2DWEYSRA = __esm({
-    "../priv/static/chunk-2DWEYSRA.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
-      __defProp4 = Object.defineProperty;
-      __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
+  var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, TreeCollection, fallbackMethods;
+  var init_dist14 = __esm({
+    "../node_modules/.pnpm/@zag-js+collection@1.33.1/node_modules/@zag-js/collection/dist/index.mjs"() {
+      init_dist3();
+      __defProp5 = Object.defineProperty;
+      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
       fallback = {
         itemToValue(item) {
           if (typeof item === "string") return item;
@@ -4816,18 +4982,18 @@ var Corex = (() => {
       ListCollection = class _ListCollection {
         constructor(options) {
           this.options = options;
-          __publicField4(this, "items");
-          __publicField4(this, "indexMap", null);
-          __publicField4(this, "copy", (items) => {
+          __publicField5(this, "items");
+          __publicField5(this, "indexMap", null);
+          __publicField5(this, "copy", (items) => {
             return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
           });
-          __publicField4(this, "isEqual", (other) => {
+          __publicField5(this, "isEqual", (other) => {
             return isEqual2(this.items, other.items);
           });
-          __publicField4(this, "setItems", (items) => {
+          __publicField5(this, "setItems", (items) => {
             return this.copy(items);
           });
-          __publicField4(this, "getValues", (items = this.items) => {
+          __publicField5(this, "getValues", (items = this.items) => {
             const values = [];
             for (const item of items) {
               const value = this.getItemValue(item);
@@ -4835,12 +5001,12 @@ var Corex = (() => {
             }
             return values;
           });
-          __publicField4(this, "find", (value) => {
+          __publicField5(this, "find", (value) => {
             if (value == null) return null;
             const index = this.indexOf(value);
             return index !== -1 ? this.at(index) : null;
           });
-          __publicField4(this, "findMany", (values) => {
+          __publicField5(this, "findMany", (values) => {
             const result = [];
             for (const value of values) {
               const item = this.find(value);
@@ -4848,7 +5014,7 @@ var Corex = (() => {
             }
             return result;
           });
-          __publicField4(this, "at", (index) => {
+          __publicField5(this, "at", (index) => {
             var _a;
             if (!this.options.groupBy && !this.options.groupSort) {
               return (_a = this.items[index]) != null ? _a : null;
@@ -4863,34 +5029,34 @@ var Corex = (() => {
             }
             return null;
           });
-          __publicField4(this, "sortFn", (valueA, valueB) => {
+          __publicField5(this, "sortFn", (valueA, valueB) => {
             const indexA = this.indexOf(valueA);
             const indexB = this.indexOf(valueB);
             return (indexA != null ? indexA : 0) - (indexB != null ? indexB : 0);
           });
-          __publicField4(this, "sort", (values) => {
+          __publicField5(this, "sort", (values) => {
             return [...values].sort(this.sortFn.bind(this));
           });
-          __publicField4(this, "getItemValue", (item) => {
+          __publicField5(this, "getItemValue", (item) => {
             var _a, _b, _c;
             if (item == null) return null;
             return (_c = (_b = (_a = this.options).itemToValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToValue(item);
           });
-          __publicField4(this, "getItemDisabled", (item) => {
+          __publicField5(this, "getItemDisabled", (item) => {
             var _a, _b, _c;
             if (item == null) return false;
             return (_c = (_b = (_a = this.options).isItemDisabled) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.isItemDisabled(item);
           });
-          __publicField4(this, "stringifyItem", (item) => {
+          __publicField5(this, "stringifyItem", (item) => {
             var _a, _b, _c;
             if (item == null) return null;
             return (_c = (_b = (_a = this.options).itemToString) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToString(item);
           });
-          __publicField4(this, "stringify", (value) => {
+          __publicField5(this, "stringify", (value) => {
             if (value == null) return null;
             return this.stringifyItem(this.find(value));
           });
-          __publicField4(this, "stringifyItems", (items, separator = ", ") => {
+          __publicField5(this, "stringifyItems", (items, separator = ", ") => {
             const strs = [];
             for (const item of items) {
               const str = this.stringifyItem(item);
@@ -4898,17 +5064,17 @@ var Corex = (() => {
             }
             return strs.join(separator);
           });
-          __publicField4(this, "stringifyMany", (value, separator) => {
+          __publicField5(this, "stringifyMany", (value, separator) => {
             return this.stringifyItems(this.findMany(value), separator);
           });
-          __publicField4(this, "has", (value) => {
+          __publicField5(this, "has", (value) => {
             return this.indexOf(value) !== -1;
           });
-          __publicField4(this, "hasItem", (item) => {
+          __publicField5(this, "hasItem", (item) => {
             if (item == null) return false;
             return this.has(this.getItemValue(item));
           });
-          __publicField4(this, "group", () => {
+          __publicField5(this, "group", () => {
             const { groupBy, groupSort } = this.options;
             if (!groupBy) return [["", [...this.items]]];
             const groups = /* @__PURE__ */ new Map();
@@ -4937,21 +5103,21 @@ var Corex = (() => {
             }
             return entries;
           });
-          __publicField4(this, "getNextValue", (value, step = 1, clamp3 = false) => {
+          __publicField5(this, "getNextValue", (value, step = 1, clamp3 = false) => {
             let index = this.indexOf(value);
             if (index === -1) return null;
             index = clamp3 ? Math.min(index + step, this.size - 1) : index + step;
             while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
             return this.getItemValue(this.at(index));
           });
-          __publicField4(this, "getPreviousValue", (value, step = 1, clamp3 = false) => {
+          __publicField5(this, "getPreviousValue", (value, step = 1, clamp3 = false) => {
             let index = this.indexOf(value);
             if (index === -1) return null;
             index = clamp3 ? Math.max(index - step, 0) : index - step;
             while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
             return this.getItemValue(this.at(index));
           });
-          __publicField4(this, "indexOf", (value) => {
+          __publicField5(this, "indexOf", (value) => {
             var _a;
             if (value == null) return -1;
             if (!this.options.groupBy && !this.options.groupSort) {
@@ -4973,7 +5139,7 @@ var Corex = (() => {
             }
             return (_a = this.indexMap.get(value)) != null ? _a : -1;
           });
-          __publicField4(this, "getByText", (text, current) => {
+          __publicField5(this, "getByText", (text, current) => {
             const currentIndex = current != null ? this.indexOf(current) : -1;
             const isSingleKey = text.length === 1;
             for (let i2 = 0; i2 < this.items.length; i2++) {
@@ -4984,7 +5150,7 @@ var Corex = (() => {
             }
             return void 0;
           });
-          __publicField4(this, "search", (queryString, options2) => {
+          __publicField5(this, "search", (queryString, options2) => {
             const { state: state2, currentValue, timeout = 350 } = options2;
             const search = state2.keysSoFar + queryString;
             const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
@@ -5008,12 +5174,12 @@ var Corex = (() => {
             update(search);
             return value;
           });
-          __publicField4(this, "update", (value, item) => {
+          __publicField5(this, "update", (value, item) => {
             let index = this.indexOf(value);
             if (index === -1) return this;
             return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
           });
-          __publicField4(this, "upsert", (value, item, mode = "append") => {
+          __publicField5(this, "upsert", (value, item, mode = "append") => {
             let index = this.indexOf(value);
             if (index === -1) {
               const fn = mode === "append" ? this.append : this.prepend;
@@ -5021,10 +5187,10 @@ var Corex = (() => {
             }
             return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
           });
-          __publicField4(this, "insert", (index, ...items) => {
+          __publicField5(this, "insert", (index, ...items) => {
             return this.copy(insert(this.items, index, ...items));
           });
-          __publicField4(this, "insertBefore", (value, ...items) => {
+          __publicField5(this, "insertBefore", (value, ...items) => {
             let toIndex = this.indexOf(value);
             if (toIndex === -1) {
               if (this.items.length === 0) toIndex = 0;
@@ -5032,7 +5198,7 @@ var Corex = (() => {
             }
             return this.copy(insert(this.items, toIndex, ...items));
           });
-          __publicField4(this, "insertAfter", (value, ...items) => {
+          __publicField5(this, "insertAfter", (value, ...items) => {
             let toIndex = this.indexOf(value);
             if (toIndex === -1) {
               if (this.items.length === 0) toIndex = 0;
@@ -5040,17 +5206,17 @@ var Corex = (() => {
             }
             return this.copy(insert(this.items, toIndex + 1, ...items));
           });
-          __publicField4(this, "prepend", (...items) => {
+          __publicField5(this, "prepend", (...items) => {
             return this.copy(insert(this.items, 0, ...items));
           });
-          __publicField4(this, "append", (...items) => {
+          __publicField5(this, "append", (...items) => {
             return this.copy(insert(this.items, this.items.length, ...items));
           });
-          __publicField4(this, "filter", (fn) => {
+          __publicField5(this, "filter", (fn) => {
             const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
             return this.copy(filteredItems);
           });
-          __publicField4(this, "remove", (...itemsOrValues) => {
+          __publicField5(this, "remove", (...itemsOrValues) => {
             const values = itemsOrValues.map(
               (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
             );
@@ -5062,34 +5228,34 @@ var Corex = (() => {
               })
             );
           });
-          __publicField4(this, "move", (value, toIndex) => {
+          __publicField5(this, "move", (value, toIndex) => {
             const fromIndex = this.indexOf(value);
             if (fromIndex === -1) return this;
             return this.copy(move(this.items, [fromIndex], toIndex));
           });
-          __publicField4(this, "moveBefore", (value, ...values) => {
+          __publicField5(this, "moveBefore", (value, ...values) => {
             let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
             if (toIndex === -1) return this;
             let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
             return this.copy(move(this.items, indices, toIndex));
           });
-          __publicField4(this, "moveAfter", (value, ...values) => {
+          __publicField5(this, "moveAfter", (value, ...values) => {
             let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
             if (toIndex === -1) return this;
             let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
             return this.copy(move(this.items, indices, toIndex + 1));
           });
-          __publicField4(this, "reorder", (fromIndex, toIndex) => {
+          __publicField5(this, "reorder", (fromIndex, toIndex) => {
             return this.copy(move(this.items, [fromIndex], toIndex));
           });
-          __publicField4(this, "compareValue", (a2, b2) => {
+          __publicField5(this, "compareValue", (a2, b2) => {
             const indexA = this.indexOf(a2);
             const indexB = this.indexOf(b2);
             if (indexA < indexB) return -1;
             if (indexA > indexB) return 1;
             return 0;
           });
-          __publicField4(this, "range", (from, to) => {
+          __publicField5(this, "range", (from, to) => {
             let keys = [];
             let key = from;
             while (key != null) {
@@ -5100,7 +5266,7 @@ var Corex = (() => {
             }
             return [];
           });
-          __publicField4(this, "getValueRange", (from, to) => {
+          __publicField5(this, "getValueRange", (from, to) => {
             if (from && to) {
               if (this.compareValue(from, to) <= 0) {
                 return this.range(from, to);
@@ -5109,7 +5275,7 @@ var Corex = (() => {
             }
             return [];
           });
-          __publicField4(this, "toString", () => {
+          __publicField5(this, "toString", () => {
             let result = "";
             for (const item of this.items) {
               const value = this.getItemValue(item);
@@ -5120,7 +5286,7 @@ var Corex = (() => {
             }
             return result;
           });
-          __publicField4(this, "toJSON", () => {
+          __publicField5(this, "toJSON", () => {
             return {
               size: this.size,
               first: this.firstValue,
@@ -5161,43 +5327,43 @@ var Corex = (() => {
       TreeCollection = class _TreeCollection {
         constructor(options) {
           this.options = options;
-          __publicField4(this, "rootNode");
-          __publicField4(this, "isEqual", (other) => {
+          __publicField5(this, "rootNode");
+          __publicField5(this, "isEqual", (other) => {
             return isEqual2(this.rootNode, other.rootNode);
           });
-          __publicField4(this, "getNodeChildren", (node) => {
+          __publicField5(this, "getNodeChildren", (node) => {
             var _a, _b, _c, _d;
             return (_d = (_c = (_b = (_a = this.options).nodeToChildren) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
           });
-          __publicField4(this, "resolveIndexPath", (valueOrIndexPath) => {
+          __publicField5(this, "resolveIndexPath", (valueOrIndexPath) => {
             return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
           });
-          __publicField4(this, "resolveNode", (valueOrIndexPath) => {
+          __publicField5(this, "resolveNode", (valueOrIndexPath) => {
             const indexPath = this.resolveIndexPath(valueOrIndexPath);
             return indexPath ? this.at(indexPath) : void 0;
           });
-          __publicField4(this, "getNodeChildrenCount", (node) => {
+          __publicField5(this, "getNodeChildrenCount", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
           });
-          __publicField4(this, "getNodeValue", (node) => {
+          __publicField5(this, "getNodeValue", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).nodeToValue) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToValue(node);
           });
-          __publicField4(this, "getNodeDisabled", (node) => {
+          __publicField5(this, "getNodeDisabled", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
           });
-          __publicField4(this, "stringify", (value) => {
+          __publicField5(this, "stringify", (value) => {
             const node = this.findNode(value);
             if (!node) return null;
             return this.stringifyNode(node);
           });
-          __publicField4(this, "stringifyNode", (node) => {
+          __publicField5(this, "stringifyNode", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).nodeToString) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToString(node);
           });
-          __publicField4(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
+          __publicField5(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
             let firstChild;
             visit(rootNode, {
               getChildren: this.getNodeChildren,
@@ -5213,7 +5379,7 @@ var Corex = (() => {
             });
             return firstChild;
           });
-          __publicField4(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
+          __publicField5(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
             let lastChild;
             visit(rootNode, {
               getChildren: this.getNodeChildren,
@@ -5228,42 +5394,42 @@ var Corex = (() => {
             });
             return lastChild;
           });
-          __publicField4(this, "at", (indexPath) => {
+          __publicField5(this, "at", (indexPath) => {
             return access(this.rootNode, indexPath, {
               getChildren: this.getNodeChildren
             });
           });
-          __publicField4(this, "findNode", (value, rootNode = this.rootNode) => {
+          __publicField5(this, "findNode", (value, rootNode = this.rootNode) => {
             return find(rootNode, {
               getChildren: this.getNodeChildren,
               predicate: (node) => this.getNodeValue(node) === value
             });
           });
-          __publicField4(this, "findNodes", (values, rootNode = this.rootNode) => {
+          __publicField5(this, "findNodes", (values, rootNode = this.rootNode) => {
             const v2 = new Set(values.filter((v22) => v22 != null));
             return findAll(rootNode, {
               getChildren: this.getNodeChildren,
               predicate: (node) => v2.has(this.getNodeValue(node))
             });
           });
-          __publicField4(this, "sort", (values) => {
+          __publicField5(this, "sort", (values) => {
             return values.reduce((acc, value) => {
               const indexPath = this.getIndexPath(value);
               if (indexPath) acc.push({ value, indexPath });
               return acc;
             }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
           });
-          __publicField4(this, "getIndexPath", (value) => {
+          __publicField5(this, "getIndexPath", (value) => {
             return findIndexPath(this.rootNode, {
               getChildren: this.getNodeChildren,
               predicate: (node) => this.getNodeValue(node) === value
             });
           });
-          __publicField4(this, "getValue", (indexPath) => {
+          __publicField5(this, "getValue", (indexPath) => {
             const node = this.at(indexPath);
             return node ? this.getNodeValue(node) : void 0;
           });
-          __publicField4(this, "getValuePath", (indexPath) => {
+          __publicField5(this, "getValuePath", (indexPath) => {
             if (!indexPath) return [];
             const valuePath = [];
             let currentPath = [...indexPath];
@@ -5274,7 +5440,7 @@ var Corex = (() => {
             }
             return valuePath;
           });
-          __publicField4(this, "getDepth", (value) => {
+          __publicField5(this, "getDepth", (value) => {
             var _a;
             const indexPath = findIndexPath(this.rootNode, {
               getChildren: this.getNodeChildren,
@@ -5282,17 +5448,17 @@ var Corex = (() => {
             });
             return (_a = indexPath == null ? void 0 : indexPath.length) != null ? _a : 0;
           });
-          __publicField4(this, "isSameNode", (node, other) => {
+          __publicField5(this, "isSameNode", (node, other) => {
             return this.getNodeValue(node) === this.getNodeValue(other);
           });
-          __publicField4(this, "isRootNode", (node) => {
+          __publicField5(this, "isRootNode", (node) => {
             return this.isSameNode(node, this.rootNode);
           });
-          __publicField4(this, "contains", (parentIndexPath, valueIndexPath) => {
+          __publicField5(this, "contains", (parentIndexPath, valueIndexPath) => {
             if (!parentIndexPath || !valueIndexPath) return false;
             return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
           });
-          __publicField4(this, "getNextNode", (value, opts = {}) => {
+          __publicField5(this, "getNextNode", (value, opts = {}) => {
             let found = false;
             let nextNode;
             visit(this.rootNode, {
@@ -5318,7 +5484,7 @@ var Corex = (() => {
             });
             return nextNode;
           });
-          __publicField4(this, "getPreviousNode", (value, opts = {}) => {
+          __publicField5(this, "getPreviousNode", (value, opts = {}) => {
             let previousNode;
             let found = false;
             visit(this.rootNode, {
@@ -5341,7 +5507,7 @@ var Corex = (() => {
             });
             return found ? previousNode : void 0;
           });
-          __publicField4(this, "getParentNodes", (valueOrIndexPath) => {
+          __publicField5(this, "getParentNodes", (valueOrIndexPath) => {
             var _a;
             const indexPath = (_a = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a.slice();
             if (!indexPath) return [];
@@ -5355,7 +5521,7 @@ var Corex = (() => {
             }
             return result;
           });
-          __publicField4(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
+          __publicField5(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
             const parentNode = this.resolveNode(valueOrIndexPath);
             if (!parentNode) return [];
             const result = [];
@@ -5369,18 +5535,18 @@ var Corex = (() => {
             });
             return result;
           });
-          __publicField4(this, "getDescendantValues", (valueOrIndexPath, options2) => {
+          __publicField5(this, "getDescendantValues", (valueOrIndexPath, options2) => {
             const children = this.getDescendantNodes(valueOrIndexPath, options2);
             return children.map((child) => this.getNodeValue(child));
           });
-          __publicField4(this, "getParentIndexPath", (indexPath) => {
+          __publicField5(this, "getParentIndexPath", (indexPath) => {
             return indexPath.slice(0, -1);
           });
-          __publicField4(this, "getParentNode", (valueOrIndexPath) => {
+          __publicField5(this, "getParentNode", (valueOrIndexPath) => {
             const indexPath = this.resolveIndexPath(valueOrIndexPath);
             return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
           });
-          __publicField4(this, "visit", (opts) => {
+          __publicField5(this, "visit", (opts) => {
             const _a = opts, { skip } = _a, rest = __objRest(_a, ["skip"]);
             visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
               getChildren: this.getNodeChildren,
@@ -5392,7 +5558,7 @@ var Corex = (() => {
               }
             }));
           });
-          __publicField4(this, "getPreviousSibling", (indexPath) => {
+          __publicField5(this, "getPreviousSibling", (indexPath) => {
             const parentNode = this.getParentNode(indexPath);
             if (!parentNode) return;
             const siblings = this.getNodeChildren(parentNode);
@@ -5403,7 +5569,7 @@ var Corex = (() => {
             }
             return;
           });
-          __publicField4(this, "getNextSibling", (indexPath) => {
+          __publicField5(this, "getNextSibling", (indexPath) => {
             const parentNode = this.getParentNode(indexPath);
             if (!parentNode) return;
             const siblings = this.getNodeChildren(parentNode);
@@ -5414,26 +5580,26 @@ var Corex = (() => {
             }
             return;
           });
-          __publicField4(this, "getSiblingNodes", (indexPath) => {
+          __publicField5(this, "getSiblingNodes", (indexPath) => {
             const parentNode = this.getParentNode(indexPath);
             return parentNode ? this.getNodeChildren(parentNode) : [];
           });
-          __publicField4(this, "getValues", (rootNode = this.rootNode) => {
+          __publicField5(this, "getValues", (rootNode = this.rootNode) => {
             const values = flatMap(rootNode, {
               getChildren: this.getNodeChildren,
               transform: (node) => [this.getNodeValue(node)]
             });
             return values.slice(1);
           });
-          __publicField4(this, "isValidDepth", (indexPath, depth) => {
+          __publicField5(this, "isValidDepth", (indexPath, depth) => {
             if (depth == null) return true;
             if (typeof depth === "function") return depth(indexPath.length);
             return indexPath.length === depth;
           });
-          __publicField4(this, "isBranchNode", (node) => {
+          __publicField5(this, "isBranchNode", (node) => {
             return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
           });
-          __publicField4(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
+          __publicField5(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
             let values = [];
             visit(rootNode, {
               getChildren: this.getNodeChildren,
@@ -5449,54 +5615,54 @@ var Corex = (() => {
             });
             return values;
           });
-          __publicField4(this, "flatten", (rootNode = this.rootNode) => {
+          __publicField5(this, "flatten", (rootNode = this.rootNode) => {
             return flatten(rootNode, { getChildren: this.getNodeChildren });
           });
-          __publicField4(this, "_create", (node, children) => {
+          __publicField5(this, "_create", (node, children) => {
             if (this.getNodeChildren(node).length > 0 || children.length > 0) {
               return __spreadProps(__spreadValues({}, node), { children });
             }
             return __spreadValues({}, node);
           });
-          __publicField4(this, "_insert", (rootNode, indexPath, nodes) => {
+          __publicField5(this, "_insert", (rootNode, indexPath, nodes) => {
             return this.copy(
               insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
             );
           });
-          __publicField4(this, "copy", (rootNode) => {
+          __publicField5(this, "copy", (rootNode) => {
             return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
           });
-          __publicField4(this, "_replace", (rootNode, indexPath, node) => {
+          __publicField5(this, "_replace", (rootNode, indexPath, node) => {
             return this.copy(
               replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
             );
           });
-          __publicField4(this, "_move", (rootNode, indexPaths, to) => {
+          __publicField5(this, "_move", (rootNode, indexPaths, to) => {
             return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
           });
-          __publicField4(this, "_remove", (rootNode, indexPaths) => {
+          __publicField5(this, "_remove", (rootNode, indexPaths) => {
             return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
           });
-          __publicField4(this, "replace", (indexPath, node) => {
+          __publicField5(this, "replace", (indexPath, node) => {
             return this._replace(this.rootNode, indexPath, node);
           });
-          __publicField4(this, "remove", (indexPaths) => {
+          __publicField5(this, "remove", (indexPaths) => {
             return this._remove(this.rootNode, indexPaths);
           });
-          __publicField4(this, "insertBefore", (indexPath, nodes) => {
+          __publicField5(this, "insertBefore", (indexPath, nodes) => {
             const parentNode = this.getParentNode(indexPath);
             return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
           });
-          __publicField4(this, "insertAfter", (indexPath, nodes) => {
+          __publicField5(this, "insertAfter", (indexPath, nodes) => {
             const parentNode = this.getParentNode(indexPath);
             if (!parentNode) return;
             const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
             return this._insert(this.rootNode, nextIndex2, nodes);
           });
-          __publicField4(this, "move", (fromIndexPaths, toIndexPath) => {
+          __publicField5(this, "move", (fromIndexPaths, toIndexPath) => {
             return this._move(this.rootNode, fromIndexPaths, toIndexPath);
           });
-          __publicField4(this, "filter", (predicate) => {
+          __publicField5(this, "filter", (predicate) => {
             const filteredRoot = filter(this.rootNode, {
               predicate,
               getChildren: this.getNodeChildren,
@@ -5504,7 +5670,7 @@ var Corex = (() => {
             });
             return this.copy(filteredRoot);
           });
-          __publicField4(this, "toJSON", () => {
+          __publicField5(this, "toJSON", () => {
             return this.getValues(this.rootNode);
           });
           this.rootNode = options.rootNode;
@@ -5535,7 +5701,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-GRHV6R4F.mjs
+  // ../node_modules/.pnpm/@floating-ui+utils@0.2.10/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs
   function clamp2(start, value, end) {
     return max2(start, min2(value, end));
   }
@@ -5641,6 +5807,37 @@ var Corex = (() => {
       y: y2
     };
   }
+  var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement;
+  var init_floating_ui_utils = __esm({
+    "../node_modules/.pnpm/@floating-ui+utils@0.2.10/node_modules/@floating-ui/utils/dist/floating-ui.utils.mjs"() {
+      sides = ["top", "right", "bottom", "left"];
+      min2 = Math.min;
+      max2 = Math.max;
+      round2 = Math.round;
+      floor2 = Math.floor;
+      createCoords = (v2) => ({
+        x: v2,
+        y: v2
+      });
+      oppositeSideMap = {
+        left: "right",
+        right: "left",
+        bottom: "top",
+        top: "bottom"
+      };
+      oppositeAlignmentMap = {
+        start: "end",
+        end: "start"
+      };
+      yAxisSides = /* @__PURE__ */ new Set(["top", "bottom"]);
+      lrPlacement = ["left", "right"];
+      rlPlacement = ["right", "left"];
+      tbPlacement = ["top", "bottom"];
+      btPlacement = ["bottom", "top"];
+    }
+  });
+
+  // ../node_modules/.pnpm/@floating-ui+core@1.7.4/node_modules/@floating-ui/core/dist/floating-ui.core.mjs
   function computeCoordsFromPlacement(_ref, placement, rtl) {
     let {
       reference,
@@ -5804,6 +6001,580 @@ var Corex = (() => {
       };
     });
   }
+  var computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size;
+  var init_floating_ui_core = __esm({
+    "../node_modules/.pnpm/@floating-ui+core@1.7.4/node_modules/@floating-ui/core/dist/floating-ui.core.mjs"() {
+      init_floating_ui_utils();
+      init_floating_ui_utils();
+      computePosition = (reference, floating, config) => __async(null, null, function* () {
+        const {
+          placement = "bottom",
+          strategy = "absolute",
+          middleware = [],
+          platform: platform2
+        } = config;
+        const validMiddleware = middleware.filter(Boolean);
+        const rtl = yield platform2.isRTL == null ? void 0 : platform2.isRTL(floating);
+        let rects = yield platform2.getElementRects({
+          reference,
+          floating,
+          strategy
+        });
+        let {
+          x: x2,
+          y: y2
+        } = computeCoordsFromPlacement(rects, placement, rtl);
+        let statefulPlacement = placement;
+        let middlewareData = {};
+        let resetCount = 0;
+        for (let i2 = 0; i2 < validMiddleware.length; i2++) {
+          var _platform$detectOverf;
+          const {
+            name,
+            fn
+          } = validMiddleware[i2];
+          const {
+            x: nextX,
+            y: nextY,
+            data,
+            reset
+          } = yield fn({
+            x: x2,
+            y: y2,
+            initialPlacement: placement,
+            placement: statefulPlacement,
+            strategy,
+            middlewareData,
+            rects,
+            platform: __spreadProps(__spreadValues({}, platform2), {
+              detectOverflow: (_platform$detectOverf = platform2.detectOverflow) != null ? _platform$detectOverf : detectOverflow
+            }),
+            elements: {
+              reference,
+              floating
+            }
+          });
+          x2 = nextX != null ? nextX : x2;
+          y2 = nextY != null ? nextY : y2;
+          middlewareData = __spreadProps(__spreadValues({}, middlewareData), {
+            [name]: __spreadValues(__spreadValues({}, middlewareData[name]), data)
+          });
+          if (reset && resetCount <= 50) {
+            resetCount++;
+            if (typeof reset === "object") {
+              if (reset.placement) {
+                statefulPlacement = reset.placement;
+              }
+              if (reset.rects) {
+                rects = reset.rects === true ? yield platform2.getElementRects({
+                  reference,
+                  floating,
+                  strategy
+                }) : reset.rects;
+              }
+              ({
+                x: x2,
+                y: y2
+              } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
+            }
+            i2 = -1;
+          }
+        }
+        return {
+          x: x2,
+          y: y2,
+          placement: statefulPlacement,
+          strategy,
+          middlewareData
+        };
+      });
+      arrow = (options) => ({
+        name: "arrow",
+        options,
+        fn(state2) {
+          return __async(this, null, function* () {
+            const {
+              x: x2,
+              y: y2,
+              placement,
+              rects,
+              platform: platform2,
+              elements,
+              middlewareData
+            } = state2;
+            const {
+              element,
+              padding = 0
+            } = evaluate(options, state2) || {};
+            if (element == null) {
+              return {};
+            }
+            const paddingObject = getPaddingObject(padding);
+            const coords = {
+              x: x2,
+              y: y2
+            };
+            const axis = getAlignmentAxis(placement);
+            const length = getAxisLength(axis);
+            const arrowDimensions = yield platform2.getDimensions(element);
+            const isYAxis = axis === "y";
+            const minProp = isYAxis ? "top" : "left";
+            const maxProp = isYAxis ? "bottom" : "right";
+            const clientProp = isYAxis ? "clientHeight" : "clientWidth";
+            const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
+            const startDiff = coords[axis] - rects.reference[axis];
+            const arrowOffsetParent = yield platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(element);
+            let clientSize = arrowOffsetParent ? arrowOffsetParent[clientProp] : 0;
+            if (!clientSize || !(yield platform2.isElement == null ? void 0 : platform2.isElement(arrowOffsetParent))) {
+              clientSize = elements.floating[clientProp] || rects.floating[length];
+            }
+            const centerToReference = endDiff / 2 - startDiff / 2;
+            const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
+            const minPadding = min2(paddingObject[minProp], largestPossiblePadding);
+            const maxPadding = min2(paddingObject[maxProp], largestPossiblePadding);
+            const min$1 = minPadding;
+            const max4 = clientSize - arrowDimensions[length] - maxPadding;
+            const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
+            const offset3 = clamp2(min$1, center, max4);
+            const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
+            const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max4 : 0;
+            return {
+              [axis]: coords[axis] + alignmentOffset,
+              data: __spreadValues({
+                [axis]: offset3,
+                centerOffset: center - offset3 - alignmentOffset
+              }, shouldAddOffset && {
+                alignmentOffset
+              }),
+              reset: shouldAddOffset
+            };
+          });
+        }
+      });
+      flip = function(options) {
+        if (options === void 0) {
+          options = {};
+        }
+        return {
+          name: "flip",
+          options,
+          fn(state2) {
+            return __async(this, null, function* () {
+              var _middlewareData$arrow, _middlewareData$flip;
+              const {
+                placement,
+                middlewareData,
+                rects,
+                initialPlacement,
+                platform: platform2,
+                elements
+              } = state2;
+              const _a2 = evaluate(options, state2), {
+                mainAxis: checkMainAxis = true,
+                crossAxis: checkCrossAxis = true,
+                fallbackPlacements: specifiedFallbackPlacements,
+                fallbackStrategy = "bestFit",
+                fallbackAxisSideDirection = "none",
+                flipAlignment = true
+              } = _a2, detectOverflowOptions = __objRest(_a2, [
+                "mainAxis",
+                "crossAxis",
+                "fallbackPlacements",
+                "fallbackStrategy",
+                "fallbackAxisSideDirection",
+                "flipAlignment"
+              ]);
+              if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+                return {};
+              }
+              const side = getSide(placement);
+              const initialSideAxis = getSideAxis(initialPlacement);
+              const isBasePlacement = getSide(initialPlacement) === initialPlacement;
+              const rtl = yield platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating);
+              const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
+              const hasFallbackAxisSideDirection = fallbackAxisSideDirection !== "none";
+              if (!specifiedFallbackPlacements && hasFallbackAxisSideDirection) {
+                fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
+              }
+              const placements2 = [initialPlacement, ...fallbackPlacements];
+              const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
+              const overflows = [];
+              let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
+              if (checkMainAxis) {
+                overflows.push(overflow[side]);
+              }
+              if (checkCrossAxis) {
+                const sides2 = getAlignmentSides(placement, rects, rtl);
+                overflows.push(overflow[sides2[0]], overflow[sides2[1]]);
+              }
+              overflowsData = [...overflowsData, {
+                placement,
+                overflows
+              }];
+              if (!overflows.every((side2) => side2 <= 0)) {
+                var _middlewareData$flip2, _overflowsData$filter;
+                const nextIndex2 = (((_middlewareData$flip2 = middlewareData.flip) == null ? void 0 : _middlewareData$flip2.index) || 0) + 1;
+                const nextPlacement = placements2[nextIndex2];
+                if (nextPlacement) {
+                  const ignoreCrossAxisOverflow = checkCrossAxis === "alignment" ? initialSideAxis !== getSideAxis(nextPlacement) : false;
+                  if (!ignoreCrossAxisOverflow || // We leave the current main axis only if every placement on that axis
+                  // overflows the main axis.
+                  overflowsData.every((d2) => getSideAxis(d2.placement) === initialSideAxis ? d2.overflows[0] > 0 : true)) {
+                    return {
+                      data: {
+                        index: nextIndex2,
+                        overflows: overflowsData
+                      },
+                      reset: {
+                        placement: nextPlacement
+                      }
+                    };
+                  }
+                }
+                let resetPlacement = (_overflowsData$filter = overflowsData.filter((d2) => d2.overflows[0] <= 0).sort((a2, b2) => a2.overflows[1] - b2.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
+                if (!resetPlacement) {
+                  switch (fallbackStrategy) {
+                    case "bestFit": {
+                      var _overflowsData$filter2;
+                      const placement2 = (_overflowsData$filter2 = overflowsData.filter((d2) => {
+                        if (hasFallbackAxisSideDirection) {
+                          const currentSideAxis = getSideAxis(d2.placement);
+                          return currentSideAxis === initialSideAxis || // Create a bias to the `y` side axis due to horizontal
+                          // reading directions favoring greater width.
+                          currentSideAxis === "y";
+                        }
+                        return true;
+                      }).map((d2) => [d2.placement, d2.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
+                      if (placement2) {
+                        resetPlacement = placement2;
+                      }
+                      break;
+                    }
+                    case "initialPlacement":
+                      resetPlacement = initialPlacement;
+                      break;
+                  }
+                }
+                if (placement !== resetPlacement) {
+                  return {
+                    reset: {
+                      placement: resetPlacement
+                    }
+                  };
+                }
+              }
+              return {};
+            });
+          }
+        };
+      };
+      hide = function(options) {
+        if (options === void 0) {
+          options = {};
+        }
+        return {
+          name: "hide",
+          options,
+          fn(state2) {
+            return __async(this, null, function* () {
+              const {
+                rects,
+                platform: platform2
+              } = state2;
+              const _a2 = evaluate(options, state2), {
+                strategy = "referenceHidden"
+              } = _a2, detectOverflowOptions = __objRest(_a2, [
+                "strategy"
+              ]);
+              switch (strategy) {
+                case "referenceHidden": {
+                  const overflow = yield platform2.detectOverflow(state2, __spreadProps(__spreadValues({}, detectOverflowOptions), {
+                    elementContext: "reference"
+                  }));
+                  const offsets = getSideOffsets(overflow, rects.reference);
+                  return {
+                    data: {
+                      referenceHiddenOffsets: offsets,
+                      referenceHidden: isAnySideFullyClipped(offsets)
+                    }
+                  };
+                }
+                case "escaped": {
+                  const overflow = yield platform2.detectOverflow(state2, __spreadProps(__spreadValues({}, detectOverflowOptions), {
+                    altBoundary: true
+                  }));
+                  const offsets = getSideOffsets(overflow, rects.floating);
+                  return {
+                    data: {
+                      escapedOffsets: offsets,
+                      escaped: isAnySideFullyClipped(offsets)
+                    }
+                  };
+                }
+                default: {
+                  return {};
+                }
+              }
+            });
+          }
+        };
+      };
+      originSides = /* @__PURE__ */ new Set(["left", "top"]);
+      offset = function(options) {
+        if (options === void 0) {
+          options = 0;
+        }
+        return {
+          name: "offset",
+          options,
+          fn(state2) {
+            return __async(this, null, function* () {
+              var _middlewareData$offse, _middlewareData$arrow;
+              const {
+                x: x2,
+                y: y2,
+                placement,
+                middlewareData
+              } = state2;
+              const diffCoords = yield convertValueToCoords(state2, options);
+              if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
+                return {};
+              }
+              return {
+                x: x2 + diffCoords.x,
+                y: y2 + diffCoords.y,
+                data: __spreadProps(__spreadValues({}, diffCoords), {
+                  placement
+                })
+              };
+            });
+          }
+        };
+      };
+      shift = function(options) {
+        if (options === void 0) {
+          options = {};
+        }
+        return {
+          name: "shift",
+          options,
+          fn(state2) {
+            return __async(this, null, function* () {
+              const {
+                x: x2,
+                y: y2,
+                placement,
+                platform: platform2
+              } = state2;
+              const _a2 = evaluate(options, state2), {
+                mainAxis: checkMainAxis = true,
+                crossAxis: checkCrossAxis = false,
+                limiter = {
+                  fn: (_ref) => {
+                    let {
+                      x: x3,
+                      y: y3
+                    } = _ref;
+                    return {
+                      x: x3,
+                      y: y3
+                    };
+                  }
+                }
+              } = _a2, detectOverflowOptions = __objRest(_a2, [
+                "mainAxis",
+                "crossAxis",
+                "limiter"
+              ]);
+              const coords = {
+                x: x2,
+                y: y2
+              };
+              const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
+              const crossAxis = getSideAxis(getSide(placement));
+              const mainAxis = getOppositeAxis(crossAxis);
+              let mainAxisCoord = coords[mainAxis];
+              let crossAxisCoord = coords[crossAxis];
+              if (checkMainAxis) {
+                const minSide = mainAxis === "y" ? "top" : "left";
+                const maxSide = mainAxis === "y" ? "bottom" : "right";
+                const min4 = mainAxisCoord + overflow[minSide];
+                const max4 = mainAxisCoord - overflow[maxSide];
+                mainAxisCoord = clamp2(min4, mainAxisCoord, max4);
+              }
+              if (checkCrossAxis) {
+                const minSide = crossAxis === "y" ? "top" : "left";
+                const maxSide = crossAxis === "y" ? "bottom" : "right";
+                const min4 = crossAxisCoord + overflow[minSide];
+                const max4 = crossAxisCoord - overflow[maxSide];
+                crossAxisCoord = clamp2(min4, crossAxisCoord, max4);
+              }
+              const limitedCoords = limiter.fn(__spreadProps(__spreadValues({}, state2), {
+                [mainAxis]: mainAxisCoord,
+                [crossAxis]: crossAxisCoord
+              }));
+              return __spreadProps(__spreadValues({}, limitedCoords), {
+                data: {
+                  x: limitedCoords.x - x2,
+                  y: limitedCoords.y - y2,
+                  enabled: {
+                    [mainAxis]: checkMainAxis,
+                    [crossAxis]: checkCrossAxis
+                  }
+                }
+              });
+            });
+          }
+        };
+      };
+      limitShift = function(options) {
+        if (options === void 0) {
+          options = {};
+        }
+        return {
+          options,
+          fn(state2) {
+            const {
+              x: x2,
+              y: y2,
+              placement,
+              rects,
+              middlewareData
+            } = state2;
+            const {
+              offset: offset3 = 0,
+              mainAxis: checkMainAxis = true,
+              crossAxis: checkCrossAxis = true
+            } = evaluate(options, state2);
+            const coords = {
+              x: x2,
+              y: y2
+            };
+            const crossAxis = getSideAxis(placement);
+            const mainAxis = getOppositeAxis(crossAxis);
+            let mainAxisCoord = coords[mainAxis];
+            let crossAxisCoord = coords[crossAxis];
+            const rawOffset = evaluate(offset3, state2);
+            const computedOffset = typeof rawOffset === "number" ? {
+              mainAxis: rawOffset,
+              crossAxis: 0
+            } : __spreadValues({
+              mainAxis: 0,
+              crossAxis: 0
+            }, rawOffset);
+            if (checkMainAxis) {
+              const len = mainAxis === "y" ? "height" : "width";
+              const limitMin = rects.reference[mainAxis] - rects.floating[len] + computedOffset.mainAxis;
+              const limitMax = rects.reference[mainAxis] + rects.reference[len] - computedOffset.mainAxis;
+              if (mainAxisCoord < limitMin) {
+                mainAxisCoord = limitMin;
+              } else if (mainAxisCoord > limitMax) {
+                mainAxisCoord = limitMax;
+              }
+            }
+            if (checkCrossAxis) {
+              var _middlewareData$offse, _middlewareData$offse2;
+              const len = mainAxis === "y" ? "width" : "height";
+              const isOriginSide = originSides.has(getSide(placement));
+              const limitMin = rects.reference[crossAxis] - rects.floating[len] + (isOriginSide ? ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse[crossAxis]) || 0 : 0) + (isOriginSide ? 0 : computedOffset.crossAxis);
+              const limitMax = rects.reference[crossAxis] + rects.reference[len] + (isOriginSide ? 0 : ((_middlewareData$offse2 = middlewareData.offset) == null ? void 0 : _middlewareData$offse2[crossAxis]) || 0) - (isOriginSide ? computedOffset.crossAxis : 0);
+              if (crossAxisCoord < limitMin) {
+                crossAxisCoord = limitMin;
+              } else if (crossAxisCoord > limitMax) {
+                crossAxisCoord = limitMax;
+              }
+            }
+            return {
+              [mainAxis]: mainAxisCoord,
+              [crossAxis]: crossAxisCoord
+            };
+          }
+        };
+      };
+      size = function(options) {
+        if (options === void 0) {
+          options = {};
+        }
+        return {
+          name: "size",
+          options,
+          fn(state2) {
+            return __async(this, null, function* () {
+              var _state$middlewareData, _state$middlewareData2;
+              const {
+                placement,
+                rects,
+                platform: platform2,
+                elements
+              } = state2;
+              const _a2 = evaluate(options, state2), {
+                apply = () => {
+                }
+              } = _a2, detectOverflowOptions = __objRest(_a2, [
+                "apply"
+              ]);
+              const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
+              const side = getSide(placement);
+              const alignment = getAlignment(placement);
+              const isYAxis = getSideAxis(placement) === "y";
+              const {
+                width,
+                height
+              } = rects.floating;
+              let heightSide;
+              let widthSide;
+              if (side === "top" || side === "bottom") {
+                heightSide = side;
+                widthSide = alignment === ((yield platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)) ? "start" : "end") ? "left" : "right";
+              } else {
+                widthSide = side;
+                heightSide = alignment === "end" ? "top" : "bottom";
+              }
+              const maximumClippingHeight = height - overflow.top - overflow.bottom;
+              const maximumClippingWidth = width - overflow.left - overflow.right;
+              const overflowAvailableHeight = min2(height - overflow[heightSide], maximumClippingHeight);
+              const overflowAvailableWidth = min2(width - overflow[widthSide], maximumClippingWidth);
+              const noShift = !state2.middlewareData.shift;
+              let availableHeight = overflowAvailableHeight;
+              let availableWidth = overflowAvailableWidth;
+              if ((_state$middlewareData = state2.middlewareData.shift) != null && _state$middlewareData.enabled.x) {
+                availableWidth = maximumClippingWidth;
+              }
+              if ((_state$middlewareData2 = state2.middlewareData.shift) != null && _state$middlewareData2.enabled.y) {
+                availableHeight = maximumClippingHeight;
+              }
+              if (noShift && !alignment) {
+                const xMin = max2(overflow.left, 0);
+                const xMax = max2(overflow.right, 0);
+                const yMin = max2(overflow.top, 0);
+                const yMax = max2(overflow.bottom, 0);
+                if (isYAxis) {
+                  availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max2(overflow.left, overflow.right));
+                } else {
+                  availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max2(overflow.top, overflow.bottom));
+                }
+              }
+              yield apply(__spreadProps(__spreadValues({}, state2), {
+                availableWidth,
+                availableHeight
+              }));
+              const nextDimensions = yield platform2.getDimensions(elements.floating);
+              if (width !== nextDimensions.width || height !== nextDimensions.height) {
+                return {
+                  reset: {
+                    rects: true
+                  }
+                };
+              }
+              return {};
+            });
+          }
+        };
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@floating-ui+utils@0.2.10/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs
   function hasWindow() {
     return typeof window !== "undefined";
   }
@@ -5948,6 +6719,20 @@ var Corex = (() => {
   function getFrameElement(win) {
     return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
   }
+  var invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames;
+  var init_floating_ui_utils_dom = __esm({
+    "../node_modules/.pnpm/@floating-ui+utils@0.2.10/node_modules/@floating-ui/utils/dist/floating-ui.utils.dom.mjs"() {
+      invalidOverflowDisplayValues = /* @__PURE__ */ new Set(["inline", "contents"]);
+      tableElements = /* @__PURE__ */ new Set(["table", "td", "th"]);
+      topLayerSelectors = [":popover-open", ":modal"];
+      transformProperties = ["transform", "translate", "scale", "rotate", "perspective"];
+      willChangeValues = ["transform", "translate", "scale", "rotate", "perspective", "filter"];
+      containValues = ["paint", "layout", "strict", "content"];
+      lastTraversableNodeNames = /* @__PURE__ */ new Set(["html", "body", "#document"]);
+    }
+  });
+
+  // ../node_modules/.pnpm/@floating-ui+dom@1.7.5/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs
   function getCssDimensions(element) {
     const css2 = getComputedStyle3(element);
     let width = parseFloat(css2.width) || 0;
@@ -6505,6 +7290,66 @@ var Corex = (() => {
       }
     };
   }
+  var noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2;
+  var init_floating_ui_dom = __esm({
+    "../node_modules/.pnpm/@floating-ui+dom@1.7.5/node_modules/@floating-ui/dom/dist/floating-ui.dom.mjs"() {
+      init_floating_ui_core();
+      init_floating_ui_utils();
+      init_floating_ui_utils_dom();
+      noOffsets = /* @__PURE__ */ createCoords(0);
+      SCROLLBAR_MAX = 25;
+      absoluteOrFixed = /* @__PURE__ */ new Set(["absolute", "fixed"]);
+      getElementRects = function(data) {
+        return __async(this, null, function* () {
+          const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
+          const getDimensionsFn = this.getDimensions;
+          const floatingDimensions = yield getDimensionsFn(data.floating);
+          return {
+            reference: getRectRelativeToOffsetParent(data.reference, yield getOffsetParentFn(data.floating), data.strategy),
+            floating: {
+              x: 0,
+              y: 0,
+              width: floatingDimensions.width,
+              height: floatingDimensions.height
+            }
+          };
+        });
+      };
+      platform = {
+        convertOffsetParentRelativeRectToViewportRelativeRect,
+        getDocumentElement: getDocumentElement2,
+        getClippingRect,
+        getOffsetParent,
+        getElementRects,
+        getClientRects,
+        getDimensions,
+        getScale,
+        isElement: isElement2,
+        isRTL
+      };
+      offset2 = offset;
+      shift2 = shift;
+      flip2 = flip;
+      size2 = size;
+      hide2 = hide;
+      arrow2 = arrow;
+      limitShift2 = limitShift;
+      computePosition2 = (reference, floating, options) => {
+        const cache = /* @__PURE__ */ new Map();
+        const mergedOptions = __spreadValues({
+          platform
+        }, options);
+        const platformWithCache = __spreadProps(__spreadValues({}, mergedOptions.platform), {
+          _c: cache
+        });
+        return computePosition(reference, floating, __spreadProps(__spreadValues({}, mergedOptions), {
+          platform: platformWithCache
+        }));
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+popper@1.33.1/node_modules/@zag-js/popper/dist/index.mjs
   function createDOMRect(x2 = 0, y2 = 0, width = 0, height = 0) {
     if (typeof DOMRect === "function") {
       return new DOMRect(x2, y2, width, height);
@@ -6784,657 +7629,12 @@ var Corex = (() => {
       }
     };
   }
-  var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_GRHV6R4F = __esm({
-    "../priv/static/chunk-GRHV6R4F.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
-      sides = ["top", "right", "bottom", "left"];
-      min2 = Math.min;
-      max2 = Math.max;
-      round2 = Math.round;
-      floor2 = Math.floor;
-      createCoords = (v2) => ({
-        x: v2,
-        y: v2
-      });
-      oppositeSideMap = {
-        left: "right",
-        right: "left",
-        bottom: "top",
-        top: "bottom"
-      };
-      oppositeAlignmentMap = {
-        start: "end",
-        end: "start"
-      };
-      yAxisSides = /* @__PURE__ */ new Set(["top", "bottom"]);
-      lrPlacement = ["left", "right"];
-      rlPlacement = ["right", "left"];
-      tbPlacement = ["top", "bottom"];
-      btPlacement = ["bottom", "top"];
-      computePosition = (reference, floating, config) => __async(null, null, function* () {
-        const {
-          placement = "bottom",
-          strategy = "absolute",
-          middleware = [],
-          platform: platform2
-        } = config;
-        const validMiddleware = middleware.filter(Boolean);
-        const rtl = yield platform2.isRTL == null ? void 0 : platform2.isRTL(floating);
-        let rects = yield platform2.getElementRects({
-          reference,
-          floating,
-          strategy
-        });
-        let {
-          x: x2,
-          y: y2
-        } = computeCoordsFromPlacement(rects, placement, rtl);
-        let statefulPlacement = placement;
-        let middlewareData = {};
-        let resetCount = 0;
-        for (let i2 = 0; i2 < validMiddleware.length; i2++) {
-          var _platform$detectOverf;
-          const {
-            name,
-            fn
-          } = validMiddleware[i2];
-          const {
-            x: nextX,
-            y: nextY,
-            data,
-            reset
-          } = yield fn({
-            x: x2,
-            y: y2,
-            initialPlacement: placement,
-            placement: statefulPlacement,
-            strategy,
-            middlewareData,
-            rects,
-            platform: __spreadProps(__spreadValues({}, platform2), {
-              detectOverflow: (_platform$detectOverf = platform2.detectOverflow) != null ? _platform$detectOverf : detectOverflow
-            }),
-            elements: {
-              reference,
-              floating
-            }
-          });
-          x2 = nextX != null ? nextX : x2;
-          y2 = nextY != null ? nextY : y2;
-          middlewareData = __spreadProps(__spreadValues({}, middlewareData), {
-            [name]: __spreadValues(__spreadValues({}, middlewareData[name]), data)
-          });
-          if (reset && resetCount <= 50) {
-            resetCount++;
-            if (typeof reset === "object") {
-              if (reset.placement) {
-                statefulPlacement = reset.placement;
-              }
-              if (reset.rects) {
-                rects = reset.rects === true ? yield platform2.getElementRects({
-                  reference,
-                  floating,
-                  strategy
-                }) : reset.rects;
-              }
-              ({
-                x: x2,
-                y: y2
-              } = computeCoordsFromPlacement(rects, statefulPlacement, rtl));
-            }
-            i2 = -1;
-          }
-        }
-        return {
-          x: x2,
-          y: y2,
-          placement: statefulPlacement,
-          strategy,
-          middlewareData
-        };
-      });
-      arrow = (options) => ({
-        name: "arrow",
-        options,
-        fn(state2) {
-          return __async(this, null, function* () {
-            const {
-              x: x2,
-              y: y2,
-              placement,
-              rects,
-              platform: platform2,
-              elements,
-              middlewareData
-            } = state2;
-            const {
-              element,
-              padding = 0
-            } = evaluate(options, state2) || {};
-            if (element == null) {
-              return {};
-            }
-            const paddingObject = getPaddingObject(padding);
-            const coords = {
-              x: x2,
-              y: y2
-            };
-            const axis = getAlignmentAxis(placement);
-            const length = getAxisLength(axis);
-            const arrowDimensions = yield platform2.getDimensions(element);
-            const isYAxis = axis === "y";
-            const minProp = isYAxis ? "top" : "left";
-            const maxProp = isYAxis ? "bottom" : "right";
-            const clientProp = isYAxis ? "clientHeight" : "clientWidth";
-            const endDiff = rects.reference[length] + rects.reference[axis] - coords[axis] - rects.floating[length];
-            const startDiff = coords[axis] - rects.reference[axis];
-            const arrowOffsetParent = yield platform2.getOffsetParent == null ? void 0 : platform2.getOffsetParent(element);
-            let clientSize = arrowOffsetParent ? arrowOffsetParent[clientProp] : 0;
-            if (!clientSize || !(yield platform2.isElement == null ? void 0 : platform2.isElement(arrowOffsetParent))) {
-              clientSize = elements.floating[clientProp] || rects.floating[length];
-            }
-            const centerToReference = endDiff / 2 - startDiff / 2;
-            const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
-            const minPadding = min2(paddingObject[minProp], largestPossiblePadding);
-            const maxPadding = min2(paddingObject[maxProp], largestPossiblePadding);
-            const min$1 = minPadding;
-            const max22 = clientSize - arrowDimensions[length] - maxPadding;
-            const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-            const offset3 = clamp2(min$1, center, max22);
-            const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
-            const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max22 : 0;
-            return {
-              [axis]: coords[axis] + alignmentOffset,
-              data: __spreadValues({
-                [axis]: offset3,
-                centerOffset: center - offset3 - alignmentOffset
-              }, shouldAddOffset && {
-                alignmentOffset
-              }),
-              reset: shouldAddOffset
-            };
-          });
-        }
-      });
-      flip = function(options) {
-        if (options === void 0) {
-          options = {};
-        }
-        return {
-          name: "flip",
-          options,
-          fn(state2) {
-            return __async(this, null, function* () {
-              var _middlewareData$arrow, _middlewareData$flip;
-              const {
-                placement,
-                middlewareData,
-                rects,
-                initialPlacement,
-                platform: platform2,
-                elements
-              } = state2;
-              const _a2 = evaluate(options, state2), {
-                mainAxis: checkMainAxis = true,
-                crossAxis: checkCrossAxis = true,
-                fallbackPlacements: specifiedFallbackPlacements,
-                fallbackStrategy = "bestFit",
-                fallbackAxisSideDirection = "none",
-                flipAlignment = true
-              } = _a2, detectOverflowOptions = __objRest(_a2, [
-                "mainAxis",
-                "crossAxis",
-                "fallbackPlacements",
-                "fallbackStrategy",
-                "fallbackAxisSideDirection",
-                "flipAlignment"
-              ]);
-              if ((_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
-                return {};
-              }
-              const side = getSide(placement);
-              const initialSideAxis = getSideAxis(initialPlacement);
-              const isBasePlacement = getSide(initialPlacement) === initialPlacement;
-              const rtl = yield platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating);
-              const fallbackPlacements = specifiedFallbackPlacements || (isBasePlacement || !flipAlignment ? [getOppositePlacement(initialPlacement)] : getExpandedPlacements(initialPlacement));
-              const hasFallbackAxisSideDirection = fallbackAxisSideDirection !== "none";
-              if (!specifiedFallbackPlacements && hasFallbackAxisSideDirection) {
-                fallbackPlacements.push(...getOppositeAxisPlacements(initialPlacement, flipAlignment, fallbackAxisSideDirection, rtl));
-              }
-              const placements2 = [initialPlacement, ...fallbackPlacements];
-              const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
-              const overflows = [];
-              let overflowsData = ((_middlewareData$flip = middlewareData.flip) == null ? void 0 : _middlewareData$flip.overflows) || [];
-              if (checkMainAxis) {
-                overflows.push(overflow[side]);
-              }
-              if (checkCrossAxis) {
-                const sides2 = getAlignmentSides(placement, rects, rtl);
-                overflows.push(overflow[sides2[0]], overflow[sides2[1]]);
-              }
-              overflowsData = [...overflowsData, {
-                placement,
-                overflows
-              }];
-              if (!overflows.every((side2) => side2 <= 0)) {
-                var _middlewareData$flip2, _overflowsData$filter;
-                const nextIndex2 = (((_middlewareData$flip2 = middlewareData.flip) == null ? void 0 : _middlewareData$flip2.index) || 0) + 1;
-                const nextPlacement = placements2[nextIndex2];
-                if (nextPlacement) {
-                  const ignoreCrossAxisOverflow = checkCrossAxis === "alignment" ? initialSideAxis !== getSideAxis(nextPlacement) : false;
-                  if (!ignoreCrossAxisOverflow || // We leave the current main axis only if every placement on that axis
-                  // overflows the main axis.
-                  overflowsData.every((d2) => getSideAxis(d2.placement) === initialSideAxis ? d2.overflows[0] > 0 : true)) {
-                    return {
-                      data: {
-                        index: nextIndex2,
-                        overflows: overflowsData
-                      },
-                      reset: {
-                        placement: nextPlacement
-                      }
-                    };
-                  }
-                }
-                let resetPlacement = (_overflowsData$filter = overflowsData.filter((d2) => d2.overflows[0] <= 0).sort((a2, b2) => a2.overflows[1] - b2.overflows[1])[0]) == null ? void 0 : _overflowsData$filter.placement;
-                if (!resetPlacement) {
-                  switch (fallbackStrategy) {
-                    case "bestFit": {
-                      var _overflowsData$filter2;
-                      const placement2 = (_overflowsData$filter2 = overflowsData.filter((d2) => {
-                        if (hasFallbackAxisSideDirection) {
-                          const currentSideAxis = getSideAxis(d2.placement);
-                          return currentSideAxis === initialSideAxis || // Create a bias to the `y` side axis due to horizontal
-                          // reading directions favoring greater width.
-                          currentSideAxis === "y";
-                        }
-                        return true;
-                      }).map((d2) => [d2.placement, d2.overflows.filter((overflow2) => overflow2 > 0).reduce((acc, overflow2) => acc + overflow2, 0)]).sort((a2, b2) => a2[1] - b2[1])[0]) == null ? void 0 : _overflowsData$filter2[0];
-                      if (placement2) {
-                        resetPlacement = placement2;
-                      }
-                      break;
-                    }
-                    case "initialPlacement":
-                      resetPlacement = initialPlacement;
-                      break;
-                  }
-                }
-                if (placement !== resetPlacement) {
-                  return {
-                    reset: {
-                      placement: resetPlacement
-                    }
-                  };
-                }
-              }
-              return {};
-            });
-          }
-        };
-      };
-      hide = function(options) {
-        if (options === void 0) {
-          options = {};
-        }
-        return {
-          name: "hide",
-          options,
-          fn(state2) {
-            return __async(this, null, function* () {
-              const {
-                rects,
-                platform: platform2
-              } = state2;
-              const _a2 = evaluate(options, state2), {
-                strategy = "referenceHidden"
-              } = _a2, detectOverflowOptions = __objRest(_a2, [
-                "strategy"
-              ]);
-              switch (strategy) {
-                case "referenceHidden": {
-                  const overflow = yield platform2.detectOverflow(state2, __spreadProps(__spreadValues({}, detectOverflowOptions), {
-                    elementContext: "reference"
-                  }));
-                  const offsets = getSideOffsets(overflow, rects.reference);
-                  return {
-                    data: {
-                      referenceHiddenOffsets: offsets,
-                      referenceHidden: isAnySideFullyClipped(offsets)
-                    }
-                  };
-                }
-                case "escaped": {
-                  const overflow = yield platform2.detectOverflow(state2, __spreadProps(__spreadValues({}, detectOverflowOptions), {
-                    altBoundary: true
-                  }));
-                  const offsets = getSideOffsets(overflow, rects.floating);
-                  return {
-                    data: {
-                      escapedOffsets: offsets,
-                      escaped: isAnySideFullyClipped(offsets)
-                    }
-                  };
-                }
-                default: {
-                  return {};
-                }
-              }
-            });
-          }
-        };
-      };
-      originSides = /* @__PURE__ */ new Set(["left", "top"]);
-      offset = function(options) {
-        if (options === void 0) {
-          options = 0;
-        }
-        return {
-          name: "offset",
-          options,
-          fn(state2) {
-            return __async(this, null, function* () {
-              var _middlewareData$offse, _middlewareData$arrow;
-              const {
-                x: x2,
-                y: y2,
-                placement,
-                middlewareData
-              } = state2;
-              const diffCoords = yield convertValueToCoords(state2, options);
-              if (placement === ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse.placement) && (_middlewareData$arrow = middlewareData.arrow) != null && _middlewareData$arrow.alignmentOffset) {
-                return {};
-              }
-              return {
-                x: x2 + diffCoords.x,
-                y: y2 + diffCoords.y,
-                data: __spreadProps(__spreadValues({}, diffCoords), {
-                  placement
-                })
-              };
-            });
-          }
-        };
-      };
-      shift = function(options) {
-        if (options === void 0) {
-          options = {};
-        }
-        return {
-          name: "shift",
-          options,
-          fn(state2) {
-            return __async(this, null, function* () {
-              const {
-                x: x2,
-                y: y2,
-                placement,
-                platform: platform2
-              } = state2;
-              const _a2 = evaluate(options, state2), {
-                mainAxis: checkMainAxis = true,
-                crossAxis: checkCrossAxis = false,
-                limiter = {
-                  fn: (_ref) => {
-                    let {
-                      x: x22,
-                      y: y22
-                    } = _ref;
-                    return {
-                      x: x22,
-                      y: y22
-                    };
-                  }
-                }
-              } = _a2, detectOverflowOptions = __objRest(_a2, [
-                "mainAxis",
-                "crossAxis",
-                "limiter"
-              ]);
-              const coords = {
-                x: x2,
-                y: y2
-              };
-              const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
-              const crossAxis = getSideAxis(getSide(placement));
-              const mainAxis = getOppositeAxis(crossAxis);
-              let mainAxisCoord = coords[mainAxis];
-              let crossAxisCoord = coords[crossAxis];
-              if (checkMainAxis) {
-                const minSide = mainAxis === "y" ? "top" : "left";
-                const maxSide = mainAxis === "y" ? "bottom" : "right";
-                const min23 = mainAxisCoord + overflow[minSide];
-                const max22 = mainAxisCoord - overflow[maxSide];
-                mainAxisCoord = clamp2(min23, mainAxisCoord, max22);
-              }
-              if (checkCrossAxis) {
-                const minSide = crossAxis === "y" ? "top" : "left";
-                const maxSide = crossAxis === "y" ? "bottom" : "right";
-                const min23 = crossAxisCoord + overflow[minSide];
-                const max22 = crossAxisCoord - overflow[maxSide];
-                crossAxisCoord = clamp2(min23, crossAxisCoord, max22);
-              }
-              const limitedCoords = limiter.fn(__spreadProps(__spreadValues({}, state2), {
-                [mainAxis]: mainAxisCoord,
-                [crossAxis]: crossAxisCoord
-              }));
-              return __spreadProps(__spreadValues({}, limitedCoords), {
-                data: {
-                  x: limitedCoords.x - x2,
-                  y: limitedCoords.y - y2,
-                  enabled: {
-                    [mainAxis]: checkMainAxis,
-                    [crossAxis]: checkCrossAxis
-                  }
-                }
-              });
-            });
-          }
-        };
-      };
-      limitShift = function(options) {
-        if (options === void 0) {
-          options = {};
-        }
-        return {
-          options,
-          fn(state2) {
-            const {
-              x: x2,
-              y: y2,
-              placement,
-              rects,
-              middlewareData
-            } = state2;
-            const {
-              offset: offset3 = 0,
-              mainAxis: checkMainAxis = true,
-              crossAxis: checkCrossAxis = true
-            } = evaluate(options, state2);
-            const coords = {
-              x: x2,
-              y: y2
-            };
-            const crossAxis = getSideAxis(placement);
-            const mainAxis = getOppositeAxis(crossAxis);
-            let mainAxisCoord = coords[mainAxis];
-            let crossAxisCoord = coords[crossAxis];
-            const rawOffset = evaluate(offset3, state2);
-            const computedOffset = typeof rawOffset === "number" ? {
-              mainAxis: rawOffset,
-              crossAxis: 0
-            } : __spreadValues({
-              mainAxis: 0,
-              crossAxis: 0
-            }, rawOffset);
-            if (checkMainAxis) {
-              const len = mainAxis === "y" ? "height" : "width";
-              const limitMin = rects.reference[mainAxis] - rects.floating[len] + computedOffset.mainAxis;
-              const limitMax = rects.reference[mainAxis] + rects.reference[len] - computedOffset.mainAxis;
-              if (mainAxisCoord < limitMin) {
-                mainAxisCoord = limitMin;
-              } else if (mainAxisCoord > limitMax) {
-                mainAxisCoord = limitMax;
-              }
-            }
-            if (checkCrossAxis) {
-              var _middlewareData$offse, _middlewareData$offse2;
-              const len = mainAxis === "y" ? "width" : "height";
-              const isOriginSide = originSides.has(getSide(placement));
-              const limitMin = rects.reference[crossAxis] - rects.floating[len] + (isOriginSide ? ((_middlewareData$offse = middlewareData.offset) == null ? void 0 : _middlewareData$offse[crossAxis]) || 0 : 0) + (isOriginSide ? 0 : computedOffset.crossAxis);
-              const limitMax = rects.reference[crossAxis] + rects.reference[len] + (isOriginSide ? 0 : ((_middlewareData$offse2 = middlewareData.offset) == null ? void 0 : _middlewareData$offse2[crossAxis]) || 0) - (isOriginSide ? computedOffset.crossAxis : 0);
-              if (crossAxisCoord < limitMin) {
-                crossAxisCoord = limitMin;
-              } else if (crossAxisCoord > limitMax) {
-                crossAxisCoord = limitMax;
-              }
-            }
-            return {
-              [mainAxis]: mainAxisCoord,
-              [crossAxis]: crossAxisCoord
-            };
-          }
-        };
-      };
-      size = function(options) {
-        if (options === void 0) {
-          options = {};
-        }
-        return {
-          name: "size",
-          options,
-          fn(state2) {
-            return __async(this, null, function* () {
-              var _state$middlewareData, _state$middlewareData2;
-              const {
-                placement,
-                rects,
-                platform: platform2,
-                elements
-              } = state2;
-              const _a2 = evaluate(options, state2), {
-                apply = () => {
-                }
-              } = _a2, detectOverflowOptions = __objRest(_a2, [
-                "apply"
-              ]);
-              const overflow = yield platform2.detectOverflow(state2, detectOverflowOptions);
-              const side = getSide(placement);
-              const alignment = getAlignment(placement);
-              const isYAxis = getSideAxis(placement) === "y";
-              const {
-                width,
-                height
-              } = rects.floating;
-              let heightSide;
-              let widthSide;
-              if (side === "top" || side === "bottom") {
-                heightSide = side;
-                widthSide = alignment === ((yield platform2.isRTL == null ? void 0 : platform2.isRTL(elements.floating)) ? "start" : "end") ? "left" : "right";
-              } else {
-                widthSide = side;
-                heightSide = alignment === "end" ? "top" : "bottom";
-              }
-              const maximumClippingHeight = height - overflow.top - overflow.bottom;
-              const maximumClippingWidth = width - overflow.left - overflow.right;
-              const overflowAvailableHeight = min2(height - overflow[heightSide], maximumClippingHeight);
-              const overflowAvailableWidth = min2(width - overflow[widthSide], maximumClippingWidth);
-              const noShift = !state2.middlewareData.shift;
-              let availableHeight = overflowAvailableHeight;
-              let availableWidth = overflowAvailableWidth;
-              if ((_state$middlewareData = state2.middlewareData.shift) != null && _state$middlewareData.enabled.x) {
-                availableWidth = maximumClippingWidth;
-              }
-              if ((_state$middlewareData2 = state2.middlewareData.shift) != null && _state$middlewareData2.enabled.y) {
-                availableHeight = maximumClippingHeight;
-              }
-              if (noShift && !alignment) {
-                const xMin = max2(overflow.left, 0);
-                const xMax = max2(overflow.right, 0);
-                const yMin = max2(overflow.top, 0);
-                const yMax = max2(overflow.bottom, 0);
-                if (isYAxis) {
-                  availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max2(overflow.left, overflow.right));
-                } else {
-                  availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max2(overflow.top, overflow.bottom));
-                }
-              }
-              yield apply(__spreadProps(__spreadValues({}, state2), {
-                availableWidth,
-                availableHeight
-              }));
-              const nextDimensions = yield platform2.getDimensions(elements.floating);
-              if (width !== nextDimensions.width || height !== nextDimensions.height) {
-                return {
-                  reset: {
-                    rects: true
-                  }
-                };
-              }
-              return {};
-            });
-          }
-        };
-      };
-      invalidOverflowDisplayValues = /* @__PURE__ */ new Set(["inline", "contents"]);
-      tableElements = /* @__PURE__ */ new Set(["table", "td", "th"]);
-      topLayerSelectors = [":popover-open", ":modal"];
-      transformProperties = ["transform", "translate", "scale", "rotate", "perspective"];
-      willChangeValues = ["transform", "translate", "scale", "rotate", "perspective", "filter"];
-      containValues = ["paint", "layout", "strict", "content"];
-      lastTraversableNodeNames = /* @__PURE__ */ new Set(["html", "body", "#document"]);
-      noOffsets = /* @__PURE__ */ createCoords(0);
-      SCROLLBAR_MAX = 25;
-      absoluteOrFixed = /* @__PURE__ */ new Set(["absolute", "fixed"]);
-      getElementRects = function(data) {
-        return __async(this, null, function* () {
-          const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
-          const getDimensionsFn = this.getDimensions;
-          const floatingDimensions = yield getDimensionsFn(data.floating);
-          return {
-            reference: getRectRelativeToOffsetParent(data.reference, yield getOffsetParentFn(data.floating), data.strategy),
-            floating: {
-              x: 0,
-              y: 0,
-              width: floatingDimensions.width,
-              height: floatingDimensions.height
-            }
-          };
-        });
-      };
-      platform = {
-        convertOffsetParentRelativeRectToViewportRelativeRect,
-        getDocumentElement: getDocumentElement2,
-        getClippingRect,
-        getOffsetParent,
-        getElementRects,
-        getClientRects,
-        getDimensions,
-        getScale,
-        isElement: isElement2,
-        isRTL
-      };
-      offset2 = offset;
-      shift2 = shift;
-      flip2 = flip;
-      size2 = size;
-      hide2 = hide;
-      arrow2 = arrow;
-      limitShift2 = limitShift;
-      computePosition2 = (reference, floating, options) => {
-        const cache = /* @__PURE__ */ new Map();
-        const mergedOptions = __spreadValues({
-          platform
-        }, options);
-        const platformWithCache = __spreadProps(__spreadValues({}, mergedOptions.platform), {
-          _c: cache
-        });
-        return computePosition(reference, floating, __spreadProps(__spreadValues({}, mergedOptions), {
-          platform: platformWithCache
-        }));
-      };
+  var toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
+  var init_dist15 = __esm({
+    "../node_modules/.pnpm/@zag-js+popper@1.33.1/node_modules/@zag-js/popper/dist/index.mjs"() {
+      init_floating_ui_dom();
+      init_dist2();
+      init_dist3();
       toVar = (value) => ({ variable: value, reference: `var(${value})` });
       cssVars = {
         arrowSize: toVar("--arrow-size"),
@@ -7491,7 +7691,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-BPSX7Z7Y.mjs
+  // ../node_modules/.pnpm/@zag-js+interact-outside@1.33.1/node_modules/@zag-js/interact-outside/dist/index.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -7707,6 +7907,18 @@ var Corex = (() => {
     const event = new win.CustomEvent(type, init);
     return el.dispatchEvent(event);
   }
+  var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
+  var init_dist16 = __esm({
+    "../node_modules/.pnpm/@zag-js+interact-outside@1.33.1/node_modules/@zag-js/interact-outside/dist/index.mjs"() {
+      init_dist2();
+      init_dist3();
+      POINTER_OUTSIDE_EVENT = "pointerdown.outside";
+      FOCUS_OUTSIDE_EVENT = "focus.outside";
+      isPointerEvent = (event) => "clientY" in event;
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+dismissable@1.33.1/node_modules/@zag-js/dismissable/dist/index.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -7864,14 +8076,12 @@ var Corex = (() => {
       cleanups.forEach((fn) => fn == null ? void 0 : fn());
     };
   }
-  var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent, LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_BPSX7Z7Y = __esm({
-    "../priv/static/chunk-BPSX7Z7Y.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
-      POINTER_OUTSIDE_EVENT = "pointerdown.outside";
-      FOCUS_OUTSIDE_EVENT = "focus.outside";
-      isPointerEvent = (event) => "clientY" in event;
+  var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
+  var init_dist17 = __esm({
+    "../node_modules/.pnpm/@zag-js+dismissable@1.33.1/node_modules/@zag-js/dismissable/dist/index.mjs"() {
+      init_dist2();
+      init_dist16();
+      init_dist3();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -7995,11 +8205,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/combobox.mjs
-  var combobox_exports = {};
-  __export(combobox_exports, {
-    Combobox: () => ComboboxHook
-  });
+  // ../node_modules/.pnpm/@zag-js+combobox@1.33.1/node_modules/@zag-js/combobox/dist/index.mjs
   function connect5(service, normalize) {
     const { context, prop, state: state2, send, scope, computed, event } = service;
     const translations = prop("translations");
@@ -8403,25 +8609,17 @@ var Corex = (() => {
   function getOpenChangeReason(event) {
     return (event.previousEvent || event).src;
   }
-  function snakeToCamel(str) {
-    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
-  }
-  function transformPositioningOptions(obj) {
-    const result = {};
-    for (const [key, value] of Object.entries(obj)) {
-      const camelKey = snakeToCamel(key);
-      result[camelKey] = value;
-    }
-    return result;
-  }
-  var anatomy5, parts5, collection, getRootId5, getLabelId3, getControlId2, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId, getItemGroupLabelId, getItemId2, getContentEl2, getInputEl2, getPositionerEl, getControlEl, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine5, props5, splitProps5, itemGroupLabelProps, splitItemGroupLabelProps, itemGroupProps, splitItemGroupProps, itemProps2, splitItemProps2, Combobox, ComboboxHook;
-  var init_combobox = __esm({
-    "../priv/static/combobox.mjs"() {
-      "use strict";
-      init_chunk_2DWEYSRA();
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
+  var anatomy5, parts5, collection, getRootId5, getLabelId3, getControlId2, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId, getItemGroupLabelId, getItemId2, getContentEl2, getInputEl2, getPositionerEl, getControlEl, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine5, props5, splitProps5, itemGroupLabelProps, splitItemGroupLabelProps, itemGroupProps, splitItemGroupProps, itemProps2, splitItemProps2;
+  var init_dist18 = __esm({
+    "../node_modules/.pnpm/@zag-js+combobox@1.33.1/node_modules/@zag-js/combobox/dist/index.mjs"() {
+      init_dist();
+      init_dist14();
+      init_dist2();
+      init_dist15();
+      init_dist3();
+      init_dist4();
+      init_dist17();
+      init_dist5();
       anatomy5 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -9601,6 +9799,18 @@ var Corex = (() => {
       splitItemGroupProps = createSplitProps(itemGroupProps);
       itemProps2 = createProps()(["item", "persistFocus"]);
       splitItemProps2 = createSplitProps(itemProps2);
+    }
+  });
+
+  // components/combobox.ts
+  var Combobox;
+  var init_combobox = __esm({
+    "components/combobox.ts"() {
+      "use strict";
+      init_dist18();
+      init_dist18();
+      init_dist9();
+      init_core();
       Combobox = class extends Component {
         constructor() {
           super(...arguments);
@@ -9630,9 +9840,9 @@ var Corex = (() => {
             isItemDisabled: (item) => item.disabled
           });
         }
-        initMachine(props22) {
+        initMachine(props15) {
           const self2 = this;
-          return new VanillaMachine(machine5, __spreadProps(__spreadValues({}, props22), {
+          return new VanillaMachine(machine5, __spreadProps(__spreadValues({}, props15), {
             get collection() {
               return self2.getCollection();
             },
@@ -9640,8 +9850,8 @@ var Corex = (() => {
               if (details.open) {
                 self2.options = self2.allOptions;
               }
-              if (props22.onOpenChange) {
-                props22.onOpenChange(details);
+              if (props15.onOpenChange) {
+                props15.onOpenChange(details);
               }
             },
             onInputValueChange: (details) => {
@@ -9649,8 +9859,8 @@ var Corex = (() => {
                 (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
               );
               self2.options = filtered.length > 0 ? filtered : self2.allOptions;
-              if (props22.onInputValueChange) {
-                props22.onInputValueChange(details);
+              if (props15.onInputValueChange) {
+                props15.onInputValueChange(details);
               }
             }
           }));
@@ -9761,13 +9971,38 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/combobox.ts
+  var combobox_exports = {};
+  __export(combobox_exports, {
+    Combobox: () => ComboboxHook
+  });
+  function snakeToCamel(str) {
+    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
+  }
+  function transformPositioningOptions(obj) {
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const camelKey = snakeToCamel(key);
+      result[camelKey] = value;
+    }
+    return result;
+  }
+  var ComboboxHook;
+  var init_combobox2 = __esm({
+    "hooks/combobox.ts"() {
+      "use strict";
+      init_combobox();
+      init_util();
       ComboboxHook = {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => item.group !== void 0);
-          const props22 = __spreadProps(__spreadValues({
+          const props15 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             disabled: getBoolean(el, "disabled"),
@@ -9912,7 +10147,7 @@ var Corex = (() => {
               }
             }
           });
-          const combobox = new Combobox(el, props22);
+          const combobox = new Combobox(el, props15);
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
@@ -9977,14 +10212,16 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/date-picker.mjs
-  var date_picker_exports = {};
-  __export(date_picker_exports, {
-    DatePicker: () => DatePickerHook
-  });
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/utils.mjs
   function $2b4dce13dd5a17fa$export$842a2cf37af977e1(amount, numerator) {
     return amount - numerator * Math.floor(amount / numerator);
   }
+  var init_utils = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/utils.mjs"() {
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs
   function $3b62074eb05584b2$export$f297eb839006d339(era, year, month, day) {
     year = $3b62074eb05584b2$export$c36e0ecb2d4fa69d(era, year);
     let y1 = year - 1;
@@ -10010,6 +10247,213 @@ var Corex = (() => {
       year
     ];
   }
+  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec;
+  var init_GregorianCalendar = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs"() {
+      init_CalendarDate();
+      init_utils();
+      $3b62074eb05584b2$var$EPOCH = 1721426;
+      $3b62074eb05584b2$var$daysInMonth = {
+        standard: [
+          31,
+          28,
+          31,
+          30,
+          31,
+          30,
+          31,
+          31,
+          30,
+          31,
+          30,
+          31
+        ],
+        leapyear: [
+          31,
+          29,
+          31,
+          30,
+          31,
+          30,
+          31,
+          31,
+          30,
+          31,
+          30,
+          31
+        ]
+      };
+      $3b62074eb05584b2$export$80ee6245ec4f29ec = class {
+        fromJulianDay(jd) {
+          let jd0 = jd;
+          let depoch = jd0 - $3b62074eb05584b2$var$EPOCH;
+          let quadricent = Math.floor(depoch / 146097);
+          let dqc = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(depoch, 146097);
+          let cent = Math.floor(dqc / 36524);
+          let dcent = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(dqc, 36524);
+          let quad = Math.floor(dcent / 1461);
+          let dquad = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(dcent, 1461);
+          let yindex = Math.floor(dquad / 365);
+          let extendedYear = quadricent * 400 + cent * 100 + quad * 4 + yindex + (cent !== 4 && yindex !== 4 ? 1 : 0);
+          let [era, year] = $3b62074eb05584b2$export$4475b7e617eb123c(extendedYear);
+          let yearDay = jd0 - $3b62074eb05584b2$export$f297eb839006d339(era, year, 1, 1);
+          let leapAdj = 2;
+          if (jd0 < $3b62074eb05584b2$export$f297eb839006d339(era, year, 3, 1)) leapAdj = 0;
+          else if ($3b62074eb05584b2$export$553d7fa8e3805fc0(year)) leapAdj = 1;
+          let month = Math.floor(((yearDay + leapAdj) * 12 + 373) / 367);
+          let day = jd0 - $3b62074eb05584b2$export$f297eb839006d339(era, year, month, 1) + 1;
+          return new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)(era, year, month, day);
+        }
+        toJulianDay(date) {
+          return $3b62074eb05584b2$export$f297eb839006d339(date.era, date.year, date.month, date.day);
+        }
+        getDaysInMonth(date) {
+          return $3b62074eb05584b2$var$daysInMonth[$3b62074eb05584b2$export$553d7fa8e3805fc0(date.year) ? "leapyear" : "standard"][date.month - 1];
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        getMonthsInYear(date) {
+          return 12;
+        }
+        getDaysInYear(date) {
+          return $3b62074eb05584b2$export$553d7fa8e3805fc0(date.year) ? 366 : 365;
+        }
+        getMaximumMonthsInYear() {
+          return 12;
+        }
+        getMaximumDaysInMonth() {
+          return 31;
+        }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        getYearsInEra(date) {
+          return 9999;
+        }
+        getEras() {
+          return [
+            "BC",
+            "AD"
+          ];
+        }
+        isInverseEra(date) {
+          return date.era === "BC";
+        }
+        balanceDate(date) {
+          if (date.year <= 0) {
+            date.era = date.era === "BC" ? "AD" : "BC";
+            date.year = 1 - date.year;
+          }
+        }
+        constructor() {
+          this.identifier = "gregory";
+        }
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/weekStartData.mjs
+  var $2fe286d2fb449abb$export$7a5acbd77d414bd9;
+  var init_weekStartData = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/weekStartData.mjs"() {
+      $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
+        "001": 1,
+        AD: 1,
+        AE: 6,
+        AF: 6,
+        AI: 1,
+        AL: 1,
+        AM: 1,
+        AN: 1,
+        AR: 1,
+        AT: 1,
+        AU: 1,
+        AX: 1,
+        AZ: 1,
+        BA: 1,
+        BE: 1,
+        BG: 1,
+        BH: 6,
+        BM: 1,
+        BN: 1,
+        BY: 1,
+        CH: 1,
+        CL: 1,
+        CM: 1,
+        CN: 1,
+        CR: 1,
+        CY: 1,
+        CZ: 1,
+        DE: 1,
+        DJ: 6,
+        DK: 1,
+        DZ: 6,
+        EC: 1,
+        EE: 1,
+        EG: 6,
+        ES: 1,
+        FI: 1,
+        FJ: 1,
+        FO: 1,
+        FR: 1,
+        GB: 1,
+        GE: 1,
+        GF: 1,
+        GP: 1,
+        GR: 1,
+        HR: 1,
+        HU: 1,
+        IE: 1,
+        IQ: 6,
+        IR: 6,
+        IS: 1,
+        IT: 1,
+        JO: 6,
+        KG: 1,
+        KW: 6,
+        KZ: 1,
+        LB: 1,
+        LI: 1,
+        LK: 1,
+        LT: 1,
+        LU: 1,
+        LV: 1,
+        LY: 6,
+        MC: 1,
+        MD: 1,
+        ME: 1,
+        MK: 1,
+        MN: 1,
+        MQ: 1,
+        MV: 5,
+        MY: 1,
+        NL: 1,
+        NO: 1,
+        NZ: 1,
+        OM: 6,
+        PL: 1,
+        QA: 6,
+        RE: 1,
+        RO: 1,
+        RS: 1,
+        RU: 1,
+        SD: 6,
+        SE: 1,
+        SI: 1,
+        SK: 1,
+        SM: 1,
+        SY: 6,
+        TJ: 1,
+        TM: 1,
+        TR: 1,
+        UA: 1,
+        UY: 1,
+        UZ: 1,
+        VA: 1,
+        VN: 1,
+        XK: 1
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/queries.mjs
   function $14e0f24ef4ac5c92$export$ea39ec197993aef0(a2, b2) {
     b2 = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b2, a2.calendar);
     return a2.era === b2.era && a2.year === b2.year && a2.month === b2.month && a2.day === b2.day;
@@ -10182,6 +10626,97 @@ var Corex = (() => {
     ];
     return dayOfWeek === start || dayOfWeek === end;
   }
+  var $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA;
+  var init_queries = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/queries.mjs"() {
+      init_conversion();
+      init_weekStartData();
+      $14e0f24ef4ac5c92$var$DAY_MAP = {
+        sun: 0,
+        mon: 1,
+        tue: 2,
+        wed: 3,
+        thu: 4,
+        fri: 5,
+        sat: 6
+      };
+      $14e0f24ef4ac5c92$var$localTimeZone = null;
+      $14e0f24ef4ac5c92$var$cachedRegions = /* @__PURE__ */ new Map();
+      $14e0f24ef4ac5c92$var$cachedWeekInfo = /* @__PURE__ */ new Map();
+      $14e0f24ef4ac5c92$var$WEEKEND_DATA = {
+        AF: [
+          4,
+          5
+        ],
+        AE: [
+          5,
+          6
+        ],
+        BH: [
+          5,
+          6
+        ],
+        DZ: [
+          5,
+          6
+        ],
+        EG: [
+          5,
+          6
+        ],
+        IL: [
+          5,
+          6
+        ],
+        IQ: [
+          5,
+          6
+        ],
+        IR: [
+          5,
+          5
+        ],
+        JO: [
+          5,
+          6
+        ],
+        KW: [
+          5,
+          6
+        ],
+        LY: [
+          5,
+          6
+        ],
+        OM: [
+          5,
+          6
+        ],
+        QA: [
+          5,
+          6
+        ],
+        SA: [
+          5,
+          6
+        ],
+        SD: [
+          5,
+          6
+        ],
+        SY: [
+          5,
+          6
+        ],
+        YE: [
+          5,
+          6
+        ]
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/conversion.mjs
   function $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) {
     date = $11d87f3f76e88657$export$b4a036af3fc0b032(date, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
     let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(date.era, date.year);
@@ -10216,9 +10751,9 @@ var Corex = (() => {
       });
       $11d87f3f76e88657$var$formattersByTimeZone.set(timeZone, formatter);
     }
-    let parts22 = formatter.formatToParts(new Date(ms));
+    let parts16 = formatter.formatToParts(new Date(ms));
     let namedParts = {};
-    for (let part of parts22) if (part.type !== "literal") namedParts[part.type] = part.value;
+    for (let part of parts16) if (part.type !== "literal") namedParts[part.type] = part.value;
     return {
       // Firefox returns B instead of BC... https://bugzilla.mozilla.org/show_bug.cgi?id=1752253
       year: namedParts.era === "BC" || namedParts.era === "B" ? -namedParts.year + 1 : +namedParts.year,
@@ -10239,8 +10774,8 @@ var Corex = (() => {
     return found.filter((absolute) => $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute));
   }
   function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
-    let parts22 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
-    return date.year === parts22.year && date.month === parts22.month && date.day === parts22.day && date.hour === parts22.hour && date.minute === parts22.minute && date.second === parts22.second;
+    let parts16 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
+    return date.year === parts16.year && date.month === parts16.month && date.day === parts16.day && date.hour === parts16.hour && date.minute === parts16.minute && date.second === parts16.second;
   }
   function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
     let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
@@ -10332,6 +10867,19 @@ var Corex = (() => {
     let ms = $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) - date.offset;
     return $11d87f3f76e88657$export$b4a036af3fc0b032($11d87f3f76e88657$export$1b96692a1ba042ac(ms, timeZone), date.calendar);
   }
+  var $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS;
+  var init_conversion = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/conversion.mjs"() {
+      init_CalendarDate();
+      init_manipulation();
+      init_GregorianCalendar();
+      init_queries();
+      $11d87f3f76e88657$var$formattersByTimeZone = /* @__PURE__ */ new Map();
+      $11d87f3f76e88657$var$DAYMILLIS = 864e5;
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/manipulation.mjs
   function $735220c2d4774dd3$export$e16d8520af44a096(date, duration) {
     let mutableDate = date.copy();
     let days = "hour" in mutableDate ? $735220c2d4774dd3$var$addTimeFields(mutableDate, duration) : 0;
@@ -10614,6 +11162,16 @@ var Corex = (() => {
     let ms = (0, $11d87f3f76e88657$export$5107c82f94518f5c)(res, dateTime.timeZone, disambiguation);
     return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)((0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone), dateTime.calendar);
   }
+  var $735220c2d4774dd3$var$ONE_HOUR;
+  var init_manipulation = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/manipulation.mjs"() {
+      init_conversion();
+      init_GregorianCalendar();
+      $735220c2d4774dd3$var$ONE_HOUR = 36e5;
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/string.mjs
   function $fae977aafc393c5c$export$6b862160d295c8e(value) {
     let m2 = value.match($fae977aafc393c5c$var$DATE_RE);
     if (!m2) {
@@ -10655,15 +11213,53 @@ var Corex = (() => {
   function $fae977aafc393c5c$export$bf79f1ebf4b18792(date) {
     return `${$fae977aafc393c5c$export$4223de14708adc63(date)}${$fae977aafc393c5c$var$offsetToString(date.offset)}[${date.timeZone}]`;
   }
+  var $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$DATE_TIME_DURATION_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups;
+  var init_string = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/string.mjs"() {
+      init_CalendarDate();
+      init_conversion();
+      init_GregorianCalendar();
+      $fae977aafc393c5c$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
+      $fae977aafc393c5c$var$ABSOLUTE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:(?:([+-]\d{2})(?::?(\d{2}))?)|Z)$/;
+      $fae977aafc393c5c$var$DATE_TIME_DURATION_RE = new RegExp("^((?<negative>-)|\\+)?P((?<years>\\d*)Y)?((?<months>\\d*)M)?((?<weeks>\\d*)W)?((?<days>\\d*)D)?((?<time>T)((?<hours>\\d*[.,]?\\d{1,9})H)?((?<minutes>\\d*[.,]?\\d{1,9})M)?((?<seconds>\\d*[.,]?\\d{1,9})S)?)?$");
+      $fae977aafc393c5c$var$requiredDurationTimeGroups = [
+        "hours",
+        "minutes",
+        "seconds"
+      ];
+      $fae977aafc393c5c$var$requiredDurationGroups = [
+        "years",
+        "months",
+        "weeks",
+        "days",
+        ...$fae977aafc393c5c$var$requiredDurationTimeGroups
+      ];
+    }
+  });
+
+  // ../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_check_private_redeclaration.js
   function _check_private_redeclaration(obj, privateCollection) {
     if (privateCollection.has(obj)) {
       throw new TypeError("Cannot initialize the same private elements twice on an object");
     }
   }
+  var init_check_private_redeclaration = __esm({
+    "../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_check_private_redeclaration.js"() {
+    }
+  });
+
+  // ../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_class_private_field_init.js
   function _class_private_field_init(obj, privateMap, value) {
     _check_private_redeclaration(obj, privateMap);
     privateMap.set(obj, value);
   }
+  var init_class_private_field_init = __esm({
+    "../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_class_private_field_init.js"() {
+      init_check_private_redeclaration();
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/CalendarDate.mjs
   function $35ea8db9cb2ccb90$var$shiftArgs(args) {
     let calendar = typeof args[0] === "object" ? args.shift() : new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)();
     let era;
@@ -10683,6 +11279,201 @@ var Corex = (() => {
       day
     ];
   }
+  var $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea;
+  var init_CalendarDate = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/CalendarDate.mjs"() {
+      init_manipulation();
+      init_queries();
+      init_string();
+      init_GregorianCalendar();
+      init_conversion();
+      init_class_private_field_init();
+      $35ea8db9cb2ccb90$var$_type = /* @__PURE__ */ new WeakMap();
+      $35ea8db9cb2ccb90$export$99faa760c7908e4f = class _$35ea8db9cb2ccb90$export$99faa760c7908e4f {
+        /** Returns a copy of this date. */
+        copy() {
+          if (this.era) return new _$35ea8db9cb2ccb90$export$99faa760c7908e4f(this.calendar, this.era, this.year, this.month, this.day);
+          else return new _$35ea8db9cb2ccb90$export$99faa760c7908e4f(this.calendar, this.year, this.month, this.day);
+        }
+        /** Returns a new `CalendarDate` with the given duration added to it. */
+        add(duration) {
+          return (0, $735220c2d4774dd3$export$e16d8520af44a096)(this, duration);
+        }
+        /** Returns a new `CalendarDate` with the given duration subtracted from it. */
+        subtract(duration) {
+          return (0, $735220c2d4774dd3$export$4e2d2ead65e5f7e3)(this, duration);
+        }
+        /** Returns a new `CalendarDate` with the given fields set to the provided values. Other fields will be constrained accordingly. */
+        set(fields) {
+          return (0, $735220c2d4774dd3$export$adaa4cf7ef1b65be)(this, fields);
+        }
+        /**
+        * Returns a new `CalendarDate` with the given field adjusted by a specified amount.
+        * When the resulting value reaches the limits of the field, it wraps around.
+        */
+        cycle(field, amount, options) {
+          return (0, $735220c2d4774dd3$export$d52ced6badfb9a4c)(this, field, amount, options);
+        }
+        /** Converts the date to a native JavaScript Date object, with the time set to midnight in the given time zone. */
+        toDate(timeZone) {
+          return (0, $11d87f3f76e88657$export$e67a095c620b86fe)(this, timeZone);
+        }
+        /** Converts the date to an ISO 8601 formatted string. */
+        toString() {
+          return (0, $fae977aafc393c5c$export$60dfd74aa96791bd)(this);
+        }
+        /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
+        compare(b2) {
+          return (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b2);
+        }
+        constructor(...args) {
+          (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type, {
+            writable: true,
+            value: void 0
+          });
+          let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
+          this.calendar = calendar;
+          this.era = era;
+          this.year = year;
+          this.month = month;
+          this.day = day;
+          (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
+        }
+      };
+      $35ea8db9cb2ccb90$var$_type2 = /* @__PURE__ */ new WeakMap();
+      $35ea8db9cb2ccb90$export$ca871e8dbb80966f = class _$35ea8db9cb2ccb90$export$ca871e8dbb80966f {
+        /** Returns a copy of this date. */
+        copy() {
+          if (this.era) return new _$35ea8db9cb2ccb90$export$ca871e8dbb80966f(this.calendar, this.era, this.year, this.month, this.day, this.hour, this.minute, this.second, this.millisecond);
+          else return new _$35ea8db9cb2ccb90$export$ca871e8dbb80966f(this.calendar, this.year, this.month, this.day, this.hour, this.minute, this.second, this.millisecond);
+        }
+        /** Returns a new `CalendarDateTime` with the given duration added to it. */
+        add(duration) {
+          return (0, $735220c2d4774dd3$export$e16d8520af44a096)(this, duration);
+        }
+        /** Returns a new `CalendarDateTime` with the given duration subtracted from it. */
+        subtract(duration) {
+          return (0, $735220c2d4774dd3$export$4e2d2ead65e5f7e3)(this, duration);
+        }
+        /** Returns a new `CalendarDateTime` with the given fields set to the provided values. Other fields will be constrained accordingly. */
+        set(fields) {
+          return (0, $735220c2d4774dd3$export$adaa4cf7ef1b65be)((0, $735220c2d4774dd3$export$e5d5e1c1822b6e56)(this, fields), fields);
+        }
+        /**
+        * Returns a new `CalendarDateTime` with the given field adjusted by a specified amount.
+        * When the resulting value reaches the limits of the field, it wraps around.
+        */
+        cycle(field, amount, options) {
+          switch (field) {
+            case "era":
+            case "year":
+            case "month":
+            case "day":
+              return (0, $735220c2d4774dd3$export$d52ced6badfb9a4c)(this, field, amount, options);
+            default:
+              return (0, $735220c2d4774dd3$export$dd02b3e0007dfe28)(this, field, amount, options);
+          }
+        }
+        /** Converts the date to a native JavaScript Date object in the given time zone. */
+        toDate(timeZone, disambiguation) {
+          return (0, $11d87f3f76e88657$export$e67a095c620b86fe)(this, timeZone, disambiguation);
+        }
+        /** Converts the date to an ISO 8601 formatted string. */
+        toString() {
+          return (0, $fae977aafc393c5c$export$4223de14708adc63)(this);
+        }
+        /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
+        compare(b2) {
+          let res = (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b2);
+          if (res === 0) return (0, $14e0f24ef4ac5c92$export$c19a80a9721b80f6)(this, (0, $11d87f3f76e88657$export$b21e0b124e224484)(b2));
+          return res;
+        }
+        constructor(...args) {
+          (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type2, {
+            writable: true,
+            value: void 0
+          });
+          let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
+          this.calendar = calendar;
+          this.era = era;
+          this.year = year;
+          this.month = month;
+          this.day = day;
+          this.hour = args.shift() || 0;
+          this.minute = args.shift() || 0;
+          this.second = args.shift() || 0;
+          this.millisecond = args.shift() || 0;
+          (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
+        }
+      };
+      $35ea8db9cb2ccb90$var$_type3 = /* @__PURE__ */ new WeakMap();
+      $35ea8db9cb2ccb90$export$d3b7288e7994edea = class _$35ea8db9cb2ccb90$export$d3b7288e7994edea {
+        /** Returns a copy of this date. */
+        copy() {
+          if (this.era) return new _$35ea8db9cb2ccb90$export$d3b7288e7994edea(this.calendar, this.era, this.year, this.month, this.day, this.timeZone, this.offset, this.hour, this.minute, this.second, this.millisecond);
+          else return new _$35ea8db9cb2ccb90$export$d3b7288e7994edea(this.calendar, this.year, this.month, this.day, this.timeZone, this.offset, this.hour, this.minute, this.second, this.millisecond);
+        }
+        /** Returns a new `ZonedDateTime` with the given duration added to it. */
+        add(duration) {
+          return (0, $735220c2d4774dd3$export$96b1d28349274637)(this, duration);
+        }
+        /** Returns a new `ZonedDateTime` with the given duration subtracted from it. */
+        subtract(duration) {
+          return (0, $735220c2d4774dd3$export$6814caac34ca03c7)(this, duration);
+        }
+        /** Returns a new `ZonedDateTime` with the given fields set to the provided values. Other fields will be constrained accordingly. */
+        set(fields, disambiguation) {
+          return (0, $735220c2d4774dd3$export$31b5430eb18be4f8)(this, fields, disambiguation);
+        }
+        /**
+        * Returns a new `ZonedDateTime` with the given field adjusted by a specified amount.
+        * When the resulting value reaches the limits of the field, it wraps around.
+        */
+        cycle(field, amount, options) {
+          return (0, $735220c2d4774dd3$export$9a297d111fc86b79)(this, field, amount, options);
+        }
+        /** Converts the date to a native JavaScript Date object. */
+        toDate() {
+          return (0, $11d87f3f76e88657$export$83aac07b4c37b25)(this);
+        }
+        /** Converts the date to an ISO 8601 formatted string, including the UTC offset and time zone identifier. */
+        toString() {
+          return (0, $fae977aafc393c5c$export$bf79f1ebf4b18792)(this);
+        }
+        /** Converts the date to an ISO 8601 formatted string in UTC. */
+        toAbsoluteString() {
+          return this.toDate().toISOString();
+        }
+        /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
+        compare(b2) {
+          return this.toDate().getTime() - (0, $11d87f3f76e88657$export$84c95a83c799e074)(b2, this.timeZone).toDate().getTime();
+        }
+        constructor(...args) {
+          (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type3, {
+            writable: true,
+            value: void 0
+          });
+          let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
+          let timeZone = args.shift();
+          let offset3 = args.shift();
+          this.calendar = calendar;
+          this.era = era;
+          this.year = year;
+          this.month = month;
+          this.day = day;
+          this.timeZone = timeZone;
+          this.offset = offset3;
+          this.hour = args.shift() || 0;
+          this.minute = args.shift() || 0;
+          this.second = args.shift() || 0;
+          this.millisecond = args.shift() || 0;
+          (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
+        }
+      };
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/DateFormatter.mjs
   function $fb18d541ea1ad717$var$getCachedDateFormatter(locale, options = {}) {
     if (typeof options.hour12 === "boolean" && $fb18d541ea1ad717$var$hasBuggyHour12Behavior()) {
       options = __spreadValues({}, options);
@@ -10727,6 +11518,87 @@ var Corex = (() => {
     if (min4 === 12 && max4 === 11) return "h12";
     throw new Error("Unexpected hour cycle result");
   }
+  var $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle;
+  var init_DateFormatter = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/DateFormatter.mjs"() {
+      $fb18d541ea1ad717$var$formatterCache = /* @__PURE__ */ new Map();
+      $fb18d541ea1ad717$export$ad991b66133851cf = class {
+        /** Formats a date as a string according to the locale and format options passed to the constructor. */
+        format(value) {
+          return this.formatter.format(value);
+        }
+        /** Formats a date to an array of parts such as separators, numbers, punctuation, and more. */
+        formatToParts(value) {
+          return this.formatter.formatToParts(value);
+        }
+        /** Formats a date range as a string. */
+        formatRange(start, end) {
+          if (typeof this.formatter.formatRange === "function")
+            return this.formatter.formatRange(start, end);
+          if (end < start) throw new RangeError("End date must be >= start date");
+          return `${this.formatter.format(start)} \u2013 ${this.formatter.format(end)}`;
+        }
+        /** Formats a date range as an array of parts. */
+        formatRangeToParts(start, end) {
+          if (typeof this.formatter.formatRangeToParts === "function")
+            return this.formatter.formatRangeToParts(start, end);
+          if (end < start) throw new RangeError("End date must be >= start date");
+          let startParts = this.formatter.formatToParts(start);
+          let endParts = this.formatter.formatToParts(end);
+          return [
+            ...startParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
+              source: "startRange"
+            })),
+            {
+              type: "literal",
+              value: " \u2013 ",
+              source: "shared"
+            },
+            ...endParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
+              source: "endRange"
+            }))
+          ];
+        }
+        /** Returns the resolved formatting options based on the values passed to the constructor. */
+        resolvedOptions() {
+          let resolvedOptions = this.formatter.resolvedOptions();
+          if ($fb18d541ea1ad717$var$hasBuggyResolvedHourCycle()) {
+            if (!this.resolvedHourCycle) this.resolvedHourCycle = $fb18d541ea1ad717$var$getResolvedHourCycle(resolvedOptions.locale, this.options);
+            resolvedOptions.hourCycle = this.resolvedHourCycle;
+            resolvedOptions.hour12 = this.resolvedHourCycle === "h11" || this.resolvedHourCycle === "h12";
+          }
+          if (resolvedOptions.calendar === "ethiopic-amete-alem") resolvedOptions.calendar = "ethioaa";
+          return resolvedOptions;
+        }
+        constructor(locale, options = {}) {
+          this.formatter = $fb18d541ea1ad717$var$getCachedDateFormatter(locale, options);
+          this.options = options;
+        }
+      };
+      $fb18d541ea1ad717$var$hour12Preferences = {
+        true: {
+          // Only Japanese uses the h11 style for 12 hour time. All others use h12.
+          ja: "h11"
+        },
+        false: {}
+      };
+      $fb18d541ea1ad717$var$_hasBuggyHour12Behavior = null;
+      $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle = null;
+    }
+  });
+
+  // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/import.mjs
+  var init_import = __esm({
+    "../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/import.mjs"() {
+      init_CalendarDate();
+      init_conversion();
+      init_queries();
+      init_string();
+      init_DateFormatter();
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+date-utils@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/index.mjs
   function alignCenter(date, duration, locale, min4, max4) {
     const halfDuration = {};
     for (let prop in duration) {
@@ -10852,10 +11724,10 @@ var Corex = (() => {
     });
   }
   function formatRange(startDate, endDate, formatter, toString, timeZone) {
-    let parts22 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
+    let parts16 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
     let separatorIndex = -1;
-    for (let i2 = 0; i2 < parts22.length; i2++) {
-      let part = parts22[i2];
+    for (let i2 = 0; i2 < parts16.length; i2++) {
+      let part = parts16[i2];
       if (part.source === "shared" && part.type === "literal") {
         separatorIndex = i2;
       } else if (part.source === "endRange") {
@@ -10864,11 +11736,11 @@ var Corex = (() => {
     }
     let start = "";
     let end = "";
-    for (let i2 = 0; i2 < parts22.length; i2++) {
+    for (let i2 = 0; i2 < parts16.length; i2++) {
       if (i2 < separatorIndex) {
-        start += parts22[i2].value;
+        start += parts16[i2].value;
       } else if (i2 > separatorIndex) {
-        end += parts22[i2].value;
+        end += parts16[i2].value;
       }
     }
     return toString(start, end);
@@ -11096,8 +11968,8 @@ var Corex = (() => {
   }
   function createRegex(locale, timeZone) {
     const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone });
-    const parts22 = formatter.formatToParts(new Date(2e3, 11, 25));
-    return parts22.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
+    const parts16 = formatter.formatToParts(new Date(2e3, 11, 25));
+    return parts16.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
   }
   function extract(pattern, str) {
     var _a;
@@ -11155,6 +12027,19 @@ var Corex = (() => {
         throw new Error(`Invalid date range preset: ${preset}`);
     }
   }
+  var daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay;
+  var init_dist19 = __esm({
+    "../node_modules/.pnpm/@zag-js+date-utils@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/index.mjs"() {
+      init_import();
+      daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+      FUTURE_YEAR_COERCION = 10;
+      isValidYear = (year) => year != null && year.length === 4;
+      isValidMonth = (month) => month != null && parseFloat(month) <= 12;
+      isValidDay = (day) => day != null && parseFloat(day) <= 31;
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+live-region@1.33.1/node_modules/@zag-js/live-region/dist/index.mjs
   function createLiveRegion(opts = {}) {
     var _a;
     const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
@@ -11199,6 +12084,14 @@ var Corex = (() => {
       }
     };
   }
+  var ID;
+  var init_dist20 = __esm({
+    "../node_modules/.pnpm/@zag-js+live-region@1.33.1/node_modules/@zag-js/live-region/dist/index.mjs"() {
+      ID = "__live-region__";
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+date-picker@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/index.mjs
   function adjustStartAndEndDate(value) {
     const [startDate, endDate] = value;
     let result;
@@ -12037,558 +12930,19 @@ var Corex = (() => {
     }
     return $fae977aafc393c5c$export$6b862160d295c8e(value);
   }
-  function toISOString(d2) {
-    const pad = (n2) => String(n2).padStart(2, "0");
-    return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
-  }
-  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, ID, anatomy6, parts6, getLabelId4, getRootId6, getTableId, getContentId3, getCellTriggerId, getPrevTriggerId, getNextTriggerId, getViewTriggerId, getClearTriggerId2, getControlId3, getInputId3, getTriggerId3, getPositionerId2, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl2, getContentEl3, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl2, getControlEl2, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and3, machine6, normalizeValue, props6, splitProps6, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps, DatePicker, DatePickerHook;
-  var init_date_picker = __esm({
-    "../priv/static/date-picker.mjs"() {
-      "use strict";
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
-      $3b62074eb05584b2$var$EPOCH = 1721426;
-      $3b62074eb05584b2$var$daysInMonth = {
-        standard: [
-          31,
-          28,
-          31,
-          30,
-          31,
-          30,
-          31,
-          31,
-          30,
-          31,
-          30,
-          31
-        ],
-        leapyear: [
-          31,
-          29,
-          31,
-          30,
-          31,
-          30,
-          31,
-          31,
-          30,
-          31,
-          30,
-          31
-        ]
-      };
-      $3b62074eb05584b2$export$80ee6245ec4f29ec = class {
-        fromJulianDay(jd) {
-          let jd0 = jd;
-          let depoch = jd0 - $3b62074eb05584b2$var$EPOCH;
-          let quadricent = Math.floor(depoch / 146097);
-          let dqc = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(depoch, 146097);
-          let cent = Math.floor(dqc / 36524);
-          let dcent = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(dqc, 36524);
-          let quad = Math.floor(dcent / 1461);
-          let dquad = (0, $2b4dce13dd5a17fa$export$842a2cf37af977e1)(dcent, 1461);
-          let yindex = Math.floor(dquad / 365);
-          let extendedYear = quadricent * 400 + cent * 100 + quad * 4 + yindex + (cent !== 4 && yindex !== 4 ? 1 : 0);
-          let [era, year] = $3b62074eb05584b2$export$4475b7e617eb123c(extendedYear);
-          let yearDay = jd0 - $3b62074eb05584b2$export$f297eb839006d339(era, year, 1, 1);
-          let leapAdj = 2;
-          if (jd0 < $3b62074eb05584b2$export$f297eb839006d339(era, year, 3, 1)) leapAdj = 0;
-          else if ($3b62074eb05584b2$export$553d7fa8e3805fc0(year)) leapAdj = 1;
-          let month = Math.floor(((yearDay + leapAdj) * 12 + 373) / 367);
-          let day = jd0 - $3b62074eb05584b2$export$f297eb839006d339(era, year, month, 1) + 1;
-          return new (0, $35ea8db9cb2ccb90$export$99faa760c7908e4f)(era, year, month, day);
-        }
-        toJulianDay(date) {
-          return $3b62074eb05584b2$export$f297eb839006d339(date.era, date.year, date.month, date.day);
-        }
-        getDaysInMonth(date) {
-          return $3b62074eb05584b2$var$daysInMonth[$3b62074eb05584b2$export$553d7fa8e3805fc0(date.year) ? "leapyear" : "standard"][date.month - 1];
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        getMonthsInYear(date) {
-          return 12;
-        }
-        getDaysInYear(date) {
-          return $3b62074eb05584b2$export$553d7fa8e3805fc0(date.year) ? 366 : 365;
-        }
-        getMaximumMonthsInYear() {
-          return 12;
-        }
-        getMaximumDaysInMonth() {
-          return 31;
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        getYearsInEra(date) {
-          return 9999;
-        }
-        getEras() {
-          return [
-            "BC",
-            "AD"
-          ];
-        }
-        isInverseEra(date) {
-          return date.era === "BC";
-        }
-        balanceDate(date) {
-          if (date.year <= 0) {
-            date.era = date.era === "BC" ? "AD" : "BC";
-            date.year = 1 - date.year;
-          }
-        }
-        constructor() {
-          this.identifier = "gregory";
-        }
-      };
-      $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
-        "001": 1,
-        AD: 1,
-        AE: 6,
-        AF: 6,
-        AI: 1,
-        AL: 1,
-        AM: 1,
-        AN: 1,
-        AR: 1,
-        AT: 1,
-        AU: 1,
-        AX: 1,
-        AZ: 1,
-        BA: 1,
-        BE: 1,
-        BG: 1,
-        BH: 6,
-        BM: 1,
-        BN: 1,
-        BY: 1,
-        CH: 1,
-        CL: 1,
-        CM: 1,
-        CN: 1,
-        CR: 1,
-        CY: 1,
-        CZ: 1,
-        DE: 1,
-        DJ: 6,
-        DK: 1,
-        DZ: 6,
-        EC: 1,
-        EE: 1,
-        EG: 6,
-        ES: 1,
-        FI: 1,
-        FJ: 1,
-        FO: 1,
-        FR: 1,
-        GB: 1,
-        GE: 1,
-        GF: 1,
-        GP: 1,
-        GR: 1,
-        HR: 1,
-        HU: 1,
-        IE: 1,
-        IQ: 6,
-        IR: 6,
-        IS: 1,
-        IT: 1,
-        JO: 6,
-        KG: 1,
-        KW: 6,
-        KZ: 1,
-        LB: 1,
-        LI: 1,
-        LK: 1,
-        LT: 1,
-        LU: 1,
-        LV: 1,
-        LY: 6,
-        MC: 1,
-        MD: 1,
-        ME: 1,
-        MK: 1,
-        MN: 1,
-        MQ: 1,
-        MV: 5,
-        MY: 1,
-        NL: 1,
-        NO: 1,
-        NZ: 1,
-        OM: 6,
-        PL: 1,
-        QA: 6,
-        RE: 1,
-        RO: 1,
-        RS: 1,
-        RU: 1,
-        SD: 6,
-        SE: 1,
-        SI: 1,
-        SK: 1,
-        SM: 1,
-        SY: 6,
-        TJ: 1,
-        TM: 1,
-        TR: 1,
-        UA: 1,
-        UY: 1,
-        UZ: 1,
-        VA: 1,
-        VN: 1,
-        XK: 1
-      };
-      $14e0f24ef4ac5c92$var$DAY_MAP = {
-        sun: 0,
-        mon: 1,
-        tue: 2,
-        wed: 3,
-        thu: 4,
-        fri: 5,
-        sat: 6
-      };
-      $14e0f24ef4ac5c92$var$localTimeZone = null;
-      $14e0f24ef4ac5c92$var$cachedRegions = /* @__PURE__ */ new Map();
-      $14e0f24ef4ac5c92$var$cachedWeekInfo = /* @__PURE__ */ new Map();
-      $14e0f24ef4ac5c92$var$WEEKEND_DATA = {
-        AF: [
-          4,
-          5
-        ],
-        AE: [
-          5,
-          6
-        ],
-        BH: [
-          5,
-          6
-        ],
-        DZ: [
-          5,
-          6
-        ],
-        EG: [
-          5,
-          6
-        ],
-        IL: [
-          5,
-          6
-        ],
-        IQ: [
-          5,
-          6
-        ],
-        IR: [
-          5,
-          5
-        ],
-        JO: [
-          5,
-          6
-        ],
-        KW: [
-          5,
-          6
-        ],
-        LY: [
-          5,
-          6
-        ],
-        OM: [
-          5,
-          6
-        ],
-        QA: [
-          5,
-          6
-        ],
-        SA: [
-          5,
-          6
-        ],
-        SD: [
-          5,
-          6
-        ],
-        SY: [
-          5,
-          6
-        ],
-        YE: [
-          5,
-          6
-        ]
-      };
-      $11d87f3f76e88657$var$formattersByTimeZone = /* @__PURE__ */ new Map();
-      $11d87f3f76e88657$var$DAYMILLIS = 864e5;
-      $735220c2d4774dd3$var$ONE_HOUR = 36e5;
-      $fae977aafc393c5c$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
-      $fae977aafc393c5c$var$ABSOLUTE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:(?:([+-]\d{2})(?::?(\d{2}))?)|Z)$/;
-      $fae977aafc393c5c$var$requiredDurationTimeGroups = [
-        "hours",
-        "minutes",
-        "seconds"
-      ];
-      $fae977aafc393c5c$var$requiredDurationGroups = [
-        "years",
-        "months",
-        "weeks",
-        "days",
-        ...$fae977aafc393c5c$var$requiredDurationTimeGroups
-      ];
-      $35ea8db9cb2ccb90$var$_type = /* @__PURE__ */ new WeakMap();
-      $35ea8db9cb2ccb90$export$99faa760c7908e4f = class _$35ea8db9cb2ccb90$export$99faa760c7908e4f {
-        /** Returns a copy of this date. */
-        copy() {
-          if (this.era) return new _$35ea8db9cb2ccb90$export$99faa760c7908e4f(this.calendar, this.era, this.year, this.month, this.day);
-          else return new _$35ea8db9cb2ccb90$export$99faa760c7908e4f(this.calendar, this.year, this.month, this.day);
-        }
-        /** Returns a new `CalendarDate` with the given duration added to it. */
-        add(duration) {
-          return (0, $735220c2d4774dd3$export$e16d8520af44a096)(this, duration);
-        }
-        /** Returns a new `CalendarDate` with the given duration subtracted from it. */
-        subtract(duration) {
-          return (0, $735220c2d4774dd3$export$4e2d2ead65e5f7e3)(this, duration);
-        }
-        /** Returns a new `CalendarDate` with the given fields set to the provided values. Other fields will be constrained accordingly. */
-        set(fields) {
-          return (0, $735220c2d4774dd3$export$adaa4cf7ef1b65be)(this, fields);
-        }
-        /**
-        * Returns a new `CalendarDate` with the given field adjusted by a specified amount.
-        * When the resulting value reaches the limits of the field, it wraps around.
-        */
-        cycle(field, amount, options) {
-          return (0, $735220c2d4774dd3$export$d52ced6badfb9a4c)(this, field, amount, options);
-        }
-        /** Converts the date to a native JavaScript Date object, with the time set to midnight in the given time zone. */
-        toDate(timeZone) {
-          return (0, $11d87f3f76e88657$export$e67a095c620b86fe)(this, timeZone);
-        }
-        /** Converts the date to an ISO 8601 formatted string. */
-        toString() {
-          return (0, $fae977aafc393c5c$export$60dfd74aa96791bd)(this);
-        }
-        /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
-        compare(b2) {
-          return (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b2);
-        }
-        constructor(...args) {
-          (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type, {
-            writable: true,
-            value: void 0
-          });
-          let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
-          this.calendar = calendar;
-          this.era = era;
-          this.year = year;
-          this.month = month;
-          this.day = day;
-          (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
-        }
-      };
-      $35ea8db9cb2ccb90$var$_type2 = /* @__PURE__ */ new WeakMap();
-      $35ea8db9cb2ccb90$export$ca871e8dbb80966f = class _$35ea8db9cb2ccb90$export$ca871e8dbb80966f {
-        /** Returns a copy of this date. */
-        copy() {
-          if (this.era) return new _$35ea8db9cb2ccb90$export$ca871e8dbb80966f(this.calendar, this.era, this.year, this.month, this.day, this.hour, this.minute, this.second, this.millisecond);
-          else return new _$35ea8db9cb2ccb90$export$ca871e8dbb80966f(this.calendar, this.year, this.month, this.day, this.hour, this.minute, this.second, this.millisecond);
-        }
-        /** Returns a new `CalendarDateTime` with the given duration added to it. */
-        add(duration) {
-          return (0, $735220c2d4774dd3$export$e16d8520af44a096)(this, duration);
-        }
-        /** Returns a new `CalendarDateTime` with the given duration subtracted from it. */
-        subtract(duration) {
-          return (0, $735220c2d4774dd3$export$4e2d2ead65e5f7e3)(this, duration);
-        }
-        /** Returns a new `CalendarDateTime` with the given fields set to the provided values. Other fields will be constrained accordingly. */
-        set(fields) {
-          return (0, $735220c2d4774dd3$export$adaa4cf7ef1b65be)((0, $735220c2d4774dd3$export$e5d5e1c1822b6e56)(this, fields), fields);
-        }
-        /**
-        * Returns a new `CalendarDateTime` with the given field adjusted by a specified amount.
-        * When the resulting value reaches the limits of the field, it wraps around.
-        */
-        cycle(field, amount, options) {
-          switch (field) {
-            case "era":
-            case "year":
-            case "month":
-            case "day":
-              return (0, $735220c2d4774dd3$export$d52ced6badfb9a4c)(this, field, amount, options);
-            default:
-              return (0, $735220c2d4774dd3$export$dd02b3e0007dfe28)(this, field, amount, options);
-          }
-        }
-        /** Converts the date to a native JavaScript Date object in the given time zone. */
-        toDate(timeZone, disambiguation) {
-          return (0, $11d87f3f76e88657$export$e67a095c620b86fe)(this, timeZone, disambiguation);
-        }
-        /** Converts the date to an ISO 8601 formatted string. */
-        toString() {
-          return (0, $fae977aafc393c5c$export$4223de14708adc63)(this);
-        }
-        /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
-        compare(b2) {
-          let res = (0, $14e0f24ef4ac5c92$export$68781ddf31c0090f)(this, b2);
-          if (res === 0) return (0, $14e0f24ef4ac5c92$export$c19a80a9721b80f6)(this, (0, $11d87f3f76e88657$export$b21e0b124e224484)(b2));
-          return res;
-        }
-        constructor(...args) {
-          (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type2, {
-            writable: true,
-            value: void 0
-          });
-          let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
-          this.calendar = calendar;
-          this.era = era;
-          this.year = year;
-          this.month = month;
-          this.day = day;
-          this.hour = args.shift() || 0;
-          this.minute = args.shift() || 0;
-          this.second = args.shift() || 0;
-          this.millisecond = args.shift() || 0;
-          (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
-        }
-      };
-      $35ea8db9cb2ccb90$var$_type3 = /* @__PURE__ */ new WeakMap();
-      $35ea8db9cb2ccb90$export$d3b7288e7994edea = class _$35ea8db9cb2ccb90$export$d3b7288e7994edea {
-        /** Returns a copy of this date. */
-        copy() {
-          if (this.era) return new _$35ea8db9cb2ccb90$export$d3b7288e7994edea(this.calendar, this.era, this.year, this.month, this.day, this.timeZone, this.offset, this.hour, this.minute, this.second, this.millisecond);
-          else return new _$35ea8db9cb2ccb90$export$d3b7288e7994edea(this.calendar, this.year, this.month, this.day, this.timeZone, this.offset, this.hour, this.minute, this.second, this.millisecond);
-        }
-        /** Returns a new `ZonedDateTime` with the given duration added to it. */
-        add(duration) {
-          return (0, $735220c2d4774dd3$export$96b1d28349274637)(this, duration);
-        }
-        /** Returns a new `ZonedDateTime` with the given duration subtracted from it. */
-        subtract(duration) {
-          return (0, $735220c2d4774dd3$export$6814caac34ca03c7)(this, duration);
-        }
-        /** Returns a new `ZonedDateTime` with the given fields set to the provided values. Other fields will be constrained accordingly. */
-        set(fields, disambiguation) {
-          return (0, $735220c2d4774dd3$export$31b5430eb18be4f8)(this, fields, disambiguation);
-        }
-        /**
-        * Returns a new `ZonedDateTime` with the given field adjusted by a specified amount.
-        * When the resulting value reaches the limits of the field, it wraps around.
-        */
-        cycle(field, amount, options) {
-          return (0, $735220c2d4774dd3$export$9a297d111fc86b79)(this, field, amount, options);
-        }
-        /** Converts the date to a native JavaScript Date object. */
-        toDate() {
-          return (0, $11d87f3f76e88657$export$83aac07b4c37b25)(this);
-        }
-        /** Converts the date to an ISO 8601 formatted string, including the UTC offset and time zone identifier. */
-        toString() {
-          return (0, $fae977aafc393c5c$export$bf79f1ebf4b18792)(this);
-        }
-        /** Converts the date to an ISO 8601 formatted string in UTC. */
-        toAbsoluteString() {
-          return this.toDate().toISOString();
-        }
-        /** Compares this date with another. A negative result indicates that this date is before the given one, and a positive date indicates that it is after. */
-        compare(b2) {
-          return this.toDate().getTime() - (0, $11d87f3f76e88657$export$84c95a83c799e074)(b2, this.timeZone).toDate().getTime();
-        }
-        constructor(...args) {
-          (0, _class_private_field_init)(this, $35ea8db9cb2ccb90$var$_type3, {
-            writable: true,
-            value: void 0
-          });
-          let [calendar, era, year, month, day] = $35ea8db9cb2ccb90$var$shiftArgs(args);
-          let timeZone = args.shift();
-          let offset3 = args.shift();
-          this.calendar = calendar;
-          this.era = era;
-          this.year = year;
-          this.month = month;
-          this.day = day;
-          this.timeZone = timeZone;
-          this.offset = offset3;
-          this.hour = args.shift() || 0;
-          this.minute = args.shift() || 0;
-          this.second = args.shift() || 0;
-          this.millisecond = args.shift() || 0;
-          (0, $735220c2d4774dd3$export$c4e2ecac49351ef2)(this);
-        }
-      };
-      $fb18d541ea1ad717$var$formatterCache = /* @__PURE__ */ new Map();
-      $fb18d541ea1ad717$export$ad991b66133851cf = class {
-        /** Formats a date as a string according to the locale and format options passed to the constructor. */
-        format(value) {
-          return this.formatter.format(value);
-        }
-        /** Formats a date to an array of parts such as separators, numbers, punctuation, and more. */
-        formatToParts(value) {
-          return this.formatter.formatToParts(value);
-        }
-        /** Formats a date range as a string. */
-        formatRange(start, end) {
-          if (typeof this.formatter.formatRange === "function")
-            return this.formatter.formatRange(start, end);
-          if (end < start) throw new RangeError("End date must be >= start date");
-          return `${this.formatter.format(start)} \u2013 ${this.formatter.format(end)}`;
-        }
-        /** Formats a date range as an array of parts. */
-        formatRangeToParts(start, end) {
-          if (typeof this.formatter.formatRangeToParts === "function")
-            return this.formatter.formatRangeToParts(start, end);
-          if (end < start) throw new RangeError("End date must be >= start date");
-          let startParts = this.formatter.formatToParts(start);
-          let endParts = this.formatter.formatToParts(end);
-          return [
-            ...startParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
-              source: "startRange"
-            })),
-            {
-              type: "literal",
-              value: " \u2013 ",
-              source: "shared"
-            },
-            ...endParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
-              source: "endRange"
-            }))
-          ];
-        }
-        /** Returns the resolved formatting options based on the values passed to the constructor. */
-        resolvedOptions() {
-          let resolvedOptions = this.formatter.resolvedOptions();
-          if ($fb18d541ea1ad717$var$hasBuggyResolvedHourCycle()) {
-            if (!this.resolvedHourCycle) this.resolvedHourCycle = $fb18d541ea1ad717$var$getResolvedHourCycle(resolvedOptions.locale, this.options);
-            resolvedOptions.hourCycle = this.resolvedHourCycle;
-            resolvedOptions.hour12 = this.resolvedHourCycle === "h11" || this.resolvedHourCycle === "h12";
-          }
-          if (resolvedOptions.calendar === "ethiopic-amete-alem") resolvedOptions.calendar = "ethioaa";
-          return resolvedOptions;
-        }
-        constructor(locale, options = {}) {
-          this.formatter = $fb18d541ea1ad717$var$getCachedDateFormatter(locale, options);
-          this.options = options;
-        }
-      };
-      $fb18d541ea1ad717$var$hour12Preferences = {
-        true: {
-          // Only Japanese uses the h11 style for 12 hour time. All others use h12.
-          ja: "h11"
-        },
-        false: {}
-      };
-      $fb18d541ea1ad717$var$_hasBuggyHour12Behavior = null;
-      $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle = null;
-      daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-      FUTURE_YEAR_COERCION = 10;
-      isValidYear = (year) => year != null && year.length === 4;
-      isValidMonth = (month) => month != null && parseFloat(month) <= 12;
-      isValidDay = (day) => day != null && parseFloat(day) <= 31;
-      ID = "__live-region__";
+  var anatomy6, parts6, getLabelId4, getRootId6, getTableId, getContentId3, getCellTriggerId, getPrevTriggerId, getNextTriggerId, getViewTriggerId, getClearTriggerId2, getControlId3, getInputId3, getTriggerId3, getPositionerId2, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl2, getContentEl3, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl2, getControlEl2, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and3, machine6, normalizeValue, props6, splitProps6, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps;
+  var init_dist21 = __esm({
+    "../node_modules/.pnpm/@zag-js+date-picker@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/index.mjs"() {
+      init_dist();
+      init_import();
+      init_dist19();
+      init_dist2();
+      init_dist15();
+      init_dist3();
+      init_dist4();
+      init_dist17();
+      init_dist20();
+      init_dist5();
       anatomy6 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -13875,6 +14229,17 @@ var Corex = (() => {
       splitTableCellProps = createSplitProps(tableCellProps);
       viewProps = createProps()(["view"]);
       splitViewProps = createSplitProps(viewProps);
+    }
+  });
+
+  // components/date-picker.ts
+  var DatePicker;
+  var init_date_picker = __esm({
+    "components/date-picker.ts"() {
+      "use strict";
+      init_dist21();
+      init_dist9();
+      init_core();
       DatePicker = class extends Component {
         constructor() {
           super(...arguments);
@@ -13979,8 +14344,8 @@ var Corex = (() => {
             });
           });
         }
-        initMachine(props22) {
-          return new VanillaMachine(machine6, __spreadValues({}, props22));
+        initMachine(props15) {
+          return new VanillaMachine(machine6, __spreadValues({}, props15));
         }
         initApi() {
           return connect6(this.machine.service, normalizeProps);
@@ -14147,6 +14512,25 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/date-picker.ts
+  var date_picker_exports = {};
+  __export(date_picker_exports, {
+    DatePicker: () => DatePickerHook
+  });
+  function toISOString(d2) {
+    const pad = (n2) => String(n2).padStart(2, "0");
+    return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
+  }
+  var DatePickerHook;
+  var init_date_picker2 = __esm({
+    "hooks/date-picker.ts"() {
+      "use strict";
+      init_date_picker();
+      init_dist21();
+      init_util();
       DatePickerHook = {
         mounted() {
           const el = this.el;
@@ -14327,11 +14711,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/dialog.mjs
-  var dialog_exports = {};
-  __export(dialog_exports, {
-    Dialog: () => DialogHook
-  });
+  // ../node_modules/.pnpm/@zag-js+aria-hidden@1.33.1/node_modules/@zag-js/aria-hidden/dist/index.mjs
   function ariaHidden(targetsOrFn, options = {}) {
     const { defer = true } = options;
     const func = defer ? raf2 : (v2) => v2();
@@ -14348,181 +14728,10 @@ var Corex = (() => {
       cleanups.forEach((fn) => fn == null ? void 0 : fn());
     };
   }
-  function trapFocus(el, options = {}) {
-    let trap;
-    const cleanup = raf(() => {
-      const elements = Array.isArray(el) ? el : [el];
-      const resolvedElements = elements.map((e2) => typeof e2 === "function" ? e2() : e2).filter((e2) => e2 != null);
-      if (resolvedElements.length === 0) return;
-      const primaryEl = resolvedElements[0];
-      trap = new FocusTrap(resolvedElements, __spreadProps(__spreadValues({
-        escapeDeactivates: false,
-        allowOutsideClick: true,
-        preventScroll: true,
-        returnFocusOnDeactivate: true,
-        delayInitialFocus: false,
-        fallbackFocus: primaryEl
-      }, options), {
-        document: getDocument(primaryEl)
-      }));
-      try {
-        trap.activate();
-      } catch (e2) {
-      }
-    });
-    return function destroy() {
-      trap == null ? void 0 : trap.deactivate();
-      cleanup();
-    };
-  }
-  function getPaddingProperty(documentElement) {
-    const documentLeft = documentElement.getBoundingClientRect().left;
-    const scrollbarX = Math.round(documentLeft) + documentElement.scrollLeft;
-    return scrollbarX ? "paddingLeft" : "paddingRight";
-  }
-  function hasStableScrollbarGutter(element) {
-    const styles = getComputedStyle2(element);
-    const scrollbarGutter = styles == null ? void 0 : styles.scrollbarGutter;
-    return scrollbarGutter === "stable" || (scrollbarGutter == null ? void 0 : scrollbarGutter.startsWith("stable ")) === true;
-  }
-  function preventBodyScroll(_document) {
-    var _a;
-    const doc = _document != null ? _document : document;
-    const win = (_a = doc.defaultView) != null ? _a : window;
-    const { documentElement, body } = doc;
-    const locked = body.hasAttribute(LOCK_CLASSNAME);
-    if (locked) return;
-    const hasStableGutter = hasStableScrollbarGutter(documentElement) || hasStableScrollbarGutter(body);
-    const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
-    body.setAttribute(LOCK_CLASSNAME, "");
-    const setScrollbarWidthProperty = () => setStyleProperty(documentElement, "--scrollbar-width", `${scrollbarWidth}px`);
-    const paddingProperty = getPaddingProperty(documentElement);
-    const setBodyStyle = () => {
-      const styles = {
-        overflow: "hidden"
-      };
-      if (!hasStableGutter && scrollbarWidth > 0) {
-        styles[paddingProperty] = `${scrollbarWidth}px`;
-      }
-      return setStyle(body, styles);
-    };
-    const setBodyStyleIOS = () => {
-      var _a2, _b;
-      const { scrollX, scrollY, visualViewport } = win;
-      const offsetLeft = (_a2 = visualViewport == null ? void 0 : visualViewport.offsetLeft) != null ? _a2 : 0;
-      const offsetTop = (_b = visualViewport == null ? void 0 : visualViewport.offsetTop) != null ? _b : 0;
-      const styles = {
-        position: "fixed",
-        overflow: "hidden",
-        top: `${-(scrollY - Math.floor(offsetTop))}px`,
-        left: `${-(scrollX - Math.floor(offsetLeft))}px`,
-        right: "0"
-      };
-      if (!hasStableGutter && scrollbarWidth > 0) {
-        styles[paddingProperty] = `${scrollbarWidth}px`;
-      }
-      const restoreStyle = setStyle(body, styles);
-      return () => {
-        restoreStyle == null ? void 0 : restoreStyle();
-        win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
-      };
-    };
-    const cleanups = [setScrollbarWidthProperty(), isIos() ? setBodyStyleIOS() : setBodyStyle()];
-    return () => {
-      cleanups.forEach((fn) => fn == null ? void 0 : fn());
-      body.removeAttribute(LOCK_CLASSNAME);
-    };
-  }
-  function connect7(service, normalize) {
-    const { state: state2, send, context, prop, scope } = service;
-    const ariaLabel = prop("aria-label");
-    const open = state2.matches("open");
-    return {
-      open,
-      setOpen(nextOpen) {
-        const open2 = state2.matches("open");
-        if (open2 === nextOpen) return;
-        send({ type: nextOpen ? "OPEN" : "CLOSE" });
-      },
-      getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts7.trigger.attrs), {
-          dir: prop("dir"),
-          id: getTriggerId4(scope),
-          "aria-haspopup": "dialog",
-          type: "button",
-          "aria-expanded": open,
-          "data-state": open ? "open" : "closed",
-          "aria-controls": getContentId4(scope),
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            send({ type: "TOGGLE" });
-          }
-        }));
-      },
-      getBackdropProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.backdrop.attrs), {
-          dir: prop("dir"),
-          hidden: !open,
-          id: getBackdropId(scope),
-          "data-state": open ? "open" : "closed"
-        }));
-      },
-      getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.positioner.attrs), {
-          dir: prop("dir"),
-          id: getPositionerId3(scope),
-          style: {
-            pointerEvents: open ? void 0 : "none"
-          }
-        }));
-      },
-      getContentProps() {
-        const rendered = context.get("rendered");
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.content.attrs), {
-          dir: prop("dir"),
-          role: prop("role"),
-          hidden: !open,
-          id: getContentId4(scope),
-          tabIndex: -1,
-          "data-state": open ? "open" : "closed",
-          "aria-modal": true,
-          "aria-label": ariaLabel || void 0,
-          "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
-          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
-        }));
-      },
-      getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.title.attrs), {
-          dir: prop("dir"),
-          id: getTitleId(scope)
-        }));
-      },
-      getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.description.attrs), {
-          dir: prop("dir"),
-          id: getDescriptionId(scope)
-        }));
-      },
-      getCloseTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts7.closeTrigger.attrs), {
-          dir: prop("dir"),
-          id: getCloseTriggerId(scope),
-          type: "button",
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            event.stopPropagation();
-            send({ type: "CLOSE" });
-          }
-        }));
-      }
-    };
-  }
-  var counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp5, __defNormalProp5, __publicField5, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, anatomy7, parts7, getPositionerId3, getBackdropId, getContentId4, getTriggerId4, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl4, getPositionerEl3, getBackdropEl, getTriggerEl3, getTitleEl, getDescriptionEl, getCloseTriggerEl, machine7, props7, splitProps7, Dialog, DialogHook;
-  var init_dialog = __esm({
-    "../priv/static/dialog.mjs"() {
-      "use strict";
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
+  var counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2;
+  var init_dist22 = __esm({
+    "../node_modules/.pnpm/@zag-js+aria-hidden@1.33.1/node_modules/@zag-js/aria-hidden/dist/index.mjs"() {
+      init_dist2();
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -14544,8 +14753,8 @@ var Corex = (() => {
         if (node.hasAttribute("aria-live")) return true;
         return node.matches("[data-live-announcer]");
       };
-      walkTreeOutside = (originalTarget, props22) => {
-        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props22;
+      walkTreeOutside = (originalTarget, props15) => {
+        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props15;
         const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
         markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
         const markerCounter = markerMap[markerName];
@@ -14642,9 +14851,44 @@ var Corex = (() => {
         const frameId = requestAnimationFrame(() => fn());
         return () => cancelAnimationFrame(frameId);
       };
-      __defProp5 = Object.defineProperty;
-      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+focus-trap@1.33.1/node_modules/@zag-js/focus-trap/dist/index.mjs
+  function trapFocus(el, options = {}) {
+    let trap;
+    const cleanup = raf(() => {
+      const elements = Array.isArray(el) ? el : [el];
+      const resolvedElements = elements.map((e2) => typeof e2 === "function" ? e2() : e2).filter((e2) => e2 != null);
+      if (resolvedElements.length === 0) return;
+      const primaryEl = resolvedElements[0];
+      trap = new FocusTrap(resolvedElements, __spreadProps(__spreadValues({
+        escapeDeactivates: false,
+        allowOutsideClick: true,
+        preventScroll: true,
+        returnFocusOnDeactivate: true,
+        delayInitialFocus: false,
+        fallbackFocus: primaryEl
+      }, options), {
+        document: getDocument(primaryEl)
+      }));
+      try {
+        trap.activate();
+      } catch (e2) {
+      }
+    });
+    return function destroy() {
+      trap == null ? void 0 : trap.deactivate();
+      cleanup();
+    };
+  }
+  var __defProp6, __defNormalProp6, __publicField6, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput;
+  var init_dist23 = __esm({
+    "../node_modules/.pnpm/@zag-js+focus-trap@1.33.1/node_modules/@zag-js/focus-trap/dist/index.mjs"() {
+      init_dist2();
+      __defProp6 = Object.defineProperty;
+      __defNormalProp6 = (obj, key, value) => key in obj ? __defProp6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField6 = (obj, key, value) => __defNormalProp6(obj, typeof key !== "symbol" ? key + "" : key, value);
       activeFocusTraps = {
         activateTrap(trapStack, trap) {
           if (trapStack.length > 0) {
@@ -14674,10 +14918,10 @@ var Corex = (() => {
       sharedTrapStack = [];
       FocusTrap = class {
         constructor(elements, options) {
-          __publicField5(this, "trapStack");
-          __publicField5(this, "config");
-          __publicField5(this, "doc");
-          __publicField5(this, "state", {
+          __publicField6(this, "trapStack");
+          __publicField6(this, "config");
+          __publicField6(this, "doc");
+          __publicField6(this, "state", {
             containers: [],
             containerGroups: [],
             tabbableGroups: [],
@@ -14688,9 +14932,9 @@ var Corex = (() => {
             delayInitialFocusTimer: void 0,
             recentNavEvent: void 0
           });
-          __publicField5(this, "portalContainers", /* @__PURE__ */ new Set());
-          __publicField5(this, "listenerCleanups", []);
-          __publicField5(this, "handleFocus", (event) => {
+          __publicField6(this, "portalContainers", /* @__PURE__ */ new Set());
+          __publicField6(this, "listenerCleanups", []);
+          __publicField6(this, "handleFocus", (event) => {
             const target = getEventTarget(event);
             const targetContained = this.findContainerIndex(target, event) >= 0;
             if (targetContained || isDocument(target)) {
@@ -14745,7 +14989,7 @@ var Corex = (() => {
             }
             this.state.recentNavEvent = void 0;
           });
-          __publicField5(this, "handlePointerDown", (event) => {
+          __publicField6(this, "handlePointerDown", (event) => {
             const target = getEventTarget(event);
             if (this.findContainerIndex(target, event) >= 0) {
               return;
@@ -14759,7 +15003,7 @@ var Corex = (() => {
             }
             event.preventDefault();
           });
-          __publicField5(this, "handleClick", (event) => {
+          __publicField6(this, "handleClick", (event) => {
             const target = getEventTarget(event);
             if (this.findContainerIndex(target, event) >= 0) {
               return;
@@ -14773,7 +15017,7 @@ var Corex = (() => {
             event.preventDefault();
             event.stopImmediatePropagation();
           });
-          __publicField5(this, "handleTabKey", (event) => {
+          __publicField6(this, "handleTabKey", (event) => {
             if (this.config.isKeyForward(event) || this.config.isKeyBackward(event)) {
               this.state.recentNavEvent = event;
               const isBackward = this.config.isKeyBackward(event);
@@ -14785,14 +15029,14 @@ var Corex = (() => {
               this.tryFocus(destinationNode);
             }
           });
-          __publicField5(this, "handleEscapeKey", (event) => {
+          __publicField6(this, "handleEscapeKey", (event) => {
             if (isEscapeEvent(event) && valueOrHandler(this.config.escapeDeactivates, event) !== false) {
               event.preventDefault();
               this.deactivate();
             }
           });
-          __publicField5(this, "_mutationObserver");
-          __publicField5(this, "setupMutationObserver", () => {
+          __publicField6(this, "_mutationObserver");
+          __publicField6(this, "setupMutationObserver", () => {
             const win = this.doc.defaultView || window;
             this._mutationObserver = new win.MutationObserver((mutations) => {
               const isFocusedNodeRemoved = mutations.some((mutation) => {
@@ -14827,7 +15071,7 @@ var Corex = (() => {
               }
             });
           });
-          __publicField5(this, "updateObservedNodes", () => {
+          __publicField6(this, "updateObservedNodes", () => {
             var _a;
             (_a = this._mutationObserver) == null ? void 0 : _a.disconnect();
             if (this.state.active && !this.state.paused) {
@@ -14845,7 +15089,7 @@ var Corex = (() => {
               });
             }
           });
-          __publicField5(this, "getInitialFocusNode", () => {
+          __publicField6(this, "getInitialFocusNode", () => {
             let node = this.getNodeForOption("initialFocus", { hasFallback: true });
             if (node === false) {
               return false;
@@ -14870,7 +15114,7 @@ var Corex = (() => {
             }
             return node;
           });
-          __publicField5(this, "tryFocus", (node) => {
+          __publicField6(this, "tryFocus", (node) => {
             if (node === false) return;
             if (node === getActiveElement(this.doc)) return;
             if (!node || !node.focus) {
@@ -14883,7 +15127,7 @@ var Corex = (() => {
               node.select();
             }
           });
-          __publicField5(this, "deactivate", (deactivateOptions) => {
+          __publicField6(this, "deactivate", (deactivateOptions) => {
             if (!this.state.active) return this;
             const options2 = __spreadValues({
               onDeactivate: this.config.onDeactivate,
@@ -14920,7 +15164,7 @@ var Corex = (() => {
             finishDeactivation();
             return this;
           });
-          __publicField5(this, "pause", (pauseOptions) => {
+          __publicField6(this, "pause", (pauseOptions) => {
             if (this.state.paused || !this.state.active) {
               return this;
             }
@@ -14933,7 +15177,7 @@ var Corex = (() => {
             onPostPause == null ? void 0 : onPostPause();
             return this;
           });
-          __publicField5(this, "unpause", (unpauseOptions) => {
+          __publicField6(this, "unpause", (unpauseOptions) => {
             if (!this.state.paused || !this.state.active) {
               return this;
             }
@@ -14947,7 +15191,7 @@ var Corex = (() => {
             onPostUnpause == null ? void 0 : onPostUnpause();
             return this;
           });
-          __publicField5(this, "updateContainerElements", (containerElements) => {
+          __publicField6(this, "updateContainerElements", (containerElements) => {
             this.state.containers = Array.isArray(containerElements) ? containerElements.filter(Boolean) : [containerElements].filter(Boolean);
             if (this.state.active) {
               this.updateTabbableNodes();
@@ -14955,19 +15199,19 @@ var Corex = (() => {
             this.updateObservedNodes();
             return this;
           });
-          __publicField5(this, "getReturnFocusNode", (previousActiveElement) => {
+          __publicField6(this, "getReturnFocusNode", (previousActiveElement) => {
             const node = this.getNodeForOption("setReturnFocus", {
               params: [previousActiveElement]
             });
             return node ? node : node === false ? false : previousActiveElement;
           });
-          __publicField5(this, "getOption", (configOverrideOptions, optionName, configOptionName) => {
+          __publicField6(this, "getOption", (configOverrideOptions, optionName, configOptionName) => {
             return configOverrideOptions && configOverrideOptions[optionName] !== void 0 ? configOverrideOptions[optionName] : (
               // @ts-expect-error
               this.config[configOptionName || optionName]
             );
           });
-          __publicField5(this, "getNodeForOption", (optionName, { hasFallback = false, params = [] } = {}) => {
+          __publicField6(this, "getNodeForOption", (optionName, { hasFallback = false, params = [] } = {}) => {
             let optionValue = this.config[optionName];
             if (typeof optionValue === "function") optionValue = optionValue(...params);
             if (optionValue === true) optionValue = void 0;
@@ -14992,7 +15236,7 @@ var Corex = (() => {
             }
             return node;
           });
-          __publicField5(this, "findNextNavNode", (opts) => {
+          __publicField6(this, "findNextNavNode", (opts) => {
             const { event, isBackward = false } = opts;
             const target = opts.target || getEventTarget(event);
             this.updateTabbableNodes();
@@ -15214,7 +15458,173 @@ var Corex = (() => {
       isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
       delay = (fn) => setTimeout(fn, 0);
       isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+remove-scroll@1.33.1/node_modules/@zag-js/remove-scroll/dist/index.mjs
+  function getPaddingProperty(documentElement) {
+    const documentLeft = documentElement.getBoundingClientRect().left;
+    const scrollbarX = Math.round(documentLeft) + documentElement.scrollLeft;
+    return scrollbarX ? "paddingLeft" : "paddingRight";
+  }
+  function hasStableScrollbarGutter(element) {
+    const styles = getComputedStyle2(element);
+    const scrollbarGutter = styles == null ? void 0 : styles.scrollbarGutter;
+    return scrollbarGutter === "stable" || (scrollbarGutter == null ? void 0 : scrollbarGutter.startsWith("stable ")) === true;
+  }
+  function preventBodyScroll(_document) {
+    var _a;
+    const doc = _document != null ? _document : document;
+    const win = (_a = doc.defaultView) != null ? _a : window;
+    const { documentElement, body } = doc;
+    const locked = body.hasAttribute(LOCK_CLASSNAME);
+    if (locked) return;
+    const hasStableGutter = hasStableScrollbarGutter(documentElement) || hasStableScrollbarGutter(body);
+    const scrollbarWidth = win.innerWidth - documentElement.clientWidth;
+    body.setAttribute(LOCK_CLASSNAME, "");
+    const setScrollbarWidthProperty = () => setStyleProperty(documentElement, "--scrollbar-width", `${scrollbarWidth}px`);
+    const paddingProperty = getPaddingProperty(documentElement);
+    const setBodyStyle = () => {
+      const styles = {
+        overflow: "hidden"
+      };
+      if (!hasStableGutter && scrollbarWidth > 0) {
+        styles[paddingProperty] = `${scrollbarWidth}px`;
+      }
+      return setStyle(body, styles);
+    };
+    const setBodyStyleIOS = () => {
+      var _a2, _b;
+      const { scrollX, scrollY, visualViewport } = win;
+      const offsetLeft = (_a2 = visualViewport == null ? void 0 : visualViewport.offsetLeft) != null ? _a2 : 0;
+      const offsetTop = (_b = visualViewport == null ? void 0 : visualViewport.offsetTop) != null ? _b : 0;
+      const styles = {
+        position: "fixed",
+        overflow: "hidden",
+        top: `${-(scrollY - Math.floor(offsetTop))}px`,
+        left: `${-(scrollX - Math.floor(offsetLeft))}px`,
+        right: "0"
+      };
+      if (!hasStableGutter && scrollbarWidth > 0) {
+        styles[paddingProperty] = `${scrollbarWidth}px`;
+      }
+      const restoreStyle = setStyle(body, styles);
+      return () => {
+        restoreStyle == null ? void 0 : restoreStyle();
+        win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
+      };
+    };
+    const cleanups = [setScrollbarWidthProperty(), isIos() ? setBodyStyleIOS() : setBodyStyle()];
+    return () => {
+      cleanups.forEach((fn) => fn == null ? void 0 : fn());
+      body.removeAttribute(LOCK_CLASSNAME);
+    };
+  }
+  var LOCK_CLASSNAME;
+  var init_dist24 = __esm({
+    "../node_modules/.pnpm/@zag-js+remove-scroll@1.33.1/node_modules/@zag-js/remove-scroll/dist/index.mjs"() {
+      init_dist2();
       LOCK_CLASSNAME = "data-scroll-lock";
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+dialog@1.33.1/node_modules/@zag-js/dialog/dist/index.mjs
+  function connect7(service, normalize) {
+    const { state: state2, send, context, prop, scope } = service;
+    const ariaLabel = prop("aria-label");
+    const open = state2.matches("open");
+    return {
+      open,
+      setOpen(nextOpen) {
+        const open2 = state2.matches("open");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      getTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts7.trigger.attrs), {
+          dir: prop("dir"),
+          id: getTriggerId4(scope),
+          "aria-haspopup": "dialog",
+          type: "button",
+          "aria-expanded": open,
+          "data-state": open ? "open" : "closed",
+          "aria-controls": getContentId4(scope),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "TOGGLE" });
+          }
+        }));
+      },
+      getBackdropProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.backdrop.attrs), {
+          dir: prop("dir"),
+          hidden: !open,
+          id: getBackdropId(scope),
+          "data-state": open ? "open" : "closed"
+        }));
+      },
+      getPositionerProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.positioner.attrs), {
+          dir: prop("dir"),
+          id: getPositionerId3(scope),
+          style: {
+            pointerEvents: open ? void 0 : "none"
+          }
+        }));
+      },
+      getContentProps() {
+        const rendered = context.get("rendered");
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.content.attrs), {
+          dir: prop("dir"),
+          role: prop("role"),
+          hidden: !open,
+          id: getContentId4(scope),
+          tabIndex: -1,
+          "data-state": open ? "open" : "closed",
+          "aria-modal": true,
+          "aria-label": ariaLabel || void 0,
+          "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
+          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
+        }));
+      },
+      getTitleProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.title.attrs), {
+          dir: prop("dir"),
+          id: getTitleId(scope)
+        }));
+      },
+      getDescriptionProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.description.attrs), {
+          dir: prop("dir"),
+          id: getDescriptionId(scope)
+        }));
+      },
+      getCloseTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts7.closeTrigger.attrs), {
+          dir: prop("dir"),
+          id: getCloseTriggerId(scope),
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            event.stopPropagation();
+            send({ type: "CLOSE" });
+          }
+        }));
+      }
+    };
+  }
+  var anatomy7, parts7, getPositionerId3, getBackdropId, getContentId4, getTriggerId4, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl4, getPositionerEl3, getBackdropEl, getTriggerEl3, getTitleEl, getDescriptionEl, getCloseTriggerEl, machine7, props7, splitProps7;
+  var init_dist25 = __esm({
+    "../node_modules/.pnpm/@zag-js+dialog@1.33.1/node_modules/@zag-js/dialog/dist/index.mjs"() {
+      init_dist();
+      init_dist22();
+      init_dist4();
+      init_dist17();
+      init_dist2();
+      init_dist23();
+      init_dist24();
+      init_dist5();
+      init_dist3();
       anatomy7 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -15475,10 +15885,21 @@ var Corex = (() => {
         "trapFocus"
       ]);
       splitProps7 = createSplitProps(props7);
+    }
+  });
+
+  // components/dialog.ts
+  var Dialog;
+  var init_dialog = __esm({
+    "components/dialog.ts"() {
+      "use strict";
+      init_dist25();
+      init_dist9();
+      init_core();
       Dialog = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine7, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine7, props15);
         }
         initApi() {
           return connect7(this.machine.service, normalizeProps);
@@ -15501,6 +15922,20 @@ var Corex = (() => {
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
+    }
+  });
+
+  // hooks/dialog.ts
+  var dialog_exports = {};
+  __export(dialog_exports, {
+    Dialog: () => DialogHook
+  });
+  var DialogHook;
+  var init_dialog2 = __esm({
+    "hooks/dialog.ts"() {
+      "use strict";
+      init_dialog();
+      init_util();
       DialogHook = {
         mounted() {
           const el = this.el;
@@ -15588,11 +16023,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/menu.mjs
-  var menu_exports = {};
-  __export(menu_exports, {
-    Menu: () => MenuHook
-  });
+  // ../node_modules/.pnpm/@zag-js+rect-utils@1.33.1/node_modules/@zag-js/rect-utils/dist/index.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
     const midX = x2 + width / 2;
@@ -15643,6 +16074,16 @@ var Corex = (() => {
     }
     return c2;
   }
+  var createPoint, min3, max3, sign2, abs2, min22;
+  var init_dist26 = __esm({
+    "../node_modules/.pnpm/@zag-js+rect-utils@1.33.1/node_modules/@zag-js/rect-utils/dist/index.mjs"() {
+      createPoint = (x2, y2) => ({ x: x2, y: y2 });
+      ({ min: min3, max: max3 } = Math);
+      ({ sign: sign2, abs: abs2, min: min22 } = Math);
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+menu@1.33.1/node_modules/@zag-js/menu/dist/index.mjs
   function dispatchSelectionEvent(el, value) {
     if (!el) return;
     const win = getWindow(el);
@@ -16068,16 +16509,17 @@ var Corex = (() => {
     }
     return getItemId3(scope, value);
   }
-  var createPoint, min3, max3, sign2, abs2, min22, anatomy8, parts8, getTriggerId5, getContextTriggerId, getContentId5, getArrowId, getPositionerId4, getGroupId, getItemId3, getItemValue, getGroupLabelId, getContentEl5, getPositionerEl4, getTriggerEl4, getItemEl2, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not4, and4, or, machine8, props8, splitProps8, itemProps3, splitItemProps3, itemGroupLabelProps2, splitItemGroupLabelProps2, itemGroupProps2, splitItemGroupProps2, optionItemProps, splitOptionItemProps, Menu, MenuHook;
-  var init_menu = __esm({
-    "../priv/static/menu.mjs"() {
-      "use strict";
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
-      createPoint = (x2, y2) => ({ x: x2, y: y2 });
-      ({ min: min3, max: max3 } = Math);
-      ({ sign: sign2, abs: abs2, min: min22 } = Math);
+  var anatomy8, parts8, getTriggerId5, getContextTriggerId, getContentId5, getArrowId, getPositionerId4, getGroupId, getItemId3, getItemValue, getGroupLabelId, getContentEl5, getPositionerEl4, getTriggerEl4, getItemEl2, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not4, and4, or, machine8, props8, splitProps8, itemProps3, splitItemProps3, itemGroupLabelProps2, splitItemGroupLabelProps2, itemGroupProps2, splitItemGroupProps2, optionItemProps, splitOptionItemProps;
+  var init_dist27 = __esm({
+    "../node_modules/.pnpm/@zag-js+menu@1.33.1/node_modules/@zag-js/menu/dist/index.mjs"() {
+      init_dist();
+      init_dist4();
+      init_dist2();
+      init_dist15();
+      init_dist3();
+      init_dist17();
+      init_dist26();
+      init_dist5();
       anatomy8 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -17040,14 +17482,25 @@ var Corex = (() => {
         "valueText"
       ]);
       splitOptionItemProps = createSplitProps(optionItemProps);
+    }
+  });
+
+  // components/menu.ts
+  var Menu;
+  var init_menu = __esm({
+    "components/menu.ts"() {
+      "use strict";
+      init_dist27();
+      init_dist9();
+      init_core();
       Menu = class extends Component {
         constructor() {
           super(...arguments);
           __publicField(this, "children", []);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine8, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine8, props15);
         }
         initApi() {
           return connect8(this.machine.service, normalizeProps);
@@ -17174,6 +17627,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/menu.ts
+  var menu_exports = {};
+  __export(menu_exports, {
+    Menu: () => MenuHook
+  });
+  var MenuHook;
+  var init_menu2 = __esm({
+    "hooks/menu.ts"() {
+      "use strict";
+      init_menu();
+      init_util();
       MenuHook = {
         mounted() {
           const el = this.el;
@@ -17350,11 +17817,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/select.mjs
-  var select_exports = {};
-  __export(select_exports, {
-    Select: () => SelectHook
-  });
+  // ../node_modules/.pnpm/@zag-js+select@1.33.1/node_modules/@zag-js/select/dist/index.mjs
   function connect9(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
@@ -17764,25 +18227,17 @@ var Corex = (() => {
     const v2 = (_b = event.restoreFocus) != null ? _b : (_a = event.previousEvent) == null ? void 0 : _a.restoreFocus;
     return v2 == null || !!v2;
   }
-  function snakeToCamel2(str) {
-    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
-  }
-  function transformPositioningOptions2(obj) {
-    const result = {};
-    for (const [key, value] of Object.entries(obj)) {
-      const camelKey = snakeToCamel2(key);
-      result[camelKey] = value;
-    }
-    return result;
-  }
-  var anatomy9, parts9, collection2, getRootId7, getContentId6, getTriggerId6, getClearTriggerId3, getLabelId5, getControlId4, getItemId4, getHiddenSelectId, getPositionerId5, getItemGroupId2, getItemGroupLabelId2, getHiddenSelectEl, getContentEl6, getTriggerEl5, getClearTriggerEl3, getPositionerEl5, getItemEl3, and5, not5, or2, machine9, props9, splitProps9, itemProps4, splitItemProps4, itemGroupProps3, splitItemGroupProps3, itemGroupLabelProps3, splitItemGroupLabelProps3, Select, SelectHook;
-  var init_select = __esm({
-    "../priv/static/select.mjs"() {
-      "use strict";
-      init_chunk_2DWEYSRA();
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
+  var anatomy9, parts9, collection2, getRootId7, getContentId6, getTriggerId6, getClearTriggerId3, getLabelId5, getControlId4, getItemId4, getHiddenSelectId, getPositionerId5, getItemGroupId2, getItemGroupLabelId2, getHiddenSelectEl, getContentEl6, getTriggerEl5, getClearTriggerEl3, getPositionerEl5, getItemEl3, and5, not5, or2, machine9, props9, splitProps9, itemProps4, splitItemProps4, itemGroupProps3, splitItemGroupProps3, itemGroupLabelProps3, splitItemGroupLabelProps3;
+  var init_dist28 = __esm({
+    "../node_modules/.pnpm/@zag-js+select@1.33.1/node_modules/@zag-js/select/dist/index.mjs"() {
+      init_dist();
+      init_dist14();
+      init_dist2();
+      init_dist15();
+      init_dist3();
+      init_dist4();
+      init_dist17();
+      init_dist5();
       anatomy9 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -18581,9 +19036,22 @@ var Corex = (() => {
       splitItemGroupProps3 = createSplitProps(itemGroupProps3);
       itemGroupLabelProps3 = createProps()(["htmlFor"]);
       splitItemGroupLabelProps3 = createSplitProps(itemGroupLabelProps3);
+    }
+  });
+
+  // components/select.ts
+  var Select;
+  var init_select = __esm({
+    "components/select.ts"() {
+      "use strict";
+      init_dist28();
+      init_dist28();
+      init_dist9();
+      init_core();
+      init_util();
       Select = class extends Component {
-        constructor(el, props22) {
-          super(el, props22);
+        constructor(el, props15) {
+          super(el, props15);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "placeholder", "");
@@ -18619,9 +19087,9 @@ var Corex = (() => {
             isItemDisabled: (item) => !!item.disabled
           });
         }
-        initMachine(props22) {
+        initMachine(props15) {
           const self2 = this;
-          return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props22), {
+          return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props15), {
             get collection() {
               return self2.getCollection();
             }
@@ -18778,6 +19246,31 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/select.ts
+  var select_exports = {};
+  __export(select_exports, {
+    Select: () => SelectHook
+  });
+  function snakeToCamel2(str) {
+    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
+  }
+  function transformPositioningOptions2(obj) {
+    const result = {};
+    for (const [key, value] of Object.entries(obj)) {
+      const camelKey = snakeToCamel2(key);
+      result[camelKey] = value;
+    }
+    return result;
+  }
+  var SelectHook;
+  var init_select2 = __esm({
+    "hooks/select.ts"() {
+      "use strict";
+      init_select();
+      init_util();
       SelectHook = {
         mounted() {
           const el = this.el;
@@ -18920,11 +19413,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/signature-pad.mjs
-  var signature_pad_exports = {};
-  __export(signature_pad_exports, {
-    SignaturePad: () => SignaturePadHook
-  });
+  // ../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs
   function i(e2, t2, n2, r2 = (e3) => e3) {
     return e2 * r2(0.5 - t2 * (0.5 - n2));
   }
@@ -19094,6 +19583,23 @@ var Corex = (() => {
   function R(e2, t2 = {}) {
     return P(L(e2, t2), t2);
   }
+  var e, t, n, r, a, E, D, O, F, z;
+  var init_esm = __esm({
+    "../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs"() {
+      ({ PI: e } = Math);
+      t = e + 1e-4;
+      n = 0.5;
+      r = [1, 1];
+      ({ min: a } = Math);
+      E = [0, 0];
+      D = [0, 0];
+      O = [0, 0];
+      F = [0, 0];
+      z = R;
+    }
+  });
+
+  // ../node_modules/.pnpm/@zag-js+signature-pad@1.33.1/node_modules/@zag-js/signature-pad/dist/index.mjs
   function connect10(service, normalize) {
     const { state: state2, send, prop, computed, context, scope } = service;
     const drawing = state2.matches("drawing");
@@ -19240,41 +19746,15 @@ var Corex = (() => {
     }
     return result;
   }
-  function getPaths(el, attr) {
-    const value = el.dataset[attr];
-    if (!value) return [];
-    try {
-      return JSON.parse(value);
-    } catch (e2) {
-      return [];
-    }
-  }
-  function buildDrawingOptions(el) {
-    var _a, _b, _c, _d;
-    return {
-      fill: getString(el, "drawingFill") || "black",
-      size: (_a = getNumber(el, "drawingSize")) != null ? _a : 2,
-      simulatePressure: getBoolean(el, "drawingSimulatePressure"),
-      smoothing: (_b = getNumber(el, "drawingSmoothing")) != null ? _b : 0.5,
-      thinning: (_c = getNumber(el, "drawingThinning")) != null ? _c : 0.7,
-      streamline: (_d = getNumber(el, "drawingStreamline")) != null ? _d : 0.65
-    };
-  }
-  var e, t, n, r, a, E, D, O, F, z, anatomy10, parts10, getRootId8, getControlId5, getLabelId6, getHiddenInputId2, getControlEl3, getSegmentEl, getDataUrl2, average, machine10, props10, splitProps10, SignaturePad, SignaturePadHook;
-  var init_signature_pad = __esm({
-    "../priv/static/signature-pad.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
-      ({ PI: e } = Math);
-      t = e + 1e-4;
-      n = 0.5;
-      r = [1, 1];
-      ({ min: a } = Math);
-      E = [0, 0];
-      D = [0, 0];
-      O = [0, 0];
-      F = [0, 0];
-      z = R;
+  var anatomy10, parts10, getRootId8, getControlId5, getLabelId6, getHiddenInputId2, getControlEl3, getSegmentEl, getDataUrl2, average, machine10, props10, splitProps10;
+  var init_dist29 = __esm({
+    "../node_modules/.pnpm/@zag-js+signature-pad@1.33.1/node_modules/@zag-js/signature-pad/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist4();
+      init_esm();
+      init_dist5();
+      init_dist3();
       anatomy10 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -19455,6 +19935,17 @@ var Corex = (() => {
         "translations"
       ]);
       splitProps10 = createSplitProps(props10);
+    }
+  });
+
+  // components/signature-pad.ts
+  var SignaturePad;
+  var init_signature_pad = __esm({
+    "components/signature-pad.ts"() {
+      "use strict";
+      init_dist29();
+      init_core();
+      init_dist9();
       SignaturePad = class extends Component {
         constructor() {
           super(...arguments);
@@ -19490,9 +19981,9 @@ var Corex = (() => {
             }
           });
         }
-        initMachine(props22) {
-          this.name = props22.name;
-          return new VanillaMachine(machine10, props22);
+        initMachine(props15) {
+          this.name = props15.name;
+          return new VanillaMachine(machine10, props15);
         }
         setName(name) {
           this.name = name;
@@ -19537,6 +20028,40 @@ var Corex = (() => {
           this.syncPaths();
         }
       };
+    }
+  });
+
+  // hooks/signature-pad.ts
+  var signature_pad_exports = {};
+  __export(signature_pad_exports, {
+    SignaturePad: () => SignaturePadHook
+  });
+  function getPaths(el, attr) {
+    const value = el.dataset[attr];
+    if (!value) return [];
+    try {
+      return JSON.parse(value);
+    } catch (e2) {
+      return [];
+    }
+  }
+  function buildDrawingOptions(el) {
+    var _a, _b, _c, _d;
+    return {
+      fill: getString(el, "drawingFill") || "black",
+      size: (_a = getNumber(el, "drawingSize")) != null ? _a : 2,
+      simulatePressure: getBoolean(el, "drawingSimulatePressure"),
+      smoothing: (_b = getNumber(el, "drawingSmoothing")) != null ? _b : 0.5,
+      thinning: (_c = getNumber(el, "drawingThinning")) != null ? _c : 0.7,
+      streamline: (_d = getNumber(el, "drawingStreamline")) != null ? _d : 0.65
+    };
+  }
+  var SignaturePadHook;
+  var init_signature_pad2 = __esm({
+    "hooks/signature-pad.ts"() {
+      "use strict";
+      init_signature_pad();
+      init_util();
       SignaturePadHook = {
         mounted() {
           const el = this.el;
@@ -19650,11 +20175,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/switch.mjs
-  var switch_exports = {};
-  __export(switch_exports, {
-    Switch: () => SwitchHook
-  });
+  // ../node_modules/.pnpm/@zag-js+switch@1.33.1/node_modules/@zag-js/switch/dist/index.mjs
   function connect11(service, normalize) {
     const { context, send, prop, scope } = service;
     const disabled = !!prop("disabled");
@@ -19763,12 +20284,15 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy11, parts11, getRootId9, getLabelId7, getThumbId, getControlId6, getHiddenInputId3, getRootEl3, getHiddenInputEl2, not6, machine11, props11, splitProps11, Switch, SwitchHook;
-  var init_switch = __esm({
-    "../priv/static/switch.mjs"() {
-      "use strict";
-      init_chunk_EAMC7PNF();
-      init_chunk_GFGFZBBD();
+  var anatomy11, parts11, getRootId9, getLabelId7, getThumbId, getControlId6, getHiddenInputId3, getRootEl3, getHiddenInputEl2, not6, machine11, props11, splitProps11;
+  var init_dist30 = __esm({
+    "../node_modules/.pnpm/@zag-js+switch@1.33.1/node_modules/@zag-js/switch/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist10();
+      init_dist4();
+      init_dist5();
+      init_dist3();
       anatomy11 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts11 = anatomy11.build();
       getRootId9 = (ctx) => {
@@ -19951,10 +20475,21 @@ var Corex = (() => {
         "value"
       ]);
       splitProps11 = createSplitProps(props11);
+    }
+  });
+
+  // components/switch.ts
+  var Switch;
+  var init_switch = __esm({
+    "components/switch.ts"() {
+      "use strict";
+      init_dist30();
+      init_dist9();
+      init_core();
       Switch = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine11, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine11, props15);
         }
         initApi() {
           return connect11(this.machine.service, normalizeProps);
@@ -19981,6 +20516,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/switch.ts
+  var switch_exports = {};
+  __export(switch_exports, {
+    Switch: () => SwitchHook
+  });
+  var SwitchHook;
+  var init_switch2 = __esm({
+    "hooks/switch.ts"() {
+      "use strict";
+      init_switch();
+      init_util();
       SwitchHook = {
         mounted() {
           const el = this.el;
@@ -20106,11 +20655,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/tabs.mjs
-  var tabs_exports = {};
-  __export(tabs_exports, {
-    Tabs: () => TabsHook
-  });
+  // ../node_modules/.pnpm/@zag-js+tabs@1.33.1/node_modules/@zag-js/tabs/dist/index.mjs
   function connect12(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
@@ -20295,11 +20840,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy12, parts12, getRootId10, getListId, getContentId7, getTriggerId7, getIndicatorId, getListEl, getContentEl7, getTriggerEl6, getIndicatorEl, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect, getRectByValue, createMachine3, machine12, props12, splitProps12, triggerProps, splitTriggerProps, contentProps, splitContentProps, Tabs, TabsHook;
-  var init_tabs = __esm({
-    "../priv/static/tabs.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
+  var anatomy12, parts12, getRootId10, getListId, getContentId7, getTriggerId7, getIndicatorId, getListEl, getContentEl7, getTriggerEl6, getIndicatorEl, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect, getRectByValue, createMachine3, machine12, props12, splitProps12, triggerProps, splitTriggerProps, contentProps, splitContentProps;
+  var init_dist31 = __esm({
+    "../node_modules/.pnpm/@zag-js+tabs@1.33.1/node_modules/@zag-js/tabs/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist3();
+      init_dist4();
+      init_dist5();
       anatomy12 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts12 = anatomy12.build();
       getRootId10 = (ctx) => {
@@ -20633,10 +21181,21 @@ var Corex = (() => {
       splitTriggerProps = createSplitProps(triggerProps);
       contentProps = createProps()(["value"]);
       splitContentProps = createSplitProps(contentProps);
+    }
+  });
+
+  // components/tabs.ts
+  var Tabs;
+  var init_tabs = __esm({
+    "components/tabs.ts"() {
+      "use strict";
+      init_dist31();
+      init_dist9();
+      init_core();
       Tabs = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine12, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine12, props15);
         }
         initApi() {
           return connect12(this.machine.service, normalizeProps);
@@ -20668,6 +21227,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/tabs.ts
+  var tabs_exports = {};
+  __export(tabs_exports, {
+    Tabs: () => TabsHook
+  });
+  var TabsHook;
+  var init_tabs2 = __esm({
+    "hooks/tabs.ts"() {
+      "use strict";
+      init_tabs();
+      init_util();
       TabsHook = {
         mounted() {
           const el = this.el;
@@ -20783,11 +21356,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/toast.mjs
-  var toast_exports = {};
-  __export(toast_exports, {
-    Toast: () => ToastHook
-  });
+  // ../node_modules/.pnpm/@zag-js+toast@1.33.1/node_modules/@zag-js/toast/dist/index.mjs
   function getToastDuration(duration, type) {
     var _a;
     return (_a = duration != null ? duration : defaultTimeouts[type]) != null ? _a : defaultTimeouts.DEFAULT;
@@ -21338,38 +21907,14 @@ var Corex = (() => {
       collapse
     };
   }
-  function createToastGroup(container, options) {
-    var _a, _b, _c;
-    const groupId = (_a = options == null ? void 0 : options.id) != null ? _a : generateId(container, "toast");
-    const store = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
-      placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom",
-      overlap: options == null ? void 0 : options.overlap,
-      max: options == null ? void 0 : options.max,
-      gap: options == null ? void 0 : options.gap,
-      offsets: options == null ? void 0 : options.offsets,
-      pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
-    });
-    const group2 = new ToastGroup(container, { id: groupId, store });
-    group2.init();
-    toastGroups.set(groupId, group2);
-    toastStores.set(groupId, store);
-    container.dataset.toastGroup = "true";
-    container.dataset.toastGroupId = groupId;
-    return { group: group2, store };
-  }
-  function getToastStore(groupId) {
-    if (groupId) return toastStores.get(groupId);
-    const el = document.querySelector("[data-toast-group]");
-    if (!el) return;
-    const id = el.dataset.toastGroupId || el.id;
-    return id ? toastStores.get(id) : void 0;
-  }
-  var anatomy13, parts13, getRegionId, getRegionEl, getRootId11, getRootEl4, getTitleId2, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards2, createMachine22, and6, groupMachine, not7, machine13, withDefaults, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
-  var init_toast = __esm({
-    "../priv/static/toast.mjs"() {
-      "use strict";
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
+  var anatomy13, parts13, getRegionId, getRegionEl, getRootId11, getRootEl4, getTitleId2, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards2, createMachine4, and6, groupMachine, not7, machine13, withDefaults, isHttpResponse, group;
+  var init_dist32 = __esm({
+    "../node_modules/.pnpm/@zag-js+toast@1.33.1/node_modules/@zag-js/toast/dist/index.mjs"() {
+      init_dist2();
+      init_dist();
+      init_dist4();
+      init_dist17();
+      init_dist3();
       anatomy13 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -21394,9 +21939,9 @@ var Corex = (() => {
         DEFAULT: 5e3
       };
       getOffsets = (offsets) => typeof offsets === "string" ? { left: offsets, right: offsets, bottom: offsets, top: offsets } : offsets;
-      ({ guards: guards2, createMachine: createMachine22 } = setup());
+      ({ guards: guards2, createMachine: createMachine4 } = setup());
       ({ and: and6 } = guards2);
-      groupMachine = createMachine22({
+      groupMachine = createMachine4({
         props({ props: props15 }) {
           return __spreadProps(__spreadValues({
             dir: "ltr",
@@ -21898,6 +22443,44 @@ var Corex = (() => {
         connect: groupConnect,
         machine: groupMachine
       };
+    }
+  });
+
+  // components/toast.ts
+  function createToastGroup(container, options) {
+    var _a, _b, _c;
+    const groupId = (_a = options == null ? void 0 : options.id) != null ? _a : generateId(container, "toast");
+    const store = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
+      placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom",
+      overlap: options == null ? void 0 : options.overlap,
+      max: options == null ? void 0 : options.max,
+      gap: options == null ? void 0 : options.gap,
+      offsets: options == null ? void 0 : options.offsets,
+      pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
+    });
+    const group2 = new ToastGroup(container, { id: groupId, store });
+    group2.init();
+    toastGroups.set(groupId, group2);
+    toastStores.set(groupId, store);
+    container.dataset.toastGroup = "true";
+    container.dataset.toastGroupId = groupId;
+    return { group: group2, store };
+  }
+  function getToastStore(groupId) {
+    if (groupId) return toastStores.get(groupId);
+    const el = document.querySelector("[data-toast-group]");
+    if (!el) return;
+    const id = el.dataset.toastGroupId || el.id;
+    return id ? toastStores.get(id) : void 0;
+  }
+  var toastGroups, toastStores, ToastItem, ToastGroup;
+  var init_toast = __esm({
+    "components/toast.ts"() {
+      "use strict";
+      init_dist32();
+      init_dist9();
+      init_core();
+      init_util();
       toastGroups = /* @__PURE__ */ new Map();
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
@@ -22043,6 +22626,20 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/toast.ts
+  var toast_exports = {};
+  __export(toast_exports, {
+    Toast: () => ToastHook
+  });
+  var ToastHook;
+  var init_toast2 = __esm({
+    "hooks/toast.ts"() {
+      "use strict";
+      init_toast();
+      init_util();
       ToastHook = {
         mounted() {
           var _a;
@@ -22190,11 +22787,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/toggle-group.mjs
-  var toggle_group_exports = {};
-  __export(toggle_group_exports, {
-    ToggleGroup: () => ToggleGroupHook
-  });
+  // ../node_modules/.pnpm/@zag-js+toggle-group@1.33.1/node_modules/@zag-js/toggle-group/dist/index.mjs
   function connect14(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
@@ -22320,11 +22913,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy14, parts14, getRootId12, getItemId5, getRootEl5, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not8, and7, machine14, props13, splitProps13, itemProps5, splitItemProps5, ToggleGroup, ToggleGroupHook;
-  var init_toggle_group = __esm({
-    "../priv/static/toggle-group.mjs"() {
-      "use strict";
-      init_chunk_GFGFZBBD();
+  var anatomy14, parts14, getRootId12, getItemId5, getRootEl5, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not8, and7, machine14, props13, splitProps13, itemProps5, splitItemProps5;
+  var init_dist33 = __esm({
+    "../node_modules/.pnpm/@zag-js+toggle-group@1.33.1/node_modules/@zag-js/toggle-group/dist/index.mjs"() {
+      init_dist();
+      init_dist2();
+      init_dist3();
+      init_dist4();
+      init_dist5();
       anatomy14 = createAnatomy("toggle-group").parts("root", "item");
       parts14 = anatomy14.build();
       getRootId12 = (ctx) => {
@@ -22541,10 +23137,22 @@ var Corex = (() => {
       splitProps13 = createSplitProps(props13);
       itemProps5 = createProps()(["value", "disabled"]);
       splitItemProps5 = createSplitProps(itemProps5);
+    }
+  });
+
+  // components/toggle-group.ts
+  var ToggleGroup;
+  var init_toggle_group = __esm({
+    "components/toggle-group.ts"() {
+      "use strict";
+      init_dist33();
+      init_dist9();
+      init_core();
+      init_util();
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine14, props22);
+        initMachine(props15) {
+          return new VanillaMachine(machine14, props15);
         }
         initApi() {
           return connect14(this.machine.service, normalizeProps);
@@ -22563,11 +23171,25 @@ var Corex = (() => {
           }
         }
       };
+    }
+  });
+
+  // hooks/toggle-group.ts
+  var toggle_group_exports = {};
+  __export(toggle_group_exports, {
+    ToggleGroup: () => ToggleGroupHook
+  });
+  var ToggleGroupHook;
+  var init_toggle_group2 = __esm({
+    "hooks/toggle-group.ts"() {
+      "use strict";
+      init_toggle_group();
+      init_util();
       ToggleGroupHook = {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const props22 = __spreadProps(__spreadValues({
+          const props15 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             defaultValue: getStringList(el, "defaultValue"),
@@ -22600,7 +23222,7 @@ var Corex = (() => {
               }
             }
           });
-          const toggleGroup = new ToggleGroup(el, props22);
+          const toggleGroup = new ToggleGroup(el, props15);
           toggleGroup.init();
           this.toggleGroup = toggleGroup;
           this.onSetValue = (event) => {
@@ -22655,11 +23277,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/tree-view.mjs
-  var tree_view_exports = {};
-  __export(tree_view_exports, {
-    TreeView: () => TreeViewHook
-  });
+  // ../node_modules/.pnpm/@zag-js+tree-view@1.33.1/node_modules/@zag-js/tree-view/dist/index.mjs
   function getCheckedState(collection22, node, checkedValue) {
     const value = collection22.getNodeValue(node);
     if (!collection22.isBranchNode(node)) {
@@ -23225,48 +23843,15 @@ var Corex = (() => {
     }
     return false;
   }
-  function buildTreeFromDOM(rootEl) {
-    var _a;
-    const selector = '[data-scope="tree-view"][data-part="branch"], [data-scope="tree-view"][data-part="item"]';
-    const elements = rootEl.querySelectorAll(selector);
-    const nodes = [];
-    for (const el of elements) {
-      const pathRaw = el.getAttribute("data-path");
-      const value = el.getAttribute("data-value");
-      if (pathRaw == null || value == null) continue;
-      const pathArr = pathRaw.split("/").map((s2) => parseInt(s2, 10));
-      if (pathArr.some(Number.isNaN)) continue;
-      const name = (_a = el.getAttribute("data-name")) != null ? _a : value;
-      const isBranch = el.getAttribute("data-part") === "branch";
-      nodes.push({ pathArr, id: value, name, isBranch });
-    }
-    nodes.sort((a2, b2) => {
-      const len = Math.min(a2.pathArr.length, b2.pathArr.length);
-      for (let i2 = 0; i2 < len; i2++) {
-        if (a2.pathArr[i2] !== b2.pathArr[i2]) return a2.pathArr[i2] - b2.pathArr[i2];
-      }
-      return a2.pathArr.length - b2.pathArr.length;
-    });
-    const root = { id: "ROOT", name: "", children: [] };
-    for (const { pathArr, id, name, isBranch } of nodes) {
-      let parent = root;
-      for (let i2 = 0; i2 < pathArr.length - 1; i2++) {
-        const idx = pathArr[i2];
-        if (!parent.children) parent.children = [];
-        parent = parent.children[idx];
-      }
-      const lastIdx = pathArr[pathArr.length - 1];
-      if (!parent.children) parent.children = [];
-      parent.children[lastIdx] = isBranch ? { id, name, children: [] } : { id, name };
-    }
-    return root;
-  }
-  var anatomy15, parts15, collection3, getRootId13, getLabelId8, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and8, machine15, props14, splitProps14, itemProps6, splitItemProps6, TreeView, TreeViewHook;
-  var init_tree_view = __esm({
-    "../priv/static/tree-view.mjs"() {
-      "use strict";
-      init_chunk_2DWEYSRA();
-      init_chunk_GFGFZBBD();
+  var anatomy15, parts15, collection3, getRootId13, getLabelId8, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and8, machine15, props14, splitProps14, itemProps6, splitItemProps6;
+  var init_dist34 = __esm({
+    "../node_modules/.pnpm/@zag-js+tree-view@1.33.1/node_modules/@zag-js/tree-view/dist/index.mjs"() {
+      init_dist();
+      init_dist14();
+      init_dist2();
+      init_dist3();
+      init_dist4();
+      init_dist5();
       anatomy15 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
@@ -23964,16 +24549,63 @@ var Corex = (() => {
       splitProps14 = createSplitProps(props14);
       itemProps6 = createProps()(["node", "indexPath"]);
       splitItemProps6 = createSplitProps(itemProps6);
+    }
+  });
+
+  // components/tree-view.ts
+  function buildTreeFromDOM(rootEl) {
+    var _a;
+    const selector = '[data-scope="tree-view"][data-part="branch"], [data-scope="tree-view"][data-part="item"]';
+    const elements = rootEl.querySelectorAll(selector);
+    const nodes = [];
+    for (const el of elements) {
+      const pathRaw = el.getAttribute("data-path");
+      const value = el.getAttribute("data-value");
+      if (pathRaw == null || value == null) continue;
+      const pathArr = pathRaw.split("/").map((s2) => parseInt(s2, 10));
+      if (pathArr.some(Number.isNaN)) continue;
+      const name = (_a = el.getAttribute("data-name")) != null ? _a : value;
+      const isBranch = el.getAttribute("data-part") === "branch";
+      nodes.push({ pathArr, id: value, name, isBranch });
+    }
+    nodes.sort((a2, b2) => {
+      const len = Math.min(a2.pathArr.length, b2.pathArr.length);
+      for (let i2 = 0; i2 < len; i2++) {
+        if (a2.pathArr[i2] !== b2.pathArr[i2]) return a2.pathArr[i2] - b2.pathArr[i2];
+      }
+      return a2.pathArr.length - b2.pathArr.length;
+    });
+    const root = { id: "ROOT", name: "", children: [] };
+    for (const { pathArr, id, name, isBranch } of nodes) {
+      let parent = root;
+      for (let i2 = 0; i2 < pathArr.length - 1; i2++) {
+        const idx = pathArr[i2];
+        if (!parent.children) parent.children = [];
+        parent = parent.children[idx];
+      }
+      const lastIdx = pathArr[pathArr.length - 1];
+      if (!parent.children) parent.children = [];
+      parent.children[lastIdx] = isBranch ? { id, name, children: [] } : { id, name };
+    }
+    return root;
+  }
+  var TreeView;
+  var init_tree_view = __esm({
+    "components/tree-view.ts"() {
+      "use strict";
+      init_dist34();
+      init_dist9();
+      init_core();
       TreeView = class extends Component {
-        constructor(el, props22) {
+        constructor(el, props15) {
           var _a;
-          const treeData = (_a = props22.treeData) != null ? _a : buildTreeFromDOM(el);
-          const collection22 = collection3({
+          const treeData = (_a = props15.treeData) != null ? _a : buildTreeFromDOM(el);
+          const collection4 = collection3({
             nodeToValue: (node) => node.id,
             nodeToString: (node) => node.name,
             rootNode: treeData
           });
-          super(el, __spreadProps(__spreadValues({}, props22), { collection: collection22 }));
+          super(el, __spreadProps(__spreadValues({}, props15), { collection: collection4 }));
           __publicField(this, "collection");
           __publicField(this, "syncTree", () => {
             const treeEl = this.el.querySelector(
@@ -23983,10 +24615,10 @@ var Corex = (() => {
             this.spreadProps(treeEl, this.api.getTreeProps());
             this.updateExistingTree(treeEl);
           });
-          this.collection = collection22;
+          this.collection = collection4;
         }
-        initMachine(props22) {
-          return new VanillaMachine(machine15, __spreadValues({}, props22));
+        initMachine(props15) {
+          return new VanillaMachine(machine15, __spreadValues({}, props15));
         }
         initApi() {
           return connect15(this.machine.service, normalizeProps);
@@ -24063,6 +24695,20 @@ var Corex = (() => {
           this.syncTree();
         }
       };
+    }
+  });
+
+  // hooks/tree-view.ts
+  var tree_view_exports = {};
+  __export(tree_view_exports, {
+    TreeView: () => TreeViewHook
+  });
+  var TreeViewHook;
+  var init_tree_view2 = __esm({
+    "hooks/tree-view.ts"() {
+      "use strict";
+      init_tree_view();
+      init_util();
       TreeViewHook = {
         mounted() {
           var _a;
@@ -24232,21 +24878,21 @@ var Corex = (() => {
     };
   }
   var Hooks = {
-    Accordion: hooks(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
-    Checkbox: hooks(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
-    Clipboard: hooks(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
-    Collapsible: hooks(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
-    Combobox: hooks(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
-    DatePicker: hooks(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
-    Dialog: hooks(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
-    Menu: hooks(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
-    Select: hooks(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
-    SignaturePad: hooks(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
-    Switch: hooks(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
-    Tabs: hooks(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
-    Toast: hooks(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
-    ToggleGroup: hooks(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
-    TreeView: hooks(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
+    Accordion: hooks(() => Promise.resolve().then(() => (init_accordion2(), accordion_exports)), "Accordion"),
+    Checkbox: hooks(() => Promise.resolve().then(() => (init_checkbox2(), checkbox_exports)), "Checkbox"),
+    Clipboard: hooks(() => Promise.resolve().then(() => (init_clipboard2(), clipboard_exports)), "Clipboard"),
+    Collapsible: hooks(() => Promise.resolve().then(() => (init_collapsible2(), collapsible_exports)), "Collapsible"),
+    Combobox: hooks(() => Promise.resolve().then(() => (init_combobox2(), combobox_exports)), "Combobox"),
+    DatePicker: hooks(() => Promise.resolve().then(() => (init_date_picker2(), date_picker_exports)), "DatePicker"),
+    Dialog: hooks(() => Promise.resolve().then(() => (init_dialog2(), dialog_exports)), "Dialog"),
+    Menu: hooks(() => Promise.resolve().then(() => (init_menu2(), menu_exports)), "Menu"),
+    Select: hooks(() => Promise.resolve().then(() => (init_select2(), select_exports)), "Select"),
+    SignaturePad: hooks(() => Promise.resolve().then(() => (init_signature_pad2(), signature_pad_exports)), "SignaturePad"),
+    Switch: hooks(() => Promise.resolve().then(() => (init_switch2(), switch_exports)), "Switch"),
+    Tabs: hooks(() => Promise.resolve().then(() => (init_tabs2(), tabs_exports)), "Tabs"),
+    Toast: hooks(() => Promise.resolve().then(() => (init_toast2(), toast_exports)), "Toast"),
+    ToggleGroup: hooks(() => Promise.resolve().then(() => (init_toggle_group2(), toggle_group_exports)), "ToggleGroup"),
+    TreeView: hooks(() => Promise.resolve().then(() => (init_tree_view2(), tree_view_exports)), "TreeView")
   };
   var corex_default = Hooks;
   return __toCommonJS(corex_exports);
