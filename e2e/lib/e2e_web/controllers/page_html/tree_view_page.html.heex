@@ -5,10 +5,10 @@
   <section class="layout__section">
     <div class="layout__row">
       <button
-        phx-click={Corex.TreeView.set_expanded_value("my-tree", ["node_modules", "src"])}
+        phx-click={Corex.TreeView.set_expanded_value("my-tree", ["accordion", "checkbox"])}
         class="button button--sm"
       >
-        Expand node_modules & src
+        Expand Accordion & Checkbox
       </button>
       <button
         phx-click={Corex.TreeView.set_expanded_value("my-tree", [])}
@@ -17,10 +17,10 @@
         Collapse all
       </button>
       <button
-        phx-click={Corex.TreeView.set_selected_value("my-tree", ["package.json"])}
+        phx-click={Corex.TreeView.set_selected_value("my-tree", ["/#{@locale}/accordion"])}
         class="button button--sm"
       >
-        Select package.json
+        Select Controller (Accordion)
       </button>
       <button
         phx-click={Corex.TreeView.set_selected_value("my-tree", [])}

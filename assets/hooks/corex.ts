@@ -32,21 +32,21 @@ function hooks(
 }
 
 export const Hooks = {
-  Accordion: hooks(() => import("./accordion"), "Accordion"),
-  Checkbox: hooks(() => import("./checkbox"), "Checkbox"),
-  Clipboard: hooks(() => import("./clipboard"), "Clipboard"),
-  Collapsible: hooks(() => import("./collapsible"), "Collapsible"),
-  Combobox: hooks(() => import("./combobox"), "Combobox"),
-  DatePicker: hooks(() => import("./date-picker"), "DatePicker"),
-  Dialog: hooks(() => import("./dialog"), "Dialog"),
-  Menu: hooks(() => import("./menu"), "Menu"),
-  Select: hooks(() => import("./select"), "Select"),
-  SignaturePad: hooks(() => import("./signature-pad"), "SignaturePad"),
-  Switch: hooks(() => import("./switch"), "Switch"),
-  Tabs: hooks(() => import("./tabs"), "Tabs"),
-  Toast: hooks(() => import("./toast"), "Toast"),
-  ToggleGroup: hooks(() => import("./toggle-group"), "ToggleGroup"),
-  TreeView: hooks(() => import("./tree-view"), "TreeView"),
+  Accordion: hooks(() => import("corex/accordion"), "Accordion"),
+  Checkbox: hooks(() => import("corex/checkbox"), "Checkbox"),
+  Clipboard: hooks(() => import("corex/clipboard"), "Clipboard"),
+  Collapsible: hooks(() => import("corex/collapsible"), "Collapsible"),
+  Combobox: hooks(() => import("corex/combobox"), "Combobox"),
+  DatePicker: hooks(() => import("corex/date-picker"), "DatePicker"),
+  Dialog: hooks(() => import("corex/dialog"), "Dialog"),
+  Menu: hooks(() => import("corex/menu"), "Menu"),
+  Select: hooks(() => import("corex/select"), "Select"),
+  SignaturePad: hooks(() => import("corex/signature-pad"), "SignaturePad"),
+  Switch: hooks(() => import("corex/switch"), "Switch"),
+  Tabs: hooks(() => import("corex/tabs"), "Tabs"),
+  Toast: hooks(() => import("corex/toast"), "Toast"),
+  ToggleGroup: hooks(() => import("corex/toggle-group"), "ToggleGroup"),
+  TreeView: hooks(() => import("corex/tree-view"), "TreeView"),
 };
 
 export { hooks };
