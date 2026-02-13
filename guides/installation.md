@@ -346,20 +346,38 @@ In order to use the API, you must use an id on the component
   end
   ```
 
-## Components
+## Performance
 
-Now that Corex is installed, explore the component documentation:
+By default Phoenix esbuild is set to bundle all the JS into a single file.
 
-- [Accordion](Corex.Accordion.html)
-- [Checkbox](Corex.Checkbox.html)
-- [Clipboard](Corex.Clipboard.html)
-- [Collapsible](Corex.Collapsible.html)
-- [Combobox](Corex.Combobox.html)
-- [Date Picker](Corex.DatePicker.html)
-- [Dialog](Corex.Dialog.html)
-- [Select](Corex.Select.html)
-- [Switch](Corex.Switch.html)
-- [Tabs](Corex.Tabs.html)
-- [Toast](Corex.Toast.html)
-- [Toggle Group](Corex.ToggleGroup.html)
+### 1.Enable splitting
 
+In order to enable splitting add the following `--format=esm --splitting` to your esbuild config
+
+```elixir
+config :esbuild,
+  version: "0.25.4",
+  e2e: [
+    args:
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+Run `mix assets.build` and see the magic happening
+
+### 2.Enable gzip for Plug.Static
+
+In your `endpoint.ex` enable gzip for developement also
+
+```elexir
+  plug Plug.Static,
+    at: "/",
+    from: :e2e,
+    gzip: true,
+    only: E2eWeb.static_paths(),
+    raise_on_missing_only: code_reloading?
+```
+
+See the [Production guide](production.html) for the final build in production environnement
