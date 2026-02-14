@@ -1,7 +1,6 @@
 <Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   <h1>Menu</h1>
   <h2>Controller View</h2>
-  <h3>Client Api</h3>
 
   <.menu
     class="menu"
@@ -96,38 +95,19 @@
     </:indicator>
   </.menu>
 
-  <.menu
-    class="menu"
-    redirect
-    items={[
-      %Corex.Tree.Item{
-        id: "accordion",
-        label: "Accordion",
-        group: "Components"
-      },
-      %Corex.Tree.Item{
-        id: "checkbox",
-        label: "Checkbox",
-        group: "Components"
-      },
-      %Corex.Tree.Item{
-        id: "users",
-        label: "Controller",
-        group: "Phoenix Form"
-      },
-      %Corex.Tree.Item{
-        id: "admins",
-        label: "Live View",
-        group: "Phoenix Form"
-      }
-    ]}
-  >
-    <:trigger>Corex</:trigger>
-    <:indicator>
-      <.icon name="hero-chevron-down" />
-    </:indicator>
-    <:item :let={item}>
-      {item.label}
-    </:item>
-  </.menu>
+ <.menu
+        class="menu"
+        redirect
+        items={menu_items(@locale)}
+      >
+        <:trigger>Corex</:trigger>
+        <:indicator>
+          <.icon name="hero-chevron-down" />
+        </:indicator>
+        <:item :let={item}>
+          {item.label}
+        </:item>
+      </.menu>
 </Layouts.app>
+
+

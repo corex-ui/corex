@@ -94,4 +94,5 @@ defmodule E2eWeb.PageController do
   def tree_view_page(conn, _params) do
     render(conn, :tree_view_page)
   end
+
 end
