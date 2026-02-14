@@ -10,6 +10,7 @@ type MenuHookState = {
   menu?: Menu;
   handlers?: Array<CallbackRef>;
   onSetOpen?: (event: Event) => void;
+  onSubmenuItemClick?: (event: Event) => void;
   nestedMenus?: Map<string, Menu>;
 };
 
@@ -20,6 +21,9 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     if (el.hasAttribute("data-nested")) {
       return;
     }
+
+    const pushEvent = this.pushEvent.bind(this);
+    const getMain = () => this.liveSocket?.main;
 
     const menu = new Menu(el, {
       id: el.id.replace("menu:", ""),
@@ -38,11 +42,9 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
         ].find((node) => node.getAttribute("data-value") === details.value);
         const itemRedirect = itemEl?.getAttribute("data-redirect");
         const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+        const main = getMain();
         const doRedirect =
-          redirect &&
-          details.value &&
-          !this.liveSocket.main.isConnected() &&
-          itemRedirect !== "false";
+          redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
         if (doRedirect) {
           if (itemNewTab) {
             window.open(details.value, "_blank", "noopener,noreferrer");
@@ -51,8 +53,8 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
           }
         }
         const eventName = getString(el, "onSelect");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
+        if (eventName && main && !main.isDead && main.isConnected()) {
+          pushEvent(eventName, {
             id: el.id,
             value: details.value ?? null,
           });
@@ -72,9 +74,10 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
         }
       },
       onOpenChange: (details: OpenChangeDetails) => {
+        const main = getMain();
         const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
+        if (eventName && main && !main.isDead && main.isConnected()) {
+          pushEvent(eventName, {
             id: el.id,
             open: details.open ?? false,
           });
@@ -103,10 +106,10 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     );
 
     const nestedMenuInstances: Menu[] = [];
-    nestedMenuElements.forEach((nestedEl) => {
+    nestedMenuElements.forEach((nestedEl, index) => {
       const nestedId = nestedEl.id;
       if (nestedId) {
-        const nestedMenuId = nestedId.replace("menu:", "");
+        const nestedMenuId = `${nestedId}-${index}`;
         const nestedMenu = new Menu(nestedEl, {
           id: nestedMenuId,
           dir: getString<Direction>(nestedEl, "dir", ["ltr", "rtl"]),
@@ -114,6 +117,44 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
           loopFocus: getBoolean(nestedEl, "loopFocus"),
           typeahead: getBoolean(nestedEl, "typeahead"),
           composite: getBoolean(nestedEl, "composite"),
+          onSelect: (details: SelectionDetails) => {
+            const redirect = getBoolean(el, "redirect");
+            const itemEl = [
+              ...el.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="item"]'),
+            ].find((node) => node.getAttribute("data-value") === details.value);
+            const itemRedirect = itemEl?.getAttribute("data-redirect");
+            const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+            const main = getMain();
+            const doRedirect =
+              redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
+            if (doRedirect) {
+              if (itemNewTab) {
+                window.open(details.value, "_blank", "noopener,noreferrer");
+              } else {
+                window.location.href = details.value;
+              }
+            }
+            const eventName = getString(el, "onSelect");
+            if (eventName && main && !main.isDead && main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: details.value ?? null,
+              });
+            }
+
+            const eventNameClient = getString(el, "onSelectClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: details.value ?? null,
+                  },
+                })
+              );
+            }
+          },
         });
 
         nestedMenu.init();
@@ -130,15 +171,6 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
         }
       });
 
-      if (this.menu) {
-        this.menu.api = this.menu.initApi();
-        this.menu.render();
-      }
-      nestedMenuInstances.forEach((nestedMenu) => {
-        nestedMenu.api = nestedMenu.initApi();
-        nestedMenu.render();
-      });
-
       if (this.menu && this.menu.children.length > 0) {
         this.menu.renderSubmenuTriggers();
       }
@@ -146,7 +178,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
 
     this.onSetOpen = (event: Event) => {
       const { open } = (event as CustomEvent<{ open: boolean }>).detail;
-      menu.api.setOpen(open);
+      if (menu.api.open !== open) menu.api.setOpen(open);
     };
     el.addEventListener("phx:menu:set-open", this.onSetOpen);
 
@@ -155,7 +187,8 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     this.handlers.push(
       this.handleEvent("menu_set_open", (payload: { menu_id?: string; open: boolean }) => {
         const targetId = payload.menu_id;
-        if (targetId && targetId !== el.id) return;
+        const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
+        if (!matches) return;
         menu.api.setOpen(payload.open);
       })
     );

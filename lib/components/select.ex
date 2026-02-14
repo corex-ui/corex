@@ -539,16 +539,14 @@ defmodule Corex.Select do
         </div>
         <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
           <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
-            <span data-scope="select" data-part="item-text">
-              <%= if @selected_label do %>
-                {@selected_label}
-              <% else %>
-                <%= if !Enum.empty?(@placeholder) do %>
-                  {render_slot(@placeholder)}
-                <% else %>
-                  {@placeholder_text || "Select an option"}
-                <% end %>
-              <% end %>
+            <span :if={@selected_label} data-scope="select" data-part="item-text">
+              {@selected_label}
+            </span>
+            <span :if={!@selected_label and !Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
+              {render_slot(@placeholder)}
+            </span>
+            <span :if={!@selected_label and Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
+              {@placeholder_text || "Select an option"}
             </span>
             {render_slot(@trigger)}
           </button>
@@ -558,27 +556,25 @@ defmodule Corex.Select do
         </div>
         <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
           <ul {Connect.content(%Content{id: @id, dir: @dir})}>
-          </ul>
-
-          <div style="display: none;" data-templates="select">
-            <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="select" data-part="item-group" data-id={group || "default"} data-template="true">
+            <li :if={@has_groups} :for={{group, items} <- Enum.sort(@grouped_items, fn {a, _}, {b, _} -> (a || "") <= (b || "") end)} data-scope="select" data-part="item-group" data-id={group || "default"}>
               <div :if={group} data-scope="select" data-part="item-group-label" data-id={group}>
                 {group}
               </div>
-              <li :for={item <- items} data-scope="select" data-part="item" data-value={item.id} data-template="true">
-                <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
-                  {render_slot(@item, item)}
-                </span>
-                <span :if={Enum.empty?(@item)} data-scope="select" data-part="item-text">
-                  {item.label}
-                </span>
-                <span :if={!Enum.empty?(@item_indicator)} data-scope="select" data-part="item-indicator">
-                  {render_slot(@item_indicator)}
-                </span>
-              </li>
-            </div>
-
-            <li :if={!@has_groups} :for={item <- @collection} data-scope="select" data-part="item" data-value={item.id} data-template="true">
+              <ul>
+                <li :for={item <- items} data-scope="select" data-part="item" data-value={item.id}>
+                  <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
+                    {render_slot(@item, item)}
+                  </span>
+                  <span :if={Enum.empty?(@item)} data-scope="select" data-part="item-text">
+                    {item.label}
+                  </span>
+                  <span :if={!Enum.empty?(@item_indicator)} data-scope="select" data-part="item-indicator">
+                    {render_slot(@item_indicator)}
+                  </span>
+                </li>
+              </ul>
+            </li>
+            <li :if={!@has_groups} :for={item <- @collection} data-scope="select" data-part="item" data-value={item.id}>
               <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
                 {render_slot(@item, item)}
               </span>
@@ -589,7 +585,7 @@ defmodule Corex.Select do
                 {render_slot(@item_indicator)}
               </span>
             </li>
-          </div>
+          </ul>
         </div>
       </div>
     </div>

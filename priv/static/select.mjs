@@ -1205,6 +1205,8 @@ var Select = class extends Component {
   placeholder = "";
   constructor(el, props2) {
     super(el, props2);
+    const collectionFromProps = props2.collection;
+    this._options = collectionFromProps?.items ?? [];
     this.placeholder = getString(this.el, "placeholder") || "";
   }
   get options() {
@@ -1234,91 +1236,71 @@ var Select = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
     const getCollection = this.getCollection.bind(this);
+    const collectionFromProps = props2.collection;
     return new VanillaMachine(machine, {
       ...props2,
       get collection() {
-        return getCollection();
+        return collectionFromProps ?? getCollection();
       }
     });
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
-  renderItems() {
+  init = () => {
+    this.machine.start();
+    this.render();
+    this.machine.subscribe(() => {
+      this.api = this.initApi();
+      this.render();
+    });
+  };
+  applyItemProps() {
     const contentEl = this.el.querySelector(
       '[data-scope="select"][data-part="content"]'
     );
     if (!contentEl) return;
-    const templatesContainer = this.el.querySelector('[data-templates="select"]');
-    if (!templatesContainer) return;
-    contentEl.querySelectorAll('[data-scope="select"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
-    contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-    const items = this.api.collection.items;
-    const groups = this.api.collection.group?.() ?? [];
-    const hasGroupsInCollection = groups.some(([group]) => group != null);
-    if (hasGroupsInCollection) {
-      this.renderGroupedItems(contentEl, templatesContainer, groups);
-    } else {
-      this.renderFlatItems(contentEl, templatesContainer, items);
-    }
-  }
-  renderGroupedItems(contentEl, templatesContainer, groups) {
-    for (const [groupId, groupItems] of groups) {
-      if (groupId == null) continue;
-      const groupTemplate = templatesContainer.querySelector(
-        `[data-scope="select"][data-part="item-group"][data-id="${groupId}"][data-template]`
-      );
-      if (!groupTemplate) continue;
-      const groupEl = groupTemplate.cloneNode(true);
-      groupEl.removeAttribute("data-template");
+    contentEl.querySelectorAll(
+      '[data-scope="select"][data-part="item-group"]'
+    ).forEach((groupEl) => {
+      const groupId = groupEl.dataset.id ?? "";
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
         '[data-scope="select"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+        this.spreadProps(
+          labelEl,
+          this.api.getItemGroupLabelProps({ htmlFor: groupId })
+        );
       }
-      const templateItems = groupEl.querySelectorAll(
-        '[data-scope="select"][data-part="item"][data-template]'
+    });
+    contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
+      const value = itemEl.dataset.value ?? "";
+      const item = this.options.find(
+        (i) => String(i.id ?? i.value ?? "") === String(value)
       );
-      templateItems.forEach((item) => item.remove());
-      for (const item of groupItems) {
-        const itemEl = this.cloneItem(templatesContainer, item);
-        if (itemEl) groupEl.appendChild(itemEl);
+      if (!item) return;
+      this.spreadProps(itemEl, this.api.getItemProps({ item }));
+      const textEl = itemEl.querySelector(
+        '[data-scope="select"][data-part="item-text"]'
+      );
+      if (textEl) {
+        this.spreadProps(textEl, this.api.getItemTextProps({ item }));
       }
-      contentEl.appendChild(groupEl);
-    }
-  }
-  renderFlatItems(contentEl, templatesContainer, items) {
-    for (const item of items) {
-      const itemEl = this.cloneItem(templatesContainer, item);
-      if (itemEl) contentEl.appendChild(itemEl);
-    }
-  }
-  cloneItem(templatesContainer, item) {
-    const value = this.api.collection.getItemValue(item);
-    const template = templatesContainer.querySelector(
-      `[data-scope="select"][data-part="item"][data-value="${value}"][data-template]`
-    );
-    if (!template) return null;
-    const el = template.cloneNode(true);
-    el.removeAttribute("data-template");
-    this.spreadProps(el, this.api.getItemProps({ item }));
-    const textEl = el.querySelector('[data-scope="select"][data-part="item-text"]');
-    if (textEl) {
-      this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-    }
-    const indicatorEl = el.querySelector(
-      '[data-scope="select"][data-part="item-indicator"]'
-    );
-    if (indicatorEl) {
-      this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
-    }
-    return el;
+      const indicatorEl = itemEl.querySelector(
+        '[data-scope="select"][data-part="item-indicator"]'
+      );
+      if (indicatorEl) {
+        this.spreadProps(
+          indicatorEl,
+          this.api.getItemIndicatorProps({ item })
+        );
+      }
+    });
   }
   render() {
-    const root = this.el.querySelector('[data-scope="select"][data-part="root"]');
-    if (!root) return;
+    const root = this.el.querySelector('[data-scope="select"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
     const hiddenSelect = this.el.querySelector(
       '[data-scope="select"][data-part="hidden-select"]'
@@ -1338,8 +1320,17 @@ var Select = class extends Component {
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
     }
-    ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
-      const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
+    [
+      "label",
+      "control",
+      "trigger",
+      "indicator",
+      "clear-trigger",
+      "positioner"
+    ].forEach((part) => {
+      const el = this.el.querySelector(
+        `[data-scope="select"][data-part="${part}"]`
+      );
       if (!el) return;
       const method = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
       this.spreadProps(el, this.api[method]());
@@ -1369,12 +1360,29 @@ var Select = class extends Component {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
-      this.renderItems();
+      this.applyItemProps();
     }
   }
 };
 
 // hooks/select.ts
+function buildCollection(items, hasGroups) {
+  if (hasGroups) {
+    return collection({
+      items,
+      itemToValue: (item) => item.id ?? item.value ?? "",
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled,
+      groupBy: (item) => item.group ?? ""
+    });
+  }
+  return collection({
+    items,
+    itemToValue: (item) => item.id ?? item.value ?? "",
+    itemToString: (item) => item.label,
+    isItemDisabled: (item) => !!item.disabled
+  });
+}
 function snakeToCamel(str) {
   return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 }
@@ -1391,8 +1399,10 @@ var SelectHook = {
     const el = this.el;
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item) => item.group !== void 0);
+    const initialCollection = buildCollection(allItems, hasGroups);
     const selectComponent = new Select(el, {
       id: el.id,
+      collection: initialCollection,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       disabled: getBoolean(el, "disabled"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
@@ -1461,12 +1471,13 @@ var SelectHook = {
     this.handlers = [];
   },
   updated() {
-    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item) => item.group !== void 0);
+    const newItems = JSON.parse(this.el.dataset.collection || "[]");
+    const hasGroups = newItems.some((item) => item.group !== void 0);
     if (this.select) {
       this.select.hasGroups = hasGroups;
-      this.select.setOptions(newCollection);
+      this.select.setOptions(newItems);
       this.select.updateProps({
+        collection: buildCollection(newItems, hasGroups),
         id: this.el.id,
         ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
         name: getString(this.el, "name"),

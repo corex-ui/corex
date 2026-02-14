@@ -1,11 +1,38 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import { collection } from "@zag-js/select";
 import { Select } from "../components/select";
 import type { Props, ValueChangeDetails } from "@zag-js/select";
 import type { Direction } from "@zag-js/types";
 import type { PositioningOptions } from "@zag-js/popper";
 
 import { getString, getBoolean, getStringList } from "../lib/util";
+
+type SelectItem = {
+  id?: string;
+  value?: string;
+  label: string;
+  disabled?: boolean;
+  group?: string;
+};
+
+function buildCollection(items: SelectItem[], hasGroups: boolean) {
+  if (hasGroups) {
+    return collection({
+      items,
+      itemToValue: (item: SelectItem) => item.id ?? item.value ?? "",
+      itemToString: (item: SelectItem) => item.label,
+      isItemDisabled: (item: SelectItem) => !!item.disabled,
+      groupBy: (item: SelectItem) => item.group ?? "",
+    });
+  }
+  return collection({
+    items,
+    itemToValue: (item: SelectItem) => item.id ?? item.value ?? "",
+    itemToString: (item: SelectItem) => item.label,
+    isItemDisabled: (item: SelectItem) => !!item.disabled,
+  });
+}
 
 type SelectHookState = {
   select?: Select;
@@ -29,10 +56,12 @@ function transformPositioningOptions(obj: Record<string, unknown>): PositioningO
 const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SelectHookState) {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.collection || "[]");
-    const hasGroups = allItems.some((item: { group?: unknown }) => item.group !== undefined);
+    const allItems = JSON.parse(el.dataset.collection || "[]") as SelectItem[];
+    const hasGroups = allItems.some((item: SelectItem) => item.group !== undefined);
+    const initialCollection = buildCollection(allItems, hasGroups);
     const selectComponent = new Select(el, {
       id: el.id,
+      collection: initialCollection,
       ...(getBoolean(el, "controlled")
         ? { value: getStringList(el, "value") }
         : { defaultValue: getStringList(el, "defaultValue") }),
@@ -123,14 +152,14 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
-    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item: { group?: unknown }) => item.group !== undefined);
+    const newItems = JSON.parse(this.el.dataset.collection || "[]") as SelectItem[];
+    const hasGroups = newItems.some((item: SelectItem) => item.group !== undefined);
 
     if (this.select) {
       this.select.hasGroups = hasGroups;
-      this.select.setOptions(newCollection);
-
+      this.select.setOptions(newItems);
       this.select.updateProps({
+        collection: buildCollection(newItems, hasGroups),
         id: this.el.id,
         ...(getBoolean(this.el, "controlled")
           ? { value: getStringList(this.el, "value") }

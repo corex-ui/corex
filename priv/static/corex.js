@@ -17093,8 +17093,13 @@ var Corex = (() => {
           if (positionerEl && contentEl) {
             this.spreadProps(positionerEl, this.api.getPositionerProps());
             this.spreadProps(contentEl, this.api.getContentProps());
+            contentEl.style.pointerEvents = "auto";
             positionerEl.hidden = !this.api.open;
-            if (this.api.open) {
+            const isNested = !this.el.querySelector(
+              '[data-scope="menu"][data-part="trigger"]'
+            );
+            const shouldApplyItems = this.api.open || isNested;
+            if (shouldApplyItems) {
               const items = contentEl.querySelectorAll(
                 '[data-scope="menu"][data-part="item"]'
               );
@@ -17106,27 +17111,6 @@ var Corex = (() => {
                   this.spreadProps(
                     itemEl,
                     this.api.getItemProps({ value, disabled: disabled || void 0 })
-                  );
-                }
-              });
-              const optionItems = contentEl.querySelectorAll(
-                '[data-scope="menu"][data-part="option-item"]'
-              );
-              optionItems.forEach((optionItemEl) => {
-                if (!this.isOwnElement(optionItemEl)) return;
-                const value = optionItemEl.dataset.value;
-                const type = optionItemEl.dataset.type;
-                if (value && type) {
-                  const checked = optionItemEl.hasAttribute("data-checked");
-                  const disabled = optionItemEl.hasAttribute("data-disabled");
-                  this.spreadProps(
-                    optionItemEl,
-                    this.api.getOptionItemProps({
-                      value,
-                      type,
-                      checked,
-                      disabled: disabled || void 0
-                    })
                   );
                 }
               });
@@ -17163,6 +17147,11 @@ var Corex = (() => {
           if (el.hasAttribute("data-nested")) {
             return;
           }
+          const pushEvent = this.pushEvent.bind(this);
+          const getMain = () => {
+            var _a;
+            return (_a = this.liveSocket) == null ? void 0 : _a.main;
+          };
           const menu = new Menu(el, __spreadProps(__spreadValues({
             id: el.id.replace("menu:", "")
           }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
@@ -17172,14 +17161,15 @@ var Corex = (() => {
             composite: getBoolean(el, "composite"),
             dir: getString(el, "dir", ["ltr", "rtl"]),
             onSelect: (details) => {
-              var _a, _b;
+              var _a, _b, _c;
               const redirect = getBoolean(el, "redirect");
               const itemEl = [
                 ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
               ].find((node) => node.getAttribute("data-value") === details.value);
               const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
               const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
-              const doRedirect = redirect && details.value && !this.liveSocket.main.isConnected() && itemRedirect !== "false";
+              const main = getMain();
+              const doRedirect = redirect && details.value && ((_a = main == null ? void 0 : main.isDead) != null ? _a : true) && itemRedirect !== "false";
               if (doRedirect) {
                 if (itemNewTab) {
                   window.open(details.value, "_blank", "noopener,noreferrer");
@@ -17188,10 +17178,10 @@ var Corex = (() => {
                 }
               }
               const eventName = getString(el, "onSelect");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
+              if (eventName && main && !main.isDead && main.isConnected()) {
+                pushEvent(eventName, {
                   id: el.id,
-                  value: (_a = details.value) != null ? _a : null
+                  value: (_b = details.value) != null ? _b : null
                 });
               }
               const eventNameClient = getString(el, "onSelectClient");
@@ -17201,7 +17191,7 @@ var Corex = (() => {
                     bubbles: true,
                     detail: {
                       id: el.id,
-                      value: (_b = details.value) != null ? _b : null
+                      value: (_c = details.value) != null ? _c : null
                     }
                   })
                 );
@@ -17209,9 +17199,10 @@ var Corex = (() => {
             },
             onOpenChange: (details) => {
               var _a, _b;
+              const main = getMain();
               const eventName = getString(el, "onOpenChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
+              if (eventName && main && !main.isDead && main.isConnected()) {
+                pushEvent(eventName, {
                   id: el.id,
                   open: (_a = details.open) != null ? _a : false
                 });
@@ -17237,18 +17228,55 @@ var Corex = (() => {
             '[data-scope="menu"][data-nested="menu"]'
           );
           const nestedMenuInstances = [];
-          nestedMenuElements.forEach((nestedEl) => {
+          nestedMenuElements.forEach((nestedEl, index) => {
             var _a;
             const nestedId = nestedEl.id;
             if (nestedId) {
-              const nestedMenuId = nestedId.replace("menu:", "");
+              const nestedMenuId = `${nestedId}-${index}`;
               const nestedMenu = new Menu(nestedEl, {
                 id: nestedMenuId,
                 dir: getString(nestedEl, "dir", ["ltr", "rtl"]),
                 closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
                 loopFocus: getBoolean(nestedEl, "loopFocus"),
                 typeahead: getBoolean(nestedEl, "typeahead"),
-                composite: getBoolean(nestedEl, "composite")
+                composite: getBoolean(nestedEl, "composite"),
+                onSelect: (details) => {
+                  var _a2, _b, _c;
+                  const redirect = getBoolean(el, "redirect");
+                  const itemEl = [
+                    ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+                  ].find((node) => node.getAttribute("data-value") === details.value);
+                  const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
+                  const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
+                  const main = getMain();
+                  const doRedirect = redirect && details.value && ((_a2 = main == null ? void 0 : main.isDead) != null ? _a2 : true) && itemRedirect !== "false";
+                  if (doRedirect) {
+                    if (itemNewTab) {
+                      window.open(details.value, "_blank", "noopener,noreferrer");
+                    } else {
+                      window.location.href = details.value;
+                    }
+                  }
+                  const eventName = getString(el, "onSelect");
+                  if (eventName && main && !main.isDead && main.isConnected()) {
+                    pushEvent(eventName, {
+                      id: el.id,
+                      value: (_b = details.value) != null ? _b : null
+                    });
+                  }
+                  const eventNameClient = getString(el, "onSelectClient");
+                  if (eventNameClient) {
+                    el.dispatchEvent(
+                      new CustomEvent(eventNameClient, {
+                        bubbles: true,
+                        detail: {
+                          id: el.id,
+                          value: (_c = details.value) != null ? _c : null
+                        }
+                      })
+                    );
+                  }
+                }
               });
               nestedMenu.init();
               (_a = this.nestedMenus) == null ? void 0 : _a.set(nestedId, nestedMenu);
@@ -17262,28 +17290,21 @@ var Corex = (() => {
                 nestedMenu.setParent(this.menu);
               }
             });
-            if (this.menu) {
-              this.menu.api = this.menu.initApi();
-              this.menu.render();
-            }
-            nestedMenuInstances.forEach((nestedMenu) => {
-              nestedMenu.api = nestedMenu.initApi();
-              nestedMenu.render();
-            });
             if (this.menu && this.menu.children.length > 0) {
               this.menu.renderSubmenuTriggers();
             }
           }, 0);
           this.onSetOpen = (event) => {
             const { open } = event.detail;
-            menu.api.setOpen(open);
+            if (menu.api.open !== open) menu.api.setOpen(open);
           };
           el.addEventListener("phx:menu:set-open", this.onSetOpen);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("menu_set_open", (payload) => {
               const targetId = payload.menu_id;
-              if (targetId && targetId !== el.id) return;
+              const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
+              if (!matches) return;
               menu.api.setOpen(payload.open);
             })
           );
@@ -17743,6 +17764,32 @@ var Corex = (() => {
     var _a, _b;
     const v2 = (_b = event.restoreFocus) != null ? _b : (_a = event.previousEvent) == null ? void 0 : _a.restoreFocus;
     return v2 == null || !!v2;
+  }
+  function buildCollection(items, hasGroups) {
+    if (hasGroups) {
+      return collection2({
+        items,
+        itemToValue: (item) => {
+          var _a, _b;
+          return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+        },
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => {
+          var _a;
+          return (_a = item.group) != null ? _a : "";
+        }
+      });
+    }
+    return collection2({
+      items,
+      itemToValue: (item) => {
+        var _a, _b;
+        return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+      },
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    });
   }
   function snakeToCamel2(str) {
     return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
@@ -18563,10 +18610,21 @@ var Corex = (() => {
       splitItemGroupLabelProps3 = createSplitProps(itemGroupLabelProps3);
       Select = class extends Component {
         constructor(el, props22) {
+          var _a;
           super(el, props22);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "placeholder", "");
+          __publicField(this, "init", () => {
+            this.machine.start();
+            this.render();
+            this.machine.subscribe(() => {
+              this.api = this.initApi();
+              this.render();
+            });
+          });
+          const collectionFromProps = props22.collection;
+          this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
           this.placeholder = getString(this.el, "placeholder") || "";
         }
         get options() {
@@ -18605,91 +18663,68 @@ var Corex = (() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props22) {
           const getCollection = this.getCollection.bind(this);
+          const collectionFromProps = props22.collection;
           return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props22), {
             get collection() {
-              return getCollection();
+              return collectionFromProps != null ? collectionFromProps : getCollection();
             }
           }));
         }
         initApi() {
           return connect9(this.machine.service, normalizeProps);
         }
-        renderItems() {
-          var _a, _b, _c;
+        applyItemProps() {
           const contentEl = this.el.querySelector(
             '[data-scope="select"][data-part="content"]'
           );
           if (!contentEl) return;
-          const templatesContainer = this.el.querySelector('[data-templates="select"]');
-          if (!templatesContainer) return;
-          contentEl.querySelectorAll('[data-scope="select"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
-          contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-          const items = this.api.collection.items;
-          const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
-          const hasGroupsInCollection = groups.some(([group2]) => group2 != null);
-          if (hasGroupsInCollection) {
-            this.renderGroupedItems(contentEl, templatesContainer, groups);
-          } else {
-            this.renderFlatItems(contentEl, templatesContainer, items);
-          }
-        }
-        renderGroupedItems(contentEl, templatesContainer, groups) {
-          for (const [groupId, groupItems] of groups) {
-            if (groupId == null) continue;
-            const groupTemplate = templatesContainer.querySelector(
-              `[data-scope="select"][data-part="item-group"][data-id="${groupId}"][data-template]`
-            );
-            if (!groupTemplate) continue;
-            const groupEl = groupTemplate.cloneNode(true);
-            groupEl.removeAttribute("data-template");
+          contentEl.querySelectorAll(
+            '[data-scope="select"][data-part="item-group"]'
+          ).forEach((groupEl) => {
+            var _a;
+            const groupId = (_a = groupEl.dataset.id) != null ? _a : "";
             this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
             const labelEl = groupEl.querySelector(
               '[data-scope="select"][data-part="item-group-label"]'
             );
             if (labelEl) {
-              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+              this.spreadProps(
+                labelEl,
+                this.api.getItemGroupLabelProps({ htmlFor: groupId })
+              );
             }
-            const templateItems = groupEl.querySelectorAll(
-              '[data-scope="select"][data-part="item"][data-template]'
+          });
+          contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
+            var _a;
+            const value = (_a = itemEl.dataset.value) != null ? _a : "";
+            const item = this.options.find(
+              (i2) => {
+                var _a2, _b;
+                return String((_b = (_a2 = i2.id) != null ? _a2 : i2.value) != null ? _b : "") === String(value);
+              }
             );
-            templateItems.forEach((item) => item.remove());
-            for (const item of groupItems) {
-              const itemEl = this.cloneItem(templatesContainer, item);
-              if (itemEl) groupEl.appendChild(itemEl);
+            if (!item) return;
+            this.spreadProps(itemEl, this.api.getItemProps({ item }));
+            const textEl = itemEl.querySelector(
+              '[data-scope="select"][data-part="item-text"]'
+            );
+            if (textEl) {
+              this.spreadProps(textEl, this.api.getItemTextProps({ item }));
             }
-            contentEl.appendChild(groupEl);
-          }
-        }
-        renderFlatItems(contentEl, templatesContainer, items) {
-          for (const item of items) {
-            const itemEl = this.cloneItem(templatesContainer, item);
-            if (itemEl) contentEl.appendChild(itemEl);
-          }
-        }
-        cloneItem(templatesContainer, item) {
-          const value = this.api.collection.getItemValue(item);
-          const template = templatesContainer.querySelector(
-            `[data-scope="select"][data-part="item"][data-value="${value}"][data-template]`
-          );
-          if (!template) return null;
-          const el = template.cloneNode(true);
-          el.removeAttribute("data-template");
-          this.spreadProps(el, this.api.getItemProps({ item }));
-          const textEl = el.querySelector('[data-scope="select"][data-part="item-text"]');
-          if (textEl) {
-            this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-          }
-          const indicatorEl = el.querySelector(
-            '[data-scope="select"][data-part="item-indicator"]'
-          );
-          if (indicatorEl) {
-            this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
-          }
-          return el;
+            const indicatorEl = itemEl.querySelector(
+              '[data-scope="select"][data-part="item-indicator"]'
+            );
+            if (indicatorEl) {
+              this.spreadProps(
+                indicatorEl,
+                this.api.getItemIndicatorProps({ item })
+              );
+            }
+          });
         }
         render() {
-          const root = this.el.querySelector('[data-scope="select"][data-part="root"]');
-          if (!root) return;
+          var _a;
+          const root = (_a = this.el.querySelector('[data-scope="select"][data-part="root"]')) != null ? _a : this.el;
           this.spreadProps(root, this.api.getRootProps());
           const hiddenSelect = this.el.querySelector(
             '[data-scope="select"][data-part="hidden-select"]'
@@ -18709,8 +18744,17 @@ var Corex = (() => {
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
           }
-          ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
-            const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
+          [
+            "label",
+            "control",
+            "trigger",
+            "indicator",
+            "clear-trigger",
+            "positioner"
+          ].forEach((part) => {
+            const el = this.el.querySelector(
+              `[data-scope="select"][data-part="${part}"]`
+            );
             if (!el) return;
             const method = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
             this.spreadProps(el, this.api[method]());
@@ -18723,8 +18767,8 @@ var Corex = (() => {
             if (this.api.value && this.api.value.length > 0 && !valueAsString) {
               const selectedValue = this.api.value[0];
               const selectedItem = this.options.find((item) => {
-                var _a, _b;
-                const itemValue = (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+                var _a2, _b;
+                const itemValue = (_b = (_a2 = item.id) != null ? _a2 : item.value) != null ? _b : "";
                 return String(itemValue) === String(selectedValue);
               });
               if (selectedItem) {
@@ -18741,7 +18785,7 @@ var Corex = (() => {
           );
           if (contentEl) {
             this.spreadProps(contentEl, this.api.getContentProps());
-            this.renderItems();
+            this.applyItemProps();
           }
         }
       };
@@ -18750,8 +18794,10 @@ var Corex = (() => {
           const el = this.el;
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => item.group !== void 0);
+          const initialCollection = buildCollection(allItems, hasGroups);
           const selectComponent = new Select(el, __spreadProps(__spreadValues({
-            id: el.id
+            id: el.id,
+            collection: initialCollection
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             disabled: getBoolean(el, "disabled"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
@@ -18821,12 +18867,13 @@ var Corex = (() => {
           this.handlers = [];
         },
         updated() {
-          const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-          const hasGroups = newCollection.some((item) => item.group !== void 0);
+          const newItems = JSON.parse(this.el.dataset.collection || "[]");
+          const hasGroups = newItems.some((item) => item.group !== void 0);
           if (this.select) {
             this.select.hasGroups = hasGroups;
-            this.select.setOptions(newCollection);
+            this.select.setOptions(newItems);
             this.select.updateProps(__spreadProps(__spreadValues({
+              collection: buildCollection(newItems, hasGroups),
               id: this.el.id
             }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
               name: getString(this.el, "name"),

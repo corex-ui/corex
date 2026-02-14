@@ -383,7 +383,7 @@ defmodule Corex.Menu do
       on_open_change: @on_open_change,
       on_open_change_client: @on_open_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, dir: @dir})}>
+      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
         <button {Connect.trigger(%Trigger{
           id: @id,
           disabled: @disabled,
@@ -479,7 +479,7 @@ defmodule Corex.Menu do
       on_open_change: nil,
       on_open_change_client: nil
     })}>
-      <div {Connect.root(%Root{id: @nested_id, dir: @dir})}>
+      <div phx-update="ignore" {Connect.root(%Root{id: @nested_id, dir: @dir})}>
         <div {Connect.positioner(%Root{id: @nested_id, dir: @dir, open: false})}>
           <ul {Connect.content(%Root{id: @nested_id, dir: @dir, open: false})}>
             <li :for={child <- @item.children} {Connect.item(%Item{
@@ -584,7 +584,7 @@ defmodule Corex.Menu do
   """
   def set_open(menu_id, open) when is_binary(menu_id) do
     Phoenix.LiveView.JS.dispatch("phx:menu:set-open",
-      to: "##{menu_id}",
+      to: "[id=\"menu:#{menu_id}\"]",
       detail: %{open: open},
       bubbles: false
     )

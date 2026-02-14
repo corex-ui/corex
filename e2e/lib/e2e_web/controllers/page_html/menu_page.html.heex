@@ -95,19 +95,17 @@
     </:indicator>
   </.menu>
 
- <.menu
-        class="menu"
-        redirect
-        items={menu_items(@locale)}
-      >
-        <:trigger>Corex</:trigger>
-        <:indicator>
-          <.icon name="hero-chevron-down" />
-        </:indicator>
-        <:item :let={item}>
-          {item.label}
-        </:item>
-      </.menu>
+  <.menu
+    class="menu"
+    redirect
+    items={menu_items(@locale)}
+  >
+    <:trigger>Corex</:trigger>
+    <:indicator>
+      <.icon name="hero-chevron-down" />
+    </:indicator>
+    <:item :let={item}>
+      {item.label}
+    </:item>
+  </.menu>
 </Layouts.app>
-
-

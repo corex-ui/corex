@@ -80,17 +80,17 @@ export class Menu extends Component<Props, Api> {
     );
 
     if (positionerEl && contentEl) {
-      // Always apply positioner and content props so Zag can manage visibility,
-      // keyboard handlers, aria-activedescendant, etc. across state transitions.
-      // getContentProps() includes hidden: !open which controls content visibility.
       this.spreadProps(positionerEl, this.api.getPositionerProps());
       this.spreadProps(contentEl, this.api.getContentProps());
+      contentEl.style.pointerEvents = "auto";
 
-      // Also manage positioner hidden state for rendering optimization
       positionerEl.hidden = !this.api.open;
 
-      if (this.api.open) {
-        // Handle menu items - only process items belonging to THIS menu
+      const isNested = !this.el.querySelector<HTMLElement>(
+        '[data-scope="menu"][data-part="trigger"]'
+      );
+      const shouldApplyItems = this.api.open || isNested;
+      if (shouldApplyItems) {
         const items = contentEl.querySelectorAll<HTMLElement>(
           '[data-scope="menu"][data-part="item"]'
         );
@@ -103,30 +103,6 @@ export class Menu extends Component<Props, Api> {
             this.spreadProps(
               itemEl,
               this.api.getItemProps({ value, disabled: disabled || undefined })
-            );
-          }
-        });
-
-        // Handle option items (checkbox/radio)
-        const optionItems = contentEl.querySelectorAll<HTMLElement>(
-          '[data-scope="menu"][data-part="option-item"]'
-        );
-        optionItems.forEach((optionItemEl) => {
-          if (!this.isOwnElement(optionItemEl)) return;
-
-          const value = optionItemEl.dataset.value;
-          const type = optionItemEl.dataset.type as "checkbox" | "radio" | undefined;
-          if (value && type) {
-            const checked = optionItemEl.hasAttribute("data-checked");
-            const disabled = optionItemEl.hasAttribute("data-disabled");
-            this.spreadProps(
-              optionItemEl,
-              this.api.getOptionItemProps({
-                value,
-                type,
-                checked: checked,
-                disabled: disabled || undefined,
-              })
             );
           }
         });

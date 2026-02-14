@@ -52,6 +52,7 @@ defmodule E2eWeb.MenuLive do
 
       <.menu
         class="menu"
+        id="my-menu"
         items={[
           %Corex.Tree.Item{
             id: "edit",
@@ -153,6 +154,9 @@ defmodule E2eWeb.MenuLive do
         <:indicator>
           <.icon name="hero-chevron-down" />
         </:indicator>
+        <:nested_indicator>
+        <.icon name="hero-chevron-right" />
+      </:nested_indicator>
         <:item :let={item}>
           {item.label}
         </:item>
@@ -165,14 +169,7 @@ defmodule E2eWeb.MenuLive do
     Corex.Tree.new([
       [
         label: "Accordion",
-        id: "accordion",
-        children: [
-          [label: "Controller", id: "/#{locale}/accordion"],
-          [label: "Live", id: "/#{locale}/live/accordion"],
-          [label: "Playground", id: "/#{locale}/playground/accordion"],
-          [label: "Controlled", id: "/#{locale}/controlled/accordion"],
-          [label: "Async", id: "/#{locale}/async/accordion"]
-        ]
+        id: "/#{locale}/accordion"
       ],
       [
         label: "Checkbox",
