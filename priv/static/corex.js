@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-GFGFZBBD.mjs
+  // ../priv/static/chunk-IXOYOLUJ.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -338,6 +338,11 @@ var Corex = (() => {
     }
     return navigator.userAgent;
   }
+  function getBeforeInputValue(event) {
+    const { selectionStart, selectionEnd, value } = event.currentTarget;
+    const data = event.data;
+    return value.slice(0, selectionStart) + (data != null ? data : "") + value.slice(selectionEnd);
+  }
   function getComposedPath(event) {
     var _a, _b, _c, _d;
     return (_d = (_a = event.composedPath) == null ? void 0 : _a.call(event)) != null ? _d : (_c = (_b = event.nativeEvent) == null ? void 0 : _b.composedPath) == null ? void 0 : _c.call(_b);
@@ -396,6 +401,15 @@ var Corex = (() => {
     var _a;
     return (_a = event.nativeEvent) != null ? _a : event;
   }
+  function getEventStep(event) {
+    if (event.ctrlKey || event.metaKey) {
+      return 0.1;
+    } else {
+      const isPageKey = pageKeys.has(event.key);
+      const isSkipKey = isPageKey || event.shiftKey && arrowKeys.has(event.key);
+      return isSkipKey ? 10 : 1;
+    }
+  }
   function getEventPoint(event, type = "client") {
     const point = isTouchEvent(event) ? event.touches[0] || event.changedTouches[0] : event;
     return { x: point[`${type}X`], y: point[`${type}Y`] };
@@ -428,6 +442,14 @@ var Corex = (() => {
     (_a = descriptor.set) == null ? void 0 : _a.call(el, checked);
     if (checked) el.setAttribute("checked", "");
     else el.removeAttribute("checked");
+  }
+  function dispatchInputValueEvent(el, options) {
+    const { value, bubbles = true } = options;
+    if (!el) return;
+    const win = getWindow(el);
+    if (!(el instanceof win.HTMLInputElement)) return;
+    setElementValue(el, `${value}`);
+    el.dispatchEvent(new win.Event("input", { bubbles }));
   }
   function dispatchInputCheckedEvent(el, options) {
     const { checked, bubbles = true } = options;
@@ -715,6 +737,32 @@ var Corex = (() => {
       return invertY ? 1 - percent.y : percent.y;
     }
     return { offset: offset3, percent, getPercentValue };
+  }
+  function requestPointerLock(doc, fn) {
+    const body = doc.body;
+    const supported = "pointerLockElement" in doc || "mozPointerLockElement" in doc;
+    const isLocked = () => !!doc.pointerLockElement;
+    function onPointerChange() {
+      fn == null ? void 0 : fn(isLocked());
+    }
+    function onPointerError(event) {
+      if (isLocked()) fn == null ? void 0 : fn(false);
+      console.error("PointerLock error occurred:", event);
+      doc.exitPointerLock();
+    }
+    if (!supported) return;
+    try {
+      body.requestPointerLock();
+    } catch (e2) {
+    }
+    const cleanup = [
+      addDomEvent(doc, "pointerlockchange", onPointerChange, false),
+      addDomEvent(doc, "pointerlockerror", onPointerError, false)
+    ];
+    return () => {
+      cleanup.forEach((cleanup2) => cleanup2());
+      doc.exitPointerLock();
+    };
   }
   function disableTextSelectionImpl(options = {}) {
     const { target, doc } = options;
@@ -1136,6 +1184,28 @@ var Corex = (() => {
     (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, match2);
     throw error;
   }
+  function throttle(fn, wait = 0) {
+    let lastCall = 0;
+    let timeout = null;
+    return (...args) => {
+      const now = Date.now();
+      const timeSinceLastCall = now - lastCall;
+      if (timeSinceLastCall >= wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        fn(...args);
+        lastCall = now;
+      } else if (!timeout) {
+        timeout = setTimeout(() => {
+          fn(...args);
+          lastCall = Date.now();
+          timeout = null;
+        }, wait - timeSinceLastCall);
+      }
+    };
+  }
   function compact(obj) {
     if (!isPlainObject(obj) || obj === void 0) return obj;
     const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
@@ -1148,19 +1218,40 @@ var Corex = (() => {
     }
     return filtered;
   }
-  function splitProps(props15, keys) {
+  function pick(obj, keys) {
+    const filtered = {};
+    for (const key of keys) {
+      const value = obj[key];
+      if (value !== void 0) {
+        filtered[key] = value;
+      }
+    }
+    return filtered;
+  }
+  function splitProps(props26, keys) {
     const rest = {};
     const result = {};
     const keySet = new Set(keys);
-    const ownKeys = Reflect.ownKeys(props15);
+    const ownKeys = Reflect.ownKeys(props26);
     for (const key of ownKeys) {
       if (keySet.has(key)) {
-        result[key] = props15[key];
+        result[key] = props26[key];
       } else {
-        rest[key] = props15[key];
+        rest[key] = props26[key];
       }
     }
     return [result, rest];
+  }
+  function setRafInterval(fn, intervalMs) {
+    const timer = new Timer(({ now, deltaMs }) => {
+      if (deltaMs >= intervalMs) {
+        const startMs = intervalMs > 0 ? now - deltaMs % intervalMs : now;
+        timer.setStartMs(startMs);
+        fn({ startMs, deltaMs });
+      }
+    });
+    timer.start();
+    return () => timer.stop();
   }
   function setRafTimeout(fn, delayMs) {
     const timer = new Timer(({ deltaMs }) => {
@@ -1179,44 +1270,51 @@ var Corex = (() => {
       console.warn(m2);
     }
   }
+  function invariant(...a2) {
+    const m2 = a2.length === 1 ? a2[0] : a2[1];
+    const c2 = a2.length === 2 ? a2[0] : true;
+    if (c2 && true) {
+      throw new Error(m2);
+    }
+  }
   function ensure(c2, m2) {
     if (c2 == null) throw new Error(m2());
   }
-  function ensureProps(props15, keys, scope) {
+  function ensureProps(props26, keys, scope) {
     let missingKeys = [];
     for (const key of keys) {
-      if (props15[key] == null) missingKeys.push(key);
+      if (props26[key] == null) missingKeys.push(key);
     }
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
   function mergeProps(...args) {
     let result = {};
-    for (let props15 of args) {
-      if (!props15) continue;
+    for (let props26 of args) {
+      if (!props26) continue;
       for (let key in result) {
-        if (key.startsWith("on") && typeof result[key] === "function" && typeof props15[key] === "function") {
-          result[key] = callAll(props15[key], result[key]);
+        if (key.startsWith("on") && typeof result[key] === "function" && typeof props26[key] === "function") {
+          result[key] = callAll(props26[key], result[key]);
           continue;
         }
         if (key === "className" || key === "class") {
-          result[key] = clsx(result[key], props15[key]);
+          result[key] = clsx(result[key], props26[key]);
           continue;
         }
         if (key === "style") {
-          result[key] = css(result[key], props15[key]);
+          result[key] = css(result[key], props26[key]);
           continue;
         }
-        result[key] = props15[key] !== void 0 ? props15[key] : result[key];
+        result[key] = props26[key] !== void 0 ? props26[key] : result[key];
       }
-      for (let key in props15) {
+      for (let key in props26) {
         if (result[key] === void 0) {
-          result[key] = props15[key];
+          result[key] = props26[key];
         }
       }
-      const symbols = Object.getOwnPropertySymbols(props15);
+      const symbols = Object.getOwnPropertySymbols(props26);
       for (let symbol of symbols) {
-        result[symbol] = props15[symbol];
+        result[symbol] = props26[symbol];
       }
     }
     return result;
@@ -1237,14 +1335,14 @@ var Corex = (() => {
   }
   function createGuards() {
     return {
-      and: (...guards3) => {
+      and: (...guards5) => {
         return function andGuard(params) {
-          return guards3.every((str) => params.guard(str));
+          return guards5.every((str) => params.guard(str));
         };
       },
-      or: (...guards3) => {
+      or: (...guards5) => {
         return function orGuard(params) {
-          return guards3.some((str) => params.guard(str));
+          return guards5.some((str) => params.guard(str));
         };
       },
       not: (guard) => {
@@ -1264,17 +1362,17 @@ var Corex = (() => {
         return createMachine(config);
       },
       choose: (transitions) => {
-        return function chooseFn({ choose: choose2 }) {
+        return function chooseFn({ choose: choose4 }) {
           var _a;
-          return (_a = choose2(transitions)) == null ? void 0 : _a.actions;
+          return (_a = choose4(transitions)) == null ? void 0 : _a.actions;
         };
       }
     };
   }
-  function createScope(props15) {
+  function createScope(props26) {
     const getRootNode2 = () => {
       var _a, _b;
-      return (_b = (_a = props15.getRootNode) == null ? void 0 : _a.call(props15)) != null ? _b : document;
+      return (_b = (_a = props26.getRootNode) == null ? void 0 : _a.call(props26)) != null ? _b : document;
     };
     const getDoc = () => getDocument(getRootNode2());
     const getWin = () => {
@@ -1283,7 +1381,7 @@ var Corex = (() => {
     };
     const getActiveElementFn = () => getActiveElement(getRootNode2());
     const getById = (id) => getRootNode2().getElementById(id);
-    return __spreadProps(__spreadValues({}, props15), {
+    return __spreadProps(__spreadValues({}, props26), {
       getRootNode: getRootNode2,
       getDoc,
       getWin,
@@ -1296,8 +1394,8 @@ var Corex = (() => {
     return new Proxy({}, {
       get(_target, key) {
         if (key === "style")
-          return (props15) => {
-            return fn({ style: props15 }).style;
+          return (props26) => {
+            return fn({ style: props26 }).style;
           };
         return fn;
       }
@@ -1431,40 +1529,40 @@ var Corex = (() => {
       }
     };
   }
-  function bindable(props15) {
+  function bindable(props26) {
     var _a, _b;
-    const initial = (_a = props15().value) != null ? _a : props15().defaultValue;
-    if (props15().debug) {
-      console.log(`[bindable > ${props15().debug}] initial`, initial);
+    const initial = (_a = props26().value) != null ? _a : props26().defaultValue;
+    if (props26().debug) {
+      console.log(`[bindable > ${props26().debug}] initial`, initial);
     }
-    const eq = (_b = props15().isEqual) != null ? _b : Object.is;
+    const eq = (_b = props26().isEqual) != null ? _b : Object.is;
     const store = proxy({ value: initial });
-    const controlled = () => props15().value !== void 0;
+    const controlled = () => props26().value !== void 0;
     return {
       initial,
       ref: store,
       get() {
-        return controlled() ? props15().value : store.value;
+        return controlled() ? props26().value : store.value;
       },
       set(nextValue) {
         var _a2, _b2;
         const prev2 = store.value;
         const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
-        if (props15().debug) {
-          console.log(`[bindable > ${props15().debug}] setValue`, { next: next2, prev: prev2 });
+        if (props26().debug) {
+          console.log(`[bindable > ${props26().debug}] setValue`, { next: next2, prev: prev2 });
         }
         if (!controlled()) store.value = next2;
         if (!eq(next2, prev2)) {
-          (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
+          (_b2 = (_a2 = props26()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
         }
       },
       invoke(nextValue, prevValue) {
         var _a2, _b2;
-        (_b2 = (_a2 = props15()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
+        (_b2 = (_a2 = props26()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
       },
       hash(value) {
         var _a2, _b2, _c;
-        return (_c = (_b2 = (_a2 = props15()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
+        return (_c = (_b2 = (_a2 = props26()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
       }
     };
   }
@@ -1498,9 +1596,9 @@ var Corex = (() => {
     }
     return result;
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, isValueWithinRange, clampValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
-  var init_chunk_GFGFZBBD = __esm({
-    "../priv/static/chunk-GFGFZBBD.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, clampValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, countDecimals, decimalOp, incrementValue, decrementValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
+  var init_chunk_IXOYOLUJ = __esm({
+    "../priv/static/chunk-IXOYOLUJ.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1533,18 +1631,18 @@ var Corex = (() => {
         if (element == null ? void 0 : element.id) return element.id;
         return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
       };
-      createAnatomy = (name, parts16 = []) => ({
+      createAnatomy = (name, parts27 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts16)) {
+          if (isEmpty(parts27)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts16, ...values]),
-        omit: (...values) => createAnatomy(name, parts16.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts16),
-        keys: () => parts16,
-        build: () => [...new Set(parts16)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts27, ...values]),
+        omit: (...values) => createAnatomy(name, parts27.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts27),
+        keys: () => parts27,
+        build: () => [...new Set(parts27)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -1630,6 +1728,8 @@ var Corex = (() => {
         ArrowLeft: "ArrowRight",
         ArrowRight: "ArrowLeft"
       };
+      pageKeys = /* @__PURE__ */ new Set(["PageUp", "PageDown"]);
+      arrowKeys = /* @__PURE__ */ new Set(["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"]);
       addDomEvent = (target, eventName, handler, options) => {
         const node = typeof target === "function" ? target() : target;
         node == null ? void 0 : node.addEventListener(eventName, handler, options);
@@ -1831,6 +1931,9 @@ var Corex = (() => {
       ({ floor, abs, round, min, max, pow, sign } = Math);
       isNaN2 = (v2) => Number.isNaN(v2);
       nan = (v2) => isNaN2(v2) ? 0 : v2;
+      wrap2 = (v2, vmax) => (v2 % vmax + vmax) % vmax;
+      isValueAtMax = (v2, vmax) => nan(v2) >= vmax;
+      isValueAtMin = (v2, vmin) => nan(v2) <= vmin;
       isValueWithinRange = (v2, vmin, vmax) => {
         const value = nan(v2);
         const minCheck = vmin == null || value >= vmin;
@@ -1838,10 +1941,63 @@ var Corex = (() => {
         return minCheck && maxCheck;
       };
       clampValue = (v2, vmin, vmax) => min(max(nan(v2), vmin), vmax);
+      roundToStepPrecision = (v2, step) => {
+        let rv = v2;
+        let ss = step.toString();
+        let pi = ss.indexOf(".");
+        let p2 = pi >= 0 ? ss.length - pi : 0;
+        if (p2 > 0) {
+          let pw = pow(10, p2);
+          rv = round(rv * pw) / pw;
+        }
+        return rv;
+      };
+      roundToDpr = (v2, dpr) => typeof dpr === "number" ? floor(v2 * dpr + 0.5) / dpr : round(v2);
+      snapValueToStep = (v2, vmin, vmax, step) => {
+        const min23 = vmin != null ? Number(vmin) : 0;
+        const max22 = Number(vmax);
+        const remainder = (v2 - min23) % step;
+        let snapped = abs(remainder) * 2 >= step ? v2 + sign(remainder) * (step - abs(remainder)) : v2 - remainder;
+        snapped = roundToStepPrecision(snapped, step);
+        if (!isNaN2(min23) && snapped < min23) {
+          snapped = min23;
+        } else if (!isNaN2(max22) && snapped > max22) {
+          const stepsInRange = floor((max22 - min23) / step);
+          const largestValidStep = min23 + stepsInRange * step;
+          snapped = stepsInRange <= 0 || largestValidStep < min23 ? max22 : largestValidStep;
+        }
+        return roundToStepPrecision(snapped, step);
+      };
+      setValueAtIndex = (vs, i2, v2) => {
+        if (vs[i2] === v2) return vs;
+        return [...vs.slice(0, i2), v2, ...vs.slice(i2 + 1)];
+      };
+      countDecimals = (value) => {
+        if (!Number.isFinite(value)) return 0;
+        let e2 = 1, p2 = 0;
+        while (Math.round(value * e2) / e2 !== value) {
+          e2 *= 10;
+          p2 += 1;
+        }
+        return p2;
+      };
+      decimalOp = (a2, op, b2) => {
+        let result = op === "+" ? a2 + b2 : a2 - b2;
+        if (a2 % 1 !== 0 || b2 % 1 !== 0) {
+          const multiplier = 10 ** Math.max(countDecimals(a2), countDecimals(b2));
+          a2 = Math.round(a2 * multiplier);
+          b2 = Math.round(b2 * multiplier);
+          result = op === "+" ? a2 + b2 : a2 - b2;
+          result /= multiplier;
+        }
+        return result;
+      };
+      incrementValue = (v2, s2) => decimalOp(nan(v2), "+", s2);
+      decrementValue = (v2, s2) => decimalOp(nan(v2), "-", s2);
       toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
       createSplitProps = (keys) => {
-        return function split(props15) {
-          return splitProps(props15, keys);
+        return function split(props26) {
+          return splitProps(props26, keys);
         };
       };
       currentTime = () => performance.now();
@@ -1929,7 +2085,7 @@ var Corex = (() => {
         return MachineStatus2;
       })(MachineStatus || {});
       INIT_STATE = "__init__";
-      createProps = () => (props15) => Array.from(new Set(props15));
+      createProps = () => (props26) => Array.from(new Set(props26));
       TRACK_MEMO_SYMBOL = Symbol();
       GET_ORIGINAL_SYMBOL = Symbol();
       getProto = Object.getPrototypeOf;
@@ -2142,8 +2298,8 @@ var Corex = (() => {
         }
         return string;
       };
-      normalizeProps = createNormalizer((props15) => {
-        return Object.entries(props15).reduce((acc, [key, value]) => {
+      normalizeProps = createNormalizer((props26) => {
+        return Object.entries(props26).reduce((acc, [key, value]) => {
           if (value === void 0) return acc;
           if (key in propMap) {
             key = propMap[key];
@@ -2191,9 +2347,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine16, userProps = {}) {
+        constructor(machine27, userProps = {}) {
           var _a, _b, _c;
-          this.machine = machine16;
+          this.machine = machine27;
           __publicField3(this, "scope");
           __publicField3(this, "context");
           __publicField3(this, "prop");
@@ -2345,11 +2501,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a2, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props15 = (_b2 = (_a2 = machine16.props) == null ? void 0 : _a2.call(machine16, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
-            return props15[key];
+            const props26 = (_b2 = (_a2 = machine27.props) == null ? void 0 : _a2.call(machine27, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            return props26[key];
           };
           this.prop = prop;
-          const context = (_a = machine16.context) == null ? void 0 : _a.call(machine16, {
+          const context = (_a = machine27.context) == null ? void 0 : _a.call(machine27, {
             prop,
             bindable,
             scope: this.scope,
@@ -2391,7 +2547,7 @@ var Corex = (() => {
           this.context = ctx;
           const computed = (key) => {
             var _a2, _b2;
-            return (_b2 = (_a2 = machine16.computed) == null ? void 0 : _a2[key]({
+            return (_b2 = (_a2 = machine27.computed) == null ? void 0 : _a2[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2401,10 +2557,10 @@ var Corex = (() => {
             })) != null ? _b2 : {};
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine16.refs) == null ? void 0 : _b.call(machine16, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine27.refs) == null ? void 0 : _b.call(machine27, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: machine16.initialState({ prop }),
+            defaultValue: machine27.initialState({ prop }),
             onChange: (nextState, prevState) => {
               var _a2, _b2, _c2, _d;
               if (prevState) {
@@ -2419,8 +2575,8 @@ var Corex = (() => {
               const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
               if (cleanup) this.effects.set(nextState, cleanup);
               if (prevState === INIT_STATE) {
-                this.action(machine16.entry);
-                const cleanup2 = this.effect(machine16.effects);
+                this.action(machine27.entry);
+                const cleanup2 = this.effect(machine27.effects);
                 if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
               }
               this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
@@ -2470,7 +2626,7 @@ var Corex = (() => {
         }
       };
       Component = class {
-        constructor(el, props15) {
+        constructor(el, props26) {
           __publicField(this, "el");
           __publicField(this, "doc");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2487,16 +2643,16 @@ var Corex = (() => {
           __publicField(this, "destroy", () => {
             this.machine.stop();
           });
-          __publicField(this, "spreadProps", (el, props15) => {
-            spreadProps(el, props15, this.machine.scope.id);
+          __publicField(this, "spreadProps", (el, props26) => {
+            spreadProps(el, props26, this.machine.scope.id);
           });
-          __publicField(this, "updateProps", (props15) => {
-            this.machine.updateProps(props15);
+          __publicField(this, "updateProps", (props26) => {
+            this.machine.updateProps(props26);
           });
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
-          this.machine = this.initMachine(props15);
+          this.machine = this.initMachine(props26);
           this.api = this.initApi();
         }
       };
@@ -2520,12 +2676,12 @@ var Corex = (() => {
       }
       send({ type: "VALUE.SET", value: nextValue });
     }
-    function getItemState(props22) {
+    function getItemState(props26) {
       var _a;
       return {
-        expanded: value.includes(props22.value),
-        focused: focusedValue === props22.value,
-        disabled: Boolean((_a = props22.disabled) != null ? _a : prop("disabled"))
+        expanded: value.includes(props26.value),
+        focused: focusedValue === props26.value,
+        disabled: Boolean((_a = props26.disabled) != null ? _a : prop("disabled"))
       };
     }
     return {
@@ -2540,24 +2696,24 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemProps(props22) {
-        const itemState = getItemState(props22);
+      getItemProps(props26) {
+        const itemState = getItemState(props26);
         return normalize.element(__spreadProps(__spreadValues({}, parts.item.attrs), {
           dir: prop("dir"),
-          id: getItemId(scope, props22.value),
+          id: getItemId(scope, props26.value),
           "data-state": itemState.expanded ? "open" : "closed",
           "data-focus": dataAttr(itemState.focused),
           "data-disabled": dataAttr(itemState.disabled),
           "data-orientation": prop("orientation")
         }));
       },
-      getItemContentProps(props22) {
-        const itemState = getItemState(props22);
+      getItemContentProps(props26) {
+        const itemState = getItemState(props26);
         return normalize.element(__spreadProps(__spreadValues({}, parts.itemContent.attrs), {
           dir: prop("dir"),
           role: "region",
-          id: getItemContentId(scope, props22.value),
-          "aria-labelledby": getItemTriggerId(scope, props22.value),
+          id: getItemContentId(scope, props26.value),
+          "aria-labelledby": getItemTriggerId(scope, props26.value),
           hidden: !itemState.expanded,
           "data-state": itemState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(itemState.disabled),
@@ -2565,8 +2721,8 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemIndicatorProps(props22) {
-        const itemState = getItemState(props22);
+      getItemIndicatorProps(props26) {
+        const itemState = getItemState(props26);
         return normalize.element(__spreadProps(__spreadValues({}, parts.itemIndicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
@@ -2576,9 +2732,9 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemTriggerProps(props22) {
-        const { value: value2 } = props22;
-        const itemState = getItemState(props22);
+      getItemTriggerProps(props26) {
+        const { value: value2 } = props26;
+        const itemState = getItemState(props26);
         return normalize.button(__spreadProps(__spreadValues({}, parts.itemTrigger.attrs), {
           type: "button",
           dir: prop("dir"),
@@ -2651,7 +2807,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
+      init_chunk_IXOYOLUJ();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2682,13 +2838,13 @@ var Corex = (() => {
       getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
       ({ and, not } = createGuards());
       machine = createMachine({
-        props({ props: props22 }) {
+        props({ props: props26 }) {
           return __spreadValues({
             collapsible: false,
             multiple: false,
             orientation: "vertical",
             defaultValue: []
-          }, props22);
+          }, props26);
         },
         initialState() {
           return "idle";
@@ -2832,8 +2988,8 @@ var Corex = (() => {
       splitItemProps = createSplitProps(itemProps);
       Accordion = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine, props26);
         }
         initApi() {
           return connect(this.machine.service, normalizeProps);
@@ -3004,7 +3160,2302 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-EAMC7PNF.mjs
+  // ../priv/static/chunk-BMVNROAE.mjs
+  function getPointAngle(rect, point, reference = rect.center) {
+    const x2 = point.x - reference.x;
+    const y2 = point.y - reference.y;
+    const deg = Math.atan2(x2, y2) * (180 / Math.PI) + 180;
+    return 360 - deg;
+  }
+  function createRect(r2) {
+    const { x: x2, y: y2, width, height } = r2;
+    const midX = x2 + width / 2;
+    const midY = y2 + height / 2;
+    return {
+      x: x2,
+      y: y2,
+      width,
+      height,
+      minX: x2,
+      minY: y2,
+      maxX: x2 + width,
+      maxY: y2 + height,
+      midX,
+      midY,
+      center: createPoint(midX, midY)
+    };
+  }
+  function getRectCorners(v2) {
+    const top = createPoint(v2.minX, v2.minY);
+    const right = createPoint(v2.maxX, v2.minY);
+    const bottom = createPoint(v2.maxX, v2.maxY);
+    const left = createPoint(v2.minX, v2.maxY);
+    return { top, right, bottom, left };
+  }
+  function getCacheComputedStyle(el) {
+    if (!styleCache2.has(el)) {
+      const win = el.ownerDocument.defaultView || window;
+      styleCache2.set(el, win.getComputedStyle(el));
+    }
+    return styleCache2.get(el);
+  }
+  function getElementRect(el, opts = {}) {
+    return createRect(getClientRect(el, opts));
+  }
+  function getClientRect(el, opts = {}) {
+    const { excludeScrollbar = false, excludeBorders = false } = opts;
+    const { x: x2, y: y2, width, height } = el.getBoundingClientRect();
+    const r2 = { x: x2, y: y2, width, height };
+    const style = getCacheComputedStyle(el);
+    const { borderLeftWidth, borderTopWidth, borderRightWidth, borderBottomWidth } = style;
+    const borderXWidth = sum(borderLeftWidth, borderRightWidth);
+    const borderYWidth = sum(borderTopWidth, borderBottomWidth);
+    if (excludeBorders) {
+      r2.width -= borderXWidth;
+      r2.height -= borderYWidth;
+      r2.x += px(borderLeftWidth);
+      r2.y += px(borderTopWidth);
+    }
+    if (excludeScrollbar) {
+      const scrollbarWidth = el.offsetWidth - el.clientWidth - borderXWidth;
+      const scrollbarHeight = el.offsetHeight - el.clientHeight - borderYWidth;
+      r2.width -= scrollbarWidth;
+      r2.height -= scrollbarHeight;
+    }
+    return r2;
+  }
+  function getWindowRect(win, opts = {}) {
+    return createRect(getViewportRect(win, opts));
+  }
+  function getViewportRect(win, opts) {
+    const { excludeScrollbar = false } = opts;
+    const { innerWidth, innerHeight, document: doc, visualViewport } = win;
+    const width = (visualViewport == null ? void 0 : visualViewport.width) || innerWidth;
+    const height = (visualViewport == null ? void 0 : visualViewport.height) || innerHeight;
+    const rect = { x: 0, y: 0, width, height };
+    if (excludeScrollbar) {
+      const scrollbarWidth = innerWidth - doc.documentElement.clientWidth;
+      const scrollbarHeight = innerHeight - doc.documentElement.clientHeight;
+      rect.width -= scrollbarWidth;
+      rect.height -= scrollbarHeight;
+    }
+    return rect;
+  }
+  function getElementPolygon(rectValue, placement) {
+    const rect = createRect(rectValue);
+    const { top, right, left, bottom } = getRectCorners(rect);
+    const [base] = placement.split("-");
+    return {
+      top: [left, top, right, bottom],
+      right: [top, right, bottom, left],
+      bottom: [top, left, bottom, right],
+      left: [right, top, left, bottom]
+    }[base];
+  }
+  function isPointInPolygon(polygon, point) {
+    const { x: x2, y: y2 } = point;
+    let c2 = false;
+    for (let i2 = 0, j2 = polygon.length - 1; i2 < polygon.length; j2 = i2++) {
+      const xi = polygon[i2].x;
+      const yi = polygon[i2].y;
+      const xj = polygon[j2].x;
+      const yj = polygon[j2].y;
+      if (yi > y2 !== yj > y2 && x2 < (xj - xi) * (y2 - yi) / (yj - yi) + xi) {
+        c2 = !c2;
+      }
+    }
+    return c2;
+  }
+  function getRectExtentPoint(rect, direction) {
+    const { minX, minY, maxX, maxY, midX, midY } = rect;
+    const x2 = direction.includes("w") ? minX : direction.includes("e") ? maxX : midX;
+    const y2 = direction.includes("n") ? minY : direction.includes("s") ? maxY : midY;
+    return { x: x2, y: y2 };
+  }
+  function getOppositeDirection(direction) {
+    return oppositeDirectionMap[direction];
+  }
+  function resizeRect(rect, offset3, direction, opts) {
+    const { scalingOriginMode, lockAspectRatio } = opts;
+    const extent = getRectExtentPoint(rect, direction);
+    const oppositeDirection = getOppositeDirection(direction);
+    const oppositeExtent = getRectExtentPoint(rect, oppositeDirection);
+    if (scalingOriginMode === "center") {
+      offset3 = { x: offset3.x * 2, y: offset3.y * 2 };
+    }
+    const newExtent = {
+      x: extent.x + offset3.x,
+      y: extent.y + offset3.y
+    };
+    const multiplier = {
+      x: compassDirectionMap[direction].x * 2 - 1,
+      y: compassDirectionMap[direction].y * 2 - 1
+    };
+    const newSize = {
+      width: newExtent.x - oppositeExtent.x,
+      height: newExtent.y - oppositeExtent.y
+    };
+    const scaleX = multiplier.x * newSize.width / rect.width;
+    const scaleY = multiplier.y * newSize.height / rect.height;
+    const largestMagnitude = abs2(scaleX) > abs2(scaleY) ? scaleX : scaleY;
+    const scale = lockAspectRatio ? { x: largestMagnitude, y: largestMagnitude } : {
+      x: extent.x === oppositeExtent.x ? 1 : scaleX,
+      y: extent.y === oppositeExtent.y ? 1 : scaleY
+    };
+    if (extent.y === oppositeExtent.y) {
+      scale.y = abs2(scale.y);
+    } else if (sign2(scale.y) !== sign2(scaleY)) {
+      scale.y *= -1;
+    }
+    if (extent.x === oppositeExtent.x) {
+      scale.x = abs2(scale.x);
+    } else if (sign2(scale.x) !== sign2(scaleX)) {
+      scale.x *= -1;
+    }
+    switch (scalingOriginMode) {
+      case "extent":
+        return transformRect(rect, AffineTransform.scale(scale.x, scale.y, oppositeExtent), false);
+      case "center":
+        return transformRect(
+          rect,
+          AffineTransform.scale(scale.x, scale.y, {
+            x: rect.midX,
+            y: rect.midY
+          }),
+          false
+        );
+    }
+  }
+  function createRectFromPoints(initialPoint, finalPoint, normalized = true) {
+    if (normalized) {
+      return {
+        x: min22(finalPoint.x, initialPoint.x),
+        y: min22(finalPoint.y, initialPoint.y),
+        width: abs2(finalPoint.x - initialPoint.x),
+        height: abs2(finalPoint.y - initialPoint.y)
+      };
+    }
+    return {
+      x: initialPoint.x,
+      y: initialPoint.y,
+      width: finalPoint.x - initialPoint.x,
+      height: finalPoint.y - initialPoint.y
+    };
+  }
+  function transformRect(rect, transform, normalized = true) {
+    const p1 = transform.applyTo({ x: rect.minX, y: rect.minY });
+    const p2 = transform.applyTo({ x: rect.maxX, y: rect.maxY });
+    return createRectFromPoints(p1, p2, normalized);
+  }
+  var __defProp4, __defNormalProp4, __publicField4, AffineTransform, clamp2, clampPoint, defaultMinSize, defaultMaxSize, clampSize, createPoint, subtractPoints, addPoints, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, min2, max2, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min22;
+  var init_chunk_BMVNROAE = __esm({
+    "../priv/static/chunk-BMVNROAE.mjs"() {
+      "use strict";
+      __defProp4 = Object.defineProperty;
+      __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
+      AffineTransform = class _AffineTransform {
+        constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
+          __publicField4(this, "m00");
+          __publicField4(this, "m01");
+          __publicField4(this, "m02");
+          __publicField4(this, "m10");
+          __publicField4(this, "m11");
+          __publicField4(this, "m12");
+          __publicField4(this, "rotate", (...args) => {
+            return this.prepend(_AffineTransform.rotate(...args));
+          });
+          __publicField4(this, "scale", (...args) => {
+            return this.prepend(_AffineTransform.scale(...args));
+          });
+          __publicField4(this, "translate", (...args) => {
+            return this.prepend(_AffineTransform.translate(...args));
+          });
+          this.m00 = m00;
+          this.m01 = m01;
+          this.m02 = m02;
+          this.m10 = m10;
+          this.m11 = m11;
+          this.m12 = m12;
+        }
+        applyTo(point) {
+          const { x: x2, y: y2 } = point;
+          const { m00, m01, m02, m10, m11, m12 } = this;
+          return {
+            x: m00 * x2 + m01 * y2 + m02,
+            y: m10 * x2 + m11 * y2 + m12
+          };
+        }
+        prepend(other) {
+          return new _AffineTransform([
+            this.m00 * other.m00 + this.m01 * other.m10,
+            // m00
+            this.m00 * other.m01 + this.m01 * other.m11,
+            // m01
+            this.m00 * other.m02 + this.m01 * other.m12 + this.m02,
+            // m02
+            this.m10 * other.m00 + this.m11 * other.m10,
+            // m10
+            this.m10 * other.m01 + this.m11 * other.m11,
+            // m11
+            this.m10 * other.m02 + this.m11 * other.m12 + this.m12
+            // m12
+          ]);
+        }
+        append(other) {
+          return new _AffineTransform([
+            other.m00 * this.m00 + other.m01 * this.m10,
+            // m00
+            other.m00 * this.m01 + other.m01 * this.m11,
+            // m01
+            other.m00 * this.m02 + other.m01 * this.m12 + other.m02,
+            // m02
+            other.m10 * this.m00 + other.m11 * this.m10,
+            // m10
+            other.m10 * this.m01 + other.m11 * this.m11,
+            // m11
+            other.m10 * this.m02 + other.m11 * this.m12 + other.m12
+            // m12
+          ]);
+        }
+        get determinant() {
+          return this.m00 * this.m11 - this.m01 * this.m10;
+        }
+        get isInvertible() {
+          const det = this.determinant;
+          return isFinite(det) && isFinite(this.m02) && isFinite(this.m12) && det !== 0;
+        }
+        invert() {
+          const det = this.determinant;
+          return new _AffineTransform([
+            this.m11 / det,
+            // m00
+            -this.m01 / det,
+            // m01
+            (this.m01 * this.m12 - this.m11 * this.m02) / det,
+            // m02
+            -this.m10 / det,
+            // m10
+            this.m00 / det,
+            // m11
+            (this.m10 * this.m02 - this.m00 * this.m12) / det
+            // m12
+          ]);
+        }
+        get array() {
+          return [this.m00, this.m01, this.m02, this.m10, this.m11, this.m12, 0, 0, 1];
+        }
+        get float32Array() {
+          return new Float32Array(this.array);
+        }
+        // Static
+        static get identity() {
+          return new _AffineTransform([1, 0, 0, 0, 1, 0]);
+        }
+        static rotate(theta, origin) {
+          const rotation = new _AffineTransform([Math.cos(theta), -Math.sin(theta), 0, Math.sin(theta), Math.cos(theta), 0]);
+          if (origin && (origin.x !== 0 || origin.y !== 0)) {
+            return _AffineTransform.multiply(
+              _AffineTransform.translate(origin.x, origin.y),
+              rotation,
+              _AffineTransform.translate(-origin.x, -origin.y)
+            );
+          }
+          return rotation;
+        }
+        static scale(sx, sy = sx, origin = { x: 0, y: 0 }) {
+          const scale = new _AffineTransform([sx, 0, 0, 0, sy, 0]);
+          if (origin.x !== 0 || origin.y !== 0) {
+            return _AffineTransform.multiply(
+              _AffineTransform.translate(origin.x, origin.y),
+              scale,
+              _AffineTransform.translate(-origin.x, -origin.y)
+            );
+          }
+          return scale;
+        }
+        static translate(tx, ty) {
+          return new _AffineTransform([1, 0, tx, 0, 1, ty]);
+        }
+        static multiply(...[first2, ...rest]) {
+          if (!first2) return _AffineTransform.identity;
+          return rest.reduce((result, item) => result.prepend(item), first2);
+        }
+        get a() {
+          return this.m00;
+        }
+        get b() {
+          return this.m10;
+        }
+        get c() {
+          return this.m01;
+        }
+        get d() {
+          return this.m11;
+        }
+        get tx() {
+          return this.m02;
+        }
+        get ty() {
+          return this.m12;
+        }
+        get scaleComponents() {
+          return { x: this.a, y: this.d };
+        }
+        get translationComponents() {
+          return { x: this.tx, y: this.ty };
+        }
+        get skewComponents() {
+          return { x: this.c, y: this.b };
+        }
+        toString() {
+          return `matrix(${this.a}, ${this.b}, ${this.c}, ${this.d}, ${this.tx}, ${this.ty})`;
+        }
+      };
+      clamp2 = (value, min32, max22) => Math.min(Math.max(value, min32), max22);
+      clampPoint = (position, size3, boundaryRect) => {
+        const x2 = clamp2(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size3.width);
+        const y2 = clamp2(position.y, boundaryRect.y, boundaryRect.y + boundaryRect.height - size3.height);
+        return { x: x2, y: y2 };
+      };
+      defaultMinSize = {
+        width: 0,
+        height: 0
+      };
+      defaultMaxSize = {
+        width: Infinity,
+        height: Infinity
+      };
+      clampSize = (size3, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
+        return {
+          width: Math.min(Math.max(size3.width, minSize.width), maxSize.width),
+          height: Math.min(Math.max(size3.height, minSize.height), maxSize.height)
+        };
+      };
+      createPoint = (x2, y2) => ({ x: x2, y: y2 });
+      subtractPoints = (a2, b2) => {
+        if (!b2) return a2;
+        return createPoint(a2.x - b2.x, a2.y - b2.y);
+      };
+      addPoints = (a2, b2) => createPoint(a2.x + b2.x, a2.y + b2.y);
+      constrainRect = (rect, boundary) => {
+        const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
+        const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
+        return {
+          x: left,
+          y: top,
+          width: Math.min(rect.width, boundary.width),
+          height: Math.min(rect.height, boundary.height)
+        };
+      };
+      isSizeEqual = (a2, b2) => {
+        return a2.width === (b2 == null ? void 0 : b2.width) && a2.height === (b2 == null ? void 0 : b2.height);
+      };
+      isPointEqual = (a2, b2) => {
+        return a2.x === (b2 == null ? void 0 : b2.x) && a2.y === (b2 == null ? void 0 : b2.y);
+      };
+      styleCache2 = /* @__PURE__ */ new WeakMap();
+      px = (v2) => parseFloat(v2.replace("px", ""));
+      sum = (...vals) => vals.reduce((sum2, v2) => sum2 + (v2 ? px(v2) : 0), 0);
+      ({ min: min2, max: max2 } = Math);
+      compassDirectionMap = {
+        n: { x: 0.5, y: 0 },
+        ne: { x: 1, y: 0 },
+        e: { x: 1, y: 0.5 },
+        se: { x: 1, y: 1 },
+        s: { x: 0.5, y: 1 },
+        sw: { x: 0, y: 1 },
+        w: { x: 0, y: 0.5 },
+        nw: { x: 0, y: 0 }
+      };
+      oppositeDirectionMap = {
+        n: "s",
+        ne: "sw",
+        e: "w",
+        se: "nw",
+        s: "n",
+        sw: "ne",
+        w: "e",
+        nw: "se"
+      };
+      ({ sign: sign2, abs: abs2, min: min22 } = Math);
+    }
+  });
+
+  // ../priv/static/angle-slider.mjs
+  var angle_slider_exports = {};
+  __export(angle_slider_exports, {
+    AngleSlider: () => AngleSliderHook
+  });
+  function getAngle(controlEl, point, angularOffset) {
+    const rect = createRect(controlEl.getBoundingClientRect());
+    const angle = getPointAngle(rect, point);
+    if (angularOffset != null) {
+      return angle - angularOffset;
+    }
+    return angle;
+  }
+  function clampAngle(degree) {
+    return Math.min(Math.max(degree, MIN_VALUE), MAX_VALUE);
+  }
+  function constrainAngle(degree, step) {
+    const clampedDegree = clampAngle(degree);
+    const upperStep = Math.ceil(clampedDegree / step);
+    const nearestStep = Math.round(clampedDegree / step);
+    return upperStep >= clampedDegree / step ? upperStep * step === MAX_VALUE ? MIN_VALUE : upperStep * step : nearestStep * step;
+  }
+  function snapAngleToStep(value, step) {
+    return snapValueToStep(value, MIN_VALUE, MAX_VALUE, step);
+  }
+  function connect2(service, normalize) {
+    const { state: state2, send, context, prop, computed, scope } = service;
+    const dragging = state2.matches("dragging");
+    const value = context.get("value");
+    const valueAsDegree = computed("valueAsDegree");
+    const disabled = prop("disabled");
+    const invalid = prop("invalid");
+    const readOnly = prop("readOnly");
+    const interactive = computed("interactive");
+    const ariaLabel = prop("aria-label");
+    const ariaLabelledBy = prop("aria-labelledby");
+    return {
+      value,
+      valueAsDegree,
+      dragging,
+      setValue(value2) {
+        send({ type: "VALUE.SET", value: value2 });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts2.root.attrs), {
+          id: getRootId2(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          style: {
+            "--value": value,
+            "--angle": valueAsDegree
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts2.label.attrs), {
+          id: getLabelId(scope),
+          htmlFor: getHiddenInputId(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          onClick(event) {
+            var _a;
+            if (!interactive) return;
+            event.preventDefault();
+            (_a = getThumbEl(scope)) == null ? void 0 : _a.focus();
+          }
+        }));
+      },
+      getHiddenInputProps() {
+        return normalize.element({
+          type: "hidden",
+          value,
+          name: prop("name"),
+          id: getHiddenInputId(scope)
+        });
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts2.control.attrs), {
+          role: "presentation",
+          id: getControlId(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          onPointerDown(event) {
+            if (!interactive) return;
+            if (!isLeftClick(event)) return;
+            const point = getEventPoint(event);
+            const controlEl = event.currentTarget;
+            const thumbEl = getThumbEl(scope);
+            const composedPath = getNativeEvent(event).composedPath();
+            const isOverThumb = thumbEl && composedPath.includes(thumbEl);
+            let angularOffset = null;
+            if (isOverThumb) {
+              const clickAngle = getAngle(controlEl, point);
+              angularOffset = clickAngle - value;
+            }
+            send({ type: "CONTROL.POINTER_DOWN", point, angularOffset });
+            event.stopPropagation();
+          },
+          style: {
+            touchAction: "none",
+            userSelect: "none",
+            WebkitUserSelect: "none"
+          }
+        }));
+      },
+      getThumbProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts2.thumb.attrs), {
+          id: getThumbId(scope),
+          role: "slider",
+          "aria-label": ariaLabel,
+          "aria-labelledby": ariaLabelledBy != null ? ariaLabelledBy : getLabelId(scope),
+          "aria-valuemax": 360,
+          "aria-valuemin": 0,
+          "aria-valuenow": value,
+          tabIndex: readOnly || interactive ? 0 : void 0,
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          onFocus() {
+            send({ type: "THUMB.FOCUS" });
+          },
+          onBlur() {
+            send({ type: "THUMB.BLUR" });
+          },
+          onKeyDown(event) {
+            if (!interactive) return;
+            const step = getEventStep(event) * prop("step");
+            switch (event.key) {
+              case "ArrowLeft":
+              case "ArrowUp":
+                event.preventDefault();
+                send({ type: "THUMB.ARROW_DEC", step });
+                break;
+              case "ArrowRight":
+              case "ArrowDown":
+                event.preventDefault();
+                send({ type: "THUMB.ARROW_INC", step });
+                break;
+              case "Home":
+                event.preventDefault();
+                send({ type: "THUMB.HOME" });
+                break;
+              case "End":
+                event.preventDefault();
+                send({ type: "THUMB.END" });
+                break;
+            }
+          },
+          style: {
+            rotate: `var(--angle)`
+          }
+        }));
+      },
+      getValueTextProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts2.valueText.attrs), {
+          id: getValueTextId(scope)
+        }));
+      },
+      getMarkerGroupProps() {
+        return normalize.element(__spreadValues({}, parts2.markerGroup.attrs));
+      },
+      getMarkerProps(props26) {
+        let markerState;
+        if (props26.value < value) {
+          markerState = "under-value";
+        } else if (props26.value > value) {
+          markerState = "over-value";
+        } else {
+          markerState = "at-value";
+        }
+        return normalize.element(__spreadProps(__spreadValues({}, parts2.marker.attrs), {
+          "data-value": props26.value,
+          "data-state": markerState,
+          "data-disabled": dataAttr(disabled),
+          style: {
+            "--marker-value": props26.value,
+            rotate: `calc(var(--marker-value) * 1deg)`
+          }
+        }));
+      }
+    };
+  }
+  var anatomy2, parts2, getRootId2, getThumbId, getHiddenInputId, getControlId, getValueTextId, getLabelId, getHiddenInputEl, getControlEl, getThumbEl, MIN_VALUE, MAX_VALUE, machine2, props2, splitProps3, AngleSlider, AngleSliderHook;
+  var init_angle_slider = __esm({
+    "../priv/static/angle-slider.mjs"() {
+      "use strict";
+      init_chunk_BMVNROAE();
+      init_chunk_IXOYOLUJ();
+      anatomy2 = createAnatomy("angle-slider").parts(
+        "root",
+        "label",
+        "thumb",
+        "valueText",
+        "control",
+        "track",
+        "markerGroup",
+        "marker"
+      );
+      parts2 = anatomy2.build();
+      getRootId2 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `angle-slider:${ctx.id}`;
+      };
+      getThumbId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.thumb) != null ? _b : `angle-slider:${ctx.id}:thumb`;
+      };
+      getHiddenInputId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenInput) != null ? _b : `angle-slider:${ctx.id}:input`;
+      };
+      getControlId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `angle-slider:${ctx.id}:control`;
+      };
+      getValueTextId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.valueText) != null ? _b : `angle-slider:${ctx.id}:value-text`;
+      };
+      getLabelId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `angle-slider:${ctx.id}:label`;
+      };
+      getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
+      getControlEl = (ctx) => ctx.getById(getControlId(ctx));
+      getThumbEl = (ctx) => ctx.getById(getThumbId(ctx));
+      MIN_VALUE = 0;
+      MAX_VALUE = 359;
+      machine2 = createMachine({
+        props({ props: props26 }) {
+          return __spreadValues({
+            step: 1,
+            defaultValue: 0
+          }, props26);
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              onChange(value) {
+                var _a;
+                (_a = prop("onValueChange")) == null ? void 0 : _a({ value, valueAsDegree: `${value}deg` });
+              }
+            }))
+          };
+        },
+        refs() {
+          return {
+            thumbDragOffset: null
+          };
+        },
+        computed: {
+          interactive: ({ prop }) => !(prop("disabled") || prop("readOnly")),
+          valueAsDegree: ({ context }) => `${context.get("value")}deg`
+        },
+        watch({ track, context, action }) {
+          track([() => context.get("value")], () => {
+            action(["syncInputElement"]);
+          });
+        },
+        initialState() {
+          return "idle";
+        },
+        on: {
+          "VALUE.SET": {
+            actions: ["setValue"]
+          }
+        },
+        states: {
+          idle: {
+            on: {
+              "CONTROL.POINTER_DOWN": {
+                target: "dragging",
+                actions: ["setThumbDragOffset", "setPointerValue", "focusThumb"]
+              },
+              "THUMB.FOCUS": {
+                target: "focused"
+              }
+            }
+          },
+          focused: {
+            on: {
+              "CONTROL.POINTER_DOWN": {
+                target: "dragging",
+                actions: ["setThumbDragOffset", "setPointerValue", "focusThumb"]
+              },
+              "THUMB.ARROW_DEC": {
+                actions: ["decrementValue", "invokeOnChangeEnd"]
+              },
+              "THUMB.ARROW_INC": {
+                actions: ["incrementValue", "invokeOnChangeEnd"]
+              },
+              "THUMB.HOME": {
+                actions: ["setValueToMin", "invokeOnChangeEnd"]
+              },
+              "THUMB.END": {
+                actions: ["setValueToMax", "invokeOnChangeEnd"]
+              },
+              "THUMB.BLUR": {
+                target: "idle"
+              }
+            }
+          },
+          dragging: {
+            entry: ["focusThumb"],
+            effects: ["trackPointerMove"],
+            on: {
+              "DOC.POINTER_UP": {
+                target: "focused",
+                actions: ["invokeOnChangeEnd", "clearThumbDragOffset"]
+              },
+              "DOC.POINTER_MOVE": {
+                actions: ["setPointerValue"]
+              }
+            }
+          }
+        },
+        implementations: {
+          effects: {
+            trackPointerMove({ scope, send }) {
+              return trackPointerMove(scope.getDoc(), {
+                onPointerMove(info) {
+                  send({ type: "DOC.POINTER_MOVE", point: info.point });
+                },
+                onPointerUp() {
+                  send({ type: "DOC.POINTER_UP" });
+                }
+              });
+            }
+          },
+          actions: {
+            syncInputElement({ scope, context }) {
+              const inputEl = getHiddenInputEl(scope);
+              setElementValue(inputEl, context.get("value").toString());
+            },
+            invokeOnChangeEnd({ context, prop, computed }) {
+              var _a;
+              (_a = prop("onValueChangeEnd")) == null ? void 0 : _a({
+                value: context.get("value"),
+                valueAsDegree: computed("valueAsDegree")
+              });
+            },
+            setPointerValue({ scope, event, context, prop, refs }) {
+              const controlEl = getControlEl(scope);
+              if (!controlEl) return;
+              const angularOffset = refs.get("thumbDragOffset");
+              const deg = getAngle(controlEl, event.point, angularOffset);
+              context.set("value", constrainAngle(deg, prop("step")));
+            },
+            setValueToMin({ context }) {
+              context.set("value", MIN_VALUE);
+            },
+            setValueToMax({ context }) {
+              context.set("value", MAX_VALUE);
+            },
+            setValue({ context, event }) {
+              context.set("value", clampAngle(event.value));
+            },
+            decrementValue({ context, event, prop }) {
+              var _a;
+              const value = snapAngleToStep(context.get("value") - event.step, (_a = event.step) != null ? _a : prop("step"));
+              context.set("value", value);
+            },
+            incrementValue({ context, event, prop }) {
+              var _a;
+              const value = snapAngleToStep(context.get("value") + event.step, (_a = event.step) != null ? _a : prop("step"));
+              context.set("value", value);
+            },
+            focusThumb({ scope }) {
+              raf(() => {
+                var _a;
+                (_a = getThumbEl(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+              });
+            },
+            setThumbDragOffset({ refs, event }) {
+              var _a;
+              refs.set("thumbDragOffset", (_a = event.angularOffset) != null ? _a : null);
+            },
+            clearThumbDragOffset({ refs }) {
+              refs.set("thumbDragOffset", null);
+            }
+          }
+        }
+      });
+      props2 = createProps()([
+        "aria-label",
+        "aria-labelledby",
+        "dir",
+        "disabled",
+        "getRootNode",
+        "id",
+        "ids",
+        "invalid",
+        "name",
+        "onValueChange",
+        "onValueChangeEnd",
+        "readOnly",
+        "step",
+        "value",
+        "defaultValue"
+      ]);
+      splitProps3 = createSplitProps(props2);
+      AngleSlider = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine2, props26);
+        }
+        initApi() {
+          return connect2(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="angle-slider"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="angle-slider"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const hiddenInputEl = this.el.querySelector(
+            '[data-scope="angle-slider"][data-part="hidden-input"]'
+          );
+          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="angle-slider"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const thumbEl = this.el.querySelector(
+            '[data-scope="angle-slider"][data-part="thumb"]'
+          );
+          if (thumbEl) this.spreadProps(thumbEl, this.api.getThumbProps());
+          const valueTextEl = this.el.querySelector(
+            '[data-scope="angle-slider"][data-part="value-text"]'
+          );
+          if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
+          const markerGroupEl = this.el.querySelector(
+            '[data-scope="angle-slider"][data-part="marker-group"]'
+          );
+          if (markerGroupEl) this.spreadProps(markerGroupEl, this.api.getMarkerGroupProps());
+          this.el.querySelectorAll('[data-scope="angle-slider"][data-part="marker"]').forEach((markerEl) => {
+            const valueStr = markerEl.dataset.value;
+            if (valueStr == null) return;
+            const value = Number(valueStr);
+            if (Number.isNaN(value)) return;
+            this.spreadProps(markerEl, this.api.getMarkerProps({ value }));
+          });
+        }
+      };
+      AngleSliderHook = {
+        mounted() {
+          var _a;
+          const el = this.el;
+          const value = getNumber(el, "value");
+          const defaultValue = getNumber(el, "defaultValue");
+          const controlled = getBoolean(el, "controlled");
+          const zag = new AngleSlider(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : 0 }), {
+            step: (_a = getNumber(el, "step")) != null ? _a : 1,
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            invalid: getBoolean(el, "invalid"),
+            name: getString(el, "name"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            onValueChange: (details) => {
+              const hiddenInput = el.querySelector(
+                '[data-scope="angle-slider"][data-part="hidden-input"]'
+              );
+              if (hiddenInput) {
+                hiddenInput.value = String(details.value);
+                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+              const eventName = getString(el, "onValueChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  valueAsDegree: details.valueAsDegree,
+                  id: el.id
+                });
+              }
+              const clientName = getString(el, "onValueChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.init();
+          this.angleSlider = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a, _b;
+          const value = getNumber(this.el, "value");
+          const controlled = getBoolean(this.el, "controlled");
+          (_b = this.angleSlider) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, controlled && value !== void 0 ? { value } : {}), {
+            step: (_a = getNumber(this.el, "step")) != null ? _a : 1,
+            disabled: getBoolean(this.el, "disabled"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            invalid: getBoolean(this.el, "invalid"),
+            name: getString(this.el, "name")
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.angleSlider) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/avatar.mjs
+  var avatar_exports = {};
+  __export(avatar_exports, {
+    Avatar: () => AvatarHook
+  });
+  function connect3(service, normalize) {
+    const { state: state2, send, prop, scope } = service;
+    const loaded = state2.matches("loaded");
+    return {
+      loaded,
+      setSrc(src) {
+        const img = getImageEl(scope);
+        img == null ? void 0 : img.setAttribute("src", src);
+      },
+      setLoaded() {
+        send({ type: "img.loaded", src: "api" });
+      },
+      setError() {
+        send({ type: "img.error", src: "api" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts3.root.attrs), {
+          dir: prop("dir"),
+          id: getRootId3(scope)
+        }));
+      },
+      getImageProps() {
+        return normalize.img(__spreadProps(__spreadValues({}, parts3.image.attrs), {
+          hidden: !loaded,
+          dir: prop("dir"),
+          id: getImageId(scope),
+          "data-state": loaded ? "visible" : "hidden",
+          onLoad() {
+            send({ type: "img.loaded", src: "element" });
+          },
+          onError() {
+            send({ type: "img.error", src: "element" });
+          }
+        }));
+      },
+      getFallbackProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts3.fallback.attrs), {
+          dir: prop("dir"),
+          id: getFallbackId(scope),
+          hidden: loaded,
+          "data-state": loaded ? "hidden" : "visible"
+        }));
+      }
+    };
+  }
+  function hasLoaded(image) {
+    return image.complete && image.naturalWidth !== 0 && image.naturalHeight !== 0;
+  }
+  var anatomy3, parts3, getRootId3, getImageId, getFallbackId, getRootEl2, getImageEl, machine3, props3, splitProps4, Avatar, AvatarHook;
+  var init_avatar = __esm({
+    "../priv/static/avatar.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
+      parts3 = anatomy3.build();
+      getRootId3 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `avatar:${ctx.id}`;
+      };
+      getImageId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.image) != null ? _b : `avatar:${ctx.id}:image`;
+      };
+      getFallbackId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.fallback) != null ? _b : `avatar:${ctx.id}:fallback`;
+      };
+      getRootEl2 = (ctx) => ctx.getById(getRootId3(ctx));
+      getImageEl = (ctx) => ctx.getById(getImageId(ctx));
+      machine3 = createMachine({
+        initialState() {
+          return "loading";
+        },
+        effects: ["trackImageRemoval", "trackSrcChange"],
+        on: {
+          "src.change": {
+            target: "loading"
+          },
+          "img.unmount": {
+            target: "error"
+          }
+        },
+        states: {
+          loading: {
+            entry: ["checkImageStatus"],
+            on: {
+              "img.loaded": {
+                target: "loaded",
+                actions: ["invokeOnLoad"]
+              },
+              "img.error": {
+                target: "error",
+                actions: ["invokeOnError"]
+              }
+            }
+          },
+          error: {
+            on: {
+              "img.loaded": {
+                target: "loaded",
+                actions: ["invokeOnLoad"]
+              }
+            }
+          },
+          loaded: {
+            on: {
+              "img.error": {
+                target: "error",
+                actions: ["invokeOnError"]
+              }
+            }
+          }
+        },
+        implementations: {
+          actions: {
+            invokeOnLoad({ prop }) {
+              var _a;
+              (_a = prop("onStatusChange")) == null ? void 0 : _a({ status: "loaded" });
+            },
+            invokeOnError({ prop }) {
+              var _a;
+              (_a = prop("onStatusChange")) == null ? void 0 : _a({ status: "error" });
+            },
+            checkImageStatus({ send, scope }) {
+              const imageEl = getImageEl(scope);
+              if (!(imageEl == null ? void 0 : imageEl.complete)) return;
+              const type = hasLoaded(imageEl) ? "img.loaded" : "img.error";
+              send({ type, src: "ssr" });
+            }
+          },
+          effects: {
+            trackImageRemoval({ send, scope }) {
+              const rootEl = getRootEl2(scope);
+              return observeChildren(rootEl, {
+                callback(records) {
+                  const removedNodes = Array.from(records[0].removedNodes);
+                  const removed = removedNodes.find(
+                    (node) => node.nodeType === Node.ELEMENT_NODE && node.matches("[data-scope=avatar][data-part=image]")
+                  );
+                  if (removed) {
+                    send({ type: "img.unmount" });
+                  }
+                }
+              });
+            },
+            trackSrcChange({ send, scope }) {
+              const imageEl = getImageEl(scope);
+              return observeAttributes(imageEl, {
+                attributes: ["src", "srcset"],
+                callback() {
+                  send({ type: "src.change" });
+                }
+              });
+            }
+          }
+        }
+      });
+      props3 = createProps()(["dir", "id", "ids", "onStatusChange", "getRootNode"]);
+      splitProps4 = createSplitProps(props3);
+      Avatar = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine3, props26);
+        }
+        initApi() {
+          return connect3(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="avatar"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const imageEl = this.el.querySelector('[data-scope="avatar"][data-part="image"]');
+          if (imageEl) this.spreadProps(imageEl, this.api.getImageProps());
+          const fallbackEl = this.el.querySelector(
+            '[data-scope="avatar"][data-part="fallback"]'
+          );
+          if (fallbackEl) this.spreadProps(fallbackEl, this.api.getFallbackProps());
+        }
+      };
+      AvatarHook = {
+        mounted() {
+          const el = this.el;
+          const src = getString(el, "src");
+          const zag = new Avatar(el, __spreadValues({
+            id: el.id,
+            onStatusChange: (details) => {
+              const eventName = getString(el, "onStatusChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { status: details.status, id: el.id });
+              }
+              const clientName = getString(el, "onStatusChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }, src !== void 0 ? {} : {}));
+          zag.init();
+          this.avatar = zag;
+          if (src !== void 0) {
+            zag.api.setSrc(src);
+          }
+          this.handlers = [];
+        },
+        updated() {
+          const src = getString(this.el, "src");
+          if (src !== void 0 && this.avatar) {
+            this.avatar.api.setSrc(src);
+          }
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.avatar) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/carousel.mjs
+  var carousel_exports = {};
+  __export(carousel_exports, {
+    Carousel: () => CarouselHook
+  });
+  function getScrollPadding(element) {
+    const style = getComputedStyle2(element);
+    const rect = element.getBoundingClientRect();
+    let xBeforeRaw = style.getPropertyValue("scroll-padding-left").replace("auto", "0px");
+    let yBeforeRaw = style.getPropertyValue("scroll-padding-top").replace("auto", "0px");
+    let xAfterRaw = style.getPropertyValue("scroll-padding-right").replace("auto", "0px");
+    let yAfterRaw = style.getPropertyValue("scroll-padding-bottom").replace("auto", "0px");
+    function convert(raw, size3) {
+      let n2 = parseFloat(raw);
+      if (/%/.test(raw)) {
+        n2 /= 100;
+        n2 *= size3;
+      }
+      return Number.isNaN(n2) ? 0 : n2;
+    }
+    let xBefore = convert(xBeforeRaw, rect.width);
+    let yBefore = convert(yBeforeRaw, rect.height);
+    let xAfter = convert(xAfterRaw, rect.width);
+    let yAfter = convert(yAfterRaw, rect.height);
+    return {
+      x: { before: xBefore, after: xAfter },
+      y: { before: yBefore, after: yAfter }
+    };
+  }
+  function isRectIntersecting(a2, b2, axis = "both") {
+    return axis === "x" && a2.right >= b2.left && a2.left <= b2.right || axis === "y" && a2.bottom >= b2.top && a2.top <= b2.bottom || axis === "both" && a2.right >= b2.left && a2.left <= b2.right && a2.bottom >= b2.top && a2.top <= b2.bottom;
+  }
+  function getDescendants(parent) {
+    let children = [];
+    for (const child of parent.children) {
+      children = children.concat(child, getDescendants(child));
+    }
+    return children;
+  }
+  function getSnapPositions(parent, subtree = false) {
+    const parentRect = parent.getBoundingClientRect();
+    const dir = getDirection(parent);
+    const isRtl = dir === "rtl";
+    const positions = {
+      x: { start: [], center: [], end: [] },
+      y: { start: [], center: [], end: [] }
+    };
+    const children = subtree ? getDescendants(parent) : parent.children;
+    for (const axis of ["x", "y"]) {
+      const orthogonalAxis = axis === "x" ? "y" : "x";
+      const axisStart = axis === "x" ? "left" : "top";
+      const axisEnd = axis === "x" ? "right" : "bottom";
+      const axisSize = axis === "x" ? "width" : "height";
+      const axisScroll = axis === "x" ? "scrollLeft" : "scrollTop";
+      const useRtlCalc = isRtl && axis === "x";
+      for (const child of children) {
+        const childRect = child.getBoundingClientRect();
+        if (!isRectIntersecting(parentRect, childRect, orthogonalAxis)) {
+          continue;
+        }
+        const childStyle = getComputedStyle2(child);
+        let [childAlignY, childAlignX] = childStyle.getPropertyValue("scroll-snap-align").split(" ");
+        if (typeof childAlignX === "undefined") {
+          childAlignX = childAlignY;
+        }
+        const childAlign = axis === "x" ? childAlignX : childAlignY;
+        let childOffsetStart;
+        let childOffsetEnd;
+        let childOffsetCenter;
+        if (useRtlCalc) {
+          const scrollOffset = Math.abs(parent[axisScroll]);
+          const rightOffset = parentRect[axisEnd] - childRect[axisEnd] + scrollOffset;
+          childOffsetStart = rightOffset;
+          childOffsetEnd = rightOffset + childRect[axisSize];
+          childOffsetCenter = rightOffset + childRect[axisSize] / 2;
+        } else {
+          childOffsetStart = childRect[axisStart] - parentRect[axisStart] + parent[axisScroll];
+          childOffsetEnd = childOffsetStart + childRect[axisSize];
+          childOffsetCenter = childOffsetStart + childRect[axisSize] / 2;
+        }
+        switch (childAlign) {
+          case "none":
+            break;
+          case "start":
+            positions[axis].start.push({ node: child, position: childOffsetStart });
+            break;
+          case "center":
+            positions[axis].center.push({ node: child, position: childOffsetCenter });
+            break;
+          case "end":
+            positions[axis].end.push({ node: child, position: childOffsetEnd });
+            break;
+        }
+      }
+    }
+    return positions;
+  }
+  function getScrollSnapPositions(element) {
+    const dir = getDirection(element);
+    const rect = element.getBoundingClientRect();
+    const scrollPadding = getScrollPadding(element);
+    const snapPositions = getSnapPositions(element);
+    const maxScroll = {
+      x: element.scrollWidth - element.offsetWidth,
+      y: element.scrollHeight - element.offsetHeight
+    };
+    const isRtl = dir === "rtl";
+    const usesNegativeScrollLeft = isRtl && element.scrollLeft <= 0;
+    let xPositions;
+    if (isRtl) {
+      xPositions = uniq2(
+        [
+          ...snapPositions.x.start.map((v2) => v2.position - scrollPadding.x.after),
+          ...snapPositions.x.center.map((v2) => v2.position - rect.width / 2),
+          ...snapPositions.x.end.map((v2) => v2.position - rect.width + scrollPadding.x.before)
+        ].map(clamp3(0, maxScroll.x))
+      );
+      if (usesNegativeScrollLeft) {
+        xPositions = xPositions.map((pos) => -pos);
+      }
+    } else {
+      xPositions = uniq2(
+        [
+          ...snapPositions.x.start.map((v2) => v2.position - scrollPadding.x.before),
+          ...snapPositions.x.center.map((v2) => v2.position - rect.width / 2),
+          ...snapPositions.x.end.map((v2) => v2.position - rect.width + scrollPadding.x.after)
+        ].map(clamp3(0, maxScroll.x))
+      );
+    }
+    return {
+      x: xPositions,
+      y: uniq2(
+        [
+          ...snapPositions.y.start.map((v2) => v2.position - scrollPadding.y.before),
+          ...snapPositions.y.center.map((v2) => v2.position - rect.height / 2),
+          ...snapPositions.y.end.map((v2) => v2.position - rect.height + scrollPadding.y.after)
+        ].map(clamp3(0, maxScroll.y))
+      )
+    };
+  }
+  function findSnapPoint(parent, axis, predicate) {
+    const dir = getDirection(parent);
+    const scrollPadding = getScrollPadding(parent);
+    const snapPositions = getSnapPositions(parent);
+    const items = [...snapPositions[axis].start, ...snapPositions[axis].center, ...snapPositions[axis].end];
+    const isRtl = dir === "rtl";
+    const usesNegativeScrollLeft = isRtl && axis === "x" && parent.scrollLeft <= 0;
+    for (const item of items) {
+      if (predicate(item.node)) {
+        let position;
+        if (axis === "x" && isRtl) {
+          position = item.position - scrollPadding.x.after;
+          if (usesNegativeScrollLeft) {
+            position = -position;
+          }
+        } else {
+          position = item.position - (axis === "x" ? scrollPadding.x.before : scrollPadding.y.before);
+        }
+        return position;
+      }
+    }
+  }
+  function connect4(service, normalize) {
+    const { state: state2, context, computed, send, scope, prop } = service;
+    const isPlaying = state2.matches("autoplay");
+    const isDragging = state2.matches("dragging");
+    const canScrollNext = computed("canScrollNext");
+    const canScrollPrev = computed("canScrollPrev");
+    const horizontal = computed("isHorizontal");
+    const autoSize = prop("autoSize");
+    const pageSnapPoints = Array.from(context.get("pageSnapPoints"));
+    const page = context.get("page");
+    const slidesPerPage = prop("slidesPerPage");
+    const padding = prop("padding");
+    const translations = prop("translations");
+    return {
+      isPlaying,
+      isDragging,
+      page,
+      pageSnapPoints,
+      canScrollNext,
+      canScrollPrev,
+      getProgress() {
+        return page / pageSnapPoints.length;
+      },
+      getProgressText() {
+        var _a, _b;
+        const details = { page: page + 1, totalPages: pageSnapPoints.length };
+        return (_b = (_a = translations.progressText) == null ? void 0 : _a.call(translations, details)) != null ? _b : "";
+      },
+      scrollToIndex(index, instant) {
+        send({ type: "INDEX.SET", index, instant });
+      },
+      scrollTo(index, instant) {
+        send({ type: "PAGE.SET", index, instant });
+      },
+      scrollNext(instant) {
+        send({ type: "PAGE.NEXT", instant });
+      },
+      scrollPrev(instant) {
+        send({ type: "PAGE.PREV", instant });
+      },
+      play() {
+        send({ type: "AUTOPLAY.START" });
+      },
+      pause() {
+        send({ type: "AUTOPLAY.PAUSE" });
+      },
+      isInView(index) {
+        return Array.from(context.get("slidesInView")).includes(index);
+      },
+      refresh() {
+        send({ type: "SNAP.REFRESH" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.root.attrs), {
+          id: getRootId4(scope),
+          role: "region",
+          "aria-roledescription": "carousel",
+          "data-orientation": prop("orientation"),
+          dir: prop("dir"),
+          style: {
+            "--slides-per-page": slidesPerPage,
+            "--slide-spacing": prop("spacing"),
+            "--slide-item-size": autoSize ? "auto" : "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
+          }
+        }));
+      },
+      getItemGroupProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.itemGroup.attrs), {
+          id: getItemGroupId(scope),
+          "data-orientation": prop("orientation"),
+          "data-dragging": dataAttr(isDragging),
+          dir: prop("dir"),
+          "aria-live": isPlaying ? "off" : "polite",
+          onFocus(event) {
+            if (!contains(event.currentTarget, getEventTarget(event))) return;
+            send({ type: "VIEWPORT.FOCUS" });
+          },
+          onBlur(event) {
+            if (contains(event.currentTarget, event.relatedTarget)) return;
+            send({ type: "VIEWPORT.BLUR" });
+          },
+          onMouseDown(event) {
+            if (event.defaultPrevented) return;
+            if (!prop("allowMouseDrag")) return;
+            if (!isLeftClick(event)) return;
+            const target = getEventTarget(event);
+            if (isFocusable(target) && target !== event.currentTarget) return;
+            event.preventDefault();
+            send({ type: "DRAGGING.START" });
+          },
+          onWheel: throttle((event) => {
+            const axis = prop("orientation") === "horizontal" ? "deltaX" : "deltaY";
+            const isScrollingLeft = event[axis] < 0;
+            if (isScrollingLeft && !computed("canScrollPrev")) return;
+            const isScrollingRight = event[axis] > 0;
+            if (isScrollingRight && !computed("canScrollNext")) return;
+            send({ type: "USER.SCROLL" });
+          }, 150),
+          onTouchStart() {
+            send({ type: "USER.SCROLL" });
+          },
+          style: {
+            display: autoSize ? "flex" : "grid",
+            gap: "var(--slide-spacing)",
+            scrollSnapType: [horizontal ? "x" : "y", prop("snapType")].join(" "),
+            gridAutoFlow: horizontal ? "column" : "row",
+            scrollbarWidth: "none",
+            overscrollBehaviorX: "contain",
+            [horizontal ? "gridAutoColumns" : "gridAutoRows"]: autoSize ? void 0 : "var(--slide-item-size)",
+            [horizontal ? "scrollPaddingInline" : "scrollPaddingBlock"]: padding,
+            [horizontal ? "paddingInline" : "paddingBlock"]: padding,
+            [horizontal ? "overflowX" : "overflowY"]: "auto"
+          }
+        }));
+      },
+      getItemProps(props26) {
+        const isInView = context.get("slidesInView").includes(props26.index);
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.item.attrs), {
+          id: getItemId2(scope, props26.index),
+          dir: prop("dir"),
+          role: "group",
+          "data-index": props26.index,
+          "data-inview": dataAttr(isInView),
+          "aria-roledescription": "slide",
+          "data-orientation": prop("orientation"),
+          "aria-label": translations.item(props26.index, prop("slideCount")),
+          "aria-hidden": ariaAttr(!isInView),
+          style: {
+            flex: "0 0 auto",
+            [horizontal ? "maxWidth" : "maxHeight"]: "100%",
+            scrollSnapAlign: (() => {
+              var _a;
+              const snapAlign = (_a = props26.snapAlign) != null ? _a : "start";
+              const slidesPerMove = prop("slidesPerMove");
+              const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
+              const shouldSnap = (props26.index + perMove) % perMove === 0;
+              return shouldSnap ? snapAlign : void 0;
+            })()
+          }
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.control.attrs), {
+          "data-orientation": prop("orientation")
+        }));
+      },
+      getPrevTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.prevTrigger.attrs), {
+          id: getPrevTriggerId(scope),
+          type: "button",
+          disabled: !canScrollPrev,
+          dir: prop("dir"),
+          "aria-label": translations.prevTrigger,
+          "data-orientation": prop("orientation"),
+          "aria-controls": getItemGroupId(scope),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "PAGE.PREV", src: "trigger" });
+          }
+        }));
+      },
+      getNextTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.nextTrigger.attrs), {
+          dir: prop("dir"),
+          id: getNextTriggerId(scope),
+          type: "button",
+          "aria-label": translations.nextTrigger,
+          "data-orientation": prop("orientation"),
+          "aria-controls": getItemGroupId(scope),
+          disabled: !canScrollNext,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "PAGE.NEXT", src: "trigger" });
+          }
+        }));
+      },
+      getIndicatorGroupProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.indicatorGroup.attrs), {
+          dir: prop("dir"),
+          id: getIndicatorGroupId(scope),
+          "data-orientation": prop("orientation"),
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            const src = "indicator";
+            const keyMap2 = {
+              ArrowDown(event2) {
+                if (horizontal) return;
+                send({ type: "PAGE.NEXT", src });
+                event2.preventDefault();
+              },
+              ArrowUp(event2) {
+                if (horizontal) return;
+                send({ type: "PAGE.PREV", src });
+                event2.preventDefault();
+              },
+              ArrowRight(event2) {
+                if (!horizontal) return;
+                send({ type: "PAGE.NEXT", src });
+                event2.preventDefault();
+              },
+              ArrowLeft(event2) {
+                if (!horizontal) return;
+                send({ type: "PAGE.PREV", src });
+                event2.preventDefault();
+              },
+              Home(event2) {
+                send({ type: "PAGE.SET", index: 0, src });
+                event2.preventDefault();
+              },
+              End(event2) {
+                send({ type: "PAGE.SET", index: pageSnapPoints.length - 1, src });
+                event2.preventDefault();
+              }
+            };
+            const key = getEventKey(event, {
+              dir: prop("dir"),
+              orientation: prop("orientation")
+            });
+            const exec = keyMap2[key];
+            exec == null ? void 0 : exec(event);
+          }
+        }));
+      },
+      getIndicatorProps(props26) {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.indicator.attrs), {
+          dir: prop("dir"),
+          id: getIndicatorId(scope, props26.index),
+          type: "button",
+          "data-orientation": prop("orientation"),
+          "data-index": props26.index,
+          "data-readonly": dataAttr(props26.readOnly),
+          "data-current": dataAttr(props26.index === page),
+          "aria-label": translations.indicator(props26.index),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (props26.readOnly) return;
+            send({ type: "PAGE.SET", index: props26.index, src: "indicator" });
+          }
+        }));
+      },
+      getAutoplayTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.autoplayTrigger.attrs), {
+          type: "button",
+          "data-orientation": prop("orientation"),
+          "data-pressed": dataAttr(isPlaying),
+          "aria-label": isPlaying ? translations.autoplayStop : translations.autoplayStart,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: isPlaying ? "AUTOPLAY.PAUSE" : "AUTOPLAY.START" });
+          }
+        }));
+      },
+      getProgressTextProps() {
+        return normalize.element(__spreadValues({}, parts4.progressText.attrs));
+      }
+    };
+  }
+  function getPageSnapPoints(totalSlides, slidesPerMove, slidesPerPage) {
+    if (totalSlides == null || slidesPerPage <= 0) {
+      return [];
+    }
+    const snapPoints = [];
+    const perMove = slidesPerMove === "auto" ? Math.floor(slidesPerPage) : slidesPerMove;
+    if (perMove <= 0) {
+      return [];
+    }
+    for (let i2 = 0; i2 < totalSlides; i2 += perMove) {
+      if (i2 + slidesPerPage > totalSlides) break;
+      snapPoints.push(i2);
+    }
+    return snapPoints;
+  }
+  var getDirection, uniq2, clamp3, anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, machine4, props4, splitProps5, indicatorProps, splitIndicatorProps, itemProps2, splitItemProps2, Carousel, CarouselHook;
+  var init_carousel = __esm({
+    "../priv/static/carousel.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      getDirection = (element) => getComputedStyle2(element).direction;
+      uniq2 = (arr) => [...new Set(arr)];
+      clamp3 = (min4, max4) => (value) => Math.max(min4, Math.min(max4, value));
+      anatomy4 = createAnatomy("carousel").parts(
+        "root",
+        "itemGroup",
+        "item",
+        "control",
+        "nextTrigger",
+        "prevTrigger",
+        "indicatorGroup",
+        "indicator",
+        "autoplayTrigger",
+        "progressText"
+      );
+      parts4 = anatomy4.build();
+      getRootId4 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `carousel:${ctx.id}`;
+      };
+      getItemId2 = (ctx, index) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, index)) != null ? _c : `carousel:${ctx.id}:item:${index}`;
+      };
+      getItemGroupId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroup) != null ? _b : `carousel:${ctx.id}:item-group`;
+      };
+      getNextTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.nextTrigger) != null ? _b : `carousel:${ctx.id}:next-trigger`;
+      };
+      getPrevTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.prevTrigger) != null ? _b : `carousel:${ctx.id}:prev-trigger`;
+      };
+      getIndicatorGroupId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.indicatorGroup) != null ? _b : `carousel:${ctx.id}:indicator-group`;
+      };
+      getIndicatorId = (ctx, index) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.indicator) == null ? void 0 : _b.call(_a, index)) != null ? _c : `carousel:${ctx.id}:indicator:${index}`;
+      };
+      getItemGroupEl = (ctx) => ctx.getById(getItemGroupId(ctx));
+      getItemEls = (ctx) => queryAll(getItemGroupEl(ctx), `[data-part=item]`);
+      getIndicatorEl = (ctx, page) => ctx.getById(getIndicatorId(ctx, page));
+      syncTabIndex = (ctx) => {
+        const el = getItemGroupEl(ctx);
+        if (!el) return;
+        const tabbables = getTabbables(el);
+        el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
+      };
+      machine4 = createMachine({
+        props({ props: props26 }) {
+          ensureProps(props26, ["slideCount"], "carousel");
+          return __spreadProps(__spreadValues({
+            dir: "ltr",
+            defaultPage: 0,
+            orientation: "horizontal",
+            snapType: "mandatory",
+            loop: !!props26.autoplay,
+            slidesPerPage: 1,
+            slidesPerMove: "auto",
+            spacing: "0px",
+            autoplay: false,
+            allowMouseDrag: false,
+            inViewThreshold: 0.6,
+            autoSize: false
+          }, props26), {
+            translations: __spreadValues({
+              nextTrigger: "Next slide",
+              prevTrigger: "Previous slide",
+              indicator: (index) => `Go to slide ${index + 1}`,
+              item: (index, count) => `${index + 1} of ${count}`,
+              autoplayStart: "Start slide rotation",
+              autoplayStop: "Stop slide rotation",
+              progressText: ({ page, totalPages }) => `${page} / ${totalPages}`
+            }, props26.translations)
+          });
+        },
+        refs() {
+          return {
+            timeoutRef: void 0
+          };
+        },
+        initialState({ prop }) {
+          return prop("autoplay") ? "autoplay" : "idle";
+        },
+        context({ prop, bindable: bindable2, getContext }) {
+          return {
+            page: bindable2(() => ({
+              defaultValue: prop("defaultPage"),
+              value: prop("page"),
+              onChange(page) {
+                var _a;
+                const ctx = getContext();
+                const pageSnapPoints = ctx.get("pageSnapPoints");
+                (_a = prop("onPageChange")) == null ? void 0 : _a({ page, pageSnapPoint: pageSnapPoints[page] });
+              }
+            })),
+            pageSnapPoints: bindable2(() => {
+              return {
+                defaultValue: prop("autoSize") ? Array.from({ length: prop("slideCount") }, (_2, i2) => i2) : getPageSnapPoints(prop("slideCount"), prop("slidesPerMove"), prop("slidesPerPage"))
+              };
+            }),
+            slidesInView: bindable2(() => ({
+              defaultValue: []
+            }))
+          };
+        },
+        computed: {
+          isRtl: ({ prop }) => prop("dir") === "rtl",
+          isHorizontal: ({ prop }) => prop("orientation") === "horizontal",
+          canScrollNext: ({ prop, context }) => prop("loop") || context.get("page") < context.get("pageSnapPoints").length - 1,
+          canScrollPrev: ({ prop, context }) => prop("loop") || context.get("page") > 0,
+          autoplayInterval: ({ prop }) => {
+            const autoplay = prop("autoplay");
+            return isObject2(autoplay) ? autoplay.delay : 4e3;
+          }
+        },
+        watch({ track, action, context, prop, send }) {
+          track([() => prop("slidesPerPage"), () => prop("slidesPerMove")], () => {
+            action(["setSnapPoints"]);
+          });
+          track([() => context.get("page")], () => {
+            action(["scrollToPage", "focusIndicatorEl"]);
+          });
+          track([() => prop("orientation"), () => prop("autoSize"), () => prop("dir")], () => {
+            action(["setSnapPoints", "scrollToPage"]);
+          });
+          track([() => prop("slideCount")], () => {
+            send({ type: "SNAP.REFRESH", src: "slide.count" });
+          });
+          track([() => !!prop("autoplay")], () => {
+            send({ type: prop("autoplay") ? "AUTOPLAY.START" : "AUTOPLAY.PAUSE", src: "autoplay.prop.change" });
+          });
+        },
+        on: {
+          "PAGE.NEXT": {
+            target: "idle",
+            actions: ["clearScrollEndTimer", "setNextPage"]
+          },
+          "PAGE.PREV": {
+            target: "idle",
+            actions: ["clearScrollEndTimer", "setPrevPage"]
+          },
+          "PAGE.SET": {
+            target: "idle",
+            actions: ["clearScrollEndTimer", "setPage"]
+          },
+          "INDEX.SET": {
+            target: "idle",
+            actions: ["clearScrollEndTimer", "setMatchingPage"]
+          },
+          "SNAP.REFRESH": {
+            actions: ["setSnapPoints", "clampPage"]
+          },
+          "PAGE.SCROLL": {
+            actions: ["scrollToPage"]
+          }
+        },
+        effects: ["trackSlideMutation", "trackSlideIntersections", "trackSlideResize"],
+        entry: ["setSnapPoints", "setPage"],
+        exit: ["clearScrollEndTimer"],
+        states: {
+          idle: {
+            on: {
+              "DRAGGING.START": {
+                target: "dragging",
+                actions: ["invokeDragStart"]
+              },
+              "AUTOPLAY.START": {
+                target: "autoplay",
+                actions: ["invokeAutoplayStart"]
+              },
+              "USER.SCROLL": {
+                target: "userScroll"
+              },
+              "VIEWPORT.FOCUS": {
+                target: "focus"
+              }
+            }
+          },
+          focus: {
+            effects: ["trackKeyboardScroll"],
+            on: {
+              "VIEWPORT.BLUR": {
+                target: "idle"
+              },
+              "PAGE.NEXT": {
+                actions: ["clearScrollEndTimer", "setNextPage"]
+              },
+              "PAGE.PREV": {
+                actions: ["clearScrollEndTimer", "setPrevPage"]
+              },
+              "PAGE.SET": {
+                actions: ["clearScrollEndTimer", "setPage"]
+              },
+              "INDEX.SET": {
+                actions: ["clearScrollEndTimer", "setMatchingPage"]
+              },
+              "USER.SCROLL": {
+                target: "userScroll"
+              }
+            }
+          },
+          dragging: {
+            effects: ["trackPointerMove"],
+            entry: ["disableScrollSnap"],
+            on: {
+              DRAGGING: {
+                actions: ["scrollSlides", "invokeDragging"]
+              },
+              "DRAGGING.END": {
+                target: "idle",
+                actions: ["endDragging", "invokeDraggingEnd"]
+              }
+            }
+          },
+          userScroll: {
+            effects: ["trackScroll"],
+            on: {
+              "DRAGGING.START": {
+                target: "dragging",
+                actions: ["invokeDragStart"]
+              },
+              "SCROLL.END": [
+                {
+                  guard: "isFocused",
+                  target: "focus",
+                  actions: ["setClosestPage"]
+                },
+                {
+                  target: "idle",
+                  actions: ["setClosestPage"]
+                }
+              ]
+            }
+          },
+          autoplay: {
+            effects: ["trackDocumentVisibility", "trackScroll", "autoUpdateSlide"],
+            exit: ["invokeAutoplayEnd"],
+            on: {
+              "AUTOPLAY.TICK": {
+                actions: ["setNextPage", "invokeAutoplay"]
+              },
+              "DRAGGING.START": {
+                target: "dragging",
+                actions: ["invokeDragStart"]
+              },
+              "AUTOPLAY.PAUSE": {
+                target: "idle"
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isFocused: ({ scope }) => scope.isActiveElement(getItemGroupEl(scope))
+          },
+          effects: {
+            autoUpdateSlide({ computed, send }) {
+              const id = setInterval(() => {
+                send({
+                  type: computed("canScrollNext") ? "AUTOPLAY.TICK" : "AUTOPLAY.PAUSE",
+                  src: "autoplay.interval"
+                });
+              }, computed("autoplayInterval"));
+              return () => clearInterval(id);
+            },
+            trackSlideMutation({ scope, send }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const win = scope.getWin();
+              const observer = new win.MutationObserver(() => {
+                send({ type: "SNAP.REFRESH", src: "slide.mutation" });
+                syncTabIndex(scope);
+              });
+              syncTabIndex(scope);
+              observer.observe(el, { childList: true, subtree: true });
+              return () => observer.disconnect();
+            },
+            trackSlideResize({ scope, send }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const exec = () => {
+                send({ type: "SNAP.REFRESH", src: "slide.resize" });
+              };
+              raf(() => {
+                exec();
+                raf(() => {
+                  send({ type: "PAGE.SCROLL", instant: true });
+                });
+              });
+              const itemEls = getItemEls(scope);
+              itemEls.forEach(exec);
+              const cleanups = itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec));
+              return callAll(...cleanups);
+            },
+            trackSlideIntersections({ scope, prop, context }) {
+              const el = getItemGroupEl(scope);
+              const win = scope.getWin();
+              const observer = new win.IntersectionObserver(
+                (entries) => {
+                  const slidesInView = entries.reduce((acc, entry) => {
+                    var _a;
+                    const target = entry.target;
+                    const index = Number((_a = target.dataset.index) != null ? _a : "-1");
+                    if (index == null || Number.isNaN(index) || index === -1) return acc;
+                    return entry.isIntersecting ? add(acc, index) : remove(acc, index);
+                  }, context.get("slidesInView"));
+                  context.set("slidesInView", uniq(slidesInView));
+                },
+                {
+                  root: el,
+                  threshold: prop("inViewThreshold")
+                }
+              );
+              getItemEls(scope).forEach((slide) => observer.observe(slide));
+              return () => observer.disconnect();
+            },
+            trackScroll({ send, refs, scope }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const onScroll = () => {
+                clearTimeout(refs.get("timeoutRef"));
+                refs.set("timeoutRef", void 0);
+                refs.set(
+                  "timeoutRef",
+                  setTimeout(() => {
+                    send({ type: "SCROLL.END" });
+                  }, 150)
+                );
+              };
+              return addDomEvent(el, "scroll", onScroll, { passive: true });
+            },
+            trackDocumentVisibility({ scope, send }) {
+              const doc = scope.getDoc();
+              const onVisibilityChange = () => {
+                if (doc.visibilityState === "visible") return;
+                send({ type: "AUTOPLAY.PAUSE", src: "doc.hidden" });
+              };
+              return addDomEvent(doc, "visibilitychange", onVisibilityChange);
+            },
+            trackPointerMove({ scope, send }) {
+              const doc = scope.getDoc();
+              return trackPointerMove(doc, {
+                onPointerMove({ event }) {
+                  send({ type: "DRAGGING", left: -event.movementX, top: -event.movementY });
+                },
+                onPointerUp() {
+                  send({ type: "DRAGGING.END" });
+                }
+              });
+            },
+            trackKeyboardScroll({ scope, send, context }) {
+              const win = scope.getWin();
+              const onKeyDown = (event) => {
+                switch (event.key) {
+                  case "ArrowRight":
+                    event.preventDefault();
+                    send({ type: "PAGE.NEXT" });
+                    break;
+                  case "ArrowLeft":
+                    event.preventDefault();
+                    send({ type: "PAGE.PREV" });
+                    break;
+                  case "Home":
+                    event.preventDefault();
+                    send({ type: "PAGE.SET", index: 0 });
+                    break;
+                  case "End":
+                    event.preventDefault();
+                    send({ type: "PAGE.SET", index: context.get("pageSnapPoints").length - 1 });
+                }
+              };
+              return addDomEvent(win, "keydown", onKeyDown, { capture: true });
+            }
+          },
+          actions: {
+            clearScrollEndTimer({ refs }) {
+              if (refs.get("timeoutRef") == null) return;
+              clearTimeout(refs.get("timeoutRef"));
+              refs.set("timeoutRef", void 0);
+            },
+            scrollToPage({ context, event, scope, computed, flush }) {
+              var _a;
+              const behavior = event.instant ? "instant" : "smooth";
+              const index = clampValue((_a = event.index) != null ? _a : context.get("page"), 0, context.get("pageSnapPoints").length - 1);
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const axis = computed("isHorizontal") ? "left" : "top";
+              flush(() => {
+                el.scrollTo({ [axis]: context.get("pageSnapPoints")[index], behavior });
+              });
+            },
+            setClosestPage({ context, scope, computed }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const scrollPosition = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
+              const page = context.get("pageSnapPoints").findIndex((point) => Math.abs(point - scrollPosition) < 1);
+              if (page === -1) return;
+              context.set("page", page);
+            },
+            setNextPage({ context, prop, state: state2 }) {
+              const loop = state2.matches("autoplay") || prop("loop");
+              const page = nextIndex(context.get("pageSnapPoints"), context.get("page"), { loop });
+              context.set("page", page);
+            },
+            setPrevPage({ context, prop, state: state2 }) {
+              const loop = state2.matches("autoplay") || prop("loop");
+              const page = prevIndex(context.get("pageSnapPoints"), context.get("page"), { loop });
+              context.set("page", page);
+            },
+            setMatchingPage({ context, event, computed, scope }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const snapPoint = findSnapPoint(
+                el,
+                computed("isHorizontal") ? "x" : "y",
+                (node) => node.dataset.index === event.index.toString()
+              );
+              if (snapPoint == null) return;
+              const page = context.get("pageSnapPoints").findIndex((point) => Math.abs(point - snapPoint) < 1);
+              context.set("page", page);
+            },
+            setPage({ context, event }) {
+              var _a;
+              const page = (_a = event.index) != null ? _a : context.get("page");
+              context.set("page", page);
+            },
+            clampPage({ context }) {
+              const index = clampValue(context.get("page"), 0, context.get("pageSnapPoints").length - 1);
+              context.set("page", index);
+            },
+            setSnapPoints({ context, computed, scope }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const scrollSnapPoints = getScrollSnapPositions(el);
+              context.set("pageSnapPoints", computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y);
+            },
+            disableScrollSnap({ scope }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const styles = getComputedStyle(el);
+              el.dataset.scrollSnapType = styles.getPropertyValue("scroll-snap-type");
+              el.style.setProperty("scroll-snap-type", "none");
+            },
+            scrollSlides({ scope, event }) {
+              const el = getItemGroupEl(scope);
+              el == null ? void 0 : el.scrollBy({ left: event.left, top: event.top, behavior: "instant" });
+            },
+            endDragging({ scope, context, computed }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const isHorizontal = computed("isHorizontal");
+              const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
+              const snapPoints = context.get("pageSnapPoints");
+              const closest = snapPoints.reduce((closest2, curr) => {
+                return Math.abs(curr - scrollPos) < Math.abs(closest2 - scrollPos) ? curr : closest2;
+              }, snapPoints[0]);
+              raf(() => {
+                el.scrollTo({
+                  left: isHorizontal ? closest : el.scrollLeft,
+                  top: isHorizontal ? el.scrollTop : closest,
+                  behavior: "smooth"
+                });
+                context.set("page", snapPoints.indexOf(closest));
+                const scrollSnapType = el.dataset.scrollSnapType;
+                if (scrollSnapType) {
+                  el.style.setProperty("scroll-snap-type", scrollSnapType);
+                  delete el.dataset.scrollSnapType;
+                }
+              });
+            },
+            focusIndicatorEl({ context, event, scope }) {
+              if (event.src !== "indicator") return;
+              const el = getIndicatorEl(scope, context.get("page"));
+              if (!el) return;
+              raf(() => el.focus({ preventScroll: true }));
+            },
+            invokeDragStart({ context, prop }) {
+              var _a;
+              (_a = prop("onDragStatusChange")) == null ? void 0 : _a({ type: "dragging.start", isDragging: true, page: context.get("page") });
+            },
+            invokeDragging({ context, prop }) {
+              var _a;
+              (_a = prop("onDragStatusChange")) == null ? void 0 : _a({ type: "dragging", isDragging: true, page: context.get("page") });
+            },
+            invokeDraggingEnd({ context, prop }) {
+              var _a;
+              (_a = prop("onDragStatusChange")) == null ? void 0 : _a({ type: "dragging.end", isDragging: false, page: context.get("page") });
+            },
+            invokeAutoplay({ context, prop }) {
+              var _a;
+              (_a = prop("onAutoplayStatusChange")) == null ? void 0 : _a({ type: "autoplay", isPlaying: true, page: context.get("page") });
+            },
+            invokeAutoplayStart({ context, prop }) {
+              var _a;
+              (_a = prop("onAutoplayStatusChange")) == null ? void 0 : _a({ type: "autoplay.start", isPlaying: true, page: context.get("page") });
+            },
+            invokeAutoplayEnd({ context, prop }) {
+              var _a;
+              (_a = prop("onAutoplayStatusChange")) == null ? void 0 : _a({ type: "autoplay.stop", isPlaying: false, page: context.get("page") });
+            }
+          }
+        }
+      });
+      props4 = createProps()([
+        "dir",
+        "getRootNode",
+        "id",
+        "ids",
+        "loop",
+        "page",
+        "defaultPage",
+        "onPageChange",
+        "orientation",
+        "slideCount",
+        "slidesPerPage",
+        "slidesPerMove",
+        "spacing",
+        "padding",
+        "autoplay",
+        "allowMouseDrag",
+        "inViewThreshold",
+        "translations",
+        "snapType",
+        "autoSize",
+        "onDragStatusChange",
+        "onAutoplayStatusChange"
+      ]);
+      splitProps5 = createSplitProps(props4);
+      indicatorProps = createProps()(["index", "readOnly"]);
+      splitIndicatorProps = createSplitProps(indicatorProps);
+      itemProps2 = createProps()(["index", "snapAlign"]);
+      splitItemProps2 = createSplitProps(itemProps2);
+      Carousel = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine4, props26);
+        }
+        initApi() {
+          return connect4(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="carousel"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const itemGroupEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="item-group"]'
+          );
+          if (itemGroupEl) this.spreadProps(itemGroupEl, this.api.getItemGroupProps());
+          const slideCount = Number(this.el.dataset.slideCount) || 0;
+          for (let i2 = 0; i2 < slideCount; i2++) {
+            const itemEl = this.el.querySelector(
+              `[data-scope="carousel"][data-part="item"][data-index="${i2}"]`
+            );
+            if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ index: i2 }));
+          }
+          const prevTriggerEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="prev-trigger"]'
+          );
+          if (prevTriggerEl) this.spreadProps(prevTriggerEl, this.api.getPrevTriggerProps());
+          const nextTriggerEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="next-trigger"]'
+          );
+          if (nextTriggerEl) this.spreadProps(nextTriggerEl, this.api.getNextTriggerProps());
+          const autoplayTriggerEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="autoplay-trigger"]'
+          );
+          if (autoplayTriggerEl) this.spreadProps(autoplayTriggerEl, this.api.getAutoplayTriggerProps());
+          const indicatorGroupEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="indicator-group"]'
+          );
+          if (indicatorGroupEl) this.spreadProps(indicatorGroupEl, this.api.getIndicatorGroupProps());
+          const indicatorCount = this.api.pageSnapPoints.length;
+          for (let i2 = 0; i2 < indicatorCount; i2++) {
+            const indicatorEl = this.el.querySelector(
+              `[data-scope="carousel"][data-part="indicator"][data-index="${i2}"]`
+            );
+            if (indicatorEl)
+              this.spreadProps(indicatorEl, this.api.getIndicatorProps({ index: i2 }));
+          }
+          const progressTextEl = this.el.querySelector(
+            '[data-scope="carousel"][data-part="progress-text"]'
+          );
+          if (progressTextEl) this.spreadProps(progressTextEl, this.api.getProgressTextProps());
+        }
+      };
+      CarouselHook = {
+        mounted() {
+          var _a, _b, _c, _d;
+          const el = this.el;
+          const page = getNumber(el, "page");
+          const defaultPage = getNumber(el, "defaultPage");
+          const controlled = getBoolean(el, "controlled");
+          const slideCount = getNumber(el, "slideCount");
+          if (slideCount == null || slideCount < 1) {
+            return;
+          }
+          const zag = new Carousel(el, __spreadProps(__spreadValues({
+            id: el.id,
+            slideCount
+          }, controlled && page !== void 0 ? { page } : { defaultPage: defaultPage != null ? defaultPage : 0 }), {
+            dir: getDir(el),
+            orientation: getString(el, "orientation", [
+              "horizontal",
+              "vertical"
+            ]),
+            slidesPerPage: (_a = getNumber(el, "slidesPerPage")) != null ? _a : 1,
+            slidesPerMove: getString(el, "slidesPerMove") === "auto" ? "auto" : getNumber(el, "slidesPerMove"),
+            loop: getBoolean(el, "loop"),
+            autoplay: getBoolean(el, "autoplay") ? { delay: (_b = getNumber(el, "autoplayDelay")) != null ? _b : 4e3 } : false,
+            allowMouseDrag: getBoolean(el, "allowMouseDrag"),
+            spacing: (_c = getString(el, "spacing")) != null ? _c : "0px",
+            padding: getString(el, "padding"),
+            inViewThreshold: (_d = getNumber(el, "inViewThreshold")) != null ? _d : 0.6,
+            snapType: getString(el, "snapType", ["proximity", "mandatory"]),
+            autoSize: getBoolean(el, "autoSize"),
+            onPageChange: (details) => {
+              const eventName = getString(el, "onPageChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  page: details.page,
+                  pageSnapPoint: details.pageSnapPoint,
+                  id: el.id
+                });
+              }
+              const clientName = getString(el, "onPageChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.init();
+          this.carousel = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a, _b;
+          const slideCount = getNumber(this.el, "slideCount");
+          if (slideCount == null || slideCount < 1) return;
+          const page = getNumber(this.el, "page");
+          const controlled = getBoolean(this.el, "controlled");
+          (_b = this.carousel) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id,
+            slideCount
+          }, controlled && page !== void 0 ? { page } : {}), {
+            dir: getDir(this.el),
+            orientation: getString(this.el, "orientation", [
+              "horizontal",
+              "vertical"
+            ]),
+            slidesPerPage: (_a = getNumber(this.el, "slidesPerPage")) != null ? _a : 1,
+            loop: getBoolean(this.el, "loop"),
+            allowMouseDrag: getBoolean(this.el, "allowMouseDrag")
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.carousel) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/chunk-TEV2GE3U.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -3098,11 +5549,14 @@ var Corex = (() => {
     );
     listenerMap.set(win, { focus });
   }
+  function getInteractionModality() {
+    return currentModality;
+  }
   function isFocusVisible() {
     return currentModality === "keyboard";
   }
-  function trackFocusVisible(props15 = {}) {
-    const { isTextInput, autoFocus, onChange, root } = props15;
+  function trackFocusVisible(props26 = {}) {
+    const { isTextInput, autoFocus, onChange, root } = props26;
     setupGlobalFocusEvents(root);
     onChange == null ? void 0 : onChange({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
     const handler = (modality, e2) => {
@@ -3115,10 +5569,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_EAMC7PNF = __esm({
-    "../priv/static/chunk-EAMC7PNF.mjs"() {
+  var init_chunk_TEV2GE3U = __esm({
+    "../priv/static/chunk-TEV2GE3U.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
+      init_chunk_IXOYOLUJ();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -3167,7 +5621,7 @@ var Corex = (() => {
   __export(checkbox_exports, {
     Checkbox: () => CheckboxHook
   });
-  function connect2(service, normalize) {
+  function connect5(service, normalize) {
     const { send, context, prop, computed, scope } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -3202,10 +5656,10 @@ var Corex = (() => {
         send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
       },
       getRootProps() {
-        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts2.root.attrs), dataAttrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts5.root.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getRootId2(scope),
-          htmlFor: getHiddenInputId(scope),
+          id: getRootId5(scope),
+          htmlFor: getHiddenInputId2(scope),
           onPointerMove() {
             if (disabled) return;
             send({ type: "CONTEXT.SET", context: { hovered: true } });
@@ -3216,39 +5670,39 @@ var Corex = (() => {
           },
           onClick(event) {
             const target = getEventTarget(event);
-            if (target === getHiddenInputEl(scope)) {
+            if (target === getHiddenInputEl2(scope)) {
               event.stopPropagation();
             }
           }
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts2.label.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts5.label.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getLabelId(scope)
+          id: getLabelId2(scope)
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts2.control.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts5.control.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getControlId(scope),
+          id: getControlId2(scope),
           "aria-hidden": true
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts2.indicator.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts5.indicator.attrs), dataAttrs), {
           dir: prop("dir"),
           hidden: !indeterminate && !checked
         }));
       },
       getHiddenInputProps() {
         return normalize.input({
-          id: getHiddenInputId(scope),
+          id: getHiddenInputId2(scope),
           type: "checkbox",
           required: prop("required"),
           defaultChecked: checked,
           disabled,
-          "aria-labelledby": getLabelId(scope),
+          "aria-labelledby": getLabelId2(scope),
           "aria-invalid": invalid,
           name: prop("name"),
           form: prop("form"),
@@ -3279,40 +5733,40 @@ var Corex = (() => {
   function isChecked(checked) {
     return isIndeterminate(checked) ? false : !!checked;
   }
-  var anatomy2, parts2, getRootId2, getLabelId, getControlId, getHiddenInputId, getRootEl2, getHiddenInputEl, not2, machine2, props2, splitProps3, Checkbox, CheckboxHook;
+  var anatomy5, parts5, getRootId5, getLabelId2, getControlId2, getHiddenInputId2, getRootEl3, getHiddenInputEl2, not2, machine5, props5, splitProps6, Checkbox, CheckboxHook;
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_EAMC7PNF();
-      init_chunk_GFGFZBBD();
-      anatomy2 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
-      parts2 = anatomy2.build();
-      getRootId2 = (ctx) => {
+      init_chunk_TEV2GE3U();
+      init_chunk_IXOYOLUJ();
+      anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
+      parts5 = anatomy5.build();
+      getRootId5 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `checkbox:${ctx.id}`;
       };
-      getLabelId = (ctx) => {
+      getLabelId2 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `checkbox:${ctx.id}:label`;
       };
-      getControlId = (ctx) => {
+      getControlId2 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `checkbox:${ctx.id}:control`;
       };
-      getHiddenInputId = (ctx) => {
+      getHiddenInputId2 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenInput) != null ? _b : `checkbox:${ctx.id}:input`;
       };
-      getRootEl2 = (ctx) => ctx.getById(getRootId2(ctx));
-      getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
+      getRootEl3 = (ctx) => ctx.getById(getRootId5(ctx));
+      getHiddenInputEl2 = (ctx) => ctx.getById(getHiddenInputId2(ctx));
       ({ not: not2 } = createGuards());
-      machine2 = createMachine({
-        props({ props: props22 }) {
+      machine5 = createMachine({
+        props({ props: props26 }) {
           var _a;
           return __spreadProps(__spreadValues({
             value: "on"
-          }, props22), {
-            defaultChecked: (_a = props22.defaultChecked) != null ? _a : false
+          }, props26), {
+            defaultChecked: (_a = props26.defaultChecked) != null ? _a : false
           });
         },
         initialState() {
@@ -3383,8 +5837,8 @@ var Corex = (() => {
             trackPressEvent({ context, computed, scope }) {
               if (computed("disabled")) return;
               return trackPress({
-                pointerNode: getRootEl2(scope),
-                keyboardNode: getHiddenInputEl(scope),
+                pointerNode: getRootEl3(scope),
+                keyboardNode: getHiddenInputEl2(scope),
                 isValidKey: (event) => event.key === " ",
                 onPress: () => context.set("active", false),
                 onPressStart: () => context.set("active", true),
@@ -3397,7 +5851,7 @@ var Corex = (() => {
               return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
             },
             trackFormControlState({ context, scope }) {
-              return trackFormControl(getHiddenInputEl(scope), {
+              return trackFormControl(getHiddenInputEl2(scope), {
                 onFieldsetDisabledChange(disabled) {
                   context.set("fieldsetDisabled", disabled);
                 },
@@ -3414,7 +5868,7 @@ var Corex = (() => {
               }
             },
             syncInputElement({ context, computed, scope }) {
-              const inputEl = getHiddenInputEl(scope);
+              const inputEl = getHiddenInputEl2(scope);
               if (!inputEl) return;
               setElementChecked(inputEl, computed("checked"));
               inputEl.indeterminate = isIndeterminate(context.get("checked"));
@@ -3434,14 +5888,14 @@ var Corex = (() => {
             },
             dispatchChangeEvent({ computed, scope }) {
               queueMicrotask(() => {
-                const inputEl = getHiddenInputEl(scope);
+                const inputEl = getHiddenInputEl2(scope);
                 dispatchInputCheckedEvent(inputEl, { checked: computed("checked") });
               });
             }
           }
         }
       });
-      props2 = createProps()([
+      props5 = createProps()([
         "defaultChecked",
         "checked",
         "dir",
@@ -3457,14 +5911,14 @@ var Corex = (() => {
         "required",
         "value"
       ]);
-      splitProps3 = createSplitProps(props2);
+      splitProps6 = createSplitProps(props5);
       Checkbox = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine2, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine5, props26);
         }
         initApi() {
-          return connect2(this.machine.service, normalizeProps);
+          return connect5(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]');
@@ -3662,7 +6116,7 @@ var Corex = (() => {
     doc.body.removeChild(node);
     return Promise.resolve();
   }
-  function connect3(service, normalize) {
+  function connect6(service, normalize) {
     const { state: state2, send, context, scope } = service;
     const copied = state2.matches("copied");
     return {
@@ -3675,25 +6129,25 @@ var Corex = (() => {
         send({ type: "COPY" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts3.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts6.root.attrs), {
           "data-copied": dataAttr(copied),
-          id: getRootId3(scope)
+          id: getRootId6(scope)
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts3.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts6.label.attrs), {
           htmlFor: getInputId(scope),
           "data-copied": dataAttr(copied),
-          id: getLabelId2(scope)
+          id: getLabelId3(scope)
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts3.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts6.control.attrs), {
           "data-copied": dataAttr(copied)
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadProps(__spreadValues({}, parts3.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts6.input.attrs), {
           defaultValue: context.get("value"),
           "data-copied": dataAttr(copied),
           readOnly: true,
@@ -3708,7 +6162,7 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts3.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts6.trigger.attrs), {
           type: "button",
           "aria-label": copied ? "Copied to clipboard" : "Copy to clipboard",
           "data-copied": dataAttr(copied),
@@ -3717,21 +6171,21 @@ var Corex = (() => {
           }
         }));
       },
-      getIndicatorProps(props22) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts3.indicator.attrs), {
-          hidden: props22.copied !== copied
+      getIndicatorProps(props26) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts6.indicator.attrs), {
+          hidden: props26.copied !== copied
         }));
       }
     };
   }
-  var anatomy3, parts3, getRootId3, getInputId, getLabelId2, getInputEl, writeToClipboard, machine3, props3, contextProps, indicatorProps, splitIndicatorProps, Clipboard, ClipboardHook;
+  var anatomy6, parts6, getRootId6, getInputId, getLabelId3, getInputEl, writeToClipboard, machine6, props6, contextProps, indicatorProps2, splitIndicatorProps2, Clipboard, ClipboardHook;
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
-      anatomy3 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
-      parts3 = anatomy3.build();
-      getRootId3 = (ctx) => {
+      init_chunk_IXOYOLUJ();
+      anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
+      parts6 = anatomy6.build();
+      getRootId6 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `clip:${ctx.id}`;
       };
@@ -3739,18 +6193,18 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `clip:${ctx.id}:input`;
       };
-      getLabelId2 = (ctx) => {
+      getLabelId3 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `clip:${ctx.id}:label`;
       };
       getInputEl = (ctx) => ctx.getById(getInputId(ctx));
       writeToClipboard = (ctx, value) => copyText(ctx.getDoc(), value);
-      machine3 = createMachine({
-        props({ props: props22 }) {
+      machine6 = createMachine({
+        props({ props: props26 }) {
           return __spreadValues({
             timeout: 3e3,
             defaultValue: ""
-          }, props22);
+          }, props26);
         },
         initialState() {
           return "idle";
@@ -3833,7 +6287,7 @@ var Corex = (() => {
           }
         }
       });
-      props3 = createProps()([
+      props6 = createProps()([
         "getRootNode",
         "id",
         "ids",
@@ -3843,16 +6297,16 @@ var Corex = (() => {
         "onStatusChange",
         "onValueChange"
       ]);
-      contextProps = createSplitProps(props3);
-      indicatorProps = createProps()(["copied"]);
-      splitIndicatorProps = createSplitProps(indicatorProps);
+      contextProps = createSplitProps(props6);
+      indicatorProps2 = createProps()(["copied"]);
+      splitIndicatorProps2 = createSplitProps(indicatorProps2);
       Clipboard = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine3, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine6, props26);
         }
         initApi() {
-          return connect3(this.machine.service, normalizeProps);
+          return connect6(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="clipboard"][data-part="root"]');
@@ -4002,7 +6456,7 @@ var Corex = (() => {
   __export(collapsible_exports, {
     Collapsible: () => CollapsibleHook
   });
-  function connect4(service, normalize) {
+  function connect7(service, normalize) {
     const { state: state2, send, context, scope, prop } = service;
     const visible = state2.matches("open") || state2.matches("closing");
     const open = state2.matches("open");
@@ -4028,14 +6482,14 @@ var Corex = (() => {
         send({ type: nextOpen ? "open" : "close" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.root.attrs), {
           "data-state": open ? "open" : "closed",
           dir: prop("dir"),
-          id: getRootId4(scope)
+          id: getRootId7(scope)
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.content.attrs), {
           id: getContentId(scope),
           "data-collapsible": "",
           "data-state": skip ? void 0 : open ? "open" : "closed",
@@ -4060,7 +6514,7 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.trigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.trigger.attrs), {
           id: getTriggerId(scope),
           dir: prop("dir"),
           type: "button",
@@ -4076,7 +6530,7 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts7.indicator.attrs), {
           dir: prop("dir"),
           "data-state": open ? "open" : "closed",
           "data-disabled": dataAttr(disabled)
@@ -4084,14 +6538,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy4, parts4, getRootId4, getContentId, getTriggerId, getContentEl, machine4, props4, splitProps4, Collapsible, CollapsibleHook;
+  var anatomy7, parts7, getRootId7, getContentId, getTriggerId, getContentEl, machine7, props7, splitProps7, Collapsible, CollapsibleHook;
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
-      anatomy4 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
-      parts4 = anatomy4.build();
-      getRootId4 = (ctx) => {
+      init_chunk_IXOYOLUJ();
+      anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
+      parts7 = anatomy7.build();
+      getRootId7 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `collapsible:${ctx.id}`;
       };
@@ -4104,7 +6558,7 @@ var Corex = (() => {
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `collapsible:${ctx.id}:trigger`;
       };
       getContentEl = (ctx) => ctx.getById(getContentId(ctx));
-      machine4 = createMachine({
+      machine7 = createMachine({
         initialState({ prop }) {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "closed";
@@ -4354,7 +6808,7 @@ var Corex = (() => {
           }
         }
       });
-      props4 = createProps()([
+      props7 = createProps()([
         "dir",
         "disabled",
         "getRootNode",
@@ -4367,14 +6821,14 @@ var Corex = (() => {
         "defaultOpen",
         "open"
       ]);
-      splitProps4 = createSplitProps(props4);
+      splitProps7 = createSplitProps(props7);
       Collapsible = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine4, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine7, props26);
         }
         initApi() {
-          return connect4(this.machine.service, normalizeProps);
+          return connect7(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -4479,7 +6933,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-2DWEYSRA.mjs
+  // ../priv/static/chunk-2PO3TGCF.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -4491,6 +6945,9 @@ var Corex = (() => {
     }
     toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
     return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
+  }
+  function isGridCollection(v2) {
+    return hasProp(v2, "columnCount") && hasProp(v2, "getRows");
   }
   function access(node, indexPath, options) {
     for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
@@ -4820,14 +7277,14 @@ var Corex = (() => {
       stack.pop();
     }
   }
-  var __defProp4, __defNormalProp4, __publicField4, fallback, ListCollection, match3, TreeCollection, fallbackMethods;
-  var init_chunk_2DWEYSRA = __esm({
-    "../priv/static/chunk-2DWEYSRA.mjs"() {
+  var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
+  var init_chunk_2PO3TGCF = __esm({
+    "../priv/static/chunk-2PO3TGCF.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
-      __defProp4 = Object.defineProperty;
-      __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
+      init_chunk_IXOYOLUJ();
+      __defProp5 = Object.defineProperty;
+      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
       fallback = {
         itemToValue(item) {
           if (typeof item === "string") return item;
@@ -4847,18 +7304,18 @@ var Corex = (() => {
       ListCollection = class _ListCollection {
         constructor(options) {
           this.options = options;
-          __publicField4(this, "items");
-          __publicField4(this, "indexMap", null);
-          __publicField4(this, "copy", (items) => {
+          __publicField5(this, "items");
+          __publicField5(this, "indexMap", null);
+          __publicField5(this, "copy", (items) => {
             return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
           });
-          __publicField4(this, "isEqual", (other) => {
+          __publicField5(this, "isEqual", (other) => {
             return isEqual2(this.items, other.items);
           });
-          __publicField4(this, "setItems", (items) => {
+          __publicField5(this, "setItems", (items) => {
             return this.copy(items);
           });
-          __publicField4(this, "getValues", (items = this.items) => {
+          __publicField5(this, "getValues", (items = this.items) => {
             const values = [];
             for (const item of items) {
               const value = this.getItemValue(item);
@@ -4866,12 +7323,12 @@ var Corex = (() => {
             }
             return values;
           });
-          __publicField4(this, "find", (value) => {
+          __publicField5(this, "find", (value) => {
             if (value == null) return null;
             const index = this.indexOf(value);
             return index !== -1 ? this.at(index) : null;
           });
-          __publicField4(this, "findMany", (values) => {
+          __publicField5(this, "findMany", (values) => {
             const result = [];
             for (const value of values) {
               const item = this.find(value);
@@ -4879,7 +7336,7 @@ var Corex = (() => {
             }
             return result;
           });
-          __publicField4(this, "at", (index) => {
+          __publicField5(this, "at", (index) => {
             var _a;
             if (!this.options.groupBy && !this.options.groupSort) {
               return (_a = this.items[index]) != null ? _a : null;
@@ -4894,34 +7351,34 @@ var Corex = (() => {
             }
             return null;
           });
-          __publicField4(this, "sortFn", (valueA, valueB) => {
+          __publicField5(this, "sortFn", (valueA, valueB) => {
             const indexA = this.indexOf(valueA);
             const indexB = this.indexOf(valueB);
             return (indexA != null ? indexA : 0) - (indexB != null ? indexB : 0);
           });
-          __publicField4(this, "sort", (values) => {
+          __publicField5(this, "sort", (values) => {
             return [...values].sort(this.sortFn.bind(this));
           });
-          __publicField4(this, "getItemValue", (item) => {
+          __publicField5(this, "getItemValue", (item) => {
             var _a, _b, _c;
             if (item == null) return null;
             return (_c = (_b = (_a = this.options).itemToValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToValue(item);
           });
-          __publicField4(this, "getItemDisabled", (item) => {
+          __publicField5(this, "getItemDisabled", (item) => {
             var _a, _b, _c;
             if (item == null) return false;
             return (_c = (_b = (_a = this.options).isItemDisabled) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.isItemDisabled(item);
           });
-          __publicField4(this, "stringifyItem", (item) => {
+          __publicField5(this, "stringifyItem", (item) => {
             var _a, _b, _c;
             if (item == null) return null;
             return (_c = (_b = (_a = this.options).itemToString) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToString(item);
           });
-          __publicField4(this, "stringify", (value) => {
+          __publicField5(this, "stringify", (value) => {
             if (value == null) return null;
             return this.stringifyItem(this.find(value));
           });
-          __publicField4(this, "stringifyItems", (items, separator = ", ") => {
+          __publicField5(this, "stringifyItems", (items, separator = ", ") => {
             const strs = [];
             for (const item of items) {
               const str = this.stringifyItem(item);
@@ -4929,17 +7386,17 @@ var Corex = (() => {
             }
             return strs.join(separator);
           });
-          __publicField4(this, "stringifyMany", (value, separator) => {
+          __publicField5(this, "stringifyMany", (value, separator) => {
             return this.stringifyItems(this.findMany(value), separator);
           });
-          __publicField4(this, "has", (value) => {
+          __publicField5(this, "has", (value) => {
             return this.indexOf(value) !== -1;
           });
-          __publicField4(this, "hasItem", (item) => {
+          __publicField5(this, "hasItem", (item) => {
             if (item == null) return false;
             return this.has(this.getItemValue(item));
           });
-          __publicField4(this, "group", () => {
+          __publicField5(this, "group", () => {
             const { groupBy, groupSort } = this.options;
             if (!groupBy) return [["", [...this.items]]];
             const groups = /* @__PURE__ */ new Map();
@@ -4968,21 +7425,21 @@ var Corex = (() => {
             }
             return entries;
           });
-          __publicField4(this, "getNextValue", (value, step = 1, clamp3 = false) => {
+          __publicField5(this, "getNextValue", (value, step = 1, clamp5 = false) => {
             let index = this.indexOf(value);
             if (index === -1) return null;
-            index = clamp3 ? Math.min(index + step, this.size - 1) : index + step;
+            index = clamp5 ? Math.min(index + step, this.size - 1) : index + step;
             while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
             return this.getItemValue(this.at(index));
           });
-          __publicField4(this, "getPreviousValue", (value, step = 1, clamp3 = false) => {
+          __publicField5(this, "getPreviousValue", (value, step = 1, clamp5 = false) => {
             let index = this.indexOf(value);
             if (index === -1) return null;
-            index = clamp3 ? Math.max(index - step, 0) : index - step;
+            index = clamp5 ? Math.max(index - step, 0) : index - step;
             while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
             return this.getItemValue(this.at(index));
           });
-          __publicField4(this, "indexOf", (value) => {
+          __publicField5(this, "indexOf", (value) => {
             var _a;
             if (value == null) return -1;
             if (!this.options.groupBy && !this.options.groupSort) {
@@ -5004,7 +7461,7 @@ var Corex = (() => {
             }
             return (_a = this.indexMap.get(value)) != null ? _a : -1;
           });
-          __publicField4(this, "getByText", (text, current) => {
+          __publicField5(this, "getByText", (text, current) => {
             const currentIndex = current != null ? this.indexOf(current) : -1;
             const isSingleKey = text.length === 1;
             for (let i2 = 0; i2 < this.items.length; i2++) {
@@ -5015,7 +7472,7 @@ var Corex = (() => {
             }
             return void 0;
           });
-          __publicField4(this, "search", (queryString, options2) => {
+          __publicField5(this, "search", (queryString, options2) => {
             const { state: state2, currentValue, timeout = 350 } = options2;
             const search = state2.keysSoFar + queryString;
             const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
@@ -5039,12 +7496,12 @@ var Corex = (() => {
             update(search);
             return value;
           });
-          __publicField4(this, "update", (value, item) => {
+          __publicField5(this, "update", (value, item) => {
             let index = this.indexOf(value);
             if (index === -1) return this;
             return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
           });
-          __publicField4(this, "upsert", (value, item, mode = "append") => {
+          __publicField5(this, "upsert", (value, item, mode = "append") => {
             let index = this.indexOf(value);
             if (index === -1) {
               const fn = mode === "append" ? this.append : this.prepend;
@@ -5052,10 +7509,10 @@ var Corex = (() => {
             }
             return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
           });
-          __publicField4(this, "insert", (index, ...items) => {
+          __publicField5(this, "insert", (index, ...items) => {
             return this.copy(insert(this.items, index, ...items));
           });
-          __publicField4(this, "insertBefore", (value, ...items) => {
+          __publicField5(this, "insertBefore", (value, ...items) => {
             let toIndex = this.indexOf(value);
             if (toIndex === -1) {
               if (this.items.length === 0) toIndex = 0;
@@ -5063,7 +7520,7 @@ var Corex = (() => {
             }
             return this.copy(insert(this.items, toIndex, ...items));
           });
-          __publicField4(this, "insertAfter", (value, ...items) => {
+          __publicField5(this, "insertAfter", (value, ...items) => {
             let toIndex = this.indexOf(value);
             if (toIndex === -1) {
               if (this.items.length === 0) toIndex = 0;
@@ -5071,17 +7528,17 @@ var Corex = (() => {
             }
             return this.copy(insert(this.items, toIndex + 1, ...items));
           });
-          __publicField4(this, "prepend", (...items) => {
+          __publicField5(this, "prepend", (...items) => {
             return this.copy(insert(this.items, 0, ...items));
           });
-          __publicField4(this, "append", (...items) => {
+          __publicField5(this, "append", (...items) => {
             return this.copy(insert(this.items, this.items.length, ...items));
           });
-          __publicField4(this, "filter", (fn) => {
+          __publicField5(this, "filter", (fn) => {
             const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
             return this.copy(filteredItems);
           });
-          __publicField4(this, "remove", (...itemsOrValues) => {
+          __publicField5(this, "remove", (...itemsOrValues) => {
             const values = itemsOrValues.map(
               (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
             );
@@ -5093,34 +7550,34 @@ var Corex = (() => {
               })
             );
           });
-          __publicField4(this, "move", (value, toIndex) => {
+          __publicField5(this, "move", (value, toIndex) => {
             const fromIndex = this.indexOf(value);
             if (fromIndex === -1) return this;
             return this.copy(move(this.items, [fromIndex], toIndex));
           });
-          __publicField4(this, "moveBefore", (value, ...values) => {
+          __publicField5(this, "moveBefore", (value, ...values) => {
             let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
             if (toIndex === -1) return this;
             let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
             return this.copy(move(this.items, indices, toIndex));
           });
-          __publicField4(this, "moveAfter", (value, ...values) => {
+          __publicField5(this, "moveAfter", (value, ...values) => {
             let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
             if (toIndex === -1) return this;
             let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
             return this.copy(move(this.items, indices, toIndex + 1));
           });
-          __publicField4(this, "reorder", (fromIndex, toIndex) => {
+          __publicField5(this, "reorder", (fromIndex, toIndex) => {
             return this.copy(move(this.items, [fromIndex], toIndex));
           });
-          __publicField4(this, "compareValue", (a2, b2) => {
+          __publicField5(this, "compareValue", (a2, b2) => {
             const indexA = this.indexOf(a2);
             const indexB = this.indexOf(b2);
             if (indexA < indexB) return -1;
             if (indexA > indexB) return 1;
             return 0;
           });
-          __publicField4(this, "range", (from, to) => {
+          __publicField5(this, "range", (from, to) => {
             let keys = [];
             let key = from;
             while (key != null) {
@@ -5131,7 +7588,7 @@ var Corex = (() => {
             }
             return [];
           });
-          __publicField4(this, "getValueRange", (from, to) => {
+          __publicField5(this, "getValueRange", (from, to) => {
             if (from && to) {
               if (this.compareValue(from, to) <= 0) {
                 return this.range(from, to);
@@ -5140,7 +7597,7 @@ var Corex = (() => {
             }
             return [];
           });
-          __publicField4(this, "toString", () => {
+          __publicField5(this, "toString", () => {
             let result = "";
             for (const item of this.items) {
               const value = this.getItemValue(item);
@@ -5151,7 +7608,7 @@ var Corex = (() => {
             }
             return result;
           });
-          __publicField4(this, "toJSON", () => {
+          __publicField5(this, "toJSON", () => {
             return {
               size: this.size,
               first: this.firstValue,
@@ -5189,46 +7646,284 @@ var Corex = (() => {
       match3 = (label, query2) => {
         return !!(label == null ? void 0 : label.toLowerCase().startsWith(query2.toLowerCase()));
       };
+      GridCollection = class extends ListCollection {
+        constructor(options) {
+          const { columnCount } = options;
+          super(options);
+          __publicField5(this, "columnCount");
+          __publicField5(this, "rows", null);
+          __publicField5(this, "getRows", () => {
+            if (!this.rows) {
+              this.rows = chunk([...this.items], this.columnCount);
+            }
+            return this.rows;
+          });
+          __publicField5(this, "getRowCount", () => {
+            return Math.ceil(this.items.length / this.columnCount);
+          });
+          __publicField5(this, "getCellIndex", (row, column) => {
+            return row * this.columnCount + column;
+          });
+          __publicField5(this, "getCell", (row, column) => {
+            return this.at(this.getCellIndex(row, column));
+          });
+          __publicField5(this, "getValueCell", (value) => {
+            const index = this.indexOf(value);
+            if (index === -1) return null;
+            const row = Math.floor(index / this.columnCount);
+            const column = index % this.columnCount;
+            return { row, column };
+          });
+          __publicField5(this, "getLastEnabledColumnIndex", (row) => {
+            for (let col = this.columnCount - 1; col >= 0; col--) {
+              const cell = this.getCell(row, col);
+              if (cell && !this.getItemDisabled(cell)) {
+                return col;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "getFirstEnabledColumnIndex", (row) => {
+            for (let col = 0; col < this.columnCount; col++) {
+              const cell = this.getCell(row, col);
+              if (cell && !this.getItemDisabled(cell)) {
+                return col;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "getPreviousRowValue", (value, loop = false) => {
+            const currentCell = this.getValueCell(value);
+            if (currentCell === null) return null;
+            const rows = this.getRows();
+            const rowCount = rows.length;
+            let prevRowIndex = currentCell.row;
+            let prevColumnIndex = currentCell.column;
+            for (let i2 = 1; i2 <= rowCount; i2++) {
+              prevRowIndex = prevIndex(rows, prevRowIndex, { loop });
+              const prevRow = rows[prevRowIndex];
+              if (!prevRow) continue;
+              const prevCell = prevRow[prevColumnIndex];
+              if (!prevCell) {
+                const lastColumnIndex = this.getLastEnabledColumnIndex(prevRowIndex);
+                if (lastColumnIndex != null) {
+                  prevColumnIndex = lastColumnIndex;
+                }
+              }
+              const cell = this.getCell(prevRowIndex, prevColumnIndex);
+              if (!this.getItemDisabled(cell)) {
+                return this.getItemValue(cell);
+              }
+            }
+            return this.firstValue;
+          });
+          __publicField5(this, "getNextRowValue", (value, loop = false) => {
+            const currentCell = this.getValueCell(value);
+            if (currentCell === null) return null;
+            const rows = this.getRows();
+            const rowCount = rows.length;
+            let nextRowIndex = currentCell.row;
+            let nextColumnIndex = currentCell.column;
+            for (let i2 = 1; i2 <= rowCount; i2++) {
+              nextRowIndex = nextIndex(rows, nextRowIndex, { loop });
+              const nextRow = rows[nextRowIndex];
+              if (!nextRow) continue;
+              const nextCell = nextRow[nextColumnIndex];
+              if (!nextCell) {
+                const lastColumnIndex = this.getLastEnabledColumnIndex(nextRowIndex);
+                if (lastColumnIndex != null) {
+                  nextColumnIndex = lastColumnIndex;
+                }
+              }
+              const cell = this.getCell(nextRowIndex, nextColumnIndex);
+              if (!this.getItemDisabled(cell)) {
+                return this.getItemValue(cell);
+              }
+            }
+            return this.lastValue;
+          });
+          this.columnCount = columnCount;
+        }
+      };
+      Selection = class _Selection extends Set {
+        constructor(values = []) {
+          super(values);
+          __publicField5(this, "selectionMode", "single");
+          __publicField5(this, "deselectable", true);
+          __publicField5(this, "copy", () => {
+            const clone = new _Selection([...this]);
+            return this.sync(clone);
+          });
+          __publicField5(this, "sync", (other) => {
+            other.selectionMode = this.selectionMode;
+            other.deselectable = this.deselectable;
+            return other;
+          });
+          __publicField5(this, "isEmpty", () => {
+            return this.size === 0;
+          });
+          __publicField5(this, "isSelected", (value) => {
+            if (this.selectionMode === "none" || value == null) {
+              return false;
+            }
+            return this.has(value);
+          });
+          __publicField5(this, "canSelect", (collection5, value) => {
+            return this.selectionMode !== "none" || !collection5.getItemDisabled(collection5.find(value));
+          });
+          __publicField5(this, "firstSelectedValue", (collection5) => {
+            let firstValue = null;
+            for (let value of this) {
+              if (!firstValue || collection5.compareValue(value, firstValue) < 0) {
+                firstValue = value;
+              }
+            }
+            return firstValue;
+          });
+          __publicField5(this, "lastSelectedValue", (collection5) => {
+            let lastValue = null;
+            for (let value of this) {
+              if (!lastValue || collection5.compareValue(value, lastValue) > 0) {
+                lastValue = value;
+              }
+            }
+            return lastValue;
+          });
+          __publicField5(this, "extendSelection", (collection5, anchorValue, targetValue) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single") {
+              return this.replaceSelection(collection5, targetValue);
+            }
+            const selection = this.copy();
+            const lastSelected = Array.from(this).pop();
+            for (let key of collection5.getValueRange(anchorValue, lastSelected != null ? lastSelected : targetValue)) {
+              selection.delete(key);
+            }
+            for (let key of collection5.getValueRange(targetValue, anchorValue)) {
+              if (this.canSelect(collection5, key)) {
+                selection.add(key);
+              }
+            }
+            return selection;
+          });
+          __publicField5(this, "toggleSelection", (collection5, value) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single" && !this.isSelected(value)) {
+              return this.replaceSelection(collection5, value);
+            }
+            const selection = this.copy();
+            if (selection.has(value)) {
+              selection.delete(value);
+            } else if (selection.canSelect(collection5, value)) {
+              selection.add(value);
+            }
+            return selection;
+          });
+          __publicField5(this, "replaceSelection", (collection5, value) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (value == null) {
+              return this;
+            }
+            if (!this.canSelect(collection5, value)) {
+              return this;
+            }
+            const selection = new _Selection([value]);
+            return this.sync(selection);
+          });
+          __publicField5(this, "setSelection", (values2) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            let selection = new _Selection();
+            for (let value of values2) {
+              if (value != null) {
+                selection.add(value);
+                if (this.selectionMode === "single") {
+                  break;
+                }
+              }
+            }
+            return this.sync(selection);
+          });
+          __publicField5(this, "clearSelection", () => {
+            const selection = this.copy();
+            if (selection.deselectable && selection.size > 0) {
+              selection.clear();
+            }
+            return selection;
+          });
+          __publicField5(this, "select", (collection5, value, forceToggle) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single") {
+              if (this.isSelected(value) && this.deselectable) {
+                return this.toggleSelection(collection5, value);
+              } else {
+                return this.replaceSelection(collection5, value);
+              }
+            } else if (this.selectionMode === "multiple" || forceToggle) {
+              return this.toggleSelection(collection5, value);
+            } else {
+              return this.replaceSelection(collection5, value);
+            }
+          });
+          __publicField5(this, "deselect", (value) => {
+            const selection = this.copy();
+            selection.delete(value);
+            return selection;
+          });
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual2(Array.from(this), Array.from(other));
+          });
+        }
+      };
       TreeCollection = class _TreeCollection {
         constructor(options) {
           this.options = options;
-          __publicField4(this, "rootNode");
-          __publicField4(this, "isEqual", (other) => {
+          __publicField5(this, "rootNode");
+          __publicField5(this, "isEqual", (other) => {
             return isEqual2(this.rootNode, other.rootNode);
           });
-          __publicField4(this, "getNodeChildren", (node) => {
+          __publicField5(this, "getNodeChildren", (node) => {
             var _a, _b, _c, _d;
             return (_d = (_c = (_b = (_a = this.options).nodeToChildren) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
           });
-          __publicField4(this, "resolveIndexPath", (valueOrIndexPath) => {
+          __publicField5(this, "resolveIndexPath", (valueOrIndexPath) => {
             return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
           });
-          __publicField4(this, "resolveNode", (valueOrIndexPath) => {
+          __publicField5(this, "resolveNode", (valueOrIndexPath) => {
             const indexPath = this.resolveIndexPath(valueOrIndexPath);
             return indexPath ? this.at(indexPath) : void 0;
           });
-          __publicField4(this, "getNodeChildrenCount", (node) => {
+          __publicField5(this, "getNodeChildrenCount", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
           });
-          __publicField4(this, "getNodeValue", (node) => {
+          __publicField5(this, "getNodeValue", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).nodeToValue) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToValue(node);
           });
-          __publicField4(this, "getNodeDisabled", (node) => {
+          __publicField5(this, "getNodeDisabled", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
           });
-          __publicField4(this, "stringify", (value) => {
+          __publicField5(this, "stringify", (value) => {
             const node = this.findNode(value);
             if (!node) return null;
             return this.stringifyNode(node);
           });
-          __publicField4(this, "stringifyNode", (node) => {
+          __publicField5(this, "stringifyNode", (node) => {
             var _a, _b, _c;
             return (_c = (_b = (_a = this.options).nodeToString) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToString(node);
           });
-          __publicField4(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
+          __publicField5(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
             let firstChild;
             visit(rootNode, {
               getChildren: this.getNodeChildren,
@@ -5244,7 +7939,7 @@ var Corex = (() => {
             });
             return firstChild;
           });
-          __publicField4(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
+          __publicField5(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
             let lastChild;
             visit(rootNode, {
               getChildren: this.getNodeChildren,
@@ -5259,42 +7954,42 @@ var Corex = (() => {
             });
             return lastChild;
           });
-          __publicField4(this, "at", (indexPath) => {
+          __publicField5(this, "at", (indexPath) => {
             return access(this.rootNode, indexPath, {
               getChildren: this.getNodeChildren
             });
           });
-          __publicField4(this, "findNode", (value, rootNode = this.rootNode) => {
+          __publicField5(this, "findNode", (value, rootNode = this.rootNode) => {
             return find(rootNode, {
               getChildren: this.getNodeChildren,
               predicate: (node) => this.getNodeValue(node) === value
             });
           });
-          __publicField4(this, "findNodes", (values, rootNode = this.rootNode) => {
+          __publicField5(this, "findNodes", (values, rootNode = this.rootNode) => {
             const v2 = new Set(values.filter((v22) => v22 != null));
             return findAll(rootNode, {
               getChildren: this.getNodeChildren,
               predicate: (node) => v2.has(this.getNodeValue(node))
             });
           });
-          __publicField4(this, "sort", (values) => {
+          __publicField5(this, "sort", (values) => {
             return values.reduce((acc, value) => {
               const indexPath = this.getIndexPath(value);
               if (indexPath) acc.push({ value, indexPath });
               return acc;
             }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
           });
-          __publicField4(this, "getIndexPath", (value) => {
+          __publicField5(this, "getIndexPath", (value) => {
             return findIndexPath(this.rootNode, {
               getChildren: this.getNodeChildren,
               predicate: (node) => this.getNodeValue(node) === value
             });
           });
-          __publicField4(this, "getValue", (indexPath) => {
+          __publicField5(this, "getValue", (indexPath) => {
             const node = this.at(indexPath);
             return node ? this.getNodeValue(node) : void 0;
           });
-          __publicField4(this, "getValuePath", (indexPath) => {
+          __publicField5(this, "getValuePath", (indexPath) => {
             if (!indexPath) return [];
             const valuePath = [];
             let currentPath = [...indexPath];
@@ -5305,7 +8000,7 @@ var Corex = (() => {
             }
             return valuePath;
           });
-          __publicField4(this, "getDepth", (value) => {
+          __publicField5(this, "getDepth", (value) => {
             var _a;
             const indexPath = findIndexPath(this.rootNode, {
               getChildren: this.getNodeChildren,
@@ -5313,17 +8008,17 @@ var Corex = (() => {
             });
             return (_a = indexPath == null ? void 0 : indexPath.length) != null ? _a : 0;
           });
-          __publicField4(this, "isSameNode", (node, other) => {
+          __publicField5(this, "isSameNode", (node, other) => {
             return this.getNodeValue(node) === this.getNodeValue(other);
           });
-          __publicField4(this, "isRootNode", (node) => {
+          __publicField5(this, "isRootNode", (node) => {
             return this.isSameNode(node, this.rootNode);
           });
-          __publicField4(this, "contains", (parentIndexPath, valueIndexPath) => {
+          __publicField5(this, "contains", (parentIndexPath, valueIndexPath) => {
             if (!parentIndexPath || !valueIndexPath) return false;
             return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
           });
-          __publicField4(this, "getNextNode", (value, opts = {}) => {
+          __publicField5(this, "getNextNode", (value, opts = {}) => {
             let found = false;
             let nextNode;
             visit(this.rootNode, {
@@ -5349,7 +8044,7 @@ var Corex = (() => {
             });
             return nextNode;
           });
-          __publicField4(this, "getPreviousNode", (value, opts = {}) => {
+          __publicField5(this, "getPreviousNode", (value, opts = {}) => {
             let previousNode;
             let found = false;
             visit(this.rootNode, {
@@ -5372,7 +8067,7 @@ var Corex = (() => {
             });
             return found ? previousNode : void 0;
           });
-          __publicField4(this, "getParentNodes", (valueOrIndexPath) => {
+          __publicField5(this, "getParentNodes", (valueOrIndexPath) => {
             var _a;
             const indexPath = (_a = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a.slice();
             if (!indexPath) return [];
@@ -5386,7 +8081,7 @@ var Corex = (() => {
             }
             return result;
           });
-          __publicField4(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
+          __publicField5(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
             const parentNode = this.resolveNode(valueOrIndexPath);
             if (!parentNode) return [];
             const result = [];
@@ -5400,18 +8095,18 @@ var Corex = (() => {
             });
             return result;
           });
-          __publicField4(this, "getDescendantValues", (valueOrIndexPath, options2) => {
+          __publicField5(this, "getDescendantValues", (valueOrIndexPath, options2) => {
             const children = this.getDescendantNodes(valueOrIndexPath, options2);
             return children.map((child) => this.getNodeValue(child));
           });
-          __publicField4(this, "getParentIndexPath", (indexPath) => {
+          __publicField5(this, "getParentIndexPath", (indexPath) => {
             return indexPath.slice(0, -1);
           });
-          __publicField4(this, "getParentNode", (valueOrIndexPath) => {
+          __publicField5(this, "getParentNode", (valueOrIndexPath) => {
             const indexPath = this.resolveIndexPath(valueOrIndexPath);
             return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
           });
-          __publicField4(this, "visit", (opts) => {
+          __publicField5(this, "visit", (opts) => {
             const _a = opts, { skip } = _a, rest = __objRest(_a, ["skip"]);
             visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
               getChildren: this.getNodeChildren,
@@ -5423,7 +8118,7 @@ var Corex = (() => {
               }
             }));
           });
-          __publicField4(this, "getPreviousSibling", (indexPath) => {
+          __publicField5(this, "getPreviousSibling", (indexPath) => {
             const parentNode = this.getParentNode(indexPath);
             if (!parentNode) return;
             const siblings = this.getNodeChildren(parentNode);
@@ -5434,7 +8129,7 @@ var Corex = (() => {
             }
             return;
           });
-          __publicField4(this, "getNextSibling", (indexPath) => {
+          __publicField5(this, "getNextSibling", (indexPath) => {
             const parentNode = this.getParentNode(indexPath);
             if (!parentNode) return;
             const siblings = this.getNodeChildren(parentNode);
@@ -5445,26 +8140,26 @@ var Corex = (() => {
             }
             return;
           });
-          __publicField4(this, "getSiblingNodes", (indexPath) => {
+          __publicField5(this, "getSiblingNodes", (indexPath) => {
             const parentNode = this.getParentNode(indexPath);
             return parentNode ? this.getNodeChildren(parentNode) : [];
           });
-          __publicField4(this, "getValues", (rootNode = this.rootNode) => {
+          __publicField5(this, "getValues", (rootNode = this.rootNode) => {
             const values = flatMap(rootNode, {
               getChildren: this.getNodeChildren,
               transform: (node) => [this.getNodeValue(node)]
             });
             return values.slice(1);
           });
-          __publicField4(this, "isValidDepth", (indexPath, depth) => {
+          __publicField5(this, "isValidDepth", (indexPath, depth) => {
             if (depth == null) return true;
             if (typeof depth === "function") return depth(indexPath.length);
             return indexPath.length === depth;
           });
-          __publicField4(this, "isBranchNode", (node) => {
+          __publicField5(this, "isBranchNode", (node) => {
             return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
           });
-          __publicField4(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
+          __publicField5(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
             let values = [];
             visit(rootNode, {
               getChildren: this.getNodeChildren,
@@ -5480,54 +8175,54 @@ var Corex = (() => {
             });
             return values;
           });
-          __publicField4(this, "flatten", (rootNode = this.rootNode) => {
+          __publicField5(this, "flatten", (rootNode = this.rootNode) => {
             return flatten(rootNode, { getChildren: this.getNodeChildren });
           });
-          __publicField4(this, "_create", (node, children) => {
+          __publicField5(this, "_create", (node, children) => {
             if (this.getNodeChildren(node).length > 0 || children.length > 0) {
               return __spreadProps(__spreadValues({}, node), { children });
             }
             return __spreadValues({}, node);
           });
-          __publicField4(this, "_insert", (rootNode, indexPath, nodes) => {
+          __publicField5(this, "_insert", (rootNode, indexPath, nodes) => {
             return this.copy(
               insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
             );
           });
-          __publicField4(this, "copy", (rootNode) => {
+          __publicField5(this, "copy", (rootNode) => {
             return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
           });
-          __publicField4(this, "_replace", (rootNode, indexPath, node) => {
+          __publicField5(this, "_replace", (rootNode, indexPath, node) => {
             return this.copy(
               replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
             );
           });
-          __publicField4(this, "_move", (rootNode, indexPaths, to) => {
+          __publicField5(this, "_move", (rootNode, indexPaths, to) => {
             return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
           });
-          __publicField4(this, "_remove", (rootNode, indexPaths) => {
+          __publicField5(this, "_remove", (rootNode, indexPaths) => {
             return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
           });
-          __publicField4(this, "replace", (indexPath, node) => {
+          __publicField5(this, "replace", (indexPath, node) => {
             return this._replace(this.rootNode, indexPath, node);
           });
-          __publicField4(this, "remove", (indexPaths) => {
+          __publicField5(this, "remove", (indexPaths) => {
             return this._remove(this.rootNode, indexPaths);
           });
-          __publicField4(this, "insertBefore", (indexPath, nodes) => {
+          __publicField5(this, "insertBefore", (indexPath, nodes) => {
             const parentNode = this.getParentNode(indexPath);
             return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
           });
-          __publicField4(this, "insertAfter", (indexPath, nodes) => {
+          __publicField5(this, "insertAfter", (indexPath, nodes) => {
             const parentNode = this.getParentNode(indexPath);
             if (!parentNode) return;
             const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
             return this._insert(this.rootNode, nextIndex2, nodes);
           });
-          __publicField4(this, "move", (fromIndexPaths, toIndexPath) => {
+          __publicField5(this, "move", (fromIndexPaths, toIndexPath) => {
             return this._move(this.rootNode, fromIndexPaths, toIndexPath);
           });
-          __publicField4(this, "filter", (predicate) => {
+          __publicField5(this, "filter", (predicate) => {
             const filteredRoot = filter(this.rootNode, {
               predicate,
               getChildren: this.getNodeChildren,
@@ -5535,7 +8230,7 @@ var Corex = (() => {
             });
             return this.copy(filteredRoot);
           });
-          __publicField4(this, "toJSON", () => {
+          __publicField5(this, "toJSON", () => {
             return this.getValues(this.rootNode);
           });
           this.rootNode = options.rootNode;
@@ -5566,9 +8261,9 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-GRHV6R4F.mjs
-  function clamp2(start, value, end) {
-    return max2(start, min2(value, end));
+  // ../priv/static/chunk-EENFWNGI.mjs
+  function clamp4(start, value, end) {
+    return max3(start, min3(value, end));
   }
   function evaluate(value, param) {
     return typeof value === "function" ? value(param) : value;
@@ -6157,12 +8852,12 @@ var Corex = (() => {
     const html = getDocumentElement2(element);
     const scroll = getNodeScroll(element);
     const body = element.ownerDocument.body;
-    const width = max2(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
-    const height = max2(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
+    const width = max3(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
+    const height = max3(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
     let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
     const y2 = -scroll.scrollTop;
     if (getComputedStyle3(body).direction === "rtl") {
-      x2 += max2(html.clientWidth, body.clientWidth) - width;
+      x2 += max3(html.clientWidth, body.clientWidth) - width;
     }
     return {
       width,
@@ -6171,7 +8866,7 @@ var Corex = (() => {
       y: y2
     };
   }
-  function getViewportRect(element, strategy) {
+  function getViewportRect2(element, strategy) {
     const win = getWindow2(element);
     const html = getDocumentElement2(element);
     const visualViewport = win.visualViewport;
@@ -6227,7 +8922,7 @@ var Corex = (() => {
   function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) {
     let rect;
     if (clippingAncestor === "viewport") {
-      rect = getViewportRect(element, strategy);
+      rect = getViewportRect2(element, strategy);
     } else if (clippingAncestor === "document") {
       rect = getDocumentRect(getDocumentElement2(element));
     } else if (isElement2(clippingAncestor)) {
@@ -6288,10 +8983,10 @@ var Corex = (() => {
     const firstClippingAncestor = clippingAncestors[0];
     const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
       const rect = getClientRectFromClippingAncestor(element, clippingAncestor, strategy);
-      accRect.top = max2(rect.top, accRect.top);
-      accRect.right = min2(rect.right, accRect.right);
-      accRect.bottom = min2(rect.bottom, accRect.bottom);
-      accRect.left = max2(rect.left, accRect.left);
+      accRect.top = max3(rect.top, accRect.top);
+      accRect.right = min3(rect.right, accRect.right);
+      accRect.bottom = min3(rect.bottom, accRect.bottom);
+      accRect.left = max3(rect.left, accRect.left);
       return accRect;
     }, getClientRectFromClippingAncestor(element, firstClippingAncestor, strategy));
     return {
@@ -6433,7 +9128,7 @@ var Corex = (() => {
       const rootMargin = -insetTop + "px " + -insetRight + "px " + -insetBottom + "px " + -insetLeft + "px";
       const options = {
         rootMargin,
-        threshold: max2(0, min2(1, threshold)) || 1
+        threshold: max3(0, min3(1, threshold)) || 1
       };
       let isFirstUpdate = true;
       function handleObserve(entries) {
@@ -6815,14 +9510,14 @@ var Corex = (() => {
       }
     };
   }
-  var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_GRHV6R4F = __esm({
-    "../priv/static/chunk-GRHV6R4F.mjs"() {
+  var sides, min3, max3, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
+  var init_chunk_EENFWNGI = __esm({
+    "../priv/static/chunk-EENFWNGI.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
+      init_chunk_IXOYOLUJ();
       sides = ["top", "right", "bottom", "left"];
-      min2 = Math.min;
-      max2 = Math.max;
+      min3 = Math.min;
+      max3 = Math.max;
       round2 = Math.round;
       floor2 = Math.floor;
       createCoords = (v2) => ({
@@ -6968,12 +9663,12 @@ var Corex = (() => {
             }
             const centerToReference = endDiff / 2 - startDiff / 2;
             const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
-            const minPadding = min2(paddingObject[minProp], largestPossiblePadding);
-            const maxPadding = min2(paddingObject[maxProp], largestPossiblePadding);
+            const minPadding = min3(paddingObject[minProp], largestPossiblePadding);
+            const maxPadding = min3(paddingObject[maxProp], largestPossiblePadding);
             const min$1 = minPadding;
             const max22 = clientSize - arrowDimensions[length] - maxPadding;
             const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-            const offset3 = clamp2(min$1, center, max22);
+            const offset3 = clamp4(min$1, center, max22);
             const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
             const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max22 : 0;
             return {
@@ -7238,14 +9933,14 @@ var Corex = (() => {
                 const maxSide = mainAxis === "y" ? "bottom" : "right";
                 const min23 = mainAxisCoord + overflow[minSide];
                 const max22 = mainAxisCoord - overflow[maxSide];
-                mainAxisCoord = clamp2(min23, mainAxisCoord, max22);
+                mainAxisCoord = clamp4(min23, mainAxisCoord, max22);
               }
               if (checkCrossAxis) {
                 const minSide = crossAxis === "y" ? "top" : "left";
                 const maxSide = crossAxis === "y" ? "bottom" : "right";
                 const min23 = crossAxisCoord + overflow[minSide];
                 const max22 = crossAxisCoord - overflow[maxSide];
-                crossAxisCoord = clamp2(min23, crossAxisCoord, max22);
+                crossAxisCoord = clamp4(min23, crossAxisCoord, max22);
               }
               const limitedCoords = limiter.fn(__spreadProps(__spreadValues({}, state2), {
                 [mainAxis]: mainAxisCoord,
@@ -7370,8 +10065,8 @@ var Corex = (() => {
               }
               const maximumClippingHeight = height - overflow.top - overflow.bottom;
               const maximumClippingWidth = width - overflow.left - overflow.right;
-              const overflowAvailableHeight = min2(height - overflow[heightSide], maximumClippingHeight);
-              const overflowAvailableWidth = min2(width - overflow[widthSide], maximumClippingWidth);
+              const overflowAvailableHeight = min3(height - overflow[heightSide], maximumClippingHeight);
+              const overflowAvailableWidth = min3(width - overflow[widthSide], maximumClippingWidth);
               const noShift = !state2.middlewareData.shift;
               let availableHeight = overflowAvailableHeight;
               let availableWidth = overflowAvailableWidth;
@@ -7382,14 +10077,14 @@ var Corex = (() => {
                 availableHeight = maximumClippingHeight;
               }
               if (noShift && !alignment) {
-                const xMin = max2(overflow.left, 0);
-                const xMax = max2(overflow.right, 0);
-                const yMin = max2(overflow.top, 0);
-                const yMax = max2(overflow.bottom, 0);
+                const xMin = max3(overflow.left, 0);
+                const xMax = max3(overflow.right, 0);
+                const yMin = max3(overflow.top, 0);
+                const yMax = max3(overflow.bottom, 0);
                 if (isYAxis) {
-                  availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max2(overflow.left, overflow.right));
+                  availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max3(overflow.left, overflow.right));
                 } else {
-                  availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max2(overflow.top, overflow.bottom));
+                  availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max3(overflow.top, overflow.bottom));
                 }
               }
               yield apply(__spreadProps(__spreadValues({}, state2), {
@@ -7522,7 +10217,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-BPSX7Z7Y.mjs
+  // ../priv/static/chunk-ER3INIAI.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -7738,6 +10433,18 @@ var Corex = (() => {
     const event = new win.CustomEvent(type, init);
     return el.dispatchEvent(event);
   }
+  var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
+  var init_chunk_ER3INIAI = __esm({
+    "../priv/static/chunk-ER3INIAI.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      POINTER_OUTSIDE_EVENT = "pointerdown.outside";
+      FOCUS_OUTSIDE_EVENT = "focus.outside";
+      isPointerEvent = (event) => "clientY" in event;
+    }
+  });
+
+  // ../priv/static/chunk-RR7TJIQ5.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -7895,14 +10602,12 @@ var Corex = (() => {
       cleanups.forEach((fn) => fn == null ? void 0 : fn());
     };
   }
-  var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent, LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_BPSX7Z7Y = __esm({
-    "../priv/static/chunk-BPSX7Z7Y.mjs"() {
+  var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
+  var init_chunk_RR7TJIQ5 = __esm({
+    "../priv/static/chunk-RR7TJIQ5.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
-      POINTER_OUTSIDE_EVENT = "pointerdown.outside";
-      FOCUS_OUTSIDE_EVENT = "focus.outside";
-      isPointerEvent = (event) => "clientY" in event;
+      init_chunk_ER3INIAI();
+      init_chunk_IXOYOLUJ();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -8031,7 +10736,7 @@ var Corex = (() => {
   __export(combobox_exports, {
     Combobox: () => ComboboxHook
   });
-  function connect5(service, normalize) {
+  function connect8(service, normalize) {
     const { context, prop, state: state2, send, scope, computed, event } = service;
     const translations = prop("translations");
     const collection22 = prop("collection");
@@ -8047,10 +10752,10 @@ var Corex = (() => {
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: context.get("currentPlacement")
     }));
-    function getItemState(props22) {
-      const disabled2 = collection22.getItemDisabled(props22.item);
-      const value = collection22.getItemValue(props22.item);
-      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props22.item)}`);
+    function getItemState(props26) {
+      const disabled2 = collection22.getItemDisabled(props26.item);
+      const value = collection22.getItemValue(props26.item);
+      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
       return {
         value,
         disabled: Boolean(disabled2 || disabled2),
@@ -8109,18 +10814,18 @@ var Corex = (() => {
         send({ type: nextOpen ? "OPEN" : "CLOSE", src: reason });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.root.attrs), {
           dir: prop("dir"),
-          id: getRootId5(scope),
+          id: getRootId8(scope),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts5.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts8.label.attrs), {
           dir: prop("dir"),
           htmlFor: getInputId2(scope),
-          id: getLabelId3(scope),
+          id: getLabelId4(scope),
           "data-readonly": dataAttr(readOnly),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -8135,9 +10840,9 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.control.attrs), {
           dir: prop("dir"),
-          id: getControlId2(scope),
+          id: getControlId3(scope),
           "data-state": open ? "open" : "closed",
           "data-focus": dataAttr(focused),
           "data-disabled": dataAttr(disabled),
@@ -8145,14 +10850,14 @@ var Corex = (() => {
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId(scope),
           style: popperStyles.floating
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadProps(__spreadValues({}, parts5.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts8.input.attrs), {
           dir: prop("dir"),
           "aria-invalid": ariaAttr(invalid),
           "data-invalid": dataAttr(invalid),
@@ -8175,7 +10880,7 @@ var Corex = (() => {
           "aria-controls": getContentId2(scope),
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
-          "aria-activedescendant": highlightedValue ? getItemId2(scope, highlightedValue) : void 0,
+          "aria-activedescendant": highlightedValue ? getItemId3(scope, highlightedValue) : void 0,
           onClick(event2) {
             if (event2.defaultPrevented) return;
             if (!prop("openOnClick")) return;
@@ -8251,24 +10956,24 @@ var Corex = (() => {
           }
         }));
       },
-      getTriggerProps(props22 = {}) {
-        return normalize.button(__spreadProps(__spreadValues({}, parts5.trigger.attrs), {
+      getTriggerProps(props26 = {}) {
+        return normalize.button(__spreadProps(__spreadValues({}, parts8.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId2(scope),
           "aria-haspopup": composite ? "listbox" : "dialog",
           type: "button",
-          tabIndex: props22.focusable ? void 0 : -1,
+          tabIndex: props26.focusable ? void 0 : -1,
           "aria-label": translations.triggerLabel,
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
           "aria-controls": open ? getContentId2(scope) : void 0,
           disabled,
           "data-invalid": dataAttr(invalid),
-          "data-focusable": dataAttr(props22.focusable),
+          "data-focusable": dataAttr(props26.focusable),
           "data-readonly": dataAttr(readOnly),
           "data-disabled": dataAttr(disabled),
           onFocus() {
-            if (!props22.focusable) return;
+            if (!props26.focusable) return;
             send({ type: "INPUT.FOCUS", src: "trigger" });
           },
           onClick(event2) {
@@ -8308,7 +11013,7 @@ var Corex = (() => {
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.content.attrs), {
           dir: prop("dir"),
           id: getContentId2(scope),
           role: !composite ? "dialog" : "listbox",
@@ -8316,7 +11021,7 @@ var Corex = (() => {
           hidden: !open,
           "data-state": open ? "open" : "closed",
           "data-placement": context.get("currentPlacement"),
-          "aria-labelledby": getLabelId3(scope),
+          "aria-labelledby": getLabelId4(scope),
           "aria-multiselectable": prop("multiple") && composite ? true : void 0,
           "data-empty": dataAttr(collection22.size === 0),
           onPointerDown(event2) {
@@ -8326,15 +11031,15 @@ var Corex = (() => {
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.list.attrs), {
           role: !composite ? "listbox" : void 0,
           "data-empty": dataAttr(collection22.size === 0),
-          "aria-labelledby": getLabelId3(scope),
+          "aria-labelledby": getLabelId4(scope),
           "aria-multiselectable": prop("multiple") && !composite ? true : void 0
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts5.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts8.clearTrigger.attrs), {
           dir: prop("dir"),
           id: getClearTriggerId(scope),
           type: "button",
@@ -8356,12 +11061,12 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props22) {
-        const itemState = getItemState(props22);
+      getItemProps(props26) {
+        const itemState = getItemState(props26);
         const value = itemState.value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.item.attrs), {
           dir: prop("dir"),
-          id: getItemId2(scope, value),
+          id: getItemId3(scope, value),
           role: "option",
           tabIndex: -1,
           "data-highlighted": dataAttr(itemState.highlighted),
@@ -8376,7 +11081,7 @@ var Corex = (() => {
             send({ type: "ITEM.POINTER_MOVE", value });
           },
           onPointerLeave() {
-            if (props22.persistFocus) return;
+            if (props26.persistFocus) return;
             if (itemState.disabled) return;
             const prev2 = event.previous();
             const mouseMoved = prev2 == null ? void 0 : prev2.type.includes("POINTER");
@@ -8392,38 +11097,38 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props22) {
-        const itemState = getItemState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.itemText.attrs), {
+      getItemTextProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
           dir: prop("dir"),
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props22) {
-        const itemState = getItemState(props22);
+      getItemIndicatorProps(props26) {
+        const itemState = getItemState(props26);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts5.itemIndicator.attrs), {
+        }, parts8.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
-      getItemGroupProps(props22) {
-        const { id } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.itemGroup.attrs), {
+      getItemGroupProps(props26) {
+        const { id } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
           dir: prop("dir"),
-          id: getItemGroupId(scope, id),
+          id: getItemGroupId2(scope, id),
           "aria-labelledby": getItemGroupLabelId(scope, id),
           "data-empty": dataAttr(collection22.size === 0),
           role: "group"
         }));
       },
-      getItemGroupLabelProps(props22) {
-        const { htmlFor } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts5.itemGroupLabel.attrs), {
+      getItemGroupLabelProps(props26) {
+        const { htmlFor } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
           dir: prop("dir"),
           id: getItemGroupLabelId(scope, htmlFor),
           role: "presentation"
@@ -8445,15 +11150,15 @@ var Corex = (() => {
     }
     return result;
   }
-  var anatomy5, parts5, collection, getRootId5, getLabelId3, getControlId2, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId, getItemGroupLabelId, getItemId2, getContentEl2, getInputEl2, getPositionerEl, getControlEl, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine5, props5, splitProps5, itemGroupLabelProps, splitItemGroupLabelProps, itemGroupProps, splitItemGroupProps, itemProps2, splitItemProps2, Combobox, ComboboxHook;
+  var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, props8, splitProps8, itemGroupLabelProps, splitItemGroupLabelProps, itemGroupProps, splitItemGroupProps, itemProps3, splitItemProps3, Combobox, ComboboxHook;
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_2DWEYSRA();
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
-      anatomy5 = createAnatomy("combobox").parts(
+      init_chunk_2PO3TGCF();
+      init_chunk_EENFWNGI();
+      init_chunk_RR7TJIQ5();
+      init_chunk_IXOYOLUJ();
+      anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
         "content",
@@ -8469,22 +11174,22 @@ var Corex = (() => {
         "positioner",
         "trigger"
       );
-      parts5 = anatomy5.build();
+      parts8 = anatomy8.build();
       collection = (options) => {
         return new ListCollection(options);
       };
       collection.empty = () => {
         return new ListCollection({ items: [] });
       };
-      getRootId5 = (ctx) => {
+      getRootId8 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `combobox:${ctx.id}`;
       };
-      getLabelId3 = (ctx) => {
+      getLabelId4 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `combobox:${ctx.id}:label`;
       };
-      getControlId2 = (ctx) => {
+      getControlId3 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `combobox:${ctx.id}:control`;
       };
@@ -8508,7 +11213,7 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.clearTrigger) != null ? _b : `combobox:${ctx.id}:clear-btn`;
       };
-      getItemGroupId = (ctx, id) => {
+      getItemGroupId2 = (ctx, id) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroup) == null ? void 0 : _b.call(_a, id)) != null ? _c : `combobox:${ctx.id}:optgroup:${id}`;
       };
@@ -8516,14 +11221,14 @@ var Corex = (() => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroupLabel) == null ? void 0 : _b.call(_a, id)) != null ? _c : `combobox:${ctx.id}:optgroup-label:${id}`;
       };
-      getItemId2 = (ctx, id) => {
+      getItemId3 = (ctx, id) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, id)) != null ? _c : `combobox:${ctx.id}:option:${id}`;
       };
       getContentEl2 = (ctx) => ctx.getById(getContentId2(ctx));
       getInputEl2 = (ctx) => ctx.getById(getInputId2(ctx));
       getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
-      getControlEl = (ctx) => ctx.getById(getControlId2(ctx));
+      getControlEl2 = (ctx) => ctx.getById(getControlId3(ctx));
       getTriggerEl = (ctx) => ctx.getById(getTriggerId2(ctx));
       getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
       getItemEl = (ctx, value) => {
@@ -8543,18 +11248,18 @@ var Corex = (() => {
       };
       ({ guards, createMachine: createMachine2, choose } = setup());
       ({ and: and2, not: not3 } = guards);
-      machine5 = createMachine2({
-        props({ props: props22 }) {
+      machine8 = createMachine2({
+        props({ props: props26 }) {
           return __spreadProps(__spreadValues({
             loopFocus: true,
             openOnClick: false,
             defaultValue: [],
             defaultInputValue: "",
-            closeOnSelect: !props22.multiple,
+            closeOnSelect: !props26.multiple,
             allowCustomValue: false,
             alwaysSubmitOnEnter: false,
             inputBehavior: "none",
-            selectionBehavior: props22.multiple ? "clear" : "replace",
+            selectionBehavior: props26.multiple ? "clear" : "replace",
             openOnKeyPress: true,
             openOnChange: true,
             composite: true,
@@ -8562,15 +11267,15 @@ var Corex = (() => {
               clickIfLink(node);
             },
             collection: collection.empty()
-          }, props22), {
+          }, props26), {
             positioning: __spreadValues({
               placement: "bottom",
               sameWidth: true
-            }, props22.positioning),
+            }, props26.positioning),
             translations: __spreadValues({
               triggerLabel: "Toggle suggestions",
               clearTriggerLabel: "Clear value"
-            }, props22.translations)
+            }, props26.translations)
           });
         },
         initialState({ prop }) {
@@ -9251,7 +11956,7 @@ var Corex = (() => {
               });
             },
             trackPlacement({ context, prop, scope }) {
-              const anchorEl = () => getControlEl(scope) || getTriggerEl(scope);
+              const anchorEl = () => getControlEl2(scope) || getTriggerEl(scope);
               const positionerEl = () => getPositionerEl(scope);
               context.set("currentPlacement", prop("positioning").placement);
               return getPlacement(anchorEl, positionerEl, __spreadProps(__spreadValues({}, prop("positioning")), {
@@ -9299,7 +12004,7 @@ var Corex = (() => {
           },
           actions: {
             reposition({ context, prop, scope, event }) {
-              const controlEl = () => getControlEl(scope);
+              const controlEl = () => getControlEl2(scope);
               const positionerEl = () => getPositionerEl(scope);
               getPlacement(controlEl, positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 defer: true,
@@ -9577,7 +12282,7 @@ var Corex = (() => {
           }
         }
       });
-      props5 = createProps()([
+      props8 = createProps()([
         "allowCustomValue",
         "autoFocus",
         "closeOnSelect",
@@ -9625,13 +12330,13 @@ var Corex = (() => {
         "value",
         "alwaysSubmitOnEnter"
       ]);
-      splitProps5 = createSplitProps(props5);
+      splitProps8 = createSplitProps(props8);
       itemGroupLabelProps = createProps()(["htmlFor"]);
       splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
       itemGroupProps = createProps()(["id"]);
       splitItemGroupProps = createSplitProps(itemGroupProps);
-      itemProps2 = createProps()(["item", "persistFocus"]);
-      splitItemProps2 = createSplitProps(itemProps2);
+      itemProps3 = createProps()(["item", "persistFocus"]);
+      splitItemProps3 = createSplitProps(itemProps3);
       Combobox = class extends Component {
         constructor() {
           super(...arguments);
@@ -9674,9 +12379,9 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
+        initMachine(props26) {
           const getCollection = this.getCollection.bind(this);
-          return new VanillaMachine(machine5, __spreadProps(__spreadValues({}, props22), {
+          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props26), {
             get collection() {
               return getCollection();
             },
@@ -9684,8 +12389,8 @@ var Corex = (() => {
               if (details.open) {
                 this.options = this.allOptions;
               }
-              if (props22.onOpenChange) {
-                props22.onOpenChange(details);
+              if (props26.onOpenChange) {
+                props26.onOpenChange(details);
               }
             },
             onInputValueChange: (details) => {
@@ -9693,14 +12398,14 @@ var Corex = (() => {
                 (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
               );
               this.options = filtered.length > 0 ? filtered : this.allOptions;
-              if (props22.onInputValueChange) {
-                props22.onInputValueChange(details);
+              if (props26.onInputValueChange) {
+                props26.onInputValueChange(details);
               }
             }
           }));
         }
         initApi() {
-          return connect5(this.machine.service, normalizeProps);
+          return connect8(this.machine.service, normalizeProps);
         }
         renderItems() {
           var _a, _b, _c;
@@ -9804,7 +12509,7 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => item.group !== void 0);
-          const props22 = __spreadProps(__spreadValues({
+          const props26 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             disabled: getBoolean(el, "disabled"),
@@ -9949,7 +12654,7 @@ var Corex = (() => {
               }
             }
           });
-          const combobox = new Combobox(el, props22);
+          const combobox = new Combobox(el, props26);
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
@@ -10259,9 +12964,9 @@ var Corex = (() => {
       });
       $11d87f3f76e88657$var$formattersByTimeZone.set(timeZone, formatter);
     }
-    let parts22 = formatter.formatToParts(new Date(ms));
+    let parts27 = formatter.formatToParts(new Date(ms));
     let namedParts = {};
-    for (let part of parts22) if (part.type !== "literal") namedParts[part.type] = part.value;
+    for (let part of parts27) if (part.type !== "literal") namedParts[part.type] = part.value;
     return {
       // Firefox returns B instead of BC... https://bugzilla.mozilla.org/show_bug.cgi?id=1752253
       year: namedParts.era === "BC" || namedParts.era === "B" ? -namedParts.year + 1 : +namedParts.year,
@@ -10282,8 +12987,8 @@ var Corex = (() => {
     return found.filter((absolute) => $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute));
   }
   function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
-    let parts22 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
-    return date.year === parts22.year && date.month === parts22.month && date.day === parts22.day && date.hour === parts22.hour && date.minute === parts22.minute && date.second === parts22.second;
+    let parts27 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
+    return date.year === parts27.year && date.month === parts27.month && date.day === parts27.day && date.hour === parts27.hour && date.minute === parts27.minute && date.second === parts27.second;
   }
   function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
     let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
@@ -10895,10 +13600,10 @@ var Corex = (() => {
     });
   }
   function formatRange(startDate, endDate, formatter, toString, timeZone) {
-    let parts22 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
+    let parts27 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
     let separatorIndex = -1;
-    for (let i2 = 0; i2 < parts22.length; i2++) {
-      let part = parts22[i2];
+    for (let i2 = 0; i2 < parts27.length; i2++) {
+      let part = parts27[i2];
       if (part.source === "shared" && part.type === "literal") {
         separatorIndex = i2;
       } else if (part.source === "endRange") {
@@ -10907,11 +13612,11 @@ var Corex = (() => {
     }
     let start = "";
     let end = "";
-    for (let i2 = 0; i2 < parts22.length; i2++) {
+    for (let i2 = 0; i2 < parts27.length; i2++) {
       if (i2 < separatorIndex) {
-        start += parts22[i2].value;
+        start += parts27[i2].value;
       } else if (i2 > separatorIndex) {
-        end += parts22[i2].value;
+        end += parts27[i2].value;
       }
     }
     return toString(start, end);
@@ -11139,8 +13844,8 @@ var Corex = (() => {
   }
   function createRegex(locale, timeZone) {
     const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone });
-    const parts22 = formatter.formatToParts(new Date(2e3, 11, 25));
-    return parts22.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
+    const parts27 = formatter.formatToParts(new Date(2e3, 11, 25));
+    return parts27.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
   }
   function extract(pattern, str) {
     var _a;
@@ -11272,8 +13977,8 @@ var Corex = (() => {
   }
   function getLocaleSeparator(locale) {
     const dateFormatter = new Intl.DateTimeFormat(locale);
-    const parts22 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
-    const literalPart = parts22.find((part) => part.type === "literal");
+    const parts27 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
+    const literalPart = parts27.find((part) => part.type === "literal");
     return literalPart ? literalPart.value : "/";
   }
   function viewToNumber(view, fallback2) {
@@ -11305,7 +14010,7 @@ var Corex = (() => {
   function eachView(cb) {
     views.forEach((view) => cb(view));
   }
-  function connect6(service, normalize) {
+  function connect9(service, normalize) {
     const { state: state2, context, prop, send, computed, scope } = service;
     const startValue = context.get("startValue");
     const endValue = computed("endValue");
@@ -11337,8 +14042,8 @@ var Corex = (() => {
       const numOfWeeks = prop("fixedWeeks") ? 6 : void 0;
       return getMonthDays(from, locale, numOfWeeks, startOfWeek);
     }
-    function getMonths(props22 = {}) {
-      const { format } = props22;
+    function getMonths(props26 = {}) {
+      const { format } = props26;
       return getMonthNames(locale, format).map((label, index) => {
         const value = index + 1;
         const dateValue = focusedValue.set({ month: value });
@@ -11366,14 +14071,14 @@ var Corex = (() => {
       const date = startValue != null ? startValue : getTodayDate(timeZone);
       send({ type: "FOCUS.SET", value: date.set({ year }) });
     }
-    function getYearTableCellState(props22) {
-      const { value, disabled: disabled2 } = props22;
+    function getYearTableCellState(props26) {
+      const { value, disabled: disabled2 } = props26;
       const dateValue = focusedValue.set({ year: value });
       const decadeYears = getDecadeRange(startValue.year, { strict: true });
       const isOutsideVisibleRange = !decadeYears.includes(value);
       const isOutsideRange = isValueWithinRange(value, min4 == null ? void 0 : min4.year, max4 == null ? void 0 : max4.year);
       const cellState = {
-        focused: focusedValue.year === props22.value,
+        focused: focusedValue.year === props26.value,
         selectable: isOutsideVisibleRange || isOutsideRange,
         outsideRange: isOutsideVisibleRange,
         selected: !!selectedValue.find((date) => date && date.year === value),
@@ -11386,12 +14091,12 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getMonthTableCellState(props22) {
-      const { value, disabled: disabled2 } = props22;
+    function getMonthTableCellState(props26) {
+      const { value, disabled: disabled2 } = props26;
       const dateValue = focusedValue.set({ month: value });
       const formatter = getMonthFormatter(locale, timeZone);
       const cellState = {
-        focused: focusedValue.month === props22.value,
+        focused: focusedValue.month === props26.value,
         selectable: !isDateOutsideRange(dateValue, min4, max4),
         selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
         valueText: formatter.format(dateValue.toDate(timeZone)),
@@ -11403,8 +14108,8 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getDayTableCellState(props22) {
-      const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props22;
+    function getDayTableCellState(props26) {
+      const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props26;
       const formatter = getDayFormatter(locale, timeZone);
       const unitDuration = getUnitDuration(computed("visibleDuration"));
       const outsideDaySelectable = prop("outsideDaySelectable");
@@ -11446,8 +14151,8 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getTableId2(props22) {
-      const { view = "day", id } = props22;
+    function getTableId2(props26) {
+      const { view = "day", id } = props26;
       return [view, id].filter(Boolean).join(" ");
     }
     return {
@@ -11515,8 +14220,8 @@ var Corex = (() => {
       focusYear,
       getYears,
       getMonths,
-      getYearsGrid(props22 = {}) {
-        const { columns = 1 } = props22;
+      getYearsGrid(props26 = {}) {
+        const { columns = 1 } = props26;
         const years = getDecadeRange(startValue.year, { strict: true }).map((year) => ({
           label: year.toString(),
           value: year,
@@ -11528,8 +14233,8 @@ var Corex = (() => {
         const years = getDecadeRange(startValue.year, { strict: true });
         return { start: years.at(0), end: years.at(-1) };
       },
-      getMonthsGrid(props22 = {}) {
-        const { columns = 1, format } = props22;
+      getMonthsGrid(props26 = {}) {
+        const { columns = 1, format } = props26;
         return chunk(getMonths({ format }), columns);
       },
       format(value, opts = { month: "long", year: "numeric" }) {
@@ -11545,19 +14250,19 @@ var Corex = (() => {
         send({ type: "GOTO.PREV", view: context.get("view") });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.root.attrs), {
           dir: prop("dir"),
-          id: getRootId6(scope),
+          id: getRootId9(scope),
           "data-state": open ? "open" : "closed",
           "data-disabled": dataAttr(disabled),
           "data-readonly": dataAttr(readOnly),
           "data-empty": dataAttr(empty)
         }));
       },
-      getLabelProps(props22 = {}) {
-        const { index = 0 } = props22;
-        return normalize.label(__spreadProps(__spreadValues({}, parts6.label.attrs), {
-          id: getLabelId4(scope, index),
+      getLabelProps(props26 = {}) {
+        const { index = 0 } = props26;
+        return normalize.label(__spreadProps(__spreadValues({}, parts9.label.attrs), {
+          id: getLabelId5(scope, index),
           dir: prop("dir"),
           htmlFor: getInputId3(scope, index),
           "data-state": open ? "open" : "closed",
@@ -11567,20 +14272,20 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.control.attrs), {
           dir: prop("dir"),
-          id: getControlId3(scope),
+          id: getControlId4(scope),
           "data-disabled": dataAttr(disabled),
           "data-placeholder-shown": dataAttr(empty)
         }));
       },
       getRangeTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.rangeText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.rangeText.attrs), {
           dir: prop("dir")
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.content.attrs), {
           hidden: !open,
           dir: prop("dir"),
           "data-state": open ? "open" : "closed",
@@ -11593,10 +14298,10 @@ var Corex = (() => {
           "aria-label": translations.content
         }));
       },
-      getTableProps(props22 = {}) {
-        const { view = "day", columns = view === "day" ? 7 : 4 } = props22;
-        const uid = getTableId2(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.table.attrs), {
+      getTableProps(props26 = {}) {
+        const { view = "day", columns = view === "day" ? 7 : 4 } = props26;
+        const uid = getTableId2(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.table.attrs), {
           role: "grid",
           "data-columns": columns,
           "aria-roledescription": getRoleDescription(view),
@@ -11667,43 +14372,43 @@ var Corex = (() => {
           }
         }));
       },
-      getTableHeadProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableHead.attrs), {
+      getTableHeadProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableHead.attrs), {
           "aria-hidden": true,
           dir: prop("dir"),
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableHeaderProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableHeader.attrs), {
+      getTableHeaderProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableHeader.attrs), {
           dir: prop("dir"),
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableBodyProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableBody.attrs), {
+      getTableBodyProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableBody.attrs), {
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableRowProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableRow.attrs), {
+      getTableRowProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableRow.attrs), {
           "aria-disabled": ariaAttr(disabled),
           "data-disabled": dataAttr(disabled),
           "data-view": view
         }));
       },
       getDayTableCellState,
-      getDayTableCellProps(props22) {
-        const { value } = props22;
-        const cellState = getDayTableCellState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableCell.attrs), {
+      getDayTableCellProps(props26) {
+        const { value } = props26;
+        const cellState = getDayTableCellState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           role: "gridcell",
           "aria-disabled": ariaAttr(!cellState.selectable),
           "aria-selected": cellState.selected || cellState.inRange,
@@ -11712,10 +14417,10 @@ var Corex = (() => {
           "data-value": value.toString()
         }));
       },
-      getDayTableCellTriggerProps(props22) {
-        const { value } = props22;
-        const cellState = getDayTableCellState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableCellTrigger.attrs), {
+      getDayTableCellTriggerProps(props26) {
+        const { value } = props26;
+        const cellState = getDayTableCellState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCellTrigger.attrs), {
           id: getCellTriggerId(scope, value.toString()),
           role: "button",
           dir: prop("dir"),
@@ -11753,10 +14458,10 @@ var Corex = (() => {
         }));
       },
       getMonthTableCellState,
-      getMonthTableCellProps(props22) {
-        const { value, columns } = props22;
-        const cellState = getMonthTableCellState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableCell.attrs), {
+      getMonthTableCellProps(props26) {
+        const { value, columns } = props26;
+        const cellState = getMonthTableCellState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
           role: "gridcell",
@@ -11766,10 +14471,10 @@ var Corex = (() => {
           "data-value": value
         }));
       },
-      getMonthTableCellTriggerProps(props22) {
-        const { value } = props22;
-        const cellState = getMonthTableCellState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableCellTrigger.attrs), {
+      getMonthTableCellTriggerProps(props26) {
+        const { value } = props26;
+        const cellState = getMonthTableCellState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCellTrigger.attrs), {
           dir: prop("dir"),
           role: "button",
           id: getCellTriggerId(scope, value.toString()),
@@ -11798,10 +14503,10 @@ var Corex = (() => {
         }));
       },
       getYearTableCellState,
-      getYearTableCellProps(props22) {
-        const { value, columns } = props22;
-        const cellState = getYearTableCellState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableCell.attrs), {
+      getYearTableCellProps(props26) {
+        const { value, columns } = props26;
+        const cellState = getYearTableCellState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
           role: "gridcell",
@@ -11811,10 +14516,10 @@ var Corex = (() => {
           "data-value": value
         }));
       },
-      getYearTableCellTriggerProps(props22) {
-        const { value } = props22;
-        const cellState = getYearTableCellState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.tableCellTrigger.attrs), {
+      getYearTableCellTriggerProps(props26) {
+        const { value } = props26;
+        const cellState = getYearTableCellState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCellTrigger.attrs), {
           dir: prop("dir"),
           role: "button",
           id: getCellTriggerId(scope, value.toString()),
@@ -11842,12 +14547,12 @@ var Corex = (() => {
           } : void 0
         }));
       },
-      getNextTriggerProps(props22 = {}) {
-        const { view = "day" } = props22;
+      getNextTriggerProps(props26 = {}) {
+        const { view = "day" } = props26;
         const isDisabled = disabled || !computed("isNextVisibleRangeValid");
-        return normalize.button(__spreadProps(__spreadValues({}, parts6.nextTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.nextTrigger.attrs), {
           dir: prop("dir"),
-          id: getNextTriggerId(scope, view),
+          id: getNextTriggerId2(scope, view),
           type: "button",
           "aria-label": translations.nextTrigger(view),
           disabled: isDisabled,
@@ -11858,12 +14563,12 @@ var Corex = (() => {
           }
         }));
       },
-      getPrevTriggerProps(props22 = {}) {
-        const { view = "day" } = props22;
+      getPrevTriggerProps(props26 = {}) {
+        const { view = "day" } = props26;
         const isDisabled = disabled || !computed("isPrevVisibleRangeValid");
-        return normalize.button(__spreadProps(__spreadValues({}, parts6.prevTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.prevTrigger.attrs), {
           dir: prop("dir"),
-          id: getPrevTriggerId(scope, view),
+          id: getPrevTriggerId2(scope, view),
           type: "button",
           "aria-label": translations.prevTrigger(view),
           disabled: isDisabled,
@@ -11875,7 +14580,7 @@ var Corex = (() => {
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts6.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.clearTrigger.attrs), {
           id: getClearTriggerId2(scope),
           dir: prop("dir"),
           type: "button",
@@ -11888,7 +14593,7 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts6.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.trigger.attrs), {
           id: getTriggerId3(scope),
           dir: prop("dir"),
           type: "button",
@@ -11906,16 +14611,16 @@ var Corex = (() => {
           }
         }));
       },
-      getViewProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.view.attrs), {
+      getViewProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.view.attrs), {
           "data-view": view,
           hidden: context.get("view") !== view
         }));
       },
-      getViewTriggerProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.button(__spreadProps(__spreadValues({}, parts6.viewTrigger.attrs), {
+      getViewTriggerProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.viewTrigger.attrs), {
           "data-view": view,
           dir: prop("dir"),
           id: getViewTriggerId(scope, view),
@@ -11929,16 +14634,16 @@ var Corex = (() => {
           }
         }));
       },
-      getViewControlProps(props22 = {}) {
-        const { view = "day" } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts6.viewControl.attrs), {
+      getViewControlProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.viewControl.attrs), {
           "data-view": view,
           dir: prop("dir")
         }));
       },
-      getInputProps(props22 = {}) {
-        const { index = 0, fixOnBlur = true } = props22;
-        return normalize.input(__spreadProps(__spreadValues({}, parts6.input.attrs), {
+      getInputProps(props26 = {}) {
+        const { index = 0, fixOnBlur = true } = props26;
+        return normalize.input(__spreadProps(__spreadValues({}, parts9.input.attrs), {
           id: getInputId3(scope, index),
           autoComplete: "off",
           autoCorrect: "off",
@@ -11992,7 +14697,7 @@ var Corex = (() => {
         }));
       },
       getMonthSelectProps() {
-        return normalize.select(__spreadProps(__spreadValues({}, parts6.monthSelect.attrs), {
+        return normalize.select(__spreadProps(__spreadValues({}, parts9.monthSelect.attrs), {
           id: getMonthSelectId(scope),
           "aria-label": translations.monthSelect,
           disabled,
@@ -12004,7 +14709,7 @@ var Corex = (() => {
         }));
       },
       getYearSelectProps() {
-        return normalize.select(__spreadProps(__spreadValues({}, parts6.yearSelect.attrs), {
+        return normalize.select(__spreadProps(__spreadValues({}, parts9.yearSelect.attrs), {
           id: getYearSelectId(scope),
           disabled,
           "aria-label": translations.yearSelect,
@@ -12018,15 +14723,15 @@ var Corex = (() => {
       getPositionerProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getPositionerId2(scope)
-        }, parts6.positioner.attrs), {
+        }, parts9.positioner.attrs), {
           dir: prop("dir"),
           style: popperStyles.floating
         }));
       },
-      getPresetTriggerProps(props22) {
-        const value = Array.isArray(props22.value) ? props22.value : getDateRangePreset(props22.value, locale, timeZone);
+      getPresetTriggerProps(props26) {
+        const value = Array.isArray(props26.value) ? props26.value : getDateRangePreset(props26.value, locale, timeZone);
         const valueAsString = value.filter((item) => item != null).map((item) => item.toDate(timeZone).toDateString());
-        return normalize.button(__spreadProps(__spreadValues({}, parts6.presetTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts9.presetTrigger.attrs), {
           "aria-label": translations.presetTrigger(valueAsString),
           type: "button",
           onClick(event) {
@@ -12084,13 +14789,13 @@ var Corex = (() => {
     const pad = (n2) => String(n2).padStart(2, "0");
     return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
   }
-  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, ID, anatomy6, parts6, getLabelId4, getRootId6, getTableId, getContentId3, getCellTriggerId, getPrevTriggerId, getNextTriggerId, getViewTriggerId, getClearTriggerId2, getControlId3, getInputId3, getTriggerId3, getPositionerId2, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl2, getContentEl3, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl2, getControlEl2, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and3, machine6, normalizeValue, props6, splitProps6, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps, DatePicker, DatePickerHook;
+  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, ID, anatomy9, parts9, getLabelId5, getRootId9, getTableId, getContentId3, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId4, getInputId3, getTriggerId3, getPositionerId2, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl2, getContentEl3, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl2, getControlEl3, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and3, machine9, normalizeValue, props9, splitProps9, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps, DatePicker, DatePickerHook;
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
+      init_chunk_EENFWNGI();
+      init_chunk_RR7TJIQ5();
+      init_chunk_IXOYOLUJ();
       $3b62074eb05584b2$var$EPOCH = 1721426;
       $3b62074eb05584b2$var$daysInMonth = {
         standard: [
@@ -12632,7 +15337,7 @@ var Corex = (() => {
       isValidMonth = (month) => month != null && parseFloat(month) <= 12;
       isValidDay = (day) => day != null && parseFloat(day) <= 31;
       ID = "__live-region__";
-      anatomy6 = createAnatomy("date-picker").parts(
+      anatomy9 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
         "control",
@@ -12658,12 +15363,12 @@ var Corex = (() => {
         "viewTrigger",
         "yearSelect"
       );
-      parts6 = anatomy6.build();
-      getLabelId4 = (ctx, index) => {
+      parts9 = anatomy9.build();
+      getLabelId5 = (ctx, index) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.label) == null ? void 0 : _b.call(_a, index)) != null ? _c : `datepicker:${ctx.id}:label:${index}`;
       };
-      getRootId6 = (ctx) => {
+      getRootId9 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `datepicker:${ctx.id}`;
       };
@@ -12679,11 +15384,11 @@ var Corex = (() => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.cellTrigger) == null ? void 0 : _b.call(_a, id)) != null ? _c : `datepicker:${ctx.id}:cell-trigger:${id}`;
       };
-      getPrevTriggerId = (ctx, view) => {
+      getPrevTriggerId2 = (ctx, view) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.prevTrigger) == null ? void 0 : _b.call(_a, view)) != null ? _c : `datepicker:${ctx.id}:prev:${view}`;
       };
-      getNextTriggerId = (ctx, view) => {
+      getNextTriggerId2 = (ctx, view) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.nextTrigger) == null ? void 0 : _b.call(_a, view)) != null ? _c : `datepicker:${ctx.id}:next:${view}`;
       };
@@ -12695,7 +15400,7 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.clearTrigger) != null ? _b : `datepicker:${ctx.id}:clear`;
       };
-      getControlId3 = (ctx) => {
+      getControlId4 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `datepicker:${ctx.id}:control`;
       };
@@ -12722,12 +15427,12 @@ var Corex = (() => {
       getFocusedCell = (ctx, view) => query(getContentEl3(ctx), `[data-part=table-cell-trigger][data-view=${view}][data-focus]:not([data-outside-range])`);
       getTriggerEl2 = (ctx) => ctx.getById(getTriggerId3(ctx));
       getContentEl3 = (ctx) => ctx.getById(getContentId3(ctx));
-      getInputEls = (ctx) => queryAll(getControlEl2(ctx), `[data-part=input]`);
+      getInputEls = (ctx) => queryAll(getControlEl3(ctx), `[data-part=input]`);
       getYearSelectEl = (ctx) => ctx.getById(getYearSelectId(ctx));
       getMonthSelectEl = (ctx) => ctx.getById(getMonthSelectId(ctx));
       getClearTriggerEl2 = (ctx) => ctx.getById(getClearTriggerId2(ctx));
       getPositionerEl2 = (ctx) => ctx.getById(getPositionerId2(ctx));
-      getControlEl2 = (ctx) => ctx.getById(getControlId3(ctx));
+      getControlEl3 = (ctx) => ctx.getById(getControlId4(ctx));
       PLACEHOLDERS = {
         day: "dd",
         month: "mm",
@@ -12812,19 +15517,19 @@ var Corex = (() => {
         }
       );
       ({ and: and3 } = createGuards());
-      machine6 = createMachine({
-        props({ props: props22 }) {
-          const locale = props22.locale || "en-US";
-          const timeZone = props22.timeZone || "UTC";
-          const selectionMode = props22.selectionMode || "single";
-          const numOfMonths = props22.numOfMonths || 1;
-          const defaultValue = props22.defaultValue ? sortDates(props22.defaultValue).map((date) => constrainValue(date, props22.min, props22.max)) : void 0;
-          const value = props22.value ? sortDates(props22.value).map((date) => constrainValue(date, props22.min, props22.max)) : void 0;
-          let focusedValue = props22.focusedValue || props22.defaultFocusedValue || (value == null ? void 0 : value[0]) || (defaultValue == null ? void 0 : defaultValue[0]) || getTodayDate(timeZone);
-          focusedValue = constrainValue(focusedValue, props22.min, props22.max);
+      machine9 = createMachine({
+        props({ props: props26 }) {
+          const locale = props26.locale || "en-US";
+          const timeZone = props26.timeZone || "UTC";
+          const selectionMode = props26.selectionMode || "single";
+          const numOfMonths = props26.numOfMonths || 1;
+          const defaultValue = props26.defaultValue ? sortDates(props26.defaultValue).map((date) => constrainValue(date, props26.min, props26.max)) : void 0;
+          const value = props26.value ? sortDates(props26.value).map((date) => constrainValue(date, props26.min, props26.max)) : void 0;
+          let focusedValue = props26.focusedValue || props26.defaultFocusedValue || (value == null ? void 0 : value[0]) || (defaultValue == null ? void 0 : defaultValue[0]) || getTodayDate(timeZone);
+          focusedValue = constrainValue(focusedValue, props26.min, props26.max);
           const minView = "day";
           const maxView = "year";
-          const defaultView = clampView(props22.view || minView, minView, maxView);
+          const defaultView = clampView(props26.view || minView, minView, maxView);
           return __spreadProps(__spreadValues({
             locale,
             numOfMonths,
@@ -12842,14 +15547,14 @@ var Corex = (() => {
             parse(value2, { locale: locale2, timeZone: timeZone2 }) {
               return parseDateString(value2, locale2, timeZone2);
             }
-          }, props22), {
-            focusedValue: typeof props22.focusedValue === "undefined" ? void 0 : focusedValue,
+          }, props26), {
+            focusedValue: typeof props26.focusedValue === "undefined" ? void 0 : focusedValue,
             defaultFocusedValue: focusedValue,
             value,
             defaultValue: defaultValue != null ? defaultValue : [],
             positioning: __spreadValues({
               placement: "bottom"
-            }, props22.positioning)
+            }, props26.positioning)
           });
         },
         initialState({ prop }) {
@@ -13414,7 +16119,7 @@ var Corex = (() => {
               if (!context.get("currentPlacement")) {
                 context.set("currentPlacement", prop("positioning").placement);
               }
-              const anchorEl = getControlEl2(scope);
+              const anchorEl = getControlEl3(scope);
               const getPositionerEl22 = () => getPositionerEl2(scope);
               return getPlacement(anchorEl, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 defer: true,
@@ -13864,7 +16569,7 @@ var Corex = (() => {
         });
         return dateValue;
       };
-      props6 = createProps()([
+      props9 = createProps()([
         "closeOnSelect",
         "dir",
         "disabled",
@@ -13907,7 +16612,7 @@ var Corex = (() => {
         "minView",
         "maxView"
       ]);
-      splitProps6 = createSplitProps(props6);
+      splitProps9 = createSplitProps(props9);
       inputProps = createProps()(["index", "fixOnBlur"]);
       splitInputProps = createSplitProps(inputProps);
       presetTriggerProps = createProps()(["value"]);
@@ -14008,11 +16713,11 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine6, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine9, props26);
         }
         initApi() {
-          return connect6(this.machine.service, normalizeProps);
+          return connect9(this.machine.service, normalizeProps);
         }
         render() {
           const root = this.el.querySelector('[data-scope="date-picker"][data-part="root"]');
@@ -14406,7 +17111,7 @@ var Corex = (() => {
       body.removeAttribute(LOCK_CLASSNAME);
     };
   }
-  function connect7(service, normalize) {
+  function connect10(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const ariaLabel = prop("aria-label");
     const open = state2.matches("open");
@@ -14418,7 +17123,7 @@ var Corex = (() => {
         send({ type: nextOpen ? "OPEN" : "CLOSE" });
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts7.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts10.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId4(scope),
           "aria-haspopup": "dialog",
@@ -14433,7 +17138,7 @@ var Corex = (() => {
         }));
       },
       getBackdropProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.backdrop.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.backdrop.attrs), {
           dir: prop("dir"),
           hidden: !open,
           id: getBackdropId(scope),
@@ -14441,7 +17146,7 @@ var Corex = (() => {
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId3(scope),
           style: {
@@ -14451,7 +17156,7 @@ var Corex = (() => {
       },
       getContentProps() {
         const rendered = context.get("rendered");
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.content.attrs), {
           dir: prop("dir"),
           role: prop("role"),
           hidden: !open,
@@ -14465,19 +17170,19 @@ var Corex = (() => {
         }));
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.title.attrs), {
           dir: prop("dir"),
           id: getTitleId(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts7.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts10.description.attrs), {
           dir: prop("dir"),
           id: getDescriptionId(scope)
         }));
       },
       getCloseTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts7.closeTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts10.closeTrigger.attrs), {
           dir: prop("dir"),
           id: getCloseTriggerId(scope),
           type: "button",
@@ -14490,12 +17195,12 @@ var Corex = (() => {
       }
     };
   }
-  var counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp5, __defNormalProp5, __publicField5, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, anatomy7, parts7, getPositionerId3, getBackdropId, getContentId4, getTriggerId4, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl4, getPositionerEl3, getBackdropEl, getTriggerEl3, getTitleEl, getDescriptionEl, getCloseTriggerEl, machine7, props7, splitProps7, Dialog, DialogHook;
+  var counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp6, __defNormalProp6, __publicField6, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, anatomy10, parts10, getPositionerId3, getBackdropId, getContentId4, getTriggerId4, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl4, getPositionerEl3, getBackdropEl, getTriggerEl3, getTitleEl, getDescriptionEl, getCloseTriggerEl, machine10, props10, splitProps10, Dialog, DialogHook;
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
+      init_chunk_RR7TJIQ5();
+      init_chunk_IXOYOLUJ();
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -14517,8 +17222,8 @@ var Corex = (() => {
         if (node.hasAttribute("aria-live")) return true;
         return node.matches("[data-live-announcer]");
       };
-      walkTreeOutside = (originalTarget, props22) => {
-        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props22;
+      walkTreeOutside = (originalTarget, props26) => {
+        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props26;
         const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
         markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
         const markerCounter = markerMap[markerName];
@@ -14615,9 +17320,9 @@ var Corex = (() => {
         const frameId = requestAnimationFrame(() => fn());
         return () => cancelAnimationFrame(frameId);
       };
-      __defProp5 = Object.defineProperty;
-      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
+      __defProp6 = Object.defineProperty;
+      __defNormalProp6 = (obj, key, value) => key in obj ? __defProp6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField6 = (obj, key, value) => __defNormalProp6(obj, typeof key !== "symbol" ? key + "" : key, value);
       activeFocusTraps = {
         activateTrap(trapStack, trap) {
           if (trapStack.length > 0) {
@@ -14647,10 +17352,10 @@ var Corex = (() => {
       sharedTrapStack = [];
       FocusTrap = class {
         constructor(elements, options) {
-          __publicField5(this, "trapStack");
-          __publicField5(this, "config");
-          __publicField5(this, "doc");
-          __publicField5(this, "state", {
+          __publicField6(this, "trapStack");
+          __publicField6(this, "config");
+          __publicField6(this, "doc");
+          __publicField6(this, "state", {
             containers: [],
             containerGroups: [],
             tabbableGroups: [],
@@ -14661,9 +17366,9 @@ var Corex = (() => {
             delayInitialFocusTimer: void 0,
             recentNavEvent: void 0
           });
-          __publicField5(this, "portalContainers", /* @__PURE__ */ new Set());
-          __publicField5(this, "listenerCleanups", []);
-          __publicField5(this, "handleFocus", (event) => {
+          __publicField6(this, "portalContainers", /* @__PURE__ */ new Set());
+          __publicField6(this, "listenerCleanups", []);
+          __publicField6(this, "handleFocus", (event) => {
             const target = getEventTarget(event);
             const targetContained = this.findContainerIndex(target, event) >= 0;
             if (targetContained || isDocument(target)) {
@@ -14718,7 +17423,7 @@ var Corex = (() => {
             }
             this.state.recentNavEvent = void 0;
           });
-          __publicField5(this, "handlePointerDown", (event) => {
+          __publicField6(this, "handlePointerDown", (event) => {
             const target = getEventTarget(event);
             if (this.findContainerIndex(target, event) >= 0) {
               return;
@@ -14732,7 +17437,7 @@ var Corex = (() => {
             }
             event.preventDefault();
           });
-          __publicField5(this, "handleClick", (event) => {
+          __publicField6(this, "handleClick", (event) => {
             const target = getEventTarget(event);
             if (this.findContainerIndex(target, event) >= 0) {
               return;
@@ -14746,7 +17451,7 @@ var Corex = (() => {
             event.preventDefault();
             event.stopImmediatePropagation();
           });
-          __publicField5(this, "handleTabKey", (event) => {
+          __publicField6(this, "handleTabKey", (event) => {
             if (this.config.isKeyForward(event) || this.config.isKeyBackward(event)) {
               this.state.recentNavEvent = event;
               const isBackward = this.config.isKeyBackward(event);
@@ -14758,14 +17463,14 @@ var Corex = (() => {
               this.tryFocus(destinationNode);
             }
           });
-          __publicField5(this, "handleEscapeKey", (event) => {
+          __publicField6(this, "handleEscapeKey", (event) => {
             if (isEscapeEvent(event) && valueOrHandler(this.config.escapeDeactivates, event) !== false) {
               event.preventDefault();
               this.deactivate();
             }
           });
-          __publicField5(this, "_mutationObserver");
-          __publicField5(this, "setupMutationObserver", () => {
+          __publicField6(this, "_mutationObserver");
+          __publicField6(this, "setupMutationObserver", () => {
             const win = this.doc.defaultView || window;
             this._mutationObserver = new win.MutationObserver((mutations) => {
               const isFocusedNodeRemoved = mutations.some((mutation) => {
@@ -14800,7 +17505,7 @@ var Corex = (() => {
               }
             });
           });
-          __publicField5(this, "updateObservedNodes", () => {
+          __publicField6(this, "updateObservedNodes", () => {
             var _a;
             (_a = this._mutationObserver) == null ? void 0 : _a.disconnect();
             if (this.state.active && !this.state.paused) {
@@ -14818,7 +17523,7 @@ var Corex = (() => {
               });
             }
           });
-          __publicField5(this, "getInitialFocusNode", () => {
+          __publicField6(this, "getInitialFocusNode", () => {
             let node = this.getNodeForOption("initialFocus", { hasFallback: true });
             if (node === false) {
               return false;
@@ -14843,7 +17548,7 @@ var Corex = (() => {
             }
             return node;
           });
-          __publicField5(this, "tryFocus", (node) => {
+          __publicField6(this, "tryFocus", (node) => {
             if (node === false) return;
             if (node === getActiveElement(this.doc)) return;
             if (!node || !node.focus) {
@@ -14856,7 +17561,7 @@ var Corex = (() => {
               node.select();
             }
           });
-          __publicField5(this, "deactivate", (deactivateOptions) => {
+          __publicField6(this, "deactivate", (deactivateOptions) => {
             if (!this.state.active) return this;
             const options2 = __spreadValues({
               onDeactivate: this.config.onDeactivate,
@@ -14893,7 +17598,7 @@ var Corex = (() => {
             finishDeactivation();
             return this;
           });
-          __publicField5(this, "pause", (pauseOptions) => {
+          __publicField6(this, "pause", (pauseOptions) => {
             if (this.state.paused || !this.state.active) {
               return this;
             }
@@ -14906,7 +17611,7 @@ var Corex = (() => {
             onPostPause == null ? void 0 : onPostPause();
             return this;
           });
-          __publicField5(this, "unpause", (unpauseOptions) => {
+          __publicField6(this, "unpause", (unpauseOptions) => {
             if (!this.state.paused || !this.state.active) {
               return this;
             }
@@ -14920,7 +17625,7 @@ var Corex = (() => {
             onPostUnpause == null ? void 0 : onPostUnpause();
             return this;
           });
-          __publicField5(this, "updateContainerElements", (containerElements) => {
+          __publicField6(this, "updateContainerElements", (containerElements) => {
             this.state.containers = Array.isArray(containerElements) ? containerElements.filter(Boolean) : [containerElements].filter(Boolean);
             if (this.state.active) {
               this.updateTabbableNodes();
@@ -14928,19 +17633,19 @@ var Corex = (() => {
             this.updateObservedNodes();
             return this;
           });
-          __publicField5(this, "getReturnFocusNode", (previousActiveElement) => {
+          __publicField6(this, "getReturnFocusNode", (previousActiveElement) => {
             const node = this.getNodeForOption("setReturnFocus", {
               params: [previousActiveElement]
             });
             return node ? node : node === false ? false : previousActiveElement;
           });
-          __publicField5(this, "getOption", (configOverrideOptions, optionName, configOptionName) => {
+          __publicField6(this, "getOption", (configOverrideOptions, optionName, configOptionName) => {
             return configOverrideOptions && configOverrideOptions[optionName] !== void 0 ? configOverrideOptions[optionName] : (
               // @ts-expect-error
               this.config[configOptionName || optionName]
             );
           });
-          __publicField5(this, "getNodeForOption", (optionName, { hasFallback = false, params = [] } = {}) => {
+          __publicField6(this, "getNodeForOption", (optionName, { hasFallback = false, params = [] } = {}) => {
             let optionValue = this.config[optionName];
             if (typeof optionValue === "function") optionValue = optionValue(...params);
             if (optionValue === true) optionValue = void 0;
@@ -14965,7 +17670,7 @@ var Corex = (() => {
             }
             return node;
           });
-          __publicField5(this, "findNextNavNode", (opts) => {
+          __publicField6(this, "findNextNavNode", (opts) => {
             const { event, isBackward = false } = opts;
             const target = opts.target || getEventTarget(event);
             this.updateTabbableNodes();
@@ -15188,7 +17893,7 @@ var Corex = (() => {
       delay = (fn) => setTimeout(fn, 0);
       isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
       LOCK_CLASSNAME = "data-scroll-lock";
-      anatomy7 = createAnatomy("dialog").parts(
+      anatomy10 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
         "positioner",
@@ -15197,7 +17902,7 @@ var Corex = (() => {
         "description",
         "closeTrigger"
       );
-      parts7 = anatomy7.build();
+      parts10 = anatomy10.build();
       getPositionerId3 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.positioner) != null ? _b : `dialog:${ctx.id}:positioner`;
@@ -15233,11 +17938,11 @@ var Corex = (() => {
       getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
       getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
       getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
-      machine7 = createMachine({
-        props({ props: props22, scope }) {
-          const alertDialog = props22.role === "alertdialog";
+      machine10 = createMachine({
+        props({ props: props26, scope }) {
+          const alertDialog = props26.role === "alertdialog";
           const initialFocusEl = alertDialog ? () => getCloseTriggerEl(scope) : void 0;
-          const modal = typeof props22.modal === "boolean" ? props22.modal : true;
+          const modal = typeof props26.modal === "boolean" ? props26.modal : true;
           return __spreadValues({
             role: "dialog",
             modal,
@@ -15247,7 +17952,7 @@ var Corex = (() => {
             closeOnEscape: true,
             restoreFocus: true,
             initialFocusEl
-          }, props22);
+          }, props26);
         },
         initialState({ prop }) {
           const open = prop("open") || prop("defaultOpen");
@@ -15420,7 +18125,7 @@ var Corex = (() => {
           }
         }
       });
-      props7 = createProps()([
+      props10 = createProps()([
         "aria-label",
         "closeOnEscape",
         "closeOnInteractOutside",
@@ -15447,14 +18152,14 @@ var Corex = (() => {
         "role",
         "trapFocus"
       ]);
-      splitProps7 = createSplitProps(props7);
+      splitProps10 = createSplitProps(props10);
       Dialog = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine7, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine10, props26);
         }
         initApi() {
-          return connect7(this.machine.service, normalizeProps);
+          return connect10(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el;
@@ -15573,68 +18278,2858 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/editable.mjs
+  var editable_exports = {};
+  __export(editable_exports, {
+    Editable: () => EditableHook
+  });
+  function connect11(service, normalize) {
+    var _a;
+    const { state: state2, context, send, prop, scope, computed } = service;
+    const disabled = !!prop("disabled");
+    const interactive = computed("isInteractive");
+    const readOnly = !!prop("readOnly");
+    const required = !!prop("required");
+    const invalid = !!prop("invalid");
+    const autoResize = !!prop("autoResize");
+    const translations = prop("translations");
+    const editing = state2.matches("edit");
+    const placeholderProp = prop("placeholder");
+    const placeholder = typeof placeholderProp === "string" ? { edit: placeholderProp, preview: placeholderProp } : placeholderProp;
+    const value = context.get("value");
+    const empty = value.trim() === "";
+    const valueText = empty ? (_a = placeholder == null ? void 0 : placeholder.preview) != null ? _a : "" : value;
+    return {
+      editing,
+      empty,
+      value,
+      valueText,
+      setValue(value2) {
+        send({ type: "VALUE.SET", value: value2, src: "setValue" });
+      },
+      clearValue() {
+        send({ type: "VALUE.SET", value: "", src: "clearValue" });
+      },
+      edit() {
+        if (!interactive) return;
+        send({ type: "EDIT" });
+      },
+      cancel() {
+        if (!interactive) return;
+        send({ type: "CANCEL" });
+      },
+      submit() {
+        if (!interactive) return;
+        send({ type: "SUBMIT" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.root.attrs), {
+          id: getRootId10(scope),
+          dir: prop("dir")
+        }));
+      },
+      getAreaProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.area.attrs), {
+          id: getAreaId(scope),
+          dir: prop("dir"),
+          style: autoResize ? { display: "inline-grid" } : void 0,
+          "data-focus": dataAttr(editing),
+          "data-disabled": dataAttr(disabled),
+          "data-placeholder-shown": dataAttr(empty)
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts11.label.attrs), {
+          id: getLabelId6(scope),
+          dir: prop("dir"),
+          htmlFor: getInputId4(scope),
+          "data-focus": dataAttr(editing),
+          "data-invalid": dataAttr(invalid),
+          "data-required": dataAttr(required),
+          onClick() {
+            if (editing) return;
+            const previewEl = getPreviewEl(scope);
+            previewEl == null ? void 0 : previewEl.focus({ preventScroll: true });
+          }
+        }));
+      },
+      getInputProps() {
+        return normalize.input(__spreadProps(__spreadValues({}, parts11.input.attrs), {
+          dir: prop("dir"),
+          "aria-label": translations == null ? void 0 : translations.input,
+          name: prop("name"),
+          form: prop("form"),
+          id: getInputId4(scope),
+          hidden: autoResize ? void 0 : !editing,
+          placeholder: placeholder == null ? void 0 : placeholder.edit,
+          maxLength: prop("maxLength"),
+          required: prop("required"),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          readOnly,
+          "data-readonly": dataAttr(readOnly),
+          "aria-invalid": ariaAttr(invalid),
+          "data-invalid": dataAttr(invalid),
+          "data-autoresize": dataAttr(autoResize),
+          defaultValue: value,
+          size: autoResize ? 1 : void 0,
+          onChange(event) {
+            send({
+              type: "VALUE.SET",
+              src: "input.change",
+              value: event.currentTarget.value
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const keyMap2 = {
+              Escape() {
+                send({ type: "CANCEL" });
+                event.preventDefault();
+              },
+              Enter(event2) {
+                if (!computed("submitOnEnter")) return;
+                const { localName } = event2.currentTarget;
+                if (localName === "textarea") {
+                  const submitMod = isApple() ? event2.metaKey : event2.ctrlKey;
+                  if (!submitMod) return;
+                  send({ type: "SUBMIT", src: "keydown.enter" });
+                  return;
+                }
+                if (localName === "input" && !event2.shiftKey && !event2.metaKey) {
+                  send({ type: "SUBMIT", src: "keydown.enter" });
+                  event2.preventDefault();
+                }
+              }
+            };
+            const exec = keyMap2[event.key];
+            if (exec) {
+              exec(event);
+            }
+          },
+          style: autoResize ? {
+            gridArea: "1 / 1 / auto / auto",
+            visibility: !editing ? "hidden" : void 0
+          } : void 0
+        }));
+      },
+      getPreviewProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getPreviewId(scope)
+        }, parts11.preview.attrs), {
+          dir: prop("dir"),
+          "data-placeholder-shown": dataAttr(empty),
+          "aria-readonly": ariaAttr(readOnly),
+          "data-readonly": dataAttr(disabled),
+          "data-disabled": dataAttr(disabled),
+          "aria-disabled": ariaAttr(disabled),
+          "aria-invalid": ariaAttr(invalid),
+          "data-invalid": dataAttr(invalid),
+          "aria-label": translations == null ? void 0 : translations.edit,
+          "data-autoresize": dataAttr(autoResize),
+          children: valueText,
+          hidden: autoResize ? void 0 : editing,
+          tabIndex: interactive ? 0 : void 0,
+          onClick() {
+            if (!interactive) return;
+            if (prop("activationMode") !== "click") return;
+            send({ type: "EDIT", src: "click" });
+          },
+          onFocus() {
+            if (!interactive) return;
+            if (prop("activationMode") !== "focus") return;
+            send({ type: "EDIT", src: "focus" });
+          },
+          onDoubleClick(event) {
+            if (event.defaultPrevented) return;
+            if (!interactive) return;
+            if (prop("activationMode") !== "dblclick") return;
+            send({ type: "EDIT", src: "dblclick" });
+          },
+          style: autoResize ? {
+            whiteSpace: "pre",
+            gridArea: "1 / 1 / auto / auto",
+            visibility: editing ? "hidden" : void 0,
+            // in event the preview overflow's the parent element
+            overflow: "hidden",
+            textOverflow: "ellipsis"
+          } : void 0
+        }));
+      },
+      getEditTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.editTrigger.attrs), {
+          id: getEditTriggerId(scope),
+          dir: prop("dir"),
+          "aria-label": translations == null ? void 0 : translations.edit,
+          hidden: editing,
+          type: "button",
+          disabled,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!interactive) return;
+            send({ type: "EDIT", src: "edit.click" });
+          }
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getControlId5(scope)
+        }, parts11.control.attrs), {
+          dir: prop("dir")
+        }));
+      },
+      getSubmitTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.submitTrigger.attrs), {
+          dir: prop("dir"),
+          id: getSubmitTriggerId(scope),
+          "aria-label": translations == null ? void 0 : translations.submit,
+          hidden: !editing,
+          disabled,
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!interactive) return;
+            send({ type: "SUBMIT", src: "submit.click" });
+          }
+        }));
+      },
+      getCancelTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.cancelTrigger.attrs), {
+          dir: prop("dir"),
+          "aria-label": translations == null ? void 0 : translations.cancel,
+          id: getCancelTriggerId(scope),
+          hidden: !editing,
+          type: "button",
+          disabled,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!interactive) return;
+            send({ type: "CANCEL", src: "cancel.click" });
+          }
+        }));
+      }
+    };
+  }
+  var anatomy11, parts11, getRootId10, getAreaId, getLabelId6, getPreviewId, getInputId4, getControlId5, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine11, props11, splitProps11, Editable, EditableHook;
+  var init_editable = __esm({
+    "../priv/static/editable.mjs"() {
+      "use strict";
+      init_chunk_ER3INIAI();
+      init_chunk_IXOYOLUJ();
+      anatomy11 = createAnatomy("editable").parts(
+        "root",
+        "area",
+        "label",
+        "preview",
+        "input",
+        "editTrigger",
+        "submitTrigger",
+        "cancelTrigger",
+        "control"
+      );
+      parts11 = anatomy11.build();
+      getRootId10 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `editable:${ctx.id}`;
+      };
+      getAreaId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.area) != null ? _b : `editable:${ctx.id}:area`;
+      };
+      getLabelId6 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `editable:${ctx.id}:label`;
+      };
+      getPreviewId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.preview) != null ? _b : `editable:${ctx.id}:preview`;
+      };
+      getInputId4 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `editable:${ctx.id}:input`;
+      };
+      getControlId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `editable:${ctx.id}:control`;
+      };
+      getSubmitTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.submitTrigger) != null ? _b : `editable:${ctx.id}:submit`;
+      };
+      getCancelTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.cancelTrigger) != null ? _b : `editable:${ctx.id}:cancel`;
+      };
+      getEditTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.editTrigger) != null ? _b : `editable:${ctx.id}:edit`;
+      };
+      getInputEl3 = (ctx) => ctx.getById(getInputId4(ctx));
+      getPreviewEl = (ctx) => ctx.getById(getPreviewId(ctx));
+      getSubmitTriggerEl = (ctx) => ctx.getById(getSubmitTriggerId(ctx));
+      getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
+      getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
+      machine11 = createMachine({
+        props({ props: props26 }) {
+          return __spreadProps(__spreadValues({
+            activationMode: "focus",
+            submitMode: "both",
+            defaultValue: "",
+            selectOnFocus: true
+          }, props26), {
+            translations: __spreadValues({
+              input: "editable input",
+              edit: "edit",
+              submit: "submit",
+              cancel: "cancel"
+            }, props26.translations)
+          });
+        },
+        initialState({ prop }) {
+          const edit = prop("edit") || prop("defaultEdit");
+          return edit ? "edit" : "preview";
+        },
+        entry: ["focusInputIfNeeded"],
+        context: ({ bindable: bindable2, prop }) => {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              onChange(value) {
+                var _a;
+                return (_a = prop("onValueChange")) == null ? void 0 : _a({ value });
+              }
+            })),
+            previousValue: bindable2(() => ({
+              defaultValue: ""
+            }))
+          };
+        },
+        watch({ track, action, context, prop }) {
+          track([() => context.get("value")], () => {
+            action(["syncInputValue"]);
+          });
+          track([() => prop("edit")], () => {
+            action(["toggleEditing"]);
+          });
+        },
+        computed: {
+          submitOnEnter({ prop }) {
+            const submitMode = prop("submitMode");
+            return submitMode === "both" || submitMode === "enter";
+          },
+          submitOnBlur({ prop }) {
+            const submitMode = prop("submitMode");
+            return submitMode === "both" || submitMode === "blur";
+          },
+          isInteractive({ prop }) {
+            return !(prop("disabled") || prop("readOnly"));
+          }
+        },
+        on: {
+          "VALUE.SET": {
+            actions: ["setValue"]
+          }
+        },
+        states: {
+          preview: {
+            entry: ["blurInput"],
+            on: {
+              "CONTROLLED.EDIT": {
+                target: "edit",
+                actions: ["setPreviousValue", "focusInput"]
+              },
+              EDIT: [
+                {
+                  guard: "isEditControlled",
+                  actions: ["invokeOnEdit"]
+                },
+                {
+                  target: "edit",
+                  actions: ["setPreviousValue", "focusInput", "invokeOnEdit"]
+                }
+              ]
+            }
+          },
+          edit: {
+            effects: ["trackInteractOutside"],
+            entry: ["syncInputValue"],
+            on: {
+              "CONTROLLED.PREVIEW": [
+                {
+                  guard: "isSubmitEvent",
+                  target: "preview",
+                  actions: ["setPreviousValue", "restoreFocus", "invokeOnSubmit"]
+                },
+                {
+                  target: "preview",
+                  actions: ["revertValue", "restoreFocus", "invokeOnCancel"]
+                }
+              ],
+              CANCEL: [
+                {
+                  guard: "isEditControlled",
+                  actions: ["invokeOnPreview"]
+                },
+                {
+                  target: "preview",
+                  actions: ["revertValue", "restoreFocus", "invokeOnCancel", "invokeOnPreview"]
+                }
+              ],
+              SUBMIT: [
+                {
+                  guard: "isEditControlled",
+                  actions: ["invokeOnPreview"]
+                },
+                {
+                  target: "preview",
+                  actions: ["setPreviousValue", "restoreFocus", "invokeOnSubmit", "invokeOnPreview"]
+                }
+              ]
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            isEditControlled: ({ prop }) => prop("edit") != void 0,
+            isSubmitEvent: ({ event }) => {
+              var _a;
+              return ((_a = event.previousEvent) == null ? void 0 : _a.type) === "SUBMIT";
+            }
+          },
+          effects: {
+            trackInteractOutside({ send, scope, prop, computed }) {
+              return trackInteractOutside(getInputEl3(scope), {
+                exclude(target) {
+                  const ignore = [getCancelTriggerEl(scope), getSubmitTriggerEl(scope)];
+                  return ignore.some((el) => contains(el, target));
+                },
+                onFocusOutside: prop("onFocusOutside"),
+                onPointerDownOutside: prop("onPointerDownOutside"),
+                onInteractOutside(event) {
+                  var _a;
+                  (_a = prop("onInteractOutside")) == null ? void 0 : _a(event);
+                  if (event.defaultPrevented) return;
+                  const { focusable } = event.detail;
+                  send({
+                    type: computed("submitOnBlur") ? "SUBMIT" : "CANCEL",
+                    src: "interact-outside",
+                    focusable
+                  });
+                }
+              });
+            }
+          },
+          actions: {
+            restoreFocus({ event, scope, prop }) {
+              if (event.focusable) return;
+              raf(() => {
+                var _a, _b;
+                const finalEl = (_b = (_a = prop("finalFocusEl")) == null ? void 0 : _a()) != null ? _b : getEditTriggerEl(scope);
+                finalEl == null ? void 0 : finalEl.focus({ preventScroll: true });
+              });
+            },
+            clearValue({ context }) {
+              context.set("value", "");
+            },
+            focusInputIfNeeded({ action, prop }) {
+              const edit = prop("edit") || prop("defaultEdit");
+              if (!edit) return;
+              action(["focusInput"]);
+            },
+            focusInput({ scope, prop }) {
+              raf(() => {
+                const inputEl = getInputEl3(scope);
+                if (!inputEl) return;
+                if (prop("selectOnFocus")) {
+                  inputEl.select();
+                } else {
+                  inputEl.focus({ preventScroll: true });
+                }
+              });
+            },
+            invokeOnCancel({ prop, context }) {
+              var _a;
+              const prev2 = context.get("previousValue");
+              (_a = prop("onValueRevert")) == null ? void 0 : _a({ value: prev2 });
+            },
+            invokeOnSubmit({ prop, context }) {
+              var _a;
+              const value = context.get("value");
+              (_a = prop("onValueCommit")) == null ? void 0 : _a({ value });
+            },
+            invokeOnEdit({ prop }) {
+              var _a;
+              (_a = prop("onEditChange")) == null ? void 0 : _a({ edit: true });
+            },
+            invokeOnPreview({ prop }) {
+              var _a;
+              (_a = prop("onEditChange")) == null ? void 0 : _a({ edit: false });
+            },
+            toggleEditing({ prop, send, event }) {
+              send({
+                type: prop("edit") ? "CONTROLLED.EDIT" : "CONTROLLED.PREVIEW",
+                previousEvent: event
+              });
+            },
+            syncInputValue({ context, scope }) {
+              const inputEl = getInputEl3(scope);
+              if (!inputEl) return;
+              setElementValue(inputEl, context.get("value"));
+            },
+            setValue({ context, prop, event }) {
+              const max4 = prop("maxLength");
+              const value = max4 != null ? event.value.slice(0, max4) : event.value;
+              context.set("value", value);
+            },
+            setPreviousValue({ context }) {
+              context.set("previousValue", context.get("value"));
+            },
+            revertValue({ context }) {
+              const value = context.get("previousValue");
+              if (!value) return;
+              context.set("value", value);
+            },
+            blurInput({ scope }) {
+              var _a;
+              (_a = getInputEl3(scope)) == null ? void 0 : _a.blur();
+            }
+          }
+        }
+      });
+      props11 = createProps()([
+        "activationMode",
+        "autoResize",
+        "dir",
+        "disabled",
+        "finalFocusEl",
+        "form",
+        "getRootNode",
+        "id",
+        "ids",
+        "invalid",
+        "maxLength",
+        "name",
+        "onEditChange",
+        "onFocusOutside",
+        "onInteractOutside",
+        "onPointerDownOutside",
+        "onValueChange",
+        "onValueCommit",
+        "onValueRevert",
+        "placeholder",
+        "readOnly",
+        "required",
+        "selectOnFocus",
+        "edit",
+        "defaultEdit",
+        "submitMode",
+        "translations",
+        "defaultValue",
+        "value"
+      ]);
+      splitProps11 = createSplitProps(props11);
+      Editable = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine11, props26);
+        }
+        initApi() {
+          return connect11(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="editable"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
+          if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const inputEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="input"]'
+          );
+          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          const previewEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="preview"]'
+          );
+          if (previewEl) this.spreadProps(previewEl, this.api.getPreviewProps());
+          const editTriggerEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="edit-trigger"]'
+          );
+          if (editTriggerEl) this.spreadProps(editTriggerEl, this.api.getEditTriggerProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const submitTriggerEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="submit-trigger"]'
+          );
+          if (submitTriggerEl) this.spreadProps(submitTriggerEl, this.api.getSubmitTriggerProps());
+          const cancelTriggerEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="cancel-trigger"]'
+          );
+          if (cancelTriggerEl) this.spreadProps(cancelTriggerEl, this.api.getCancelTriggerProps());
+        }
+      };
+      EditableHook = {
+        mounted() {
+          const el = this.el;
+          const value = getString(el, "value");
+          const defaultValue = getString(el, "defaultValue");
+          const controlled = getBoolean(el, "controlled");
+          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
+            id: el.id
+          }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : "" }), {
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            required: getBoolean(el, "required"),
+            invalid: getBoolean(el, "invalid"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            dir: getDir(el)
+          }), getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
+            onValueChange: (details) => {
+              const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
+              if (inputEl) {
+                inputEl.value = details.value;
+                inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+                inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+              const eventName = getString(el, "onValueChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { value: details.value, id: el.id });
+              }
+              const clientName = getString(el, "onValueChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.init();
+          this.editable = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a;
+          const value = getString(this.el, "value");
+          const controlled = getBoolean(this.el, "controlled");
+          (_a = this.editable) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, controlled && value !== void 0 ? { value } : {}), {
+            disabled: getBoolean(this.el, "disabled"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            required: getBoolean(this.el, "required"),
+            invalid: getBoolean(this.el, "invalid"),
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form")
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.editable) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/floating-panel.mjs
+  var floating_panel_exports = {};
+  __export(floating_panel_exports, {
+    FloatingPanel: () => FloatingPanelHook
+  });
+  function getResizeAxisStyle(axis) {
+    switch (axis) {
+      case "n":
+        return {
+          cursor: "n-resize",
+          width: "100%",
+          top: 0,
+          left: "50%",
+          translate: "-50%"
+        };
+      case "e":
+        return {
+          cursor: "e-resize",
+          height: "100%",
+          right: 0,
+          top: "50%",
+          translate: "0 -50%"
+        };
+      case "s":
+        return {
+          cursor: "s-resize",
+          width: "100%",
+          bottom: 0,
+          left: "50%",
+          translate: "-50%"
+        };
+      case "w":
+        return {
+          cursor: "w-resize",
+          height: "100%",
+          left: 0,
+          top: "50%",
+          translate: "0 -50%"
+        };
+      case "se":
+        return {
+          cursor: "se-resize",
+          bottom: 0,
+          right: 0
+        };
+      case "sw":
+        return {
+          cursor: "sw-resize",
+          bottom: 0,
+          left: 0
+        };
+      case "ne":
+        return {
+          cursor: "ne-resize",
+          top: 0,
+          right: 0
+        };
+      case "nw":
+        return {
+          cursor: "nw-resize",
+          top: 0,
+          left: 0
+        };
+      default:
+        throw new Error(`Invalid axis: ${axis}`);
+    }
+  }
+  function connect12(service, normalize) {
+    const { state: state2, send, scope, prop, computed, context } = service;
+    const open = state2.hasTag("open");
+    const dragging = state2.matches("open.dragging");
+    const resizing = state2.matches("open.resizing");
+    const isTopmost = context.get("isTopmost");
+    const size3 = context.get("size");
+    const position = context.get("position");
+    const isMaximized = computed("isMaximized");
+    const isMinimized = computed("isMinimized");
+    const isStaged = computed("isStaged");
+    const canResize = computed("canResize");
+    const canDrag = computed("canDrag");
+    return {
+      open,
+      resizable: prop("resizable"),
+      draggable: prop("draggable"),
+      setOpen(nextOpen) {
+        const open2 = state2.hasTag("open");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      dragging,
+      resizing,
+      position,
+      size: size3,
+      setPosition(position2) {
+        send({ type: "SET_POSITION", position: position2 });
+      },
+      setSize(size22) {
+        send({ type: "SET_SIZE", size: size22 });
+      },
+      minimize() {
+        send({ type: "MINIMIZE" });
+      },
+      maximize() {
+        send({ type: "MAXIMIZE" });
+      },
+      restore() {
+        send({ type: "RESTORE" });
+      },
+      getTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts12.trigger.attrs), {
+          dir: prop("dir"),
+          type: "button",
+          disabled: prop("disabled"),
+          id: getTriggerId5(scope),
+          "data-state": open ? "open" : "closed",
+          "data-dragging": dataAttr(dragging),
+          "aria-controls": getContentId5(scope),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (prop("disabled")) return;
+            const open2 = state2.hasTag("open");
+            send({ type: open2 ? "CLOSE" : "OPEN", src: "trigger" });
+          }
+        }));
+      },
+      getPositionerProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.positioner.attrs), {
+          dir: prop("dir"),
+          id: getPositionerId4(scope),
+          style: {
+            "--width": toPx(size3 == null ? void 0 : size3.width),
+            "--height": toPx(size3 == null ? void 0 : size3.height),
+            "--x": toPx(position == null ? void 0 : position.x),
+            "--y": toPx(position == null ? void 0 : position.y),
+            position: prop("strategy"),
+            top: "var(--y)",
+            left: "var(--x)"
+          }
+        }));
+      },
+      getContentProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.content.attrs), {
+          dir: prop("dir"),
+          role: "dialog",
+          tabIndex: 0,
+          hidden: !open,
+          id: getContentId5(scope),
+          "aria-labelledby": getTitleId2(scope),
+          "data-state": open ? "open" : "closed",
+          "data-dragging": dataAttr(dragging),
+          "data-topmost": dataAttr(isTopmost),
+          "data-behind": dataAttr(!isTopmost),
+          "data-minimized": dataAttr(isMinimized),
+          "data-maximized": dataAttr(isMaximized),
+          "data-staged": dataAttr(isStaged),
+          style: {
+            width: "var(--width)",
+            height: "var(--height)",
+            overflow: isMinimized ? "hidden" : void 0
+          },
+          onFocus() {
+            send({ type: "CONTENT_FOCUS" });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (event.currentTarget !== getEventTarget(event)) return;
+            const step = getEventStep(event) * prop("gridSize");
+            const keyMap2 = {
+              Escape() {
+                if (!isTopmost) return;
+                send({ type: "ESCAPE" });
+              },
+              ArrowLeft() {
+                send({ type: "MOVE", direction: "left", step });
+              },
+              ArrowRight() {
+                send({ type: "MOVE", direction: "right", step });
+              },
+              ArrowUp() {
+                send({ type: "MOVE", direction: "up", step });
+              },
+              ArrowDown() {
+                send({ type: "MOVE", direction: "down", step });
+              }
+            };
+            const handler = keyMap2[getEventKey(event, { dir: prop("dir") })];
+            if (handler) {
+              event.preventDefault();
+              handler(event);
+            }
+          }
+        }));
+      },
+      getCloseTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts12.closeTrigger.attrs), {
+          dir: prop("dir"),
+          disabled: prop("disabled"),
+          "aria-label": "Close Window",
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "CLOSE" });
+          }
+        }));
+      },
+      getStageTriggerProps(props26) {
+        if (!validStages.has(props26.stage)) {
+          throw new Error(`[zag-js] Invalid stage: ${props26.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
+        }
+        const translations = prop("translations");
+        const actionProps = match2(props26.stage, {
+          minimized: () => ({
+            "aria-label": translations.minimize,
+            hidden: isStaged
+          }),
+          maximized: () => ({
+            "aria-label": translations.maximize,
+            hidden: isStaged
+          }),
+          default: () => ({
+            "aria-label": translations.restore,
+            hidden: !isStaged
+          })
+        });
+        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts12.stageTrigger.attrs), {
+          dir: prop("dir"),
+          disabled: prop("disabled"),
+          "data-stage": props26.stage
+        }), actionProps), {
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!prop("resizable")) return;
+            const type = match2(props26.stage, {
+              minimized: () => "MINIMIZE",
+              maximized: () => "MAXIMIZE",
+              default: () => "RESTORE"
+            });
+            send({ type: type.toUpperCase() });
+          }
+        }));
+      },
+      getResizeTriggerProps(props26) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.resizeTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(!canResize),
+          "data-axis": props26.axis,
+          onPointerDown(event) {
+            if (!canResize) return;
+            if (!isLeftClick(event)) return;
+            event.currentTarget.setPointerCapture(event.pointerId);
+            event.stopPropagation();
+            send({
+              type: "RESIZE_START",
+              axis: props26.axis,
+              position: { x: event.clientX, y: event.clientY }
+            });
+          },
+          onPointerUp(event) {
+            if (!canResize) return;
+            const node = event.currentTarget;
+            if (node.hasPointerCapture(event.pointerId)) {
+              node.releasePointerCapture(event.pointerId);
+            }
+          },
+          style: __spreadValues({
+            position: "absolute",
+            touchAction: "none"
+          }, getResizeAxisStyle(props26.axis))
+        }));
+      },
+      getDragTriggerProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.dragTrigger.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(!canDrag),
+          onPointerDown(event) {
+            if (!canDrag) return;
+            if (!isLeftClick(event)) return;
+            const target = getEventTarget(event);
+            if ((target == null ? void 0 : target.closest("button")) || (target == null ? void 0 : target.closest("[data-no-drag]"))) {
+              return;
+            }
+            event.currentTarget.setPointerCapture(event.pointerId);
+            event.stopPropagation();
+            send({
+              type: "DRAG_START",
+              pointerId: event.pointerId,
+              position: { x: event.clientX, y: event.clientY }
+            });
+          },
+          onPointerUp(event) {
+            if (!canDrag) return;
+            const node = event.currentTarget;
+            if (node.hasPointerCapture(event.pointerId)) {
+              node.releasePointerCapture(event.pointerId);
+            }
+          },
+          onDoubleClick(event) {
+            if (event.defaultPrevented) return;
+            if (!prop("resizable")) return;
+            send({ type: isStaged ? "RESTORE" : "MAXIMIZE" });
+          },
+          style: {
+            WebkitUserSelect: "none",
+            userSelect: "none",
+            touchAction: "none",
+            cursor: "move"
+          }
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.control.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(prop("disabled")),
+          "data-stage": context.get("stage"),
+          "data-minimized": dataAttr(isMinimized),
+          "data-maximized": dataAttr(isMaximized),
+          "data-staged": dataAttr(isStaged)
+        }));
+      },
+      getTitleProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.title.attrs), {
+          dir: prop("dir"),
+          id: getTitleId2(scope)
+        }));
+      },
+      getHeaderProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.header.attrs), {
+          dir: prop("dir"),
+          id: getHeaderId(scope),
+          "data-dragging": dataAttr(dragging),
+          "data-topmost": dataAttr(isTopmost),
+          "data-behind": dataAttr(!isTopmost),
+          "data-minimized": dataAttr(isMinimized),
+          "data-maximized": dataAttr(isMaximized),
+          "data-staged": dataAttr(isStaged)
+        }));
+      },
+      getBodyProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts12.body.attrs), {
+          dir: prop("dir"),
+          "data-dragging": dataAttr(dragging),
+          "data-minimized": dataAttr(isMinimized),
+          "data-maximized": dataAttr(isMaximized),
+          "data-staged": dataAttr(isStaged),
+          hidden: isMinimized
+        }));
+      }
+    };
+  }
+  function parseSize(val) {
+    if (!val) return void 0;
+    try {
+      const parsed = JSON.parse(val);
+      if (typeof parsed.width === "number" && typeof parsed.height === "number") {
+        return { width: parsed.width, height: parsed.height };
+      }
+    } catch (e2) {
+    }
+    return void 0;
+  }
+  function parsePoint(val) {
+    if (!val) return void 0;
+    try {
+      const parsed = JSON.parse(val);
+      if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+        return { x: parsed.x, y: parsed.y };
+      }
+    } catch (e2) {
+    }
+    return void 0;
+  }
+  var anatomy12, parts12, getTriggerId5, getPositionerId4, getContentId5, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl4, getContentEl5, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and4, defaultTranslations2, machine12, props12, splitProps12, resizeTriggerProps, splitResizeTriggerProps, FloatingPanel, FloatingPanelHook;
+  var init_floating_panel = __esm({
+    "../priv/static/floating-panel.mjs"() {
+      "use strict";
+      init_chunk_BMVNROAE();
+      init_chunk_IXOYOLUJ();
+      anatomy12 = createAnatomy("floating-panel").parts(
+        "trigger",
+        "positioner",
+        "content",
+        "header",
+        "body",
+        "title",
+        "resizeTrigger",
+        "dragTrigger",
+        "stageTrigger",
+        "closeTrigger",
+        "control"
+      );
+      parts12 = anatomy12.build();
+      getTriggerId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `float:${ctx.id}:trigger`;
+      };
+      getPositionerId4 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.positioner) != null ? _b : `float:${ctx.id}:positioner`;
+      };
+      getContentId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `float:${ctx.id}:content`;
+      };
+      getTitleId2 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.title) != null ? _b : `float:${ctx.id}:title`;
+      };
+      getHeaderId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.header) != null ? _b : `float:${ctx.id}:header`;
+      };
+      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
+      getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
+      getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
+      getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
+      getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
+        let boundaryRect;
+        if (isHTMLElement(boundaryEl)) {
+          boundaryRect = getElementRect(boundaryEl);
+        } else {
+          boundaryRect = getWindowRect(ctx.getWin());
+        }
+        if (allowOverflow) {
+          boundaryRect = createRect({
+            x: -boundaryRect.width,
+            // empty(left)
+            y: boundaryRect.minY,
+            width: boundaryRect.width * 3,
+            // empty(left) + win + empty(right)
+            height: boundaryRect.height * 2
+            // win + empty(bottom)
+          });
+        }
+        return pick(boundaryRect, ["x", "y", "width", "height"]);
+      };
+      validStages = /* @__PURE__ */ new Set(["minimized", "maximized", "default"]);
+      panelStack = proxy({
+        stack: [],
+        count() {
+          return this.stack.length;
+        },
+        add(panelId) {
+          if (this.stack.includes(panelId)) return;
+          this.stack.push(panelId);
+        },
+        remove(panelId) {
+          const index = this.stack.indexOf(panelId);
+          if (index < 0) return;
+          this.stack.splice(index, 1);
+        },
+        bringToFront(id) {
+          this.remove(id);
+          this.add(id);
+        },
+        isTopmost(id) {
+          return this.stack[this.stack.length - 1] === id;
+        },
+        indexOf(id) {
+          return this.stack.indexOf(id);
+        }
+      });
+      ({ not: not4, and: and4 } = createGuards());
+      defaultTranslations2 = {
+        minimize: "Minimize window",
+        maximize: "Maximize window",
+        restore: "Restore window"
+      };
+      machine12 = createMachine({
+        props({ props: props26 }) {
+          ensureProps(props26, ["id"], "floating-panel");
+          return __spreadProps(__spreadValues({
+            strategy: "fixed",
+            gridSize: 1,
+            defaultSize: { width: 320, height: 240 },
+            defaultPosition: { x: 300, y: 100 },
+            allowOverflow: true,
+            resizable: true,
+            draggable: true
+          }, props26), {
+            hasSpecifiedPosition: !!props26.defaultPosition || !!props26.position,
+            translations: __spreadValues(__spreadValues({}, defaultTranslations2), props26.translations)
+          });
+        },
+        initialState({ prop }) {
+          const open = prop("open") || prop("defaultOpen");
+          return open ? "open" : "closed";
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            size: bindable2(() => ({
+              defaultValue: prop("defaultSize"),
+              value: prop("size"),
+              isEqual: isSizeEqual,
+              sync: true,
+              hash(v2) {
+                return `W:${v2.width} H:${v2.height}`;
+              },
+              onChange(value) {
+                var _a;
+                (_a = prop("onSizeChange")) == null ? void 0 : _a({ size: value });
+              }
+            })),
+            position: bindable2(() => ({
+              defaultValue: prop("defaultPosition"),
+              value: prop("position"),
+              isEqual: isPointEqual,
+              sync: true,
+              hash(v2) {
+                return `X:${v2.x} Y:${v2.y}`;
+              },
+              onChange(value) {
+                var _a;
+                (_a = prop("onPositionChange")) == null ? void 0 : _a({ position: value });
+              }
+            })),
+            stage: bindable2(() => ({
+              defaultValue: "default",
+              onChange(value) {
+                var _a;
+                (_a = prop("onStageChange")) == null ? void 0 : _a({ stage: value });
+              }
+            })),
+            lastEventPosition: bindable2(() => ({
+              defaultValue: null
+            })),
+            prevPosition: bindable2(() => ({
+              defaultValue: null
+            })),
+            prevSize: bindable2(() => ({
+              defaultValue: null
+            })),
+            isTopmost: bindable2(() => ({
+              defaultValue: void 0
+            }))
+          };
+        },
+        computed: {
+          isMaximized: ({ context }) => context.get("stage") === "maximized",
+          isMinimized: ({ context }) => context.get("stage") === "minimized",
+          isStaged: ({ context }) => context.get("stage") !== "default",
+          canResize: ({ context, prop }) => prop("resizable") && !prop("disabled") && context.get("stage") === "default",
+          canDrag: ({ prop, computed }) => prop("draggable") && !prop("disabled") && !computed("isMaximized")
+        },
+        watch({ track, context, action, prop }) {
+          track([() => context.hash("position")], () => {
+            action(["setPositionStyle"]);
+          });
+          track([() => context.hash("size")], () => {
+            action(["setSizeStyle"]);
+          });
+          track([() => prop("open")], () => {
+            action(["toggleVisibility"]);
+          });
+        },
+        effects: ["trackPanelStack"],
+        on: {
+          CONTENT_FOCUS: {
+            actions: ["bringToFrontOfPanelStack"]
+          },
+          SET_POSITION: {
+            actions: ["setPosition"]
+          },
+          SET_SIZE: {
+            actions: ["setSize"]
+          }
+        },
+        states: {
+          closed: {
+            tags: ["closed"],
+            on: {
+              "CONTROLLED.OPEN": {
+                target: "open",
+                actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+              },
+              OPEN: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+                }
+              ]
+            }
+          },
+          open: {
+            tags: ["open"],
+            entry: ["bringToFrontOfPanelStack"],
+            effects: ["trackBoundaryRect"],
+            on: {
+              DRAG_START: {
+                guard: not4("isMaximized"),
+                target: "open.dragging",
+                actions: ["setPrevPosition"]
+              },
+              RESIZE_START: {
+                guard: not4("isMinimized"),
+                target: "open.resizing",
+                actions: ["setPrevSize"]
+              },
+              "CONTROLLED.CLOSE": {
+                target: "closed",
+                actions: ["resetRect", "focusTriggerEl"]
+              },
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+                }
+              ],
+              ESCAPE: [
+                {
+                  guard: and4("isOpenControlled", "closeOnEsc"),
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  guard: "closeOnEsc",
+                  target: "closed",
+                  actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+                }
+              ],
+              MINIMIZE: {
+                actions: ["setMinimized"]
+              },
+              MAXIMIZE: {
+                actions: ["setMaximized"]
+              },
+              RESTORE: {
+                actions: ["setRestored"]
+              },
+              MOVE: {
+                actions: ["setPositionFromKeyboard"]
+              }
+            }
+          },
+          "open.dragging": {
+            tags: ["open"],
+            effects: ["trackPointerMove"],
+            exit: ["clearPrevPosition"],
+            on: {
+              DRAG: {
+                actions: ["setPosition"]
+              },
+              DRAG_END: {
+                target: "open",
+                actions: ["invokeOnDragEnd"]
+              },
+              "CONTROLLED.CLOSE": {
+                target: "closed",
+                actions: ["resetRect"]
+              },
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose", "resetRect"]
+                }
+              ],
+              ESCAPE: {
+                target: "open"
+              }
+            }
+          },
+          "open.resizing": {
+            tags: ["open"],
+            effects: ["trackPointerMove"],
+            exit: ["clearPrevSize"],
+            on: {
+              DRAG: {
+                actions: ["setSize"]
+              },
+              DRAG_END: {
+                target: "open",
+                actions: ["invokeOnResizeEnd"]
+              },
+              "CONTROLLED.CLOSE": {
+                target: "closed",
+                actions: ["resetRect"]
+              },
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose", "resetRect"]
+                }
+              ],
+              ESCAPE: {
+                target: "open"
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            closeOnEsc: ({ prop }) => !!prop("closeOnEscape"),
+            isMaximized: ({ context }) => context.get("stage") === "maximized",
+            isMinimized: ({ context }) => context.get("stage") === "minimized",
+            isOpenControlled: ({ prop }) => prop("open") != void 0
+          },
+          effects: {
+            trackPointerMove({ scope, send, event: evt, prop }) {
+              var _a;
+              const doc = scope.getDoc();
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+              return trackPointerMove(doc, {
+                onPointerMove({ point, event }) {
+                  const { altKey, shiftKey } = event;
+                  let x2 = clampValue(point.x, boundaryRect.x, boundaryRect.x + boundaryRect.width);
+                  let y2 = clampValue(point.y, boundaryRect.y, boundaryRect.y + boundaryRect.height);
+                  send({ type: "DRAG", position: { x: x2, y: y2 }, axis: evt.axis, altKey, shiftKey });
+                },
+                onPointerUp() {
+                  send({ type: "DRAG_END" });
+                }
+              });
+            },
+            trackBoundaryRect({ context, scope, prop, computed }) {
+              var _a;
+              const win = scope.getWin();
+              let skip = true;
+              const exec = () => {
+                var _a2;
+                if (skip) {
+                  skip = false;
+                  return;
+                }
+                const boundaryEl2 = (_a2 = prop("getBoundaryEl")) == null ? void 0 : _a2();
+                let boundaryRect = getBoundaryRect(scope, boundaryEl2, false);
+                if (!computed("isMaximized")) {
+                  const rect = __spreadValues(__spreadValues({}, context.get("position")), context.get("size"));
+                  boundaryRect = constrainRect(rect, boundaryRect);
+                }
+                context.set("size", pick(boundaryRect, ["width", "height"]));
+                context.set("position", pick(boundaryRect, ["x", "y"]));
+              };
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              if (isHTMLElement(boundaryEl)) {
+                return resizeObserverBorderBox.observe(boundaryEl, exec);
+              }
+              return addDomEvent(win, "resize", exec);
+            },
+            trackPanelStack({ context, scope }) {
+              const unsub = subscribe(panelStack, () => {
+                context.set("isTopmost", panelStack.isTopmost(scope.id));
+                const contentEl = getContentEl5(scope);
+                if (!contentEl) return;
+                const index = panelStack.indexOf(scope.id);
+                if (index === -1) return;
+                contentEl.style.setProperty("--z-index", `${index + 1}`);
+              });
+              return () => {
+                panelStack.remove(scope.id);
+                unsub();
+              };
+            }
+          },
+          actions: {
+            setAnchorPosition({ context, prop, scope }) {
+              if (prop("hasSpecifiedPosition")) return;
+              const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
+              if (prop("persistRect") && hasPrevRect) return;
+              raf(() => {
+                var _a, _b;
+                const triggerRect = getTriggerEl4(scope);
+                const boundaryRect = getBoundaryRect(scope, (_a = prop("getBoundaryEl")) == null ? void 0 : _a(), false);
+                let anchorPosition = (_b = prop("getAnchorPosition")) == null ? void 0 : _b({
+                  triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
+                  boundaryRect: DOMRect.fromRect(boundaryRect)
+                });
+                if (!anchorPosition) {
+                  const size3 = context.get("size");
+                  anchorPosition = {
+                    x: boundaryRect.x + (boundaryRect.width - size3.width) / 2,
+                    y: boundaryRect.y + (boundaryRect.height - size3.height) / 2
+                  };
+                }
+                if (!anchorPosition) return;
+                context.set("position", anchorPosition);
+              });
+            },
+            setPrevPosition({ context, event }) {
+              context.set("prevPosition", __spreadValues({}, context.get("position")));
+              context.set("lastEventPosition", event.position);
+            },
+            clearPrevPosition({ context, prop }) {
+              if (!prop("persistRect")) context.set("prevPosition", null);
+              context.set("lastEventPosition", null);
+            },
+            setPosition({ context, event, prop, scope }) {
+              var _a;
+              let diff3 = subtractPoints(event.position, context.get("lastEventPosition"));
+              diff3.x = Math.round(diff3.x / prop("gridSize")) * prop("gridSize");
+              diff3.y = Math.round(diff3.y / prop("gridSize")) * prop("gridSize");
+              const prevPosition = context.get("prevPosition");
+              if (!prevPosition) return;
+              let position = addPoints(prevPosition, diff3);
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, prop("allowOverflow"));
+              position = clampPoint(position, context.get("size"), boundaryRect);
+              context.set("position", position);
+            },
+            setPositionStyle({ scope, context }) {
+              const el = getPositionerEl4(scope);
+              const position = context.get("position");
+              el == null ? void 0 : el.style.setProperty("--x", `${position.x}px`);
+              el == null ? void 0 : el.style.setProperty("--y", `${position.y}px`);
+            },
+            resetRect({ context, prop }) {
+              context.set("stage", "default");
+              if (!prop("persistRect")) {
+                context.set("position", context.initial("position"));
+                context.set("size", context.initial("size"));
+              }
+            },
+            setPrevSize({ context, event }) {
+              context.set("prevSize", __spreadValues({}, context.get("size")));
+              context.set("prevPosition", __spreadValues({}, context.get("position")));
+              context.set("lastEventPosition", event.position);
+            },
+            clearPrevSize({ context }) {
+              context.set("prevSize", null);
+              context.set("prevPosition", null);
+              context.set("lastEventPosition", null);
+            },
+            setSize({ context, event, scope, prop }) {
+              var _a;
+              const prevSize = context.get("prevSize");
+              const prevPosition = context.get("prevPosition");
+              const lastEventPosition = context.get("lastEventPosition");
+              if (!prevSize || !prevPosition || !lastEventPosition) return;
+              const prevRect = createRect(__spreadValues(__spreadValues({}, prevPosition), prevSize));
+              const offset3 = subtractPoints(event.position, lastEventPosition);
+              const nextRect = resizeRect(prevRect, offset3, event.axis, {
+                scalingOriginMode: event.altKey ? "center" : "extent",
+                lockAspectRatio: !!prop("lockAspectRatio") || event.shiftKey
+              });
+              let nextSize = pick(nextRect, ["width", "height"]);
+              let nextPosition = pick(nextRect, ["x", "y"]);
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+              nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+              nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+              context.set("size", nextSize);
+              if (nextPosition) {
+                const point = clampPoint(nextPosition, nextSize, boundaryRect);
+                context.set("position", point);
+              }
+            },
+            setSizeStyle({ scope, context }) {
+              queueMicrotask(() => {
+                const el = getPositionerEl4(scope);
+                const size3 = context.get("size");
+                el == null ? void 0 : el.style.setProperty("--width", `${size3.width}px`);
+                el == null ? void 0 : el.style.setProperty("--height", `${size3.height}px`);
+              });
+            },
+            setMaximized({ context, prop, scope }) {
+              var _a;
+              context.set("stage", "maximized");
+              context.set("prevSize", context.get("size"));
+              context.set("prevPosition", context.get("position"));
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+              context.set("position", pick(boundaryRect, ["x", "y"]));
+              context.set("size", pick(boundaryRect, ["height", "width"]));
+            },
+            setMinimized({ context, scope }) {
+              context.set("stage", "minimized");
+              context.set("prevSize", context.get("size"));
+              context.set("prevPosition", context.get("position"));
+              const headerEl = getHeaderEl(scope);
+              if (!headerEl) return;
+              const size3 = __spreadProps(__spreadValues({}, context.get("size")), {
+                height: headerEl == null ? void 0 : headerEl.offsetHeight
+              });
+              context.set("size", size3);
+            },
+            setRestored({ context, prop, scope }) {
+              var _a;
+              const boundaryRect = getBoundaryRect(scope, (_a = prop("getBoundaryEl")) == null ? void 0 : _a(), false);
+              context.set("stage", "default");
+              const prevSize = context.get("prevSize");
+              if (prevSize) {
+                let nextSize = prevSize;
+                nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+                nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+                context.set("size", nextSize);
+                context.set("prevSize", null);
+              }
+              if (context.get("prevPosition")) {
+                let nextPosition = context.get("prevPosition");
+                nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
+                context.set("position", nextPosition);
+                context.set("prevPosition", null);
+              }
+            },
+            setPositionFromKeyboard({ context, event, prop, scope }) {
+              var _a;
+              invariant(event.step == null, "step is required");
+              const position = context.get("position");
+              const step = event.step;
+              let nextPosition = match2(event.direction, {
+                left: { x: position.x - step, y: position.y },
+                right: { x: position.x + step, y: position.y },
+                up: { x: position.x, y: position.y - step },
+                down: { x: position.x, y: position.y + step }
+              });
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+              nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
+              context.set("position", nextPosition);
+            },
+            bringToFrontOfPanelStack({ prop }) {
+              panelStack.bringToFront(prop("id"));
+            },
+            invokeOnOpen({ prop }) {
+              var _a;
+              (_a = prop("onOpenChange")) == null ? void 0 : _a({ open: true });
+            },
+            invokeOnClose({ prop }) {
+              var _a;
+              (_a = prop("onOpenChange")) == null ? void 0 : _a({ open: false });
+            },
+            invokeOnDragEnd({ context, prop }) {
+              var _a;
+              (_a = prop("onPositionChangeEnd")) == null ? void 0 : _a({ position: context.get("position") });
+            },
+            invokeOnResizeEnd({ context, prop }) {
+              var _a;
+              (_a = prop("onSizeChangeEnd")) == null ? void 0 : _a({ size: context.get("size") });
+            },
+            focusTriggerEl({ scope }) {
+              raf(() => {
+                var _a;
+                (_a = getTriggerEl4(scope)) == null ? void 0 : _a.focus();
+              });
+            },
+            focusContentEl({ scope }) {
+              raf(() => {
+                var _a;
+                (_a = getContentEl5(scope)) == null ? void 0 : _a.focus();
+              });
+            },
+            toggleVisibility({ send, prop, event }) {
+              send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+            }
+          }
+        }
+      });
+      props12 = createProps()([
+        "allowOverflow",
+        "closeOnEscape",
+        "defaultOpen",
+        "defaultPosition",
+        "defaultSize",
+        "dir",
+        "disabled",
+        "draggable",
+        "getAnchorPosition",
+        "getBoundaryEl",
+        "getRootNode",
+        "gridSize",
+        "id",
+        "ids",
+        "lockAspectRatio",
+        "maxSize",
+        "minSize",
+        "onOpenChange",
+        "onPositionChange",
+        "onPositionChangeEnd",
+        "onSizeChange",
+        "onSizeChangeEnd",
+        "onStageChange",
+        "open",
+        "persistRect",
+        "position",
+        "resizable",
+        "size",
+        "strategy",
+        "translations"
+      ]);
+      splitProps12 = createSplitProps(props12);
+      resizeTriggerProps = createProps()(["axis"]);
+      splitResizeTriggerProps = createSplitProps(resizeTriggerProps);
+      FloatingPanel = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine12, props26);
+        }
+        initApi() {
+          return connect12(this.machine.service, normalizeProps);
+        }
+        render() {
+          const triggerEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="trigger"]'
+          );
+          if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+          const positionerEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="positioner"]'
+          );
+          if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+          const contentEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="content"]'
+          );
+          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          const titleEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="title"]'
+          );
+          if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
+          const headerEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="header"]'
+          );
+          if (headerEl) this.spreadProps(headerEl, this.api.getHeaderProps());
+          const bodyEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="body"]'
+          );
+          if (bodyEl) this.spreadProps(bodyEl, this.api.getBodyProps());
+          const dragTriggerEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="drag-trigger"]'
+          );
+          if (dragTriggerEl) this.spreadProps(dragTriggerEl, this.api.getDragTriggerProps());
+          const resizeAxes = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
+          resizeAxes.forEach((axis) => {
+            const resizeEl = this.el.querySelector(
+              `[data-scope="floating-panel"][data-part="resize-trigger"][data-axis="${axis}"]`
+            );
+            if (resizeEl)
+              this.spreadProps(resizeEl, this.api.getResizeTriggerProps({ axis }));
+          });
+          const closeTriggerEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="close-trigger"]'
+          );
+          if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="floating-panel"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const stages = ["minimized", "maximized", "default"];
+          stages.forEach((stage) => {
+            const stageTriggerEl = this.el.querySelector(
+              `[data-scope="floating-panel"][data-part="stage-trigger"][data-stage="${stage}"]`
+            );
+            if (stageTriggerEl)
+              this.spreadProps(
+                stageTriggerEl,
+                this.api.getStageTriggerProps({ stage })
+              );
+          });
+        }
+      };
+      FloatingPanelHook = {
+        mounted() {
+          const el = this.el;
+          const open = getBoolean(el, "open");
+          const defaultOpen = getBoolean(el, "defaultOpen");
+          const controlled = getBoolean(el, "controlled");
+          const size3 = parseSize(el.dataset.size);
+          const defaultSize = parseSize(el.dataset.defaultSize);
+          const position = parsePoint(el.dataset.position);
+          const defaultPosition = parsePoint(el.dataset.defaultPosition);
+          const zag = new FloatingPanel(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled ? { open } : { defaultOpen }), {
+            draggable: getBoolean(el, "draggable") !== false,
+            resizable: getBoolean(el, "resizable") !== false,
+            allowOverflow: getBoolean(el, "allowOverflow") !== false,
+            closeOnEscape: getBoolean(el, "closeOnEscape") !== false,
+            disabled: getBoolean(el, "disabled"),
+            dir: getDir(el),
+            size: size3,
+            defaultSize,
+            position,
+            defaultPosition,
+            minSize: parseSize(el.dataset.minSize),
+            maxSize: parseSize(el.dataset.maxSize),
+            persistRect: getBoolean(el, "persistRect"),
+            gridSize: Number(el.dataset.gridSize) || 1,
+            onOpenChange: (details) => {
+              const eventName = getString(el, "onOpenChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { open: details.open, id: el.id });
+              }
+              const clientName = getString(el, "onOpenChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            },
+            onPositionChange: (details) => {
+              const eventName = getString(el, "onPositionChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  position: details.position,
+                  id: el.id
+                });
+              }
+            },
+            onSizeChange: (details) => {
+              const eventName = getString(el, "onSizeChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  size: details.size,
+                  id: el.id
+                });
+              }
+            },
+            onStageChange: (details) => {
+              const eventName = getString(el, "onStageChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  stage: details.stage,
+                  id: el.id
+                });
+              }
+            }
+          }));
+          zag.init();
+          this.floatingPanel = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a;
+          const open = getBoolean(this.el, "open");
+          const controlled = getBoolean(this.el, "controlled");
+          (_a = this.floatingPanel) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, controlled ? { open } : {}), {
+            disabled: getBoolean(this.el, "disabled"),
+            dir: getDir(this.el)
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.floatingPanel) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/listbox.mjs
+  var listbox_exports = {};
+  __export(listbox_exports, {
+    Listbox: () => ListboxHook
+  });
+  function connect13(service, normalize) {
+    const { context, prop, scope, computed, send, refs } = service;
+    const disabled = prop("disabled");
+    const collection22 = prop("collection");
+    const layout = isGridCollection(collection22) ? "grid" : "list";
+    const focused = context.get("focused");
+    const focusVisible = refs.get("focusVisible") && focused;
+    const inputState = refs.get("inputState");
+    const value = context.get("value");
+    const selectedItems = context.get("selectedItems");
+    const highlightedValue = context.get("highlightedValue");
+    const highlightedItem = context.get("highlightedItem");
+    const isTypingAhead = computed("isTypingAhead");
+    const interactive = computed("isInteractive");
+    const ariaActiveDescendant = highlightedValue ? getItemId4(scope, highlightedValue) : void 0;
+    function getItemState(props26) {
+      const itemDisabled = collection22.getItemDisabled(props26.item);
+      const value2 = collection22.getItemValue(props26.item);
+      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
+      const highlighted = highlightedValue === value2;
+      return {
+        value: value2,
+        disabled: Boolean(disabled || itemDisabled),
+        focused: highlighted && focused,
+        focusVisible: highlighted && focusVisible,
+        // deprecated
+        highlighted: highlighted && (inputState.focused ? focused : focusVisible),
+        selected: context.get("value").includes(value2)
+      };
+    }
+    return {
+      empty: value.length === 0,
+      highlightedItem,
+      highlightedValue,
+      clearHighlightedValue() {
+        send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+      },
+      selectedItems,
+      hasSelectedItems: computed("hasSelectedItems"),
+      value,
+      valueAsString: computed("valueAsString"),
+      collection: collection22,
+      disabled: !!disabled,
+      selectValue(value2) {
+        send({ type: "ITEM.SELECT", value: value2 });
+      },
+      setValue(value2) {
+        send({ type: "VALUE.SET", value: value2 });
+      },
+      selectAll() {
+        if (!computed("multiple")) {
+          throw new Error("[zag-js] Cannot select all items in a single-select listbox");
+        }
+        send({ type: "VALUE.SET", value: collection22.getValues() });
+      },
+      highlightValue(value2) {
+        send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
+      },
+      clearValue(value2) {
+        if (value2) {
+          send({ type: "ITEM.CLEAR", value: value2 });
+        } else {
+          send({ type: "VALUE.CLEAR" });
+        }
+      },
+      getItemState,
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+          dir: prop("dir"),
+          id: getRootId11(scope),
+          "data-orientation": prop("orientation"),
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getInputProps(props26 = {}) {
+        return normalize.input(__spreadProps(__spreadValues({}, parts13.input.attrs), {
+          dir: prop("dir"),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          autoComplete: "off",
+          autoCorrect: "off",
+          "aria-haspopup": "listbox",
+          "aria-controls": getContentId6(scope),
+          "aria-autocomplete": "list",
+          "aria-activedescendant": ariaActiveDescendant,
+          spellCheck: false,
+          enterKeyHint: "go",
+          onFocus() {
+            queueMicrotask(() => {
+              send({ type: "INPUT.FOCUS", autoHighlight: !!(props26 == null ? void 0 : props26.autoHighlight) });
+            });
+          },
+          onBlur() {
+            send({ type: "CONTENT.BLUR", src: "input" });
+          },
+          onInput(event) {
+            if (!(props26 == null ? void 0 : props26.autoHighlight)) return;
+            if (event.currentTarget.value.trim()) return;
+            queueMicrotask(() => {
+              send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+            });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            const nativeEvent = getNativeEvent(event);
+            const forwardEvent = () => {
+              var _a;
+              event.preventDefault();
+              const win = scope.getWin();
+              const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
+              (_a = getContentEl6(scope)) == null ? void 0 : _a.dispatchEvent(keyboardEvent);
+            };
+            switch (nativeEvent.key) {
+              case "ArrowLeft":
+              case "ArrowRight": {
+                if (!isGridCollection(collection22)) return;
+                if (event.ctrlKey) return;
+                forwardEvent();
+              }
+              case "Home":
+              case "End": {
+                if (highlightedValue == null && event.shiftKey) return;
+                forwardEvent();
+              }
+              case "ArrowDown":
+              case "ArrowUp": {
+                forwardEvent();
+                break;
+              }
+              case "Enter":
+                if (highlightedValue != null) {
+                  event.preventDefault();
+                  send({ type: "ITEM.CLICK", value: highlightedValue });
+                }
+                break;
+            }
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir"),
+          id: getLabelId7(scope)
+        }, parts13.label.attrs), {
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getValueTextProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.valueText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getItemProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getItemId4(scope, itemState.value),
+          role: "option"
+        }, parts13.item.attrs), {
+          dir: prop("dir"),
+          "data-value": itemState.value,
+          "aria-selected": itemState.selected,
+          "data-selected": dataAttr(itemState.selected),
+          "data-layout": layout,
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          "data-orientation": prop("orientation"),
+          "data-highlighted": dataAttr(itemState.highlighted),
+          "data-disabled": dataAttr(itemState.disabled),
+          "aria-disabled": ariaAttr(itemState.disabled),
+          onPointerMove(event) {
+            if (!props26.highlightOnHover) return;
+            if (itemState.disabled || event.pointerType !== "mouse") return;
+            if (itemState.highlighted) return;
+            send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
+          },
+          onMouseDown(event) {
+            var _a;
+            event.preventDefault();
+            (_a = getContentEl6(scope)) == null ? void 0 : _a.focus();
+          },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (itemState.disabled) return;
+            send({
+              type: "ITEM.CLICK",
+              value: itemState.value,
+              shiftKey: event.shiftKey,
+              anchorValue: highlightedValue,
+              metaKey: isCtrlOrMetaKey(event)
+            });
+          }
+        }));
+      },
+      getItemTextProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemText.attrs), {
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          "data-disabled": dataAttr(itemState.disabled),
+          "data-highlighted": dataAttr(itemState.highlighted)
+        }));
+      },
+      getItemIndicatorProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemIndicator.attrs), {
+          "aria-hidden": true,
+          "data-state": itemState.selected ? "checked" : "unchecked",
+          hidden: !itemState.selected
+        }));
+      },
+      getItemGroupLabelProps(props26) {
+        const { htmlFor } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemGroupLabel.attrs), {
+          id: getItemGroupLabelId2(scope, htmlFor),
+          dir: prop("dir"),
+          role: "presentation"
+        }));
+      },
+      getItemGroupProps(props26) {
+        const { id } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts13.itemGroup.attrs), {
+          "data-disabled": dataAttr(disabled),
+          "data-orientation": prop("orientation"),
+          "data-empty": dataAttr(collection22.size === 0),
+          id: getItemGroupId3(scope, id),
+          "aria-labelledby": getItemGroupLabelId2(scope, id),
+          role: "group",
+          dir: prop("dir")
+        }));
+      },
+      getContentProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir"),
+          id: getContentId6(scope),
+          role: "listbox"
+        }, parts13.content.attrs), {
+          "data-activedescendant": ariaActiveDescendant,
+          "aria-activedescendant": ariaActiveDescendant,
+          "data-orientation": prop("orientation"),
+          "aria-multiselectable": computed("multiple") ? true : void 0,
+          "aria-labelledby": getLabelId7(scope),
+          tabIndex: 0,
+          "data-layout": layout,
+          "data-empty": dataAttr(collection22.size === 0),
+          style: {
+            "--column-count": isGridCollection(collection22) ? collection22.columnCount : 1
+          },
+          onFocus() {
+            send({ type: "CONTENT.FOCUS" });
+          },
+          onBlur() {
+            send({ type: "CONTENT.BLUR" });
+          },
+          onKeyDown(event) {
+            if (!interactive) return;
+            if (!contains(event.currentTarget, getEventTarget(event))) return;
+            const shiftKey = event.shiftKey;
+            const keyMap2 = {
+              ArrowUp(event2) {
+                let nextValue = null;
+                if (isGridCollection(collection22) && highlightedValue) {
+                  nextValue = collection22.getPreviousRowValue(highlightedValue);
+                } else if (highlightedValue) {
+                  nextValue = collection22.getPreviousValue(highlightedValue);
+                }
+                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                  nextValue = collection22.lastValue;
+                }
+                if (!nextValue) return;
+                event2.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowDown(event2) {
+                let nextValue = null;
+                if (isGridCollection(collection22) && highlightedValue) {
+                  nextValue = collection22.getNextRowValue(highlightedValue);
+                } else if (highlightedValue) {
+                  nextValue = collection22.getNextValue(highlightedValue);
+                }
+                if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                  nextValue = collection22.firstValue;
+                }
+                if (!nextValue) return;
+                event2.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowLeft() {
+                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
+                let nextValue = highlightedValue ? collection22.getPreviousValue(highlightedValue) : null;
+                if (!nextValue && prop("loopFocus")) {
+                  nextValue = collection22.lastValue;
+                }
+                if (!nextValue) return;
+                event.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              ArrowRight() {
+                if (!isGridCollection(collection22) && prop("orientation") === "vertical") return;
+                let nextValue = highlightedValue ? collection22.getNextValue(highlightedValue) : null;
+                if (!nextValue && prop("loopFocus")) {
+                  nextValue = collection22.firstValue;
+                }
+                if (!nextValue) return;
+                event.preventDefault();
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              Home(event2) {
+                event2.preventDefault();
+                let nextValue = collection22.firstValue;
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              End(event2) {
+                event2.preventDefault();
+                let nextValue = collection22.lastValue;
+                send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+              },
+              Enter() {
+                send({ type: "ITEM.CLICK", value: highlightedValue });
+              },
+              a(event2) {
+                if (isCtrlOrMetaKey(event2) && computed("multiple") && !prop("disallowSelectAll")) {
+                  event2.preventDefault();
+                  send({ type: "VALUE.SET", value: collection22.getValues() });
+                }
+              },
+              Space(event2) {
+                var _a;
+                if (isTypingAhead && prop("typeahead")) {
+                  send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
+                } else {
+                  (_a = keyMap2.Enter) == null ? void 0 : _a.call(keyMap2, event2);
+                }
+              },
+              Escape(event2) {
+                if (prop("deselectable") && value.length > 0) {
+                  event2.preventDefault();
+                  event2.stopPropagation();
+                  send({ type: "VALUE.CLEAR" });
+                }
+              }
+            };
+            const exec = keyMap2[getEventKey(event)];
+            if (exec) {
+              exec(event);
+              return;
+            }
+            const target = getEventTarget(event);
+            if (isEditableElement(target)) {
+              return;
+            }
+            if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
+              send({ type: "CONTENT.TYPEAHEAD", key: event.key });
+              event.preventDefault();
+            }
+          }
+        }));
+      }
+    };
+  }
+  function invokeOnSelect(current, next2, onSelect) {
+    const added = diff2(next2, current);
+    for (const item of added) {
+      onSelect == null ? void 0 : onSelect({ value: item });
+    }
+  }
+  function buildCollection(items, hasGroups) {
+    if (hasGroups) {
+      return collection2({
+        items,
+        itemToValue: (item) => {
+          var _a, _b;
+          return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+        },
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => {
+          var _a;
+          return (_a = item.group) != null ? _a : "";
+        }
+      });
+    }
+    return collection2({
+      items,
+      itemToValue: (item) => {
+        var _a, _b;
+        return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+      },
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    });
+  }
+  var anatomy13, parts13, collection2, gridCollection, getRootId11, getContentId6, getLabelId7, getItemId4, getItemGroupId3, getItemGroupLabelId2, getContentEl6, getItemEl2, guards2, createMachine3, or, machine13, diff2, props13, splitProps13, itemProps4, splitItemProps4, itemGroupProps2, splitItemGroupProps2, itemGroupLabelProps2, splitItemGroupLabelProps2, Listbox, ListboxHook;
+  var init_listbox = __esm({
+    "../priv/static/listbox.mjs"() {
+      "use strict";
+      init_chunk_TEV2GE3U();
+      init_chunk_2PO3TGCF();
+      init_chunk_IXOYOLUJ();
+      anatomy13 = createAnatomy("listbox").parts(
+        "label",
+        "input",
+        "item",
+        "itemText",
+        "itemIndicator",
+        "itemGroup",
+        "itemGroupLabel",
+        "content",
+        "root",
+        "valueText"
+      );
+      parts13 = anatomy13.build();
+      collection2 = (options) => {
+        return new ListCollection(options);
+      };
+      collection2.empty = () => {
+        return new ListCollection({ items: [] });
+      };
+      gridCollection = (options) => {
+        return new GridCollection(options);
+      };
+      gridCollection.empty = () => {
+        return new GridCollection({ items: [], columnCount: 0 });
+      };
+      getRootId11 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `select:${ctx.id}`;
+      };
+      getContentId6 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `select:${ctx.id}:content`;
+      };
+      getLabelId7 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `select:${ctx.id}:label`;
+      };
+      getItemId4 = (ctx, id) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:option:${id}`;
+      };
+      getItemGroupId3 = (ctx, id) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroup) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:optgroup:${id}`;
+      };
+      getItemGroupLabelId2 = (ctx, id) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroupLabel) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:optgroup-label:${id}`;
+      };
+      getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
+      getItemEl2 = (ctx, id) => ctx.getById(getItemId4(ctx, id));
+      ({ guards: guards2, createMachine: createMachine3 } = setup());
+      ({ or } = guards2);
+      machine13 = createMachine3({
+        props({ props: props26 }) {
+          return __spreadValues({
+            loopFocus: false,
+            composite: true,
+            defaultValue: [],
+            multiple: false,
+            typeahead: true,
+            collection: collection2.empty(),
+            orientation: "vertical",
+            selectionMode: "single"
+          }, props26);
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              isEqual: isEqual2,
+              onChange(value) {
+                var _a;
+                const items = prop("collection").findMany(value);
+                return (_a = prop("onValueChange")) == null ? void 0 : _a({ value, items });
+              }
+            })),
+            highlightedValue: bindable2(() => ({
+              defaultValue: prop("defaultHighlightedValue") || null,
+              value: prop("highlightedValue"),
+              sync: true,
+              onChange(value) {
+                var _a;
+                (_a = prop("onHighlightChange")) == null ? void 0 : _a({
+                  highlightedValue: value,
+                  highlightedItem: prop("collection").find(value),
+                  highlightedIndex: prop("collection").indexOf(value)
+                });
+              }
+            })),
+            highlightedItem: bindable2(() => ({
+              defaultValue: null
+            })),
+            selectedItems: bindable2(() => {
+              var _a, _b;
+              const value = (_b = (_a = prop("value")) != null ? _a : prop("defaultValue")) != null ? _b : [];
+              const items = prop("collection").findMany(value);
+              return { defaultValue: items };
+            }),
+            focused: bindable2(() => ({
+              sync: true,
+              defaultValue: false
+            }))
+          };
+        },
+        refs() {
+          return {
+            typeahead: __spreadValues({}, getByTypeahead.defaultOptions),
+            focusVisible: false,
+            inputState: { autoHighlight: false, focused: false }
+          };
+        },
+        computed: {
+          hasSelectedItems: ({ context }) => context.get("value").length > 0,
+          isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
+          isInteractive: ({ prop }) => !prop("disabled"),
+          selection: ({ context, prop }) => {
+            const selection = new Selection(context.get("value"));
+            selection.selectionMode = prop("selectionMode");
+            selection.deselectable = !!prop("deselectable");
+            return selection;
+          },
+          multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
+          valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+        },
+        initialState() {
+          return "idle";
+        },
+        watch({ context, prop, track, action }) {
+          track([() => context.get("value").toString()], () => {
+            action(["syncSelectedItems"]);
+          });
+          track([() => context.get("highlightedValue")], () => {
+            action(["syncHighlightedItem"]);
+          });
+          track([() => prop("collection").toString()], () => {
+            action(["syncHighlightedValue"]);
+          });
+        },
+        effects: ["trackFocusVisible"],
+        on: {
+          "HIGHLIGHTED_VALUE.SET": {
+            actions: ["setHighlightedItem"]
+          },
+          "ITEM.SELECT": {
+            actions: ["selectItem"]
+          },
+          "ITEM.CLEAR": {
+            actions: ["clearItem"]
+          },
+          "VALUE.SET": {
+            actions: ["setSelectedItems"]
+          },
+          "VALUE.CLEAR": {
+            actions: ["clearSelectedItems"]
+          }
+        },
+        states: {
+          idle: {
+            effects: ["scrollToHighlightedItem"],
+            on: {
+              "INPUT.FOCUS": {
+                actions: ["setFocused", "setInputState"]
+              },
+              "CONTENT.FOCUS": [
+                {
+                  guard: or("hasSelectedValue", "hasHighlightedValue"),
+                  actions: ["setFocused"]
+                },
+                {
+                  actions: ["setFocused", "setDefaultHighlightedValue"]
+                }
+              ],
+              "CONTENT.BLUR": {
+                actions: ["clearFocused", "clearInputState"]
+              },
+              "ITEM.CLICK": {
+                actions: ["setHighlightedItem", "selectHighlightedItem"]
+              },
+              "CONTENT.TYPEAHEAD": {
+                actions: ["setFocused", "highlightMatchingItem"]
+              },
+              "ITEM.POINTER_MOVE": {
+                actions: ["highlightItem"]
+              },
+              "ITEM.POINTER_LEAVE": {
+                actions: ["clearHighlightedItem"]
+              },
+              NAVIGATE: {
+                actions: ["setFocused", "setHighlightedItem", "selectWithKeyboard"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            hasSelectedValue: ({ context }) => context.get("value").length > 0,
+            hasHighlightedValue: ({ context }) => context.get("highlightedValue") != null
+          },
+          effects: {
+            trackFocusVisible: ({ scope, refs }) => {
+              var _a;
+              return trackFocusVisible({
+                root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope),
+                onChange(details) {
+                  refs.set("focusVisible", details.isFocusVisible);
+                }
+              });
+            },
+            scrollToHighlightedItem({ context, prop, scope }) {
+              const exec = (immediate) => {
+                const highlightedValue = context.get("highlightedValue");
+                if (highlightedValue == null) return;
+                const modality = getInteractionModality();
+                if (modality !== "keyboard") return;
+                const contentEl2 = getContentEl6(scope);
+                const scrollToIndexFn = prop("scrollToIndexFn");
+                if (scrollToIndexFn) {
+                  const highlightedIndex = prop("collection").indexOf(highlightedValue);
+                  scrollToIndexFn == null ? void 0 : scrollToIndexFn({
+                    index: highlightedIndex,
+                    immediate,
+                    getElement() {
+                      return getItemEl2(scope, highlightedValue);
+                    }
+                  });
+                  return;
+                }
+                const itemEl = getItemEl2(scope, highlightedValue);
+                scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
+              };
+              raf(() => exec(true));
+              const contentEl = () => getContentEl6(scope);
+              return observeAttributes(contentEl, {
+                defer: true,
+                attributes: ["data-activedescendant"],
+                callback() {
+                  exec(false);
+                }
+              });
+            }
+          },
+          actions: {
+            selectHighlightedItem({ context, prop, event, computed }) {
+              var _a;
+              const value = (_a = event.value) != null ? _a : context.get("highlightedValue");
+              const collection22 = prop("collection");
+              if (value == null || !collection22.has(value)) return;
+              const selection = computed("selection");
+              if (event.shiftKey && computed("multiple") && event.anchorValue) {
+                const next2 = selection.extendSelection(collection22, event.anchorValue, value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              } else {
+                const next2 = selection.select(collection22, value, event.metaKey);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              }
+            },
+            selectWithKeyboard({ context, prop, event, computed }) {
+              const selection = computed("selection");
+              const collection22 = prop("collection");
+              if (event.shiftKey && computed("multiple") && event.anchorValue) {
+                const next2 = selection.extendSelection(collection22, event.anchorValue, event.value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+                return;
+              }
+              if (prop("selectOnHighlight")) {
+                const next2 = selection.replaceSelection(collection22, event.value);
+                invokeOnSelect(selection, next2, prop("onSelect"));
+                context.set("value", Array.from(next2));
+              }
+            },
+            highlightItem({ context, event }) {
+              context.set("highlightedValue", event.value);
+            },
+            highlightMatchingItem({ context, prop, event, refs }) {
+              const value = prop("collection").search(event.key, {
+                state: refs.get("typeahead"),
+                currentValue: context.get("highlightedValue")
+              });
+              if (value == null) return;
+              context.set("highlightedValue", value);
+            },
+            setHighlightedItem({ context, event }) {
+              context.set("highlightedValue", event.value);
+            },
+            clearHighlightedItem({ context }) {
+              context.set("highlightedValue", null);
+            },
+            selectItem({ context, prop, event, computed }) {
+              const collection22 = prop("collection");
+              const selection = computed("selection");
+              const next2 = selection.select(collection22, event.value);
+              invokeOnSelect(selection, next2, prop("onSelect"));
+              context.set("value", Array.from(next2));
+            },
+            clearItem({ context, event, computed }) {
+              const selection = computed("selection");
+              const value = selection.deselect(event.value);
+              context.set("value", Array.from(value));
+            },
+            setSelectedItems({ context, event }) {
+              context.set("value", event.value);
+            },
+            clearSelectedItems({ context }) {
+              context.set("value", []);
+            },
+            syncSelectedItems({ context, prop }) {
+              const collection22 = prop("collection");
+              const prevSelectedItems = context.get("selectedItems");
+              const value = context.get("value");
+              const selectedItems = value.map((value2) => {
+                const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === value2);
+                return item || collection22.find(value2);
+              });
+              context.set("selectedItems", selectedItems);
+            },
+            syncHighlightedItem({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              const highlightedItem = highlightedValue ? collection22.find(highlightedValue) : null;
+              context.set("highlightedItem", highlightedItem);
+            },
+            syncHighlightedValue({ context, prop, refs }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              const { autoHighlight } = refs.get("inputState");
+              if (autoHighlight) {
+                queueMicrotask(() => {
+                  var _a;
+                  context.set("highlightedValue", (_a = prop("collection").firstValue) != null ? _a : null);
+                });
+                return;
+              }
+              if (highlightedValue != null && !collection22.has(highlightedValue)) {
+                queueMicrotask(() => {
+                  context.set("highlightedValue", null);
+                });
+              }
+            },
+            setFocused({ context }) {
+              context.set("focused", true);
+            },
+            setDefaultHighlightedValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const firstValue = collection22.firstValue;
+              if (firstValue != null) {
+                context.set("highlightedValue", firstValue);
+              }
+            },
+            clearFocused({ context }) {
+              context.set("focused", false);
+            },
+            setInputState({ refs, event }) {
+              refs.set("inputState", { autoHighlight: !!event.autoHighlight, focused: true });
+            },
+            clearInputState({ refs }) {
+              refs.set("inputState", { autoHighlight: false, focused: false });
+            }
+          }
+        }
+      });
+      diff2 = (a2, b2) => {
+        const result = new Set(a2);
+        for (const item of b2) result.delete(item);
+        return result;
+      };
+      props13 = createProps()([
+        "collection",
+        "defaultHighlightedValue",
+        "defaultValue",
+        "dir",
+        "disabled",
+        "deselectable",
+        "disallowSelectAll",
+        "getRootNode",
+        "highlightedValue",
+        "id",
+        "ids",
+        "loopFocus",
+        "onHighlightChange",
+        "onSelect",
+        "onValueChange",
+        "orientation",
+        "scrollToIndexFn",
+        "selectionMode",
+        "selectOnHighlight",
+        "typeahead",
+        "value"
+      ]);
+      splitProps13 = createSplitProps(props13);
+      itemProps4 = createProps()(["item", "highlightOnHover"]);
+      splitItemProps4 = createSplitProps(itemProps4);
+      itemGroupProps2 = createProps()(["id"]);
+      splitItemGroupProps2 = createSplitProps(itemGroupProps2);
+      itemGroupLabelProps2 = createProps()(["htmlFor"]);
+      splitItemGroupLabelProps2 = createSplitProps(itemGroupLabelProps2);
+      Listbox = class extends Component {
+        constructor(el, props26) {
+          var _a;
+          super(el, props26);
+          __publicField(this, "_options", []);
+          __publicField(this, "hasGroups", false);
+          __publicField(this, "init", () => {
+            this.machine.start();
+            this.render();
+            this.machine.subscribe(() => {
+              this.api = this.initApi();
+              this.render();
+            });
+          });
+          const collectionFromProps = props26.collection;
+          this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
+        }
+        get options() {
+          return Array.isArray(this._options) ? this._options : [];
+        }
+        setOptions(options) {
+          this._options = Array.isArray(options) ? options : [];
+        }
+        getCollection() {
+          const items = this.options;
+          if (this.hasGroups) {
+            return collection2({
+              items,
+              itemToValue: (item) => {
+                var _a, _b;
+                return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+              },
+              itemToString: (item) => item.label,
+              isItemDisabled: (item) => !!item.disabled,
+              groupBy: (item) => {
+                var _a;
+                return (_a = item.group) != null ? _a : "";
+              }
+            });
+          }
+          return collection2({
+            items,
+            itemToValue: (item) => {
+              var _a, _b;
+              return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+            },
+            itemToString: (item) => item.label,
+            isItemDisabled: (item) => !!item.disabled
+          });
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          const getCollection = this.getCollection.bind(this);
+          const collectionFromProps = props26.collection;
+          return new VanillaMachine(machine13, __spreadProps(__spreadValues({}, props26), {
+            get collection() {
+              return collectionFromProps != null ? collectionFromProps : getCollection();
+            }
+          }));
+        }
+        initApi() {
+          return connect13(this.machine.service, normalizeProps);
+        }
+        applyItemProps() {
+          const contentEl = this.el.querySelector(
+            '[data-scope="listbox"][data-part="content"]'
+          );
+          if (!contentEl) return;
+          contentEl.querySelectorAll('[data-scope="listbox"][data-part="item-group"]').forEach((groupEl) => {
+            var _a;
+            const groupId = (_a = groupEl.dataset.id) != null ? _a : "";
+            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+            const labelEl = groupEl.querySelector(
+              '[data-scope="listbox"][data-part="item-group-label"]'
+            );
+            if (labelEl) {
+              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+            }
+          });
+          contentEl.querySelectorAll('[data-scope="listbox"][data-part="item"]').forEach((itemEl) => {
+            var _a;
+            const value = (_a = itemEl.dataset.value) != null ? _a : "";
+            const item = this.options.find((i2) => {
+              var _a2, _b;
+              return String((_b = (_a2 = i2.id) != null ? _a2 : i2.value) != null ? _b : "") === String(value);
+            });
+            if (!item) return;
+            this.spreadProps(itemEl, this.api.getItemProps({ item }));
+            const textEl = itemEl.querySelector(
+              '[data-scope="listbox"][data-part="item-text"]'
+            );
+            if (textEl) {
+              this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+            }
+            const indicatorEl = itemEl.querySelector(
+              '[data-scope="listbox"][data-part="item-indicator"]'
+            );
+            if (indicatorEl) {
+              this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
+            }
+          });
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="listbox"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector('[data-scope="listbox"][data-part="label"]');
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const valueTextEl = this.el.querySelector(
+            '[data-scope="listbox"][data-part="value-text"]'
+          );
+          if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
+          const inputEl = this.el.querySelector('[data-scope="listbox"][data-part="input"]');
+          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          const contentEl = this.el.querySelector(
+            '[data-scope="listbox"][data-part="content"]'
+          );
+          if (contentEl) {
+            this.spreadProps(contentEl, this.api.getContentProps());
+            this.applyItemProps();
+          }
+        }
+      };
+      ListboxHook = {
+        mounted() {
+          var _a;
+          const el = this.el;
+          const allItems = JSON.parse((_a = el.dataset.collection) != null ? _a : "[]");
+          const hasGroups = allItems.some((item) => item.group !== void 0);
+          const valueList = getStringList(el, "value");
+          const defaultValueList = getStringList(el, "defaultValue");
+          const controlled = getBoolean(el, "controlled");
+          const zag = new Listbox(el, __spreadProps(__spreadValues({
+            id: el.id,
+            collection: buildCollection(allItems, hasGroups)
+          }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
+            disabled: getBoolean(el, "disabled"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            orientation: getString(el, "orientation", [
+              "horizontal",
+              "vertical"
+            ]),
+            loopFocus: getBoolean(el, "loopFocus"),
+            selectionMode: getString(el, "selectionMode", [
+              "single",
+              "multiple",
+              "extended"
+            ]),
+            selectOnHighlight: getBoolean(el, "selectOnHighlight"),
+            deselectable: getBoolean(el, "deselectable"),
+            typeahead: getBoolean(el, "typeahead"),
+            onValueChange: (details) => {
+              const eventName = getString(el, "onValueChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  items: details.items,
+                  id: el.id
+                });
+              }
+              const clientName = getString(el, "onValueChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.hasGroups = hasGroups;
+          zag.setOptions(allItems);
+          zag.init();
+          this.listbox = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a;
+          const newItems = JSON.parse((_a = this.el.dataset.collection) != null ? _a : "[]");
+          const hasGroups = newItems.some((item) => item.group !== void 0);
+          const valueList = getStringList(this.el, "value");
+          const controlled = getBoolean(this.el, "controlled");
+          if (this.listbox) {
+            this.listbox.hasGroups = hasGroups;
+            this.listbox.setOptions(newItems);
+            this.listbox.updateProps(__spreadProps(__spreadValues({
+              collection: buildCollection(newItems, hasGroups),
+              id: this.el.id
+            }, controlled && valueList ? { value: valueList } : {}), {
+              disabled: getBoolean(this.el, "disabled"),
+              dir: getString(this.el, "dir", ["ltr", "rtl"]),
+              orientation: getString(this.el, "orientation", [
+                "horizontal",
+                "vertical"
+              ])
+            }));
+          }
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.listbox) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/menu.mjs
   var menu_exports = {};
   __export(menu_exports, {
     Menu: () => MenuHook
   });
-  function createRect(r2) {
-    const { x: x2, y: y2, width, height } = r2;
-    const midX = x2 + width / 2;
-    const midY = y2 + height / 2;
-    return {
-      x: x2,
-      y: y2,
-      width,
-      height,
-      minX: x2,
-      minY: y2,
-      maxX: x2 + width,
-      maxY: y2 + height,
-      midX,
-      midY,
-      center: createPoint(midX, midY)
-    };
-  }
-  function getRectCorners(v2) {
-    const top = createPoint(v2.minX, v2.minY);
-    const right = createPoint(v2.maxX, v2.minY);
-    const bottom = createPoint(v2.maxX, v2.maxY);
-    const left = createPoint(v2.minX, v2.maxY);
-    return { top, right, bottom, left };
-  }
-  function getElementPolygon(rectValue, placement) {
-    const rect = createRect(rectValue);
-    const { top, right, left, bottom } = getRectCorners(rect);
-    const [base] = placement.split("-");
-    return {
-      top: [left, top, right, bottom],
-      right: [top, right, bottom, left],
-      bottom: [top, left, bottom, right],
-      left: [right, top, left, bottom]
-    }[base];
-  }
-  function isPointInPolygon(polygon, point) {
-    const { x: x2, y: y2 } = point;
-    let c2 = false;
-    for (let i2 = 0, j2 = polygon.length - 1; i2 < polygon.length; j2 = i2++) {
-      const xi = polygon[i2].x;
-      const yi = polygon[i2].y;
-      const xj = polygon[j2].x;
-      const yj = polygon[j2].y;
-      if (yi > y2 !== yj > y2 && x2 < (xj - xi) * (y2 - yi) / (yj - yi) + xi) {
-        c2 = !c2;
-      }
-    }
-    return c2;
-  }
   function dispatchSelectionEvent(el, value) {
     if (!el) return;
     const win = getWindow(el);
     const event = new win.CustomEvent(itemSelectEvent, { detail: { value } });
     el.dispatchEvent(event);
   }
-  function connect8(service, normalize) {
+  function connect14(service, normalize) {
     const { context, send, state: state2, computed, prop, scope } = service;
     const open = state2.hasTag("open");
     const isSubmenu = context.get("isSubmenu");
@@ -15646,34 +21141,34 @@ var Corex = (() => {
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: anchorPoint ? "bottom" : currentPlacement
     }));
-    function getItemState(props22) {
+    function getItemState(props26) {
       return {
-        id: getItemId3(scope, props22.value),
-        disabled: !!props22.disabled,
-        highlighted: highlightedValue === props22.value
+        id: getItemId5(scope, props26.value),
+        disabled: !!props26.disabled,
+        highlighted: highlightedValue === props26.value
       };
     }
-    function getOptionItemProps(props22) {
+    function getOptionItemProps(props26) {
       var _a;
-      const valueText = (_a = props22.valueText) != null ? _a : props22.value;
-      return __spreadProps(__spreadValues({}, props22), { id: props22.value, valueText });
+      const valueText = (_a = props26.valueText) != null ? _a : props26.value;
+      return __spreadProps(__spreadValues({}, props26), { id: props26.value, valueText });
     }
-    function getOptionItemState(props22) {
-      const itemState = getItemState(getOptionItemProps(props22));
+    function getOptionItemState(props26) {
+      const itemState = getItemState(getOptionItemProps(props26));
       return __spreadProps(__spreadValues({}, itemState), {
-        checked: !!props22.checked
+        checked: !!props26.checked
       });
     }
-    function getItemProps(props22) {
-      const { closeOnSelect, valueText, value } = props22;
-      const itemState = getItemState(props22);
-      const id = getItemId3(scope, value);
-      return normalize.element(__spreadProps(__spreadValues({}, parts8.item.attrs), {
+    function getItemProps(props26) {
+      const { closeOnSelect, valueText, value } = props26;
+      const itemState = getItemState(props26);
+      const id = getItemId5(scope, value);
+      return normalize.element(__spreadProps(__spreadValues({}, parts14.item.attrs), {
         id,
         role: "menuitem",
         "aria-disabled": ariaAttr(itemState.disabled),
         "data-disabled": dataAttr(itemState.disabled),
-        "data-ownedby": getContentId5(scope),
+        "data-ownedby": getContentId7(scope),
         "data-highlighted": dataAttr(itemState.highlighted),
         "data-value": value,
         "data-valuetext": valueText,
@@ -15732,18 +21227,18 @@ var Corex = (() => {
       reposition(options = {}) {
         send({ type: "POSITIONING.SET", options });
       },
-      addItemListener(props22) {
-        const node = scope.getById(props22.id);
+      addItemListener(props26) {
+        const node = scope.getById(props26.id);
         if (!node) return;
         const listener = () => {
           var _a;
-          return (_a = props22.onSelect) == null ? void 0 : _a.call(props22);
+          return (_a = props26.onSelect) == null ? void 0 : _a.call(props26);
         };
         node.addEventListener(itemSelectEvent, listener);
         return () => node.removeEventListener(itemSelectEvent, listener);
       },
       getContextTriggerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.contextTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.contextTrigger.attrs), {
           dir: prop("dir"),
           id: getContextTriggerId(scope),
           "data-state": open ? "open" : "closed",
@@ -15781,15 +21276,15 @@ var Corex = (() => {
         return mergeProps(getItemProps({ value: triggerProps2.id }), triggerProps2);
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, isSubmenu ? parts8.triggerItem.attrs : parts8.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, isSubmenu ? parts14.triggerItem.attrs : parts14.trigger.attrs), {
           "data-placement": context.get("currentPlacement"),
           type: "button",
           dir: prop("dir"),
-          id: getTriggerId5(scope),
+          id: getTriggerId6(scope),
           "data-uid": prop("id"),
           "aria-haspopup": composite ? "menu" : "dialog",
-          "aria-controls": getContentId5(scope),
-          "data-controls": getContentId5(scope),
+          "aria-controls": getContentId7(scope),
+          "data-controls": getContentId7(scope),
           "aria-expanded": open || void 0,
           "data-state": open ? "open" : "closed",
           onPointerMove(event) {
@@ -15855,35 +21350,35 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.indicator.attrs), {
           dir: prop("dir"),
           "data-state": open ? "open" : "closed"
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.positioner.attrs), {
           dir: prop("dir"),
-          id: getPositionerId4(scope),
+          id: getPositionerId5(scope),
           style: popperStyles.floating
         }));
       },
       getArrowProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getArrowId(scope)
-        }, parts8.arrow.attrs), {
+        }, parts14.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.arrowTip.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.content.attrs), {
-          id: getContentId5(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.content.attrs), {
+          id: getContentId7(scope),
           "aria-label": prop("aria-label"),
           hidden: !open,
           "data-state": open ? "open" : "closed",
@@ -15891,7 +21386,7 @@ var Corex = (() => {
           tabIndex: 0,
           dir: prop("dir"),
           "aria-activedescendant": computed("highlightedId") || void 0,
-          "aria-labelledby": getTriggerId5(scope),
+          "aria-labelledby": getTriggerId6(scope),
           "data-placement": currentPlacement,
           onPointerEnter(event) {
             if (event.pointerType !== "mouse") return;
@@ -15959,7 +21454,7 @@ var Corex = (() => {
         }));
       },
       getSeparatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.separator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.separator.attrs), {
           role: "separator",
           dir: prop("dir"),
           "aria-orientation": "horizontal"
@@ -15968,13 +21463,13 @@ var Corex = (() => {
       getItemState,
       getItemProps,
       getOptionItemState,
-      getOptionItemProps(props22) {
-        const { type, disabled, closeOnSelect } = props22;
-        const option = getOptionItemProps(props22);
-        const itemState = getOptionItemState(props22);
+      getOptionItemProps(props26) {
+        const { type, disabled, closeOnSelect } = props26;
+        const option = getOptionItemProps(props26);
+        const itemState = getOptionItemState(props26);
         return __spreadValues(__spreadValues({}, getItemProps(option)), normalize.element(__spreadProps(__spreadValues({
           "data-type": type
-        }, parts8.item.attrs), {
+        }, parts14.item.attrs), {
           dir: prop("dir"),
           "data-value": option.value,
           role: `menuitem${type}`,
@@ -15989,39 +21484,39 @@ var Corex = (() => {
           }
         })));
       },
-      getItemIndicatorProps(props22) {
-        const itemState = getOptionItemState(cast(props22));
+      getItemIndicatorProps(props26) {
+        const itemState = getOptionItemState(cast(props26));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
-          "data-state": hasProp(props22, "checked") ? dataState : void 0,
-          hidden: hasProp(props22, "checked") ? !itemState.checked : void 0
+          "data-state": hasProp(props26, "checked") ? dataState : void 0,
+          hidden: hasProp(props26, "checked") ? !itemState.checked : void 0
         }));
       },
-      getItemTextProps(props22) {
-        const itemState = getOptionItemState(cast(props22));
+      getItemTextProps(props26) {
+        const itemState = getOptionItemState(cast(props26));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
-          "data-state": hasProp(props22, "checked") ? dataState : void 0
+          "data-state": hasProp(props26, "checked") ? dataState : void 0
         }));
       },
-      getItemGroupLabelProps(props22) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
-          id: getGroupLabelId(scope, props22.htmlFor),
+      getItemGroupLabelProps(props26) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroupLabel.attrs), {
+          id: getGroupLabelId(scope, props26.htmlFor),
           dir: prop("dir")
         }));
       },
-      getItemGroupProps(props22) {
+      getItemGroupProps(props26) {
         return normalize.element(__spreadProps(__spreadValues({
-          id: getGroupId(scope, props22.id)
-        }, parts8.itemGroup.attrs), {
+          id: getGroupId(scope, props26.id)
+        }, parts14.itemGroup.attrs), {
           dir: prop("dir"),
-          "aria-labelledby": getGroupLabelId(scope, props22.id),
+          "aria-labelledby": getGroupLabelId(scope, props26.id),
           role: "group"
         }));
       }
@@ -16042,28 +21537,26 @@ var Corex = (() => {
     const hasChildren = Object.keys(children).length > 0;
     if (!value) return null;
     if (!hasChildren) {
-      return getItemId3(scope, value);
+      return getItemId5(scope, value);
     }
     for (const id in children) {
       const childMenu = children[id];
-      const childTriggerId = getTriggerId5(childMenu.scope);
+      const childTriggerId = getTriggerId6(childMenu.scope);
       if (childTriggerId === value) {
         return childTriggerId;
       }
     }
-    return getItemId3(scope, value);
+    return getItemId5(scope, value);
   }
-  var createPoint, min3, max3, sign2, abs2, min22, anatomy8, parts8, getTriggerId5, getContextTriggerId, getContentId5, getArrowId, getPositionerId4, getGroupId, getItemId3, getItemValue, getGroupLabelId, getContentEl5, getPositionerEl4, getTriggerEl4, getItemEl2, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not4, and4, or, machine8, props8, splitProps8, itemProps3, splitItemProps3, itemGroupLabelProps2, splitItemGroupLabelProps2, itemGroupProps2, splitItemGroupProps2, optionItemProps, splitOptionItemProps, Menu, MenuHook;
+  var anatomy14, parts14, getTriggerId6, getContextTriggerId, getContentId7, getArrowId, getPositionerId5, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl7, getPositionerEl5, getTriggerEl5, getItemEl3, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and5, or2, machine14, props14, splitProps14, itemProps5, splitItemProps5, itemGroupLabelProps3, splitItemGroupLabelProps3, itemGroupProps3, splitItemGroupProps3, optionItemProps, splitOptionItemProps, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
-      createPoint = (x2, y2) => ({ x: x2, y: y2 });
-      ({ min: min3, max: max3 } = Math);
-      ({ sign: sign2, abs: abs2, min: min22 } = Math);
-      anatomy8 = createAnatomy("menu").parts(
+      init_chunk_BMVNROAE();
+      init_chunk_EENFWNGI();
+      init_chunk_RR7TJIQ5();
+      init_chunk_IXOYOLUJ();
+      anatomy14 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
         "content",
@@ -16079,8 +21572,8 @@ var Corex = (() => {
         "trigger",
         "triggerItem"
       );
-      parts8 = anatomy8.build();
-      getTriggerId5 = (ctx) => {
+      parts14 = anatomy14.build();
+      getTriggerId6 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `menu:${ctx.id}:trigger`;
       };
@@ -16088,7 +21581,7 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.contextTrigger) != null ? _b : `menu:${ctx.id}:ctx-trigger`;
       };
-      getContentId5 = (ctx) => {
+      getContentId7 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `menu:${ctx.id}:content`;
       };
@@ -16096,7 +21589,7 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.arrow) != null ? _b : `menu:${ctx.id}:arrow`;
       };
-      getPositionerId4 = (ctx) => {
+      getPositionerId5 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.positioner) != null ? _b : `menu:${ctx.id}:popper`;
       };
@@ -16104,7 +21597,7 @@ var Corex = (() => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.group) == null ? void 0 : _b.call(_a, id)) != null ? _c : `menu:${ctx.id}:group:${id}`;
       };
-      getItemId3 = (ctx, id) => `${ctx.id}/${id}`;
+      getItemId5 = (ctx, id) => `${ctx.id}/${id}`;
       getItemValue = (el) => {
         var _a;
         return (_a = el == null ? void 0 : el.dataset.value) != null ? _a : null;
@@ -16113,15 +21606,15 @@ var Corex = (() => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.groupLabel) == null ? void 0 : _b.call(_a, id)) != null ? _c : `menu:${ctx.id}:group-label:${id}`;
       };
-      getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
-      getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
-      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
-      getItemEl2 = (ctx, value) => value ? ctx.getById(getItemId3(ctx, value)) : null;
+      getContentEl7 = (ctx) => ctx.getById(getContentId7(ctx));
+      getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
+      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId6(ctx));
+      getItemEl3 = (ctx, value) => value ? ctx.getById(getItemId5(ctx, value)) : null;
       getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
       getElements = (ctx) => {
-        const ownerId = CSS.escape(getContentId5(ctx));
+        const ownerId = CSS.escape(getContentId7(ctx));
         const selector = `[role^="menuitem"][data-ownedby=${ownerId}]:not([data-disabled])`;
-        return queryAll(getContentEl5(ctx), selector);
+        return queryAll(getContentEl7(ctx), selector);
       };
       getFirstEl = (ctx) => first(getElements(ctx));
       getLastEl = (ctx) => last(getElements(ctx));
@@ -16155,9 +21648,9 @@ var Corex = (() => {
         return !!((_a = el == null ? void 0 : el.getAttribute("role")) == null ? void 0 : _a.startsWith("menuitem")) && !!(el == null ? void 0 : el.hasAttribute("data-controls"));
       };
       itemSelectEvent = "menu:select";
-      ({ not: not4, and: and4, or } = createGuards());
-      machine8 = createMachine({
-        props({ props: props22 }) {
+      ({ not: not5, and: and5, or: or2 } = createGuards());
+      machine14 = createMachine({
+        props({ props: props26 }) {
           return __spreadProps(__spreadValues({
             closeOnSelect: true,
             typeahead: true,
@@ -16166,11 +21659,11 @@ var Corex = (() => {
             navigate(details) {
               clickIfLink(details.node);
             }
-          }, props22), {
+          }, props26), {
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
-            }, props22.positioning)
+            }, props26.positioning)
           });
         },
         initialState({ prop }) {
@@ -16315,7 +21808,7 @@ var Corex = (() => {
                 }
               ],
               TRIGGER_FOCUS: {
-                guard: not4("isSubmenu"),
+                guard: not5("isSubmenu"),
                 target: "closed"
               },
               TRIGGER_POINTERMOVE: {
@@ -16438,7 +21931,7 @@ var Corex = (() => {
             on: {
               "CONTROLLED.OPEN": [
                 {
-                  guard: or("isOpenAutoFocusEvent", "isArrowDownEvent"),
+                  guard: or2("isOpenAutoFocusEvent", "isArrowDownEvent"),
                   target: "open",
                   actions: ["highlightFirstItem"]
                 },
@@ -16519,11 +22012,11 @@ var Corex = (() => {
               ],
               TRIGGER_CLICK: [
                 {
-                  guard: and4(not4("isTriggerItem"), "isOpenControlled"),
+                  guard: and5(not5("isTriggerItem"), "isOpenControlled"),
                   actions: ["invokeOnClose"]
                 },
                 {
-                  guard: not4("isTriggerItem"),
+                  guard: not5("isTriggerItem"),
                   target: "closed",
                   actions: ["invokeOnClose"]
                 }
@@ -16539,7 +22032,7 @@ var Corex = (() => {
               },
               ARROW_LEFT: [
                 {
-                  guard: and4("isSubmenu", "isOpenControlled"),
+                  guard: and5("isSubmenu", "isOpenControlled"),
                   actions: ["invokeOnClose"]
                 },
                 {
@@ -16569,7 +22062,7 @@ var Corex = (() => {
               ],
               ITEM_POINTERMOVE: [
                 {
-                  guard: not4("isPointerSuspended"),
+                  guard: not5("isPointerSuspended"),
                   actions: ["setHighlightedItem", "focusMenu", "closeSiblingMenus"]
                 },
                 {
@@ -16577,28 +22070,28 @@ var Corex = (() => {
                 }
               ],
               ITEM_POINTERLEAVE: {
-                guard: and4(not4("isPointerSuspended"), not4("isTriggerItem")),
+                guard: and5(not5("isPointerSuspended"), not5("isTriggerItem")),
                 actions: ["clearHighlightedItem"]
               },
               ITEM_CLICK: [
                 // == grouped ==
                 {
-                  guard: and4(
-                    not4("isTriggerItemHighlighted"),
-                    not4("isHighlightedItemEditable"),
+                  guard: and5(
+                    not5("isTriggerItemHighlighted"),
+                    not5("isHighlightedItemEditable"),
                     "closeOnSelect",
                     "isOpenControlled"
                   ),
                   actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
                 },
                 {
-                  guard: and4(not4("isTriggerItemHighlighted"), not4("isHighlightedItemEditable"), "closeOnSelect"),
+                  guard: and5(not5("isTriggerItemHighlighted"), not5("isHighlightedItemEditable"), "closeOnSelect"),
                   target: "closed",
                   actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
                 },
                 //
                 {
-                  guard: and4(not4("isTriggerItemHighlighted"), not4("isHighlightedItemEditable")),
+                  guard: and5(not5("isTriggerItemHighlighted"), not5("isHighlightedItemEditable")),
                   actions: ["invokeOnSelect", "setOptionState"]
                 },
                 { actions: ["setHighlightedItem"] }
@@ -16685,8 +22178,8 @@ var Corex = (() => {
               if (!!getContextTriggerEl(scope)) return;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
               context.set("currentPlacement", positioning.placement);
-              const getPositionerEl22 = () => getPositionerEl4(scope);
-              return getPlacement(getTriggerEl4(scope), getPositionerEl22, __spreadProps(__spreadValues({}, positioning), {
+              const getPositionerEl22 = () => getPositionerEl5(scope);
+              return getPlacement(getTriggerEl5(scope), getPositionerEl22, __spreadProps(__spreadValues({}, positioning), {
                 defer: true,
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -16694,12 +22187,12 @@ var Corex = (() => {
               }));
             },
             trackInteractOutside({ refs, scope, prop, context, send }) {
-              const getContentEl22 = () => getContentEl5(scope);
+              const getContentEl22 = () => getContentEl7(scope);
               let restoreFocus = true;
               return trackDismissableElement(getContentEl22, {
                 type: "menu",
                 defer: true,
-                exclude: [getTriggerEl4(scope)],
+                exclude: [getTriggerEl5(scope)],
                 onInteractOutside: prop("onInteractOutside"),
                 onRequestDismiss: prop("onRequestDismiss"),
                 onFocusOutside(event) {
@@ -16755,11 +22248,11 @@ var Corex = (() => {
               const exec = () => {
                 if (event.current().type.startsWith("ITEM_POINTER")) return;
                 const itemEl = scope.getById(computed("highlightedId"));
-                const contentEl2 = getContentEl5(scope);
+                const contentEl2 = getContentEl7(scope);
                 scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
               };
               raf(() => exec());
-              const contentEl = () => getContentEl5(scope);
+              const contentEl = () => getContentEl7(scope);
               return observeAttributes(contentEl, {
                 defer: true,
                 attributes: ["aria-activedescendant"],
@@ -16778,11 +22271,11 @@ var Corex = (() => {
             },
             reposition({ context, scope, prop, event, refs }) {
               var _a;
-              const getPositionerEl22 = () => getPositionerEl4(scope);
+              const getPositionerEl22 = () => getPositionerEl5(scope);
               const anchorPoint = context.get("anchorPoint");
               const getAnchorRect = anchorPoint ? () => __spreadValues({ width: 0, height: 0 }, anchorPoint) : void 0;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
-              getPlacement(getTriggerEl4(scope), getPositionerEl22, __spreadProps(__spreadValues(__spreadProps(__spreadValues({}, positioning), {
+              getPlacement(getTriggerEl5(scope), getPositionerEl22, __spreadProps(__spreadValues(__spreadProps(__spreadValues({}, positioning), {
                 defer: true,
                 getAnchorRect
               }), (_a = event.options) != null ? _a : {}), {
@@ -16813,7 +22306,7 @@ var Corex = (() => {
               }
             },
             setIntentPolygon({ context, scope, event }) {
-              const menu = getContentEl5(scope);
+              const menu = getContentEl7(scope);
               const placement = context.get("currentPlacement");
               if (!menu || !placement) return;
               const rect = menu.getBoundingClientRect();
@@ -16845,7 +22338,7 @@ var Corex = (() => {
             },
             focusMenu({ scope }) {
               raf(() => {
-                const contentEl = getContentEl5(scope);
+                const contentEl = getContentEl7(scope);
                 const initialFocusEl = getInitialFocus({
                   root: contentEl,
                   enabled: !contains(contentEl, scope.getActiveElement()),
@@ -16858,7 +22351,7 @@ var Corex = (() => {
               });
             },
             highlightFirstItem({ context, scope }) {
-              const fn = getContentEl5(scope) ? queueMicrotask : raf;
+              const fn = getContentEl7(scope) ? queueMicrotask : raf;
               fn(() => {
                 const first2 = getFirstEl(scope);
                 if (!first2) return;
@@ -16866,7 +22359,7 @@ var Corex = (() => {
               });
             },
             highlightLastItem({ context, scope }) {
-              const fn = getContentEl5(scope) ? queueMicrotask : raf;
+              const fn = getContentEl7(scope) ? queueMicrotask : raf;
               fn(() => {
                 const last2 = getLastEl(scope);
                 if (!last2) return;
@@ -16893,7 +22386,7 @@ var Corex = (() => {
               var _a;
               const value = context.get("highlightedValue");
               if (value == null) return;
-              const node = getItemEl2(scope, value);
+              const node = getItemEl3(scope, value);
               dispatchSelectionEvent(node, value);
               (_a = prop("onSelect")) == null ? void 0 : _a({ value });
             },
@@ -16901,7 +22394,7 @@ var Corex = (() => {
               if (context.get("isSubmenu") || context.get("anchorPoint") || event.restoreFocus === false) return;
               queueMicrotask(() => {
                 var _a;
-                return (_a = getTriggerEl4(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+                return (_a = getTriggerEl5(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
               });
             },
             highlightMatchedItem({ scope, context, event, refs }) {
@@ -16935,7 +22428,7 @@ var Corex = (() => {
                 if (intentPolygon && event.point && isPointInPolygon(intentPolygon, event.point)) {
                   continue;
                 }
-                (_a = getContentEl5(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+                (_a = getContentEl7(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
                 child.send({ type: "CLOSE" });
               }
             },
@@ -16982,7 +22475,7 @@ var Corex = (() => {
           }
         }
       });
-      props8 = createProps()([
+      props14 = createProps()([
         "anchorPoint",
         "aria-label",
         "closeOnSelect",
@@ -17008,13 +22501,13 @@ var Corex = (() => {
         "positioning",
         "typeahead"
       ]);
-      splitProps8 = createSplitProps(props8);
-      itemProps3 = createProps()(["closeOnSelect", "disabled", "value", "valueText"]);
-      splitItemProps3 = createSplitProps(itemProps3);
-      itemGroupLabelProps2 = createProps()(["htmlFor"]);
-      splitItemGroupLabelProps2 = createSplitProps(itemGroupLabelProps2);
-      itemGroupProps2 = createProps()(["id"]);
-      splitItemGroupProps2 = createSplitProps(itemGroupProps2);
+      splitProps14 = createSplitProps(props14);
+      itemProps5 = createProps()(["closeOnSelect", "disabled", "value", "valueText"]);
+      splitItemProps5 = createSplitProps(itemProps5);
+      itemGroupLabelProps3 = createProps()(["htmlFor"]);
+      splitItemGroupLabelProps3 = createSplitProps(itemGroupLabelProps3);
+      itemGroupProps3 = createProps()(["id"]);
+      splitItemGroupProps3 = createSplitProps(itemGroupProps3);
       optionItemProps = createProps()([
         "checked",
         "closeOnSelect",
@@ -17031,11 +22524,11 @@ var Corex = (() => {
           __publicField(this, "children", []);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine8, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine14, props26);
         }
         initApi() {
-          return connect8(this.machine.service, normalizeProps);
+          return connect14(this.machine.service, normalizeProps);
         }
         setChild(child) {
           this.api.setChild(child.machine.service);
@@ -17351,12 +22844,3045 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/number-input.mjs
+  var number_input_exports = {};
+  __export(number_input_exports, {
+    NumberInput: () => NumberInputHook
+  });
+  function $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options = {}) {
+    let { numberingSystem } = options;
+    if (numberingSystem && locale.includes("-nu-")) {
+      if (!locale.includes("-u-")) locale += "-u-";
+      locale += `-nu-${numberingSystem}`;
+    }
+    if (options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
+      var _UNITS_unit;
+      let { unit, unitDisplay = "short" } = options;
+      if (!unit) throw new Error('unit option must be provided with style: "unit"');
+      if (!((_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay])) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
+      options = __spreadProps(__spreadValues({}, options), {
+        style: "decimal"
+      });
+    }
+    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
+    if ($488c6ddbf4ef74c2$var$formatterCache.has(cacheKey)) return $488c6ddbf4ef74c2$var$formatterCache.get(cacheKey);
+    let numberFormatter = new Intl.NumberFormat(locale, options);
+    $488c6ddbf4ef74c2$var$formatterCache.set(cacheKey, numberFormatter);
+    return numberFormatter;
+  }
+  function $488c6ddbf4ef74c2$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
+    if (signDisplay === "auto") return numberFormat.format(num);
+    else if (signDisplay === "never") return numberFormat.format(Math.abs(num));
+    else {
+      let needsPositiveSign = false;
+      if (signDisplay === "always") needsPositiveSign = num > 0 || Object.is(num, 0);
+      else if (signDisplay === "exceptZero") {
+        if (Object.is(num, -0) || Object.is(num, 0)) num = Math.abs(num);
+        else needsPositiveSign = num > 0;
+      }
+      if (needsPositiveSign) {
+        let negative = numberFormat.format(-num);
+        let noSign = numberFormat.format(num);
+        let minus = negative.replace(noSign, "").replace(/\u200e|\u061C/, "");
+        if ([
+          ...minus
+        ].length !== 1) console.warn("@react-aria/i18n polyfill for NumberFormat signDisplay: Unsupported case");
+        let positive = negative.replace(noSign, "!!!").replace(minus, "+").replace("!!!", noSign);
+        return positive;
+      } else return numberFormat.format(num);
+    }
+  }
+  function $6c7bd7858deea686$var$getNumberParserImpl(locale, options, value) {
+    let defaultParser = $6c7bd7858deea686$var$getCachedNumberParser(locale, options);
+    if (!locale.includes("-nu-") && !defaultParser.isValidPartialNumber(value)) {
+      for (let numberingSystem of $6c7bd7858deea686$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
+        let parser = $6c7bd7858deea686$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
+        if (parser.isValidPartialNumber(value)) return parser;
+      }
+    }
+    return defaultParser;
+  }
+  function $6c7bd7858deea686$var$getCachedNumberParser(locale, options) {
+    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
+    let parser = $6c7bd7858deea686$var$numberParserCache.get(cacheKey);
+    if (!parser) {
+      parser = new $6c7bd7858deea686$var$NumberParserImpl(locale, options);
+      $6c7bd7858deea686$var$numberParserCache.set(cacheKey, parser);
+    }
+    return parser;
+  }
+  function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
+    var _allParts_find, _posAllParts_find, _decimalParts_find, _allParts_find1;
+    let symbolFormatter = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
+      // Resets so we get the full range of symbols
+      minimumSignificantDigits: 1,
+      maximumSignificantDigits: 21,
+      roundingIncrement: 1,
+      roundingPriority: "auto",
+      roundingMode: "halfExpand"
+    }));
+    let allParts = symbolFormatter.formatToParts(-10000.111);
+    let posAllParts = symbolFormatter.formatToParts(10000.111);
+    let pluralParts = $6c7bd7858deea686$var$pluralNumbers.map((n2) => symbolFormatter.formatToParts(n2));
+    var _allParts_find_value;
+    let minusSign = (_allParts_find_value = (_allParts_find = allParts.find((p2) => p2.type === "minusSign")) === null || _allParts_find === void 0 ? void 0 : _allParts_find.value) !== null && _allParts_find_value !== void 0 ? _allParts_find_value : "-";
+    let plusSign = (_posAllParts_find = posAllParts.find((p2) => p2.type === "plusSign")) === null || _posAllParts_find === void 0 ? void 0 : _posAllParts_find.value;
+    if (!plusSign && ((originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "exceptZero" || (originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "always")) plusSign = "+";
+    let decimalParts = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })).formatToParts(1e-3);
+    let decimal = (_decimalParts_find = decimalParts.find((p2) => p2.type === "decimal")) === null || _decimalParts_find === void 0 ? void 0 : _decimalParts_find.value;
+    let group2 = (_allParts_find1 = allParts.find((p2) => p2.type === "group")) === null || _allParts_find1 === void 0 ? void 0 : _allParts_find1.value;
+    let allPartsLiterals = allParts.filter((p2) => !$6c7bd7858deea686$var$nonLiteralParts.has(p2.type)).map((p2) => $6c7bd7858deea686$var$escapeRegex(p2.value));
+    let pluralPartsLiterals = pluralParts.flatMap((p2) => p2.filter((p22) => !$6c7bd7858deea686$var$nonLiteralParts.has(p22.type)).map((p22) => $6c7bd7858deea686$var$escapeRegex(p22.value)));
+    let sortedLiterals = [
+      .../* @__PURE__ */ new Set([
+        ...allPartsLiterals,
+        ...pluralPartsLiterals
+      ])
+    ].sort((a2, b2) => b2.length - a2.length);
+    let literals = sortedLiterals.length === 0 ? new RegExp("[\\p{White_Space}]", "gu") : new RegExp(`${sortedLiterals.join("|")}|[\\p{White_Space}]`, "gu");
+    let numerals = [
+      ...new Intl.NumberFormat(intlOptions.locale, {
+        useGrouping: false
+      }).format(9876543210)
+    ].reverse();
+    let indexes = new Map(numerals.map((d2, i2) => [
+      d2,
+      i2
+    ]));
+    let numeral = new RegExp(`[${numerals.join("")}]`, "g");
+    let index = (d2) => String(indexes.get(d2));
+    return {
+      minusSign,
+      plusSign,
+      decimal,
+      group: group2,
+      literals,
+      numeral,
+      index
+    };
+  }
+  function $6c7bd7858deea686$var$replaceAll(str, find2, replace2) {
+    if (str.replaceAll) return str.replaceAll(find2, replace2);
+    return str.split(find2).join(replace2);
+  }
+  function $6c7bd7858deea686$var$escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  function recordCursor(inputEl, scope) {
+    if (!inputEl || !scope.isActiveElement(inputEl)) return;
+    try {
+      const { selectionStart: start, selectionEnd: end, value } = inputEl;
+      if (start == null || end == null) return void 0;
+      return { start, end, value };
+    } catch (e2) {
+      return void 0;
+    }
+  }
+  function restoreCursor(inputEl, selection, scope) {
+    if (!inputEl || !scope.isActiveElement(inputEl)) return;
+    if (!selection) {
+      const len = inputEl.value.length;
+      inputEl.setSelectionRange(len, len);
+      return;
+    }
+    try {
+      const newValue = inputEl.value;
+      const { start, end, value: oldValue } = selection;
+      if (newValue === oldValue) {
+        inputEl.setSelectionRange(start, end);
+        return;
+      }
+      const newStart = getNextCursorPosition(oldValue, newValue, start);
+      const newEnd = start === end ? newStart : getNextCursorPosition(oldValue, newValue, end);
+      const clampedStart = Math.max(0, Math.min(newStart, newValue.length));
+      const clampedEnd = Math.max(clampedStart, Math.min(newEnd, newValue.length));
+      inputEl.setSelectionRange(clampedStart, clampedEnd);
+    } catch (e2) {
+      const len = inputEl.value.length;
+      inputEl.setSelectionRange(len, len);
+    }
+  }
+  function getNextCursorPosition(oldValue, newValue, oldPosition) {
+    const beforeCursor = oldValue.slice(0, oldPosition);
+    const afterCursor = oldValue.slice(oldPosition);
+    let prefixLength = 0;
+    const maxPrefixLength = Math.min(beforeCursor.length, newValue.length);
+    for (let i2 = 0; i2 < maxPrefixLength; i2++) {
+      if (beforeCursor[i2] === newValue[i2]) {
+        prefixLength = i2 + 1;
+      } else {
+        break;
+      }
+    }
+    let suffixLength = 0;
+    const maxSuffixLength = Math.min(afterCursor.length, newValue.length - prefixLength);
+    for (let i2 = 0; i2 < maxSuffixLength; i2++) {
+      const oldIndex = afterCursor.length - 1 - i2;
+      const newIndex = newValue.length - 1 - i2;
+      if (afterCursor[oldIndex] === newValue[newIndex]) {
+        suffixLength = i2 + 1;
+      } else {
+        break;
+      }
+    }
+    if (beforeCursor.length > 0 && prefixLength >= beforeCursor.length) {
+      return prefixLength;
+    }
+    if (suffixLength >= afterCursor.length) {
+      return newValue.length - suffixLength;
+    }
+    if (prefixLength > 0) {
+      return prefixLength;
+    }
+    if (suffixLength > 0) {
+      return newValue.length - suffixLength;
+    }
+    if (oldPosition === 0 && prefixLength === 0 && suffixLength === 0) {
+      return newValue.length;
+    }
+    if (oldValue.length > 0) {
+      const ratio = oldPosition / oldValue.length;
+      return Math.round(ratio * newValue.length);
+    }
+    return newValue.length;
+  }
+  function connect15(service, normalize) {
+    const { state: state2, send, prop, scope, computed } = service;
+    const focused = state2.hasTag("focus");
+    const disabled = computed("isDisabled");
+    const readOnly = !!prop("readOnly");
+    const required = !!prop("required");
+    const scrubbing = state2.matches("scrubbing");
+    const empty = computed("isValueEmpty");
+    const invalid = computed("isOutOfRange") || !!prop("invalid");
+    const isIncrementDisabled = disabled || !computed("canIncrement") || readOnly;
+    const isDecrementDisabled = disabled || !computed("canDecrement") || readOnly;
+    const translations = prop("translations");
+    return {
+      focused,
+      invalid,
+      empty,
+      value: computed("formattedValue"),
+      valueAsNumber: computed("valueAsNumber"),
+      setValue(value) {
+        send({ type: "VALUE.SET", value });
+      },
+      clearValue() {
+        send({ type: "VALUE.CLEAR" });
+      },
+      increment() {
+        send({ type: "VALUE.INCREMENT" });
+      },
+      decrement() {
+        send({ type: "VALUE.DECREMENT" });
+      },
+      setToMax() {
+        send({ type: "VALUE.SET", value: prop("max") });
+      },
+      setToMin() {
+        send({ type: "VALUE.SET", value: prop("min") });
+      },
+      focus() {
+        var _a;
+        (_a = getInputEl4(scope)) == null ? void 0 : _a.focus();
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getRootId12(scope)
+        }, parts15.root.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-focus": dataAttr(focused),
+          "data-invalid": dataAttr(invalid),
+          "data-scrubbing": dataAttr(scrubbing)
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts15.label.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-focus": dataAttr(focused),
+          "data-invalid": dataAttr(invalid),
+          "data-required": dataAttr(required),
+          "data-scrubbing": dataAttr(scrubbing),
+          id: getLabelId8(scope),
+          htmlFor: getInputId5(scope),
+          onClick() {
+            raf(() => {
+              setCaretToEnd(getInputEl4(scope));
+            });
+          }
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.control.attrs), {
+          dir: prop("dir"),
+          role: "group",
+          "aria-disabled": disabled,
+          "data-focus": dataAttr(focused),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-scrubbing": dataAttr(scrubbing),
+          "aria-invalid": ariaAttr(invalid)
+        }));
+      },
+      getValueTextProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.valueText.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-focus": dataAttr(focused),
+          "data-scrubbing": dataAttr(scrubbing)
+        }));
+      },
+      getInputProps() {
+        return normalize.input(__spreadProps(__spreadValues({}, parts15.input.attrs), {
+          dir: prop("dir"),
+          name: prop("name"),
+          form: prop("form"),
+          id: getInputId5(scope),
+          role: "spinbutton",
+          defaultValue: computed("formattedValue"),
+          pattern: prop("formatOptions") ? void 0 : prop("pattern"),
+          inputMode: prop("inputMode"),
+          "aria-invalid": ariaAttr(invalid),
+          "data-invalid": dataAttr(invalid),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          readOnly,
+          required: prop("required"),
+          autoComplete: "off",
+          autoCorrect: "off",
+          spellCheck: "false",
+          type: "text",
+          "aria-roledescription": "numberfield",
+          "aria-valuemin": prop("min"),
+          "aria-valuemax": prop("max"),
+          "aria-valuenow": Number.isNaN(computed("valueAsNumber")) ? void 0 : computed("valueAsNumber"),
+          "aria-valuetext": computed("valueText"),
+          "data-scrubbing": dataAttr(scrubbing),
+          onFocus() {
+            send({ type: "INPUT.FOCUS" });
+          },
+          onBlur() {
+            send({ type: "INPUT.BLUR" });
+          },
+          onInput(event) {
+            const selection = recordCursor(event.currentTarget, scope);
+            send({ type: "INPUT.CHANGE", target: event.currentTarget, hint: "set", selection });
+          },
+          onBeforeInput(event) {
+            var _a;
+            try {
+              const { selectionStart, selectionEnd, value } = event.currentTarget;
+              const nextValue = value.slice(0, selectionStart) + ((_a = event.data) != null ? _a : "") + value.slice(selectionEnd);
+              const isValid = computed("parser").isValidPartialNumber(nextValue);
+              if (!isValid) {
+                event.preventDefault();
+              }
+            } catch (e2) {
+            }
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (readOnly) return;
+            if (isComposingEvent(event)) return;
+            const step = getEventStep(event) * prop("step");
+            const keyMap2 = {
+              ArrowUp() {
+                send({ type: "INPUT.ARROW_UP", step });
+                event.preventDefault();
+              },
+              ArrowDown() {
+                send({ type: "INPUT.ARROW_DOWN", step });
+                event.preventDefault();
+              },
+              Home() {
+                if (isModifierKey(event)) return;
+                send({ type: "INPUT.HOME" });
+                event.preventDefault();
+              },
+              End() {
+                if (isModifierKey(event)) return;
+                send({ type: "INPUT.END" });
+                event.preventDefault();
+              },
+              Enter(event2) {
+                const selection = recordCursor(event2.currentTarget, scope);
+                send({ type: "INPUT.ENTER", selection });
+              }
+            };
+            const exec = keyMap2[event.key];
+            exec == null ? void 0 : exec(event);
+          }
+        }));
+      },
+      getDecrementTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts15.decrementTrigger.attrs), {
+          dir: prop("dir"),
+          id: getDecrementTriggerId(scope),
+          disabled: isDecrementDisabled,
+          "data-disabled": dataAttr(isDecrementDisabled),
+          "aria-label": translations.decrementLabel,
+          type: "button",
+          tabIndex: -1,
+          "aria-controls": getInputId5(scope),
+          "data-scrubbing": dataAttr(scrubbing),
+          onPointerDown(event) {
+            var _a;
+            if (isDecrementDisabled) return;
+            if (!isLeftClick(event)) return;
+            send({ type: "TRIGGER.PRESS_DOWN", hint: "decrement", pointerType: event.pointerType });
+            if (event.pointerType === "mouse") {
+              event.preventDefault();
+            }
+            if (event.pointerType === "touch") {
+              (_a = event.currentTarget) == null ? void 0 : _a.focus({ preventScroll: true });
+            }
+          },
+          onPointerUp(event) {
+            send({ type: "TRIGGER.PRESS_UP", hint: "decrement", pointerType: event.pointerType });
+          },
+          onPointerLeave() {
+            if (isDecrementDisabled) return;
+            send({ type: "TRIGGER.PRESS_UP", hint: "decrement" });
+          }
+        }));
+      },
+      getIncrementTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts15.incrementTrigger.attrs), {
+          dir: prop("dir"),
+          id: getIncrementTriggerId(scope),
+          disabled: isIncrementDisabled,
+          "data-disabled": dataAttr(isIncrementDisabled),
+          "aria-label": translations.incrementLabel,
+          type: "button",
+          tabIndex: -1,
+          "aria-controls": getInputId5(scope),
+          "data-scrubbing": dataAttr(scrubbing),
+          onPointerDown(event) {
+            var _a;
+            if (isIncrementDisabled || !isLeftClick(event)) return;
+            send({ type: "TRIGGER.PRESS_DOWN", hint: "increment", pointerType: event.pointerType });
+            if (event.pointerType === "mouse") {
+              event.preventDefault();
+            }
+            if (event.pointerType === "touch") {
+              (_a = event.currentTarget) == null ? void 0 : _a.focus({ preventScroll: true });
+            }
+          },
+          onPointerUp(event) {
+            send({ type: "TRIGGER.PRESS_UP", hint: "increment", pointerType: event.pointerType });
+          },
+          onPointerLeave(event) {
+            send({ type: "TRIGGER.PRESS_UP", hint: "increment", pointerType: event.pointerType });
+          }
+        }));
+      },
+      getScrubberProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.scrubber.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          id: getScrubberId(scope),
+          role: "presentation",
+          "data-scrubbing": dataAttr(scrubbing),
+          onMouseDown(event) {
+            if (disabled) return;
+            if (!isLeftClick(event)) return;
+            const point = getEventPoint(event);
+            const win = getWindow(event.currentTarget);
+            const dpr = win.devicePixelRatio;
+            point.x = point.x - roundToDpr(7.5, dpr);
+            point.y = point.y - roundToDpr(7.5, dpr);
+            send({ type: "SCRUBBER.PRESS_DOWN", point });
+            event.preventDefault();
+            raf(() => {
+              setCaretToEnd(getInputEl4(scope));
+            });
+          },
+          style: {
+            cursor: disabled ? void 0 : "ew-resize"
+          }
+        }));
+      }
+    };
+  }
+  var $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, anatomy15, parts15, getRootId12, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId8, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and6, machine15, props15, splitProps15, NumberInput, NumberInputHook;
+  var init_number_input = __esm({
+    "../priv/static/number-input.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
+      $488c6ddbf4ef74c2$var$supportsSignDisplay = false;
+      try {
+        $488c6ddbf4ef74c2$var$supportsSignDisplay = new Intl.NumberFormat("de-DE", {
+          signDisplay: "exceptZero"
+        }).resolvedOptions().signDisplay === "exceptZero";
+      } catch (e2) {
+      }
+      $488c6ddbf4ef74c2$var$supportsUnit = false;
+      try {
+        $488c6ddbf4ef74c2$var$supportsUnit = new Intl.NumberFormat("de-DE", {
+          style: "unit",
+          unit: "degree"
+        }).resolvedOptions().style === "unit";
+      } catch (e2) {
+      }
+      $488c6ddbf4ef74c2$var$UNITS = {
+        degree: {
+          narrow: {
+            default: "\xB0",
+            "ja-JP": " \u5EA6",
+            "zh-TW": "\u5EA6",
+            "sl-SI": " \xB0"
+          }
+        }
+      };
+      $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5 = class {
+        /** Formats a number value as a string, according to the locale and options provided to the constructor. */
+        format(value) {
+          let res = "";
+          if (!$488c6ddbf4ef74c2$var$supportsSignDisplay && this.options.signDisplay != null) res = $488c6ddbf4ef74c2$export$711b50b3c525e0f2(this.numberFormatter, this.options.signDisplay, value);
+          else res = this.numberFormatter.format(value);
+          if (this.options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
+            var _UNITS_unit;
+            let { unit, unitDisplay = "short", locale } = this.resolvedOptions();
+            if (!unit) return res;
+            let values = (_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay];
+            res += values[locale] || values.default;
+          }
+          return res;
+        }
+        /** Formats a number to an array of parts such as separators, digits, punctuation, and more. */
+        formatToParts(value) {
+          return this.numberFormatter.formatToParts(value);
+        }
+        /** Formats a number range as a string. */
+        formatRange(start, end) {
+          if (typeof this.numberFormatter.formatRange === "function") return this.numberFormatter.formatRange(start, end);
+          if (end < start) throw new RangeError("End date must be >= start date");
+          return `${this.format(start)} \u2013 ${this.format(end)}`;
+        }
+        /** Formats a number range as an array of parts. */
+        formatRangeToParts(start, end) {
+          if (typeof this.numberFormatter.formatRangeToParts === "function") return this.numberFormatter.formatRangeToParts(start, end);
+          if (end < start) throw new RangeError("End date must be >= start date");
+          let startParts = this.numberFormatter.formatToParts(start);
+          let endParts = this.numberFormatter.formatToParts(end);
+          return [
+            ...startParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
+              source: "startRange"
+            })),
+            {
+              type: "literal",
+              value: " \u2013 ",
+              source: "shared"
+            },
+            ...endParts.map((p2) => __spreadProps(__spreadValues({}, p2), {
+              source: "endRange"
+            }))
+          ];
+        }
+        /** Returns the resolved formatting options based on the values passed to the constructor. */
+        resolvedOptions() {
+          let options = this.numberFormatter.resolvedOptions();
+          if (!$488c6ddbf4ef74c2$var$supportsSignDisplay && this.options.signDisplay != null) options = __spreadProps(__spreadValues({}, options), {
+            signDisplay: this.options.signDisplay
+          });
+          if (!$488c6ddbf4ef74c2$var$supportsUnit && this.options.style === "unit") options = __spreadProps(__spreadValues({}, options), {
+            style: "unit",
+            unit: this.options.unit,
+            unitDisplay: this.options.unitDisplay
+          });
+          return options;
+        }
+        constructor(locale, options = {}) {
+          this.numberFormatter = $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options);
+          this.options = options;
+        }
+      };
+      $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX = new RegExp("^.*\\(.*\\).*$");
+      $6c7bd7858deea686$var$NUMBERING_SYSTEMS = [
+        "latn",
+        "arab",
+        "hanidec",
+        "deva",
+        "beng",
+        "fullwide"
+      ];
+      $6c7bd7858deea686$export$cd11ab140839f11d = class {
+        /**
+        * Parses the given string to a number. Returns NaN if a valid number could not be parsed.
+        */
+        parse(value) {
+          return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).parse(value);
+        }
+        /**
+        * Returns whether the given string could potentially be a valid number. This should be used to
+        * validate user input as the user types. If a `minValue` or `maxValue` is provided, the validity
+        * of the minus/plus sign characters can be checked.
+        */
+        isValidPartialNumber(value, minValue, maxValue) {
+          return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).isValidPartialNumber(value, minValue, maxValue);
+        }
+        /**
+        * Returns a numbering system for which the given string is valid in the current locale.
+        * If no numbering system could be detected, the default numbering system for the current
+        * locale is returned.
+        */
+        getNumberingSystem(value) {
+          return $6c7bd7858deea686$var$getNumberParserImpl(this.locale, this.options, value).options.numberingSystem;
+        }
+        constructor(locale, options = {}) {
+          this.locale = locale;
+          this.options = options;
+        }
+      };
+      $6c7bd7858deea686$var$numberParserCache = /* @__PURE__ */ new Map();
+      $6c7bd7858deea686$var$NumberParserImpl = class {
+        parse(value) {
+          let fullySanitizedValue = this.sanitize(value);
+          if (this.symbols.group)
+            fullySanitizedValue = $6c7bd7858deea686$var$replaceAll(fullySanitizedValue, this.symbols.group, "");
+          if (this.symbols.decimal) fullySanitizedValue = fullySanitizedValue.replace(this.symbols.decimal, ".");
+          if (this.symbols.minusSign) fullySanitizedValue = fullySanitizedValue.replace(this.symbols.minusSign, "-");
+          fullySanitizedValue = fullySanitizedValue.replace(this.symbols.numeral, this.symbols.index);
+          if (this.options.style === "percent") {
+            let isNegative = fullySanitizedValue.indexOf("-");
+            fullySanitizedValue = fullySanitizedValue.replace("-", "");
+            fullySanitizedValue = fullySanitizedValue.replace("+", "");
+            let index = fullySanitizedValue.indexOf(".");
+            if (index === -1) index = fullySanitizedValue.length;
+            fullySanitizedValue = fullySanitizedValue.replace(".", "");
+            if (index - 2 === 0) fullySanitizedValue = `0.${fullySanitizedValue}`;
+            else if (index - 2 === -1) fullySanitizedValue = `0.0${fullySanitizedValue}`;
+            else if (index - 2 === -2) fullySanitizedValue = "0.00";
+            else fullySanitizedValue = `${fullySanitizedValue.slice(0, index - 2)}.${fullySanitizedValue.slice(index - 2)}`;
+            if (isNegative > -1) fullySanitizedValue = `-${fullySanitizedValue}`;
+          }
+          let newValue = fullySanitizedValue ? +fullySanitizedValue : NaN;
+          if (isNaN(newValue)) return NaN;
+          if (this.options.style === "percent") {
+            var _this_options_minimumFractionDigits, _this_options_maximumFractionDigits;
+            let options = __spreadProps(__spreadValues({}, this.options), {
+              style: "decimal",
+              minimumFractionDigits: Math.min(((_this_options_minimumFractionDigits = this.options.minimumFractionDigits) !== null && _this_options_minimumFractionDigits !== void 0 ? _this_options_minimumFractionDigits : 0) + 2, 20),
+              maximumFractionDigits: Math.min(((_this_options_maximumFractionDigits = this.options.maximumFractionDigits) !== null && _this_options_maximumFractionDigits !== void 0 ? _this_options_maximumFractionDigits : 0) + 2, 20)
+            });
+            return new $6c7bd7858deea686$export$cd11ab140839f11d(this.locale, options).parse(new (0, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5)(this.locale, options).format(newValue));
+          }
+          if (this.options.currencySign === "accounting" && $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX.test(value)) newValue = -1 * newValue;
+          return newValue;
+        }
+        sanitize(value) {
+          value = value.replace(this.symbols.literals, "");
+          if (this.symbols.minusSign) value = value.replace("-", this.symbols.minusSign);
+          if (this.options.numberingSystem === "arab") {
+            if (this.symbols.decimal) {
+              value = value.replace(",", this.symbols.decimal);
+              value = value.replace(String.fromCharCode(1548), this.symbols.decimal);
+            }
+            if (this.symbols.group) value = $6c7bd7858deea686$var$replaceAll(value, ".", this.symbols.group);
+          }
+          if (this.symbols.group === "\u2019" && value.includes("'")) value = $6c7bd7858deea686$var$replaceAll(value, "'", this.symbols.group);
+          if (this.options.locale === "fr-FR" && this.symbols.group) {
+            value = $6c7bd7858deea686$var$replaceAll(value, " ", this.symbols.group);
+            value = $6c7bd7858deea686$var$replaceAll(value, /\u00A0/g, this.symbols.group);
+          }
+          return value;
+        }
+        isValidPartialNumber(value, minValue = -Infinity, maxValue = Infinity) {
+          value = this.sanitize(value);
+          if (this.symbols.minusSign && value.startsWith(this.symbols.minusSign) && minValue < 0) value = value.slice(this.symbols.minusSign.length);
+          else if (this.symbols.plusSign && value.startsWith(this.symbols.plusSign) && maxValue > 0) value = value.slice(this.symbols.plusSign.length);
+          if (this.symbols.group && value.startsWith(this.symbols.group)) return false;
+          if (this.symbols.decimal && value.indexOf(this.symbols.decimal) > -1 && this.options.maximumFractionDigits === 0) return false;
+          if (this.symbols.group) value = $6c7bd7858deea686$var$replaceAll(value, this.symbols.group, "");
+          value = value.replace(this.symbols.numeral, "");
+          if (this.symbols.decimal) value = value.replace(this.symbols.decimal, "");
+          return value.length === 0;
+        }
+        constructor(locale, options = {}) {
+          this.locale = locale;
+          if (options.roundingIncrement !== 1 && options.roundingIncrement != null) {
+            if (options.maximumFractionDigits == null && options.minimumFractionDigits == null) {
+              options.maximumFractionDigits = 0;
+              options.minimumFractionDigits = 0;
+            } else if (options.maximumFractionDigits == null) options.maximumFractionDigits = options.minimumFractionDigits;
+            else if (options.minimumFractionDigits == null) options.minimumFractionDigits = options.maximumFractionDigits;
+          }
+          this.formatter = new Intl.NumberFormat(locale, options);
+          this.options = this.formatter.resolvedOptions();
+          this.symbols = $6c7bd7858deea686$var$getSymbols(locale, this.formatter, this.options, options);
+          var _this_options_minimumFractionDigits, _this_options_maximumFractionDigits;
+          if (this.options.style === "percent" && (((_this_options_minimumFractionDigits = this.options.minimumFractionDigits) !== null && _this_options_minimumFractionDigits !== void 0 ? _this_options_minimumFractionDigits : 0) > 18 || ((_this_options_maximumFractionDigits = this.options.maximumFractionDigits) !== null && _this_options_maximumFractionDigits !== void 0 ? _this_options_maximumFractionDigits : 0) > 18)) console.warn("NumberParser cannot handle percentages with greater than 18 decimal places, please reduce the number in your options.");
+        }
+      };
+      $6c7bd7858deea686$var$nonLiteralParts = /* @__PURE__ */ new Set([
+        "decimal",
+        "fraction",
+        "integer",
+        "minusSign",
+        "plusSign",
+        "group"
+      ]);
+      $6c7bd7858deea686$var$pluralNumbers = [
+        0,
+        4,
+        2,
+        1,
+        11,
+        20,
+        3,
+        7,
+        100,
+        21,
+        0.1,
+        1.1
+      ];
+      anatomy15 = createAnatomy("numberInput").parts(
+        "root",
+        "label",
+        "input",
+        "control",
+        "valueText",
+        "incrementTrigger",
+        "decrementTrigger",
+        "scrubber"
+      );
+      parts15 = anatomy15.build();
+      getRootId12 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `number-input:${ctx.id}`;
+      };
+      getInputId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `number-input:${ctx.id}:input`;
+      };
+      getIncrementTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.incrementTrigger) != null ? _b : `number-input:${ctx.id}:inc`;
+      };
+      getDecrementTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.decrementTrigger) != null ? _b : `number-input:${ctx.id}:dec`;
+      };
+      getScrubberId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.scrubber) != null ? _b : `number-input:${ctx.id}:scrubber`;
+      };
+      getCursorId = (ctx) => `number-input:${ctx.id}:cursor`;
+      getLabelId8 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `number-input:${ctx.id}:label`;
+      };
+      getInputEl4 = (ctx) => ctx.getById(getInputId5(ctx));
+      getIncrementTriggerEl = (ctx) => ctx.getById(getIncrementTriggerId(ctx));
+      getDecrementTriggerEl = (ctx) => ctx.getById(getDecrementTriggerId(ctx));
+      getCursorEl = (ctx) => ctx.getDoc().getElementById(getCursorId(ctx));
+      getPressedTriggerEl = (ctx, hint) => {
+        let btnEl = null;
+        if (hint === "increment") {
+          btnEl = getIncrementTriggerEl(ctx);
+        }
+        if (hint === "decrement") {
+          btnEl = getDecrementTriggerEl(ctx);
+        }
+        return btnEl;
+      };
+      setupVirtualCursor = (ctx, point) => {
+        if (isSafari()) return;
+        createVirtualCursor(ctx, point);
+        return () => {
+          var _a;
+          (_a = getCursorEl(ctx)) == null ? void 0 : _a.remove();
+        };
+      };
+      preventTextSelection = (ctx) => {
+        const doc = ctx.getDoc();
+        const html = doc.documentElement;
+        const body = doc.body;
+        body.style.pointerEvents = "none";
+        html.style.userSelect = "none";
+        html.style.cursor = "ew-resize";
+        return () => {
+          body.style.pointerEvents = "";
+          html.style.userSelect = "";
+          html.style.cursor = "";
+          if (!html.style.length) {
+            html.removeAttribute("style");
+          }
+          if (!body.style.length) {
+            body.removeAttribute("style");
+          }
+        };
+      };
+      getMousemoveValue = (ctx, opts) => {
+        const { point, isRtl, event } = opts;
+        const win = ctx.getWin();
+        const x2 = roundToDpr(event.movementX, win.devicePixelRatio);
+        const y2 = roundToDpr(event.movementY, win.devicePixelRatio);
+        let hint = x2 > 0 ? "increment" : x2 < 0 ? "decrement" : null;
+        if (isRtl && hint === "increment") hint = "decrement";
+        if (isRtl && hint === "decrement") hint = "increment";
+        const newPoint = { x: point.x + x2, y: point.y + y2 };
+        const width = win.innerWidth;
+        const half = roundToDpr(7.5, win.devicePixelRatio);
+        newPoint.x = wrap2(newPoint.x + half, width) - half;
+        return { hint, point: newPoint };
+      };
+      createVirtualCursor = (ctx, point) => {
+        const doc = ctx.getDoc();
+        const el = doc.createElement("div");
+        el.className = "scrubber--cursor";
+        el.id = getCursorId(ctx);
+        Object.assign(el.style, {
+          width: "15px",
+          height: "15px",
+          position: "fixed",
+          pointerEvents: "none",
+          left: "0px",
+          top: "0px",
+          zIndex: MAX_Z_INDEX,
+          transform: point ? `translate3d(${point.x}px, ${point.y}px, 0px)` : void 0,
+          willChange: "transform"
+        });
+        el.innerHTML = `
+      <svg width="46" height="15" style="left: -15.5px; position: absolute; top: 0; filter: drop-shadow(rgba(0, 0, 0, 0.4) 0px 1px 1.1px);">
+        <g transform="translate(2 3)">
+          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z" style="stroke-width: 2px; stroke: white;"></path>
+          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z"></path>
+        </g>
+      </svg>`;
+        doc.body.appendChild(el);
+      };
+      createFormatter = (locale, options = {}) => {
+        return new Intl.NumberFormat(locale, options);
+      };
+      createParser = (locale, options = {}) => {
+        return new $6c7bd7858deea686$export$cd11ab140839f11d(locale, options);
+      };
+      parseValue = (value, params) => {
+        const { prop, computed } = params;
+        if (!prop("formatOptions")) return parseFloat(value);
+        if (value === "") return Number.NaN;
+        return computed("parser").parse(value);
+      };
+      formatValue = (value, params) => {
+        const { prop, computed } = params;
+        if (Number.isNaN(value)) return "";
+        if (!prop("formatOptions")) return value.toString();
+        return computed("formatter").format(value);
+      };
+      getDefaultStep = (step, formatOptions) => {
+        let defaultStep = step !== void 0 && !Number.isNaN(step) ? step : 1;
+        if ((formatOptions == null ? void 0 : formatOptions.style) === "percent" && (step === void 0 || Number.isNaN(step))) {
+          defaultStep = 0.01;
+        }
+        return defaultStep;
+      };
+      ({ choose: choose2, guards: guards3, createMachine: createMachine4 } = setup());
+      ({ not: not6, and: and6 } = guards3);
+      machine15 = createMachine4({
+        props({ props: props26 }) {
+          const step = getDefaultStep(props26.step, props26.formatOptions);
+          return __spreadProps(__spreadValues({
+            dir: "ltr",
+            locale: "en-US",
+            focusInputOnChange: true,
+            clampValueOnBlur: !props26.allowOverflow,
+            allowOverflow: false,
+            inputMode: "decimal",
+            pattern: "-?[0-9]*(.[0-9]+)?",
+            defaultValue: "",
+            step,
+            min: Number.MIN_SAFE_INTEGER,
+            max: Number.MAX_SAFE_INTEGER,
+            spinOnPress: true
+          }, props26), {
+            translations: __spreadValues({
+              incrementLabel: "increment value",
+              decrementLabel: "decrease value"
+            }, props26.translations)
+          });
+        },
+        initialState() {
+          return "idle";
+        },
+        context({ prop, bindable: bindable2, getComputed }) {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              onChange(value) {
+                var _a;
+                const computed = getComputed();
+                const valueAsNumber = parseValue(value, { computed, prop });
+                (_a = prop("onValueChange")) == null ? void 0 : _a({ value, valueAsNumber });
+              }
+            })),
+            hint: bindable2(() => ({ defaultValue: null })),
+            scrubberCursorPoint: bindable2(() => ({
+              defaultValue: null,
+              hash(value) {
+                return value ? `x:${value.x}, y:${value.y}` : "";
+              }
+            })),
+            fieldsetDisabled: bindable2(() => ({ defaultValue: false }))
+          };
+        },
+        computed: {
+          isRtl: ({ prop }) => prop("dir") === "rtl",
+          valueAsNumber: ({ context, computed, prop }) => parseValue(context.get("value"), { computed, prop }),
+          formattedValue: ({ computed, prop }) => formatValue(computed("valueAsNumber"), { computed, prop }),
+          isAtMin: ({ computed, prop }) => isValueAtMin(computed("valueAsNumber"), prop("min")),
+          isAtMax: ({ computed, prop }) => isValueAtMax(computed("valueAsNumber"), prop("max")),
+          isOutOfRange: ({ computed, prop }) => !isValueWithinRange(computed("valueAsNumber"), prop("min"), prop("max")),
+          isValueEmpty: ({ context }) => context.get("value") === "",
+          isDisabled: ({ prop, context }) => !!prop("disabled") || context.get("fieldsetDisabled"),
+          canIncrement: ({ prop, computed }) => prop("allowOverflow") || !computed("isAtMax"),
+          canDecrement: ({ prop, computed }) => prop("allowOverflow") || !computed("isAtMin"),
+          valueText: ({ prop, context }) => {
+            var _a, _b;
+            return (_b = (_a = prop("translations")).valueText) == null ? void 0 : _b.call(_a, context.get("value"));
+          },
+          formatter: memo(
+            ({ prop }) => [prop("locale"), prop("formatOptions")],
+            ([locale, formatOptions]) => createFormatter(locale, formatOptions)
+          ),
+          parser: memo(
+            ({ prop }) => [prop("locale"), prop("formatOptions")],
+            ([locale, formatOptions]) => createParser(locale, formatOptions)
+          )
+        },
+        watch({ track, action, context, computed, prop }) {
+          track([() => context.get("value"), () => prop("locale"), () => JSON.stringify(prop("formatOptions"))], () => {
+            action(["syncInputElement"]);
+          });
+          track([() => computed("isOutOfRange")], () => {
+            action(["invokeOnInvalid"]);
+          });
+          track([() => context.hash("scrubberCursorPoint")], () => {
+            action(["setVirtualCursorPosition"]);
+          });
+        },
+        effects: ["trackFormControl"],
+        on: {
+          "VALUE.SET": {
+            actions: ["setRawValue"]
+          },
+          "VALUE.CLEAR": {
+            actions: ["clearValue"]
+          },
+          "VALUE.INCREMENT": {
+            actions: ["increment"]
+          },
+          "VALUE.DECREMENT": {
+            actions: ["decrement"]
+          }
+        },
+        states: {
+          idle: {
+            on: {
+              "TRIGGER.PRESS_DOWN": [
+                { guard: "isTouchPointer", target: "before:spin", actions: ["setHint"] },
+                {
+                  target: "before:spin",
+                  actions: ["focusInput", "invokeOnFocus", "setHint"]
+                }
+              ],
+              "SCRUBBER.PRESS_DOWN": {
+                target: "scrubbing",
+                actions: ["focusInput", "invokeOnFocus", "setHint", "setCursorPoint"]
+              },
+              "INPUT.FOCUS": {
+                target: "focused",
+                actions: ["focusInput", "invokeOnFocus"]
+              }
+            }
+          },
+          focused: {
+            tags: ["focus"],
+            effects: ["attachWheelListener"],
+            on: {
+              "TRIGGER.PRESS_DOWN": [
+                { guard: "isTouchPointer", target: "before:spin", actions: ["setHint"] },
+                { target: "before:spin", actions: ["focusInput", "setHint"] }
+              ],
+              "SCRUBBER.PRESS_DOWN": {
+                target: "scrubbing",
+                actions: ["focusInput", "setHint", "setCursorPoint"]
+              },
+              "INPUT.ARROW_UP": {
+                actions: ["increment"]
+              },
+              "INPUT.ARROW_DOWN": {
+                actions: ["decrement"]
+              },
+              "INPUT.HOME": {
+                actions: ["decrementToMin"]
+              },
+              "INPUT.END": {
+                actions: ["incrementToMax"]
+              },
+              "INPUT.CHANGE": {
+                actions: ["setValue", "setHint"]
+              },
+              "INPUT.BLUR": [
+                {
+                  guard: and6("clampValueOnBlur", not6("isInRange")),
+                  target: "idle",
+                  actions: ["setClampedValue", "clearHint", "invokeOnBlur", "invokeOnValueCommit"]
+                },
+                {
+                  guard: not6("isInRange"),
+                  target: "idle",
+                  actions: ["setFormattedValue", "clearHint", "invokeOnBlur", "invokeOnInvalid", "invokeOnValueCommit"]
+                },
+                {
+                  target: "idle",
+                  actions: ["setFormattedValue", "clearHint", "invokeOnBlur", "invokeOnValueCommit"]
+                }
+              ],
+              "INPUT.ENTER": {
+                actions: ["setFormattedValue", "clearHint", "invokeOnBlur", "invokeOnValueCommit"]
+              }
+            }
+          },
+          "before:spin": {
+            tags: ["focus"],
+            effects: ["trackButtonDisabled", "waitForChangeDelay"],
+            entry: choose2([
+              { guard: "isIncrementHint", actions: ["increment"] },
+              { guard: "isDecrementHint", actions: ["decrement"] }
+            ]),
+            on: {
+              CHANGE_DELAY: {
+                target: "spinning",
+                guard: and6("isInRange", "spinOnPress")
+              },
+              "TRIGGER.PRESS_UP": [
+                { guard: "isTouchPointer", target: "focused", actions: ["clearHint"] },
+                { target: "focused", actions: ["focusInput", "clearHint"] }
+              ]
+            }
+          },
+          spinning: {
+            tags: ["focus"],
+            effects: ["trackButtonDisabled", "spinValue"],
+            on: {
+              SPIN: [
+                {
+                  guard: "isIncrementHint",
+                  actions: ["increment"]
+                },
+                {
+                  guard: "isDecrementHint",
+                  actions: ["decrement"]
+                }
+              ],
+              "TRIGGER.PRESS_UP": {
+                target: "focused",
+                actions: ["focusInput", "clearHint"]
+              }
+            }
+          },
+          scrubbing: {
+            tags: ["focus"],
+            effects: ["activatePointerLock", "trackMousemove", "setupVirtualCursor", "preventTextSelection"],
+            on: {
+              "SCRUBBER.POINTER_UP": {
+                target: "focused",
+                actions: ["focusInput", "clearCursorPoint"]
+              },
+              "SCRUBBER.POINTER_MOVE": [
+                {
+                  guard: "isIncrementHint",
+                  actions: ["increment", "setCursorPoint"]
+                },
+                {
+                  guard: "isDecrementHint",
+                  actions: ["decrement", "setCursorPoint"]
+                }
+              ]
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            clampValueOnBlur: ({ prop }) => prop("clampValueOnBlur"),
+            spinOnPress: ({ prop }) => !!prop("spinOnPress"),
+            isInRange: ({ computed }) => !computed("isOutOfRange"),
+            isDecrementHint: ({ context, event }) => {
+              var _a;
+              return ((_a = event.hint) != null ? _a : context.get("hint")) === "decrement";
+            },
+            isIncrementHint: ({ context, event }) => {
+              var _a;
+              return ((_a = event.hint) != null ? _a : context.get("hint")) === "increment";
+            },
+            isTouchPointer: ({ event }) => event.pointerType === "touch"
+          },
+          effects: {
+            waitForChangeDelay({ send }) {
+              const id = setTimeout(() => {
+                send({ type: "CHANGE_DELAY" });
+              }, 300);
+              return () => clearTimeout(id);
+            },
+            spinValue({ send }) {
+              const id = setInterval(() => {
+                send({ type: "SPIN" });
+              }, 50);
+              return () => clearInterval(id);
+            },
+            trackFormControl({ context, scope }) {
+              const inputEl = getInputEl4(scope);
+              return trackFormControl(inputEl, {
+                onFieldsetDisabledChange(disabled) {
+                  context.set("fieldsetDisabled", disabled);
+                },
+                onFormReset() {
+                  context.set("value", context.initial("value"));
+                }
+              });
+            },
+            setupVirtualCursor({ context, scope }) {
+              const point = context.get("scrubberCursorPoint");
+              return setupVirtualCursor(scope, point);
+            },
+            preventTextSelection({ scope }) {
+              return preventTextSelection(scope);
+            },
+            trackButtonDisabled({ context, scope, send }) {
+              const hint = context.get("hint");
+              const btn = getPressedTriggerEl(scope, hint);
+              return observeAttributes(btn, {
+                attributes: ["disabled"],
+                callback() {
+                  send({ type: "TRIGGER.PRESS_UP", src: "attr" });
+                }
+              });
+            },
+            attachWheelListener({ scope, send, prop }) {
+              const inputEl = getInputEl4(scope);
+              if (!inputEl || !scope.isActiveElement(inputEl) || !prop("allowMouseWheel")) return;
+              function onWheel(event) {
+                event.preventDefault();
+                const dir = Math.sign(event.deltaY) * -1;
+                if (dir === 1) {
+                  send({ type: "VALUE.INCREMENT" });
+                } else if (dir === -1) {
+                  send({ type: "VALUE.DECREMENT" });
+                }
+              }
+              return addDomEvent(inputEl, "wheel", onWheel, { passive: false });
+            },
+            activatePointerLock({ scope }) {
+              if (isSafari()) return;
+              return requestPointerLock(scope.getDoc());
+            },
+            trackMousemove({ scope, send, context, computed }) {
+              const doc = scope.getDoc();
+              function onMousemove(event) {
+                const point = context.get("scrubberCursorPoint");
+                const isRtl = computed("isRtl");
+                const value = getMousemoveValue(scope, { point, isRtl, event });
+                if (!value.hint) return;
+                send({
+                  type: "SCRUBBER.POINTER_MOVE",
+                  hint: value.hint,
+                  point: value.point
+                });
+              }
+              function onMouseup() {
+                send({ type: "SCRUBBER.POINTER_UP" });
+              }
+              return callAll(addDomEvent(doc, "mousemove", onMousemove, false), addDomEvent(doc, "mouseup", onMouseup, false));
+            }
+          },
+          actions: {
+            focusInput({ scope, prop }) {
+              if (!prop("focusInputOnChange")) return;
+              const inputEl = getInputEl4(scope);
+              if (scope.isActiveElement(inputEl)) return;
+              raf(() => inputEl == null ? void 0 : inputEl.focus({ preventScroll: true }));
+            },
+            increment({ context, event, prop, computed }) {
+              var _a;
+              let nextValue = incrementValue(computed("valueAsNumber"), (_a = event.step) != null ? _a : prop("step"));
+              if (!prop("allowOverflow")) nextValue = clampValue(nextValue, prop("min"), prop("max"));
+              context.set("value", formatValue(nextValue, { computed, prop }));
+            },
+            decrement({ context, event, prop, computed }) {
+              var _a;
+              let nextValue = decrementValue(computed("valueAsNumber"), (_a = event.step) != null ? _a : prop("step"));
+              if (!prop("allowOverflow")) nextValue = clampValue(nextValue, prop("min"), prop("max"));
+              context.set("value", formatValue(nextValue, { computed, prop }));
+            },
+            setClampedValue({ context, prop, computed }) {
+              const nextValue = clampValue(computed("valueAsNumber"), prop("min"), prop("max"));
+              context.set("value", formatValue(nextValue, { computed, prop }));
+            },
+            setRawValue({ context, event, prop, computed }) {
+              let nextValue = parseValue(event.value, { computed, prop });
+              if (!prop("allowOverflow")) nextValue = clampValue(nextValue, prop("min"), prop("max"));
+              context.set("value", formatValue(nextValue, { computed, prop }));
+            },
+            setValue({ context, event }) {
+              var _a, _b;
+              const value = (_b = (_a = event.target) == null ? void 0 : _a.value) != null ? _b : event.value;
+              context.set("value", value);
+            },
+            clearValue({ context }) {
+              context.set("value", "");
+            },
+            incrementToMax({ context, prop, computed }) {
+              const value = formatValue(prop("max"), { computed, prop });
+              context.set("value", value);
+            },
+            decrementToMin({ context, prop, computed }) {
+              const value = formatValue(prop("min"), { computed, prop });
+              context.set("value", value);
+            },
+            setHint({ context, event }) {
+              context.set("hint", event.hint);
+            },
+            clearHint({ context }) {
+              context.set("hint", null);
+            },
+            invokeOnFocus({ computed, prop }) {
+              var _a;
+              (_a = prop("onFocusChange")) == null ? void 0 : _a({
+                focused: true,
+                value: computed("formattedValue"),
+                valueAsNumber: computed("valueAsNumber")
+              });
+            },
+            invokeOnBlur({ computed, prop }) {
+              var _a;
+              (_a = prop("onFocusChange")) == null ? void 0 : _a({
+                focused: false,
+                value: computed("formattedValue"),
+                valueAsNumber: computed("valueAsNumber")
+              });
+            },
+            invokeOnInvalid({ computed, prop, event }) {
+              var _a;
+              if (event.type === "INPUT.CHANGE") return;
+              const reason = computed("valueAsNumber") > prop("max") ? "rangeOverflow" : "rangeUnderflow";
+              (_a = prop("onValueInvalid")) == null ? void 0 : _a({
+                reason,
+                value: computed("formattedValue"),
+                valueAsNumber: computed("valueAsNumber")
+              });
+            },
+            invokeOnValueCommit({ computed, prop }) {
+              var _a;
+              (_a = prop("onValueCommit")) == null ? void 0 : _a({
+                value: computed("formattedValue"),
+                valueAsNumber: computed("valueAsNumber")
+              });
+            },
+            syncInputElement({ context, event, computed, scope }) {
+              var _a;
+              const value = event.type.endsWith("CHANGE") ? context.get("value") : computed("formattedValue");
+              const inputEl = getInputEl4(scope);
+              const sel = (_a = event.selection) != null ? _a : recordCursor(inputEl, scope);
+              raf(() => {
+                setElementValue(inputEl, value);
+                restoreCursor(inputEl, sel, scope);
+              });
+            },
+            setFormattedValue({ context, computed, action }) {
+              context.set("value", computed("formattedValue"));
+              action(["syncInputElement"]);
+            },
+            setCursorPoint({ context, event }) {
+              context.set("scrubberCursorPoint", event.point);
+            },
+            clearCursorPoint({ context }) {
+              context.set("scrubberCursorPoint", null);
+            },
+            setVirtualCursorPosition({ context, scope }) {
+              const cursorEl = getCursorEl(scope);
+              const point = context.get("scrubberCursorPoint");
+              if (!cursorEl || !point) return;
+              cursorEl.style.transform = `translate3d(${point.x}px, ${point.y}px, 0px)`;
+            }
+          }
+        }
+      });
+      props15 = createProps()([
+        "allowMouseWheel",
+        "allowOverflow",
+        "clampValueOnBlur",
+        "dir",
+        "disabled",
+        "focusInputOnChange",
+        "form",
+        "formatOptions",
+        "getRootNode",
+        "id",
+        "ids",
+        "inputMode",
+        "invalid",
+        "locale",
+        "max",
+        "min",
+        "name",
+        "onFocusChange",
+        "onValueChange",
+        "onValueCommit",
+        "onValueInvalid",
+        "pattern",
+        "required",
+        "readOnly",
+        "spinOnPress",
+        "step",
+        "translations",
+        "value",
+        "defaultValue"
+      ]);
+      splitProps15 = createSplitProps(props15);
+      NumberInput = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine15, props26);
+        }
+        initApi() {
+          return connect15(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="number-input"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const valueTextEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="value-text"]'
+          );
+          if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
+          const inputEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="input"]'
+          );
+          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          const decrementEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="decrement-trigger"]'
+          );
+          if (decrementEl) this.spreadProps(decrementEl, this.api.getDecrementTriggerProps());
+          const incrementEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="increment-trigger"]'
+          );
+          if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
+          const scrubberEl = this.el.querySelector(
+            '[data-scope="number-input"][data-part="scrubber"]'
+          );
+          if (scrubberEl) this.spreadProps(scrubberEl, this.api.getScrubberProps());
+        }
+      };
+      NumberInputHook = {
+        mounted() {
+          const el = this.el;
+          const valueStr = getString(el, "value");
+          const defaultValueStr = getString(el, "defaultValue");
+          const controlled = getBoolean(el, "controlled");
+          const zag = new NumberInput(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr }), {
+            min: getNumber(el, "min"),
+            max: getNumber(el, "max"),
+            step: getNumber(el, "step"),
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            allowMouseWheel: getBoolean(el, "allowMouseWheel"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            onValueChange: (details) => {
+              const inputEl = el.querySelector(
+                '[data-scope="number-input"][data-part="input"]'
+              );
+              if (inputEl) {
+                inputEl.value = details.value;
+                inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+                inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+              const eventName = getString(el, "onValueChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  valueAsNumber: details.valueAsNumber,
+                  id: el.id
+                });
+              }
+              const clientName = getString(el, "onValueChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.init();
+          this.numberInput = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a;
+          const valueStr = getString(this.el, "value");
+          const controlled = getBoolean(this.el, "controlled");
+          (_a = this.numberInput) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, controlled && valueStr !== void 0 ? { value: valueStr } : {}), {
+            min: getNumber(this.el, "min"),
+            max: getNumber(this.el, "max"),
+            step: getNumber(this.el, "step"),
+            disabled: getBoolean(this.el, "disabled"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            invalid: getBoolean(this.el, "invalid"),
+            required: getBoolean(this.el, "required"),
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form")
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.numberInput) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/password-input.mjs
+  var password_input_exports = {};
+  __export(password_input_exports, {
+    PasswordInput: () => PasswordInputHook
+  });
+  function connect16(service, normalize) {
+    const { scope, prop, context } = service;
+    const visible = context.get("visible");
+    const disabled = !!prop("disabled");
+    const invalid = !!prop("invalid");
+    const readOnly = !!prop("readOnly");
+    const required = !!prop("required");
+    const interactive = !(readOnly || disabled);
+    const translations = prop("translations");
+    return {
+      visible,
+      disabled,
+      invalid,
+      focus() {
+        var _a;
+        (_a = getInputEl5(scope)) == null ? void 0 : _a.focus();
+      },
+      setVisible(value) {
+        service.send({ type: "VISIBILITY.SET", value });
+      },
+      toggleVisible() {
+        service.send({ type: "VISIBILITY.SET", value: !visible });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.root.attrs), {
+          dir: prop("dir"),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly)
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts16.label.attrs), {
+          htmlFor: getInputId6(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly),
+          "data-required": dataAttr(required)
+        }));
+      },
+      getInputProps() {
+        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts16.input.attrs), {
+          id: getInputId6(scope),
+          autoCapitalize: "off",
+          name: prop("name"),
+          required: prop("required"),
+          autoComplete: prop("autoComplete"),
+          spellCheck: false,
+          readOnly,
+          disabled,
+          type: visible ? "text" : "password",
+          "data-state": visible ? "visible" : "hidden",
+          "aria-invalid": ariaAttr(invalid),
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly)
+        }), prop("ignorePasswordManagers") ? passwordManagerProps : {}));
+      },
+      getVisibilityTriggerProps() {
+        var _a;
+        return normalize.button(__spreadProps(__spreadValues({}, parts16.visibilityTrigger.attrs), {
+          type: "button",
+          tabIndex: -1,
+          "aria-controls": getInputId6(scope),
+          "aria-expanded": visible,
+          "data-readonly": dataAttr(readOnly),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          "data-state": visible ? "visible" : "hidden",
+          "aria-label": (_a = translations == null ? void 0 : translations.visibilityTrigger) == null ? void 0 : _a.call(translations, visible),
+          onPointerDown(event) {
+            if (!isLeftClick(event)) return;
+            if (!interactive) return;
+            event.preventDefault();
+            service.send({ type: "TRIGGER.CLICK" });
+          }
+        }));
+      },
+      getIndicatorProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.indicator.attrs), {
+          "aria-hidden": true,
+          "data-state": visible ? "visible" : "hidden",
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly)
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.control.attrs), {
+          "data-disabled": dataAttr(disabled),
+          "data-invalid": dataAttr(invalid),
+          "data-readonly": dataAttr(readOnly)
+        }));
+      }
+    };
+  }
+  var anatomy16, parts16, getInputId6, getInputEl5, passwordManagerProps, machine16, props16, splitProps16, PasswordInput, PasswordInputHook;
+  var init_password_input = __esm({
+    "../priv/static/password-input.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      anatomy16 = createAnatomy("password-input").parts(
+        "root",
+        "input",
+        "label",
+        "control",
+        "indicator",
+        "visibilityTrigger"
+      );
+      parts16 = anatomy16.build();
+      getInputId6 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `p-input-${ctx.id}-input`;
+      };
+      getInputEl5 = (ctx) => ctx.getById(getInputId6(ctx));
+      passwordManagerProps = {
+        // 1Password
+        "data-1p-ignore": "",
+        // LastPass
+        "data-lpignore": "true",
+        // Bitwarden
+        "data-bwignore": "true",
+        // Dashlane
+        "data-form-type": "other",
+        // Proton Pass
+        "data-protonpass-ignore": "true"
+      };
+      machine16 = createMachine({
+        props({ props: props26 }) {
+          return __spreadProps(__spreadValues({
+            id: uuid(),
+            defaultVisible: false,
+            autoComplete: "current-password",
+            ignorePasswordManagers: false
+          }, props26), {
+            translations: __spreadValues({
+              visibilityTrigger(visible) {
+                return visible ? "Hide password" : "Show password";
+              }
+            }, props26.translations)
+          });
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            visible: bindable2(() => ({
+              value: prop("visible"),
+              defaultValue: prop("defaultVisible"),
+              onChange(value) {
+                var _a;
+                (_a = prop("onVisibilityChange")) == null ? void 0 : _a({ visible: value });
+              }
+            }))
+          };
+        },
+        initialState() {
+          return "idle";
+        },
+        effects: ["trackFormEvents"],
+        states: {
+          idle: {
+            on: {
+              "VISIBILITY.SET": {
+                actions: ["setVisibility"]
+              },
+              "TRIGGER.CLICK": {
+                actions: ["toggleVisibility", "focusInputEl"]
+              }
+            }
+          }
+        },
+        implementations: {
+          actions: {
+            setVisibility({ context, event }) {
+              context.set("visible", event.value);
+            },
+            toggleVisibility({ context }) {
+              context.set("visible", (c2) => !c2);
+            },
+            focusInputEl({ scope }) {
+              const inputEl = getInputEl5(scope);
+              inputEl == null ? void 0 : inputEl.focus();
+            }
+          },
+          effects: {
+            trackFormEvents({ scope, send }) {
+              const inputEl = getInputEl5(scope);
+              const form = inputEl == null ? void 0 : inputEl.form;
+              if (!form) return;
+              const win = scope.getWin();
+              const controller = new win.AbortController();
+              form.addEventListener(
+                "reset",
+                (event) => {
+                  if (event.defaultPrevented) return;
+                  send({ type: "VISIBILITY.SET", value: false });
+                },
+                { signal: controller.signal }
+              );
+              form.addEventListener(
+                "submit",
+                () => {
+                  send({ type: "VISIBILITY.SET", value: false });
+                },
+                { signal: controller.signal }
+              );
+              return () => controller.abort();
+            }
+          }
+        }
+      });
+      props16 = createProps()([
+        "defaultVisible",
+        "dir",
+        "id",
+        "onVisibilityChange",
+        "visible",
+        "ids",
+        "getRootNode",
+        "disabled",
+        "invalid",
+        "required",
+        "readOnly",
+        "translations",
+        "ignorePasswordManagers",
+        "autoComplete",
+        "name"
+      ]);
+      splitProps16 = createSplitProps(props16);
+      PasswordInput = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine16, props26);
+        }
+        initApi() {
+          return connect16(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="password-input"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="password-input"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="password-input"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const inputEl = this.el.querySelector(
+            '[data-scope="password-input"][data-part="input"]'
+          );
+          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          const triggerEl = this.el.querySelector(
+            '[data-scope="password-input"][data-part="visibility-trigger"]'
+          );
+          if (triggerEl) this.spreadProps(triggerEl, this.api.getVisibilityTriggerProps());
+          const indicatorEl = this.el.querySelector(
+            '[data-scope="password-input"][data-part="indicator"]'
+          );
+          if (indicatorEl) this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+        }
+      };
+      PasswordInputHook = {
+        mounted() {
+          const el = this.el;
+          const zag = new PasswordInput(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, getBoolean(el, "controlledVisible") ? { visible: getBoolean(el, "visible") } : { defaultVisible: getBoolean(el, "defaultVisible") }), {
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            readOnly: getBoolean(el, "readOnly"),
+            required: getBoolean(el, "required"),
+            ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
+            name: getString(el, "name"),
+            dir: getDir(el),
+            autoComplete: getString(el, "autoComplete", [
+              "current-password",
+              "new-password"
+            ]),
+            onVisibilityChange: (details) => {
+              const eventName = getString(el, "onVisibilityChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { visible: details.visible, id: el.id });
+              }
+              const clientName = getString(el, "onVisibilityChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.init();
+          this.passwordInput = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a;
+          (_a = this.passwordInput) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, getBoolean(this.el, "controlledVisible") ? { visible: getBoolean(this.el, "visible") } : {}), {
+            disabled: getBoolean(this.el, "disabled"),
+            invalid: getBoolean(this.el, "invalid"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            required: getBoolean(this.el, "required"),
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form"),
+            dir: getDir(this.el)
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.passwordInput) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/pin-input.mjs
+  var pin_input_exports = {};
+  __export(pin_input_exports, {
+    PinInput: () => PinInputHook
+  });
+  function isValidType(type, value) {
+    var _a;
+    if (!type) return true;
+    return !!((_a = REGEX[type]) == null ? void 0 : _a.test(value));
+  }
+  function isValidValue(value, type, pattern) {
+    if (!pattern) return isValidType(type, value);
+    const regex = new RegExp(pattern, "g");
+    return regex.test(value);
+  }
+  function connect17(service, normalize) {
+    const { send, context, computed, prop, scope } = service;
+    const complete = computed("isValueComplete");
+    const disabled = !!prop("disabled");
+    const readOnly = !!prop("readOnly");
+    const invalid = !!prop("invalid");
+    const required = !!prop("required");
+    const translations = prop("translations");
+    const focusedIndex = context.get("focusedIndex");
+    function focus() {
+      var _a;
+      (_a = getFirstInputEl(scope)) == null ? void 0 : _a.focus();
+    }
+    return {
+      focus,
+      count: context.get("count"),
+      items: Array.from({ length: context.get("count") }).map((_2, i2) => i2),
+      value: context.get("value"),
+      valueAsString: computed("valueAsString"),
+      complete,
+      setValue(value) {
+        if (!Array.isArray(value)) {
+          invariant("[pin-input/setValue] value must be an array");
+        }
+        send({ type: "VALUE.SET", value });
+      },
+      clearValue() {
+        send({ type: "VALUE.CLEAR" });
+      },
+      setValueAtIndex(index, value) {
+        send({ type: "VALUE.SET", value, index });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          dir: prop("dir")
+        }, parts17.root.attrs), {
+          id: getRootId13(scope),
+          "data-invalid": dataAttr(invalid),
+          "data-disabled": dataAttr(disabled),
+          "data-complete": dataAttr(complete),
+          "data-readonly": dataAttr(readOnly)
+        }));
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts17.label.attrs), {
+          dir: prop("dir"),
+          htmlFor: getHiddenInputId3(scope),
+          id: getLabelId9(scope),
+          "data-invalid": dataAttr(invalid),
+          "data-disabled": dataAttr(disabled),
+          "data-complete": dataAttr(complete),
+          "data-required": dataAttr(required),
+          "data-readonly": dataAttr(readOnly),
+          onClick(event) {
+            event.preventDefault();
+            focus();
+          }
+        }));
+      },
+      getHiddenInputProps() {
+        return normalize.input({
+          "aria-hidden": true,
+          type: "text",
+          tabIndex: -1,
+          id: getHiddenInputId3(scope),
+          readOnly,
+          disabled,
+          required,
+          name: prop("name"),
+          form: prop("form"),
+          style: visuallyHiddenStyle,
+          maxLength: computed("valueLength"),
+          defaultValue: computed("valueAsString")
+        });
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.control.attrs), {
+          dir: prop("dir"),
+          id: getControlId6(scope)
+        }));
+      },
+      getInputProps(props26) {
+        var _a;
+        const { index } = props26;
+        const inputType = prop("type") === "numeric" ? "tel" : "text";
+        return normalize.input(__spreadProps(__spreadValues({}, parts17.input.attrs), {
+          dir: prop("dir"),
+          disabled,
+          "data-disabled": dataAttr(disabled),
+          "data-complete": dataAttr(complete),
+          id: getInputId7(scope, index.toString()),
+          "data-index": index,
+          "data-ownedby": getRootId13(scope),
+          "aria-label": (_a = translations == null ? void 0 : translations.inputLabel) == null ? void 0 : _a.call(translations, index, computed("valueLength")),
+          inputMode: prop("otp") || prop("type") === "numeric" ? "numeric" : "text",
+          "aria-invalid": ariaAttr(invalid),
+          "data-invalid": dataAttr(invalid),
+          type: prop("mask") ? "password" : inputType,
+          defaultValue: context.get("value")[index] || "",
+          readOnly,
+          autoCapitalize: "none",
+          autoComplete: prop("otp") ? "one-time-code" : "off",
+          placeholder: focusedIndex === index ? "" : prop("placeholder"),
+          onPaste(event) {
+            var _a2;
+            const pastedValue = (_a2 = event.clipboardData) == null ? void 0 : _a2.getData("text/plain");
+            if (!pastedValue) return;
+            const isValid = isValidValue(pastedValue, prop("type"), prop("pattern"));
+            if (!isValid) {
+              send({ type: "VALUE.INVALID", value: pastedValue });
+              event.preventDefault();
+              return;
+            }
+            event.preventDefault();
+            send({ type: "INPUT.PASTE", value: pastedValue });
+          },
+          onBeforeInput(event) {
+            try {
+              const value = getBeforeInputValue(event);
+              const isValid = isValidValue(value, prop("type"), prop("pattern"));
+              if (!isValid) {
+                send({ type: "VALUE.INVALID", value });
+                event.preventDefault();
+              }
+              if (value.length > 1) {
+                event.currentTarget.setSelectionRange(0, 1, "forward");
+              }
+            } catch (e2) {
+            }
+          },
+          onChange(event) {
+            const evt = getNativeEvent(event);
+            const { value } = event.currentTarget;
+            if (evt.inputType === "insertFromPaste") {
+              event.currentTarget.value = value[0] || "";
+              return;
+            }
+            if (value.length > 2) {
+              send({ type: "INPUT.PASTE", value });
+              event.currentTarget.value = value[0];
+              event.preventDefault();
+              return;
+            }
+            if (evt.inputType === "deleteContentBackward") {
+              send({ type: "INPUT.BACKSPACE" });
+              return;
+            }
+            send({ type: "INPUT.CHANGE", value, index });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (isComposingEvent(event)) return;
+            if (isModifierKey(event)) return;
+            const keyMap2 = {
+              Backspace() {
+                send({ type: "INPUT.BACKSPACE" });
+              },
+              Delete() {
+                send({ type: "INPUT.DELETE" });
+              },
+              ArrowLeft() {
+                send({ type: "INPUT.ARROW_LEFT" });
+              },
+              ArrowRight() {
+                send({ type: "INPUT.ARROW_RIGHT" });
+              },
+              Enter() {
+                send({ type: "INPUT.ENTER" });
+              }
+            };
+            const exec = keyMap2[getEventKey(event, {
+              dir: prop("dir"),
+              orientation: "horizontal"
+            })];
+            if (exec) {
+              exec(event);
+              event.preventDefault();
+            }
+          },
+          onFocus() {
+            send({ type: "INPUT.FOCUS", index });
+          },
+          onBlur(event) {
+            const target = event.relatedTarget;
+            if (isHTMLElement(target) && target.dataset.ownedby === getRootId13(scope)) return;
+            send({ type: "INPUT.BLUR", index });
+          }
+        }));
+      }
+    };
+  }
+  function getNextValue(current, next2) {
+    let nextValue = next2;
+    if (current[0] === next2[0]) {
+      nextValue = next2[1];
+    } else if (current[0] === next2[1]) {
+      nextValue = next2[0];
+    }
+    const chars = nextValue.split("");
+    nextValue = chars[chars.length - 1];
+    return nextValue != null ? nextValue : "";
+  }
+  function fill(value, count) {
+    return Array.from({ length: count }).fill("").map((v2, i2) => value[i2] || v2);
+  }
+  var anatomy17, parts17, getRootId13, getInputId7, getHiddenInputId3, getLabelId9, getControlId6, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl3, setInputValue, REGEX, choose3, createMachine5, machine17, props17, splitProps17, PinInput, PinInputHook;
+  var init_pin_input = __esm({
+    "../priv/static/pin-input.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      anatomy17 = createAnatomy("pinInput").parts("root", "label", "input", "control");
+      parts17 = anatomy17.build();
+      getRootId13 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `pin-input:${ctx.id}`;
+      };
+      getInputId7 = (ctx, id) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.input) == null ? void 0 : _b.call(_a, id)) != null ? _c : `pin-input:${ctx.id}:${id}`;
+      };
+      getHiddenInputId3 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenInput) != null ? _b : `pin-input:${ctx.id}:hidden`;
+      };
+      getLabelId9 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `pin-input:${ctx.id}:label`;
+      };
+      getControlId6 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `pin-input:${ctx.id}:control`;
+      };
+      getRootEl4 = (ctx) => ctx.getById(getRootId13(ctx));
+      getInputEls2 = (ctx) => {
+        const ownerId = CSS.escape(getRootId13(ctx));
+        const selector = `input[data-ownedby=${ownerId}]`;
+        return queryAll(getRootEl4(ctx), selector);
+      };
+      getInputElAtIndex = (ctx, index) => getInputEls2(ctx)[index];
+      getFirstInputEl = (ctx) => getInputEls2(ctx)[0];
+      getHiddenInputEl3 = (ctx) => ctx.getById(getHiddenInputId3(ctx));
+      setInputValue = (inputEl, value) => {
+        inputEl.value = value;
+        inputEl.setAttribute("value", value);
+      };
+      REGEX = {
+        numeric: /^[0-9]+$/,
+        alphabetic: /^[A-Za-z]+$/,
+        alphanumeric: /^[a-zA-Z0-9]+$/i
+      };
+      ({ choose: choose3, createMachine: createMachine5 } = setup());
+      machine17 = createMachine5({
+        props({ props: props26 }) {
+          return __spreadProps(__spreadValues({
+            placeholder: "\u25CB",
+            otp: false,
+            type: "numeric",
+            defaultValue: props26.count ? fill([], props26.count) : []
+          }, props26), {
+            translations: __spreadValues({
+              inputLabel: (index, length) => `pin code ${index + 1} of ${length}`
+            }, props26.translations)
+          });
+        },
+        initialState() {
+          return "idle";
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            value: bindable2(() => ({
+              value: prop("value"),
+              defaultValue: prop("defaultValue"),
+              isEqual: isEqual2,
+              onChange(value) {
+                var _a;
+                (_a = prop("onValueChange")) == null ? void 0 : _a({ value, valueAsString: value.join("") });
+              }
+            })),
+            focusedIndex: bindable2(() => ({
+              sync: true,
+              defaultValue: -1
+            })),
+            // TODO: Move this to `props` in next major version
+            count: bindable2(() => ({
+              defaultValue: prop("count")
+            }))
+          };
+        },
+        computed: {
+          _value: ({ context }) => fill(context.get("value"), context.get("count")),
+          valueLength: ({ computed }) => computed("_value").length,
+          filledValueLength: ({ computed }) => computed("_value").filter((v2) => (v2 == null ? void 0 : v2.trim()) !== "").length,
+          isValueComplete: ({ computed }) => computed("valueLength") === computed("filledValueLength"),
+          valueAsString: ({ computed }) => computed("_value").join(""),
+          focusedValue: ({ computed, context }) => computed("_value")[context.get("focusedIndex")] || ""
+        },
+        entry: choose3([
+          {
+            guard: "autoFocus",
+            actions: ["setInputCount", "setFocusIndexToFirst"]
+          },
+          { actions: ["setInputCount"] }
+        ]),
+        watch({ action, track, context, computed }) {
+          track([() => context.get("focusedIndex")], () => {
+            action(["focusInput", "selectInputIfNeeded"]);
+          });
+          track([() => context.get("value").join(",")], () => {
+            action(["syncInputElements", "dispatchInputEvent"]);
+          });
+          track([() => computed("isValueComplete")], () => {
+            action(["invokeOnComplete", "blurFocusedInputIfNeeded"]);
+          });
+        },
+        on: {
+          "VALUE.SET": [
+            {
+              guard: "hasIndex",
+              actions: ["setValueAtIndex"]
+            },
+            { actions: ["setValue"] }
+          ],
+          "VALUE.CLEAR": {
+            actions: ["clearValue", "setFocusIndexToFirst"]
+          }
+        },
+        states: {
+          idle: {
+            on: {
+              "INPUT.FOCUS": {
+                target: "focused",
+                actions: ["setFocusedIndex"]
+              }
+            }
+          },
+          focused: {
+            on: {
+              "INPUT.CHANGE": {
+                actions: ["setFocusedValue", "syncInputValue", "setNextFocusedIndex"]
+              },
+              "INPUT.PASTE": {
+                actions: ["setPastedValue", "setLastValueFocusIndex"]
+              },
+              "INPUT.FOCUS": {
+                actions: ["setFocusedIndex"]
+              },
+              "INPUT.BLUR": {
+                target: "idle",
+                actions: ["clearFocusedIndex"]
+              },
+              "INPUT.DELETE": {
+                guard: "hasValue",
+                actions: ["clearFocusedValue"]
+              },
+              "INPUT.ARROW_LEFT": {
+                actions: ["setPrevFocusedIndex"]
+              },
+              "INPUT.ARROW_RIGHT": {
+                actions: ["setNextFocusedIndex"]
+              },
+              "INPUT.BACKSPACE": [
+                {
+                  guard: "hasValue",
+                  actions: ["clearFocusedValue"]
+                },
+                {
+                  actions: ["setPrevFocusedIndex", "clearFocusedValue"]
+                }
+              ],
+              "INPUT.ENTER": {
+                guard: "isValueComplete",
+                actions: ["requestFormSubmit"]
+              },
+              "VALUE.INVALID": {
+                actions: ["invokeOnInvalid"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            autoFocus: ({ prop }) => !!prop("autoFocus"),
+            hasValue: ({ context }) => context.get("value")[context.get("focusedIndex")] !== "",
+            isValueComplete: ({ computed }) => computed("isValueComplete"),
+            hasIndex: ({ event }) => event.index !== void 0
+          },
+          actions: {
+            dispatchInputEvent({ computed, scope }) {
+              const inputEl = getHiddenInputEl3(scope);
+              dispatchInputValueEvent(inputEl, { value: computed("valueAsString") });
+            },
+            setInputCount({ scope, context, prop }) {
+              if (prop("count")) return;
+              const inputEls = getInputEls2(scope);
+              context.set("count", inputEls.length);
+            },
+            focusInput({ context, scope }) {
+              var _a;
+              const focusedIndex = context.get("focusedIndex");
+              if (focusedIndex === -1) return;
+              (_a = getInputElAtIndex(scope, focusedIndex)) == null ? void 0 : _a.focus({ preventScroll: true });
+            },
+            selectInputIfNeeded({ context, prop, scope }) {
+              const focusedIndex = context.get("focusedIndex");
+              if (!prop("selectOnFocus") || focusedIndex === -1) return;
+              raf(() => {
+                var _a;
+                (_a = getInputElAtIndex(scope, focusedIndex)) == null ? void 0 : _a.select();
+              });
+            },
+            invokeOnComplete({ computed, prop }) {
+              var _a;
+              if (!computed("isValueComplete")) return;
+              (_a = prop("onValueComplete")) == null ? void 0 : _a({
+                value: computed("_value"),
+                valueAsString: computed("valueAsString")
+              });
+            },
+            invokeOnInvalid({ context, event, prop }) {
+              var _a;
+              (_a = prop("onValueInvalid")) == null ? void 0 : _a({
+                value: event.value,
+                index: context.get("focusedIndex")
+              });
+            },
+            clearFocusedIndex({ context }) {
+              context.set("focusedIndex", -1);
+            },
+            setFocusedIndex({ context, event }) {
+              context.set("focusedIndex", event.index);
+            },
+            setValue({ context, event }) {
+              const value = fill(event.value, context.get("count"));
+              context.set("value", value);
+            },
+            setFocusedValue({ context, event, computed, flush }) {
+              const focusedValue = computed("focusedValue");
+              const focusedIndex = context.get("focusedIndex");
+              const value = getNextValue(focusedValue, event.value);
+              flush(() => {
+                context.set("value", setValueAtIndex(computed("_value"), focusedIndex, value));
+              });
+            },
+            revertInputValue({ context, computed, scope }) {
+              const inputEl = getInputElAtIndex(scope, context.get("focusedIndex"));
+              setInputValue(inputEl, computed("focusedValue"));
+            },
+            syncInputValue({ context, event, scope }) {
+              const value = context.get("value");
+              const inputEl = getInputElAtIndex(scope, event.index);
+              setInputValue(inputEl, value[event.index]);
+            },
+            syncInputElements({ context, scope }) {
+              const inputEls = getInputEls2(scope);
+              const value = context.get("value");
+              inputEls.forEach((inputEl, index) => {
+                setInputValue(inputEl, value[index]);
+              });
+            },
+            setPastedValue({ context, event, computed, flush }) {
+              raf(() => {
+                const valueAsString = computed("valueAsString");
+                const focusedIndex = context.get("focusedIndex");
+                const valueLength = computed("valueLength");
+                const filledValueLength = computed("filledValueLength");
+                const startIndex = Math.min(focusedIndex, filledValueLength);
+                const left = startIndex > 0 ? valueAsString.substring(0, focusedIndex) : "";
+                const right = event.value.substring(0, valueLength - startIndex);
+                const value = fill(`${left}${right}`.split(""), valueLength);
+                flush(() => {
+                  context.set("value", value);
+                });
+              });
+            },
+            setValueAtIndex({ context, event, computed }) {
+              const nextValue = getNextValue(computed("focusedValue"), event.value);
+              context.set("value", setValueAtIndex(computed("_value"), event.index, nextValue));
+            },
+            clearValue({ context }) {
+              const nextValue = Array.from({ length: context.get("count") }).fill("");
+              queueMicrotask(() => {
+                context.set("value", nextValue);
+              });
+            },
+            clearFocusedValue({ context, computed }) {
+              const focusedIndex = context.get("focusedIndex");
+              if (focusedIndex === -1) return;
+              context.set("value", setValueAtIndex(computed("_value"), focusedIndex, ""));
+            },
+            setFocusIndexToFirst({ context }) {
+              context.set("focusedIndex", 0);
+            },
+            setNextFocusedIndex({ context, computed }) {
+              context.set("focusedIndex", Math.min(context.get("focusedIndex") + 1, computed("valueLength") - 1));
+            },
+            setPrevFocusedIndex({ context }) {
+              context.set("focusedIndex", Math.max(context.get("focusedIndex") - 1, 0));
+            },
+            setLastValueFocusIndex({ context, computed }) {
+              raf(() => {
+                context.set("focusedIndex", Math.min(computed("filledValueLength"), computed("valueLength") - 1));
+              });
+            },
+            blurFocusedInputIfNeeded({ context, prop, scope }) {
+              if (!prop("blurOnComplete")) return;
+              raf(() => {
+                var _a;
+                (_a = getInputElAtIndex(scope, context.get("focusedIndex"))) == null ? void 0 : _a.blur();
+              });
+            },
+            requestFormSubmit({ computed, prop, scope }) {
+              var _a;
+              if (!prop("name") || !computed("isValueComplete")) return;
+              const inputEl = getHiddenInputEl3(scope);
+              (_a = inputEl == null ? void 0 : inputEl.form) == null ? void 0 : _a.requestSubmit();
+            }
+          }
+        }
+      });
+      props17 = createProps()([
+        "autoFocus",
+        "blurOnComplete",
+        "count",
+        "defaultValue",
+        "dir",
+        "disabled",
+        "form",
+        "getRootNode",
+        "id",
+        "ids",
+        "invalid",
+        "mask",
+        "name",
+        "onValueChange",
+        "onValueComplete",
+        "onValueInvalid",
+        "otp",
+        "pattern",
+        "placeholder",
+        "readOnly",
+        "required",
+        "selectOnFocus",
+        "translations",
+        "type",
+        "value"
+      ]);
+      splitProps17 = createSplitProps(props17);
+      PinInput = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine17, props26);
+        }
+        initApi() {
+          return connect17(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="pin-input"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="pin-input"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const hiddenInputEl = this.el.querySelector(
+            '[data-scope="pin-input"][data-part="hidden-input"]'
+          );
+          if (hiddenInputEl) this.spreadProps(hiddenInputEl, this.api.getHiddenInputProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="pin-input"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          this.api.items.forEach((i2) => {
+            const inputEl = this.el.querySelector(
+              `[data-scope="pin-input"][data-part="input"][data-index="${i2}"]`
+            );
+            if (inputEl) this.spreadProps(inputEl, this.api.getInputProps({ index: i2 }));
+          });
+        }
+      };
+      PinInputHook = {
+        mounted() {
+          var _a;
+          const el = this.el;
+          const valueList = getStringList(el, "value");
+          const defaultValueList = getStringList(el, "defaultValue");
+          const controlled = getBoolean(el, "controlled");
+          const zag = new PinInput(el, __spreadProps(__spreadValues({
+            id: el.id,
+            count: (_a = getNumber(el, "count")) != null ? _a : 4
+          }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            readOnly: getBoolean(el, "readOnly"),
+            mask: getBoolean(el, "mask"),
+            otp: getBoolean(el, "otp"),
+            blurOnComplete: getBoolean(el, "blurOnComplete"),
+            selectOnFocus: getBoolean(el, "selectOnFocus"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            type: getString(el, "type", [
+              "alphanumeric",
+              "numeric",
+              "alphabetic"
+            ]),
+            placeholder: getString(el, "placeholder"),
+            onValueChange: (details) => {
+              const hiddenInput = el.querySelector(
+                '[data-scope="pin-input"][data-part="hidden-input"]'
+              );
+              if (hiddenInput) {
+                hiddenInput.value = details.valueAsString;
+                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+              const eventName = getString(el, "onValueChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  valueAsString: details.valueAsString,
+                  id: el.id
+                });
+              }
+              const clientName = getString(el, "onValueChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            },
+            onValueComplete: (details) => {
+              const eventName = getString(el, "onValueComplete");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  valueAsString: details.valueAsString,
+                  id: el.id
+                });
+              }
+            }
+          }));
+          zag.init();
+          this.pinInput = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a, _b, _c, _d;
+          const valueList = getStringList(this.el, "value");
+          const controlled = getBoolean(this.el, "controlled");
+          (_d = this.pinInput) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id,
+            count: (_c = (_b = getNumber(this.el, "count")) != null ? _b : (_a = this.pinInput) == null ? void 0 : _a.api.count) != null ? _c : 4
+          }, controlled && valueList ? { value: valueList } : {}), {
+            disabled: getBoolean(this.el, "disabled"),
+            invalid: getBoolean(this.el, "invalid"),
+            required: getBoolean(this.el, "required"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form")
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.pinInput) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/radio-group.mjs
+  var radio_group_exports = {};
+  __export(radio_group_exports, {
+    RadioGroup: () => RadioGroupHook
+  });
+  function connect18(service, normalize) {
+    const { context, send, computed, prop, scope } = service;
+    const groupDisabled = computed("isDisabled");
+    const groupInvalid = prop("invalid");
+    const readOnly = prop("readOnly");
+    function getItemState(props26) {
+      return {
+        value: props26.value,
+        invalid: !!props26.invalid || !!groupInvalid,
+        disabled: !!props26.disabled || groupDisabled,
+        checked: context.get("value") === props26.value,
+        focused: context.get("focusedValue") === props26.value,
+        focusVisible: context.get("focusVisibleValue") === props26.value,
+        hovered: context.get("hoveredValue") === props26.value,
+        active: context.get("activeValue") === props26.value
+      };
+    }
+    function getItemDataAttrs(props26) {
+      const itemState = getItemState(props26);
+      return {
+        "data-focus": dataAttr(itemState.focused),
+        "data-focus-visible": dataAttr(itemState.focusVisible),
+        "data-disabled": dataAttr(itemState.disabled),
+        "data-readonly": dataAttr(readOnly),
+        "data-state": itemState.checked ? "checked" : "unchecked",
+        "data-hover": dataAttr(itemState.hovered),
+        "data-invalid": dataAttr(itemState.invalid),
+        "data-orientation": prop("orientation"),
+        "data-ssr": dataAttr(context.get("ssr"))
+      };
+    }
+    const focus = () => {
+      var _a;
+      const nodeToFocus = (_a = getFirstEnabledAndCheckedInputEl(scope)) != null ? _a : getFirstEnabledInputEl(scope);
+      nodeToFocus == null ? void 0 : nodeToFocus.focus();
+    };
+    return {
+      focus,
+      value: context.get("value"),
+      setValue(value) {
+        send({ type: "SET_VALUE", value, isTrusted: false });
+      },
+      clearValue() {
+        send({ type: "SET_VALUE", value: null, isTrusted: false });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts18.root.attrs), {
+          role: "radiogroup",
+          id: getRootId14(scope),
+          "aria-labelledby": getLabelId10(scope),
+          "aria-required": prop("required") || void 0,
+          "aria-disabled": groupDisabled || void 0,
+          "aria-readonly": readOnly || void 0,
+          "data-orientation": prop("orientation"),
+          "data-disabled": dataAttr(groupDisabled),
+          "data-invalid": dataAttr(groupInvalid),
+          "data-required": dataAttr(prop("required")),
+          "aria-orientation": prop("orientation"),
+          dir: prop("dir"),
+          style: {
+            position: "relative"
+          }
+        }));
+      },
+      getLabelProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts18.label.attrs), {
+          dir: prop("dir"),
+          "data-orientation": prop("orientation"),
+          "data-disabled": dataAttr(groupDisabled),
+          "data-invalid": dataAttr(groupInvalid),
+          "data-required": dataAttr(prop("required")),
+          id: getLabelId10(scope),
+          onClick: focus
+        }));
+      },
+      getItemState,
+      getItemProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts18.item.attrs), {
+          dir: prop("dir"),
+          id: getItemId6(scope, props26.value),
+          htmlFor: getItemHiddenInputId(scope, props26.value)
+        }), getItemDataAttrs(props26)), {
+          onPointerMove() {
+            if (itemState.disabled) return;
+            if (itemState.hovered) return;
+            send({ type: "SET_HOVERED", value: props26.value, hovered: true });
+          },
+          onPointerLeave() {
+            if (itemState.disabled) return;
+            send({ type: "SET_HOVERED", value: null });
+          },
+          onPointerDown(event) {
+            if (itemState.disabled) return;
+            if (!isLeftClick(event)) return;
+            if (itemState.focused && event.pointerType === "mouse") {
+              event.preventDefault();
+            }
+            send({ type: "SET_ACTIVE", value: props26.value, active: true });
+          },
+          onPointerUp() {
+            if (itemState.disabled) return;
+            send({ type: "SET_ACTIVE", value: null });
+          },
+          onClick() {
+            var _a;
+            if (!itemState.disabled && isSafari()) {
+              (_a = getItemHiddenInputEl(scope, props26.value)) == null ? void 0 : _a.focus();
+            }
+          }
+        }));
+      },
+      getItemTextProps(props26) {
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts18.itemText.attrs), {
+          dir: prop("dir"),
+          id: getItemLabelId(scope, props26.value)
+        }), getItemDataAttrs(props26)));
+      },
+      getItemControlProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts18.itemControl.attrs), {
+          dir: prop("dir"),
+          id: getItemControlId(scope, props26.value),
+          "data-active": dataAttr(itemState.active),
+          "aria-hidden": true
+        }), getItemDataAttrs(props26)));
+      },
+      getItemHiddenInputProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.input({
+          "data-ownedby": getRootId14(scope),
+          id: getItemHiddenInputId(scope, props26.value),
+          type: "radio",
+          name: prop("name") || prop("id"),
+          form: prop("form"),
+          value: props26.value,
+          required: prop("required"),
+          "aria-invalid": itemState.invalid || void 0,
+          onClick(event) {
+            if (readOnly) {
+              event.preventDefault();
+              return;
+            }
+            if (event.currentTarget.checked) {
+              send({ type: "SET_VALUE", value: props26.value, isTrusted: true });
+            }
+          },
+          onBlur() {
+            send({ type: "SET_FOCUSED", value: null, focused: false, focusVisible: false });
+          },
+          onFocus() {
+            const focusVisible = isFocusVisible();
+            send({ type: "SET_FOCUSED", value: props26.value, focused: true, focusVisible });
+          },
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            if (event.key === " ") {
+              send({ type: "SET_ACTIVE", value: props26.value, active: true });
+            }
+          },
+          onKeyUp(event) {
+            if (event.defaultPrevented) return;
+            if (event.key === " ") {
+              send({ type: "SET_ACTIVE", value: null });
+            }
+          },
+          disabled: itemState.disabled || readOnly,
+          defaultChecked: itemState.checked,
+          style: visuallyHiddenStyle
+        });
+      },
+      getIndicatorProps() {
+        const rect = context.get("indicatorRect");
+        const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getIndicatorId2(scope)
+        }, parts18.indicator.attrs), {
+          dir: prop("dir"),
+          hidden: context.get("value") == null || rectIsEmpty,
+          "data-disabled": dataAttr(groupDisabled),
+          "data-orientation": prop("orientation"),
+          style: {
+            "--transition-property": "left, top, width, height",
+            "--left": toPx(rect == null ? void 0 : rect.x),
+            "--top": toPx(rect == null ? void 0 : rect.y),
+            "--width": toPx(rect == null ? void 0 : rect.width),
+            "--height": toPx(rect == null ? void 0 : rect.height),
+            position: "absolute",
+            willChange: "var(--transition-property)",
+            transitionProperty: "var(--transition-property)",
+            transitionDuration: "var(--transition-duration, 150ms)",
+            transitionTimingFunction: "var(--transition-timing-function)",
+            [prop("orientation") === "horizontal" ? "left" : "top"]: prop("orientation") === "horizontal" ? "var(--left)" : "var(--top)"
+          }
+        }));
+      }
+    };
+  }
+  var anatomy18, parts18, getRootId14, getLabelId10, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, not7, machine18, props18, splitProps18, itemProps6, splitItemProps6, RadioGroup, RadioGroupHook;
+  var init_radio_group = __esm({
+    "../priv/static/radio-group.mjs"() {
+      "use strict";
+      init_chunk_TEV2GE3U();
+      init_chunk_IXOYOLUJ();
+      anatomy18 = createAnatomy("radio-group").parts(
+        "root",
+        "label",
+        "item",
+        "itemText",
+        "itemControl",
+        "indicator"
+      );
+      parts18 = anatomy18.build();
+      getRootId14 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `radio-group:${ctx.id}`;
+      };
+      getLabelId10 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `radio-group:${ctx.id}:label`;
+      };
+      getItemId6 = (ctx, value) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, value)) != null ? _c : `radio-group:${ctx.id}:radio:${value}`;
+      };
+      getItemHiddenInputId = (ctx, value) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemHiddenInput) == null ? void 0 : _b.call(_a, value)) != null ? _c : `radio-group:${ctx.id}:radio:input:${value}`;
+      };
+      getItemControlId = (ctx, value) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemControl) == null ? void 0 : _b.call(_a, value)) != null ? _c : `radio-group:${ctx.id}:radio:control:${value}`;
+      };
+      getItemLabelId = (ctx, value) => {
+        var _a, _b, _c;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemLabel) == null ? void 0 : _b.call(_a, value)) != null ? _c : `radio-group:${ctx.id}:radio:label:${value}`;
+      };
+      getIndicatorId2 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.indicator) != null ? _b : `radio-group:${ctx.id}:indicator`;
+      };
+      getRootEl5 = (ctx) => ctx.getById(getRootId14(ctx));
+      getItemHiddenInputEl = (ctx, value) => ctx.getById(getItemHiddenInputId(ctx, value));
+      getIndicatorEl2 = (ctx) => ctx.getById(getIndicatorId2(ctx));
+      getFirstEnabledInputEl = (ctx) => {
+        var _a;
+        return (_a = getRootEl5(ctx)) == null ? void 0 : _a.querySelector("input:not(:disabled)");
+      };
+      getFirstEnabledAndCheckedInputEl = (ctx) => {
+        var _a;
+        return (_a = getRootEl5(ctx)) == null ? void 0 : _a.querySelector("input:not(:disabled):checked");
+      };
+      getInputEls3 = (ctx) => {
+        const ownerId = CSS.escape(getRootId14(ctx));
+        const selector = `input[type=radio][data-ownedby='${ownerId}']:not([disabled])`;
+        return queryAll(getRootEl5(ctx), selector);
+      };
+      getRadioEl = (ctx, value) => {
+        if (!value) return;
+        return ctx.getById(getItemId6(ctx, value));
+      };
+      getOffsetRect = (el) => {
+        var _a, _b, _c, _d;
+        return {
+          x: (_a = el == null ? void 0 : el.offsetLeft) != null ? _a : 0,
+          y: (_b = el == null ? void 0 : el.offsetTop) != null ? _b : 0,
+          width: (_c = el == null ? void 0 : el.offsetWidth) != null ? _c : 0,
+          height: (_d = el == null ? void 0 : el.offsetHeight) != null ? _d : 0
+        };
+      };
+      ({ not: not7 } = createGuards());
+      machine18 = createMachine({
+        props({ props: props26 }) {
+          return __spreadValues({
+            orientation: "vertical"
+          }, props26);
+        },
+        initialState() {
+          return "idle";
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            value: bindable2(() => ({
+              defaultValue: prop("defaultValue"),
+              value: prop("value"),
+              onChange(value) {
+                var _a;
+                (_a = prop("onValueChange")) == null ? void 0 : _a({ value });
+              }
+            })),
+            activeValue: bindable2(() => ({
+              defaultValue: null
+            })),
+            focusedValue: bindable2(() => ({
+              defaultValue: null
+            })),
+            focusVisibleValue: bindable2(() => ({
+              defaultValue: null
+            })),
+            hoveredValue: bindable2(() => ({
+              defaultValue: null
+            })),
+            indicatorRect: bindable2(() => ({
+              defaultValue: null
+            })),
+            fieldsetDisabled: bindable2(() => ({
+              defaultValue: false
+            })),
+            ssr: bindable2(() => ({
+              defaultValue: true
+            }))
+          };
+        },
+        refs() {
+          return {
+            indicatorCleanup: null,
+            focusVisibleValue: null
+          };
+        },
+        computed: {
+          isDisabled: ({ prop, context }) => !!prop("disabled") || context.get("fieldsetDisabled")
+        },
+        entry: ["syncIndicatorRect", "syncSsr"],
+        exit: ["cleanupObserver"],
+        effects: ["trackFormControlState", "trackFocusVisible"],
+        watch({ track, action, context }) {
+          track([() => context.get("value")], () => {
+            action(["syncIndicatorRect", "syncInputElements"]);
+          });
+        },
+        on: {
+          SET_VALUE: [
+            {
+              guard: not7("isTrusted"),
+              actions: ["setValue", "dispatchChangeEvent"]
+            },
+            {
+              actions: ["setValue"]
+            }
+          ],
+          SET_HOVERED: {
+            actions: ["setHovered"]
+          },
+          SET_ACTIVE: {
+            actions: ["setActive"]
+          },
+          SET_FOCUSED: {
+            actions: ["setFocused"]
+          }
+        },
+        states: {
+          idle: {}
+        },
+        implementations: {
+          guards: {
+            isTrusted: ({ event }) => !!event.isTrusted
+          },
+          effects: {
+            trackFormControlState({ context, scope }) {
+              return trackFormControl(getRootEl5(scope), {
+                onFieldsetDisabledChange(disabled) {
+                  context.set("fieldsetDisabled", disabled);
+                },
+                onFormReset() {
+                  context.set("value", context.initial("value"));
+                }
+              });
+            },
+            trackFocusVisible({ scope }) {
+              var _a;
+              return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
+            }
+          },
+          actions: {
+            setValue({ context, event }) {
+              context.set("value", event.value);
+            },
+            setHovered({ context, event }) {
+              context.set("hoveredValue", event.value);
+            },
+            setActive({ context, event }) {
+              context.set("activeValue", event.value);
+            },
+            setFocused({ context, event }) {
+              context.set("focusedValue", event.value);
+              const focusVisibleValue = event.value != null && event.focusVisible ? event.value : null;
+              context.set("focusVisibleValue", focusVisibleValue);
+            },
+            syncInputElements({ context, scope }) {
+              const inputs = getInputEls3(scope);
+              inputs.forEach((input) => {
+                input.checked = input.value === context.get("value");
+              });
+            },
+            cleanupObserver({ refs }) {
+              var _a;
+              (_a = refs.get("indicatorCleanup")) == null ? void 0 : _a();
+            },
+            syncSsr({ context }) {
+              context.set("ssr", false);
+            },
+            syncIndicatorRect({ context, scope, refs }) {
+              var _a;
+              (_a = refs.get("indicatorCleanup")) == null ? void 0 : _a();
+              if (!getIndicatorEl2(scope)) return;
+              const value = context.get("value");
+              const radioEl = getRadioEl(scope, value);
+              if (value == null || !radioEl) {
+                context.set("indicatorRect", null);
+                return;
+              }
+              const exec = () => {
+                context.set("indicatorRect", getOffsetRect(radioEl));
+              };
+              exec();
+              const indicatorCleanup = resizeObserverBorderBox.observe(radioEl, exec);
+              refs.set("indicatorCleanup", indicatorCleanup);
+            },
+            dispatchChangeEvent({ context, scope }) {
+              const inputEls = getInputEls3(scope);
+              inputEls.forEach((inputEl) => {
+                const checked = inputEl.value === context.get("value");
+                if (checked === inputEl.checked) return;
+                dispatchInputCheckedEvent(inputEl, { checked });
+              });
+            }
+          }
+        }
+      });
+      props18 = createProps()([
+        "dir",
+        "disabled",
+        "form",
+        "getRootNode",
+        "id",
+        "ids",
+        "invalid",
+        "name",
+        "onValueChange",
+        "orientation",
+        "readOnly",
+        "required",
+        "value",
+        "defaultValue"
+      ]);
+      splitProps18 = createSplitProps(props18);
+      itemProps6 = createProps()(["value", "disabled", "invalid"]);
+      splitItemProps6 = createSplitProps(itemProps6);
+      RadioGroup = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine18, props26);
+        }
+        initApi() {
+          return connect18(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="radio-group"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="radio-group"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const indicatorEl = this.el.querySelector(
+            '[data-scope="radio-group"][data-part="indicator"]'
+          );
+          if (indicatorEl) this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+          this.el.querySelectorAll('[data-scope="radio-group"][data-part="item"]').forEach((itemEl) => {
+            const value = itemEl.dataset.value;
+            if (value == null) return;
+            const disabled = itemEl.dataset.disabled === "true";
+            const invalid = itemEl.dataset.invalid === "true";
+            this.spreadProps(itemEl, this.api.getItemProps({ value, disabled, invalid }));
+            const textEl = itemEl.querySelector(
+              '[data-scope="radio-group"][data-part="item-text"]'
+            );
+            if (textEl)
+              this.spreadProps(
+                textEl,
+                this.api.getItemTextProps({ value, disabled, invalid })
+              );
+            const controlEl = itemEl.querySelector(
+              '[data-scope="radio-group"][data-part="item-control"]'
+            );
+            if (controlEl)
+              this.spreadProps(
+                controlEl,
+                this.api.getItemControlProps({
+                  value,
+                  disabled,
+                  invalid
+                })
+              );
+            const hiddenInputEl = itemEl.querySelector(
+              '[data-scope="radio-group"][data-part="item-hidden-input"]'
+            );
+            if (hiddenInputEl)
+              this.spreadProps(
+                hiddenInputEl,
+                this.api.getItemHiddenInputProps({
+                  value,
+                  disabled,
+                  invalid
+                })
+              );
+          });
+        }
+      };
+      RadioGroupHook = {
+        mounted() {
+          const el = this.el;
+          const value = getString(el, "value");
+          const defaultValue = getString(el, "defaultValue");
+          const controlled = getBoolean(el, "controlled");
+          const zag = new RadioGroup(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, controlled && value !== void 0 ? { value: value != null ? value : null } : { defaultValue: defaultValue != null ? defaultValue : null }), {
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            disabled: getBoolean(el, "disabled"),
+            invalid: getBoolean(el, "invalid"),
+            required: getBoolean(el, "required"),
+            readOnly: getBoolean(el, "readOnly"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            orientation: getString(el, "orientation", [
+              "horizontal",
+              "vertical"
+            ]),
+            onValueChange: (details) => {
+              const eventName = getString(el, "onValueChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  id: el.id
+                });
+              }
+              const clientName = getString(el, "onValueChangeClient");
+              if (clientName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientName, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            }
+          }));
+          zag.init();
+          this.radioGroup = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a;
+          const value = getString(this.el, "value");
+          const controlled = getBoolean(this.el, "controlled");
+          (_a = this.radioGroup) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, controlled && value !== void 0 ? { value: value != null ? value : null } : {}), {
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form"),
+            disabled: getBoolean(this.el, "disabled"),
+            invalid: getBoolean(this.el, "invalid"),
+            required: getBoolean(this.el, "required"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            orientation: getString(this.el, "orientation", [
+              "horizontal",
+              "vertical"
+            ])
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.radioGroup) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/select.mjs
   var select_exports = {};
   __export(select_exports, {
     Select: () => SelectHook
   });
-  function connect9(service, normalize) {
+  function connect19(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
     const invalid = !!prop("invalid");
@@ -17372,11 +25898,11 @@ var Corex = (() => {
     const currentPlacement = context.get("currentPlacement");
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
-    const ariaActiveDescendant = highlightedValue ? getItemId4(scope, highlightedValue) : void 0;
-    function getItemState(props22) {
-      const _disabled = collection22.getItemDisabled(props22.item);
-      const value = collection22.getItemValue(props22.item);
-      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props22.item)}`);
+    const ariaActiveDescendant = highlightedValue ? getItemId7(scope, highlightedValue) : void 0;
+    function getItemState(props26) {
+      const _disabled = collection22.getItemDisabled(props26.item);
+      const value = collection22.getItemValue(props26.item);
+      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
       return {
         value,
         disabled: Boolean(disabled || _disabled),
@@ -17405,7 +25931,7 @@ var Corex = (() => {
       },
       focus() {
         var _a;
-        (_a = getTriggerEl5(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+        (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
       },
       setOpen(nextOpen) {
         const open2 = state2.hasTag("open");
@@ -17436,9 +25962,9 @@ var Corex = (() => {
       },
       getItemState,
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.root.attrs), {
           dir: prop("dir"),
-          id: getRootId7(scope),
+          id: getRootId15(scope),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
         }));
@@ -17446,8 +25972,8 @@ var Corex = (() => {
       getLabelProps() {
         return normalize.label(__spreadProps(__spreadValues({
           dir: prop("dir"),
-          id: getLabelId5(scope)
-        }, parts9.label.attrs), {
+          id: getLabelId11(scope)
+        }, parts19.label.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -17457,14 +25983,14 @@ var Corex = (() => {
             var _a;
             if (event.defaultPrevented) return;
             if (disabled) return;
-            (_a = getTriggerEl5(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+            (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
           }
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.control.attrs), {
           dir: prop("dir"),
-          id: getControlId4(scope),
+          id: getControlId7(scope),
           "data-state": open ? "open" : "closed",
           "data-focus": dataAttr(focused),
           "data-disabled": dataAttr(disabled),
@@ -17472,7 +25998,7 @@ var Corex = (() => {
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -17481,19 +26007,19 @@ var Corex = (() => {
       },
       getTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
-          id: getTriggerId6(scope),
+          id: getTriggerId7(scope),
           disabled,
           dir: prop("dir"),
           type: "button",
           role: "combobox",
-          "aria-controls": getContentId6(scope),
+          "aria-controls": getContentId8(scope),
           "aria-expanded": open,
           "aria-haspopup": "listbox",
           "data-state": open ? "open" : "closed",
           "aria-invalid": invalid,
           "aria-required": required,
-          "aria-labelledby": getLabelId5(scope)
-        }, parts9.trigger.attrs), {
+          "aria-labelledby": getLabelId11(scope)
+        }, parts19.trigger.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -17560,7 +26086,7 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.indicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
           "data-state": open ? "open" : "closed",
@@ -17569,12 +26095,12 @@ var Corex = (() => {
           "data-readonly": dataAttr(readOnly)
         }));
       },
-      getItemProps(props22) {
-        const itemState = getItemState(props22);
+      getItemProps(props26) {
+        const itemState = getItemState(props26);
         return normalize.element(__spreadProps(__spreadValues({
-          id: getItemId4(scope, itemState.value),
+          id: getItemId7(scope, itemState.value),
           role: "option"
-        }, parts9.item.attrs), {
+        }, parts19.item.attrs), {
           dir: prop("dir"),
           "data-value": itemState.value,
           "aria-selected": itemState.selected,
@@ -17595,7 +26121,7 @@ var Corex = (() => {
           onPointerLeave(event) {
             var _a;
             if (itemState.disabled) return;
-            if (props22.persistFocus) return;
+            if (props26.persistFocus) return;
             if (event.pointerType !== "mouse") return;
             const pointerMoved = (_a = service.event.previous()) == null ? void 0 : _a.type.includes("POINTER");
             if (!pointerMoved) return;
@@ -17603,43 +26129,43 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props22) {
-        const itemState = getItemState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.itemText.attrs), {
+      getItemTextProps(props26) {
+        const itemState = getItemState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props22) {
-        const itemState = getItemState(props22);
+      getItemIndicatorProps(props26) {
+        const itemState = getItemState(props26);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts9.itemIndicator.attrs), {
+        }, parts19.itemIndicator.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
-      getItemGroupLabelProps(props22) {
-        const { htmlFor } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.itemGroupLabel.attrs), {
-          id: getItemGroupLabelId2(scope, htmlFor),
+      getItemGroupLabelProps(props26) {
+        const { htmlFor } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.itemGroupLabel.attrs), {
+          id: getItemGroupLabelId3(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
         }));
       },
-      getItemGroupProps(props22) {
-        const { id } = props22;
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.itemGroup.attrs), {
+      getItemGroupProps(props26) {
+        const { id } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
-          id: getItemGroupId2(scope, id),
-          "aria-labelledby": getItemGroupLabelId2(scope, id),
+          id: getItemGroupId4(scope, id),
+          "aria-labelledby": getItemGroupLabelId3(scope, id),
           role: "group",
           dir: prop("dir")
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts9.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts19.clearTrigger.attrs), {
           id: getClearTriggerId3(scope),
           type: "button",
           "aria-label": "Clear value",
@@ -17671,15 +26197,15 @@ var Corex = (() => {
           // Let's forward the focus to the trigger.
           onFocus() {
             var _a;
-            (_a = getTriggerEl5(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+            (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
           },
-          "aria-labelledby": getLabelId5(scope)
+          "aria-labelledby": getLabelId11(scope)
         });
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.positioner.attrs), {
           dir: prop("dir"),
-          id: getPositionerId5(scope),
+          id: getPositionerId6(scope),
           style: popperStyles.floating
         }));
       },
@@ -17687,15 +26213,15 @@ var Corex = (() => {
         return normalize.element(__spreadProps(__spreadValues({
           hidden: !open,
           dir: prop("dir"),
-          id: getContentId6(scope),
+          id: getContentId8(scope),
           role: composite ? "listbox" : "dialog"
-        }, parts9.content.attrs), {
+        }, parts19.content.attrs), {
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
           "data-activedescendant": ariaActiveDescendant,
           "aria-activedescendant": composite ? ariaActiveDescendant : void 0,
           "aria-multiselectable": prop("multiple") && composite ? true : void 0,
-          "aria-labelledby": getLabelId5(scope),
+          "aria-labelledby": getLabelId11(scope),
           tabIndex: 0,
           onKeyDown(event) {
             if (!interactive) return;
@@ -17750,10 +26276,10 @@ var Corex = (() => {
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts9.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.list.attrs), {
           tabIndex: 0,
           role: !composite ? "listbox" : void 0,
-          "aria-labelledby": getTriggerId6(scope),
+          "aria-labelledby": getTriggerId7(scope),
           "aria-activedescendant": !composite ? ariaActiveDescendant : void 0,
           "aria-multiselectable": !composite && prop("multiple") ? true : void 0
         }));
@@ -17765,9 +26291,9 @@ var Corex = (() => {
     const v2 = (_b = event.restoreFocus) != null ? _b : (_a = event.previousEvent) == null ? void 0 : _a.restoreFocus;
     return v2 == null || !!v2;
   }
-  function buildCollection(items, hasGroups) {
+  function buildCollection2(items, hasGroups) {
     if (hasGroups) {
-      return collection2({
+      return collection3({
         items,
         itemToValue: (item) => {
           var _a, _b;
@@ -17781,7 +26307,7 @@ var Corex = (() => {
         }
       });
     }
-    return collection2({
+    return collection3({
       items,
       itemToValue: (item) => {
         var _a, _b;
@@ -17802,15 +26328,15 @@ var Corex = (() => {
     }
     return result;
   }
-  var anatomy9, parts9, collection2, getRootId7, getContentId6, getTriggerId6, getClearTriggerId3, getLabelId5, getControlId4, getItemId4, getHiddenSelectId, getPositionerId5, getItemGroupId2, getItemGroupLabelId2, getHiddenSelectEl, getContentEl6, getTriggerEl5, getClearTriggerEl3, getPositionerEl5, getItemEl3, and5, not5, or2, machine9, props9, splitProps9, itemProps4, splitItemProps4, itemGroupProps3, splitItemGroupProps3, itemGroupLabelProps3, splitItemGroupLabelProps3, Select, SelectHook;
+  var anatomy19, parts19, collection3, getRootId15, getContentId8, getTriggerId7, getClearTriggerId3, getLabelId11, getControlId7, getItemId7, getHiddenSelectId, getPositionerId6, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl8, getTriggerEl6, getClearTriggerEl3, getPositionerEl6, getItemEl4, and7, not8, or3, machine19, props19, splitProps19, itemProps7, splitItemProps7, itemGroupProps4, splitItemGroupProps4, itemGroupLabelProps4, splitItemGroupLabelProps4, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_2DWEYSRA();
-      init_chunk_GRHV6R4F();
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
-      anatomy9 = createAnatomy("select").parts(
+      init_chunk_2PO3TGCF();
+      init_chunk_EENFWNGI();
+      init_chunk_RR7TJIQ5();
+      init_chunk_IXOYOLUJ();
+      anatomy19 = createAnatomy("select").parts(
         "label",
         "positioner",
         "trigger",
@@ -17827,22 +26353,22 @@ var Corex = (() => {
         "control",
         "valueText"
       );
-      parts9 = anatomy9.build();
-      collection2 = (options) => {
+      parts19 = anatomy19.build();
+      collection3 = (options) => {
         return new ListCollection(options);
       };
-      collection2.empty = () => {
+      collection3.empty = () => {
         return new ListCollection({ items: [] });
       };
-      getRootId7 = (ctx) => {
+      getRootId15 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `select:${ctx.id}`;
       };
-      getContentId6 = (ctx) => {
+      getContentId8 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `select:${ctx.id}:content`;
       };
-      getTriggerId6 = (ctx) => {
+      getTriggerId7 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `select:${ctx.id}:trigger`;
       };
@@ -17850,15 +26376,15 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.clearTrigger) != null ? _b : `select:${ctx.id}:clear-trigger`;
       };
-      getLabelId5 = (ctx) => {
+      getLabelId11 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `select:${ctx.id}:label`;
       };
-      getControlId4 = (ctx) => {
+      getControlId7 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `select:${ctx.id}:control`;
       };
-      getItemId4 = (ctx, id) => {
+      getItemId7 = (ctx, id) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:option:${id}`;
       };
@@ -17866,42 +26392,42 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenSelect) != null ? _b : `select:${ctx.id}:select`;
       };
-      getPositionerId5 = (ctx) => {
+      getPositionerId6 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.positioner) != null ? _b : `select:${ctx.id}:positioner`;
       };
-      getItemGroupId2 = (ctx, id) => {
+      getItemGroupId4 = (ctx, id) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroup) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:optgroup:${id}`;
       };
-      getItemGroupLabelId2 = (ctx, id) => {
+      getItemGroupLabelId3 = (ctx, id) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroupLabel) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:optgroup-label:${id}`;
       };
       getHiddenSelectEl = (ctx) => ctx.getById(getHiddenSelectId(ctx));
-      getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
-      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId6(ctx));
+      getContentEl8 = (ctx) => ctx.getById(getContentId8(ctx));
+      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId7(ctx));
       getClearTriggerEl3 = (ctx) => ctx.getById(getClearTriggerId3(ctx));
-      getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
-      getItemEl3 = (ctx, id) => {
+      getPositionerEl6 = (ctx) => ctx.getById(getPositionerId6(ctx));
+      getItemEl4 = (ctx, id) => {
         if (id == null) return null;
-        return ctx.getById(getItemId4(ctx, id));
+        return ctx.getById(getItemId7(ctx, id));
       };
-      ({ and: and5, not: not5, or: or2 } = createGuards());
-      machine9 = createMachine({
-        props({ props: props22 }) {
+      ({ and: and7, not: not8, or: or3 } = createGuards());
+      machine19 = createMachine({
+        props({ props: props26 }) {
           var _a;
           return __spreadProps(__spreadValues({
             loopFocus: false,
-            closeOnSelect: !props22.multiple,
+            closeOnSelect: !props26.multiple,
             composite: true,
             defaultValue: []
-          }, props22), {
-            collection: (_a = props22.collection) != null ? _a : collection2.empty(),
+          }, props26), {
+            collection: (_a = props26.collection) != null ? _a : collection3.empty(),
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
-            }, props22.positioning)
+            }, props26.positioning)
           });
         },
         context({ prop, bindable: bindable2 }) {
@@ -18055,7 +26581,7 @@ var Corex = (() => {
                   actions: ["setInitialFocus", "highlightComputedLastItem"]
                 },
                 {
-                  guard: or2("isTriggerArrowDownEvent", "isTriggerEnterEvent"),
+                  guard: or3("isTriggerArrowDownEvent", "isTriggerEnterEvent"),
                   target: "open",
                   actions: ["setInitialFocus", "highlightComputedFirstItem"]
                 },
@@ -18119,34 +26645,34 @@ var Corex = (() => {
               ],
               "TRIGGER.ARROW_LEFT": [
                 {
-                  guard: and5(not5("multiple"), "hasSelectedItems"),
+                  guard: and7(not8("multiple"), "hasSelectedItems"),
                   actions: ["selectPreviousItem"]
                 },
                 {
-                  guard: not5("multiple"),
+                  guard: not8("multiple"),
                   actions: ["selectLastItem"]
                 }
               ],
               "TRIGGER.ARROW_RIGHT": [
                 {
-                  guard: and5(not5("multiple"), "hasSelectedItems"),
+                  guard: and7(not8("multiple"), "hasSelectedItems"),
                   actions: ["selectNextItem"]
                 },
                 {
-                  guard: not5("multiple"),
+                  guard: not8("multiple"),
                   actions: ["selectFirstItem"]
                 }
               ],
               "TRIGGER.HOME": {
-                guard: not5("multiple"),
+                guard: not8("multiple"),
                 actions: ["selectFirstItem"]
               },
               "TRIGGER.END": {
-                guard: not5("multiple"),
+                guard: not8("multiple"),
                 actions: ["selectLastItem"]
               },
               "TRIGGER.TYPEAHEAD": {
-                guard: not5("multiple"),
+                guard: not8("multiple"),
                 actions: ["selectMatchingItem"]
               }
             }
@@ -18194,7 +26720,7 @@ var Corex = (() => {
               ],
               "ITEM.CLICK": [
                 {
-                  guard: and5("closeOnSelect", "isOpenControlled"),
+                  guard: and7("closeOnSelect", "isOpenControlled"),
                   actions: ["selectHighlightedItem", "invokeOnClose"]
                 },
                 {
@@ -18214,7 +26740,7 @@ var Corex = (() => {
               },
               "CONTENT.ARROW_DOWN": [
                 {
-                  guard: and5("hasHighlightedItem", "loop", "isLastItemHighlighted"),
+                  guard: and7("hasHighlightedItem", "loop", "isLastItemHighlighted"),
                   actions: ["highlightFirstItem"]
                 },
                 {
@@ -18227,7 +26753,7 @@ var Corex = (() => {
               ],
               "CONTENT.ARROW_UP": [
                 {
-                  guard: and5("hasHighlightedItem", "loop", "isFirstItemHighlighted"),
+                  guard: and7("hasHighlightedItem", "loop", "isFirstItemHighlighted"),
                   actions: ["highlightLastItem"]
                 },
                 {
@@ -18298,12 +26824,12 @@ var Corex = (() => {
               });
             },
             trackDismissableElement({ scope, send, prop }) {
-              const contentEl = () => getContentEl6(scope);
+              const contentEl = () => getContentEl8(scope);
               let restoreFocus = true;
               return trackDismissableElement(contentEl, {
                 type: "listbox",
                 defer: true,
-                exclude: [getTriggerEl5(scope), getClearTriggerEl3(scope)],
+                exclude: [getTriggerEl6(scope), getClearTriggerEl3(scope)],
                 onFocusOutside: prop("onFocusOutside"),
                 onPointerDownOutside: prop("onPointerDownOutside"),
                 onInteractOutside(event) {
@@ -18319,8 +26845,8 @@ var Corex = (() => {
             computePlacement({ context, prop, scope }) {
               const positioning = prop("positioning");
               context.set("currentPlacement", positioning.placement);
-              const triggerEl = () => getTriggerEl5(scope);
-              const positionerEl = () => getPositionerEl5(scope);
+              const triggerEl = () => getTriggerEl6(scope);
+              const positionerEl = () => getPositionerEl6(scope);
               return getPlacement(triggerEl, positionerEl, __spreadProps(__spreadValues({
                 defer: true
               }, positioning), {
@@ -18334,22 +26860,22 @@ var Corex = (() => {
                 const highlightedValue = context.get("highlightedValue");
                 if (highlightedValue == null) return;
                 if (event.current().type.includes("POINTER")) return;
-                const contentEl2 = getContentEl6(scope);
+                const contentEl2 = getContentEl8(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
                   const highlightedIndex = prop("collection").indexOf(highlightedValue);
                   scrollToIndexFn == null ? void 0 : scrollToIndexFn({
                     index: highlightedIndex,
                     immediate,
-                    getElement: () => getItemEl3(scope, highlightedValue)
+                    getElement: () => getItemEl4(scope, highlightedValue)
                   });
                   return;
                 }
-                const itemEl = getItemEl3(scope, highlightedValue);
+                const itemEl = getItemEl4(scope, highlightedValue);
                 scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
               };
               raf(() => exec(true));
-              const contentEl = () => getContentEl6(scope);
+              const contentEl = () => getContentEl8(scope);
               return observeAttributes(contentEl, {
                 defer: true,
                 attributes: ["data-activedescendant"],
@@ -18361,8 +26887,8 @@ var Corex = (() => {
           },
           actions: {
             reposition({ context, prop, scope, event }) {
-              const positionerEl = () => getPositionerEl5(scope);
-              getPlacement(getTriggerEl5(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+              const positionerEl = () => getPositionerEl6(scope);
+              getPlacement(getTriggerEl6(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 defer: true,
                 listeners: false,
                 onComplete(data) {
@@ -18398,7 +26924,7 @@ var Corex = (() => {
             setInitialFocus({ scope }) {
               raf(() => {
                 const element = getInitialFocus({
-                  root: getContentEl6(scope)
+                  root: getContentEl8(scope)
                 });
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
@@ -18406,7 +26932,7 @@ var Corex = (() => {
             focusTriggerEl({ event, scope }) {
               if (!restoreFocusFn(event)) return;
               raf(() => {
-                const element = getTriggerEl5(scope);
+                const element = getTriggerEl6(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -18508,10 +27034,10 @@ var Corex = (() => {
                 (_a = prop("scrollToIndexFn")) == null ? void 0 : _a({
                   index: 0,
                   immediate: true,
-                  getElement: () => getItemEl3(scope, firstValue)
+                  getElement: () => getItemEl4(scope, firstValue)
                 });
               } else {
-                (_b = getContentEl6(scope)) == null ? void 0 : _b.scrollTo(0, 0);
+                (_b = getContentEl8(scope)) == null ? void 0 : _b.scrollTo(0, 0);
               }
             },
             invokeOnOpen({ prop, context }) {
@@ -18568,7 +27094,7 @@ var Corex = (() => {
           }
         }
       });
-      props9 = createProps()([
+      props19 = createProps()([
         "closeOnSelect",
         "collection",
         "composite",
@@ -18601,17 +27127,17 @@ var Corex = (() => {
         "scrollToIndexFn",
         "value"
       ]);
-      splitProps9 = createSplitProps(props9);
-      itemProps4 = createProps()(["item", "persistFocus"]);
-      splitItemProps4 = createSplitProps(itemProps4);
-      itemGroupProps3 = createProps()(["id"]);
-      splitItemGroupProps3 = createSplitProps(itemGroupProps3);
-      itemGroupLabelProps3 = createProps()(["htmlFor"]);
-      splitItemGroupLabelProps3 = createSplitProps(itemGroupLabelProps3);
+      splitProps19 = createSplitProps(props19);
+      itemProps7 = createProps()(["item", "persistFocus"]);
+      splitItemProps7 = createSplitProps(itemProps7);
+      itemGroupProps4 = createProps()(["id"]);
+      splitItemGroupProps4 = createSplitProps(itemGroupProps4);
+      itemGroupLabelProps4 = createProps()(["htmlFor"]);
+      splitItemGroupLabelProps4 = createSplitProps(itemGroupLabelProps4);
       Select = class extends Component {
-        constructor(el, props22) {
+        constructor(el, props26) {
           var _a;
-          super(el, props22);
+          super(el, props26);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "placeholder", "");
@@ -18623,7 +27149,7 @@ var Corex = (() => {
               this.render();
             });
           });
-          const collectionFromProps = props22.collection;
+          const collectionFromProps = props26.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
           this.placeholder = getString(this.el, "placeholder") || "";
         }
@@ -18636,7 +27162,7 @@ var Corex = (() => {
         getCollection() {
           const items = this.options;
           if (this.hasGroups) {
-            return collection2({
+            return collection3({
               items,
               itemToValue: (item) => {
                 var _a, _b;
@@ -18650,7 +27176,7 @@ var Corex = (() => {
               }
             });
           }
-          return collection2({
+          return collection3({
             items,
             itemToValue: (item) => {
               var _a, _b;
@@ -18661,26 +27187,24 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
+        initMachine(props26) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props22.collection;
-          return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props22), {
+          const collectionFromProps = props26.collection;
+          return new VanillaMachine(machine19, __spreadProps(__spreadValues({}, props26), {
             get collection() {
               return collectionFromProps != null ? collectionFromProps : getCollection();
             }
           }));
         }
         initApi() {
-          return connect9(this.machine.service, normalizeProps);
+          return connect19(this.machine.service, normalizeProps);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
             '[data-scope="select"][data-part="content"]'
           );
           if (!contentEl) return;
-          contentEl.querySelectorAll(
-            '[data-scope="select"][data-part="item-group"]'
-          ).forEach((groupEl) => {
+          contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]').forEach((groupEl) => {
             var _a;
             const groupId = (_a = groupEl.dataset.id) != null ? _a : "";
             this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
@@ -18688,21 +27212,16 @@ var Corex = (() => {
               '[data-scope="select"][data-part="item-group-label"]'
             );
             if (labelEl) {
-              this.spreadProps(
-                labelEl,
-                this.api.getItemGroupLabelProps({ htmlFor: groupId })
-              );
+              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
             }
           });
           contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
             var _a;
             const value = (_a = itemEl.dataset.value) != null ? _a : "";
-            const item = this.options.find(
-              (i2) => {
-                var _a2, _b;
-                return String((_b = (_a2 = i2.id) != null ? _a2 : i2.value) != null ? _b : "") === String(value);
-              }
-            );
+            const item = this.options.find((i2) => {
+              var _a2, _b;
+              return String((_b = (_a2 = i2.id) != null ? _a2 : i2.value) != null ? _b : "") === String(value);
+            });
             if (!item) return;
             this.spreadProps(itemEl, this.api.getItemProps({ item }));
             const textEl = itemEl.querySelector(
@@ -18715,10 +27234,7 @@ var Corex = (() => {
               '[data-scope="select"][data-part="item-indicator"]'
             );
             if (indicatorEl) {
-              this.spreadProps(
-                indicatorEl,
-                this.api.getItemIndicatorProps({ item })
-              );
+              this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
             }
           });
         }
@@ -18744,17 +27260,8 @@ var Corex = (() => {
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
           }
-          [
-            "label",
-            "control",
-            "trigger",
-            "indicator",
-            "clear-trigger",
-            "positioner"
-          ].forEach((part) => {
-            const el = this.el.querySelector(
-              `[data-scope="select"][data-part="${part}"]`
-            );
+          ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
+            const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
             if (!el) return;
             const method = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
             this.spreadProps(el, this.api[method]());
@@ -18794,7 +27301,7 @@ var Corex = (() => {
           const el = this.el;
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => item.group !== void 0);
-          const initialCollection = buildCollection(allItems, hasGroups);
+          const initialCollection = buildCollection2(allItems, hasGroups);
           const selectComponent = new Select(el, __spreadProps(__spreadValues({
             id: el.id,
             collection: initialCollection
@@ -18873,7 +27380,7 @@ var Corex = (() => {
             this.select.hasGroups = hasGroups;
             this.select.setOptions(newItems);
             this.select.updateProps(__spreadProps(__spreadValues({
-              collection: buildCollection(newItems, hasGroups),
+              collection: buildCollection2(newItems, hasGroups),
               id: this.el.id
             }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
               name: getString(this.el, "name"),
@@ -19074,7 +27581,7 @@ var Corex = (() => {
   function R(e2, t2 = {}) {
     return P(L(e2, t2), t2);
   }
-  function connect10(service, normalize) {
+  function connect20(service, normalize) {
     const { state: state2, send, prop, computed, context, scope } = service;
     const drawing = state2.matches("drawing");
     const empty = computed("isEmpty");
@@ -19095,29 +27602,29 @@ var Corex = (() => {
         return getDataUrl2(scope, { type, quality });
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts10.label.attrs), {
-          id: getLabelId6(scope),
+        return normalize.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
+          id: getLabelId12(scope),
           "data-disabled": dataAttr(disabled),
           "data-required": dataAttr(required),
-          htmlFor: getHiddenInputId2(scope),
+          htmlFor: getHiddenInputId4(scope),
           onClick(event) {
             if (!interactive) return;
             if (event.defaultPrevented) return;
-            const controlEl = getControlEl3(scope);
+            const controlEl = getControlEl4(scope);
             controlEl == null ? void 0 : controlEl.focus({ preventScroll: true });
           }
         }));
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.root.attrs), {
           "data-disabled": dataAttr(disabled),
-          id: getRootId8(scope)
+          id: getRootId16(scope)
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
           tabIndex: disabled ? void 0 : 0,
-          id: getControlId5(scope),
+          id: getControlId8(scope),
           role: "application",
           "aria-roledescription": "signature pad",
           "aria-label": translations.control,
@@ -19131,7 +27638,7 @@ var Corex = (() => {
             if (target == null ? void 0 : target.closest("[data-part=clear-trigger]")) return;
             event.currentTarget.setPointerCapture(event.pointerId);
             const point = { x: event.clientX, y: event.clientY };
-            const controlEl = getControlEl3(scope);
+            const controlEl = getControlEl4(scope);
             if (!controlEl) return;
             const { offset: offset3 } = getRelativePoint(point, controlEl);
             send({ type: "POINTER_DOWN", point: offset3, pressure: event.pressure });
@@ -19151,7 +27658,7 @@ var Corex = (() => {
         }));
       },
       getSegmentProps() {
-        return normalize.svg(__spreadProps(__spreadValues({}, parts10.segment.attrs), {
+        return normalize.svg(__spreadProps(__spreadValues({}, parts20.segment.attrs), {
           style: {
             position: "absolute",
             top: 0,
@@ -19163,18 +27670,18 @@ var Corex = (() => {
           }
         }));
       },
-      getSegmentPathProps(props22) {
-        return normalize.path(__spreadProps(__spreadValues({}, parts10.segmentPath.attrs), {
-          d: props22.path
+      getSegmentPathProps(props26) {
+        return normalize.path(__spreadProps(__spreadValues({}, parts20.segmentPath.attrs), {
+          d: props26.path
         }));
       },
       getGuideProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts10.guide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.guide.attrs), {
           "data-disabled": dataAttr(disabled)
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts10.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts20.clearTrigger.attrs), {
           type: "button",
           "aria-label": translations.clearTrigger,
           hidden: !context.get("paths").length || drawing,
@@ -19184,16 +27691,16 @@ var Corex = (() => {
           }
         }));
       },
-      getHiddenInputProps(props22) {
+      getHiddenInputProps(props26) {
         return normalize.input({
-          id: getHiddenInputId2(scope),
+          id: getHiddenInputId4(scope),
           type: "text",
           hidden: true,
           disabled,
           required: prop("required"),
           readOnly: true,
           name: prop("name"),
-          value: props22.value
+          value: props26.value
         });
       }
     };
@@ -19240,11 +27747,11 @@ var Corex = (() => {
       streamline: (_d = getNumber(el, "drawingStreamline")) != null ? _d : 0.65
     };
   }
-  var e, t, n, r, a, E, D, O, F, z, anatomy10, parts10, getRootId8, getControlId5, getLabelId6, getHiddenInputId2, getControlEl3, getSegmentEl, getDataUrl2, average, machine10, props10, splitProps10, SignaturePad, SignaturePadHook;
+  var e, t, n, r, a, E, D, O, F, z, anatomy20, parts20, getRootId16, getControlId8, getLabelId12, getHiddenInputId4, getControlEl4, getSegmentEl, getDataUrl2, average, machine20, props20, splitProps20, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
+      init_chunk_IXOYOLUJ();
       ({ PI: e } = Math);
       t = e + 1e-4;
       n = 0.5;
@@ -19255,7 +27762,7 @@ var Corex = (() => {
       O = [0, 0];
       F = [0, 0];
       z = R;
-      anatomy10 = createAnatomy("signature-pad").parts(
+      anatomy20 = createAnatomy("signature-pad").parts(
         "root",
         "control",
         "segment",
@@ -19264,45 +27771,45 @@ var Corex = (() => {
         "clearTrigger",
         "label"
       );
-      parts10 = anatomy10.build();
-      getRootId8 = (ctx) => {
+      parts20 = anatomy20.build();
+      getRootId16 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `signature-${ctx.id}`;
       };
-      getControlId5 = (ctx) => {
+      getControlId8 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `signature-control-${ctx.id}`;
       };
-      getLabelId6 = (ctx) => {
+      getLabelId12 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `signature-label-${ctx.id}`;
       };
-      getHiddenInputId2 = (ctx) => {
+      getHiddenInputId4 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenInput) != null ? _b : `signature-input-${ctx.id}`;
       };
-      getControlEl3 = (ctx) => ctx.getById(getControlId5(ctx));
-      getSegmentEl = (ctx) => query(getControlEl3(ctx), "[data-part=segment]");
+      getControlEl4 = (ctx) => ctx.getById(getControlId8(ctx));
+      getSegmentEl = (ctx) => query(getControlEl4(ctx), "[data-part=segment]");
       getDataUrl2 = (ctx, options) => {
         return getDataUrl(getSegmentEl(ctx), options);
       };
       average = (a2, b2) => (a2 + b2) / 2;
-      machine10 = createMachine({
-        props({ props: props22 }) {
+      machine20 = createMachine({
+        props({ props: props26 }) {
           return __spreadProps(__spreadValues({
             defaultPaths: []
-          }, props22), {
+          }, props26), {
             drawing: __spreadValues({
               size: 2,
               simulatePressure: false,
               thinning: 0.7,
               smoothing: 0.4,
               streamline: 0.6
-            }, props22.drawing),
+            }, props26.drawing),
             translations: __spreadValues({
               control: "signature pad",
               clearTrigger: "clear signature"
-            }, props22.translations)
+            }, props26.translations)
           });
         },
         initialState() {
@@ -19364,7 +27871,7 @@ var Corex = (() => {
               const doc = scope.getDoc();
               return trackPointerMove(doc, {
                 onPointerMove({ event, point }) {
-                  const controlEl = getControlEl3(scope);
+                  const controlEl = getControlEl4(scope);
                   if (!controlEl) return;
                   const { offset: offset3 } = getRelativePoint(point, controlEl);
                   send({ type: "POINTER_MOVE", point: offset3, pressure: event.pressure });
@@ -19418,7 +27925,7 @@ var Corex = (() => {
           }
         }
       });
-      props10 = createProps()([
+      props20 = createProps()([
         "defaultPaths",
         "dir",
         "disabled",
@@ -19434,7 +27941,7 @@ var Corex = (() => {
         "required",
         "translations"
       ]);
-      splitProps10 = createSplitProps(props10);
+      splitProps20 = createSplitProps(props20);
       SignaturePad = class extends Component {
         constructor() {
           super(...arguments);
@@ -19475,9 +27982,9 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          this.name = props22.name;
-          return new VanillaMachine(machine10, props22);
+        initMachine(props26) {
+          this.name = props26.name;
+          return new VanillaMachine(machine20, props26);
         }
         setName(name) {
           this.name = name;
@@ -19486,7 +27993,7 @@ var Corex = (() => {
           this.paths = paths;
         }
         initApi() {
-          return connect10(this.machine.service, normalizeProps);
+          return connect20(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -19662,7 +28169,7 @@ var Corex = (() => {
   __export(switch_exports, {
     Switch: () => SwitchHook
   });
-  function connect11(service, normalize) {
+  function connect21(service, normalize) {
     const { context, send, prop, scope } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -19693,10 +28200,10 @@ var Corex = (() => {
         send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
       },
       getRootProps() {
-        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts11.root.attrs), dataAttrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts21.root.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getRootId9(scope),
-          htmlFor: getHiddenInputId3(scope),
+          id: getRootId17(scope),
+          htmlFor: getHiddenInputId5(scope),
           onPointerMove() {
             if (disabled) return;
             send({ type: "CONTEXT.SET", context: { hovered: true } });
@@ -19709,43 +28216,43 @@ var Corex = (() => {
             var _a;
             if (disabled) return;
             const target = getEventTarget(event);
-            if (target === getHiddenInputEl2(scope)) {
+            if (target === getHiddenInputEl4(scope)) {
               event.stopPropagation();
             }
             if (isSafari()) {
-              (_a = getHiddenInputEl2(scope)) == null ? void 0 : _a.focus();
+              (_a = getHiddenInputEl4(scope)) == null ? void 0 : _a.focus();
             }
           }
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts11.label.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts21.label.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getLabelId7(scope)
+          id: getLabelId13(scope)
         }));
       },
       getThumbProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts11.thumb.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts21.thumb.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getThumbId(scope),
+          id: getThumbId2(scope),
           "aria-hidden": true
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts11.control.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts21.control.attrs), dataAttrs), {
           dir: prop("dir"),
-          id: getControlId6(scope),
+          id: getControlId9(scope),
           "aria-hidden": true
         }));
       },
       getHiddenInputProps() {
         return normalize.input({
-          id: getHiddenInputId3(scope),
+          id: getHiddenInputId5(scope),
           type: "checkbox",
           required: prop("required"),
           defaultChecked: checked,
           disabled,
-          "aria-labelledby": getLabelId7(scope),
+          "aria-labelledby": getLabelId13(scope),
           "aria-invalid": prop("invalid"),
           name: prop("name"),
           form: prop("form"),
@@ -19770,44 +28277,44 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy11, parts11, getRootId9, getLabelId7, getThumbId, getControlId6, getHiddenInputId3, getRootEl3, getHiddenInputEl2, not6, machine11, props11, splitProps11, Switch, SwitchHook;
+  var anatomy21, parts21, getRootId17, getLabelId13, getThumbId2, getControlId9, getHiddenInputId5, getRootEl6, getHiddenInputEl4, not9, machine21, props21, splitProps21, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_EAMC7PNF();
-      init_chunk_GFGFZBBD();
-      anatomy11 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-      parts11 = anatomy11.build();
-      getRootId9 = (ctx) => {
+      init_chunk_TEV2GE3U();
+      init_chunk_IXOYOLUJ();
+      anatomy21 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+      parts21 = anatomy21.build();
+      getRootId17 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `switch:${ctx.id}`;
       };
-      getLabelId7 = (ctx) => {
+      getLabelId13 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `switch:${ctx.id}:label`;
       };
-      getThumbId = (ctx) => {
+      getThumbId2 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.thumb) != null ? _b : `switch:${ctx.id}:thumb`;
       };
-      getControlId6 = (ctx) => {
+      getControlId9 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.control) != null ? _b : `switch:${ctx.id}:control`;
       };
-      getHiddenInputId3 = (ctx) => {
+      getHiddenInputId5 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.hiddenInput) != null ? _b : `switch:${ctx.id}:input`;
       };
-      getRootEl3 = (ctx) => ctx.getById(getRootId9(ctx));
-      getHiddenInputEl2 = (ctx) => ctx.getById(getHiddenInputId3(ctx));
-      ({ not: not6 } = createGuards());
-      machine11 = createMachine({
-        props({ props: props22 }) {
+      getRootEl6 = (ctx) => ctx.getById(getRootId17(ctx));
+      getHiddenInputEl4 = (ctx) => ctx.getById(getHiddenInputId5(ctx));
+      ({ not: not9 } = createGuards());
+      machine21 = createMachine({
+        props({ props: props26 }) {
           return __spreadValues({
             defaultChecked: false,
             label: "switch",
             value: "on"
-          }, props22);
+          }, props26);
         },
         initialState() {
           return "ready";
@@ -19854,7 +28361,7 @@ var Corex = (() => {
         on: {
           "CHECKED.TOGGLE": [
             {
-              guard: not6("isTrusted"),
+              guard: not9("isTrusted"),
               actions: ["toggleChecked", "dispatchChangeEvent"]
             },
             {
@@ -19863,7 +28370,7 @@ var Corex = (() => {
           ],
           "CHECKED.SET": [
             {
-              guard: not6("isTrusted"),
+              guard: not9("isTrusted"),
               actions: ["setChecked", "dispatchChangeEvent"]
             },
             {
@@ -19885,8 +28392,8 @@ var Corex = (() => {
             trackPressEvent({ computed, scope, context }) {
               if (computed("isDisabled")) return;
               return trackPress({
-                pointerNode: getRootEl3(scope),
-                keyboardNode: getHiddenInputEl2(scope),
+                pointerNode: getRootEl6(scope),
+                keyboardNode: getHiddenInputEl4(scope),
                 isValidKey: (event) => event.key === " ",
                 onPress: () => context.set("active", false),
                 onPressStart: () => context.set("active", true),
@@ -19898,7 +28405,7 @@ var Corex = (() => {
               return trackFocusVisible({ root: scope.getRootNode() });
             },
             trackFormControlState({ context, send, scope }) {
-              return trackFormControl(getHiddenInputEl2(scope), {
+              return trackFormControl(getHiddenInputEl4(scope), {
                 onFieldsetDisabledChange(disabled) {
                   context.set("fieldsetDisabled", disabled);
                 },
@@ -19916,7 +28423,7 @@ var Corex = (() => {
               }
             },
             syncInputElement({ context, scope }) {
-              const inputEl = getHiddenInputEl2(scope);
+              const inputEl = getHiddenInputEl4(scope);
               if (!inputEl) return;
               setElementChecked(inputEl, !!context.get("checked"));
             },
@@ -19933,14 +28440,14 @@ var Corex = (() => {
             },
             dispatchChangeEvent({ context, scope }) {
               queueMicrotask(() => {
-                const inputEl = getHiddenInputEl2(scope);
+                const inputEl = getHiddenInputEl4(scope);
                 dispatchInputCheckedEvent(inputEl, { checked: context.get("checked") });
               });
             }
           }
         }
       });
-      props11 = createProps()([
+      props21 = createProps()([
         "checked",
         "defaultChecked",
         "dir",
@@ -19957,14 +28464,14 @@ var Corex = (() => {
         "required",
         "value"
       ]);
-      splitProps11 = createSplitProps(props11);
+      splitProps21 = createSplitProps(props21);
       Switch = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine11, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine21, props26);
         }
         initApi() {
-          return connect11(this.machine.service, normalizeProps);
+          return connect21(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -20122,18 +28629,18 @@ var Corex = (() => {
   __export(tabs_exports, {
     Tabs: () => TabsHook
   });
-  function connect12(service, normalize) {
+  function connect22(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
     const focused = state2.matches("focused");
     const isVertical = prop("orientation") === "vertical";
     const isHorizontal = prop("orientation") === "horizontal";
     const composite = prop("composite");
-    function getTriggerState(props22) {
+    function getTriggerState(props26) {
       return {
-        selected: context.get("value") === props22.value,
-        focused: context.get("focusedValue") === props22.value,
-        disabled: !!props22.disabled
+        selected: context.get("value") === props26.value,
+        focused: context.get("focusedValue") === props26.value,
+        disabled: !!props26.disabled
       };
     }
     return {
@@ -20146,7 +28653,7 @@ var Corex = (() => {
         send({ type: "CLEAR_VALUE" });
       },
       setIndicatorRect(value) {
-        const id = getTriggerId7(scope, value);
+        const id = getTriggerId8(scope, value);
         send({ type: "SET_INDICATOR_RECT", id });
       },
       syncTabIndex() {
@@ -20164,18 +28671,18 @@ var Corex = (() => {
         var _a;
         const value = context.get("value");
         if (!value) return;
-        (_a = getTriggerEl6(scope, value)) == null ? void 0 : _a.focus();
+        (_a = getTriggerEl7(scope, value)) == null ? void 0 : _a.focus();
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts12.root.attrs), {
-          id: getRootId10(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
+          id: getRootId18(scope),
           "data-orientation": prop("orientation"),
           "data-focus": dataAttr(focused),
           dir: prop("dir")
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts12.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.list.attrs), {
           id: getListId(scope),
           role: "tablist",
           dir: prop("dir"),
@@ -20225,10 +28732,10 @@ var Corex = (() => {
         }));
       },
       getTriggerState,
-      getTriggerProps(props22) {
-        const { value, disabled } = props22;
-        const triggerState = getTriggerState(props22);
-        return normalize.button(__spreadProps(__spreadValues({}, parts12.trigger.attrs), {
+      getTriggerProps(props26) {
+        const { value, disabled } = props26;
+        const triggerState = getTriggerState(props26);
+        return normalize.button(__spreadProps(__spreadValues({}, parts22.trigger.attrs), {
           role: "tab",
           type: "button",
           disabled,
@@ -20240,10 +28747,10 @@ var Corex = (() => {
           "aria-selected": triggerState.selected,
           "data-selected": dataAttr(triggerState.selected),
           "data-focus": dataAttr(triggerState.focused),
-          "aria-controls": triggerState.selected ? getContentId7(scope, value) : void 0,
+          "aria-controls": triggerState.selected ? getContentId9(scope, value) : void 0,
           "data-ownedby": getListId(scope),
           "data-ssr": dataAttr(context.get("ssr")),
-          id: getTriggerId7(scope, value),
+          id: getTriggerId8(scope, value),
           tabIndex: triggerState.selected && composite ? 0 : -1,
           onFocus() {
             send({ type: "TAB_FOCUS", value });
@@ -20265,14 +28772,14 @@ var Corex = (() => {
           }
         }));
       },
-      getContentProps(props22) {
-        const { value } = props22;
+      getContentProps(props26) {
+        const { value } = props26;
         const selected = context.get("value") === value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts12.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.content.attrs), {
           dir: prop("dir"),
-          id: getContentId7(scope, value),
+          id: getContentId9(scope, value),
           tabIndex: composite ? 0 : -1,
-          "aria-labelledby": getTriggerId7(scope, value),
+          "aria-labelledby": getTriggerId8(scope, value),
           role: "tabpanel",
           "data-ownedby": getListId(scope),
           "data-selected": dataAttr(selected),
@@ -20284,8 +28791,8 @@ var Corex = (() => {
         const rect = context.get("indicatorRect");
         const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
         return normalize.element(__spreadProps(__spreadValues({
-          id: getIndicatorId(scope)
-        }, parts12.indicator.attrs), {
+          id: getIndicatorId3(scope)
+        }, parts22.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           hidden: rectIsEmpty,
@@ -20306,14 +28813,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy12, parts12, getRootId10, getListId, getContentId7, getTriggerId7, getIndicatorId, getListEl, getContentEl7, getTriggerEl6, getIndicatorEl, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect, getRectByValue, createMachine3, machine12, props12, splitProps12, triggerProps, splitTriggerProps, contentProps, splitContentProps, Tabs, TabsHook;
+  var anatomy22, parts22, getRootId18, getListId, getContentId9, getTriggerId8, getIndicatorId3, getListEl, getContentEl9, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, createMachine6, machine22, props22, splitProps22, triggerProps, splitTriggerProps, contentProps, splitContentProps, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
-      anatomy12 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
-      parts12 = anatomy12.build();
-      getRootId10 = (ctx) => {
+      init_chunk_IXOYOLUJ();
+      anatomy22 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+      parts22 = anatomy22.build();
+      getRootId18 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `tabs:${ctx.id}`;
       };
@@ -20321,22 +28828,22 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.list) != null ? _b : `tabs:${ctx.id}:list`;
       };
-      getContentId7 = (ctx, value) => {
+      getContentId9 = (ctx, value) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.content) == null ? void 0 : _b.call(_a, value)) != null ? _c : `tabs:${ctx.id}:content-${value}`;
       };
-      getTriggerId7 = (ctx, value) => {
+      getTriggerId8 = (ctx, value) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) == null ? void 0 : _b.call(_a, value)) != null ? _c : `tabs:${ctx.id}:trigger-${value}`;
       };
-      getIndicatorId = (ctx) => {
+      getIndicatorId3 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.indicator) != null ? _b : `tabs:${ctx.id}:indicator`;
       };
       getListEl = (ctx) => ctx.getById(getListId(ctx));
-      getContentEl7 = (ctx, value) => ctx.getById(getContentId7(ctx, value));
-      getTriggerEl6 = (ctx, value) => value != null ? ctx.getById(getTriggerId7(ctx, value)) : null;
-      getIndicatorEl = (ctx) => ctx.getById(getIndicatorId(ctx));
+      getContentEl9 = (ctx, value) => ctx.getById(getContentId9(ctx, value));
+      getTriggerEl7 = (ctx, value) => value != null ? ctx.getById(getTriggerId8(ctx, value)) : null;
+      getIndicatorEl3 = (ctx) => ctx.getById(getIndicatorId3(ctx));
       getElements2 = (ctx) => {
         const ownerId = CSS.escape(getListId(ctx));
         const selector = `[role=tab][data-ownedby='${ownerId}']:not([disabled])`;
@@ -20344,9 +28851,9 @@ var Corex = (() => {
       };
       getFirstTriggerEl2 = (ctx) => first(getElements2(ctx));
       getLastTriggerEl2 = (ctx) => last(getElements2(ctx));
-      getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId7(ctx, opts.value), opts.loopFocus);
-      getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId7(ctx, opts.value), opts.loopFocus);
-      getOffsetRect = (el) => {
+      getNextTriggerEl2 = (ctx, opts) => nextById(getElements2(ctx), getTriggerId8(ctx, opts.value), opts.loopFocus);
+      getPrevTriggerEl2 = (ctx, opts) => prevById(getElements2(ctx), getTriggerId8(ctx, opts.value), opts.loopFocus);
+      getOffsetRect2 = (el) => {
         var _a, _b, _c, _d;
         return {
           x: (_a = el == null ? void 0 : el.offsetLeft) != null ? _a : 0,
@@ -20356,12 +28863,12 @@ var Corex = (() => {
         };
       };
       getRectByValue = (ctx, value) => {
-        const tab = itemById(getElements2(ctx), getTriggerId7(ctx, value));
-        return getOffsetRect(tab);
+        const tab = itemById(getElements2(ctx), getTriggerId8(ctx, value));
+        return getOffsetRect2(tab);
       };
-      ({ createMachine: createMachine3 } = setup());
-      machine12 = createMachine3({
-        props({ props: props22 }) {
+      ({ createMachine: createMachine6 } = setup());
+      machine22 = createMachine6({
+        props({ props: props26 }) {
           return __spreadValues({
             dir: "ltr",
             orientation: "horizontal",
@@ -20372,7 +28879,7 @@ var Corex = (() => {
               clickIfLink(details.node);
             },
             defaultValue: null
-          }, props22);
+          }, props26);
         },
         initialState() {
           return "idle";
@@ -20567,7 +29074,7 @@ var Corex = (() => {
               raf(() => {
                 const value = context.get("value");
                 if (!value) return;
-                const contentEl = getContentEl7(scope, value);
+                const contentEl = getContentEl9(scope, value);
                 if (!contentEl) return;
                 const focusables = getFocusables(contentEl);
                 if (focusables.length > 0) {
@@ -20584,10 +29091,10 @@ var Corex = (() => {
             setIndicatorRect({ context, event, scope }) {
               var _a;
               const value = (_a = event.id) != null ? _a : context.get("value");
-              const indicatorEl = getIndicatorEl(scope);
+              const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               if (!value) return;
-              const triggerEl = getTriggerEl6(scope, value);
+              const triggerEl = getTriggerEl7(scope, value);
               if (!triggerEl) return;
               context.set("indicatorRect", getRectByValue(scope, value));
             },
@@ -20597,12 +29104,12 @@ var Corex = (() => {
             syncIndicatorRect({ context, refs, scope }) {
               const cleanup = refs.get("indicatorCleanup");
               if (cleanup) cleanup();
-              const indicatorEl = getIndicatorEl(scope);
+              const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               const exec = () => {
-                const triggerEl = getTriggerEl6(scope, context.get("value"));
+                const triggerEl = getTriggerEl7(scope, context.get("value"));
                 if (!triggerEl) return;
-                const rect = getOffsetRect(triggerEl);
+                const rect = getOffsetRect2(triggerEl);
                 context.set("indicatorRect", (prev2) => isEqual2(prev2, rect) ? prev2 : rect);
               };
               exec();
@@ -20614,7 +29121,7 @@ var Corex = (() => {
               var _a;
               const value = context.get("value");
               if (!value) return;
-              const triggerEl = getTriggerEl6(scope, value);
+              const triggerEl = getTriggerEl7(scope, value);
               if (isAnchorElement(triggerEl)) {
                 (_a = prop("navigate")) == null ? void 0 : _a({ value, node: triggerEl, href: triggerEl.href });
               }
@@ -20622,7 +29129,7 @@ var Corex = (() => {
           }
         }
       });
-      props12 = createProps()([
+      props22 = createProps()([
         "activationMode",
         "composite",
         "deselectable",
@@ -20639,18 +29146,18 @@ var Corex = (() => {
         "value",
         "defaultValue"
       ]);
-      splitProps12 = createSplitProps(props12);
+      splitProps22 = createSplitProps(props22);
       triggerProps = createProps()(["disabled", "value"]);
       splitTriggerProps = createSplitProps(triggerProps);
       contentProps = createProps()(["value"]);
       splitContentProps = createSplitProps(contentProps);
       Tabs = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine12, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine22, props26);
         }
         initApi() {
-          return connect12(this.machine.service, normalizeProps);
+          return connect22(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
@@ -20786,6 +29293,463 @@ var Corex = (() => {
             }
           }
           (_a = this.tabs) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/timer.mjs
+  var timer_exports = {};
+  __export(timer_exports, {
+    Timer: () => TimerHook
+  });
+  function connect23(service, normalize) {
+    const { state: state2, send, computed, scope } = service;
+    const running = state2.matches("running");
+    const paused = state2.matches("paused");
+    const time = computed("time");
+    const formattedTime = computed("formattedTime");
+    const progressPercent = computed("progressPercent");
+    return {
+      running,
+      paused,
+      time,
+      formattedTime,
+      progressPercent,
+      start() {
+        send({ type: "START" });
+      },
+      pause() {
+        send({ type: "PAUSE" });
+      },
+      resume() {
+        send({ type: "RESUME" });
+      },
+      reset() {
+        send({ type: "RESET" });
+      },
+      restart() {
+        send({ type: "RESTART" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadValues({
+          id: getRootId19(scope)
+        }, parts23.root.attrs));
+      },
+      getAreaProps() {
+        return normalize.element(__spreadValues({
+          role: "timer",
+          id: getAreaId2(scope),
+          "aria-label": `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+          "aria-atomic": true
+        }, parts23.area.attrs));
+      },
+      getControlProps() {
+        return normalize.element(__spreadValues({}, parts23.control.attrs));
+      },
+      getItemProps(props26) {
+        const value = time[props26.type];
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.item.attrs), {
+          "data-type": props26.type,
+          style: {
+            "--value": value
+          }
+        }));
+      },
+      getItemLabelProps(props26) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemLabel.attrs), {
+          "data-type": props26.type
+        }));
+      },
+      getItemValueProps(props26) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemValue.attrs), {
+          "data-type": props26.type
+        }));
+      },
+      getSeparatorProps() {
+        return normalize.element(__spreadValues({
+          "aria-hidden": true
+        }, parts23.separator.attrs));
+      },
+      getActionTriggerProps(props26) {
+        if (!validActions.has(props26.action)) {
+          throw new Error(
+            `[zag-js] Invalid action: ${props26.action}. Must be one of: ${Array.from(validActions).join(", ")}`
+          );
+        }
+        return normalize.button(__spreadProps(__spreadValues({}, parts23.actionTrigger.attrs), {
+          hidden: match2(props26.action, {
+            start: () => running || paused,
+            pause: () => !running,
+            reset: () => !running && !paused,
+            resume: () => !paused,
+            restart: () => false
+          }),
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: props26.action.toUpperCase() });
+          }
+        }));
+      }
+    };
+  }
+  function msToTime(ms) {
+    const time = Math.max(0, ms);
+    const milliseconds = time % 1e3;
+    const seconds = Math.floor(time / 1e3) % 60;
+    const minutes = Math.floor(time / (1e3 * 60)) % 60;
+    const hours = Math.floor(time / (1e3 * 60 * 60)) % 24;
+    const days = Math.floor(time / (1e3 * 60 * 60 * 24));
+    return {
+      days,
+      hours,
+      minutes,
+      seconds,
+      milliseconds
+    };
+  }
+  function toPercent(value, minValue, maxValue) {
+    const range = maxValue - minValue;
+    if (range === 0) return 0;
+    return (value - minValue) / range;
+  }
+  function padStart(num, size3 = 2) {
+    return num.toString().padStart(size3, "0");
+  }
+  function roundToInterval(value, interval) {
+    return Math.floor(value / interval) * interval;
+  }
+  function formatTime(time) {
+    const { days, hours, minutes, seconds } = time;
+    return {
+      days: padStart(days),
+      hours: padStart(hours),
+      minutes: padStart(minutes),
+      seconds: padStart(seconds),
+      milliseconds: padStart(time.milliseconds, 3)
+    };
+  }
+  function validateProps(props26) {
+    const { startMs, targetMs, countdown, interval } = props26;
+    if (interval != null && (typeof interval !== "number" || interval <= 0)) {
+      throw new Error(`[timer] Invalid interval: ${interval}. Must be a positive number.`);
+    }
+    if (startMs != null && (typeof startMs !== "number" || startMs < 0)) {
+      throw new Error(`[timer] Invalid startMs: ${startMs}. Must be a non-negative number.`);
+    }
+    if (targetMs != null && (typeof targetMs !== "number" || targetMs < 0)) {
+      throw new Error(`[timer] Invalid targetMs: ${targetMs}. Must be a non-negative number.`);
+    }
+    if (countdown && startMs != null && targetMs != null) {
+      if (startMs <= targetMs) {
+        throw new Error(
+          `[timer] Invalid countdown configuration: startMs (${startMs}) must be greater than targetMs (${targetMs}).`
+        );
+      }
+    }
+    if (!countdown && startMs != null && targetMs != null) {
+      if (startMs >= targetMs) {
+        throw new Error(
+          `[timer] Invalid stopwatch configuration: startMs (${startMs}) must be less than targetMs (${targetMs}).`
+        );
+      }
+    }
+    if (countdown && targetMs == null && startMs != null && startMs <= 0) {
+      throw new Error(
+        `[timer] Invalid countdown configuration: startMs (${startMs}) must be greater than 0 when no targetMs is provided.`
+      );
+    }
+  }
+  var anatomy23, parts23, getRootId19, getAreaId2, validActions, machine23, props23, splitProps23, Timer2, TimerHook;
+  var init_timer = __esm({
+    "../priv/static/timer.mjs"() {
+      "use strict";
+      init_chunk_IXOYOLUJ();
+      anatomy23 = createAnatomy("timer").parts(
+        "root",
+        "area",
+        "control",
+        "item",
+        "itemValue",
+        "itemLabel",
+        "actionTrigger",
+        "separator"
+      );
+      parts23 = anatomy23.build();
+      getRootId19 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `timer:${ctx.id}:root`;
+      };
+      getAreaId2 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.area) != null ? _b : `timer:${ctx.id}:area`;
+      };
+      validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
+      machine23 = createMachine({
+        props({ props: props26 }) {
+          validateProps(props26);
+          return __spreadValues({
+            interval: 1e3,
+            startMs: 0
+          }, props26);
+        },
+        initialState({ prop }) {
+          return prop("autoStart") ? "running" : "idle";
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            currentMs: bindable2(() => ({
+              defaultValue: prop("startMs")
+            }))
+          };
+        },
+        watch({ track, send, prop }) {
+          track([() => prop("startMs")], () => {
+            send({ type: "RESTART" });
+          });
+        },
+        on: {
+          RESTART: {
+            target: "running:temp",
+            actions: ["resetTime"]
+          }
+        },
+        computed: {
+          time: ({ context }) => msToTime(context.get("currentMs")),
+          formattedTime: ({ computed }) => formatTime(computed("time")),
+          progressPercent: memo(
+            ({ context, prop }) => [context.get("currentMs"), prop("targetMs"), prop("startMs"), prop("countdown")],
+            ([currentMs, targetMs = 0, startMs, countdown]) => {
+              const percent = countdown ? toPercent(currentMs, targetMs, startMs) : toPercent(currentMs, startMs, targetMs);
+              return clampValue(percent, 0, 1);
+            }
+          )
+        },
+        states: {
+          idle: {
+            on: {
+              START: {
+                target: "running"
+              },
+              RESET: {
+                actions: ["resetTime"]
+              }
+            }
+          },
+          "running:temp": {
+            effects: ["waitForNextTick"],
+            on: {
+              CONTINUE: {
+                target: "running"
+              }
+            }
+          },
+          running: {
+            effects: ["keepTicking"],
+            on: {
+              PAUSE: {
+                target: "paused"
+              },
+              TICK: [
+                {
+                  target: "idle",
+                  guard: "hasReachedTarget",
+                  actions: ["invokeOnComplete"]
+                },
+                {
+                  actions: ["updateTime", "invokeOnTick"]
+                }
+              ],
+              RESET: {
+                actions: ["resetTime"]
+              }
+            }
+          },
+          paused: {
+            on: {
+              RESUME: {
+                target: "running"
+              },
+              RESET: {
+                target: "idle",
+                actions: ["resetTime"]
+              }
+            }
+          }
+        },
+        implementations: {
+          effects: {
+            keepTicking({ prop, send }) {
+              return setRafInterval(({ deltaMs }) => {
+                send({ type: "TICK", deltaMs });
+              }, prop("interval"));
+            },
+            waitForNextTick({ send }) {
+              return setRafTimeout(() => {
+                send({ type: "CONTINUE" });
+              }, 0);
+            }
+          },
+          actions: {
+            updateTime({ context, prop, event }) {
+              const sign3 = prop("countdown") ? -1 : 1;
+              const deltaMs = roundToInterval(event.deltaMs, prop("interval"));
+              context.set("currentMs", (prev2) => {
+                const newValue = prev2 + sign3 * deltaMs;
+                let targetMs = prop("targetMs");
+                if (targetMs == null && prop("countdown")) targetMs = 0;
+                if (prop("countdown") && targetMs != null) {
+                  return Math.max(newValue, targetMs);
+                } else if (!prop("countdown") && targetMs != null) {
+                  return Math.min(newValue, targetMs);
+                }
+                return newValue;
+              });
+            },
+            resetTime({ context, prop }) {
+              var _a;
+              let targetMs = prop("targetMs");
+              if (targetMs == null && prop("countdown")) targetMs = 0;
+              context.set("currentMs", (_a = prop("startMs")) != null ? _a : 0);
+            },
+            invokeOnTick({ context, prop, computed }) {
+              var _a;
+              (_a = prop("onTick")) == null ? void 0 : _a({
+                value: context.get("currentMs"),
+                time: computed("time"),
+                formattedTime: computed("formattedTime")
+              });
+            },
+            invokeOnComplete({ prop }) {
+              var _a;
+              (_a = prop("onComplete")) == null ? void 0 : _a();
+            }
+          },
+          guards: {
+            hasReachedTarget: ({ context, prop }) => {
+              let targetMs = prop("targetMs");
+              if (targetMs == null && prop("countdown")) targetMs = 0;
+              if (targetMs == null) return false;
+              const currentMs = context.get("currentMs");
+              return prop("countdown") ? currentMs <= targetMs : currentMs >= targetMs;
+            }
+          }
+        }
+      });
+      props23 = createProps()([
+        "autoStart",
+        "countdown",
+        "getRootNode",
+        "id",
+        "ids",
+        "interval",
+        "onComplete",
+        "onTick",
+        "startMs",
+        "targetMs"
+      ]);
+      splitProps23 = createSplitProps(props23);
+      Timer2 = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props26) {
+          return new VanillaMachine(machine23, props26);
+        }
+        initApi() {
+          return connect23(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="timer"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const areaEl = this.el.querySelector('[data-scope="timer"][data-part="area"]');
+          if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
+          const controlEl = this.el.querySelector(
+            '[data-scope="timer"][data-part="control"]'
+          );
+          if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+          const timeParts = ["days", "hours", "minutes", "seconds", "milliseconds"];
+          timeParts.forEach((type) => {
+            const itemEl = this.el.querySelector(
+              `[data-scope="timer"][data-part="item"][data-type="${type}"]`
+            );
+            if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ type }));
+            const valueEl = this.el.querySelector(
+              `[data-scope="timer"][data-part="item-value"][data-type="${type}"]`
+            );
+            if (valueEl) this.spreadProps(valueEl, this.api.getItemValueProps({ type }));
+            const labelEl = this.el.querySelector(
+              `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
+            );
+            if (labelEl) this.spreadProps(labelEl, this.api.getItemLabelProps({ type }));
+          });
+          const separatorEl = this.el.querySelector(
+            '[data-scope="timer"][data-part="separator"]'
+          );
+          if (separatorEl) this.spreadProps(separatorEl, this.api.getSeparatorProps());
+          const actions = ["start", "pause", "resume", "reset", "restart"];
+          actions.forEach((action) => {
+            const triggerEl = this.el.querySelector(
+              `[data-scope="timer"][data-part="action-trigger"][data-action="${action}"]`
+            );
+            if (triggerEl)
+              this.spreadProps(
+                triggerEl,
+                this.api.getActionTriggerProps({ action })
+              );
+          });
+        }
+      };
+      TimerHook = {
+        mounted() {
+          var _a;
+          const el = this.el;
+          const zag = new Timer2(el, {
+            id: el.id,
+            countdown: getBoolean(el, "countdown"),
+            startMs: getNumber(el, "startMs"),
+            targetMs: getNumber(el, "targetMs"),
+            autoStart: getBoolean(el, "autoStart"),
+            interval: (_a = getNumber(el, "interval")) != null ? _a : 1e3,
+            onTick: (details) => {
+              const eventName = getString(el, "onTick");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  time: details.time,
+                  formattedTime: details.formattedTime,
+                  id: el.id
+                });
+              }
+            },
+            onComplete: () => {
+              const eventName = getString(el, "onComplete");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { id: el.id });
+              }
+            }
+          });
+          zag.init();
+          this.timer = zag;
+          this.handlers = [];
+        },
+        updated() {
+          var _a, _b;
+          (_b = this.timer) == null ? void 0 : _b.updateProps({
+            id: this.el.id,
+            countdown: getBoolean(this.el, "countdown"),
+            startMs: getNumber(this.el, "startMs"),
+            targetMs: getNumber(this.el, "targetMs"),
+            autoStart: getBoolean(this.el, "autoStart"),
+            interval: (_a = getNumber(this.el, "interval")) != null ? _a : 1e3
+          });
+        },
+        destroyed() {
+          var _a;
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.timer) == null ? void 0 : _a.destroy();
         }
       };
     }
@@ -20974,7 +29938,7 @@ var Corex = (() => {
         const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
         const placement = computed("placement");
         const [side, align = "center"] = placement.split("-");
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.group.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
           "aria-label": `${placement} ${label} ${hotkeyLabel}`,
@@ -21013,7 +29977,7 @@ var Corex = (() => {
       }
     };
   }
-  function connect13(service, normalize) {
+  function connect24(service, normalize) {
     const { state: state2, send, prop, scope, context, computed } = service;
     const visible = state2.hasTag("visible");
     const paused = state2.hasTag("paused");
@@ -21044,9 +30008,9 @@ var Corex = (() => {
         send({ type: "DISMISS", src: "programmatic" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
           dir: prop("dir"),
-          id: getRootId11(scope),
+          id: getRootId20(scope),
           "data-state": visible ? "open" : "closed",
           "data-type": type,
           "data-placement": placement,
@@ -21061,7 +30025,7 @@ var Corex = (() => {
           role: "status",
           "aria-atomic": "true",
           "aria-describedby": description ? getDescriptionId2(scope) : void 0,
-          "aria-labelledby": title ? getTitleId2(scope) : void 0,
+          "aria-labelledby": title ? getTitleId3(scope) : void 0,
           tabIndex: 0,
           style: getPlacementStyle(service, visible),
           onKeyDown(event) {
@@ -21088,17 +30052,17 @@ var Corex = (() => {
         });
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.title.attrs), {
-          id: getTitleId2(scope)
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.title.attrs), {
+          id: getTitleId3(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts13.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.description.attrs), {
           id: getDescriptionId2(scope)
         }));
       },
       getActionTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts13.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts24.actionTrigger.attrs), {
           type: "button",
           onClick(event) {
             var _a;
@@ -21111,7 +30075,7 @@ var Corex = (() => {
       getCloseTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
           id: getCloseTriggerId2(scope)
-        }, parts13.closeTrigger.attrs), {
+        }, parts24.closeTrigger.attrs), {
           type: "button",
           "aria-label": "Dismiss notification",
           onClick(event) {
@@ -21133,8 +30097,8 @@ var Corex = (() => {
       }
     });
   }
-  function createToastStore(props15 = {}) {
-    const attrs = withDefaults(props15, {
+  function createToastStore(props26 = {}) {
+    const attrs = withDefaults(props26, {
       placement: "bottom",
       overlap: false,
       max: 24,
@@ -21372,13 +30336,13 @@ var Corex = (() => {
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
-  var anatomy13, parts13, getRegionId, getRegionEl, getRootId11, getRootEl4, getTitleId2, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards2, createMachine22, and6, groupMachine, not7, machine13, withDefaults, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
+  var anatomy24, parts24, getRegionId, getRegionEl, getRootId20, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and8, groupMachine, not10, machine24, withDefaults, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_BPSX7Z7Y();
-      init_chunk_GFGFZBBD();
-      anatomy13 = createAnatomy("toast").parts(
+      init_chunk_RR7TJIQ5();
+      init_chunk_IXOYOLUJ();
+      anatomy24 = createAnatomy("toast").parts(
         "group",
         "root",
         "title",
@@ -21386,12 +30350,12 @@ var Corex = (() => {
         "actionTrigger",
         "closeTrigger"
       );
-      parts13 = anatomy13.build();
+      parts24 = anatomy24.build();
       getRegionId = (placement) => `toast-group:${placement}`;
       getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
-      getRootId11 = (ctx) => `toast:${ctx.id}`;
-      getRootEl4 = (ctx) => ctx.getById(getRootId11(ctx));
-      getTitleId2 = (ctx) => `toast:${ctx.id}:title`;
+      getRootId20 = (ctx) => `toast:${ctx.id}`;
+      getRootEl7 = (ctx) => ctx.getById(getRootId20(ctx));
+      getTitleId3 = (ctx) => `toast:${ctx.id}:title`;
       getDescriptionId2 = (ctx) => `toast:${ctx.id}:description`;
       getCloseTriggerId2 = (ctx) => `toast${ctx.id}:close`;
       defaultTimeouts = {
@@ -21402,15 +30366,15 @@ var Corex = (() => {
         DEFAULT: 5e3
       };
       getOffsets = (offsets) => typeof offsets === "string" ? { left: offsets, right: offsets, bottom: offsets, top: offsets } : offsets;
-      ({ guards: guards2, createMachine: createMachine22 } = setup());
-      ({ and: and6 } = guards2);
+      ({ guards: guards4, createMachine: createMachine22 } = setup());
+      ({ and: and8 } = guards4);
       groupMachine = createMachine22({
-        props({ props: props15 }) {
+        props({ props: props26 }) {
           return __spreadProps(__spreadValues({
             dir: "ltr",
             id: uuid()
-          }, props15), {
-            store: props15.store
+          }, props26), {
+            store: props26.store
           });
         },
         initialState({ prop }) {
@@ -21458,7 +30422,7 @@ var Corex = (() => {
           },
           "REGION.BLUR": [
             {
-              guard: and6("isOverlapping", "isPointerOut"),
+              guard: and8("isOverlapping", "isPointerOut"),
               target: "overlap",
               actions: ["collapseToasts", "resumeToasts", "restoreFocusIfPointerOut"]
             },
@@ -21656,14 +30620,14 @@ var Corex = (() => {
           }
         }
       });
-      ({ not: not7 } = createGuards());
-      machine13 = createMachine({
-        props({ props: props15 }) {
-          ensureProps(props15, ["id", "type", "parent", "removeDelay"], "toast");
+      ({ not: not10 } = createGuards());
+      machine24 = createMachine({
+        props({ props: props26 }) {
+          ensureProps(props26, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
             closable: true
-          }, props15), {
-            duration: getToastDuration(props15.duration, props15.type)
+          }, props26), {
+            duration: getToastDuration(props26.duration, props26.type)
           });
         },
         initialState({ prop }) {
@@ -21760,7 +30724,7 @@ var Corex = (() => {
             tags: ["visible", "paused"],
             on: {
               RESUME: {
-                guard: not7("isLoadingType"),
+                guard: not10("isLoadingType"),
                 target: "visible",
                 actions: ["setCloseTimer"]
               },
@@ -21817,7 +30781,7 @@ var Corex = (() => {
             trackHeight({ scope, prop }) {
               let cleanup;
               raf(() => {
-                const rootEl = getRootEl4(scope);
+                const rootEl = getRootEl7(scope);
                 if (!rootEl) return;
                 const syncHeight = () => {
                   const originalHeight = rootEl.style.height;
@@ -21851,7 +30815,7 @@ var Corex = (() => {
             },
             measureHeight({ scope, prop, context }) {
               queueMicrotask(() => {
-                const rootEl = getRootEl4(scope);
+                const rootEl = getRootEl7(scope);
                 if (!rootEl) return;
                 const originalHeight = rootEl.style.height;
                 rootEl.style.height = "auto";
@@ -21909,15 +30873,15 @@ var Corex = (() => {
       toastGroups = /* @__PURE__ */ new Map();
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
-        constructor(el, props15) {
-          super(el, props15);
+        constructor(el, props26) {
+          super(el, props26);
           __publicField(this, "parts");
           __publicField(this, "duration");
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
-          this.duration = props15.duration;
+          this.duration = props26.duration;
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.innerHTML = `
@@ -21949,11 +30913,11 @@ var Corex = (() => {
           };
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props15) {
-          return new VanillaMachine(machine13, props15);
+        initMachine(props26) {
+          return new VanillaMachine(machine24, props26);
         }
         initApi() {
-          return connect13(this.machine.service, normalizeProps);
+          return connect24(this.machine.service, normalizeProps);
         }
         render() {
           var _a, _b;
@@ -21991,9 +30955,9 @@ var Corex = (() => {
         }
       };
       ToastGroup = class extends Component {
-        constructor(el, props15) {
+        constructor(el, props26) {
           var _a;
-          super(el, props15);
+          super(el, props26);
           __publicField(this, "toastComponents", /* @__PURE__ */ new Map());
           __publicField(this, "groupEl");
           __publicField(this, "store");
@@ -22004,7 +30968,7 @@ var Corex = (() => {
             this.toastComponents.clear();
             this.machine.stop();
           });
-          this.store = props15.store;
+          this.store = props26.store;
           this.groupEl = (_a = el.querySelector('[data-part="group"]')) != null ? _a : (() => {
             const g2 = document.createElement("div");
             g2.setAttribute("data-scope", "toast");
@@ -22014,8 +30978,8 @@ var Corex = (() => {
           })();
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props15) {
-          return new VanillaMachine(group.machine, props15);
+        initMachine(props26) {
+          return new VanillaMachine(group.machine, props26);
         }
         initApi() {
           return group.connect(this.machine.service, normalizeProps);
@@ -22205,19 +31169,19 @@ var Corex = (() => {
   __export(toggle_group_exports, {
     ToggleGroup: () => ToggleGroupHook
   });
-  function connect14(service, normalize) {
+  function connect25(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
     const isSingle = !prop("multiple");
     const rovingFocus = prop("rovingFocus");
     const isHorizontal = prop("orientation") === "horizontal";
-    function getItemState(props22) {
-      const id = getItemId5(scope, props22.value);
+    function getItemState(props26) {
+      const id = getItemId8(scope, props26.value);
       return {
         id,
-        disabled: Boolean(props22.disabled || disabled),
-        pressed: !!value.includes(props22.value),
+        disabled: Boolean(props26.disabled || disabled),
+        pressed: !!value.includes(props26.value),
         focused: context.get("focusedId") === id
       };
     }
@@ -22227,8 +31191,8 @@ var Corex = (() => {
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.root.attrs), {
-          id: getRootId12(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
+          id: getRootId21(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
           tabIndex: context.get("isTabbingBackward") ? -1 : 0,
@@ -22256,13 +31220,13 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props22) {
-        const itemState = getItemState(props22);
+      getItemProps(props26) {
+        const itemState = getItemState(props26);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize.button(__spreadProps(__spreadValues({}, parts14.item.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts25.item.attrs), {
           id: itemState.id,
           type: "button",
-          "data-ownedby": getRootId12(scope),
+          "data-ownedby": getRootId21(scope),
           "data-focus": dataAttr(itemState.focused),
           disabled: itemState.disabled,
           tabIndex: rovingFocus ? rovingTabIndex : void 0,
@@ -22281,7 +31245,7 @@ var Corex = (() => {
           },
           onClick(event) {
             if (itemState.disabled) return;
-            send({ type: "TOGGLE.CLICK", id: itemState.id, value: props22.value });
+            send({ type: "TOGGLE.CLICK", id: itemState.id, value: props26.value });
             if (isSafari()) {
               event.currentTarget.focus({ preventScroll: true });
             }
@@ -22330,41 +31294,41 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy14, parts14, getRootId12, getItemId5, getRootEl5, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not8, and7, machine14, props13, splitProps13, itemProps5, splitItemProps5, ToggleGroup, ToggleGroupHook;
+  var anatomy25, parts25, getRootId21, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not11, and9, machine25, props24, splitProps24, itemProps8, splitItemProps8, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_GFGFZBBD();
-      anatomy14 = createAnatomy("toggle-group").parts("root", "item");
-      parts14 = anatomy14.build();
-      getRootId12 = (ctx) => {
+      init_chunk_IXOYOLUJ();
+      anatomy25 = createAnatomy("toggle-group").parts("root", "item");
+      parts25 = anatomy25.build();
+      getRootId21 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `toggle-group:${ctx.id}`;
       };
-      getItemId5 = (ctx, value) => {
+      getItemId8 = (ctx, value) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, value)) != null ? _c : `toggle-group:${ctx.id}:${value}`;
       };
-      getRootEl5 = (ctx) => ctx.getById(getRootId12(ctx));
+      getRootEl8 = (ctx) => ctx.getById(getRootId21(ctx));
       getElements3 = (ctx) => {
-        const ownerId = CSS.escape(getRootId12(ctx));
+        const ownerId = CSS.escape(getRootId21(ctx));
         const selector = `[data-ownedby='${ownerId}']:not([data-disabled])`;
-        return queryAll(getRootEl5(ctx), selector);
+        return queryAll(getRootEl8(ctx), selector);
       };
       getFirstEl2 = (ctx) => first(getElements3(ctx));
       getLastEl2 = (ctx) => last(getElements3(ctx));
       getNextEl2 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
       getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
-      ({ not: not8, and: and7 } = createGuards());
-      machine14 = createMachine({
-        props({ props: props22 }) {
+      ({ not: not11, and: and9 } = createGuards());
+      machine25 = createMachine({
+        props({ props: props26 }) {
           return __spreadValues({
             defaultValue: [],
             orientation: "horizontal",
             rovingFocus: true,
             loopFocus: true,
             deselectable: true
-          }, props22);
+          }, props26);
         },
         initialState() {
           return "idle";
@@ -22413,7 +31377,7 @@ var Corex = (() => {
             on: {
               "ROOT.FOCUS": {
                 target: "focused",
-                guard: not8(and7("isClickFocus", "isTabbingBackward")),
+                guard: not11(and9("isClickFocus", "isTabbingBackward")),
                 actions: ["focusFirstToggle", "clearClickFocus"]
               },
               "TOGGLE.FOCUS": {
@@ -22445,7 +31409,7 @@ var Corex = (() => {
               },
               "TOGGLE.SHIFT_TAB": [
                 {
-                  guard: not8("isFirstToggleFocused"),
+                  guard: not11("isFirstToggleFocused"),
                   target: "idle",
                   actions: ["setIsTabbingBackward"]
                 },
@@ -22480,7 +31444,7 @@ var Corex = (() => {
             },
             checkIfWithinToolbar({ context, scope }) {
               var _a;
-              const closestToolbar = (_a = getRootEl5(scope)) == null ? void 0 : _a.closest("[role=toolbar]");
+              const closestToolbar = (_a = getRootEl8(scope)) == null ? void 0 : _a.closest("[role=toolbar]");
               context.set("isWithinToolbar", !!closestToolbar);
             },
             setFocusedId({ context, event }) {
@@ -22533,7 +31497,7 @@ var Corex = (() => {
           }
         }
       });
-      props13 = createProps()([
+      props24 = createProps()([
         "dir",
         "disabled",
         "getRootNode",
@@ -22548,16 +31512,16 @@ var Corex = (() => {
         "defaultValue",
         "deselectable"
       ]);
-      splitProps13 = createSplitProps(props13);
-      itemProps5 = createProps()(["value", "disabled"]);
-      splitItemProps5 = createSplitProps(itemProps5);
+      splitProps24 = createSplitProps(props24);
+      itemProps8 = createProps()(["value", "disabled"]);
+      splitItemProps8 = createSplitProps(itemProps8);
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine14, props22);
+        initMachine(props26) {
+          return new VanillaMachine(machine25, props26);
         }
         initApi() {
-          return connect14(this.machine.service, normalizeProps);
+          return connect25(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -22581,7 +31545,7 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const props22 = __spreadProps(__spreadValues({
+          const props26 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             defaultValue: getStringList(el, "defaultValue"),
@@ -22614,7 +31578,7 @@ var Corex = (() => {
               }
             }
           });
-          const toggleGroup = new ToggleGroup(el, props22);
+          const toggleGroup = new ToggleGroup(el, props26);
           toggleGroup.init();
           this.toggleGroup = toggleGroup;
           this.onSetValue = (event) => {
@@ -22701,7 +31665,7 @@ var Corex = (() => {
     });
     return map2;
   }
-  function connect15(service, normalize) {
+  function connect26(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
     const expandedValue = Array.from(context.get("expandedValue"));
@@ -22717,8 +31681,8 @@ var Corex = (() => {
     };
     const firstNode = collection22.getFirstNode(void 0, { skip });
     const firstNodeValue = firstNode ? collection22.getNodeValue(firstNode) : null;
-    function getNodeState(props22) {
-      const { node, indexPath } = props22;
+    function getNodeState(props26) {
+      const { node, indexPath } = props26;
       const value = collection22.getNodeValue(node);
       return {
         id: getNodeId(scope, value),
@@ -22803,24 +31767,24 @@ var Corex = (() => {
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.root.attrs), {
-          id: getRootId13(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.root.attrs), {
+          id: getRootId22(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.label.attrs), {
-          id: getLabelId8(scope),
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.label.attrs), {
+          id: getLabelId14(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.tree.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
           "aria-label": "Tree View",
-          "aria-labelledby": getLabelId8(scope),
+          "aria-labelledby": getLabelId14(scope),
           "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
           tabIndex: -1,
           onKeyDown(event) {
@@ -22922,13 +31886,13 @@ var Corex = (() => {
         }));
       },
       getNodeState,
-      getItemProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.item.attrs), {
+      getItemProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
-          "data-path": props22.indexPath.join("/"),
+          "data-path": props26.indexPath.join("/"),
           "data-value": nodeState.value,
           tabIndex: nodeState.focused ? 0 : -1,
           "data-focus": dataAttr(nodeState.focused),
@@ -22961,17 +31925,17 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props22) {
-        const itemState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemText.attrs), {
+      getItemTextProps(props26) {
+        const itemState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
         }));
       },
-      getItemIndicatorProps(props22) {
-        const itemState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemIndicator.attrs), {
+      getItemIndicatorProps(props26) {
+        const itemState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -22979,9 +31943,9 @@ var Corex = (() => {
           hidden: !itemState.selected
         }));
       },
-      getBranchProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branch.attrs), {
+      getBranchProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -22990,7 +31954,7 @@ var Corex = (() => {
           "data-value": nodeState.value,
           "aria-level": nodeState.depth,
           "aria-selected": nodeState.disabled ? void 0 : nodeState.selected,
-          "data-path": props22.indexPath.join("/"),
+          "data-path": props26.indexPath.join("/"),
           "data-selected": dataAttr(nodeState.selected),
           "aria-expanded": nodeState.expanded,
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -23003,9 +31967,9 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchIndicatorProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchIndicator.attrs), {
+      getBranchIndicatorProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -23014,9 +31978,9 @@ var Corex = (() => {
           "data-loading": dataAttr(nodeState.loading)
         }));
       },
-      getBranchTriggerProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchTrigger.attrs), {
+      getBranchTriggerProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -23031,14 +31995,14 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchControlProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchControl.attrs), {
+      getBranchControlProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
           tabIndex: nodeState.focused ? 0 : -1,
-          "data-path": props22.indexPath.join("/"),
+          "data-path": props26.indexPath.join("/"),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
           "data-selected": dataAttr(nodeState.selected),
@@ -23063,37 +32027,37 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchTextProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchText.attrs), {
+      getBranchTextProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-loading": dataAttr(nodeState.loading)
         }));
       },
-      getBranchContentProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchContent.attrs), {
+      getBranchContentProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-depth": nodeState.depth,
-          "data-path": props22.indexPath.join("/"),
+          "data-path": props26.indexPath.join("/"),
           "data-value": nodeState.value,
           hidden: !nodeState.expanded
         }));
       },
-      getBranchIndentGuideProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.branchIndentGuide.attrs), {
+      getBranchIndentGuideProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
-      getNodeCheckboxProps(props22) {
-        const nodeState = getNodeState(props22);
+      getNodeCheckboxProps(props26) {
+        const nodeState = getNodeState(props26);
         const checkedState = nodeState.checked;
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.nodeCheckbox.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -23110,9 +32074,9 @@ var Corex = (() => {
           }
         }));
       },
-      getNodeRenameInputProps(props22) {
-        const nodeState = getNodeState(props22);
-        return normalize.input(__spreadProps(__spreadValues({}, parts15.nodeRenameInput.attrs), {
+      getNodeRenameInputProps(props26) {
+        const nodeState = getNodeState(props26);
+        return normalize.input(__spreadProps(__spreadValues({}, parts26.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": "Rename tree item",
@@ -23272,13 +32236,13 @@ var Corex = (() => {
     }
     return root;
   }
-  var anatomy15, parts15, collection3, getRootId13, getLabelId8, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and8, machine15, props14, splitProps14, itemProps6, splitItemProps6, TreeView, TreeViewHook;
+  var anatomy26, parts26, collection4, getRootId22, getLabelId14, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and10, machine26, props25, splitProps25, itemProps9, splitItemProps9, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_2DWEYSRA();
-      init_chunk_GFGFZBBD();
-      anatomy15 = createAnatomy("tree-view").parts(
+      init_chunk_2PO3TGCF();
+      init_chunk_IXOYOLUJ();
+      anatomy26 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -23295,18 +32259,18 @@ var Corex = (() => {
         "root",
         "tree"
       );
-      parts15 = anatomy15.build();
-      collection3 = (options) => {
+      parts26 = anatomy26.build();
+      collection4 = (options) => {
         return new TreeCollection(options);
       };
-      collection3.empty = () => {
+      collection4.empty = () => {
         return new TreeCollection({ rootNode: { children: [] } });
       };
-      getRootId13 = (ctx) => {
+      getRootId22 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `tree:${ctx.id}:root`;
       };
-      getLabelId8 = (ctx) => {
+      getLabelId14 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `tree:${ctx.id}:label`;
       };
@@ -23327,17 +32291,17 @@ var Corex = (() => {
       getRenameInputEl = (ctx, value) => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
-      ({ and: and8 } = createGuards());
-      machine15 = createMachine({
-        props({ props: props22 }) {
+      ({ and: and10 } = createGuards());
+      machine26 = createMachine({
+        props({ props: props26 }) {
           return __spreadValues({
             selectionMode: "single",
-            collection: collection3.empty(),
+            collection: collection4.empty(),
             typeahead: true,
             expandOnClick: true,
             defaultExpandedValue: [],
             defaultSelectedValue: []
-          }, props22);
+          }, props26);
         },
         initialState() {
           return "idle";
@@ -23450,7 +32414,7 @@ var Corex = (() => {
           },
           "SELECTED.ALL": [
             {
-              guard: and8("isMultipleSelection", "moveFocus"),
+              guard: and10("isMultipleSelection", "moveFocus"),
               actions: ["selectAllNodes", "focusTreeLastNode"]
             },
             {
@@ -23481,7 +32445,7 @@ var Corex = (() => {
           },
           "NODE.ARROW_DOWN": [
             {
-              guard: and8("isShiftKey", "isMultipleSelection"),
+              guard: and10("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreeNextNode", "extendSelectionToNextNode"]
             },
             {
@@ -23490,7 +32454,7 @@ var Corex = (() => {
           ],
           "NODE.ARROW_UP": [
             {
-              guard: and8("isShiftKey", "isMultipleSelection"),
+              guard: and10("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreePrevNode", "extendSelectionToPrevNode"]
             },
             {
@@ -23511,7 +32475,7 @@ var Corex = (() => {
           ],
           "BRANCH_NODE.ARROW_RIGHT": [
             {
-              guard: and8("isBranchFocused", "isBranchExpanded"),
+              guard: and10("isBranchFocused", "isBranchExpanded"),
               actions: ["focusBranchFirstNode"]
             },
             {
@@ -23523,7 +32487,7 @@ var Corex = (() => {
           },
           "NODE.HOME": [
             {
-              guard: and8("isShiftKey", "isMultipleSelection"),
+              guard: and10("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToFirstNode", "focusTreeFirstNode"]
             },
             {
@@ -23532,7 +32496,7 @@ var Corex = (() => {
           ],
           "NODE.END": [
             {
-              guard: and8("isShiftKey", "isMultipleSelection"),
+              guard: and10("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToLastNode", "focusTreeLastNode"]
             },
             {
@@ -23541,11 +32505,11 @@ var Corex = (() => {
           ],
           "NODE.CLICK": [
             {
-              guard: and8("isCtrlKey", "isMultipleSelection"),
+              guard: and10("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and8("isShiftKey", "isMultipleSelection"),
+              guard: and10("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -23554,11 +32518,11 @@ var Corex = (() => {
           ],
           "BRANCH_NODE.CLICK": [
             {
-              guard: and8("isCtrlKey", "isMultipleSelection"),
+              guard: and10("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and8("isShiftKey", "isMultipleSelection"),
+              guard: and10("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -23942,7 +32906,7 @@ var Corex = (() => {
           }
         }
       });
-      props14 = createProps()([
+      props25 = createProps()([
         "ids",
         "collection",
         "dir",
@@ -23972,19 +32936,19 @@ var Corex = (() => {
         "onRenameComplete",
         "scrollToIndexFn"
       ]);
-      splitProps14 = createSplitProps(props14);
-      itemProps6 = createProps()(["node", "indexPath"]);
-      splitItemProps6 = createSplitProps(itemProps6);
+      splitProps25 = createSplitProps(props25);
+      itemProps9 = createProps()(["node", "indexPath"]);
+      splitItemProps9 = createSplitProps(itemProps9);
       TreeView = class extends Component {
-        constructor(el, props22) {
+        constructor(el, props26) {
           var _a;
-          const treeData = (_a = props22.treeData) != null ? _a : buildTreeFromDOM(el);
-          const treeCollection = collection3({
+          const treeData = (_a = props26.treeData) != null ? _a : buildTreeFromDOM(el);
+          const treeCollection = collection4({
             nodeToValue: (node) => node.id,
             nodeToString: (node) => node.name,
             rootNode: treeData
           });
-          super(el, __spreadProps(__spreadValues({}, props22), { collection: treeCollection }));
+          super(el, __spreadProps(__spreadValues({}, props26), { collection: treeCollection }));
           __publicField(this, "treeCollection");
           __publicField(this, "syncTree", () => {
             const treeEl = this.el.querySelector('[data-scope="tree-view"][data-part="tree"]');
@@ -23995,11 +32959,11 @@ var Corex = (() => {
           this.treeCollection = treeCollection;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props22) {
-          return new VanillaMachine(machine15, __spreadValues({}, props22));
+        initMachine(props26) {
+          return new VanillaMachine(machine26, __spreadValues({}, props26));
         }
         initApi() {
-          return connect15(this.machine.service, normalizeProps);
+          return connect26(this.machine.service, normalizeProps);
         }
         getNodeAt(indexPath) {
           var _a;
@@ -24238,17 +33202,28 @@ var Corex = (() => {
   }
   var Hooks = {
     Accordion: hooks(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
+    AngleSlider: hooks(() => Promise.resolve().then(() => (init_angle_slider(), angle_slider_exports)), "AngleSlider"),
+    Avatar: hooks(() => Promise.resolve().then(() => (init_avatar(), avatar_exports)), "Avatar"),
+    Carousel: hooks(() => Promise.resolve().then(() => (init_carousel(), carousel_exports)), "Carousel"),
     Checkbox: hooks(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
     Clipboard: hooks(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
     Collapsible: hooks(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
     Combobox: hooks(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
     DatePicker: hooks(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
     Dialog: hooks(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
+    Editable: hooks(() => Promise.resolve().then(() => (init_editable(), editable_exports)), "Editable"),
+    FloatingPanel: hooks(() => Promise.resolve().then(() => (init_floating_panel(), floating_panel_exports)), "FloatingPanel"),
+    Listbox: hooks(() => Promise.resolve().then(() => (init_listbox(), listbox_exports)), "Listbox"),
     Menu: hooks(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
+    NumberInput: hooks(() => Promise.resolve().then(() => (init_number_input(), number_input_exports)), "NumberInput"),
+    PasswordInput: hooks(() => Promise.resolve().then(() => (init_password_input(), password_input_exports)), "PasswordInput"),
+    PinInput: hooks(() => Promise.resolve().then(() => (init_pin_input(), pin_input_exports)), "PinInput"),
+    RadioGroup: hooks(() => Promise.resolve().then(() => (init_radio_group(), radio_group_exports)), "RadioGroup"),
     Select: hooks(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
     SignaturePad: hooks(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
     Switch: hooks(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
     Tabs: hooks(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
+    Timer: hooks(() => Promise.resolve().then(() => (init_timer(), timer_exports)), "Timer"),
     Toast: hooks(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
     ToggleGroup: hooks(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
     TreeView: hooks(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")

@@ -1,11 +1,16 @@
 import {
+  getElementPolygon,
+  isPointInPolygon
+} from "./chunk-BMVNROAE.mjs";
+import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunk-GRHV6R4F.mjs";
+} from "./chunk-EENFWNGI.mjs";
 import {
   trackDismissableElement
-} from "./chunk-BPSX7Z7Y.mjs";
+} from "./chunk-RR7TJIQ5.mjs";
+import "./chunk-ER3INIAI.mjs";
 import {
   Component,
   VanillaMachine,
@@ -49,62 +54,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunk-GFGFZBBD.mjs";
-
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.33.1/node_modules/@zag-js/rect-utils/dist/index.mjs
-var createPoint = (x, y) => ({ x, y });
-function createRect(r) {
-  const { x, y, width, height } = r;
-  const midX = x + width / 2;
-  const midY = y + height / 2;
-  return {
-    x,
-    y,
-    width,
-    height,
-    minX: x,
-    minY: y,
-    maxX: x + width,
-    maxY: y + height,
-    midX,
-    midY,
-    center: createPoint(midX, midY)
-  };
-}
-function getRectCorners(v) {
-  const top = createPoint(v.minX, v.minY);
-  const right = createPoint(v.maxX, v.minY);
-  const bottom = createPoint(v.maxX, v.maxY);
-  const left = createPoint(v.minX, v.maxY);
-  return { top, right, bottom, left };
-}
-var { min, max } = Math;
-function getElementPolygon(rectValue, placement) {
-  const rect = createRect(rectValue);
-  const { top, right, left, bottom } = getRectCorners(rect);
-  const [base] = placement.split("-");
-  return {
-    top: [left, top, right, bottom],
-    right: [top, right, bottom, left],
-    bottom: [top, left, bottom, right],
-    left: [right, top, left, bottom]
-  }[base];
-}
-function isPointInPolygon(polygon, point) {
-  const { x, y } = point;
-  let c = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
-    if (yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
-      c = !c;
-    }
-  }
-  return c;
-}
-var { sign, abs, min: min2 } = Math;
+} from "./chunk-IXOYOLUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.33.1/node_modules/@zag-js/menu/dist/index.mjs
 var anatomy = createAnatomy("menu").parts(
@@ -1727,7 +1677,7 @@ var MenuHook = {
         const targetId = payload.menu_id;
         const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
         if (!matches) return;
-        if (menu.api.open !== payload.open) menu.api.setOpen(payload.open);
+        menu.api.setOpen(payload.open);
       })
     );
     this.handlers.push(

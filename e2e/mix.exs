@@ -67,7 +67,7 @@ defmodule E2e.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:corex, "~> 0.1.0-alpha.22"},
+      {:corex, path: "../../corex"},
       {:wallaby, "~> 0.30", only: :test},
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"}
