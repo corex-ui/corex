@@ -1,10 +1,4 @@
-import {
-  collection,
-  connect,
-  machine,
-  type Props,
-  type Api,
-} from "@zag-js/tree-view";
+import { collection, connect, machine, type Props, type Api } from "@zag-js/tree-view";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
@@ -61,10 +55,7 @@ function buildTreeFromDOM(rootEl: HTMLElement): TreeNode {
 export class TreeView extends Component<Props, Api> {
   private treeCollection: ReturnType<typeof collection<TreeNode>>;
 
-  constructor(
-    el: HTMLElement | null,
-    props: Omit<Props, "collection"> & { treeData?: TreeNode }
-  ) {
+  constructor(el: HTMLElement | null, props: Omit<Props, "collection"> & { treeData?: TreeNode }) {
     const treeData = props.treeData ?? buildTreeFromDOM(el as HTMLElement);
     const treeCollection = collection<TreeNode>({
       nodeToValue: (node) => node.id,

@@ -109,11 +109,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
         }
 
         const serverEventName = getString(el, "onValueChange");
-        if (
-          serverEventName &&
-          !this.liveSocket.main.isDead &&
-          this.liveSocket.main.isConnected()
-        ) {
+        if (serverEventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           this.pushEvent(serverEventName, payload);
         }
       },

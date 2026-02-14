@@ -210,8 +210,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       : getStringList(el, "defaultValue");
 
     if (initialValue && initialValue.length > 0) {
-      const selectedItems = allItems.filter(
-        (item: { id?: string }) => initialValue.includes(item.id ?? "")
+      const selectedItems = allItems.filter((item: { id?: string }) =>
+        initialValue.includes(item.id ?? "")
       );
       if (selectedItems.length > 0) {
         const inputValue = selectedItems

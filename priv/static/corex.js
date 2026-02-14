@@ -2852,15 +2852,21 @@ var Corex = (() => {
             if (!(itemData == null ? void 0 : itemData.value)) continue;
             const { value, disabled } = itemData;
             this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
-            const triggerEl = itemEl.querySelector('[data-scope="accordion"][data-part="item-trigger"]');
+            const triggerEl = itemEl.querySelector(
+              '[data-scope="accordion"][data-part="item-trigger"]'
+            );
             if (triggerEl) {
               this.spreadProps(triggerEl, this.api.getItemTriggerProps({ value, disabled }));
             }
-            const indicatorEl = itemEl.querySelector('[data-scope="accordion"][data-part="item-indicator"]');
+            const indicatorEl = itemEl.querySelector(
+              '[data-scope="accordion"][data-part="item-indicator"]'
+            );
             if (indicatorEl) {
               this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ value, disabled }));
             }
-            const contentEl = itemEl.querySelector('[data-scope="accordion"][data-part="item-content"]');
+            const contentEl = itemEl.querySelector(
+              '[data-scope="accordion"][data-part="item-content"]'
+            );
             if (contentEl) {
               this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
             }
@@ -2880,61 +2886,58 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const accordion = new Accordion(
-            el,
-            __spreadProps(__spreadValues({
-              id: el.id
-            }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-              collapsible: getBoolean(el, "collapsible"),
-              multiple: getBoolean(el, "multiple"),
-              orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-              dir: getDir(el),
-              onValueChange: (details) => {
-                var _a, _b;
-                const eventName = getString(el, "onValueChange");
-                if (eventName && this.liveSocket.main.isConnected()) {
-                  pushEvent(eventName, {
-                    id: el.id,
-                    value: (_a = details.value) != null ? _a : null
-                  });
-                }
-                const eventNameClient = getString(el, "onValueChangeClient");
-                if (eventNameClient) {
-                  el.dispatchEvent(
-                    new CustomEvent(eventNameClient, {
-                      bubbles: true,
-                      detail: {
-                        id: el.id,
-                        value: (_b = details.value) != null ? _b : null
-                      }
-                    })
-                  );
-                }
-              },
-              onFocusChange: (details) => {
-                var _a, _b;
-                const eventName = getString(el, "onFocusChange");
-                if (eventName && this.liveSocket.main.isConnected()) {
-                  pushEvent(eventName, {
-                    id: el.id,
-                    value: (_a = details.value) != null ? _a : null
-                  });
-                }
-                const eventNameClient = getString(el, "onFocusChangeClient");
-                if (eventNameClient) {
-                  el.dispatchEvent(
-                    new CustomEvent(eventNameClient, {
-                      bubbles: true,
-                      detail: {
-                        id: el.id,
-                        value: (_b = details.value) != null ? _b : null
-                      }
-                    })
-                  );
-                }
+          const accordion = new Accordion(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+            collapsible: getBoolean(el, "collapsible"),
+            multiple: getBoolean(el, "multiple"),
+            orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+            dir: getDir(el),
+            onValueChange: (details) => {
+              var _a, _b;
+              const eventName = getString(el, "onValueChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  value: (_a = details.value) != null ? _a : null
+                });
               }
-            })
-          );
+              const eventNameClient = getString(el, "onValueChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      value: (_b = details.value) != null ? _b : null
+                    }
+                  })
+                );
+              }
+            },
+            onFocusChange: (details) => {
+              var _a, _b;
+              const eventName = getString(el, "onFocusChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  value: (_a = details.value) != null ? _a : null
+                });
+              }
+              const eventNameClient = getString(el, "onFocusChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      value: (_b = details.value) != null ? _b : null
+                    }
+                  })
+                );
+              }
+            }
+          }));
           accordion.init();
           this.accordion = accordion;
           this.onSetValue = (event) => {
@@ -3467,18 +3470,26 @@ var Corex = (() => {
           const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]');
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const inputEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="hidden-input"]');
+          const inputEl = rootEl.querySelector(
+            ':scope > [data-scope="checkbox"][data-part="hidden-input"]'
+          );
           if (inputEl) {
             this.spreadProps(inputEl, this.api.getHiddenInputProps());
           }
-          const labelEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="label"]');
+          const labelEl = rootEl.querySelector(
+            ':scope > [data-scope="checkbox"][data-part="label"]'
+          );
           if (labelEl) {
             this.spreadProps(labelEl, this.api.getLabelProps());
           }
-          const controlEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="control"]');
+          const controlEl = rootEl.querySelector(
+            ':scope > [data-scope="checkbox"][data-part="control"]'
+          );
           if (controlEl) {
             this.spreadProps(controlEl, this.api.getControlProps());
-            const indicatorEl = controlEl.querySelector(':scope > [data-scope="checkbox"][data-part="indicator"]');
+            const indicatorEl = controlEl.querySelector(
+              ':scope > [data-scope="checkbox"][data-part="indicator"]'
+            );
             if (indicatorEl) {
               this.spreadProps(indicatorEl, this.api.getIndicatorProps());
             }
@@ -3847,14 +3858,20 @@ var Corex = (() => {
           const rootEl = this.el.querySelector('[data-scope="clipboard"][data-part="root"]');
           if (rootEl) {
             this.spreadProps(rootEl, this.api.getRootProps());
-            const labelEl = rootEl.querySelector('[data-scope="clipboard"][data-part="label"]');
+            const labelEl = rootEl.querySelector(
+              '[data-scope="clipboard"][data-part="label"]'
+            );
             if (labelEl) {
               this.spreadProps(labelEl, this.api.getLabelProps());
             }
-            const controlEl = rootEl.querySelector('[data-scope="clipboard"][data-part="control"]');
+            const controlEl = rootEl.querySelector(
+              '[data-scope="clipboard"][data-part="control"]'
+            );
             if (controlEl) {
               this.spreadProps(controlEl, this.api.getControlProps());
-              const inputEl = controlEl.querySelector('[data-scope="clipboard"][data-part="input"]');
+              const inputEl = controlEl.querySelector(
+                '[data-scope="clipboard"][data-part="input"]'
+              );
               if (inputEl) {
                 const inputProps2 = __spreadValues({}, this.api.getInputProps());
                 const inputAriaLabel = this.el.dataset.inputAriaLabel;
@@ -3863,7 +3880,9 @@ var Corex = (() => {
                 }
                 this.spreadProps(inputEl, inputProps2);
               }
-              const triggerEl = controlEl.querySelector('[data-scope="clipboard"][data-part="trigger"]');
+              const triggerEl = controlEl.querySelector(
+                '[data-scope="clipboard"][data-part="trigger"]'
+              );
               if (triggerEl) {
                 const triggerProps2 = __spreadValues({}, this.api.getTriggerProps());
                 const ariaLabel = this.el.dataset.triggerAriaLabel;
@@ -3933,11 +3952,14 @@ var Corex = (() => {
             })
           );
           this.handlers.push(
-            this.handleEvent("clipboard_set_value", (payload) => {
-              const targetId = payload.clipboard_id;
-              if (targetId && targetId !== el.id) return;
-              clipboard.api.setValue(payload.value);
-            })
+            this.handleEvent(
+              "clipboard_set_value",
+              (payload) => {
+                const targetId = payload.clipboard_id;
+                if (targetId && targetId !== el.id) return;
+                clipboard.api.setValue(payload.value);
+              }
+            )
           );
           this.handlers.push(
             this.handleEvent("clipboard_copied", () => {
@@ -4355,14 +4377,20 @@ var Corex = (() => {
           return connect4(this.machine.service, normalizeProps);
         }
         render() {
-          const rootEl = this.el.querySelector('[data-scope="collapsible"][data-part="root"]');
+          const rootEl = this.el.querySelector(
+            '[data-scope="collapsible"][data-part="root"]'
+          );
           if (rootEl) {
             this.spreadProps(rootEl, this.api.getRootProps());
-            const triggerEl = rootEl.querySelector('[data-scope="collapsible"][data-part="trigger"]');
+            const triggerEl = rootEl.querySelector(
+              '[data-scope="collapsible"][data-part="trigger"]'
+            );
             if (triggerEl) {
               this.spreadProps(triggerEl, this.api.getTriggerProps());
             }
-            const contentEl = rootEl.querySelector('[data-scope="collapsible"][data-part="content"]');
+            const contentEl = rootEl.querySelector(
+              '[data-scope="collapsible"][data-part="content"]'
+            );
             if (contentEl) {
               this.spreadProps(contentEl, this.api.getContentProps());
             }
@@ -4409,11 +4437,14 @@ var Corex = (() => {
           el.addEventListener("phx:collapsible:set-open", this.onSetOpen);
           this.handlers = [];
           this.handlers.push(
-            this.handleEvent("collapsible_set_open", (payload) => {
-              const targetId = payload.collapsible_id;
-              if (targetId && targetId !== el.id) return;
-              collapsible.api.setOpen(payload.open);
-            })
+            this.handleEvent(
+              "collapsible_set_open",
+              (payload) => {
+                const targetId = payload.collapsible_id;
+                if (targetId && targetId !== el.id) return;
+                collapsible.api.setOpen(payload.open);
+              }
+            )
           );
           this.handlers.push(
             this.handleEvent("collapsible_open", () => {
@@ -9617,38 +9648,51 @@ var Corex = (() => {
           if (this.hasGroups) {
             return collection({
               items,
-              itemToValue: (item) => item.id,
+              itemToValue: (item) => {
+                var _a;
+                return (_a = item.id) != null ? _a : "";
+              },
               itemToString: (item) => item.label,
-              isItemDisabled: (item) => item.disabled,
+              isItemDisabled: (item) => {
+                var _a;
+                return (_a = item.disabled) != null ? _a : false;
+              },
               groupBy: (item) => item.group
             });
           }
           return collection({
             items,
-            itemToValue: (item) => item.id,
+            itemToValue: (item) => {
+              var _a;
+              return (_a = item.id) != null ? _a : "";
+            },
             itemToString: (item) => item.label,
-            isItemDisabled: (item) => item.disabled
+            isItemDisabled: (item) => {
+              var _a;
+              return (_a = item.disabled) != null ? _a : false;
+            }
           });
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props22) {
-          const self2 = this;
+          const getCollection = this.getCollection.bind(this);
           return new VanillaMachine(machine5, __spreadProps(__spreadValues({}, props22), {
             get collection() {
-              return self2.getCollection();
+              return getCollection();
             },
             onOpenChange: (details) => {
               if (details.open) {
-                self2.options = self2.allOptions;
+                this.options = this.allOptions;
               }
               if (props22.onOpenChange) {
                 props22.onOpenChange(details);
               }
             },
             onInputValueChange: (details) => {
-              const filtered = self2.allOptions.filter(
+              const filtered = this.allOptions.filter(
                 (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
               );
-              self2.options = filtered.length > 0 ? filtered : self2.allOptions;
+              this.options = filtered.length > 0 ? filtered : this.allOptions;
               if (props22.onInputValueChange) {
                 props22.onInputValueChange(details);
               }
@@ -9660,7 +9704,9 @@ var Corex = (() => {
         }
         renderItems() {
           var _a, _b, _c;
-          const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
+          const contentEl = this.el.querySelector(
+            '[data-scope="combobox"][data-part="content"]'
+          );
           if (!contentEl) return;
           const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
           if (!templatesContainer) return;
@@ -9689,10 +9735,7 @@ var Corex = (() => {
               '[data-scope="combobox"][data-part="item-group-label"]'
             );
             if (labelEl) {
-              this.spreadProps(
-                labelEl,
-                this.api.getItemGroupLabelProps({ htmlFor: groupId })
-              );
+              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
             }
             const groupContentEl = groupEl.querySelector(
               '[data-scope="combobox"][data-part="item-group-content"]'
@@ -9728,12 +9771,11 @@ var Corex = (() => {
               textEl.textContent = item.label || "";
             }
           }
-          const indicatorEl = el.querySelector('[data-scope="combobox"][data-part="item-indicator"]');
+          const indicatorEl = el.querySelector(
+            '[data-scope="combobox"][data-part="item-indicator"]'
+          );
           if (indicatorEl) {
-            this.spreadProps(
-              indicatorEl,
-              this.api.getItemIndicatorProps({ item })
-            );
+            this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
           }
           return el;
         }
@@ -9741,20 +9783,15 @@ var Corex = (() => {
           const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
           if (!root) return;
           this.spreadProps(root, this.api.getRootProps());
-          [
-            "label",
-            "control",
-            "input",
-            "trigger",
-            "clear-trigger",
-            "positioner"
-          ].forEach((part) => {
+          ["label", "control", "input", "trigger", "clear-trigger", "positioner"].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
             if (!el) return;
             const apiMethod = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
             this.spreadProps(el, this.api[apiMethod]());
           });
-          const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
+          const contentEl = this.el.querySelector(
+            '[data-scope="combobox"][data-part="content"]'
+          );
           if (contentEl) {
             this.spreadProps(contentEl, this.api.getContentProps());
             this.renderItems();
@@ -9919,10 +9956,16 @@ var Corex = (() => {
           const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
           if (initialValue && initialValue.length > 0) {
             const selectedItems = allItems.filter(
-              (item) => initialValue.includes(item.id)
+              (item) => {
+                var _a;
+                return initialValue.includes((_a = item.id) != null ? _a : "");
+              }
             );
             if (selectedItems.length > 0) {
-              const inputValue = selectedItems.map((item) => item.label).join(", ");
+              const inputValue = selectedItems.map((item) => {
+                var _a;
+                return (_a = item.label) != null ? _a : "";
+              }).join(", ");
               if (combobox.api && typeof combobox.api.setInputValue === "function") {
                 combobox.api.setInputValue(inputValue);
               } else {
@@ -13911,10 +13954,7 @@ var Corex = (() => {
                 const td = this.doc.createElement("td");
                 this.spreadProps(td, this.api.getDayTableCellProps({ value }));
                 const trigger = this.doc.createElement("div");
-                this.spreadProps(
-                  trigger,
-                  this.api.getDayTableCellTriggerProps({ value })
-                );
+                this.spreadProps(trigger, this.api.getDayTableCellTriggerProps({ value }));
                 trigger.textContent = String(value.day);
                 td.appendChild(trigger);
                 tr.appendChild(td);
@@ -13934,15 +13974,9 @@ var Corex = (() => {
               this.spreadProps(tr, this.api.getTableRowProps());
               months.forEach((month) => {
                 const td = this.doc.createElement("td");
-                this.spreadProps(
-                  td,
-                  this.api.getMonthTableCellProps(__spreadProps(__spreadValues({}, month), { columns: 4 }))
-                );
+                this.spreadProps(td, this.api.getMonthTableCellProps(__spreadProps(__spreadValues({}, month), { columns: 4 })));
                 const trigger = this.doc.createElement("div");
-                this.spreadProps(
-                  trigger,
-                  this.api.getMonthTableCellTriggerProps(__spreadProps(__spreadValues({}, month), { columns: 4 }))
-                );
+                this.spreadProps(trigger, this.api.getMonthTableCellTriggerProps(__spreadProps(__spreadValues({}, month), { columns: 4 })));
                 trigger.textContent = month.label;
                 td.appendChild(trigger);
                 tr.appendChild(td);
@@ -13962,15 +13996,9 @@ var Corex = (() => {
               this.spreadProps(tr, this.api.getTableRowProps({ view: "year" }));
               years.forEach((year) => {
                 const td = this.doc.createElement("td");
-                this.spreadProps(
-                  td,
-                  this.api.getYearTableCellProps(__spreadProps(__spreadValues({}, year), { columns: 4 }))
-                );
+                this.spreadProps(td, this.api.getYearTableCellProps(__spreadProps(__spreadValues({}, year), { columns: 4 })));
                 const trigger = this.doc.createElement("div");
-                this.spreadProps(
-                  trigger,
-                  this.api.getYearTableCellTriggerProps(__spreadProps(__spreadValues({}, year), { columns: 4 }))
-                );
+                this.spreadProps(trigger, this.api.getYearTableCellTriggerProps(__spreadProps(__spreadValues({}, year), { columns: 4 })));
                 trigger.textContent = year.label;
                 td.appendChild(trigger);
                 tr.appendChild(td);
@@ -13979,16 +14007,15 @@ var Corex = (() => {
             });
           });
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props22) {
-          return new VanillaMachine(machine6, __spreadValues({}, props22));
+          return new VanillaMachine(machine6, props22);
         }
         initApi() {
           return connect6(this.machine.service, normalizeProps);
         }
         render() {
-          const root = this.el.querySelector(
-            '[data-scope="date-picker"][data-part="root"]'
-          );
+          const root = this.el.querySelector('[data-scope="date-picker"][data-part="root"]');
           if (root) this.spreadProps(root, this.api.getRootProps());
           const label = this.el.querySelector(
             '[data-scope="date-picker"][data-part="label"]'
@@ -14026,122 +14053,59 @@ var Corex = (() => {
             if (monthView) monthView.hidden = this.api.view !== "month";
             if (yearView) yearView.hidden = this.api.view !== "year";
             if (this.api.view === "day" && dayView) {
-              const viewControl = dayView.querySelector(
-                '[data-part="view-control"]'
-              );
+              const viewControl = dayView.querySelector('[data-part="view-control"]');
               if (viewControl)
-                this.spreadProps(
-                  viewControl,
-                  this.api.getViewControlProps({ view: "year" })
-                );
-              const prevTrigger = dayView.querySelector(
-                '[data-part="prev-trigger"]'
-              );
-              if (prevTrigger)
-                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-              const viewTrigger = dayView.querySelector(
-                '[data-part="view-trigger"]'
-              );
+                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+              const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
+              if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+              const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
               if (viewTrigger) {
                 this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
                 viewTrigger.textContent = this.api.visibleRangeText.start;
               }
-              const nextTrigger = dayView.querySelector(
-                '[data-part="next-trigger"]'
-              );
-              if (nextTrigger)
-                this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+              const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
+              if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
               const table = dayView.querySelector("table");
-              if (table)
-                this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+              if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
               const thead = dayView.querySelector("thead");
-              if (thead)
-                this.spreadProps(
-                  thead,
-                  this.api.getTableHeaderProps({ view: "day" })
-                );
+              if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
               this.renderDayTableHeader();
               this.renderDayTableBody();
             } else if (this.api.view === "month" && monthView) {
-              const viewControl = monthView.querySelector(
-                '[data-part="view-control"]'
-              );
+              const viewControl = monthView.querySelector('[data-part="view-control"]');
               if (viewControl)
-                this.spreadProps(
-                  viewControl,
-                  this.api.getViewControlProps({ view: "month" })
-                );
-              const prevTrigger = monthView.querySelector(
-                '[data-part="prev-trigger"]'
-              );
+                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
+              const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
               if (prevTrigger)
-                this.spreadProps(
-                  prevTrigger,
-                  this.api.getPrevTriggerProps({ view: "month" })
-                );
-              const viewTrigger = monthView.querySelector(
-                '[data-part="view-trigger"]'
-              );
+                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
+              const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
               if (viewTrigger) {
-                this.spreadProps(
-                  viewTrigger,
-                  this.api.getViewTriggerProps({ view: "month" })
-                );
+                this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
                 viewTrigger.textContent = String(this.api.visibleRange.start.year);
               }
-              const nextTrigger = monthView.querySelector(
-                '[data-part="next-trigger"]'
-              );
+              const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
               if (nextTrigger)
-                this.spreadProps(
-                  nextTrigger,
-                  this.api.getNextTriggerProps({ view: "month" })
-                );
+                this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
               const table = monthView.querySelector("table");
-              if (table)
-                this.spreadProps(
-                  table,
-                  this.api.getTableProps({ view: "month", columns: 4 })
-                );
+              if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
               this.renderMonthTableBody();
             } else if (this.api.view === "year" && yearView) {
-              const viewControl = yearView.querySelector(
-                '[data-part="view-control"]'
-              );
+              const viewControl = yearView.querySelector('[data-part="view-control"]');
               if (viewControl)
-                this.spreadProps(
-                  viewControl,
-                  this.api.getViewControlProps({ view: "year" })
-                );
-              const prevTrigger = yearView.querySelector(
-                '[data-part="prev-trigger"]'
-              );
+                this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+              const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
               if (prevTrigger)
-                this.spreadProps(
-                  prevTrigger,
-                  this.api.getPrevTriggerProps({ view: "year" })
-                );
-              const decadeText = yearView.querySelector(
-                '[data-part="decade"]'
-              );
+                this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
+              const decadeText = yearView.querySelector('[data-part="decade"]');
               if (decadeText) {
                 const decade = this.api.getDecade();
                 decadeText.textContent = `${decade.start} - ${decade.end}`;
               }
-              const nextTrigger = yearView.querySelector(
-                '[data-part="next-trigger"]'
-              );
+              const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
               if (nextTrigger)
-                this.spreadProps(
-                  nextTrigger,
-                  this.api.getNextTriggerProps({ view: "year" })
-                );
+                this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
               const table = yearView.querySelector("table");
-              if (table)
-                this.spreadProps(
-                  table,
-                  this.api.getTableProps({ view: "year", columns: 4 })
-                );
+              if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
               this.renderYearTableBody();
             }
           }
@@ -14176,7 +14140,11 @@ var Corex = (() => {
             numOfMonths: getNumber(el, "numOfMonths"),
             startOfWeek: getNumber(el, "startOfWeek"),
             fixedWeeks: getBoolean(el, "fixedWeeks"),
-            selectionMode: getString(el, "selectionMode", ["single", "multiple", "range"]),
+            selectionMode: getString(el, "selectionMode", [
+              "single",
+              "multiple",
+              "range"
+            ]),
             placeholder: getString(el, "placeholder"),
             minView: getString(el, "minView", ["day", "month", "year"]),
             maxView: getString(el, "maxView", ["day", "month", "year"]),
@@ -14185,9 +14153,7 @@ var Corex = (() => {
             onValueChange: (details) => {
               var _a;
               const isoStr = ((_a = details.value) == null ? void 0 : _a.length) ? details.value.map((d2) => toISOString(d2)).join(",") : "";
-              const hiddenInput = el.querySelector(
-                `#${el.id}-value`
-              );
+              const hiddenInput = el.querySelector(`#${el.id}-value`);
               if (hiddenInput && hiddenInput.value !== isoStr) {
                 hiddenInput.value = isoStr;
                 hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -14248,11 +14214,14 @@ var Corex = (() => {
           if (inputWrapper) inputWrapper.removeAttribute("data-loading");
           this.handlers = [];
           this.handlers.push(
-            this.handleEvent("date_picker_set_value", (payload) => {
-              const targetId = payload.date_picker_id;
-              if (targetId && targetId !== el.id) return;
-              datePickerInstance.api.setValue([parse(payload.value)]);
-            })
+            this.handleEvent(
+              "date_picker_set_value",
+              (payload) => {
+                const targetId = payload.date_picker_id;
+                if (targetId && targetId !== el.id) return;
+                datePickerInstance.api.setValue([parse(payload.value)]);
+              }
+            )
           );
           this.onSetValue = (event) => {
             var _a;
@@ -14293,7 +14262,11 @@ var Corex = (() => {
             numOfMonths: getNumber(this.el, "numOfMonths"),
             startOfWeek: getNumber(this.el, "startOfWeek"),
             fixedWeeks: getBoolean(this.el, "fixedWeeks"),
-            selectionMode: getString(this.el, "selectionMode", ["single", "multiple", "range"]),
+            selectionMode: getString(this.el, "selectionMode", [
+              "single",
+              "multiple",
+              "range"
+            ]),
             placeholder: getString(this.el, "placeholder"),
             minView: getString(this.el, "minView", ["day", "month", "year"]),
             maxView: getString(this.el, "maxView", ["day", "month", "year"]),
@@ -15485,19 +15458,31 @@ var Corex = (() => {
         }
         render() {
           const rootEl = this.el;
-          const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
+          const triggerEl = rootEl.querySelector(
+            '[data-scope="dialog"][data-part="trigger"]'
+          );
           if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-          const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+          const backdropEl = rootEl.querySelector(
+            '[data-scope="dialog"][data-part="backdrop"]'
+          );
           if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
-          const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
+          const positionerEl = rootEl.querySelector(
+            '[data-scope="dialog"][data-part="positioner"]'
+          );
           if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
-          const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+          const contentEl = rootEl.querySelector(
+            '[data-scope="dialog"][data-part="content"]'
+          );
           if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
           const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
           if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
-          const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
+          const descriptionEl = rootEl.querySelector(
+            '[data-scope="dialog"][data-part="description"]'
+          );
           if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-          const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+          const closeTriggerEl = rootEl.querySelector(
+            '[data-scope="dialog"][data-part="close-trigger"]'
+          );
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
         }
       };
@@ -17081,9 +17066,7 @@ var Corex = (() => {
             if (!this.isOwnElement(triggerEl)) continue;
             const nestedMenuId = triggerEl.dataset.nestedMenu;
             if (!nestedMenuId) continue;
-            const childMenu = this.children.find(
-              (child) => child.el.id === `menu:${nestedMenuId}`
-            );
+            const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
             if (!childMenu) continue;
             const applyProps = () => {
               const triggerProps2 = this.api.getTriggerItemProps(childMenu.api);
@@ -17180,76 +17163,73 @@ var Corex = (() => {
           if (el.hasAttribute("data-nested")) {
             return;
           }
-          const menu = new Menu(
-            el,
-            __spreadProps(__spreadValues({
-              id: el.id.replace("menu:", "")
-            }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
-              closeOnSelect: getBoolean(el, "closeOnSelect"),
-              loopFocus: getBoolean(el, "loopFocus"),
-              typeahead: getBoolean(el, "typeahead"),
-              composite: getBoolean(el, "composite"),
-              dir: getString(el, "dir", ["ltr", "rtl"]),
-              onSelect: (details) => {
-                var _a, _b;
-                const redirect = getBoolean(el, "redirect");
-                const itemEl = [...el.querySelectorAll('[data-scope="menu"][data-part="item"]')].find(
-                  (node) => node.getAttribute("data-value") === details.value
-                );
-                const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
-                const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
-                const doRedirect = redirect && details.value && !this.liveSocket.main.isConnected() && itemRedirect !== "false";
-                if (doRedirect) {
-                  if (itemNewTab) {
-                    window.open(details.value, "_blank", "noopener,noreferrer");
-                  } else {
-                    window.location.href = details.value;
-                  }
-                }
-                const eventName = getString(el, "onSelect");
-                if (eventName && this.liveSocket.main.isConnected()) {
-                  this.pushEvent(eventName, {
-                    id: el.id,
-                    value: (_a = details.value) != null ? _a : null
-                  });
-                }
-                const eventNameClient = getString(el, "onSelectClient");
-                if (eventNameClient) {
-                  el.dispatchEvent(
-                    new CustomEvent(eventNameClient, {
-                      bubbles: true,
-                      detail: {
-                        id: el.id,
-                        value: (_b = details.value) != null ? _b : null
-                      }
-                    })
-                  );
-                }
-              },
-              onOpenChange: (details) => {
-                var _a, _b;
-                const eventName = getString(el, "onOpenChange");
-                if (eventName && this.liveSocket.main.isConnected()) {
-                  this.pushEvent(eventName, {
-                    id: el.id,
-                    open: (_a = details.open) != null ? _a : false
-                  });
-                }
-                const eventNameClient = getString(el, "onOpenChangeClient");
-                if (eventNameClient) {
-                  el.dispatchEvent(
-                    new CustomEvent(eventNameClient, {
-                      bubbles: true,
-                      detail: {
-                        id: el.id,
-                        open: (_b = details.open) != null ? _b : false
-                      }
-                    })
-                  );
+          const menu = new Menu(el, __spreadProps(__spreadValues({
+            id: el.id.replace("menu:", "")
+          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+            closeOnSelect: getBoolean(el, "closeOnSelect"),
+            loopFocus: getBoolean(el, "loopFocus"),
+            typeahead: getBoolean(el, "typeahead"),
+            composite: getBoolean(el, "composite"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            onSelect: (details) => {
+              var _a, _b;
+              const redirect = getBoolean(el, "redirect");
+              const itemEl = [
+                ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+              ].find((node) => node.getAttribute("data-value") === details.value);
+              const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
+              const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
+              const doRedirect = redirect && details.value && !this.liveSocket.main.isConnected() && itemRedirect !== "false";
+              if (doRedirect) {
+                if (itemNewTab) {
+                  window.open(details.value, "_blank", "noopener,noreferrer");
+                } else {
+                  window.location.href = details.value;
                 }
               }
-            })
-          );
+              const eventName = getString(el, "onSelect");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  id: el.id,
+                  value: (_a = details.value) != null ? _a : null
+                });
+              }
+              const eventNameClient = getString(el, "onSelectClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      value: (_b = details.value) != null ? _b : null
+                    }
+                  })
+                );
+              }
+            },
+            onOpenChange: (details) => {
+              var _a, _b;
+              const eventName = getString(el, "onOpenChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  id: el.id,
+                  open: (_a = details.open) != null ? _a : false
+                });
+              }
+              const eventNameClient = getString(el, "onOpenChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      open: (_b = details.open) != null ? _b : false
+                    }
+                  })
+                );
+              }
+            }
+          }));
           menu.init();
           this.menu = menu;
           this.nestedMenus = /* @__PURE__ */ new Map();
@@ -18606,7 +18586,10 @@ var Corex = (() => {
               },
               itemToString: (item) => item.label,
               isItemDisabled: (item) => !!item.disabled,
-              groupBy: (item) => item.group
+              groupBy: (item) => {
+                var _a;
+                return (_a = item.group) != null ? _a : "";
+              }
             });
           }
           return collection2({
@@ -18619,11 +18602,12 @@ var Corex = (() => {
             isItemDisabled: (item) => !!item.disabled
           });
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props22) {
-          const self2 = this;
+          const getCollection = this.getCollection.bind(this);
           return new VanillaMachine(machine9, __spreadProps(__spreadValues({}, props22), {
             get collection() {
-              return self2.getCollection();
+              return getCollection();
             }
           }));
         }
@@ -18663,10 +18647,7 @@ var Corex = (() => {
               '[data-scope="select"][data-part="item-group-label"]'
             );
             if (labelEl) {
-              this.spreadProps(
-                labelEl,
-                this.api.getItemGroupLabelProps({ htmlFor: groupId })
-              );
+              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
             }
             const templateItems = groupEl.querySelectorAll(
               '[data-scope="select"][data-part="item"][data-template]'
@@ -18694,9 +18675,7 @@ var Corex = (() => {
           const el = template.cloneNode(true);
           el.removeAttribute("data-template");
           this.spreadProps(el, this.api.getItemProps({ item }));
-          const textEl = el.querySelector(
-            '[data-scope="select"][data-part="item-text"]'
-          );
+          const textEl = el.querySelector('[data-scope="select"][data-part="item-text"]');
           if (textEl) {
             this.spreadProps(textEl, this.api.getItemTextProps({ item }));
           }
@@ -18704,10 +18683,7 @@ var Corex = (() => {
             '[data-scope="select"][data-part="item-indicator"]'
           );
           if (indicatorEl) {
-            this.spreadProps(
-              indicatorEl,
-              this.api.getItemIndicatorProps({ item })
-            );
+            this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
           }
           return el;
         }
@@ -18733,17 +18709,8 @@ var Corex = (() => {
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
           }
-          [
-            "label",
-            "control",
-            "trigger",
-            "indicator",
-            "clear-trigger",
-            "positioner"
-          ].forEach((part) => {
-            const el = this.el.querySelector(
-              `[data-scope="select"][data-part="${part}"]`
-            );
+          ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
+            const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
             if (!el) return;
             const method = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
             this.spreadProps(el, this.api[method]());
@@ -18783,77 +18750,70 @@ var Corex = (() => {
           const el = this.el;
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => item.group !== void 0);
-          let selectComponent;
-          const hook = this;
-          selectComponent = new Select(
-            el,
-            __spreadProps(__spreadValues({
-              id: el.id
-            }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-              disabled: getBoolean(el, "disabled"),
-              closeOnSelect: getBoolean(el, "closeOnSelect"),
-              dir: getString(el, "dir", ["ltr", "rtl"]),
-              loopFocus: getBoolean(el, "loopFocus"),
-              multiple: getBoolean(el, "multiple"),
-              invalid: getBoolean(el, "invalid"),
-              name: getString(el, "name"),
-              form: getString(el, "form"),
-              readOnly: getBoolean(el, "readOnly"),
-              required: getBoolean(el, "required"),
-              positioning: (() => {
-                const positioningJson = el.dataset.positioning;
-                if (positioningJson) {
-                  try {
-                    const parsed = JSON.parse(positioningJson);
-                    return transformPositioningOptions2(parsed);
-                  } catch (e2) {
-                    return void 0;
-                  }
-                }
-                return void 0;
-              })(),
-              onValueChange: (details) => {
-                var _a;
-                const redirect = getBoolean(el, "redirect");
-                const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-                const firstItem = ((_a = details.items) == null ? void 0 : _a.length) ? details.items[0] : null;
-                const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? firstItem.redirect : void 0;
-                const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? firstItem.new_tab : void 0;
-                const doRedirect = redirect && firstValue && hook.liveSocket.main.isDead && itemRedirect !== false;
-                const openInNewTab = itemNewTab === true;
-                if (doRedirect) {
-                  if (openInNewTab) {
-                    window.open(firstValue, "_blank", "noopener,noreferrer");
-                  } else {
-                    window.location.href = firstValue;
-                  }
-                }
-                const valueInput = el.querySelector(
-                  '[data-scope="select"][data-part="value-input"]'
-                );
-                if (valueInput) {
-                  valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-                  valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-                  valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-                const payload = {
-                  value: details.value,
-                  items: details.items,
-                  id: el.id
-                };
-                const clientEventName = getString(el, "onValueChangeClient");
-                if (clientEventName) {
-                  el.dispatchEvent(
-                    new CustomEvent(clientEventName, { bubbles: true, detail: payload })
-                  );
-                }
-                const serverEventName = getString(el, "onValueChange");
-                if (serverEventName && !hook.liveSocket.main.isDead && hook.liveSocket.main.isConnected()) {
-                  this.pushEvent(serverEventName, payload);
+          const selectComponent = new Select(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
+            disabled: getBoolean(el, "disabled"),
+            closeOnSelect: getBoolean(el, "closeOnSelect"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            loopFocus: getBoolean(el, "loopFocus"),
+            multiple: getBoolean(el, "multiple"),
+            invalid: getBoolean(el, "invalid"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            readOnly: getBoolean(el, "readOnly"),
+            required: getBoolean(el, "required"),
+            positioning: (() => {
+              const positioningJson = el.dataset.positioning;
+              if (positioningJson) {
+                try {
+                  const parsed = JSON.parse(positioningJson);
+                  return transformPositioningOptions2(parsed);
+                } catch (e2) {
+                  return void 0;
                 }
               }
-            })
-          );
+              return void 0;
+            })(),
+            onValueChange: (details) => {
+              var _a;
+              const redirect = getBoolean(el, "redirect");
+              const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+              const firstItem = ((_a = details.items) == null ? void 0 : _a.length) ? details.items[0] : null;
+              const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? firstItem.redirect : void 0;
+              const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? firstItem.new_tab : void 0;
+              const doRedirect = redirect && firstValue && this.liveSocket.main.isDead && itemRedirect !== false;
+              const openInNewTab = itemNewTab === true;
+              if (doRedirect) {
+                if (openInNewTab) {
+                  window.open(firstValue, "_blank", "noopener,noreferrer");
+                } else {
+                  window.location.href = firstValue;
+                }
+              }
+              const valueInput = el.querySelector(
+                '[data-scope="select"][data-part="value-input"]'
+              );
+              if (valueInput) {
+                valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+                valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+                valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+              }
+              const payload = {
+                value: details.value,
+                items: details.items,
+                id: el.id
+              };
+              const clientEventName = getString(el, "onValueChangeClient");
+              if (clientEventName) {
+                el.dispatchEvent(new CustomEvent(clientEventName, { bubbles: true, detail: payload }));
+              }
+              const serverEventName = getString(el, "onValueChange");
+              if (serverEventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(serverEventName, payload);
+              }
+            }
+          }));
           selectComponent.hasGroups = hasGroups;
           selectComponent.setOptions(allItems);
           selectComponent.init();
@@ -19435,14 +19395,18 @@ var Corex = (() => {
           __publicField(this, "paths", []);
           __publicField(this, "name");
           __publicField(this, "syncPaths", () => {
-            const segment = this.el.querySelector('[data-scope="signature-pad"][data-part="segment"]');
+            const segment = this.el.querySelector(
+              '[data-scope="signature-pad"][data-part="segment"]'
+            );
             if (!segment) return;
             const totalPaths = this.api.paths.length + (this.api.currentPath ? 1 : 0);
             if (totalPaths === 0) {
               segment.innerHTML = "";
               this.imageURL = "";
               this.paths = [];
-              const hiddenInput = this.el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+              const hiddenInput = this.el.querySelector(
+                '[data-scope="signature-pad"][data-part="hidden-input"]'
+              );
               if (hiddenInput) hiddenInput.value = "";
               return;
             }
@@ -19463,6 +19427,7 @@ var Corex = (() => {
             }
           });
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props22) {
           this.name = props22.name;
           return new VanillaMachine(machine10, props22);
@@ -19477,24 +19442,38 @@ var Corex = (() => {
           return connect10(this.machine.service, normalizeProps);
         }
         render() {
-          const rootEl = this.el.querySelector('[data-scope="signature-pad"][data-part="root"]');
+          const rootEl = this.el.querySelector(
+            '[data-scope="signature-pad"][data-part="root"]'
+          );
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const label = rootEl.querySelector('[data-scope="signature-pad"][data-part="label"]');
+          const label = rootEl.querySelector(
+            '[data-scope="signature-pad"][data-part="label"]'
+          );
           if (label) this.spreadProps(label, this.api.getLabelProps());
-          const control = rootEl.querySelector('[data-scope="signature-pad"][data-part="control"]');
+          const control = rootEl.querySelector(
+            '[data-scope="signature-pad"][data-part="control"]'
+          );
           if (control) this.spreadProps(control, this.api.getControlProps());
-          const segment = rootEl.querySelector('[data-scope="signature-pad"][data-part="segment"]');
+          const segment = rootEl.querySelector(
+            '[data-scope="signature-pad"][data-part="segment"]'
+          );
           if (segment) this.spreadProps(segment, this.api.getSegmentProps());
-          const guide = rootEl.querySelector('[data-scope="signature-pad"][data-part="guide"]');
+          const guide = rootEl.querySelector(
+            '[data-scope="signature-pad"][data-part="guide"]'
+          );
           if (guide) this.spreadProps(guide, this.api.getGuideProps());
-          const clearBtn = rootEl.querySelector('[data-scope="signature-pad"][data-part="clear-trigger"]');
+          const clearBtn = rootEl.querySelector(
+            '[data-scope="signature-pad"][data-part="clear-trigger"]'
+          );
           if (clearBtn) {
             this.spreadProps(clearBtn, this.api.getClearTriggerProps());
             const hasPaths = this.api.paths.length > 0 || !!this.api.currentPath;
             clearBtn.hidden = !hasPaths;
           }
-          const hiddenInput = rootEl.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+          const hiddenInput = rootEl.querySelector(
+            '[data-scope="signature-pad"][data-part="hidden-input"]'
+          );
           if (hiddenInput) {
             const pathsForValue = this.paths.length > 0 ? this.paths : this.api.paths;
             if (this.paths.length === 0 && this.api.paths.length > 0) {
@@ -19524,7 +19503,9 @@ var Corex = (() => {
             drawing: buildDrawingOptions(el),
             onDrawEnd: (details) => {
               signaturePad.setPaths(details.paths);
-              const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+              const hiddenInput = el.querySelector(
+                '[data-scope="signature-pad"][data-part="hidden-input"]'
+              );
               if (hiddenInput) {
                 hiddenInput.value = JSON.stringify(details.paths);
               }
@@ -19558,7 +19539,9 @@ var Corex = (() => {
           this.signaturePad = signaturePad;
           const initialPaths = controlled ? paths : defaultPaths;
           if (initialPaths.length > 0) {
-            const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+            const hiddenInput = el.querySelector(
+              '[data-scope="signature-pad"][data-part="hidden-input"]'
+            );
             if (hiddenInput) {
               hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
               hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
@@ -19570,7 +19553,9 @@ var Corex = (() => {
             signaturePad.api.clear();
             signaturePad.imageURL = "";
             signaturePad.setPaths([]);
-            const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+            const hiddenInput = el.querySelector(
+              '[data-scope="signature-pad"][data-part="hidden-input"]'
+            );
             if (hiddenInput) {
               hiddenInput.value = "";
             }
@@ -19584,7 +19569,9 @@ var Corex = (() => {
               signaturePad.api.clear();
               signaturePad.imageURL = "";
               signaturePad.setPaths([]);
-              const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+              const hiddenInput = el.querySelector(
+                '[data-scope="signature-pad"][data-part="hidden-input"]'
+              );
               if (hiddenInput) {
                 hiddenInput.value = "";
               }
@@ -19936,7 +19923,9 @@ var Corex = (() => {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const inputEl = this.el.querySelector('[data-scope="switch"][data-part="hidden-input"]');
+          const inputEl = this.el.querySelector(
+            '[data-scope="switch"][data-part="hidden-input"]'
+          );
           if (inputEl) {
             this.spreadProps(inputEl, this.api.getHiddenInputProps());
           }
@@ -19944,7 +19933,9 @@ var Corex = (() => {
           if (labelEl) {
             this.spreadProps(labelEl, this.api.getLabelProps());
           }
-          const controlEl = this.el.querySelector('[data-scope="switch"][data-part="control"]');
+          const controlEl = this.el.querySelector(
+            '[data-scope="switch"][data-part="control"]'
+          );
           if (controlEl) {
             this.spreadProps(controlEl, this.api.getControlProps());
           }
@@ -20629,7 +20620,10 @@ var Corex = (() => {
           for (let i2 = 0; i2 < triggers.length && i2 < items.length; i2++) {
             const triggerEl = triggers[i2];
             const item = items[i2];
-            this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value, disabled: item.disabled }));
+            this.spreadProps(
+              triggerEl,
+              this.api.getTriggerProps({ value: item.value, disabled: item.disabled })
+            );
           }
           const contents = rootEl.querySelectorAll(
             '[data-scope="tabs"][data-part="content"]'
@@ -20645,59 +20639,56 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const tabs = new Tabs(
-            el,
-            __spreadProps(__spreadValues({
-              id: el.id
-            }, getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") }), {
-              orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-              dir: getString(el, "dir", ["ltr", "rtl"]),
-              onValueChange: (details) => {
-                var _a, _b;
-                const eventName = getString(el, "onValueChange");
-                if (eventName && this.liveSocket.main.isConnected()) {
-                  pushEvent(eventName, {
-                    id: el.id,
-                    value: (_a = details.value) != null ? _a : null
-                  });
-                }
-                const eventNameClient = getString(el, "onValueChangeClient");
-                if (eventNameClient) {
-                  el.dispatchEvent(
-                    new CustomEvent(eventNameClient, {
-                      bubbles: true,
-                      detail: {
-                        id: el.id,
-                        value: (_b = details.value) != null ? _b : null
-                      }
-                    })
-                  );
-                }
-              },
-              onFocusChange: (details) => {
-                var _a, _b;
-                const eventName = getString(el, "onFocusChange");
-                if (eventName && this.liveSocket.main.isConnected()) {
-                  pushEvent(eventName, {
-                    id: el.id,
-                    value: (_a = details.focusedValue) != null ? _a : null
-                  });
-                }
-                const eventNameClient = getString(el, "onFocusChangeClient");
-                if (eventNameClient) {
-                  el.dispatchEvent(
-                    new CustomEvent(eventNameClient, {
-                      bubbles: true,
-                      detail: {
-                        id: el.id,
-                        value: (_b = details.focusedValue) != null ? _b : null
-                      }
-                    })
-                  );
-                }
+          const tabs = new Tabs(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") }), {
+            orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            onValueChange: (details) => {
+              var _a, _b;
+              const eventName = getString(el, "onValueChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  value: (_a = details.value) != null ? _a : null
+                });
               }
-            })
-          );
+              const eventNameClient = getString(el, "onValueChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      value: (_b = details.value) != null ? _b : null
+                    }
+                  })
+                );
+              }
+            },
+            onFocusChange: (details) => {
+              var _a, _b;
+              const eventName = getString(el, "onFocusChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  value: (_a = details.focusedValue) != null ? _a : null
+                });
+              }
+              const eventNameClient = getString(el, "onFocusChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      value: (_b = details.focusedValue) != null ? _b : null
+                    }
+                  })
+                );
+              }
+            }
+          }));
           tabs.init();
           this.tabs = tabs;
           this.onSetValue = (event) => {
@@ -20707,14 +20698,11 @@ var Corex = (() => {
           el.addEventListener("phx:tabs:set-value", this.onSetValue);
           this.handlers = [];
           this.handlers.push(
-            this.handleEvent(
-              "tabs_set_value",
-              (payload) => {
-                const targetId = payload.tabs_id;
-                if (targetId && targetId !== el.id) return;
-                tabs.api.setValue(payload.value);
-              }
-            )
+            this.handleEvent("tabs_set_value", (payload) => {
+              const targetId = payload.tabs_id;
+              if (targetId && targetId !== el.id) return;
+              tabs.api.setValue(payload.value);
+            })
           );
           this.handlers.push(
             this.handleEvent("tabs_value", () => {
@@ -21937,7 +21925,9 @@ var Corex = (() => {
           const duration = this.duration;
           const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
           const toastGroup = this.el.closest('[phx-hook="Toast"]');
-          const loadingIconTemplate = toastGroup == null ? void 0 : toastGroup.querySelector("[data-loading-icon-template]");
+          const loadingIconTemplate = toastGroup == null ? void 0 : toastGroup.querySelector(
+            "[data-loading-icon-template]"
+          );
           const loadingIcon = loadingIconTemplate == null ? void 0 : loadingIconTemplate.innerHTML;
           if (isInfinity) {
             this.parts.progressbar.style.display = "none";
@@ -22523,10 +22513,14 @@ var Corex = (() => {
           return connect14(this.machine.service, normalizeProps);
         }
         render() {
-          const rootEl = this.el.querySelector('[data-scope="toggle-group"][data-part="root"]');
+          const rootEl = this.el.querySelector(
+            '[data-scope="toggle-group"][data-part="root"]'
+          );
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const items = this.el.querySelectorAll('[data-scope="toggle-group"][data-part="item"]');
+          const items = this.el.querySelectorAll(
+            '[data-scope="toggle-group"][data-part="item"]'
+          );
           for (let i2 = 0; i2 < items.length; i2++) {
             const itemEl = items[i2];
             const value = getString(itemEl, "value");
@@ -22583,14 +22577,11 @@ var Corex = (() => {
           el.addEventListener("phx:toggle-group:set-value", this.onSetValue);
           this.handlers = [];
           this.handlers.push(
-            this.handleEvent(
-              "toggle-group_set_value",
-              (payload) => {
-                const targetId = payload.id;
-                if (targetId && targetId !== el.id) return;
-                toggleGroup.api.setValue(payload.value);
-              }
-            )
+            this.handleEvent("toggle-group_set_value", (payload) => {
+              const targetId = payload.id;
+              if (targetId && targetId !== el.id) return;
+              toggleGroup.api.setValue(payload.value);
+            })
           );
           this.handlers.push(
             this.handleEvent("toggle-group:value", () => {
@@ -23941,23 +23932,22 @@ var Corex = (() => {
         constructor(el, props22) {
           var _a;
           const treeData = (_a = props22.treeData) != null ? _a : buildTreeFromDOM(el);
-          const collection22 = collection3({
+          const treeCollection = collection3({
             nodeToValue: (node) => node.id,
             nodeToString: (node) => node.name,
             rootNode: treeData
           });
-          super(el, __spreadProps(__spreadValues({}, props22), { collection: collection22 }));
-          __publicField(this, "collection");
+          super(el, __spreadProps(__spreadValues({}, props22), { collection: treeCollection }));
+          __publicField(this, "treeCollection");
           __publicField(this, "syncTree", () => {
-            const treeEl = this.el.querySelector(
-              '[data-scope="tree-view"][data-part="tree"]'
-            );
+            const treeEl = this.el.querySelector('[data-scope="tree-view"][data-part="tree"]');
             if (!treeEl) return;
             this.spreadProps(treeEl, this.api.getTreeProps());
             this.updateExistingTree(treeEl);
           });
-          this.collection = collection22;
+          this.treeCollection = treeCollection;
         }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props22) {
           return new VanillaMachine(machine15, __spreadValues({}, props22));
         }
@@ -23967,7 +23957,7 @@ var Corex = (() => {
         getNodeAt(indexPath) {
           var _a;
           if (indexPath.length === 0) return void 0;
-          let current = this.collection.rootNode;
+          let current = this.treeCollection.rootNode;
           for (const i2 of indexPath) {
             current = (_a = current == null ? void 0 : current.children) == null ? void 0 : _a[i2];
             if (!current) return void 0;
@@ -23998,8 +23988,7 @@ var Corex = (() => {
             const indicatorEl = branchEl.querySelector(
               '[data-scope="tree-view"][data-part="branch-indicator"]'
             );
-            if (indicatorEl)
-              this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
+            if (indicatorEl) this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
             const contentEl = branchEl.querySelector(
               '[data-scope="tree-view"][data-part="branch-content"]'
             );
@@ -24025,13 +24014,9 @@ var Corex = (() => {
         }
         render() {
           var _a;
-          const rootEl = (_a = this.el.querySelector(
-            '[data-scope="tree-view"][data-part="root"]'
-          )) != null ? _a : this.el;
+          const rootEl = (_a = this.el.querySelector('[data-scope="tree-view"][data-part="root"]')) != null ? _a : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const label = this.el.querySelector(
-            '[data-scope="tree-view"][data-part="label"]'
-          );
+          const label = this.el.querySelector('[data-scope="tree-view"][data-part="label"]');
           if (label) this.spreadProps(label, this.api.getLabelProps());
           this.syncTree();
         }
