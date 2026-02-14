@@ -19,8 +19,8 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
     const props: Props = {
       id: el.id,
       ...(getBoolean(el, "controlled")
-      ? { value: getStringList(el, "value") }
-      : { defaultValue: getStringList(el, "defaultValue") }),
+        ? { value: getStringList(el, "value") }
+        : { defaultValue: getStringList(el, "defaultValue") }),
       defaultValue: getStringList(el, "defaultValue"),
       deselectable: getBoolean(el, "deselectable"),
       loopFocus: getBoolean(el, "loopFocus"),
@@ -66,14 +66,11 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent(
-        "toggle-group_set_value",
-        (payload: { id?: string; value: string[] }) => {
-          const targetId = payload.id;
-          if (targetId && targetId !== el.id) return;
-          toggleGroup.api.setValue(payload.value);
-        }
-      )
+      this.handleEvent("toggle-group_set_value", (payload: { id?: string; value: string[] }) => {
+        const targetId = payload.id;
+        if (targetId && targetId !== el.id) return;
+        toggleGroup.api.setValue(payload.value);
+      })
     );
 
     this.handlers.push(
@@ -88,8 +85,8 @@ const ToggleGroupHook: Hook<object & ToggleGroupHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & ToggleGroupHookState) {
     this.toggleGroup?.updateProps({
       ...(getBoolean(this.el, "controlled")
-      ? { value: getStringList(this.el, "value") }
-      : { defaultValue: getStringList(this.el, "defaultValue") }),
+        ? { value: getStringList(this.el, "value") }
+        : { defaultValue: getStringList(this.el, "defaultValue") }),
       deselectable: getBoolean(this.el, "deselectable"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       rovingFocus: getBoolean(this.el, "rovingFocus"),

@@ -525,6 +525,7 @@ var SignaturePad = class extends Component {
   imageURL = "";
   paths = [];
   name;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
     this.name = props2.name;
     return new VanillaMachine(machine, props2);
@@ -539,14 +540,18 @@ var SignaturePad = class extends Component {
     return connect(this.machine.service, normalizeProps);
   }
   syncPaths = () => {
-    const segment = this.el.querySelector('[data-scope="signature-pad"][data-part="segment"]');
+    const segment = this.el.querySelector(
+      '[data-scope="signature-pad"][data-part="segment"]'
+    );
     if (!segment) return;
     const totalPaths = this.api.paths.length + (this.api.currentPath ? 1 : 0);
     if (totalPaths === 0) {
       segment.innerHTML = "";
       this.imageURL = "";
       this.paths = [];
-      const hiddenInput = this.el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      const hiddenInput = this.el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
       if (hiddenInput) hiddenInput.value = "";
       return;
     }
@@ -567,24 +572,38 @@ var SignaturePad = class extends Component {
     }
   };
   render() {
-    const rootEl = this.el.querySelector('[data-scope="signature-pad"][data-part="root"]');
+    const rootEl = this.el.querySelector(
+      '[data-scope="signature-pad"][data-part="root"]'
+    );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const label = rootEl.querySelector('[data-scope="signature-pad"][data-part="label"]');
+    const label = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="label"]'
+    );
     if (label) this.spreadProps(label, this.api.getLabelProps());
-    const control = rootEl.querySelector('[data-scope="signature-pad"][data-part="control"]');
+    const control = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="control"]'
+    );
     if (control) this.spreadProps(control, this.api.getControlProps());
-    const segment = rootEl.querySelector('[data-scope="signature-pad"][data-part="segment"]');
+    const segment = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="segment"]'
+    );
     if (segment) this.spreadProps(segment, this.api.getSegmentProps());
-    const guide = rootEl.querySelector('[data-scope="signature-pad"][data-part="guide"]');
+    const guide = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="guide"]'
+    );
     if (guide) this.spreadProps(guide, this.api.getGuideProps());
-    const clearBtn = rootEl.querySelector('[data-scope="signature-pad"][data-part="clear-trigger"]');
+    const clearBtn = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="clear-trigger"]'
+    );
     if (clearBtn) {
       this.spreadProps(clearBtn, this.api.getClearTriggerProps());
       const hasPaths = this.api.paths.length > 0 || !!this.api.currentPath;
       clearBtn.hidden = !hasPaths;
     }
-    const hiddenInput = rootEl.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+    const hiddenInput = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="hidden-input"]'
+    );
     if (hiddenInput) {
       const pathsForValue = this.paths.length > 0 ? this.paths : this.api.paths;
       if (this.paths.length === 0 && this.api.paths.length > 0) {
@@ -636,7 +655,9 @@ var SignaturePadHook = {
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
-        const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+        const hiddenInput = el.querySelector(
+          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        );
         if (hiddenInput) {
           hiddenInput.value = JSON.stringify(details.paths);
         }
@@ -670,7 +691,9 @@ var SignaturePadHook = {
     this.signaturePad = signaturePad;
     const initialPaths = controlled ? paths : defaultPaths;
     if (initialPaths.length > 0) {
-      const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      const hiddenInput = el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
       if (hiddenInput) {
         hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
         hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
@@ -682,7 +705,9 @@ var SignaturePadHook = {
       signaturePad.api.clear();
       signaturePad.imageURL = "";
       signaturePad.setPaths([]);
-      const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+      const hiddenInput = el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
       if (hiddenInput) {
         hiddenInput.value = "";
       }
@@ -696,7 +721,9 @@ var SignaturePadHook = {
         signaturePad.api.clear();
         signaturePad.imageURL = "";
         signaturePad.setPaths([]);
-        const hiddenInput = el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');
+        const hiddenInput = el.querySelector(
+          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        );
         if (hiddenInput) {
           hiddenInput.value = "";
         }

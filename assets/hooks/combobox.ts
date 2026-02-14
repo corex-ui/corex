@@ -1,7 +1,13 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Combobox } from "../components/combobox";
-import type { Props, InputValueChangeDetails, OpenChangeDetails, ValueChangeDetails, PositioningOptions } from "@zag-js/combobox";
+import type {
+  Props,
+  InputValueChangeDetails,
+  OpenChangeDetails,
+  ValueChangeDetails,
+  PositioningOptions,
+} from "@zag-js/combobox";
 import type { Direction } from "@zag-js/types";
 
 import { getString, getBoolean, getStringList } from "../lib/util";
@@ -15,8 +21,8 @@ function snakeToCamel(str: string): string {
   return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
-function transformPositioningOptions(obj: any): PositioningOptions {
-  const result: any = {};
+function transformPositioningOptions(obj: Record<string, unknown>): PositioningOptions {
+  const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
     const camelKey = snakeToCamel(key);
     result[camelKey] = value;
@@ -30,7 +36,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
 
     const allItems = JSON.parse(el.dataset.collection || "[]");
-    const hasGroups = allItems.some((item: any) => item.group !== undefined);
+    const hasGroups = allItems.some((item: { group?: unknown }) => item.group !== undefined);
 
     const props: Props = {
       id: el.id,
@@ -92,7 +98,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         }
       },
       onInputValueChange: (details: InputValueChangeDetails) => {
-    
         const eventName = getString(el, "onInputValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -117,58 +122,57 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         }
       },
       onValueChange: (details: ValueChangeDetails) => {
-      
         const valueInput = el.querySelector<HTMLInputElement>(
           '[data-scope="combobox"][data-part="value-input"]'
         );
         if (valueInput) {
-          const idValue = details.value.length === 0
-            ? ""
-            : details.value.length === 1
-              ? String(details.value[0])
-              : details.value.map(String).join(",");
+          const idValue =
+            details.value.length === 0
+              ? ""
+              : details.value.length === 1
+                ? String(details.value[0])
+                : details.value.map(String).join(",");
           valueInput.value = idValue;
-          
+
           const formId = valueInput.getAttribute("form");
           let form: HTMLFormElement | null = null;
-          
+
           if (formId) {
             form = document.getElementById(formId) as HTMLFormElement;
           } else {
             form = valueInput.closest("form");
           }
-          
-          const changeEvent = new Event("change", { 
-            bubbles: true, 
-            cancelable: true 
+
+          const changeEvent = new Event("change", {
+            bubbles: true,
+            cancelable: true,
           });
           valueInput.dispatchEvent(changeEvent);
-          
-          const inputEvent = new Event("input", { 
-            bubbles: true, 
-            cancelable: true 
+
+          const inputEvent = new Event("input", {
+            bubbles: true,
+            cancelable: true,
           });
           valueInput.dispatchEvent(inputEvent);
-          
-           if (form && form.hasAttribute("phx-change")) {
+
+          if (form && form.hasAttribute("phx-change")) {
             requestAnimationFrame(() => {
-              const formElement = form.querySelector('input, select, textarea') as HTMLElement;
+              const formElement = form.querySelector("input, select, textarea") as HTMLElement;
               if (formElement) {
-                const formChangeEvent = new Event("change", { 
-                  bubbles: true, 
-                  cancelable: true 
+                const formChangeEvent = new Event("change", {
+                  bubbles: true,
+                  cancelable: true,
                 });
                 formElement.dispatchEvent(formChangeEvent);
               } else {
-                const formChangeEvent = new Event("change", { 
-                  bubbles: true, 
-                  cancelable: true 
+                const formChangeEvent = new Event("change", {
+                  bubbles: true,
+                  cancelable: true,
                 });
                 form.dispatchEvent(formChangeEvent);
               }
             });
           }
-          
         }
 
         const eventName = getString(el, "onValueChange");
@@ -204,13 +208,15 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const initialValue = getBoolean(el, "controlled")
       ? getStringList(el, "value")
       : getStringList(el, "defaultValue");
-    
+
     if (initialValue && initialValue.length > 0) {
-      const selectedItems = allItems.filter((item: any) =>
-        initialValue.includes(item.id)
+      const selectedItems = allItems.filter((item: { id?: string }) =>
+        initialValue.includes(item.id ?? "")
       );
       if (selectedItems.length > 0) {
-        const inputValue = selectedItems.map((item: any) => item.label).join(", ");
+        const inputValue = selectedItems
+          .map((item: { label?: string }) => item.label ?? "")
+          .join(", ");
         if (combobox.api && typeof combobox.api.setInputValue === "function") {
           combobox.api.setInputValue(inputValue);
         } else {
@@ -230,8 +236,8 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item: any) => item.group !== undefined);
-    
+    const hasGroups = newCollection.some((item: { group?: unknown }) => item.group !== undefined);
+
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
@@ -248,7 +254,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         required: getBoolean(this.el, "required"),
         readOnly: getBoolean(this.el, "readOnly"),
       });
-      
+
       const inputEl = this.el.querySelector<HTMLInputElement>(
         '[data-scope="combobox"][data-part="input"]'
       );

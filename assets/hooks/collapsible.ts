@@ -60,11 +60,14 @@ const CollapsibleHook: Hook<object & CollapsibleHookState, HTMLElement> = {
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("collapsible_set_open", (payload: { collapsible_id?: string; open: boolean }) => {
-        const targetId = payload.collapsible_id;
-        if (targetId && targetId !== el.id) return;
-        collapsible.api.setOpen(payload.open);
-      })
+      this.handleEvent(
+        "collapsible_set_open",
+        (payload: { collapsible_id?: string; open: boolean }) => {
+          const targetId = payload.collapsible_id;
+          if (targetId && targetId !== el.id) return;
+          collapsible.api.setOpen(payload.open);
+        }
+      )
     );
 
     this.handlers.push(

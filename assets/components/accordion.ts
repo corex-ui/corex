@@ -1,4 +1,4 @@
-import {connect, machine, type Props, type Api}  from "@zag-js/accordion";
+import { connect, machine, type Props, type Api } from "@zag-js/accordion";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
@@ -30,17 +30,23 @@ export class Accordion extends Component<Props, Api> {
       const { value, disabled } = itemData;
       this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
 
-      const triggerEl = itemEl.querySelector<HTMLElement>('[data-scope="accordion"][data-part="item-trigger"]');
+      const triggerEl = itemEl.querySelector<HTMLElement>(
+        '[data-scope="accordion"][data-part="item-trigger"]'
+      );
       if (triggerEl) {
         this.spreadProps(triggerEl, this.api.getItemTriggerProps({ value, disabled }));
       }
 
-      const indicatorEl = itemEl.querySelector<HTMLElement>('[data-scope="accordion"][data-part="item-indicator"]');
+      const indicatorEl = itemEl.querySelector<HTMLElement>(
+        '[data-scope="accordion"][data-part="item-indicator"]'
+      );
       if (indicatorEl) {
         this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ value, disabled }));
       }
 
-      const contentEl = itemEl.querySelector<HTMLElement>('[data-scope="accordion"][data-part="item-content"]');
+      const contentEl = itemEl.querySelector<HTMLElement>(
+        '[data-scope="accordion"][data-part="item-content"]'
+      );
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
       }

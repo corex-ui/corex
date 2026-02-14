@@ -16,12 +16,12 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    
+
     const zagCheckbox = new Checkbox(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
-      ? { checked: getBoolean(el, "checked") }
-      : { defaultChecked: getBoolean(el, "defaultChecked") }),
+        ? { checked: getBoolean(el, "checked") }
+        : { defaultChecked: getBoolean(el, "defaultChecked") }),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -113,7 +113,6 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & CheckboxHookState) {
- 
     this.checkbox?.updateProps({
       id: this.el.id,
       ...(getBoolean(this.el, "controlled")

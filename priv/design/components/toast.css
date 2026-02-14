@@ -5,11 +5,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-ui-gap);
-    width: var(--container-ui);
+    width: var(--container-mini);
   }
 
   .toast [data-scope="toast"][data-part="root"] {
     @apply ui-root;
+    max-width: var(--container-mini);
 
     translate: var(--x) var(--y);
     scale: var(--scale);

@@ -255,16 +255,18 @@ defmodule Corex.Dialog do
       <div phx-update="ignore" {Connect.backdrop(%Backdrop{id: @id, dir: @dir, open: @open})}></div>
       <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir, open: @open})}>
         <div {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
-          <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
+        <div data-scope="dialog" data-part="header">
+        <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
             {render_slot(@title)}
           </h2>
+          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open})}>
+          {render_slot(@close_trigger)}
+        </button>
+        </div>
           <p :if={@description != []} {Connect.description(%Description{id: @id, dir: @dir, open: @open})}>
             {render_slot(@description)}
           </p>
           {render_slot(@content)}
-          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open})}>
-            {render_slot(@close_trigger)}
-          </button>
         </div>
       </div>
     </div>

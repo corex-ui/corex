@@ -28,15 +28,15 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     const min = getString(el, "min");
     const max = getString(el, "max");
     const positioningJson = getString(el, "positioning");
-    const parseList = (v: string[] | undefined) => (v ? v.map((x) => datePicker.parse(x)) : undefined);
+    const parseList = (v: string[] | undefined) =>
+      v ? v.map((x) => datePicker.parse(x)) : undefined;
     const parseOne = (v: string | undefined) => (v ? datePicker.parse(v) : undefined);
-
 
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
-      ? { value: parseList(getStringList(el, "value") ) }
-      : { defaultValue: parseList(getStringList(el, "defaultValue") )}),
+        ? { value: parseList(getStringList(el, "value")) }
+        : { defaultValue: parseList(getStringList(el, "defaultValue")) }),
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
       defaultView: getString<"day" | "month" | "year">(el, "defaultView", ["day", "month", "year"]),
       dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
@@ -53,7 +53,11 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       numOfMonths: getNumber(el, "numOfMonths"),
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
-      selectionMode: getString<"single" | "multiple" | "range">(el, "selectionMode", ["single", "multiple", "range"]),
+      selectionMode: getString<"single" | "multiple" | "range">(el, "selectionMode", [
+        "single",
+        "multiple",
+        "range",
+      ]),
       placeholder: getString(el, "placeholder"),
       minView: getString<"day" | "month" | "year">(el, "minView", ["day", "month", "year"]),
       maxView: getString<"day" | "month" | "year">(el, "maxView", ["day", "month", "year"]),
@@ -67,9 +71,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
               .join(",")
           : "";
 
-        const hiddenInput = el.querySelector<HTMLInputElement>(
-          `#${el.id}-value`
-        );
+        const hiddenInput = el.querySelector<HTMLInputElement>(`#${el.id}-value`);
         if (hiddenInput && hiddenInput.value !== isoStr) {
           hiddenInput.value = isoStr;
           hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -84,7 +86,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
           });
         }
       },
-      onFocusChange: (details: any) => {
+      onFocusChange: (details: { focused?: boolean }) => {
         const eventName = getString(el, "onFocusChange");
         if (eventName && liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -102,7 +104,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
           });
         }
       },
-      onVisibleRangeChange: (details: any) => {
+      onVisibleRangeChange: (details: { start?: unknown; end?: unknown }) => {
         const eventName = getString(el, "onVisibleRangeChange");
         if (eventName && liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -112,7 +114,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
           });
         }
       },
-      onOpenChange: (details: any) => {
+      onOpenChange: (details: { open?: boolean }) => {
         const eventName = getString(el, "onOpenChange");
         if (eventName && liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -127,18 +129,21 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     this.datePicker = datePickerInstance;
 
     const inputWrapper = el.querySelector<HTMLElement>(
-      '[data-scope="date-picker"][data-part="input-wrapper"]',
+      '[data-scope="date-picker"][data-part="input-wrapper"]'
     );
     if (inputWrapper) inputWrapper.removeAttribute("data-loading");
 
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("date_picker_set_value", (payload: { date_picker_id?: string; value: string }) => {
-        const targetId = payload.date_picker_id;
-        if (targetId && targetId !== el.id) return;
-        datePickerInstance.api.setValue([datePicker.parse(payload.value)]);
-      })
+      this.handleEvent(
+        "date_picker_set_value",
+        (payload: { date_picker_id?: string; value: string }) => {
+          const targetId = payload.date_picker_id;
+          if (targetId && targetId !== el.id) return;
+          datePickerInstance.api.setValue([datePicker.parse(payload.value)]);
+        }
+      )
     );
 
     this.onSetValue = (event: Event) => {
@@ -153,11 +158,12 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
     const inputWrapper = el.querySelector<HTMLElement>(
-      '[data-scope="date-picker"][data-part="input-wrapper"]',
+      '[data-scope="date-picker"][data-part="input-wrapper"]'
     );
     if (inputWrapper) inputWrapper.removeAttribute("data-loading");
 
-    const parseList = (v: string[] | undefined) => (v ? v.map((x) => datePicker.parse(x)) : undefined);
+    const parseList = (v: string[] | undefined) =>
+      v ? v.map((x) => datePicker.parse(x)) : undefined;
     const min = getString(el, "min");
     const max = getString(el, "max");
     const positioningJson = getString(el, "positioning");
@@ -166,8 +172,8 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
     this.datePicker?.updateProps({
       ...(getBoolean(el, "controlled")
-      ? { value: parseList(getStringList(el, "value") ) }
-      : { defaultValue: parseList(getStringList(el, "defaultValue") )}),
+        ? { value: parseList(getStringList(el, "value")) }
+        : { defaultValue: parseList(getStringList(el, "defaultValue")) }),
       defaultFocusedValue: focusedStr ? datePicker.parse(focusedStr) : undefined,
       defaultView: getString<"day" | "month" | "year">(el, "defaultView", ["day", "month", "year"]),
       dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
@@ -184,7 +190,11 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       numOfMonths: getNumber(this.el, "numOfMonths"),
       startOfWeek: getNumber(this.el, "startOfWeek"),
       fixedWeeks: getBoolean(this.el, "fixedWeeks"),
-      selectionMode: getString<"single" | "multiple" | "range">(this.el, "selectionMode", ["single", "multiple", "range"]),
+      selectionMode: getString<"single" | "multiple" | "range">(this.el, "selectionMode", [
+        "single",
+        "multiple",
+        "range",
+      ]),
       placeholder: getString(this.el, "placeholder"),
       minView: getString<"day" | "month" | "year">(this.el, "minView", ["day", "month", "year"]),
       maxView: getString<"day" | "month" | "year">(this.el, "maxView", ["day", "month", "year"]),
@@ -197,12 +207,12 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       const serverIso = serverValues?.join(",") ?? "";
       const zagValue = this.datePicker.api.value;
       const zagIso = zagValue?.length
-        ? zagValue.map((d: { year: number; month: number; day: number }) => toISOString(d)).join(",")
+        ? zagValue
+            .map((d: { year: number; month: number; day: number }) => toISOString(d))
+            .join(",")
         : "";
       if (serverIso !== zagIso) {
-        const parsed = serverValues?.length
-          ? serverValues.map((x) => datePicker.parse(x))
-          : [];
+        const parsed = serverValues?.length ? serverValues.map((x) => datePicker.parse(x)) : [];
         this.datePicker.api.setValue(parsed);
       }
     }

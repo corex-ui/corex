@@ -23,8 +23,8 @@ const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
       id: el.id,
       timeout: getNumber(el, "timeout"),
       ...(getBoolean(el, "controlled")
-      ? { value: getString(el, "value") }
-      : { defaultValue: getString(el, "defaultValue") }),
+        ? { value: getString(el, "value") }
+        : { defaultValue: getString(el, "defaultValue") }),
 
       onValueChange: (details: ValueChangeDetails) => {
         const eventName = getString(el, "onValueChange");
@@ -79,11 +79,14 @@ const ClipboardHook: Hook<object & ClipboardHookState, HTMLElement> = {
     );
 
     this.handlers.push(
-      this.handleEvent("clipboard_set_value", (payload: { clipboard_id?: string; value: string }) => {
-        const targetId = payload.clipboard_id;
-        if (targetId && targetId !== el.id) return;
-        clipboard.api.setValue(payload.value);
-      })
+      this.handleEvent(
+        "clipboard_set_value",
+        (payload: { clipboard_id?: string; value: string }) => {
+          const targetId = payload.clipboard_id;
+          if (targetId && targetId !== el.id) return;
+          clipboard.api.setValue(payload.value);
+        }
+      )
     );
 
     this.handlers.push(

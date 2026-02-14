@@ -552,7 +552,10 @@ var Tabs = class extends Component {
     for (let i = 0; i < triggers.length && i < items.length; i++) {
       const triggerEl = triggers[i];
       const item = items[i];
-      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value, disabled: item.disabled }));
+      this.spreadProps(
+        triggerEl,
+        this.api.getTriggerProps({ value: item.value, disabled: item.disabled })
+      );
     }
     const contents = rootEl.querySelectorAll(
       '[data-scope="tabs"][data-part="content"]'
@@ -570,57 +573,54 @@ var TabsHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const tabs = new Tabs(
-      el,
-      {
-        id: el.id,
-        ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
-        orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-        dir: getString(el, "dir", ["ltr", "rtl"]),
-        onValueChange: (details) => {
-          const eventName = getString(el, "onValueChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            pushEvent(eventName, {
-              id: el.id,
-              value: details.value ?? null
-            });
-          }
-          const eventNameClient = getString(el, "onValueChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.value ?? null
-                }
-              })
-            );
-          }
-        },
-        onFocusChange: (details) => {
-          const eventName = getString(el, "onFocusChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            pushEvent(eventName, {
-              id: el.id,
-              value: details.focusedValue ?? null
-            });
-          }
-          const eventNameClient = getString(el, "onFocusChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.focusedValue ?? null
-                }
-              })
-            );
-          }
+    const tabs = new Tabs(el, {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
+      orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onValueChange: (details) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null
+              }
+            })
+          );
+        }
+      },
+      onFocusChange: (details) => {
+        const eventName = getString(el, "onFocusChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.focusedValue ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onFocusChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.focusedValue ?? null
+              }
+            })
+          );
         }
       }
-    );
+    });
     tabs.init();
     this.tabs = tabs;
     this.onSetValue = (event) => {
@@ -630,14 +630,11 @@ var TabsHook = {
     el.addEventListener("phx:tabs:set-value", this.onSetValue);
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent(
-        "tabs_set_value",
-        (payload) => {
-          const targetId = payload.tabs_id;
-          if (targetId && targetId !== el.id) return;
-          tabs.api.setValue(payload.value);
-        }
-      )
+      this.handleEvent("tabs_set_value", (payload) => {
+        const targetId = payload.tabs_id;
+        if (targetId && targetId !== el.id) return;
+        tabs.api.setValue(payload.value);
+      })
     );
     this.handlers.push(
       this.handleEvent("tabs_value", () => {

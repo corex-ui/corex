@@ -368,10 +368,14 @@ var ToggleGroup = class extends Component {
     return connect(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="toggle-group"][data-part="root"]');
+    const rootEl = this.el.querySelector(
+      '[data-scope="toggle-group"][data-part="root"]'
+    );
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const items = this.el.querySelectorAll('[data-scope="toggle-group"][data-part="item"]');
+    const items = this.el.querySelectorAll(
+      '[data-scope="toggle-group"][data-part="item"]'
+    );
     for (let i = 0; i < items.length; i++) {
       const itemEl = items[i];
       const value = getString(itemEl, "value");
@@ -430,14 +434,11 @@ var ToggleGroupHook = {
     el.addEventListener("phx:toggle-group:set-value", this.onSetValue);
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent(
-        "toggle-group_set_value",
-        (payload) => {
-          const targetId = payload.id;
-          if (targetId && targetId !== el.id) return;
-          toggleGroup.api.setValue(payload.value);
-        }
-      )
+      this.handleEvent("toggle-group_set_value", (payload) => {
+        const targetId = payload.id;
+        if (targetId && targetId !== el.id) return;
+        toggleGroup.api.setValue(payload.value);
+      })
     );
     this.handlers.push(
       this.handleEvent("toggle-group:value", () => {

@@ -1161,7 +1161,9 @@ var ToastItem = class extends Component {
     const duration = this.duration;
     const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
     const toastGroup = this.el.closest('[phx-hook="Toast"]');
-    const loadingIconTemplate = toastGroup?.querySelector("[data-loading-icon-template]");
+    const loadingIconTemplate = toastGroup?.querySelector(
+      "[data-loading-icon-template]"
+    );
     const loadingIcon = loadingIconTemplate?.innerHTML;
     if (isInfinity) {
       this.parts.progressbar.style.display = "none";

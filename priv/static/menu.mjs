@@ -1493,9 +1493,7 @@ var Menu = class extends Component {
       if (!this.isOwnElement(triggerEl)) continue;
       const nestedMenuId = triggerEl.dataset.nestedMenu;
       if (!nestedMenuId) continue;
-      const childMenu = this.children.find(
-        (child) => child.el.id === `menu:${nestedMenuId}`
-      );
+      const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
       if (!childMenu) continue;
       const applyProps = () => {
         const triggerProps = this.api.getTriggerItemProps(childMenu.api);
@@ -1522,8 +1520,13 @@ var Menu = class extends Component {
     if (positionerEl && contentEl) {
       this.spreadProps(positionerEl, this.api.getPositionerProps());
       this.spreadProps(contentEl, this.api.getContentProps());
+      contentEl.style.pointerEvents = "auto";
       positionerEl.hidden = !this.api.open;
-      if (this.api.open) {
+      const isNested = !this.el.querySelector(
+        '[data-scope="menu"][data-part="trigger"]'
+      );
+      const shouldApplyItems = this.api.open || isNested;
+      if (shouldApplyItems) {
         const items = contentEl.querySelectorAll(
           '[data-scope="menu"][data-part="item"]'
         );
@@ -1535,27 +1538,6 @@ var Menu = class extends Component {
             this.spreadProps(
               itemEl,
               this.api.getItemProps({ value, disabled: disabled || void 0 })
-            );
-          }
-        });
-        const optionItems = contentEl.querySelectorAll(
-          '[data-scope="menu"][data-part="option-item"]'
-        );
-        optionItems.forEach((optionItemEl) => {
-          if (!this.isOwnElement(optionItemEl)) return;
-          const value = optionItemEl.dataset.value;
-          const type = optionItemEl.dataset.type;
-          if (value && type) {
-            const checked = optionItemEl.hasAttribute("data-checked");
-            const disabled = optionItemEl.hasAttribute("data-disabled");
-            this.spreadProps(
-              optionItemEl,
-              this.api.getOptionItemProps({
-                value,
-                type,
-                checked,
-                disabled: disabled || void 0
-              })
             );
           }
         });
@@ -1594,74 +1576,75 @@ var MenuHook = {
     if (el.hasAttribute("data-nested")) {
       return;
     }
-    const menu = new Menu(
-      el,
-      {
-        id: el.id.replace("menu:", ""),
-        ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
-        closeOnSelect: getBoolean(el, "closeOnSelect"),
-        loopFocus: getBoolean(el, "loopFocus"),
-        typeahead: getBoolean(el, "typeahead"),
-        composite: getBoolean(el, "composite"),
-        dir: getString(el, "dir", ["ltr", "rtl"]),
-        onSelect: (details) => {
-          const redirect = getBoolean(el, "redirect");
-          const itemEl = [...el.querySelectorAll('[data-scope="menu"][data-part="item"]')].find(
-            (node) => node.getAttribute("data-value") === details.value
-          );
-          const itemRedirect = itemEl?.getAttribute("data-redirect");
-          const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-          const doRedirect = redirect && details.value && !this.liveSocket.main.isConnected() && itemRedirect !== "false";
-          if (doRedirect) {
-            if (itemNewTab) {
-              window.open(details.value, "_blank", "noopener,noreferrer");
-            } else {
-              window.location.href = details.value;
-            }
-          }
-          const eventName = getString(el, "onSelect");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            this.pushEvent(eventName, {
-              id: el.id,
-              value: details.value ?? null
-            });
-          }
-          const eventNameClient = getString(el, "onSelectClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.value ?? null
-                }
-              })
-            );
-          }
-        },
-        onOpenChange: (details) => {
-          const eventName = getString(el, "onOpenChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            this.pushEvent(eventName, {
-              id: el.id,
-              open: details.open ?? false
-            });
-          }
-          const eventNameClient = getString(el, "onOpenChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  open: details.open ?? false
-                }
-              })
-            );
+    const pushEvent = this.pushEvent.bind(this);
+    const getMain = () => this.liveSocket?.main;
+    const menu = new Menu(el, {
+      id: el.id.replace("menu:", ""),
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      typeahead: getBoolean(el, "typeahead"),
+      composite: getBoolean(el, "composite"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onSelect: (details) => {
+        const redirect = getBoolean(el, "redirect");
+        const itemEl = [
+          ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+        ].find((node) => node.getAttribute("data-value") === details.value);
+        const itemRedirect = itemEl?.getAttribute("data-redirect");
+        const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+        const main = getMain();
+        const doRedirect = redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
+        if (doRedirect) {
+          if (itemNewTab) {
+            window.open(details.value, "_blank", "noopener,noreferrer");
+          } else {
+            window.location.href = details.value;
           }
         }
+        const eventName = getString(el, "onSelect");
+        if (eventName && main && !main.isDead && main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onSelectClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null
+              }
+            })
+          );
+        }
+      },
+      onOpenChange: (details) => {
+        const main = getMain();
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && main && !main.isDead && main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            open: details.open ?? false
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                open: details.open ?? false
+              }
+            })
+          );
+        }
       }
-    );
+    });
     menu.init();
     this.menu = menu;
     this.nestedMenus = /* @__PURE__ */ new Map();
@@ -1669,17 +1652,53 @@ var MenuHook = {
       '[data-scope="menu"][data-nested="menu"]'
     );
     const nestedMenuInstances = [];
-    nestedMenuElements.forEach((nestedEl) => {
+    nestedMenuElements.forEach((nestedEl, index) => {
       const nestedId = nestedEl.id;
       if (nestedId) {
-        const nestedMenuId = nestedId.replace("menu:", "");
+        const nestedMenuId = `${nestedId}-${index}`;
         const nestedMenu = new Menu(nestedEl, {
           id: nestedMenuId,
           dir: getString(nestedEl, "dir", ["ltr", "rtl"]),
           closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
           loopFocus: getBoolean(nestedEl, "loopFocus"),
           typeahead: getBoolean(nestedEl, "typeahead"),
-          composite: getBoolean(nestedEl, "composite")
+          composite: getBoolean(nestedEl, "composite"),
+          onSelect: (details) => {
+            const redirect = getBoolean(el, "redirect");
+            const itemEl = [
+              ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+            ].find((node) => node.getAttribute("data-value") === details.value);
+            const itemRedirect = itemEl?.getAttribute("data-redirect");
+            const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+            const main = getMain();
+            const doRedirect = redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
+            if (doRedirect) {
+              if (itemNewTab) {
+                window.open(details.value, "_blank", "noopener,noreferrer");
+              } else {
+                window.location.href = details.value;
+              }
+            }
+            const eventName = getString(el, "onSelect");
+            if (eventName && main && !main.isDead && main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: details.value ?? null
+              });
+            }
+            const eventNameClient = getString(el, "onSelectClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: details.value ?? null
+                  }
+                })
+              );
+            }
+          }
         });
         nestedMenu.init();
         this.nestedMenus?.set(nestedId, nestedMenu);
@@ -1693,29 +1712,22 @@ var MenuHook = {
           nestedMenu.setParent(this.menu);
         }
       });
-      if (this.menu) {
-        this.menu.api = this.menu.initApi();
-        this.menu.render();
-      }
-      nestedMenuInstances.forEach((nestedMenu) => {
-        nestedMenu.api = nestedMenu.initApi();
-        nestedMenu.render();
-      });
       if (this.menu && this.menu.children.length > 0) {
         this.menu.renderSubmenuTriggers();
       }
     }, 0);
     this.onSetOpen = (event) => {
       const { open } = event.detail;
-      menu.api.setOpen(open);
+      if (menu.api.open !== open) menu.api.setOpen(open);
     };
     el.addEventListener("phx:menu:set-open", this.onSetOpen);
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("menu_set_open", (payload) => {
         const targetId = payload.menu_id;
-        if (targetId && targetId !== el.id) return;
-        menu.api.setOpen(payload.open);
+        const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
+        if (!matches) return;
+        if (menu.api.open !== payload.open) menu.api.setOpen(payload.open);
       })
     );
     this.handlers.push(

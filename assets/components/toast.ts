@@ -1,5 +1,16 @@
-import * as toast from "@zag-js/toast";
-import type { Store } from "@zag-js/toast";
+import {
+  connect,
+  machine,
+  group,
+  createStore,
+  type Props,
+  type Api,
+  type GroupProps,
+  type GroupApi,
+  type Store,
+  type StoreProps,
+  type Options,
+} from "@zag-js/toast";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { generateId } from "../lib/util";
@@ -8,14 +19,14 @@ export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ToastItemProps<T = any> = toast.Props<T> & {
+type ToastItemProps<T = any> = Props<T> & {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   parent: any;
   index: number;
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> {
+export class ToastItem<T = any> extends Component<ToastItemProps<T>, Api> {
   private parts!: {
     title: HTMLElement;
     description: HTMLElement;
@@ -66,12 +77,12 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: toast.Props<T>): VanillaMachine<any> {
-    return new VanillaMachine(toast.machine, props);
+  initMachine(props: Props<T>): VanillaMachine<any> {
+    return new VanillaMachine(machine, props);
   }
 
-  initApi(): toast.Api {
-    return toast.connect(this.machine.service, normalizeProps);
+  initApi(): Api {
+    return connect(this.machine.service, normalizeProps);
   }
 
   render() {
@@ -93,9 +104,12 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
 
     const duration = this.duration;
-    const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
+    const isInfinity =
+      duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
     const toastGroup = this.el.closest('[phx-hook="Toast"]') as HTMLElement;
-    const loadingIconTemplate = toastGroup?.querySelector('[data-loading-icon-template]') as HTMLElement;
+    const loadingIconTemplate = toastGroup?.querySelector(
+      "[data-loading-icon-template]"
+    ) as HTMLElement;
     const loadingIcon = loadingIconTemplate?.innerHTML;
 
     if (isInfinity) {
@@ -118,12 +132,12 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, toast.Api> 
   };
 }
 
-export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
+export class ToastGroup extends Component<GroupProps, GroupApi> {
   private toastComponents = new Map<string, ToastItem>();
   private groupEl: HTMLElement;
   public store: Store;
 
-  constructor(el: HTMLElement, props: toast.GroupProps) {
+  constructor(el: HTMLElement, props: GroupProps) {
     super(el, props);
 
     this.store = props.store;
@@ -140,12 +154,12 @@ export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: toast.GroupProps): VanillaMachine<any> {
-    return new VanillaMachine(toast.group.machine, props);
+  initMachine(props: GroupProps): VanillaMachine<any> {
+    return new VanillaMachine(group.machine, props);
   }
 
-  initApi(): toast.GroupApi {
-    return toast.group.connect(this.machine.service, normalizeProps);
+  initApi(): GroupApi {
+    return group.connect(this.machine.service, normalizeProps);
   }
 
   render() {
@@ -153,7 +167,7 @@ export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
 
     const toasts = this.api
       .getToasts()
-      .filter((t): t is toast.Props & { id: string } => typeof t.id === "string");
+      .filter((t): t is Props & { id: string } => typeof t.id === "string");
 
     const nextIds = new Set(toasts.map((t) => t.id));
 
@@ -201,10 +215,9 @@ export class ToastGroup extends Component<toast.GroupProps, toast.GroupApi> {
   };
 }
 
-
 export function createToastGroup(
   container: HTMLElement,
-  options?: Partial<toast.StoreProps> & {
+  options?: Partial<StoreProps> & {
     id?: string;
     store?: Store;
   }
@@ -213,7 +226,7 @@ export function createToastGroup(
 
   const store =
     options?.store ??
-    toast.createStore({
+    createStore({
       placement: options?.placement ?? "bottom",
       overlap: options?.overlap,
       max: options?.max,
@@ -244,7 +257,7 @@ export function getToastStore(groupId?: string): Store | undefined {
   return id ? toastStores.get(id) : undefined;
 }
 
-export function createToast(options: toast.Options & { groupId?: string }) {
+export function createToast(options: Options & { groupId?: string }) {
   const store = getToastStore(options.groupId);
   if (!store) throw new Error("No toast store found");
 
@@ -254,7 +267,7 @@ export function createToast(options: toast.Options & { groupId?: string }) {
   });
 }
 
-export function updateToast(id: string, options: Partial<toast.Props>, groupId?: string) {
+export function updateToast(id: string, options: Partial<Props>, groupId?: string) {
   getToastStore(groupId)?.update(id, options);
 }
 

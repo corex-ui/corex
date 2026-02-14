@@ -320,7 +320,9 @@ var Switch = class extends Component {
     const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const inputEl = this.el.querySelector('[data-scope="switch"][data-part="hidden-input"]');
+    const inputEl = this.el.querySelector(
+      '[data-scope="switch"][data-part="hidden-input"]'
+    );
     if (inputEl) {
       this.spreadProps(inputEl, this.api.getHiddenInputProps());
     }
@@ -328,7 +330,9 @@ var Switch = class extends Component {
     if (labelEl) {
       this.spreadProps(labelEl, this.api.getLabelProps());
     }
-    const controlEl = this.el.querySelector('[data-scope="switch"][data-part="control"]');
+    const controlEl = this.el.querySelector(
+      '[data-scope="switch"][data-part="control"]'
+    );
     if (controlEl) {
       this.spreadProps(controlEl, this.api.getControlProps());
     }

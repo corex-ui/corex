@@ -95,4 +95,3 @@ export const generateId = (element?: HTMLElement, fallbackId: string = "element"
   if (element?.id) return element.id;
   return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
 };
-

@@ -503,13 +503,6 @@ defmodule Corex.Select do
 
     options_with_prompt = [{"", ""} | options]
 
-    {on_value_change_client_name, on_value_change_js_encoded} =
-      case assigns.on_value_change_client do
-        name when is_binary(name) -> {name, nil}
-        %Phoenix.LiveView.JS{} = js -> {nil, Phoenix.json_library().encode!(js.ops)}
-        _ -> {nil, nil}
-      end
-
     assigns =
       assigns
       |> assign(:grouped_items, grouped_items)
@@ -519,15 +512,13 @@ defmodule Corex.Select do
       |> assign(:selected_for_options, selected_for_options)
       |> assign(:disabled_values, get_disabled_values(assigns.collection))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
-      |> assign(:on_value_change_client_name, on_value_change_client_name)
-      |> assign(:on_value_change_js_encoded, on_value_change_js_encoded)
 
     ~H"""
     <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
       id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder_text, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
-      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client_name, on_value_change_js: @on_value_change_js_encoded,
+      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
       redirect: @redirect,
       positioning: @positioning
     })}>
@@ -546,18 +537,16 @@ defmodule Corex.Select do
         <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
-            <span data-scope="select" data-part="item-text">
-              <%= if @selected_label do %>
-                {@selected_label}
-              <% else %>
-                <%= if !Enum.empty?(@placeholder) do %>
-                  {render_slot(@placeholder)}
-                <% else %>
-                  {@placeholder_text || "Select an option"}
-                <% end %>
-              <% end %>
+        <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
+          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
+            <span :if={@selected_label} data-scope="select" data-part="item-text">
+              {@selected_label}
+            </span>
+            <span :if={!@selected_label and !Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
+              {render_slot(@placeholder)}
+            </span>
+            <span :if={!@selected_label and Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
+              {@placeholder_text || "Select an option"}
             </span>
             {render_slot(@trigger)}
           </button>
@@ -565,29 +554,27 @@ defmodule Corex.Select do
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="select" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
+        <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
           <ul {Connect.content(%Content{id: @id, dir: @dir})}>
-          </ul>
-
-          <div style="display: none;" data-templates="select">
-            <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="select" data-part="item-group" data-id={group || "default"} data-template="true">
+            <li :if={@has_groups} :for={{group, items} <- Enum.sort(@grouped_items, fn {a, _}, {b, _} -> (a || "") <= (b || "") end)} data-scope="select" data-part="item-group" data-id={group || "default"}>
               <div :if={group} data-scope="select" data-part="item-group-label" data-id={group}>
                 {group}
               </div>
-              <li :for={item <- items} data-scope="select" data-part="item" data-value={item.id} data-template="true">
-                <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
-                  {render_slot(@item, item)}
-                </span>
-                <span :if={Enum.empty?(@item)} data-scope="select" data-part="item-text">
-                  {item.label}
-                </span>
-                <span :if={!Enum.empty?(@item_indicator)} data-scope="select" data-part="item-indicator">
-                  {render_slot(@item_indicator)}
-                </span>
-              </li>
-            </div>
-
-            <li :if={!@has_groups} :for={item <- @collection} data-scope="select" data-part="item" data-value={item.id} data-template="true">
+              <ul>
+                <li :for={item <- items} data-scope="select" data-part="item" data-value={item.id}>
+                  <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
+                    {render_slot(@item, item)}
+                  </span>
+                  <span :if={Enum.empty?(@item)} data-scope="select" data-part="item-text">
+                    {item.label}
+                  </span>
+                  <span :if={!Enum.empty?(@item_indicator)} data-scope="select" data-part="item-indicator">
+                    {render_slot(@item_indicator)}
+                  </span>
+                </li>
+              </ul>
+            </li>
+            <li :if={!@has_groups} :for={item <- @collection} data-scope="select" data-part="item" data-value={item.id}>
               <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
                 {render_slot(@item, item)}
               </span>
@@ -598,7 +585,7 @@ defmodule Corex.Select do
                 {render_slot(@item_indicator)}
               </span>
             </li>
-          </div>
+          </ul>
         </div>
       </div>
     </div>

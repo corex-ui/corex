@@ -19,6 +19,7 @@ export default [
       globals: {
         window: "readonly",
         document: "readonly",
+        Document: "readonly",
         console: "readonly",
         navigator: "readonly",
         HTMLElement: "readonly",
@@ -28,7 +29,12 @@ export default [
         CustomEvent: "readonly",
         EventListener: "readonly",
         HTMLInputElement: "readonly",
-
+        HTMLSelectElement: "readonly",
+        HTMLFormElement: "readonly",
+        SVGSVGElement: "readonly",
+        SVGRectElement: "readonly",
+        requestAnimationFrame: "readonly",
+        setTimeout: "readonly",
       },
     },
     plugins: {

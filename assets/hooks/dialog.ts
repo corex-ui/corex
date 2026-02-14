@@ -28,7 +28,7 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-      
+
       onOpenChange: (details: OpenChangeDetails) => {
         const eventName = getString(el, "onOpenChange");
         if (eventName && this.liveSocket.main.isConnected()) {

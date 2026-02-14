@@ -1340,17 +1340,18 @@ function buildTreeFromDOM(rootEl) {
   return root;
 }
 var TreeView = class extends Component {
-  collection;
+  treeCollection;
   constructor(el, props2) {
     const treeData = props2.treeData ?? buildTreeFromDOM(el);
-    const collection2 = collection({
+    const treeCollection = collection({
       nodeToValue: (node) => node.id,
       nodeToString: (node) => node.name,
       rootNode: treeData
     });
-    super(el, { ...props2, collection: collection2 });
-    this.collection = collection2;
+    super(el, { ...props2, collection: treeCollection });
+    this.treeCollection = treeCollection;
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
     return new VanillaMachine(machine, { ...props2 });
   }
@@ -1359,7 +1360,7 @@ var TreeView = class extends Component {
   }
   getNodeAt(indexPath) {
     if (indexPath.length === 0) return void 0;
-    let current = this.collection.rootNode;
+    let current = this.treeCollection.rootNode;
     for (const i of indexPath) {
       current = current?.children?.[i];
       if (!current) return void 0;
@@ -1390,8 +1391,7 @@ var TreeView = class extends Component {
       const indicatorEl = branchEl.querySelector(
         '[data-scope="tree-view"][data-part="branch-indicator"]'
       );
-      if (indicatorEl)
-        this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
+      if (indicatorEl) this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
       const contentEl = branchEl.querySelector(
         '[data-scope="tree-view"][data-part="branch-content"]'
       );
@@ -1416,21 +1416,15 @@ var TreeView = class extends Component {
     }
   }
   syncTree = () => {
-    const treeEl = this.el.querySelector(
-      '[data-scope="tree-view"][data-part="tree"]'
-    );
+    const treeEl = this.el.querySelector('[data-scope="tree-view"][data-part="tree"]');
     if (!treeEl) return;
     this.spreadProps(treeEl, this.api.getTreeProps());
     this.updateExistingTree(treeEl);
   };
   render() {
-    const rootEl = this.el.querySelector(
-      '[data-scope="tree-view"][data-part="root"]'
-    ) ?? this.el;
+    const rootEl = this.el.querySelector('[data-scope="tree-view"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const label = this.el.querySelector(
-      '[data-scope="tree-view"][data-part="label"]'
-    );
+    const label = this.el.querySelector('[data-scope="tree-view"][data-part="label"]');
     if (label) this.spreadProps(label, this.api.getLabelProps());
     this.syncTree();
   }

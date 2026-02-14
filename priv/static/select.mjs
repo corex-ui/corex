@@ -1205,6 +1205,8 @@ var Select = class extends Component {
   placeholder = "";
   constructor(el, props2) {
     super(el, props2);
+    const collectionFromProps = props2.collection;
+    this._options = collectionFromProps?.items ?? [];
     this.placeholder = getString(this.el, "placeholder") || "";
   }
   get options() {
@@ -1221,7 +1223,7 @@ var Select = class extends Component {
         itemToValue: (item) => item.id ?? item.value ?? "",
         itemToString: (item) => item.label,
         isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item) => item.group
+        groupBy: (item) => item.group ?? ""
       });
     }
     return collection({
@@ -1231,45 +1233,37 @@ var Select = class extends Component {
       isItemDisabled: (item) => !!item.disabled
     });
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
-    const self = this;
+    const getCollection = this.getCollection.bind(this);
+    const collectionFromProps = props2.collection;
     return new VanillaMachine(machine, {
       ...props2,
       get collection() {
-        return self.getCollection();
+        return collectionFromProps ?? getCollection();
       }
     });
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
-  renderItems() {
+  init = () => {
+    this.machine.start();
+    this.render();
+    this.machine.subscribe(() => {
+      this.api = this.initApi();
+      this.render();
+    });
+  };
+  applyItemProps() {
     const contentEl = this.el.querySelector(
       '[data-scope="select"][data-part="content"]'
     );
     if (!contentEl) return;
-    const templatesContainer = this.el.querySelector('[data-templates="select"]');
-    if (!templatesContainer) return;
-    contentEl.querySelectorAll('[data-scope="select"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
-    contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-    const items = this.api.collection.items;
-    const groups = this.api.collection.group?.() ?? [];
-    const hasGroupsInCollection = groups.some(([group]) => group != null);
-    if (hasGroupsInCollection) {
-      this.renderGroupedItems(contentEl, templatesContainer, groups);
-    } else {
-      this.renderFlatItems(contentEl, templatesContainer, items);
-    }
-  }
-  renderGroupedItems(contentEl, templatesContainer, groups) {
-    for (const [groupId, groupItems] of groups) {
-      if (groupId == null) continue;
-      const groupTemplate = templatesContainer.querySelector(
-        `[data-scope="select"][data-part="item-group"][data-id="${groupId}"][data-template]`
-      );
-      if (!groupTemplate) continue;
-      const groupEl = groupTemplate.cloneNode(true);
-      groupEl.removeAttribute("data-template");
+    contentEl.querySelectorAll(
+      '[data-scope="select"][data-part="item-group"]'
+    ).forEach((groupEl) => {
+      const groupId = groupEl.dataset.id ?? "";
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
         '[data-scope="select"][data-part="item-group-label"]'
@@ -1280,52 +1274,33 @@ var Select = class extends Component {
           this.api.getItemGroupLabelProps({ htmlFor: groupId })
         );
       }
-      const templateItems = groupEl.querySelectorAll(
-        '[data-scope="select"][data-part="item"][data-template]'
+    });
+    contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
+      const value = itemEl.dataset.value ?? "";
+      const item = this.options.find(
+        (i) => String(i.id ?? i.value ?? "") === String(value)
       );
-      templateItems.forEach((item) => item.remove());
-      for (const item of groupItems) {
-        const itemEl = this.cloneItem(templatesContainer, item);
-        if (itemEl) groupEl.appendChild(itemEl);
+      if (!item) return;
+      this.spreadProps(itemEl, this.api.getItemProps({ item }));
+      const textEl = itemEl.querySelector(
+        '[data-scope="select"][data-part="item-text"]'
+      );
+      if (textEl) {
+        this.spreadProps(textEl, this.api.getItemTextProps({ item }));
       }
-      contentEl.appendChild(groupEl);
-    }
-  }
-  renderFlatItems(contentEl, templatesContainer, items) {
-    for (const item of items) {
-      const itemEl = this.cloneItem(templatesContainer, item);
-      if (itemEl) contentEl.appendChild(itemEl);
-    }
-  }
-  cloneItem(templatesContainer, item) {
-    const value = this.api.collection.getItemValue(item);
-    const template = templatesContainer.querySelector(
-      `[data-scope="select"][data-part="item"][data-value="${value}"][data-template]`
-    );
-    if (!template) return null;
-    const el = template.cloneNode(true);
-    el.removeAttribute("data-template");
-    this.spreadProps(el, this.api.getItemProps({ item }));
-    const textEl = el.querySelector(
-      '[data-scope="select"][data-part="item-text"]'
-    );
-    if (textEl) {
-      this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-    }
-    const indicatorEl = el.querySelector(
-      '[data-scope="select"][data-part="item-indicator"]'
-    );
-    if (indicatorEl) {
-      this.spreadProps(
-        indicatorEl,
-        this.api.getItemIndicatorProps({ item })
+      const indicatorEl = itemEl.querySelector(
+        '[data-scope="select"][data-part="item-indicator"]'
       );
-    }
-    return el;
+      if (indicatorEl) {
+        this.spreadProps(
+          indicatorEl,
+          this.api.getItemIndicatorProps({ item })
+        );
+      }
+    });
   }
   render() {
-    const root = this.el.querySelector('[data-scope="select"][data-part="root"]');
-    if (!root) return;
+    const root = this.el.querySelector('[data-scope="select"][data-part="root"]') ?? this.el;
     this.spreadProps(root, this.api.getRootProps());
     const hiddenSelect = this.el.querySelector(
       '[data-scope="select"][data-part="hidden-select"]'
@@ -1385,12 +1360,29 @@ var Select = class extends Component {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
-      this.renderItems();
+      this.applyItemProps();
     }
   }
 };
 
 // hooks/select.ts
+function buildCollection(items, hasGroups) {
+  if (hasGroups) {
+    return collection({
+      items,
+      itemToValue: (item) => item.id ?? item.value ?? "",
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled,
+      groupBy: (item) => item.group ?? ""
+    });
+  }
+  return collection({
+    items,
+    itemToValue: (item) => item.id ?? item.value ?? "",
+    itemToString: (item) => item.label,
+    isItemDisabled: (item) => !!item.disabled
+  });
+}
 function snakeToCamel(str) {
   return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
 }
@@ -1407,107 +1399,85 @@ var SelectHook = {
     const el = this.el;
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item) => item.group !== void 0);
-    let selectComponent;
-    const hook = this;
-    this.wasFocused = false;
-    selectComponent = new Select(
-      el,
-      {
-        id: el.id,
-        ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
-        disabled: getBoolean(el, "disabled"),
-        closeOnSelect: getBoolean(el, "closeOnSelect"),
-        dir: getString(el, "dir", ["ltr", "rtl"]),
-        loopFocus: getBoolean(el, "loopFocus"),
-        multiple: getBoolean(el, "multiple"),
-        invalid: getBoolean(el, "invalid"),
-        name: getString(el, "name"),
-        form: getString(el, "form"),
-        readOnly: getBoolean(el, "readOnly"),
-        required: getBoolean(el, "required"),
-        positioning: (() => {
-          const positioningJson = el.dataset.positioning;
-          if (positioningJson) {
-            try {
-              const parsed = JSON.parse(positioningJson);
-              return transformPositioningOptions(parsed);
-            } catch {
-              return void 0;
-            }
-          }
-          return void 0;
-        })(),
-        onValueChange: (details) => {
-          const redirect = getBoolean(el, "redirect");
-          const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-          const firstItem = details.items?.length ? details.items[0] : null;
-          const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? firstItem.redirect : void 0;
-          const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? firstItem.new_tab : void 0;
-          const doRedirect = redirect && firstValue && hook.liveSocket.main.isDead && itemRedirect !== false;
-          const openInNewTab = itemNewTab === true;
-          if (doRedirect) {
-            if (openInNewTab) {
-              window.open(firstValue, "_blank", "noopener,noreferrer");
-            } else {
-              window.location.href = firstValue;
-            }
-          }
-          const valueInput = el.querySelector(
-            '[data-scope="select"][data-part="value-input"]'
-          );
-          if (valueInput) {
-            valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-            valueInput.dispatchEvent(new Event("input", { bubbles: true }));
-            valueInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-          const payload = {
-            value: details.value,
-            items: details.items,
-            id: el.id
-          };
-          const encodedJS = el.getAttribute("data-on-value-change-js");
-          if (encodedJS) {
-            let js = encodedJS;
-            const indexMatches = [...js.matchAll(/__VALUE_(\d+)__/g)].map((m) => parseInt(m[1], 10));
-            const uniqueIndices = [...new Set(indexMatches)].sort((a, b) => b - a);
-            for (const i of uniqueIndices) {
-              const val = details.value[i];
-              const str = val !== void 0 && val !== null ? String(val) : "";
-              const escaped = JSON.stringify(str).slice(1, -1);
-              js = js.split(`__VALUE_${i}__`).join(escaped);
-            }
-            js = js.split("__VALUE__").join(JSON.stringify(details.value));
-            hook.liveSocket.execJS(el, js);
-          }
-          const clientEventName = getString(el, "onValueChangeClient");
-          if (clientEventName) {
-            el.dispatchEvent(
-              new CustomEvent(clientEventName, { bubbles: true, detail: payload })
-            );
-          }
-          const serverEventName = getString(el, "onValueChange");
-          if (serverEventName && !hook.liveSocket.main.isDead && hook.liveSocket.main.isConnected()) {
-            this.pushEvent(serverEventName, payload);
+    const initialCollection = buildCollection(allItems, hasGroups);
+    const selectComponent = new Select(el, {
+      id: el.id,
+      collection: initialCollection,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      disabled: getBoolean(el, "disabled"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      positioning: (() => {
+        const positioningJson = el.dataset.positioning;
+        if (positioningJson) {
+          try {
+            const parsed = JSON.parse(positioningJson);
+            return transformPositioningOptions(parsed);
+          } catch {
+            return void 0;
           }
         }
+        return void 0;
+      })(),
+      onValueChange: (details) => {
+        const redirect = getBoolean(el, "redirect");
+        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+        const firstItem = details.items?.length ? details.items[0] : null;
+        const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? firstItem.redirect : void 0;
+        const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? firstItem.new_tab : void 0;
+        const doRedirect = redirect && firstValue && this.liveSocket.main.isDead && itemRedirect !== false;
+        const openInNewTab = itemNewTab === true;
+        if (doRedirect) {
+          if (openInNewTab) {
+            window.open(firstValue, "_blank", "noopener,noreferrer");
+          } else {
+            window.location.href = firstValue;
+          }
+        }
+        const valueInput = el.querySelector(
+          '[data-scope="select"][data-part="value-input"]'
+        );
+        if (valueInput) {
+          valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+          valueInput.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        const payload = {
+          value: details.value,
+          items: details.items,
+          id: el.id
+        };
+        const clientEventName = getString(el, "onValueChangeClient");
+        if (clientEventName) {
+          el.dispatchEvent(new CustomEvent(clientEventName, { bubbles: true, detail: payload }));
+        }
+        const serverEventName = getString(el, "onValueChange");
+        if (serverEventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(serverEventName, payload);
+        }
       }
-    );
+    });
     selectComponent.hasGroups = hasGroups;
     selectComponent.setOptions(allItems);
     selectComponent.init();
     this.select = selectComponent;
     this.handlers = [];
   },
-  beforeUpdate() {
-    this.wasFocused = this.select?.api?.focused ?? false;
-  },
   updated() {
-    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item) => item.group !== void 0);
+    const newItems = JSON.parse(this.el.dataset.collection || "[]");
+    const hasGroups = newItems.some((item) => item.group !== void 0);
     if (this.select) {
       this.select.hasGroups = hasGroups;
-      this.select.setOptions(newCollection);
+      this.select.setOptions(newItems);
       this.select.updateProps({
+        collection: buildCollection(newItems, hasGroups),
         id: this.el.id,
         ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
         name: getString(this.el, "name"),
@@ -1519,14 +1489,6 @@ var SelectHook = {
         required: getBoolean(this.el, "required"),
         readOnly: getBoolean(this.el, "readOnly")
       });
-      if (getBoolean(this.el, "controlled")) {
-        if (this.wasFocused) {
-          const trigger = this.el.querySelector('[data-scope="select"][data-part="trigger"]');
-          if (trigger && document.activeElement !== trigger) {
-            trigger.focus();
-          }
-        }
-      }
     }
   },
   destroyed() {

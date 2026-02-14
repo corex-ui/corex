@@ -48,10 +48,15 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       return duration;
     };
 
-    const placement = getString<Placement>(el, "placement", [
-      "top-start", "top", "top-end",
-      "bottom-start", "bottom", "bottom-end",
-    ]) ?? "bottom-end";
+    const placement =
+      getString<Placement>(el, "placement", [
+        "top-start",
+        "top",
+        "top-end",
+        "bottom-start",
+        "bottom",
+        "bottom-end",
+      ]) ?? "bottom-end";
 
     createToastGroup(el, {
       id: this.groupId,
@@ -167,7 +172,6 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
         console.error("Failed to create toast:", error);
       }
     }) as EventListener);
-
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ToastHookState) {
