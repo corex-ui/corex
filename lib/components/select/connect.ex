@@ -44,7 +44,6 @@ defmodule Corex.Select.Connect do
     base
     |> maybe_put("data-on-value-change", assigns.on_value_change)
     |> maybe_put("data-on-value-change-client", assigns.on_value_change_client)
-    |> maybe_put("data-on-value-change-js", assigns.on_value_change_js)
     |> maybe_put("data-redirect", get_boolean(assigns.redirect))
   end
 
@@ -94,7 +93,8 @@ defmodule Corex.Select.Connect do
       "data-scope" => "select",
       "data-part" => "positioner",
       "dir" => assigns.dir,
-      "style" => "display: none;",
+      "style" =>
+        "position:fixed;isolation:isolate;width:var(--reference-width);pointer-events:none;top:0px;left:0px;transform:translate3d(0, -100vh, 0);z-index:var(--z-index);",
       "id" => "select:#{assigns.id}:positioner"
     }
   end

@@ -245,14 +245,20 @@ var Clipboard = class extends Component {
     const rootEl = this.el.querySelector('[data-scope="clipboard"][data-part="root"]');
     if (rootEl) {
       this.spreadProps(rootEl, this.api.getRootProps());
-      const labelEl = rootEl.querySelector('[data-scope="clipboard"][data-part="label"]');
+      const labelEl = rootEl.querySelector(
+        '[data-scope="clipboard"][data-part="label"]'
+      );
       if (labelEl) {
         this.spreadProps(labelEl, this.api.getLabelProps());
       }
-      const controlEl = rootEl.querySelector('[data-scope="clipboard"][data-part="control"]');
+      const controlEl = rootEl.querySelector(
+        '[data-scope="clipboard"][data-part="control"]'
+      );
       if (controlEl) {
         this.spreadProps(controlEl, this.api.getControlProps());
-        const inputEl = controlEl.querySelector('[data-scope="clipboard"][data-part="input"]');
+        const inputEl = controlEl.querySelector(
+          '[data-scope="clipboard"][data-part="input"]'
+        );
         if (inputEl) {
           const inputProps = { ...this.api.getInputProps() };
           const inputAriaLabel = this.el.dataset.inputAriaLabel;
@@ -261,7 +267,9 @@ var Clipboard = class extends Component {
           }
           this.spreadProps(inputEl, inputProps);
         }
-        const triggerEl = controlEl.querySelector('[data-scope="clipboard"][data-part="trigger"]');
+        const triggerEl = controlEl.querySelector(
+          '[data-scope="clipboard"][data-part="trigger"]'
+        );
         if (triggerEl) {
           const triggerProps = { ...this.api.getTriggerProps() };
           const ariaLabel = this.el.dataset.triggerAriaLabel;
@@ -332,11 +340,14 @@ var ClipboardHook = {
       })
     );
     this.handlers.push(
-      this.handleEvent("clipboard_set_value", (payload) => {
-        const targetId = payload.clipboard_id;
-        if (targetId && targetId !== el.id) return;
-        clipboard.api.setValue(payload.value);
-      })
+      this.handleEvent(
+        "clipboard_set_value",
+        (payload) => {
+          const targetId = payload.clipboard_id;
+          if (targetId && targetId !== el.id) return;
+          clipboard.api.setValue(payload.value);
+        }
+      )
     );
     this.handlers.push(
       this.handleEvent("clipboard_copied", () => {

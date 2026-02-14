@@ -1,5 +1,4 @@
-import * as select from "@zag-js/select";
-import { collection } from "@zag-js/select";
+import { collection, connect, machine, type Props, type Api } from "@zag-js/select";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getString } from "../lib/util";
@@ -9,14 +8,15 @@ type Item = {
   value?: string;
   label: string;
   disabled?: boolean;
+  group?: string;
 };
 
-export class Select extends Component<select.Props, select.Api> {
+export class Select extends Component<Props, Api> {
   private _options: Item[] = [];
   hasGroups: boolean = false;
   private placeholder: string = "";
 
-  constructor(el: HTMLElement | null, props: select.Props) {
+  constructor(el: HTMLElement | null, props: Props) {
     super(el, props);
     this.placeholder = getString(this.el, "placeholder") || "";
   }
@@ -29,7 +29,7 @@ export class Select extends Component<select.Props, select.Api> {
     this._options = Array.isArray(options) ? options : [];
   }
 
-  getCollection(): any {
+  getCollection(): ReturnType<typeof collection<Item>> {
     const items = this.options;
 
     if (this.hasGroups) {
@@ -38,7 +38,7 @@ export class Select extends Component<select.Props, select.Api> {
         itemToValue: (item) => item.id ?? item.value ?? "",
         itemToString: (item) => item.label,
         isItemDisabled: (item) => !!item.disabled,
-        groupBy: (item: any) => item.group,
+        groupBy: (item) => item.group ?? "",
       });
     }
 
@@ -50,19 +50,20 @@ export class Select extends Component<select.Props, select.Api> {
     });
   }
 
-  initMachine(props: select.Props): VanillaMachine<any> {
-    const self = this;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props: Props): VanillaMachine<any> {
+    const getCollection = this.getCollection.bind(this);
 
-    return new VanillaMachine(select.machine, {
+    return new VanillaMachine(machine, {
       ...props,
       get collection() {
-        return self.getCollection();
+        return getCollection();
       },
     });
   }
 
-  initApi(): select.Api {
-    return select.connect(this.machine.service, normalizeProps);
+  initApi(): Api {
+    return connect(this.machine.service, normalizeProps);
   }
 
   renderItems(): void {
@@ -71,8 +72,7 @@ export class Select extends Component<select.Props, select.Api> {
     );
     if (!contentEl) return;
 
-    const templatesContainer =
-      this.el.querySelector<HTMLElement>('[data-templates="select"]');
+    const templatesContainer = this.el.querySelector<HTMLElement>('[data-templates="select"]');
     if (!templatesContainer) return;
 
     contentEl
@@ -98,7 +98,7 @@ export class Select extends Component<select.Props, select.Api> {
   renderGroupedItems(
     contentEl: HTMLElement,
     templatesContainer: HTMLElement,
-    groups: [string | null, any[]][]
+    groups: [string | null, Item[]][]
   ): void {
     for (const [groupId, groupItems] of groups) {
       if (groupId == null) continue;
@@ -117,10 +117,7 @@ export class Select extends Component<select.Props, select.Api> {
         '[data-scope="select"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(
-          labelEl,
-          this.api.getItemGroupLabelProps({ htmlFor: groupId })
-        );
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
       }
 
       const templateItems = groupEl.querySelectorAll<HTMLElement>(
@@ -137,21 +134,14 @@ export class Select extends Component<select.Props, select.Api> {
     }
   }
 
-  renderFlatItems(
-    contentEl: HTMLElement,
-    templatesContainer: HTMLElement,
-    items: any[]
-  ): void {
+  renderFlatItems(contentEl: HTMLElement, templatesContainer: HTMLElement, items: Item[]): void {
     for (const item of items) {
       const itemEl = this.cloneItem(templatesContainer, item);
       if (itemEl) contentEl.appendChild(itemEl);
     }
   }
 
-  cloneItem(
-    templatesContainer: HTMLElement,
-    item: Item
-  ): HTMLElement | null {
+  cloneItem(templatesContainer: HTMLElement, item: Item): HTMLElement | null {
     const value = this.api.collection.getItemValue(item);
     const template = templatesContainer.querySelector<HTMLElement>(
       `[data-scope="select"][data-part="item"][data-value="${value}"][data-template]`
@@ -163,9 +153,7 @@ export class Select extends Component<select.Props, select.Api> {
 
     this.spreadProps(el, this.api.getItemProps({ item }));
 
-    const textEl = el.querySelector<HTMLElement>(
-      '[data-scope="select"][data-part="item-text"]'
-    );
+    const textEl = el.querySelector<HTMLElement>('[data-scope="select"][data-part="item-text"]');
     if (textEl) {
       this.spreadProps(textEl, this.api.getItemTextProps({ item }));
     }
@@ -174,53 +162,40 @@ export class Select extends Component<select.Props, select.Api> {
       '[data-scope="select"][data-part="item-indicator"]'
     );
     if (indicatorEl) {
-      this.spreadProps(
-        indicatorEl,
-        this.api.getItemIndicatorProps({ item })
-      );
+      this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
     }
 
     return el;
   }
 
   render(): void {
-    const root =
-    this.el.querySelector<HTMLElement>('[data-scope="select"][data-part="root"]');
+    const root = this.el.querySelector<HTMLElement>('[data-scope="select"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
-  
-  const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
-    '[data-scope="select"][data-part="hidden-select"]'
-  );
 
-  const valueInput = this.el.querySelector<HTMLInputElement>(
-    '[data-scope="select"][data-part="value-input"]'
-  );
-  if (valueInput) {
-    if (!this.api.value || this.api.value.length === 0) {
-      valueInput.value = "";
-    } else if (this.api.value.length === 1) {
-      valueInput.value = String(this.api.value[0]);
-    } else {
-      valueInput.value = this.api.value.map(String).join(",");
+    const hiddenSelect = this.el.querySelector<HTMLSelectElement>(
+      '[data-scope="select"][data-part="hidden-select"]'
+    );
+
+    const valueInput = this.el.querySelector<HTMLInputElement>(
+      '[data-scope="select"][data-part="value-input"]'
+    );
+    if (valueInput) {
+      if (!this.api.value || this.api.value.length === 0) {
+        valueInput.value = "";
+      } else if (this.api.value.length === 1) {
+        valueInput.value = String(this.api.value[0]);
+      } else {
+        valueInput.value = this.api.value.map(String).join(",");
+      }
     }
-  }
 
-  if (hiddenSelect) {
-    this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
-  }
+    if (hiddenSelect) {
+      this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
+    }
 
-    [
-      "label",
-      "control",
-      "trigger",
-      "indicator",
-      "clear-trigger",
-      "positioner",
-    ].forEach((part) => {
-      const el = this.el.querySelector<HTMLElement>(
-        `[data-scope="select"][data-part="${part}"]`
-      );
+    ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
+      const el = this.el.querySelector<HTMLElement>(`[data-scope="select"][data-part="${part}"]`);
       if (!el) return;
 
       const method =
@@ -242,7 +217,7 @@ export class Select extends Component<select.Props, select.Api> {
       const valueAsString = this.api.valueAsString;
       if (this.api.value && this.api.value.length > 0 && !valueAsString) {
         const selectedValue = this.api.value[0];
-        const selectedItem = this.options.find((item: any) => {
+        const selectedItem = this.options.find((item: Item) => {
           const itemValue = item.id ?? item.value ?? "";
           return String(itemValue) === String(selectedValue);
         });
@@ -265,4 +240,3 @@ export class Select extends Component<select.Props, select.Api> {
     }
   }
 }
-

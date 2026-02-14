@@ -503,13 +503,6 @@ defmodule Corex.Select do
 
     options_with_prompt = [{"", ""} | options]
 
-    {on_value_change_client_name, on_value_change_js_encoded} =
-      case assigns.on_value_change_client do
-        name when is_binary(name) -> {name, nil}
-        %Phoenix.LiveView.JS{} = js -> {nil, Phoenix.json_library().encode!(js.ops)}
-        _ -> {nil, nil}
-      end
-
     assigns =
       assigns
       |> assign(:grouped_items, grouped_items)
@@ -519,15 +512,13 @@ defmodule Corex.Select do
       |> assign(:selected_for_options, selected_for_options)
       |> assign(:disabled_values, get_disabled_values(assigns.collection))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
-      |> assign(:on_value_change_client_name, on_value_change_client_name)
-      |> assign(:on_value_change_js_encoded, on_value_change_js_encoded)
 
     ~H"""
     <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
       id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder_text, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
-      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client_name, on_value_change_js: @on_value_change_js_encoded,
+      required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
       redirect: @redirect,
       positioning: @positioning
     })}>
@@ -546,8 +537,8 @@ defmodule Corex.Select do
         <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
+        <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
+          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
             <span data-scope="select" data-part="item-text">
               <%= if @selected_label do %>
                 {@selected_label}
@@ -565,7 +556,7 @@ defmodule Corex.Select do
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="select" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
+        <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
           <ul {Connect.content(%Content{id: @id, dir: @dir})}>
           </ul>
 

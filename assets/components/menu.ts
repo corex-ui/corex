@@ -50,9 +50,7 @@ export class Menu extends Component<Props, Api> {
       const nestedMenuId = triggerEl.dataset.nestedMenu;
       if (!nestedMenuId) continue;
 
-      const childMenu = this.children.find(
-        (child) => child.el.id === `menu:${nestedMenuId}`
-      );
+      const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
       if (!childMenu) continue;
 
       const applyProps = () => {

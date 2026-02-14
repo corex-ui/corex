@@ -386,14 +386,20 @@ var Collapsible = class extends Component {
     return connect(this.machine.service, normalizeProps);
   }
   render() {
-    const rootEl = this.el.querySelector('[data-scope="collapsible"][data-part="root"]');
+    const rootEl = this.el.querySelector(
+      '[data-scope="collapsible"][data-part="root"]'
+    );
     if (rootEl) {
       this.spreadProps(rootEl, this.api.getRootProps());
-      const triggerEl = rootEl.querySelector('[data-scope="collapsible"][data-part="trigger"]');
+      const triggerEl = rootEl.querySelector(
+        '[data-scope="collapsible"][data-part="trigger"]'
+      );
       if (triggerEl) {
         this.spreadProps(triggerEl, this.api.getTriggerProps());
       }
-      const contentEl = rootEl.querySelector('[data-scope="collapsible"][data-part="content"]');
+      const contentEl = rootEl.querySelector(
+        '[data-scope="collapsible"][data-part="content"]'
+      );
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getContentProps());
       }
@@ -442,11 +448,14 @@ var CollapsibleHook = {
     el.addEventListener("phx:collapsible:set-open", this.onSetOpen);
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent("collapsible_set_open", (payload) => {
-        const targetId = payload.collapsible_id;
-        if (targetId && targetId !== el.id) return;
-        collapsible.api.setOpen(payload.open);
-      })
+      this.handleEvent(
+        "collapsible_set_open",
+        (payload) => {
+          const targetId = payload.collapsible_id;
+          if (targetId && targetId !== el.id) return;
+          collapsible.api.setOpen(payload.open);
+        }
+      )
     );
     this.handlers.push(
       this.handleEvent("collapsible_open", () => {

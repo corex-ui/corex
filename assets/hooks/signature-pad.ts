@@ -5,7 +5,7 @@ import type { Props } from "@zag-js/signature-pad";
 
 import { getString, getBoolean, getNumber } from "../lib/util";
 
-function getPaths(el: HTMLElement, attr: string): any[] {
+function getPaths(el: HTMLElement, attr: string): unknown[] {
   const value = el.dataset[attr];
   if (!value) return [];
   try {
@@ -49,7 +49,9 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
-        const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+        const hiddenInput = el.querySelector<HTMLInputElement>(
+          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        );
         if (hiddenInput) {
           hiddenInput.value = JSON.stringify(details.paths);
         }
@@ -87,7 +89,9 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
 
     const initialPaths = controlled ? paths : defaultPaths;
     if (initialPaths.length > 0) {
-      const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+      const hiddenInput = el.querySelector<HTMLInputElement>(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
       if (hiddenInput) {
         hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
         hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
@@ -100,7 +104,9 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       signaturePad.api.clear();
       signaturePad.imageURL = "";
       signaturePad.setPaths([]);
-      const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+      const hiddenInput = el.querySelector<HTMLInputElement>(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
       if (hiddenInput) {
         hiddenInput.value = "";
       }
@@ -116,13 +122,14 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         signaturePad.api.clear();
         signaturePad.imageURL = "";
         signaturePad.setPaths([]);
-        const hiddenInput = el.querySelector<HTMLInputElement>('[data-scope="signature-pad"][data-part="hidden-input"]');
+        const hiddenInput = el.querySelector<HTMLInputElement>(
+          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        );
         if (hiddenInput) {
           hiddenInput.value = "";
         }
       })
     );
-
   },
 
   updated(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
@@ -130,11 +137,11 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     const paths = getPaths(this.el, "paths");
     const defaultPaths = getPaths(this.el, "defaultPaths");
     const name = getString(this.el, "name");
-    
+
     if (name) {
       this.signaturePad?.setName(name);
     }
-    
+
     this.signaturePad?.updateProps({
       id: this.el.id,
       name: name,

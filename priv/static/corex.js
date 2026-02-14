@@ -18785,7 +18785,6 @@ var Corex = (() => {
           const hasGroups = allItems.some((item) => item.group !== void 0);
           let selectComponent;
           const hook = this;
-          this.wasFocused = false;
           selectComponent = new Select(
             el,
             __spreadProps(__spreadValues({
@@ -18842,20 +18841,6 @@ var Corex = (() => {
                   items: details.items,
                   id: el.id
                 };
-                const encodedJS = el.getAttribute("data-on-value-change-js");
-                if (encodedJS) {
-                  let js = encodedJS;
-                  const indexMatches = [...js.matchAll(/__VALUE_(\d+)__/g)].map((m2) => parseInt(m2[1], 10));
-                  const uniqueIndices = [...new Set(indexMatches)].sort((a2, b2) => b2 - a2);
-                  for (const i2 of uniqueIndices) {
-                    const val = details.value[i2];
-                    const str = val !== void 0 && val !== null ? String(val) : "";
-                    const escaped = JSON.stringify(str).slice(1, -1);
-                    js = js.split(`__VALUE_${i2}__`).join(escaped);
-                  }
-                  js = js.split("__VALUE__").join(JSON.stringify(details.value));
-                  hook.liveSocket.execJS(el, js);
-                }
                 const clientEventName = getString(el, "onValueChangeClient");
                 if (clientEventName) {
                   el.dispatchEvent(
@@ -18875,10 +18860,6 @@ var Corex = (() => {
           this.select = selectComponent;
           this.handlers = [];
         },
-        beforeUpdate() {
-          var _a, _b, _c;
-          this.wasFocused = (_c = (_b = (_a = this.select) == null ? void 0 : _a.api) == null ? void 0 : _b.focused) != null ? _c : false;
-        },
         updated() {
           const newCollection = JSON.parse(this.el.dataset.collection || "[]");
           const hasGroups = newCollection.some((item) => item.group !== void 0);
@@ -18897,14 +18878,6 @@ var Corex = (() => {
               required: getBoolean(this.el, "required"),
               readOnly: getBoolean(this.el, "readOnly")
             }));
-            if (getBoolean(this.el, "controlled")) {
-              if (this.wasFocused) {
-                const trigger = this.el.querySelector('[data-scope="select"][data-part="trigger"]');
-                if (trigger && document.activeElement !== trigger) {
-                  trigger.focus();
-                }
-              }
-            }
           }
         },
         destroyed() {

@@ -26,15 +26,12 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
             defaultExpandedValue: getStringList(el, "defaultExpandedValue"),
             defaultSelectedValue: getStringList(el, "defaultSelectedValue"),
           }),
-      selectionMode: getString<
-        "single" | "multiple"
-      >(el, "selectionMode", ["single", "multiple"]) ?? "single",
+      selectionMode:
+        getString<"single" | "multiple">(el, "selectionMode", ["single", "multiple"]) ?? "single",
       dir: getDir(el),
       onSelectionChange: (details) => {
         const redirect = getBoolean(el, "redirect");
-        const value = details.selectedValue?.length
-          ? details.selectedValue[0]
-          : undefined;
+        const value = details.selectedValue?.length ? details.selectedValue[0] : undefined;
         const itemEl = [
           ...el.querySelectorAll<HTMLElement>(
             '[data-scope="tree-view"][data-part="item"], [data-scope="tree-view"][data-part="branch"]'
@@ -44,11 +41,7 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
         const itemRedirect = itemEl?.getAttribute("data-redirect");
         const itemNewTab = itemEl?.hasAttribute("data-new-tab");
         const doRedirect =
-          redirect &&
-          value &&
-          isItem &&
-          this.liveSocket.main.isDead &&
-          itemRedirect !== "false";
+          redirect && value && isItem && this.liveSocket.main.isDead && itemRedirect !== "false";
         if (doRedirect) {
           if (itemNewTab) {
             window.open(value, "_blank", "noopener,noreferrer");

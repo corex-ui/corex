@@ -316,18 +316,26 @@ var Checkbox = class extends Component {
     const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]');
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
-    const inputEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="hidden-input"]');
+    const inputEl = rootEl.querySelector(
+      ':scope > [data-scope="checkbox"][data-part="hidden-input"]'
+    );
     if (inputEl) {
       this.spreadProps(inputEl, this.api.getHiddenInputProps());
     }
-    const labelEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="label"]');
+    const labelEl = rootEl.querySelector(
+      ':scope > [data-scope="checkbox"][data-part="label"]'
+    );
     if (labelEl) {
       this.spreadProps(labelEl, this.api.getLabelProps());
     }
-    const controlEl = rootEl.querySelector(':scope > [data-scope="checkbox"][data-part="control"]');
+    const controlEl = rootEl.querySelector(
+      ':scope > [data-scope="checkbox"][data-part="control"]'
+    );
     if (controlEl) {
       this.spreadProps(controlEl, this.api.getControlProps());
-      const indicatorEl = controlEl.querySelector(':scope > [data-scope="checkbox"][data-part="indicator"]');
+      const indicatorEl = controlEl.querySelector(
+        ':scope > [data-scope="checkbox"][data-part="indicator"]'
+      );
       if (indicatorEl) {
         this.spreadProps(indicatorEl, this.api.getIndicatorProps());
       }

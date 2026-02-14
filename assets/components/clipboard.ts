@@ -1,4 +1,4 @@
-import {connect, machine, type Props, type Api}  from "@zag-js/clipboard";
+import { connect, machine, type Props, type Api } from "@zag-js/clipboard";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
@@ -17,16 +17,22 @@ export class Clipboard extends Component<Props, Api> {
     if (rootEl) {
       this.spreadProps(rootEl, this.api.getRootProps());
 
-      const labelEl = rootEl.querySelector<HTMLElement>('[data-scope="clipboard"][data-part="label"]');
+      const labelEl = rootEl.querySelector<HTMLElement>(
+        '[data-scope="clipboard"][data-part="label"]'
+      );
       if (labelEl) {
         this.spreadProps(labelEl, this.api.getLabelProps());
       }
 
-      const controlEl = rootEl.querySelector<HTMLElement>('[data-scope="clipboard"][data-part="control"]');
+      const controlEl = rootEl.querySelector<HTMLElement>(
+        '[data-scope="clipboard"][data-part="control"]'
+      );
       if (controlEl) {
         this.spreadProps(controlEl, this.api.getControlProps());
 
-        const inputEl = controlEl.querySelector<HTMLElement>('[data-scope="clipboard"][data-part="input"]');
+        const inputEl = controlEl.querySelector<HTMLElement>(
+          '[data-scope="clipboard"][data-part="input"]'
+        );
         if (inputEl) {
           const inputProps = { ...this.api.getInputProps() };
           const inputAriaLabel = this.el.dataset.inputAriaLabel;
@@ -36,7 +42,9 @@ export class Clipboard extends Component<Props, Api> {
           this.spreadProps(inputEl, inputProps);
         }
 
-        const triggerEl = controlEl.querySelector<HTMLElement>('[data-scope="clipboard"][data-part="trigger"]');
+        const triggerEl = controlEl.querySelector<HTMLElement>(
+          '[data-scope="clipboard"][data-part="trigger"]'
+        );
         if (triggerEl) {
           const triggerProps = { ...this.api.getTriggerProps() };
           const ariaLabel = this.el.dataset.triggerAriaLabel;
@@ -47,6 +55,5 @@ export class Clipboard extends Component<Props, Api> {
         }
       }
     }
-
   }
 }

@@ -1493,9 +1493,7 @@ var Menu = class extends Component {
       if (!this.isOwnElement(triggerEl)) continue;
       const nestedMenuId = triggerEl.dataset.nestedMenu;
       if (!nestedMenuId) continue;
-      const childMenu = this.children.find(
-        (child) => child.el.id === `menu:${nestedMenuId}`
-      );
+      const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
       if (!childMenu) continue;
       const applyProps = () => {
         const triggerProps = this.api.getTriggerItemProps(childMenu.api);
@@ -1594,74 +1592,71 @@ var MenuHook = {
     if (el.hasAttribute("data-nested")) {
       return;
     }
-    const menu = new Menu(
-      el,
-      {
-        id: el.id.replace("menu:", ""),
-        ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
-        closeOnSelect: getBoolean(el, "closeOnSelect"),
-        loopFocus: getBoolean(el, "loopFocus"),
-        typeahead: getBoolean(el, "typeahead"),
-        composite: getBoolean(el, "composite"),
-        dir: getString(el, "dir", ["ltr", "rtl"]),
-        onSelect: (details) => {
-          const redirect = getBoolean(el, "redirect");
-          const itemEl = [...el.querySelectorAll('[data-scope="menu"][data-part="item"]')].find(
-            (node) => node.getAttribute("data-value") === details.value
-          );
-          const itemRedirect = itemEl?.getAttribute("data-redirect");
-          const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-          const doRedirect = redirect && details.value && !this.liveSocket.main.isConnected() && itemRedirect !== "false";
-          if (doRedirect) {
-            if (itemNewTab) {
-              window.open(details.value, "_blank", "noopener,noreferrer");
-            } else {
-              window.location.href = details.value;
-            }
-          }
-          const eventName = getString(el, "onSelect");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            this.pushEvent(eventName, {
-              id: el.id,
-              value: details.value ?? null
-            });
-          }
-          const eventNameClient = getString(el, "onSelectClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.value ?? null
-                }
-              })
-            );
-          }
-        },
-        onOpenChange: (details) => {
-          const eventName = getString(el, "onOpenChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            this.pushEvent(eventName, {
-              id: el.id,
-              open: details.open ?? false
-            });
-          }
-          const eventNameClient = getString(el, "onOpenChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  open: details.open ?? false
-                }
-              })
-            );
+    const menu = new Menu(el, {
+      id: el.id.replace("menu:", ""),
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      typeahead: getBoolean(el, "typeahead"),
+      composite: getBoolean(el, "composite"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onSelect: (details) => {
+        const redirect = getBoolean(el, "redirect");
+        const itemEl = [
+          ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+        ].find((node) => node.getAttribute("data-value") === details.value);
+        const itemRedirect = itemEl?.getAttribute("data-redirect");
+        const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+        const doRedirect = redirect && details.value && !this.liveSocket.main.isConnected() && itemRedirect !== "false";
+        if (doRedirect) {
+          if (itemNewTab) {
+            window.open(details.value, "_blank", "noopener,noreferrer");
+          } else {
+            window.location.href = details.value;
           }
         }
+        const eventName = getString(el, "onSelect");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onSelectClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null
+              }
+            })
+          );
+        }
+      },
+      onOpenChange: (details) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            id: el.id,
+            open: details.open ?? false
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                open: details.open ?? false
+              }
+            })
+          );
+        }
       }
-    );
+    });
     menu.init();
     this.menu = menu;
     this.nestedMenus = /* @__PURE__ */ new Map();

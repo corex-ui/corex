@@ -21,82 +21,79 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       return;
     }
 
-    const menu = new Menu(
-      el,
-      {
-        id: el.id.replace("menu:", ""),
-        ...(getBoolean(el, "controlled")
-          ? { open: getBoolean(el, "open") }
-          : { defaultOpen: getBoolean(el, "defaultOpen") }),
-        closeOnSelect: getBoolean(el, "closeOnSelect"),
-        loopFocus: getBoolean(el, "loopFocus"),
-        typeahead: getBoolean(el, "typeahead"),
-        composite: getBoolean(el, "composite"),
-        dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-        onSelect: (details: SelectionDetails) => {
-          const redirect = getBoolean(el, "redirect");
-          const itemEl = [...el.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="item"]')].find(
-            (node) => node.getAttribute("data-value") === details.value
+    const menu = new Menu(el, {
+      id: el.id.replace("menu:", ""),
+      ...(getBoolean(el, "controlled")
+        ? { open: getBoolean(el, "open") }
+        : { defaultOpen: getBoolean(el, "defaultOpen") }),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      typeahead: getBoolean(el, "typeahead"),
+      composite: getBoolean(el, "composite"),
+      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      onSelect: (details: SelectionDetails) => {
+        const redirect = getBoolean(el, "redirect");
+        const itemEl = [
+          ...el.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="item"]'),
+        ].find((node) => node.getAttribute("data-value") === details.value);
+        const itemRedirect = itemEl?.getAttribute("data-redirect");
+        const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+        const doRedirect =
+          redirect &&
+          details.value &&
+          !this.liveSocket.main.isConnected() &&
+          itemRedirect !== "false";
+        if (doRedirect) {
+          if (itemNewTab) {
+            window.open(details.value, "_blank", "noopener,noreferrer");
+          } else {
+            window.location.href = details.value;
+          }
+        }
+        const eventName = getString(el, "onSelect");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null,
+          });
+        }
+
+        const eventNameClient = getString(el, "onSelectClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null,
+              },
+            })
           );
-          const itemRedirect = itemEl?.getAttribute("data-redirect");
-          const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-          const doRedirect =
-            redirect &&
-            details.value &&
-            !this.liveSocket.main.isConnected() &&
-            itemRedirect !== "false";
-          if (doRedirect) {
-            if (itemNewTab) {
-              window.open(details.value, "_blank", "noopener,noreferrer");
-            } else {
-              window.location.href = details.value;
-            }
-          }
-          const eventName = getString(el, "onSelect");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            this.pushEvent(eventName, {
-              id: el.id,
-              value: details.value ?? null,
-            });
-          }
+        }
+      },
+      onOpenChange: (details: OpenChangeDetails) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            id: el.id,
+            open: details.open ?? false,
+          });
+        }
 
-          const eventNameClient = getString(el, "onSelectClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.value ?? null,
-                },
-              })
-            );
-          }
-        },
-        onOpenChange: (details: OpenChangeDetails) => {
-          const eventName = getString(el, "onOpenChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            this.pushEvent(eventName, {
-              id: el.id,
-              open: details.open ?? false,
-            });
-          }
-
-          const eventNameClient = getString(el, "onOpenChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  open: details.open ?? false,
-                },
-              })
-            );
-          }
-        },
-      }
-    );
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                open: details.open ?? false,
+              },
+            })
+          );
+        }
+      },
+    });
     menu.init();
     this.menu = menu;
 
@@ -104,7 +101,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     const nestedMenuElements = el.querySelectorAll<HTMLElement>(
       '[data-scope="menu"][data-nested="menu"]'
     );
-    
+
     const nestedMenuInstances: Menu[] = [];
     nestedMenuElements.forEach((nestedEl) => {
       const nestedId = nestedEl.id;
@@ -118,13 +115,13 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
           typeahead: getBoolean(nestedEl, "typeahead"),
           composite: getBoolean(nestedEl, "composite"),
         });
-        
+
         nestedMenu.init();
         this.nestedMenus?.set(nestedId, nestedMenu);
         nestedMenuInstances.push(nestedMenu);
       }
     });
-    
+
     setTimeout(() => {
       nestedMenuInstances.forEach((nestedMenu) => {
         if (this.menu) {

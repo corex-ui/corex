@@ -3906,10 +3906,9 @@ var splitViewProps = createSplitProps(viewProps);
 
 // components/date-picker.ts
 var DatePicker = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
-    return new VanillaMachine(machine, {
-      ...props2
-    });
+    return new VanillaMachine(machine, props2);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -3947,10 +3946,7 @@ var DatePicker = class extends Component {
         const td = this.doc.createElement("td");
         this.spreadProps(td, this.api.getDayTableCellProps({ value }));
         const trigger = this.doc.createElement("div");
-        this.spreadProps(
-          trigger,
-          this.api.getDayTableCellTriggerProps({ value })
-        );
+        this.spreadProps(trigger, this.api.getDayTableCellTriggerProps({ value }));
         trigger.textContent = String(value.day);
         td.appendChild(trigger);
         tr.appendChild(td);
@@ -3970,15 +3966,9 @@ var DatePicker = class extends Component {
       this.spreadProps(tr, this.api.getTableRowProps());
       months.forEach((month) => {
         const td = this.doc.createElement("td");
-        this.spreadProps(
-          td,
-          this.api.getMonthTableCellProps({ ...month, columns: 4 })
-        );
+        this.spreadProps(td, this.api.getMonthTableCellProps({ ...month, columns: 4 }));
         const trigger = this.doc.createElement("div");
-        this.spreadProps(
-          trigger,
-          this.api.getMonthTableCellTriggerProps({ ...month, columns: 4 })
-        );
+        this.spreadProps(trigger, this.api.getMonthTableCellTriggerProps({ ...month, columns: 4 }));
         trigger.textContent = month.label;
         td.appendChild(trigger);
         tr.appendChild(td);
@@ -3998,15 +3988,9 @@ var DatePicker = class extends Component {
       this.spreadProps(tr, this.api.getTableRowProps({ view: "year" }));
       years.forEach((year) => {
         const td = this.doc.createElement("td");
-        this.spreadProps(
-          td,
-          this.api.getYearTableCellProps({ ...year, columns: 4 })
-        );
+        this.spreadProps(td, this.api.getYearTableCellProps({ ...year, columns: 4 }));
         const trigger = this.doc.createElement("div");
-        this.spreadProps(
-          trigger,
-          this.api.getYearTableCellTriggerProps({ ...year, columns: 4 })
-        );
+        this.spreadProps(trigger, this.api.getYearTableCellTriggerProps({ ...year, columns: 4 }));
         trigger.textContent = year.label;
         td.appendChild(trigger);
         tr.appendChild(td);
@@ -4015,9 +3999,7 @@ var DatePicker = class extends Component {
     });
   };
   render() {
-    const root = this.el.querySelector(
-      '[data-scope="date-picker"][data-part="root"]'
-    );
+    const root = this.el.querySelector('[data-scope="date-picker"][data-part="root"]');
     if (root) this.spreadProps(root, this.api.getRootProps());
     const label = this.el.querySelector(
       '[data-scope="date-picker"][data-part="label"]'
@@ -4055,122 +4037,59 @@ var DatePicker = class extends Component {
       if (monthView) monthView.hidden = this.api.view !== "month";
       if (yearView) yearView.hidden = this.api.view !== "year";
       if (this.api.view === "day" && dayView) {
-        const viewControl = dayView.querySelector(
-          '[data-part="view-control"]'
-        );
+        const viewControl = dayView.querySelector('[data-part="view-control"]');
         if (viewControl)
-          this.spreadProps(
-            viewControl,
-            this.api.getViewControlProps({ view: "year" })
-          );
-        const prevTrigger = dayView.querySelector(
-          '[data-part="prev-trigger"]'
-        );
-        if (prevTrigger)
-          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
-        const viewTrigger = dayView.querySelector(
-          '[data-part="view-trigger"]'
-        );
+          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+        const prevTrigger = dayView.querySelector('[data-part="prev-trigger"]');
+        if (prevTrigger) this.spreadProps(prevTrigger, this.api.getPrevTriggerProps());
+        const viewTrigger = dayView.querySelector('[data-part="view-trigger"]');
         if (viewTrigger) {
           this.spreadProps(viewTrigger, this.api.getViewTriggerProps());
           viewTrigger.textContent = this.api.visibleRangeText.start;
         }
-        const nextTrigger = dayView.querySelector(
-          '[data-part="next-trigger"]'
-        );
-        if (nextTrigger)
-          this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
+        const nextTrigger = dayView.querySelector('[data-part="next-trigger"]');
+        if (nextTrigger) this.spreadProps(nextTrigger, this.api.getNextTriggerProps());
         const table = dayView.querySelector("table");
-        if (table)
-          this.spreadProps(table, this.api.getTableProps({ view: "day" }));
+        if (table) this.spreadProps(table, this.api.getTableProps({ view: "day" }));
         const thead = dayView.querySelector("thead");
-        if (thead)
-          this.spreadProps(
-            thead,
-            this.api.getTableHeaderProps({ view: "day" })
-          );
+        if (thead) this.spreadProps(thead, this.api.getTableHeaderProps({ view: "day" }));
         this.renderDayTableHeader();
         this.renderDayTableBody();
       } else if (this.api.view === "month" && monthView) {
-        const viewControl = monthView.querySelector(
-          '[data-part="view-control"]'
-        );
+        const viewControl = monthView.querySelector('[data-part="view-control"]');
         if (viewControl)
-          this.spreadProps(
-            viewControl,
-            this.api.getViewControlProps({ view: "month" })
-          );
-        const prevTrigger = monthView.querySelector(
-          '[data-part="prev-trigger"]'
-        );
+          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "month" }));
+        const prevTrigger = monthView.querySelector('[data-part="prev-trigger"]');
         if (prevTrigger)
-          this.spreadProps(
-            prevTrigger,
-            this.api.getPrevTriggerProps({ view: "month" })
-          );
-        const viewTrigger = monthView.querySelector(
-          '[data-part="view-trigger"]'
-        );
+          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "month" }));
+        const viewTrigger = monthView.querySelector('[data-part="view-trigger"]');
         if (viewTrigger) {
-          this.spreadProps(
-            viewTrigger,
-            this.api.getViewTriggerProps({ view: "month" })
-          );
+          this.spreadProps(viewTrigger, this.api.getViewTriggerProps({ view: "month" }));
           viewTrigger.textContent = String(this.api.visibleRange.start.year);
         }
-        const nextTrigger = monthView.querySelector(
-          '[data-part="next-trigger"]'
-        );
+        const nextTrigger = monthView.querySelector('[data-part="next-trigger"]');
         if (nextTrigger)
-          this.spreadProps(
-            nextTrigger,
-            this.api.getNextTriggerProps({ view: "month" })
-          );
+          this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "month" }));
         const table = monthView.querySelector("table");
-        if (table)
-          this.spreadProps(
-            table,
-            this.api.getTableProps({ view: "month", columns: 4 })
-          );
+        if (table) this.spreadProps(table, this.api.getTableProps({ view: "month", columns: 4 }));
         this.renderMonthTableBody();
       } else if (this.api.view === "year" && yearView) {
-        const viewControl = yearView.querySelector(
-          '[data-part="view-control"]'
-        );
+        const viewControl = yearView.querySelector('[data-part="view-control"]');
         if (viewControl)
-          this.spreadProps(
-            viewControl,
-            this.api.getViewControlProps({ view: "year" })
-          );
-        const prevTrigger = yearView.querySelector(
-          '[data-part="prev-trigger"]'
-        );
+          this.spreadProps(viewControl, this.api.getViewControlProps({ view: "year" }));
+        const prevTrigger = yearView.querySelector('[data-part="prev-trigger"]');
         if (prevTrigger)
-          this.spreadProps(
-            prevTrigger,
-            this.api.getPrevTriggerProps({ view: "year" })
-          );
-        const decadeText = yearView.querySelector(
-          '[data-part="decade"]'
-        );
+          this.spreadProps(prevTrigger, this.api.getPrevTriggerProps({ view: "year" }));
+        const decadeText = yearView.querySelector('[data-part="decade"]');
         if (decadeText) {
           const decade = this.api.getDecade();
           decadeText.textContent = `${decade.start} - ${decade.end}`;
         }
-        const nextTrigger = yearView.querySelector(
-          '[data-part="next-trigger"]'
-        );
+        const nextTrigger = yearView.querySelector('[data-part="next-trigger"]');
         if (nextTrigger)
-          this.spreadProps(
-            nextTrigger,
-            this.api.getNextTriggerProps({ view: "year" })
-          );
+          this.spreadProps(nextTrigger, this.api.getNextTriggerProps({ view: "year" }));
         const table = yearView.querySelector("table");
-        if (table)
-          this.spreadProps(
-            table,
-            this.api.getTableProps({ view: "year", columns: 4 })
-          );
+        if (table) this.spreadProps(table, this.api.getTableProps({ view: "year", columns: 4 }));
         this.renderYearTableBody();
       }
     }
@@ -4211,7 +4130,11 @@ var DatePickerHook = {
       numOfMonths: getNumber(el, "numOfMonths"),
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
-      selectionMode: getString(el, "selectionMode", ["single", "multiple", "range"]),
+      selectionMode: getString(el, "selectionMode", [
+        "single",
+        "multiple",
+        "range"
+      ]),
       placeholder: getString(el, "placeholder"),
       minView: getString(el, "minView", ["day", "month", "year"]),
       maxView: getString(el, "maxView", ["day", "month", "year"]),
@@ -4219,9 +4142,7 @@ var DatePickerHook = {
       positioning: positioningJson ? JSON.parse(positioningJson) : void 0,
       onValueChange: (details) => {
         const isoStr = details.value?.length ? details.value.map((d) => toISOString(d)).join(",") : "";
-        const hiddenInput = el.querySelector(
-          `#${el.id}-value`
-        );
+        const hiddenInput = el.querySelector(`#${el.id}-value`);
         if (hiddenInput && hiddenInput.value !== isoStr) {
           hiddenInput.value = isoStr;
           hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -4281,11 +4202,14 @@ var DatePickerHook = {
     if (inputWrapper) inputWrapper.removeAttribute("data-loading");
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent("date_picker_set_value", (payload) => {
-        const targetId = payload.date_picker_id;
-        if (targetId && targetId !== el.id) return;
-        datePickerInstance.api.setValue([parse(payload.value)]);
-      })
+      this.handleEvent(
+        "date_picker_set_value",
+        (payload) => {
+          const targetId = payload.date_picker_id;
+          if (targetId && targetId !== el.id) return;
+          datePickerInstance.api.setValue([parse(payload.value)]);
+        }
+      )
     );
     this.onSetValue = (event) => {
       const value = event.detail?.value;
@@ -4325,7 +4249,11 @@ var DatePickerHook = {
       numOfMonths: getNumber(this.el, "numOfMonths"),
       startOfWeek: getNumber(this.el, "startOfWeek"),
       fixedWeeks: getBoolean(this.el, "fixedWeeks"),
-      selectionMode: getString(this.el, "selectionMode", ["single", "multiple", "range"]),
+      selectionMode: getString(this.el, "selectionMode", [
+        "single",
+        "multiple",
+        "range"
+      ]),
       placeholder: getString(this.el, "placeholder"),
       minView: getString(this.el, "minView", ["day", "month", "year"]),
       maxView: getString(this.el, "maxView", ["day", "month", "year"]),

@@ -1,15 +1,15 @@
-import * as zagSwitch from "@zag-js/switch";
+import { connect, machine, type Props, type Api } from "@zag-js/switch";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
-export class Switch extends Component<zagSwitch.Props, zagSwitch.Api> {
+export class Switch extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props: zagSwitch.Props): VanillaMachine<any> {
-    return new VanillaMachine(zagSwitch.machine, props);
+  initMachine(props: Props): VanillaMachine<any> {
+    return new VanillaMachine(machine, props);
   }
 
-  initApi(): zagSwitch.Api {
-    return zagSwitch.connect(this.machine.service, normalizeProps);
+  initApi(): Api {
+    return connect(this.machine.service, normalizeProps);
   }
 
   render(): void {
@@ -17,7 +17,9 @@ export class Switch extends Component<zagSwitch.Props, zagSwitch.Api> {
     if (!rootEl) return;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const inputEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="hidden-input"]');
+    const inputEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="switch"][data-part="hidden-input"]'
+    );
     if (inputEl) {
       this.spreadProps(inputEl, this.api.getHiddenInputProps());
     }
@@ -27,7 +29,9 @@ export class Switch extends Component<zagSwitch.Props, zagSwitch.Api> {
       this.spreadProps(labelEl, this.api.getLabelProps());
     }
 
-    const controlEl = this.el.querySelector<HTMLElement>('[data-scope="switch"][data-part="control"]');
+    const controlEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="switch"][data-part="control"]'
+    );
     if (controlEl) {
       this.spreadProps(controlEl, this.api.getControlProps());
     }

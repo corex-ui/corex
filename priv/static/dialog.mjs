@@ -1167,19 +1167,31 @@ var Dialog = class extends Component {
   }
   render() {
     const rootEl = this.el;
-    const triggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="trigger"]');
+    const triggerEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="trigger"]'
+    );
     if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
-    const backdropEl = rootEl.querySelector('[data-scope="dialog"][data-part="backdrop"]');
+    const backdropEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="backdrop"]'
+    );
     if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
-    const positionerEl = rootEl.querySelector('[data-scope="dialog"][data-part="positioner"]');
+    const positionerEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="positioner"]'
+    );
     if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
-    const contentEl = rootEl.querySelector('[data-scope="dialog"][data-part="content"]');
+    const contentEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="content"]'
+    );
     if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
     const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
     if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
-    const descriptionEl = rootEl.querySelector('[data-scope="dialog"][data-part="description"]');
+    const descriptionEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="description"]'
+    );
     if (descriptionEl) this.spreadProps(descriptionEl, this.api.getDescriptionProps());
-    const closeTriggerEl = rootEl.querySelector('[data-scope="dialog"][data-part="close-trigger"]');
+    const closeTriggerEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="close-trigger"]'
+    );
     if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
   }
 };

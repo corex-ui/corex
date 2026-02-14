@@ -1,4 +1,10 @@
-import * as tree from "@zag-js/tree-view";
+import {
+  collection,
+  connect,
+  machine,
+  type Props,
+  type Api,
+} from "@zag-js/tree-view";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
@@ -47,41 +53,40 @@ function buildTreeFromDOM(rootEl: HTMLElement): TreeNode {
     }
     const lastIdx = pathArr[pathArr.length - 1]!;
     if (!parent.children) parent.children = [];
-    parent.children[lastIdx] = isBranch
-      ? { id, name, children: [] }
-      : { id, name };
+    parent.children[lastIdx] = isBranch ? { id, name, children: [] } : { id, name };
   }
   return root;
 }
 
-export class TreeView extends Component<tree.Props, tree.Api> {
-  private collection: ReturnType<typeof tree.collection<TreeNode>>;
+export class TreeView extends Component<Props, Api> {
+  private treeCollection: ReturnType<typeof collection<TreeNode>>;
 
   constructor(
     el: HTMLElement | null,
-    props: Omit<tree.Props, "collection"> & { treeData?: TreeNode }
+    props: Omit<Props, "collection"> & { treeData?: TreeNode }
   ) {
     const treeData = props.treeData ?? buildTreeFromDOM(el as HTMLElement);
-    const collection = tree.collection<TreeNode>({
+    const treeCollection = collection<TreeNode>({
       nodeToValue: (node) => node.id,
       nodeToString: (node) => node.name,
       rootNode: treeData,
     });
-    super(el, { ...props, collection } as tree.Props);
-    this.collection = collection;
+    super(el, { ...props, collection: treeCollection } as Props);
+    this.treeCollection = treeCollection;
   }
 
-  initMachine(props: tree.Props): VanillaMachine<any> {
-    return new VanillaMachine(tree.machine, { ...props });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props: Props): VanillaMachine<any> {
+    return new VanillaMachine(machine, { ...props });
   }
 
-  initApi(): tree.Api {
-    return tree.connect(this.machine.service, normalizeProps);
+  initApi(): Api {
+    return connect(this.machine.service, normalizeProps);
   }
 
   private getNodeAt(indexPath: number[]): TreeNode | undefined {
     if (indexPath.length === 0) return undefined;
-    let current: TreeNode | undefined = this.collection.rootNode as TreeNode;
+    let current: TreeNode | undefined = this.treeCollection.rootNode as TreeNode;
     for (const i of indexPath) {
       current = current?.children?.[i];
       if (!current) return undefined;
@@ -118,8 +123,7 @@ export class TreeView extends Component<tree.Props, tree.Api> {
       const indicatorEl = branchEl.querySelector<HTMLElement>(
         '[data-scope="tree-view"][data-part="branch-indicator"]'
       );
-      if (indicatorEl)
-        this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
+      if (indicatorEl) this.spreadProps(indicatorEl, this.api.getBranchIndicatorProps(nodeProps));
 
       const contentEl = branchEl.querySelector<HTMLElement>(
         '[data-scope="tree-view"][data-part="branch-content"]'
@@ -148,9 +152,7 @@ export class TreeView extends Component<tree.Props, tree.Api> {
   }
 
   private syncTree = () => {
-    const treeEl = this.el.querySelector<HTMLElement>(
-      '[data-scope="tree-view"][data-part="tree"]'
-    );
+    const treeEl = this.el.querySelector<HTMLElement>('[data-scope="tree-view"][data-part="tree"]');
     if (!treeEl) return;
 
     this.spreadProps(treeEl, this.api.getTreeProps());
@@ -159,14 +161,10 @@ export class TreeView extends Component<tree.Props, tree.Api> {
 
   render(): void {
     const rootEl =
-      this.el.querySelector<HTMLElement>(
-        '[data-scope="tree-view"][data-part="root"]'
-      ) ?? this.el;
+      this.el.querySelector<HTMLElement>('[data-scope="tree-view"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
 
-    const label = this.el.querySelector<HTMLElement>(
-      '[data-scope="tree-view"][data-part="label"]'
-    );
+    const label = this.el.querySelector<HTMLElement>('[data-scope="tree-view"][data-part="label"]');
     if (label) this.spreadProps(label, this.api.getLabelProps());
 
     this.syncTree();

@@ -1,4 +1,4 @@
-import {connect, machine, type Props, type Api}  from "@zag-js/tabs";
+import { connect, machine, type Props, type Api } from "@zag-js/tabs";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
@@ -21,19 +21,22 @@ export class Tabs extends Component<Props, Api> {
     if (!listEl) return;
     this.spreadProps(listEl, this.api.getListProps());
 
-    const itemsData = this.el.getAttribute('data-items');
-    const items: Array<{value: string, disabled: boolean}> = itemsData 
+    const itemsData = this.el.getAttribute("data-items");
+    const items: Array<{ value: string; disabled: boolean }> = itemsData
       ? JSON.parse(itemsData)
       : [];
 
     const triggers = listEl.querySelectorAll<HTMLElement>(
       '[data-scope="tabs"][data-part="trigger"]'
     );
-    
+
     for (let i = 0; i < triggers.length && i < items.length; i++) {
       const triggerEl = triggers[i];
       const item = items[i];
-      this.spreadProps(triggerEl, this.api.getTriggerProps({ value: item.value, disabled: item.disabled }));
+      this.spreadProps(
+        triggerEl,
+        this.api.getTriggerProps({ value: item.value, disabled: item.disabled })
+      );
     }
 
     const contents = rootEl.querySelectorAll<HTMLElement>(

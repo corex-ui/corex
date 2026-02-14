@@ -14,65 +14,62 @@ type TabsHookState = {
 
 const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TabsHookState) {
-
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
-    const tabs = new Tabs(el, 
-      {
-        id: el.id,
-        ...(getBoolean(el, "controlled")
-          ? { value: getString(el, "value") }
-          : { defaultValue: getString(el, "defaultValue") }),
-        orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
-        dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-        onValueChange: (details: ValueChangeDetails) => {
-          const eventName = getString(el, "onValueChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            pushEvent(eventName, {
-              id: el.id,
-              value: details.value ?? null,
-            });
-          }
-          
-          const eventNameClient = getString(el, "onValueChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.value ?? null,
-                },
-              })
-            );
-          }
-        },
-        
-        onFocusChange: (details: FocusChangeDetails) => {
-          const eventName = getString(el, "onFocusChange");
-          if (eventName && this.liveSocket.main.isConnected()) {
-            pushEvent(eventName, {
-              id: el.id,
-              value: details.focusedValue ?? null,
-            });
-          }
-  
-          const eventNameClient = getString(el, "onFocusChangeClient");
-          if (eventNameClient) {
-            el.dispatchEvent(
-              new CustomEvent(eventNameClient, {
-                bubbles: true,
-                detail: {
-                  id: el.id,
-                  value: details.focusedValue ?? null,
-                },
-              })
-            );
-          }
-        },
-      }
-    );
+    const tabs = new Tabs(el, {
+      id: el.id,
+      ...(getBoolean(el, "controlled")
+        ? { value: getString(el, "value") }
+        : { defaultValue: getString(el, "defaultValue") }),
+      orientation: getString<Orientation>(el, "orientation", ["horizontal", "vertical"]),
+      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      onValueChange: (details: ValueChangeDetails) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null,
+          });
+        }
+
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null,
+              },
+            })
+          );
+        }
+      },
+
+      onFocusChange: (details: FocusChangeDetails) => {
+        const eventName = getString(el, "onFocusChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.focusedValue ?? null,
+          });
+        }
+
+        const eventNameClient = getString(el, "onFocusChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.focusedValue ?? null,
+              },
+            })
+          );
+        }
+      },
+    });
     tabs.init();
     this.tabs = tabs;
 
@@ -85,14 +82,11 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent(
-        "tabs_set_value",
-        (payload: { tabs_id?: string; value: string }) => {
-          const targetId = payload.tabs_id;
-          if (targetId && targetId !== el.id) return;
-          tabs.api.setValue(payload.value);
-        }
-      )
+      this.handleEvent("tabs_set_value", (payload: { tabs_id?: string; value: string }) => {
+        const targetId = payload.tabs_id;
+        if (targetId && targetId !== el.id) return;
+        tabs.api.setValue(payload.value);
+      })
     );
 
     this.handlers.push(
@@ -119,12 +113,10 @@ const TabsHook: Hook<object & TabsHookState, HTMLElement> = {
         ? { value: getString(this.el, "value") }
         : { defaultValue: getString(this.el, "defaultValue") }),
       orientation: getString<Orientation>(this.el, "orientation", ["horizontal", "vertical"]),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"])
+      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
     } as Props);
   },
 
-
-  
   destroyed(this: object & HookInterface<HTMLElement> & TabsHookState) {
     if (this.onSetValue) {
       this.el.removeEventListener("phx:tabs:set-value", this.onSetValue);

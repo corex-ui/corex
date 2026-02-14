@@ -1,4 +1,4 @@
-import {connect, machine, type Props, type Api}  from "@zag-js/collapsible";
+import { connect, machine, type Props, type Api } from "@zag-js/collapsible";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
@@ -13,20 +13,25 @@ export class Collapsible extends Component<Props, Api> {
   }
 
   render(): void {
-    const rootEl = this.el.querySelector<HTMLElement>('[data-scope="collapsible"][data-part="root"]');
+    const rootEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="collapsible"][data-part="root"]'
+    );
     if (rootEl) {
       this.spreadProps(rootEl, this.api.getRootProps());
 
-      const triggerEl = rootEl.querySelector<HTMLElement>('[data-scope="collapsible"][data-part="trigger"]');
+      const triggerEl = rootEl.querySelector<HTMLElement>(
+        '[data-scope="collapsible"][data-part="trigger"]'
+      );
       if (triggerEl) {
         this.spreadProps(triggerEl, this.api.getTriggerProps());
       }
 
-      const contentEl = rootEl.querySelector<HTMLElement>('[data-scope="collapsible"][data-part="content"]');
+      const contentEl = rootEl.querySelector<HTMLElement>(
+        '[data-scope="collapsible"][data-part="content"]'
+      );
       if (contentEl) {
         this.spreadProps(contentEl, this.api.getContentProps());
       }
     }
-
   }
 }

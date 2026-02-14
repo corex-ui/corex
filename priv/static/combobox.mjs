@@ -1612,39 +1612,40 @@ var Combobox = class extends Component {
     if (this.hasGroups) {
       return collection({
         items,
-        itemToValue: (item) => item.id,
+        itemToValue: (item) => item.id ?? "",
         itemToString: (item) => item.label,
-        isItemDisabled: (item) => item.disabled,
+        isItemDisabled: (item) => item.disabled ?? false,
         groupBy: (item) => item.group
       });
     }
     return collection({
       items,
-      itemToValue: (item) => item.id,
+      itemToValue: (item) => item.id ?? "",
       itemToString: (item) => item.label,
-      isItemDisabled: (item) => item.disabled
+      isItemDisabled: (item) => item.disabled ?? false
     });
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
-    const self = this;
+    const getCollection = this.getCollection.bind(this);
     return new VanillaMachine(machine, {
       ...props2,
       get collection() {
-        return self.getCollection();
+        return getCollection();
       },
       onOpenChange: (details) => {
         if (details.open) {
-          self.options = self.allOptions;
+          this.options = this.allOptions;
         }
         if (props2.onOpenChange) {
           props2.onOpenChange(details);
         }
       },
       onInputValueChange: (details) => {
-        const filtered = self.allOptions.filter(
+        const filtered = this.allOptions.filter(
           (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
         );
-        self.options = filtered.length > 0 ? filtered : self.allOptions;
+        this.options = filtered.length > 0 ? filtered : this.allOptions;
         if (props2.onInputValueChange) {
           props2.onInputValueChange(details);
         }
@@ -1655,7 +1656,9 @@ var Combobox = class extends Component {
     return connect(this.machine.service, normalizeProps);
   }
   renderItems() {
-    const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
+    const contentEl = this.el.querySelector(
+      '[data-scope="combobox"][data-part="content"]'
+    );
     if (!contentEl) return;
     const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
     if (!templatesContainer) return;
@@ -1684,10 +1687,7 @@ var Combobox = class extends Component {
         '[data-scope="combobox"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(
-          labelEl,
-          this.api.getItemGroupLabelProps({ htmlFor: groupId })
-        );
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
       }
       const groupContentEl = groupEl.querySelector(
         '[data-scope="combobox"][data-part="item-group-content"]'
@@ -1723,12 +1723,11 @@ var Combobox = class extends Component {
         textEl.textContent = item.label || "";
       }
     }
-    const indicatorEl = el.querySelector('[data-scope="combobox"][data-part="item-indicator"]');
+    const indicatorEl = el.querySelector(
+      '[data-scope="combobox"][data-part="item-indicator"]'
+    );
     if (indicatorEl) {
-      this.spreadProps(
-        indicatorEl,
-        this.api.getItemIndicatorProps({ item })
-      );
+      this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
     }
     return el;
   }
@@ -1736,20 +1735,15 @@ var Combobox = class extends Component {
     const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
-    [
-      "label",
-      "control",
-      "input",
-      "trigger",
-      "clear-trigger",
-      "positioner"
-    ].forEach((part) => {
+    ["label", "control", "input", "trigger", "clear-trigger", "positioner"].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
       if (!el) return;
       const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
       this.spreadProps(el, this.api[apiMethod]());
     });
-    const contentEl = this.el.querySelector('[data-scope="combobox"][data-part="content"]');
+    const contentEl = this.el.querySelector(
+      '[data-scope="combobox"][data-part="content"]'
+    );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
       this.renderItems();
@@ -1927,10 +1921,10 @@ var ComboboxHook = {
     const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
     if (initialValue && initialValue.length > 0) {
       const selectedItems = allItems.filter(
-        (item) => initialValue.includes(item.id)
+        (item) => initialValue.includes(item.id ?? "")
       );
       if (selectedItems.length > 0) {
-        const inputValue = selectedItems.map((item) => item.label).join(", ");
+        const inputValue = selectedItems.map((item) => item.label ?? "").join(", ");
         if (combobox.api && typeof combobox.api.setInputValue === "function") {
           combobox.api.setInputValue(inputValue);
         } else {
