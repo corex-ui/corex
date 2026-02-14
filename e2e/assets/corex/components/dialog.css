@@ -41,6 +41,17 @@
   }
 
 
+  .dialog [data-scope="dialog"][data-part="header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-ui-gap);
+  }
+
+  .dialog [data-scope="dialog"][data-part="header"] [data-scope="dialog"][data-part="title"] {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
   .dialog [data-part="row"] {
     display: inline-flex;
     flex-direction: row;

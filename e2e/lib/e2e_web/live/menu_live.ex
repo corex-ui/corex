@@ -155,8 +155,8 @@ defmodule E2eWeb.MenuLive do
           <.icon name="hero-chevron-down" />
         </:indicator>
         <:nested_indicator>
-        <.icon name="hero-chevron-right" />
-      </:nested_indicator>
+          <.icon name="hero-chevron-right" />
+        </:nested_indicator>
         <:item :let={item}>
           {item.label}
         </:item>
