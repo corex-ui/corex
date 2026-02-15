@@ -1,0 +1,16 @@
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+  <div class="layout__row">
+    <h1>Editable</h1>
+    <h2>Controller View</h2>
+  </div>
+  <.editable
+    id="my-editable"
+    value="My custom value"
+    placeholder="Enter Value"
+    activation_mode="dblclick"
+    select_on_focus
+    class="editable"
+  >
+    <:label>Name</:label>
+  </.editable>
+</Layouts.app>

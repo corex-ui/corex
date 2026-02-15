@@ -1,0 +1,18 @@
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+  <div class="layout__row">
+    <h1>Carousel</h1>
+    <h2>Controller View</h2>
+  </div>
+  <.carousel
+    id="my-carousel"
+    items={["/images/beach.jpg", "/images/fall.jpg", "/images/sand.jpg", "/images/star.jpg", "/images/winter.jpg"]}
+    class="carousel"
+  >
+    <:prev_trigger>
+    <.icon name="hero-arrow-left" />
+    </:prev_trigger>
+    <:next_trigger>
+      <.icon name="hero-arrow-right" />
+    </:next_trigger>
+  </.carousel>
+</Layouts.app>

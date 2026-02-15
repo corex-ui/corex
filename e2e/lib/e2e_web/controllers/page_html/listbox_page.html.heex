@@ -1,0 +1,13 @@
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+  <div class="layout__row">
+    <h1>Listbox</h1>
+    <h2>Controller View</h2>
+  </div>
+  <.listbox
+    id="my-listbox"
+    collection={Corex.List.new([[label: "A", value: "a"], [label: "B", value: "b"], [label: "C", value: "c"]])}
+    class="listbox"
+  >
+    <:label>Choose</:label>
+  </.listbox>
+</Layouts.app>

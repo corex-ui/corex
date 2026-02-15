@@ -46,6 +46,17 @@ defmodule E2eWeb.Router do
       live "/live/toast", ToastLive
       live "/live/toggle-group", ToggleGroupLive
       live "/live/tree-view", TreeViewLive
+      live "/live/angle-slider", AngleSliderLive
+      live "/live/avatar", AvatarLive
+      live "/live/carousel", CarouselLive
+      live "/live/editable", EditableLive
+      live "/live/floating-panel", FloatingPanelLive
+      live "/live/listbox", ListboxLive
+      live "/live/number-input", NumberInputLive
+      live "/live/password-input", PasswordInputLive
+      live "/live/pin-input", PinInputLive
+      live "/live/radio-group", RadioGroupLive
+      live "/live/timer", TimerLive
     end
 
     get "/", PageController, :home
@@ -77,6 +88,17 @@ defmodule E2eWeb.Router do
 
     get "/toggle-group", PageController, :toggle_group_page
     get "/tree-view", PageController, :tree_view_page
+    get "/angle-slider", PageController, :angle_slider_page
+    get "/avatar", PageController, :avatar_page
+    get "/carousel", PageController, :carousel_page
+    get "/editable", PageController, :editable_page
+    get "/floating-panel", PageController, :floating_panel_page
+    get "/listbox", PageController, :listbox_page
+    get "/number-input", PageController, :number_input_page
+    get "/password-input", PageController, :password_input_page
+    get "/pin-input", PageController, :pin_input_page
+    get "/radio-group", PageController, :radio_group_page
+    get "/timer", PageController, :timer_page
 
     live_session :browser, on_mount: [E2eWeb.ModeLive, E2eWeb.SharedEvents] do
       live "/admins", AdminLive.Index, :index

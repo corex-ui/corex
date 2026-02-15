@@ -1,0 +1,200 @@
+@import "../main.css";
+
+@layer components {
+  .carousel [data-scope="carousel"][data-part="root"] {
+    @apply ui-root;
+
+    max-width: var(--container-ui);
+    max-height: var(--container-ui);
+    gap: var(--spacing-ui-gap);
+    justify-content: center;
+    position: relative;
+  }
+
+  .carousel [data-scope="carousel"][data-part="control"] {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    width: auto;
+    padding: var(--spacing-mini-padding-sm);
+    max-width: var(--container-mini);
+    overflow: hidden;
+    gap: var(--spacing-mini-gap);
+    justify-content: center;
+    border-radius: var(--radius-ui);
+
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      bottom: var(--spacing-mini-padding);
+    }
+
+    &[data-orientation="vertical"] {
+      flex-flow: column nowrap;
+      max-height: var(--container-mini);
+      right: var(--spacing-mini-padding);
+
+      & [data-scope="carousel"][data-part="prev-trigger"],
+      & [data-scope="carousel"][data-part="next-trigger"],
+      & [data-scope="carousel"][data-part="autoplay-trigger"] {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  .carousel [data-scope="carousel"][data-part="prev-trigger"],
+  .carousel [data-scope="carousel"][data-part="next-trigger"],
+  .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
+    @apply ui-trigger;
+
+    padding: 0;
+    aspect-ratio: 1/1;
+    gap: var(--spacing-min-gap);
+    min-height: var(--spacing-mini);
+    border: 0;
+
+    &[disabled="true"] {
+      visibility: hidden;
+    }
+  }
+
+  .carousel [data-scope="carousel"][data-part="item-group"] {
+    overflow: hidden;
+    align-self: stretch;
+    border-radius: var(--radius-ui);
+    scrollbar-width: none;
+    -webkit-scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .carousel [data-scope="carousel"][data-part="item"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+  }
+
+  .carousel [data-scope="carousel"][data-part="item"] img {
+    margin: 0;
+    object-fit: cover;
+    border-radius: var(--radius-ui);
+  }
+
+  .carousel
+    [data-scope="carousel"][data-part="item"][data-orientation="horizontal"]
+    img {
+    height: 100%;
+    width: 100%;
+  }
+
+  .carousel
+    [data-scope="carousel"][data-part="item"][data-orientation="vertical"]
+    img {
+    height: 100%;
+    width: 100%;
+  }
+
+  .carousel [data-scope="carousel"][data-part="indicator-group"] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-mini-gap);
+
+    &[data-orientation="horizontal"] {
+      flex-direction: row;
+      height: auto;
+    }
+
+    &[data-orientation="vertical"] {
+      flex-direction: column;
+      height: auto;
+    }
+  }
+
+  .carousel [data-scope="carousel"][data-part="indicator"] {
+    @apply ui-trigger;
+
+    min-height: var(--spacing-micro-xl);
+    min-width: var(--spacing-micro-xl);
+    aspect-ratio: 1/1;
+    border-radius: var(--radius-full);
+    background-color: var(--color-ui);
+    padding: 0;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .carousel [data-scope="carousel"][data-part="indicator"][data-current] {
+    background-color: var(--color-ui-accent);
+  }
+
+  .carousel
+    [data-scope="carousel"][data-part="autoplay-trigger"][data-pressed]
+    [data-play] {
+    display: none;
+  }
+
+  .carousel
+    [data-scope="carousel"][data-part="autoplay-trigger"]:not([data-pressed])
+    [data-pause] {
+    display: none;
+  }
+}
+
+@utility carousel--* {
+  [data-scope="carousel"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+    max-height: --value(--container-ui-*, [length]);
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="carousel"][data-part="control"] {
+    max-width: --value(--container-mini-*, [length]);
+    padding: --value(--spacing-mini-padding-*, [length]);
+    gap: --value(--spacing-mini-gap-*, [length]);
+  }
+
+  [data-scope="carousel"][data-part="next-trigger"],
+  [data-scope="carousel"][data-part="prev-trigger"],
+  [data-scope="carousel"][data-part="autoplay-trigger"] {
+    gap: --value(--spacing-mini-gap-*, [length]);
+    min-height: --value(--spacing-mini-*, [length]);
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+    border-color: --value(--color-ui-* --border, [color]);
+  }
+
+  [data-scope="carousel"][data-part="next-trigger"]:hover,
+  [data-scope="carousel"][data-part="prev-trigger"]:hover,
+  [data-scope="carousel"][data-part="autoplay-trigger"]:hover {
+    background-color: --value(--color-ui-* -hover, [color]);
+  }
+
+  [data-scope="carousel"][data-part="next-trigger"]:active,
+  [data-scope="carousel"][data-part="prev-trigger"]:active,
+  [data-scope="carousel"][data-part="autoplay-trigger"]:active {
+    background-color: --value(--color-ui-* -active, [color]);
+  }
+
+  [data-scope="carousel"][data-part="next-trigger"]:focus-visible,
+  [data-scope="carousel"][data-part="prev-trigger"]:focus-visible,
+  [data-scope="carousel"][data-part="autoplay-trigger"]:focus-visible {
+    outline-color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="carousel"][data-part="indicator"] {
+    min-height: --value(--spacing-micro-*, [length]);
+    min-width: --value(--spacing-micro-*, [length]);
+  }
+
+  [data-scope="carousel"][data-part="indicator"][data-current] {
+    background-color: --value(--color-ui-*, [color]);
+  }
+}

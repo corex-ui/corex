@@ -1,0 +1,214 @@
+@import "../main.css";
+
+@layer components {
+  .angle-slider [data-scope="angle-slider"][data-part="root"] {
+    @apply ui-root;
+
+    max-width: var(--container-micro);
+    gap: var(--spacing-ui-gap);
+    padding: var(--spacing-ui-padding);
+    background-color: var(--color-root);
+    color: var(--color-root--text);
+    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-root--border);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="control"] {
+    --size: calc(var(--spacing-ui) * 2);
+    --thumb-size: var(--spacing-ui);
+    --thumb-indicator-size: min(var(--thumb-size), calc(var(--size) / 2));
+
+    width: var(--size);
+    height: var(--size);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-ui--border);
+    background-color: var(--color-ui);
+    margin-inline: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    position: relative;
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="thumb"] {
+    position: absolute;
+    inset: 0 0 0 calc(50% - 1px);
+    pointer-events: none;
+    width: var(--spacing-micro-sm);
+    color: var(--color-ui--text);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="thumb"]:focus-visible {
+    outline: none;
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="thumb"]::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: var(--thumb-indicator-size);
+    width: var(--spacing-micro-sm);
+    background-color: var(--color-ui--text);
+    border-radius: var(--radius-ui);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="thumb"]:focus-visible::before {
+    outline: 1px solid var(--color-ui--text);
+    outline-offset: 2px;
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="marker-group"] {
+    position: absolute;
+    inset: 1px;
+    border-radius: var(--radius-full);
+    pointer-events: none;
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="marker"] {
+    width: 2px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(50% - 1px);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="marker"]::before {
+    content: "";
+    position: absolute;
+    top: calc(var(--thumb-size) / 4);
+    left: 0.5px;
+    width: 1px;
+    height: calc(var(--thumb-size) / 2);
+    transform: translate(-50%, -50%);
+    background-color: var(--marker-color);
+    border-radius: 1px;
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--color-ui--text);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="marker"][data-state="under-value"]::before {
+    width: 3px;
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="marker"][data-state="at-value"] {
+    display: none;
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
+    --marker-color: var(--color-ui--muted);
+
+    width: var(--spacing-micro-sm);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="value-text"] {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-ui-gap-sm);
+    width: auto;
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="text"],
+  .angle-slider
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="value"] {
+    display: flex;
+    width: auto;
+    align-items: baseline;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    font-weight: var(--font-weight-ui);
+    color: var(--color-ui--text);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-invalid]
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="text"] {
+    color: var(--color-root--alert);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-invalid]
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="value"] {
+    color: var(--color-root--alert);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-invalid]
+    [data-scope="angle-slider"][data-part="thumb"]::before {
+    color: var(--color-root--alert);
+  }
+
+  .angle-slider [data-scope="angle-slider"][data-part="hidden-input"] {
+    display: none;
+  }
+}
+
+@utility angle-slider--* {
+  [data-scope="angle-slider"][data-part="root"] {
+    max-width: --value(--container-micro-*, [length]);
+    gap: --value(--spacing-micro-gap-*, [length]);
+    padding: --value(--spacing-micro-padding-*, [length]);
+  }
+
+  [data-scope="angle-slider"][data-part="label"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="angle-slider"][data-part="control"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+    border-color: --value(--color-ui-* --border, [color]);
+
+    --size: calc(--value(--spacing-ui-*, [length]) * 2);
+    --thumb-size: --value(--spacing-ui-*, [length]);
+  }
+
+  [data-scope="angle-slider"][data-part="thumb"]::before {
+    background-color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="angle-slider"][data-part="marker"] {
+    --marker-color: --value(--color-ui-* --muted, [color]);
+  }
+
+  [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="angle-slider"][data-part="marker"][data-state="over-value"] {
+    --marker-color: --value(--color-ui-* --muted, [color]);
+  }
+
+  [data-scope="angle-slider"][data-part="value-text"] [data-part="value"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="angle-slider"][data-part="value-text"] [data-part="text"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+}

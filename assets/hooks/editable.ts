@@ -15,6 +15,10 @@ const EditableHook: Hook<object & EditableHookState, HTMLElement> = {
     const value = getString(el, "value");
     const defaultValue = getString(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
+    const placeholder = getString(el, "placeholder");
+    const activationMode = getString(el, "activationMode") as "focus" | "dblclick" | undefined;
+    const selectOnFocus = getBoolean(el, "selectOnFocus");
+
     const zag = new Editable(el, {
       id: el.id,
       ...(controlled && value !== undefined ? { value } : { defaultValue: defaultValue ?? "" }),
@@ -25,6 +29,9 @@ const EditableHook: Hook<object & EditableHookState, HTMLElement> = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       dir: getDir(el),
+      ...(placeholder !== undefined ? { placeholder } : {}),
+      ...(activationMode !== undefined ? { activationMode } : {}),
+      ...(selectOnFocus !== undefined ? { selectOnFocus } : {}),
       ...(getBoolean(el, "controlledEdit")
         ? { edit: getBoolean(el, "edit") }
         : { defaultEdit: getBoolean(el, "defaultEdit") }),

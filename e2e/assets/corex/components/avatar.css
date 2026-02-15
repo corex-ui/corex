@@ -1,0 +1,58 @@
+@import "../main.css";
+
+@layer components {
+  .avatar [data-scope="avatar"][data-part="root"] {
+    @apply ui-root;
+
+    max-width: var(--spacing-ui);
+  }
+
+  .avatar [data-scope="avatar"][data-part="fallback"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: start;
+    width: var(--spacing-ui);
+    aspect-ratio: 1 / 1;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    font-weight: var(--font-weight-ui);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-ui--border);
+    gap: var(--spacing-ui-gap);
+    height: var(--spacing-ui);
+    color: var(--color-ui--text);
+    background-color: var(--color-ui);
+  }
+
+  .avatar [data-scope="avatar"][data-part="image"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .avatar.avatar--square [data-scope="avatar"][data-part="root"] {
+    border-radius: var(--radius-ui);
+  }
+
+  .avatar.avatar--square [data-scope="avatar"][data-part="fallback"] {
+    border-radius: var(--radius-ui);
+  }
+}
+
+@utility avatar--* {
+  [data-scope="avatar"][data-part="root"] {
+    max-width: --value(--spacing-ui-*, [length]);
+  }
+
+  [data-scope="avatar"][data-part="fallback"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    width: --value(--spacing-ui-*, [length]);
+    height: --value(--spacing-ui-*, [length]);
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+    border-color: --value(--color-ui-* --border, [color]);
+  }
+}

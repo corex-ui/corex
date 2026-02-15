@@ -1,13 +1,13 @@
 import type { Hook } from "phoenix_live_view";
 
-type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
+type HookModule = Record<string, Hook<any, HTMLElement> | undefined>;
 
 function hooks(importFn: () => Promise<HookModule>, exportName: string): Hook {
   return {
     async mounted() {
       const mod = await importFn();
       const real = mod[exportName];
-      (this as { _realHook?: Hook })._realHook = real;
+      (this as { _realHook?: Hook<any, HTMLElement> })._realHook = real;
       if (real?.mounted) return real.mounted.call(this);
     },
     updated() {

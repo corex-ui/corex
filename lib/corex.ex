@@ -33,7 +33,18 @@ defmodule Corex do
     date_picker: {Corex.DatePicker, [date_picker: 1]},
     signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
     menu: {Corex.Menu, [menu: 1]},
-    tree_view: {Corex.TreeView, [tree_view: 1, tree_item: 1, tree_branch: 1]}
+    tree_view: {Corex.TreeView, [tree_view: 1, tree_item: 1, tree_branch: 1]},
+    angle_slider: {Corex.AngleSlider, [angle_slider: 1]},
+    avatar: {Corex.Avatar, [avatar: 1]},
+    carousel: {Corex.Carousel, [carousel: 1]},
+    editable: {Corex.Editable, [editable: 1]},
+    floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
+    listbox: {Corex.Listbox, [listbox: 1]},
+    number_input: {Corex.NumberInput, [number_input: 1]},
+    password_input: {Corex.PasswordInput, [password_input: 1]},
+    pin_input: {Corex.PinInput, [pin_input: 1]},
+    radio_group: {Corex.RadioGroup, [radio_group: 1]},
+    timer: {Corex.Timer, [timer: 1]}
   }
 
   defmacro __using__(opts \\ []) do

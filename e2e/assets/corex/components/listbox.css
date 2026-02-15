@@ -1,0 +1,115 @@
+@import "../main.css";
+
+@layer components {
+  .listbox [data-scope="listbox"][data-part="root"] {
+    @apply ui-root;
+
+    max-width: var(--container-mini);
+    gap: var(--spacing-mini-gap);
+  }
+
+  .listbox [data-scope="listbox"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .listbox [data-scope="listbox"][data-part="label"][data-disabled] {
+    color: var(--color-ui--muted);
+  }
+
+  .listbox [data-scope="listbox"][data-part="item-group-label"] {
+    font-size: var(--text-ui-sm);
+    line-height: var(--text-ui-sm--line-height);
+    text-align: start;
+    background-color: var(--color-root);
+    color: var(--color-root--text);
+    border-bottom: 1px solid var(--color-ui--border);
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="list"][data-orientation="vertical"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="grid"]:not(
+      :has([data-part="item-group"])
+    ) {
+    display: grid;
+    grid-template-columns: repeat(var(--column-count), 1fr);
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][data-layout="grid"]
+    [data-part="item-group"] {
+    display: grid;
+    grid-template-columns: repeat(var(--column-count), 1fr);
+  }
+
+  .listbox [data-scope="listbox"][data-part="content"]:focus-visible {
+    outline: none;
+  }
+
+  .listbox [data-scope="listbox"][data-part="item-group"] {
+    display: flex;
+    flex-direction: column;
+    margin-block: var(--spacing-micro);
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"]:not(
+      :has([data-part="item-group"])
+    ),
+  .listbox [data-scope="listbox"][data-part="item-group"] {
+    background-color: var(--color-ui--border);
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+    overflow: hidden;
+    gap: 1px;
+  }
+
+  .listbox [data-scope="listbox"][data-part="item"] {
+    @apply ui-item;
+  }
+
+  .listbox
+    [data-scope="listbox"][data-part="content"][dir="rtl"]
+    [data-scope="listbox"][data-part="item"] {
+    border-radius: 0;
+  }
+
+  [dir="rtl"] .listbox [data-scope="listbox"][data-part="item-indicator"] {
+    transform: scaleX(-1);
+  }
+}
+
+@utility listbox--* {
+  [data-scope="listbox"][data-part="root"] {
+    max-width: --value(--container-mini-*, [length]);
+    gap: --value(--spacing-mini-gap-*, [length]);
+  }
+
+  [data-scope="listbox"][data-part="label"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="listbox"][data-part="item"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+
+  [data-scope="listbox"][data-part="item"][data-selected] {
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="listbox"][data-part="item"][data-selected]:hover {
+    background-color: --value(--color-ui-* -hover, [color]);
+  }
+
+  [data-scope="listbox"][data-part="item"][data-selected]:active {
+    background-color: --value(--color-ui-* -active, [color]);
+  }
+}

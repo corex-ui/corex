@@ -385,6 +385,94 @@ defmodule E2eWeb.Layouts do
           [label: "Controller", id: "/#{locale}/tree-view"],
           [label: "Live", id: "/#{locale}/live/tree-view"]
         ]
+      ],
+      [
+        label: "Angle Slider",
+        id: "angle-slider",
+        children: [
+          [label: "Controller", id: "/#{locale}/angle-slider"],
+          [label: "Live", id: "/#{locale}/live/angle-slider"]
+        ]
+      ],
+      [
+        label: "Avatar",
+        id: "avatar",
+        children: [
+          [label: "Controller", id: "/#{locale}/avatar"],
+          [label: "Live", id: "/#{locale}/live/avatar"]
+        ]
+      ],
+      [
+        label: "Carousel",
+        id: "carousel",
+        children: [
+          [label: "Controller", id: "/#{locale}/carousel"],
+          [label: "Live", id: "/#{locale}/live/carousel"]
+        ]
+      ],
+      [
+        label: "Editable",
+        id: "editable",
+        children: [
+          [label: "Controller", id: "/#{locale}/editable"],
+          [label: "Live", id: "/#{locale}/live/editable"]
+        ]
+      ],
+      [
+        label: "Floating Panel",
+        id: "floating-panel",
+        children: [
+          [label: "Controller", id: "/#{locale}/floating-panel"],
+          [label: "Live", id: "/#{locale}/live/floating-panel"]
+        ]
+      ],
+      [
+        label: "Listbox",
+        id: "listbox",
+        children: [
+          [label: "Controller", id: "/#{locale}/listbox"],
+          [label: "Live", id: "/#{locale}/live/listbox"]
+        ]
+      ],
+      [
+        label: "Number Input",
+        id: "number-input",
+        children: [
+          [label: "Controller", id: "/#{locale}/number-input"],
+          [label: "Live", id: "/#{locale}/live/number-input"]
+        ]
+      ],
+      [
+        label: "Password Input",
+        id: "password-input",
+        children: [
+          [label: "Controller", id: "/#{locale}/password-input"],
+          [label: "Live", id: "/#{locale}/live/password-input"]
+        ]
+      ],
+      [
+        label: "Pin Input",
+        id: "pin-input",
+        children: [
+          [label: "Controller", id: "/#{locale}/pin-input"],
+          [label: "Live", id: "/#{locale}/live/pin-input"]
+        ]
+      ],
+      [
+        label: "Radio Group",
+        id: "radio-group",
+        children: [
+          [label: "Controller", id: "/#{locale}/radio-group"],
+          [label: "Live", id: "/#{locale}/live/radio-group"]
+        ]
+      ],
+      [
+        label: "Timer",
+        id: "timer",
+        children: [
+          [label: "Controller", id: "/#{locale}/timer"],
+          [label: "Live", id: "/#{locale}/live/timer"]
+        ]
       ]
     ])
   end

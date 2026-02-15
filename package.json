@@ -50,7 +50,6 @@
     "priv/design/**",
     "assets/**"
   ],
-    "sideEffects": false,
   "scripts": {
     "lint": "eslint assets",
     "lint:fix": "eslint assets --fix",
