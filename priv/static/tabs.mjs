@@ -1,1 +1,676 @@
-import{B as H,Ba as z,Bb as Q,C as k,Ca as K,Cb as Z,Db as ee,E as D,Fb as c,Ib as F,L as M,Oa as Y,V as x,Ya as J,a as w,ba as b,d as p,fa as U,i as O,k as N,kb as T,nb as A,oa as W,qa as $,ra as j,sa as q,ta as X,xb as G,yb as I,z as B}from"./chunk-IYURAQ6S.mjs";var re=w("tabs").parts("root","list","trigger","content","indicator"),V=re.build(),ne=e=>e.ids?.root??`tabs:${e.id}`,C=e=>e.ids?.list??`tabs:${e.id}:list`,P=(e,t)=>e.ids?.content?.(t)??`tabs:${e.id}:content-${t}`,m=(e,t)=>e.ids?.trigger?.(t)??`tabs:${e.id}:trigger-${t}`,ae=e=>e.ids?.indicator??`tabs:${e.id}:indicator`,le=e=>e.getById(C(e)),ue=(e,t)=>e.getById(P(e,t)),R=(e,t)=>t!=null?e.getById(m(e,t)):null,te=e=>e.getById(ae(e)),E=e=>{let o=`[role=tab][data-ownedby='${CSS.escape(C(e))}']:not([disabled])`;return W(le(e),o)},ce=e=>z(E(e)),de=e=>K(E(e)),ge=(e,t)=>j(E(e),m(e,t.value),t.loopFocus),fe=(e,t)=>q(E(e),m(e,t.value),t.loopFocus),oe=e=>({x:e?.offsetLeft??0,y:e?.offsetTop??0,width:e?.offsetWidth??0,height:e?.offsetHeight??0}),ve=(e,t)=>{let o=$(E(e),m(e,t));return oe(o)};function se(e,t){let{state:o,send:a,context:s,prop:i,scope:n}=e,l=i("translations"),d=o.matches("focused"),g=i("orientation")==="vertical",h=i("orientation")==="horizontal",S=i("composite");function L(r){return{selected:s.get("value")===r.value,focused:s.get("focusedValue")===r.value,disabled:!!r.disabled}}return{value:s.get("value"),focusedValue:s.get("focusedValue"),setValue(r){a({type:"SET_VALUE",value:r})},clearValue(){a({type:"CLEAR_VALUE"})},setIndicatorRect(r){let u=m(n,r);a({type:"SET_INDICATOR_RECT",id:u})},syncTabIndex(){a({type:"SYNC_TAB_INDEX"})},selectNext(r){a({type:"TAB_FOCUS",value:r,src:"selectNext"}),a({type:"ARROW_NEXT",src:"selectNext"})},selectPrev(r){a({type:"TAB_FOCUS",value:r,src:"selectPrev"}),a({type:"ARROW_PREV",src:"selectPrev"})},focus(){let r=s.get("value");r&&R(n,r)?.focus()},getRootProps(){return t.element({...V.root.attrs,id:ne(n),"data-orientation":i("orientation"),"data-focus":p(d),dir:i("dir")})},getListProps(){return t.element({...V.list.attrs,id:C(n),role:"tablist",dir:i("dir"),"data-focus":p(d),"aria-orientation":i("orientation"),"data-orientation":i("orientation"),"aria-label":l?.listLabel,onKeyDown(r){if(r.defaultPrevented||D(r)||!N(r.currentTarget,H(r)))return;let u={ArrowDown(){h||a({type:"ARROW_NEXT",key:"ArrowDown"})},ArrowUp(){h||a({type:"ARROW_PREV",key:"ArrowUp"})},ArrowLeft(){g||a({type:"ARROW_PREV",key:"ArrowLeft"})},ArrowRight(){g||a({type:"ARROW_NEXT",key:"ArrowRight"})},Home(){a({type:"HOME"})},End(){a({type:"END"})}},f=M(r,{dir:i("dir"),orientation:i("orientation")}),v=u[f];if(v){r.preventDefault(),v(r);return}}})},getTriggerState:L,getTriggerProps(r){let{value:u,disabled:f}=r,v=L(r);return t.button({...V.trigger.attrs,role:"tab",type:"button",disabled:f,dir:i("dir"),"data-orientation":i("orientation"),"data-disabled":p(f),"aria-disabled":f,"data-value":u,"aria-selected":v.selected,"data-selected":p(v.selected),"data-focus":p(v.focused),"aria-controls":v.selected?P(n,u):void 0,"data-ownedby":C(n),"data-ssr":p(s.get("ssr")),id:m(n,u),tabIndex:v.selected&&S?0:-1,onFocus(){a({type:"TAB_FOCUS",value:u})},onBlur(y){y.relatedTarget?.getAttribute("role")!=="tab"&&a({type:"TAB_BLUR"})},onClick(y){y.defaultPrevented||k(y)||f||(B()&&y.currentTarget.focus(),a({type:"TAB_CLICK",value:u}))}})},getContentProps(r){let{value:u}=r,f=s.get("value")===u;return t.element({...V.content.attrs,dir:i("dir"),id:P(n,u),tabIndex:S?0:-1,"aria-labelledby":m(n,u),role:"tabpanel","data-ownedby":C(n),"data-selected":p(f),"data-orientation":i("orientation"),hidden:!f})},getIndicatorProps(){let r=s.get("indicatorRect"),u=r==null||r.width===0&&r.height===0&&r.x===0&&r.y===0;return t.element({id:ae(n),...V.indicator.attrs,dir:i("dir"),"data-orientation":i("orientation"),hidden:u,style:{"--transition-property":"left, right, top, bottom, width, height","--left":T(r?.x),"--top":T(r?.y),"--width":T(r?.width),"--height":T(r?.height),position:"absolute",willChange:"var(--transition-property)",transitionProperty:"var(--transition-property)",transitionDuration:"var(--transition-duration, 150ms)",transitionTimingFunction:"var(--transition-timing-function)",[h?"left":"top"]:h?"var(--left)":"var(--top)"}})}}}var{createMachine:pe}=G(),ie=pe({props({props:e}){return{dir:"ltr",orientation:"horizontal",activationMode:"automatic",loopFocus:!0,composite:!0,navigate(t){U(t.node)},defaultValue:null,...e}},initialState(){return"idle"},context({prop:e,bindable:t}){return{value:t(()=>({defaultValue:e("defaultValue"),value:e("value"),onChange(o){e("onValueChange")?.({value:o})}})),focusedValue:t(()=>({defaultValue:e("value")||e("defaultValue"),sync:!0,onChange(o){e("onFocusChange")?.({focusedValue:o})}})),ssr:t(()=>({defaultValue:!0})),indicatorRect:t(()=>({defaultValue:null}))}},watch({context:e,prop:t,track:o,action:a}){o([()=>e.get("value")],()=>{a(["syncIndicatorRect","syncTabIndex","navigateIfNeeded"])}),o([()=>t("dir"),()=>t("orientation")],()=>{a(["syncIndicatorRect"])})},on:{SET_VALUE:{actions:["setValue"]},CLEAR_VALUE:{actions:["clearValue"]},SET_INDICATOR_RECT:{actions:["setIndicatorRect"]},SYNC_TAB_INDEX:{actions:["syncTabIndex"]}},entry:["syncIndicatorRect","syncTabIndex","syncSsr"],exit:["cleanupObserver"],states:{idle:{on:{TAB_FOCUS:{target:"focused",actions:["setFocusedValue"]},TAB_CLICK:{target:"focused",actions:["setFocusedValue","setValue"]}}},focused:{on:{TAB_CLICK:{actions:["setFocusedValue","setValue"]},ARROW_PREV:[{guard:"selectOnFocus",actions:["focusPrevTab","selectFocusedTab"]},{actions:["focusPrevTab"]}],ARROW_NEXT:[{guard:"selectOnFocus",actions:["focusNextTab","selectFocusedTab"]},{actions:["focusNextTab"]}],HOME:[{guard:"selectOnFocus",actions:["focusFirstTab","selectFocusedTab"]},{actions:["focusFirstTab"]}],END:[{guard:"selectOnFocus",actions:["focusLastTab","selectFocusedTab"]},{actions:["focusLastTab"]}],TAB_FOCUS:{actions:["setFocusedValue"]},TAB_BLUR:{target:"idle",actions:["clearFocusedValue"]}}}},implementations:{guards:{selectOnFocus:({prop:e})=>e("activationMode")==="automatic"},actions:{selectFocusedTab({context:e,prop:t}){b(()=>{let o=e.get("focusedValue");if(!o)return;let s=t("deselectable")&&e.get("value")===o?null:o;e.set("value",s)})},setFocusedValue({context:e,event:t,flush:o}){t.value!=null&&o(()=>{e.set("focusedValue",t.value)})},clearFocusedValue({context:e}){e.set("focusedValue",null)},setValue({context:e,event:t,prop:o}){let a=o("deselectable")&&e.get("value")===e.get("focusedValue");e.set("value",a?null:t.value)},clearValue({context:e}){e.set("value",null)},focusFirstTab({scope:e}){b(()=>{ce(e)?.focus()})},focusLastTab({scope:e}){b(()=>{de(e)?.focus()})},focusNextTab({context:e,prop:t,scope:o,event:a}){let s=a.value??e.get("focusedValue");if(!s)return;let i=ge(o,{value:s,loopFocus:t("loopFocus")});b(()=>{t("composite")?i?.focus():i?.dataset.value!=null&&e.set("focusedValue",i.dataset.value)})},focusPrevTab({context:e,prop:t,scope:o,event:a}){let s=a.value??e.get("focusedValue");if(!s)return;let i=fe(o,{value:s,loopFocus:t("loopFocus")});b(()=>{t("composite")?i?.focus():i?.dataset.value!=null&&e.set("focusedValue",i.dataset.value)})},syncTabIndex({context:e,scope:t}){b(()=>{let o=e.get("value");if(!o)return;let a=ue(t,o);if(!a)return;x(a).length>0?a.removeAttribute("tabindex"):a.setAttribute("tabindex","0")})},cleanupObserver({refs:e}){let t=e.get("indicatorCleanup");t&&t()},setIndicatorRect({context:e,event:t,scope:o}){let a=t.id??e.get("value");!te(o)||!a||!R(o,a)||e.set("indicatorRect",ve(o,a))},syncSsr({context:e}){e.set("ssr",!1)},syncIndicatorRect({context:e,refs:t,scope:o}){let a=t.get("indicatorCleanup");if(a&&a(),!te(o))return;let i=()=>{let d=R(o,e.get("value"));if(!d)return;let g=oe(d);e.set("indicatorRect",h=>Y(h,g)?h:g)};i();let n=E(o),l=J(...n.map(d=>X.observe(d,i)));t.set("indicatorCleanup",l)},navigateIfNeeded({context:e,prop:t,scope:o}){let a=e.get("value");if(!a)return;let s=R(o,a);O(s)&&t("navigate")?.({value:a,node:s,href:s.href})}}}}),he=I()(["activationMode","composite","deselectable","dir","getRootNode","id","ids","loopFocus","navigate","onFocusChange","onValueChange","orientation","translations","value","defaultValue"]),Ie=A(he),be=I()(["disabled","value"]),Re=A(be),me=I()(["value"]),_e=A(me);var _=class extends ee{initMachine(t){return new Z(ie,t)}initApi(){return se(this.machine.service,Q)}render(){let t=this.el.querySelector('[data-scope="tabs"][data-part="root"]');if(!t)return;this.spreadProps(t,this.api.getRootProps());let o=t.querySelector('[data-scope="tabs"][data-part="list"]');if(!o)return;this.spreadProps(o,this.api.getListProps());let a=this.el.getAttribute("data-items"),s=a?JSON.parse(a):[],i=o.querySelectorAll('[data-scope="tabs"][data-part="trigger"]');for(let l=0;l<i.length&&l<s.length;l++){let d=i[l],g=s[l];this.spreadProps(d,this.api.getTriggerProps({value:g.value,disabled:g.disabled}))}let n=t.querySelectorAll('[data-scope="tabs"][data-part="content"]');for(let l=0;l<n.length&&l<s.length;l++){let d=n[l],g=s[l];this.spreadProps(d,this.api.getContentProps({value:g.value}))}}};var Be={mounted(){let e=this.el,t=this.pushEvent.bind(this),o=new _(e,{id:e.id,...F(e,"controlled")?{value:c(e,"value")}:{defaultValue:c(e,"defaultValue")},orientation:c(e,"orientation",["horizontal","vertical"]),dir:c(e,"dir",["ltr","rtl"]),onValueChange:a=>{let s=c(e,"onValueChange");s&&this.liveSocket.main.isConnected()&&t(s,{id:e.id,value:a.value??null});let i=c(e,"onValueChangeClient");i&&e.dispatchEvent(new CustomEvent(i,{bubbles:!0,detail:{id:e.id,value:a.value??null}}))},onFocusChange:a=>{let s=c(e,"onFocusChange");s&&this.liveSocket.main.isConnected()&&t(s,{id:e.id,value:a.focusedValue??null});let i=c(e,"onFocusChangeClient");i&&e.dispatchEvent(new CustomEvent(i,{bubbles:!0,detail:{id:e.id,value:a.focusedValue??null}}))}});o.init(),this.tabs=o,this.onSetValue=a=>{let{value:s}=a.detail;o.api.setValue(s)},e.addEventListener("phx:tabs:set-value",this.onSetValue),this.handlers=[],this.handlers.push(this.handleEvent("tabs_set_value",a=>{let s=a.tabs_id;s&&s!==e.id||o.api.setValue(a.value)})),this.handlers.push(this.handleEvent("tabs_value",()=>{this.pushEvent("tabs_value_response",{value:o.api.value})})),this.handlers.push(this.handleEvent("tabs_focused_value",()=>{this.pushEvent("tabs_focused_value_response",{value:o.api.focusedValue})}))},updated(){this.tabs?.updateProps({id:this.el.id,...F(this.el,"controlled")?{value:c(this.el,"value")}:{defaultValue:c(this.el,"defaultValue")},orientation:c(this.el,"orientation",["horizontal","vertical"]),dir:c(this.el,"dir",["ltr","rtl"])})},destroyed(){if(this.onSetValue&&this.el.removeEventListener("phx:tabs:set-value",this.onSetValue),this.handlers)for(let e of this.handlers)this.removeHandleEvent(e);this.tabs?.destroy()}};export{Be as Tabs};
+import {
+  Component,
+  VanillaMachine,
+  callAll,
+  clickIfLink,
+  contains,
+  createAnatomy,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  first,
+  getBoolean,
+  getEventKey,
+  getEventTarget,
+  getFocusables,
+  getString,
+  isAnchorElement,
+  isComposingEvent,
+  isEqual,
+  isOpeningInNewTab,
+  isSafari,
+  itemById,
+  last,
+  nextById,
+  normalizeProps,
+  prevById,
+  queryAll,
+  raf,
+  resizeObserverBorderBox,
+  setup,
+  toPx
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/@zag-js+tabs@1.33.1/node_modules/@zag-js/tabs/dist/index.mjs
+var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+var parts = anatomy.build();
+var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
+var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
+var getContentId = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
+var getTriggerId = (ctx, value) => ctx.ids?.trigger?.(value) ?? `tabs:${ctx.id}:trigger-${value}`;
+var getIndicatorId = (ctx) => ctx.ids?.indicator ?? `tabs:${ctx.id}:indicator`;
+var getListEl = (ctx) => ctx.getById(getListId(ctx));
+var getContentEl = (ctx, value) => ctx.getById(getContentId(ctx, value));
+var getTriggerEl = (ctx, value) => value != null ? ctx.getById(getTriggerId(ctx, value)) : null;
+var getIndicatorEl = (ctx) => ctx.getById(getIndicatorId(ctx));
+var getElements = (ctx) => {
+  const ownerId = CSS.escape(getListId(ctx));
+  const selector = `[role=tab][data-ownedby='${ownerId}']:not([disabled])`;
+  return queryAll(getListEl(ctx), selector);
+};
+var getFirstTriggerEl = (ctx) => first(getElements(ctx));
+var getLastTriggerEl = (ctx) => last(getElements(ctx));
+var getNextTriggerEl = (ctx, opts) => nextById(getElements(ctx), getTriggerId(ctx, opts.value), opts.loopFocus);
+var getPrevTriggerEl = (ctx, opts) => prevById(getElements(ctx), getTriggerId(ctx, opts.value), opts.loopFocus);
+var getOffsetRect = (el) => ({
+  x: el?.offsetLeft ?? 0,
+  y: el?.offsetTop ?? 0,
+  width: el?.offsetWidth ?? 0,
+  height: el?.offsetHeight ?? 0
+});
+var getRectByValue = (ctx, value) => {
+  const tab = itemById(getElements(ctx), getTriggerId(ctx, value));
+  return getOffsetRect(tab);
+};
+function connect(service, normalize) {
+  const { state, send, context, prop, scope } = service;
+  const translations = prop("translations");
+  const focused = state.matches("focused");
+  const isVertical = prop("orientation") === "vertical";
+  const isHorizontal = prop("orientation") === "horizontal";
+  const composite = prop("composite");
+  function getTriggerState(props2) {
+    return {
+      selected: context.get("value") === props2.value,
+      focused: context.get("focusedValue") === props2.value,
+      disabled: !!props2.disabled
+    };
+  }
+  return {
+    value: context.get("value"),
+    focusedValue: context.get("focusedValue"),
+    setValue(value) {
+      send({ type: "SET_VALUE", value });
+    },
+    clearValue() {
+      send({ type: "CLEAR_VALUE" });
+    },
+    setIndicatorRect(value) {
+      const id = getTriggerId(scope, value);
+      send({ type: "SET_INDICATOR_RECT", id });
+    },
+    syncTabIndex() {
+      send({ type: "SYNC_TAB_INDEX" });
+    },
+    selectNext(fromValue) {
+      send({ type: "TAB_FOCUS", value: fromValue, src: "selectNext" });
+      send({ type: "ARROW_NEXT", src: "selectNext" });
+    },
+    selectPrev(fromValue) {
+      send({ type: "TAB_FOCUS", value: fromValue, src: "selectPrev" });
+      send({ type: "ARROW_PREV", src: "selectPrev" });
+    },
+    focus() {
+      const value = context.get("value");
+      if (!value) return;
+      getTriggerEl(scope, value)?.focus();
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        id: getRootId(scope),
+        "data-orientation": prop("orientation"),
+        "data-focus": dataAttr(focused),
+        dir: prop("dir")
+      });
+    },
+    getListProps() {
+      return normalize.element({
+        ...parts.list.attrs,
+        id: getListId(scope),
+        role: "tablist",
+        dir: prop("dir"),
+        "data-focus": dataAttr(focused),
+        "aria-orientation": prop("orientation"),
+        "data-orientation": prop("orientation"),
+        "aria-label": translations?.listLabel,
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (isComposingEvent(event)) return;
+          if (!contains(event.currentTarget, getEventTarget(event))) return;
+          const keyMap = {
+            ArrowDown() {
+              if (isHorizontal) return;
+              send({ type: "ARROW_NEXT", key: "ArrowDown" });
+            },
+            ArrowUp() {
+              if (isHorizontal) return;
+              send({ type: "ARROW_PREV", key: "ArrowUp" });
+            },
+            ArrowLeft() {
+              if (isVertical) return;
+              send({ type: "ARROW_PREV", key: "ArrowLeft" });
+            },
+            ArrowRight() {
+              if (isVertical) return;
+              send({ type: "ARROW_NEXT", key: "ArrowRight" });
+            },
+            Home() {
+              send({ type: "HOME" });
+            },
+            End() {
+              send({ type: "END" });
+            }
+          };
+          let key = getEventKey(event, {
+            dir: prop("dir"),
+            orientation: prop("orientation")
+          });
+          const exec = keyMap[key];
+          if (exec) {
+            event.preventDefault();
+            exec(event);
+            return;
+          }
+        }
+      });
+    },
+    getTriggerState,
+    getTriggerProps(props2) {
+      const { value, disabled } = props2;
+      const triggerState = getTriggerState(props2);
+      return normalize.button({
+        ...parts.trigger.attrs,
+        role: "tab",
+        type: "button",
+        disabled,
+        dir: prop("dir"),
+        "data-orientation": prop("orientation"),
+        "data-disabled": dataAttr(disabled),
+        "aria-disabled": disabled,
+        "data-value": value,
+        "aria-selected": triggerState.selected,
+        "data-selected": dataAttr(triggerState.selected),
+        "data-focus": dataAttr(triggerState.focused),
+        "aria-controls": triggerState.selected ? getContentId(scope, value) : void 0,
+        "data-ownedby": getListId(scope),
+        "data-ssr": dataAttr(context.get("ssr")),
+        id: getTriggerId(scope, value),
+        tabIndex: triggerState.selected && composite ? 0 : -1,
+        onFocus() {
+          send({ type: "TAB_FOCUS", value });
+        },
+        onBlur(event) {
+          const target = event.relatedTarget;
+          if (target?.getAttribute("role") !== "tab") {
+            send({ type: "TAB_BLUR" });
+          }
+        },
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (isOpeningInNewTab(event)) return;
+          if (disabled) return;
+          if (isSafari()) {
+            event.currentTarget.focus();
+          }
+          send({ type: "TAB_CLICK", value });
+        }
+      });
+    },
+    getContentProps(props2) {
+      const { value } = props2;
+      const selected = context.get("value") === value;
+      return normalize.element({
+        ...parts.content.attrs,
+        dir: prop("dir"),
+        id: getContentId(scope, value),
+        tabIndex: composite ? 0 : -1,
+        "aria-labelledby": getTriggerId(scope, value),
+        role: "tabpanel",
+        "data-ownedby": getListId(scope),
+        "data-selected": dataAttr(selected),
+        "data-orientation": prop("orientation"),
+        hidden: !selected
+      });
+    },
+    getIndicatorProps() {
+      const rect = context.get("indicatorRect");
+      const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+      return normalize.element({
+        id: getIndicatorId(scope),
+        ...parts.indicator.attrs,
+        dir: prop("dir"),
+        "data-orientation": prop("orientation"),
+        hidden: rectIsEmpty,
+        style: {
+          "--transition-property": "left, right, top, bottom, width, height",
+          "--left": toPx(rect?.x),
+          "--top": toPx(rect?.y),
+          "--width": toPx(rect?.width),
+          "--height": toPx(rect?.height),
+          position: "absolute",
+          willChange: "var(--transition-property)",
+          transitionProperty: "var(--transition-property)",
+          transitionDuration: "var(--transition-duration, 150ms)",
+          transitionTimingFunction: "var(--transition-timing-function)",
+          [isHorizontal ? "left" : "top"]: isHorizontal ? "var(--left)" : "var(--top)"
+        }
+      });
+    }
+  };
+}
+var { createMachine } = setup();
+var machine = createMachine({
+  props({ props: props2 }) {
+    return {
+      dir: "ltr",
+      orientation: "horizontal",
+      activationMode: "automatic",
+      loopFocus: true,
+      composite: true,
+      navigate(details) {
+        clickIfLink(details.node);
+      },
+      defaultValue: null,
+      ...props2
+    };
+  },
+  initialState() {
+    return "idle";
+  },
+  context({ prop, bindable }) {
+    return {
+      value: bindable(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        onChange(value) {
+          prop("onValueChange")?.({ value });
+        }
+      })),
+      focusedValue: bindable(() => ({
+        defaultValue: prop("value") || prop("defaultValue"),
+        sync: true,
+        onChange(value) {
+          prop("onFocusChange")?.({ focusedValue: value });
+        }
+      })),
+      ssr: bindable(() => ({ defaultValue: true })),
+      indicatorRect: bindable(() => ({
+        defaultValue: null
+      }))
+    };
+  },
+  watch({ context, prop, track, action }) {
+    track([() => context.get("value")], () => {
+      action(["syncIndicatorRect", "syncTabIndex", "navigateIfNeeded"]);
+    });
+    track([() => prop("dir"), () => prop("orientation")], () => {
+      action(["syncIndicatorRect"]);
+    });
+  },
+  on: {
+    SET_VALUE: {
+      actions: ["setValue"]
+    },
+    CLEAR_VALUE: {
+      actions: ["clearValue"]
+    },
+    SET_INDICATOR_RECT: {
+      actions: ["setIndicatorRect"]
+    },
+    SYNC_TAB_INDEX: {
+      actions: ["syncTabIndex"]
+    }
+  },
+  entry: ["syncIndicatorRect", "syncTabIndex", "syncSsr"],
+  exit: ["cleanupObserver"],
+  states: {
+    idle: {
+      on: {
+        TAB_FOCUS: {
+          target: "focused",
+          actions: ["setFocusedValue"]
+        },
+        TAB_CLICK: {
+          target: "focused",
+          actions: ["setFocusedValue", "setValue"]
+        }
+      }
+    },
+    focused: {
+      on: {
+        TAB_CLICK: {
+          actions: ["setFocusedValue", "setValue"]
+        },
+        ARROW_PREV: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusPrevTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusPrevTab"]
+          }
+        ],
+        ARROW_NEXT: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusNextTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusNextTab"]
+          }
+        ],
+        HOME: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusFirstTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusFirstTab"]
+          }
+        ],
+        END: [
+          {
+            guard: "selectOnFocus",
+            actions: ["focusLastTab", "selectFocusedTab"]
+          },
+          {
+            actions: ["focusLastTab"]
+          }
+        ],
+        TAB_FOCUS: {
+          actions: ["setFocusedValue"]
+        },
+        TAB_BLUR: {
+          target: "idle",
+          actions: ["clearFocusedValue"]
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      selectOnFocus: ({ prop }) => prop("activationMode") === "automatic"
+    },
+    actions: {
+      selectFocusedTab({ context, prop }) {
+        raf(() => {
+          const focusedValue = context.get("focusedValue");
+          if (!focusedValue) return;
+          const nullable = prop("deselectable") && context.get("value") === focusedValue;
+          const value = nullable ? null : focusedValue;
+          context.set("value", value);
+        });
+      },
+      setFocusedValue({ context, event, flush }) {
+        if (event.value == null) return;
+        flush(() => {
+          context.set("focusedValue", event.value);
+        });
+      },
+      clearFocusedValue({ context }) {
+        context.set("focusedValue", null);
+      },
+      setValue({ context, event, prop }) {
+        const nullable = prop("deselectable") && context.get("value") === context.get("focusedValue");
+        context.set("value", nullable ? null : event.value);
+      },
+      clearValue({ context }) {
+        context.set("value", null);
+      },
+      focusFirstTab({ scope }) {
+        raf(() => {
+          getFirstTriggerEl(scope)?.focus();
+        });
+      },
+      focusLastTab({ scope }) {
+        raf(() => {
+          getLastTriggerEl(scope)?.focus();
+        });
+      },
+      focusNextTab({ context, prop, scope, event }) {
+        const focusedValue = event.value ?? context.get("focusedValue");
+        if (!focusedValue) return;
+        const triggerEl = getNextTriggerEl(scope, {
+          value: focusedValue,
+          loopFocus: prop("loopFocus")
+        });
+        raf(() => {
+          if (prop("composite")) {
+            triggerEl?.focus();
+          } else if (triggerEl?.dataset.value != null) {
+            context.set("focusedValue", triggerEl.dataset.value);
+          }
+        });
+      },
+      focusPrevTab({ context, prop, scope, event }) {
+        const focusedValue = event.value ?? context.get("focusedValue");
+        if (!focusedValue) return;
+        const triggerEl = getPrevTriggerEl(scope, {
+          value: focusedValue,
+          loopFocus: prop("loopFocus")
+        });
+        raf(() => {
+          if (prop("composite")) {
+            triggerEl?.focus();
+          } else if (triggerEl?.dataset.value != null) {
+            context.set("focusedValue", triggerEl.dataset.value);
+          }
+        });
+      },
+      syncTabIndex({ context, scope }) {
+        raf(() => {
+          const value = context.get("value");
+          if (!value) return;
+          const contentEl = getContentEl(scope, value);
+          if (!contentEl) return;
+          const focusables = getFocusables(contentEl);
+          if (focusables.length > 0) {
+            contentEl.removeAttribute("tabindex");
+          } else {
+            contentEl.setAttribute("tabindex", "0");
+          }
+        });
+      },
+      cleanupObserver({ refs }) {
+        const cleanup = refs.get("indicatorCleanup");
+        if (cleanup) cleanup();
+      },
+      setIndicatorRect({ context, event, scope }) {
+        const value = event.id ?? context.get("value");
+        const indicatorEl = getIndicatorEl(scope);
+        if (!indicatorEl) return;
+        if (!value) return;
+        const triggerEl = getTriggerEl(scope, value);
+        if (!triggerEl) return;
+        context.set("indicatorRect", getRectByValue(scope, value));
+      },
+      syncSsr({ context }) {
+        context.set("ssr", false);
+      },
+      syncIndicatorRect({ context, refs, scope }) {
+        const cleanup = refs.get("indicatorCleanup");
+        if (cleanup) cleanup();
+        const indicatorEl = getIndicatorEl(scope);
+        if (!indicatorEl) return;
+        const exec = () => {
+          const triggerEl = getTriggerEl(scope, context.get("value"));
+          if (!triggerEl) return;
+          const rect = getOffsetRect(triggerEl);
+          context.set("indicatorRect", (prev) => isEqual(prev, rect) ? prev : rect);
+        };
+        exec();
+        const triggerEls = getElements(scope);
+        const indicatorCleanup = callAll(...triggerEls.map((el) => resizeObserverBorderBox.observe(el, exec)));
+        refs.set("indicatorCleanup", indicatorCleanup);
+      },
+      navigateIfNeeded({ context, prop, scope }) {
+        const value = context.get("value");
+        if (!value) return;
+        const triggerEl = getTriggerEl(scope, value);
+        if (isAnchorElement(triggerEl)) {
+          prop("navigate")?.({ value, node: triggerEl, href: triggerEl.href });
+        }
+      }
+    }
+  }
+});
+var props = createProps()([
+  "activationMode",
+  "composite",
+  "deselectable",
+  "dir",
+  "getRootNode",
+  "id",
+  "ids",
+  "loopFocus",
+  "navigate",
+  "onFocusChange",
+  "onValueChange",
+  "orientation",
+  "translations",
+  "value",
+  "defaultValue"
+]);
+var splitProps = createSplitProps(props);
+var triggerProps = createProps()(["disabled", "value"]);
+var splitTriggerProps = createSplitProps(triggerProps);
+var contentProps = createProps()(["value"]);
+var splitContentProps = createSplitProps(contentProps);
+
+// components/tabs.ts
+var Tabs = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    return new VanillaMachine(machine, props2);
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
+    if (!rootEl) return;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]');
+    if (!listEl) return;
+    this.spreadProps(listEl, this.api.getListProps());
+    const itemsData = this.el.getAttribute("data-items");
+    const items = itemsData ? JSON.parse(itemsData) : [];
+    const triggers = listEl.querySelectorAll(
+      '[data-scope="tabs"][data-part="trigger"]'
+    );
+    for (let i = 0; i < triggers.length && i < items.length; i++) {
+      const triggerEl = triggers[i];
+      const item = items[i];
+      this.spreadProps(
+        triggerEl,
+        this.api.getTriggerProps({ value: item.value, disabled: item.disabled })
+      );
+    }
+    const contents = rootEl.querySelectorAll(
+      '[data-scope="tabs"][data-part="content"]'
+    );
+    for (let i = 0; i < contents.length && i < items.length; i++) {
+      const contentEl = contents[i];
+      const item = items[i];
+      this.spreadProps(contentEl, this.api.getContentProps({ value: item.value }));
+    }
+  }
+};
+
+// hooks/tabs.ts
+var TabsHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const tabs = new Tabs(el, {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") },
+      orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onValueChange: (details) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null
+              }
+            })
+          );
+        }
+      },
+      onFocusChange: (details) => {
+        const eventName = getString(el, "onFocusChange");
+        if (eventName && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.focusedValue ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onFocusChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.focusedValue ?? null
+              }
+            })
+          );
+        }
+      }
+    });
+    tabs.init();
+    this.tabs = tabs;
+    this.onSetValue = (event) => {
+      const { value } = event.detail;
+      tabs.api.setValue(value);
+    };
+    el.addEventListener("phx:tabs:set-value", this.onSetValue);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("tabs_set_value", (payload) => {
+        const targetId = payload.tabs_id;
+        if (targetId && targetId !== el.id) return;
+        tabs.api.setValue(payload.value);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("tabs_value", () => {
+        this.pushEvent("tabs_value_response", {
+          value: tabs.api.value
+        });
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("tabs_focused_value", () => {
+        this.pushEvent("tabs_focused_value_response", {
+          value: tabs.api.focusedValue
+        });
+      })
+    );
+  },
+  updated() {
+    this.tabs?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") },
+      orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+  },
+  destroyed() {
+    if (this.onSetValue) {
+      this.el.removeEventListener("phx:tabs:set-value", this.onSetValue);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.tabs?.destroy();
+  }
+};
+export {
+  TabsHook as Tabs
+};

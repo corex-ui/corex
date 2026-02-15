@@ -1,1 +1,763 @@
-import{B as ct,Bb as St,Cb as yt,Db as wt,Fb as O,Hb as _,I as gt,Ib as j,K as ft,a as dt,d as D,ia as nt,ma as mt,nb as vt,pa as Pt,u as ht,yb as Et}from"./chunk-IYURAQ6S.mjs";var{PI:Kt}=Math,x=Kt+1e-4,bt=.5,Mt=[1,1];function It(t,e,n,r=a=>a){return t*r(.5-e*(.5-n))}var{min:rt}=Math;function qt(t,e,n){let r=rt(1,e/n);return rt(1,t+(rt(1,1-r)-t)*(r*.275))}function Qt(t){return[-t[0],-t[1]]}function v(t,e){return[t[0]+e[0],t[1]+e[1]]}function kt(t,e,n){return t[0]=e[0]+n[0],t[1]=e[1]+n[1],t}function M(t,e){return[t[0]-e[0],t[1]-e[1]]}function st(t,e,n){return t[0]=e[0]-n[0],t[1]=e[1]-n[1],t}function b(t,e){return[t[0]*e,t[1]*e]}function at(t,e,n){return t[0]=e[0]*n,t[1]=e[1]*n,t}function Xt(t,e){return[t[0]/e,t[1]/e]}function Nt(t){return[t[1],-t[0]]}function it(t,e){let n=e[0];return t[0]=e[1],t[1]=-n,t}function Tt(t,e){return t[0]*e[0]+t[1]*e[1]}function Yt(t,e){return t[0]===e[0]&&t[1]===e[1]}function Zt(t){return Math.hypot(t[0],t[1])}function Lt(t,e){let n=t[0]-e[0],r=t[1]-e[1];return n*n+r*r}function At(t){return Xt(t,Zt(t))}function te(t,e){return Math.hypot(t[1]-e[1],t[0]-e[0])}function ot(t,e,n){let r=Math.sin(n),a=Math.cos(n),i=t[0]-e[0],o=t[1]-e[1],s=i*a-o*r,l=i*r+o*a;return[s+e[0],l+e[1]]}function Ht(t,e,n,r){let a=Math.sin(r),i=Math.cos(r),o=e[0]-n[0],s=e[1]-n[1],l=o*i-s*a,p=o*a+s*i;return t[0]=l+n[0],t[1]=p+n[1],t}function Ct(t,e,n){return v(t,b(M(e,t),n))}function ee(t,e,n,r){let a=n[0]-e[0],i=n[1]-e[1];return t[0]=e[0]+a*r,t[1]=e[1]+i*r,t}function _t(t,e,n){return v(t,b(e,n))}var c=[0,0],y=[0,0],w=[0,0];function ne(t,e){let n=_t(t,At(Nt(M(t,v(t,[1,1])))),-e),r=[],a=1/13;for(let i=a;i<=1;i+=a)r.push(ot(n,t,x*2*i));return r}function re(t,e,n){let r=[],a=1/n;for(let i=a;i<=1;i+=a)r.push(ot(e,t,x*i));return r}function ae(t,e,n){let r=M(e,n),a=b(r,.5),i=b(r,.51);return[M(t,a),M(t,i),v(t,i),v(t,a)]}function ie(t,e,n,r){let a=[],i=_t(t,e,n),o=1/r;for(let s=o;s<1;s+=o)a.push(ot(i,t,x*3*s));return a}function se(t,e,n){return[v(t,b(e,n)),v(t,b(e,n*.99)),M(t,b(e,n*.99)),M(t,b(e,n))]}function Dt(t,e,n){return t===!1||t===void 0?0:t===!0?Math.max(e,n):t}function oe(t,e,n){return t.slice(0,10).reduce((r,a)=>{let i=a.pressure;return e&&(i=qt(r,a.distance,n)),(r+i)/2},t[0].pressure)}function ue(t,e={}){let{size:n=16,smoothing:r=.5,thinning:a=.5,simulatePressure:i=!0,easing:o=d=>d,start:s={},end:l={},last:p=!1}=e,{cap:f=!0,easing:g=d=>d*(2-d)}=s,{cap:h=!0,easing:m=d=>--d*d*d+1}=l;if(t.length===0||n<=0)return[];let u=t[t.length-1].runningLength,E=Dt(s.taper,n,u),I=Dt(l.taper,n,u),R=(n*r)**2,k=[],C=[],ut=oe(t,i,n),P=It(n,a,t[t.length-1].pressure,o),z,K=t[0].vector,q=t[0].point,U=q,T=q,L=U,Q=!1;for(let d=0;d<t.length;d++){let{pressure:tt}=t[d],{point:S,vector:N,distance:Bt,runningLength:A}=t[d],F=d===t.length-1;if(!F&&u-A<3)continue;a?(i&&(tt=qt(ut,Bt,n)),P=It(n,a,tt,o)):P=n/2,z===void 0&&(z=P);let Jt=A<E?g(A/E):1,Wt=u-A<I?m((u-A)/I):1;P=Math.max(.01,P*Math.min(Jt,Wt));let lt=(F?t[d]:t[d+1]).vector,et=F?1:Tt(N,lt),zt=Tt(N,K)<0&&!Q,pt=et!==null&&et<0;if(zt||pt){it(c,K),at(c,c,P);for(let $=0;$<=1;$+=.07692307692307693)st(y,S,c),Ht(y,y,S,x*$),T=[y[0],y[1]],k.push(T),kt(w,S,c),Ht(w,w,S,x*-$),L=[w[0],w[1]],C.push(L);q=T,U=L,pt&&(Q=!0);continue}if(Q=!1,F){it(c,N),at(c,c,P),k.push(M(S,c)),C.push(v(S,c));continue}ee(c,lt,N,et),it(c,c),at(c,c,P),st(y,S,c),T=[y[0],y[1]],(d<=1||Lt(q,T)>R)&&(k.push(T),q=T),kt(w,S,c),L=[w[0],w[1]],(d<=1||Lt(U,L)>R)&&(C.push(L),U=L),ut=tt,K=N}let X=[t[0].point[0],t[0].point[1]],Y=t.length>1?[t[t.length-1].point[0],t[t.length-1].point[1]]:v(t[0].point,[1,1]),Z=[],V=[];if(t.length===1){if(!(E||I)||p)return ne(X,z||P)}else{E||I&&t.length===1||(f?Z.push(...re(X,C[0],13)):Z.push(...ae(X,k[0],C[0])));let d=Nt(Qt(t[t.length-1].vector));I||E&&t.length===1?V.push(Y):h?V.push(...ie(Y,d,P,29)):V.push(...se(Y,d,P))}return k.concat(V,C.reverse(),Z)}var Ot=[0,0];function Rt(t){return t!=null&&t>=0}function le(t,e={}){let{streamline:n=.5,size:r=16,last:a=!1}=e;if(t.length===0)return[];let i=.15+(1-n)*.85,o=Array.isArray(t[0])?t:t.map(({x:h,y:m,pressure:u=bt})=>[h,m,u]);if(o.length===2){let h=o[1];o=o.slice(0,-1);for(let m=1;m<5;m++)o.push(Ct(o[0],h,m/4))}o.length===1&&(o=[...o,[...v(o[0],Mt),...o[0].slice(2)]]);let s=[{point:[o[0][0],o[0][1]],pressure:Rt(o[0][2])?o[0][2]:.25,vector:[...Mt],distance:0,runningLength:0}],l=!1,p=0,f=s[0],g=o.length-1;for(let h=1;h<o.length;h++){let m=a&&h===g?[o[h][0],o[h][1]]:Ct(f.point,o[h],i);if(Yt(f.point,m))continue;let u=te(m,f.point);if(p+=u,h<g&&!l){if(p<r)continue;l=!0}st(Ot,f.point,m),f={point:m,pressure:Rt(o[h][2])?o[h][2]:bt,vector:At(Ot),distance:u,runningLength:p},s.push(f)}return s[0].vector=s[1]?.vector||[0,0],s}function pe(t,e={}){return ue(le(t,e),e)}var xt=pe;var de=dt("signature-pad").parts("root","control","segment","segmentPath","guide","clearTrigger","label"),H=de.build(),he=t=>t.ids?.root??`signature-${t.id}`,Vt=t=>t.ids?.control??`signature-control-${t.id}`,ce=t=>t.ids?.label??`signature-label-${t.id}`,Ut=t=>t.ids?.hiddenInput??`signature-input-${t.id}`,B=t=>t.getById(Vt(t)),ge=t=>Pt(B(t),"[data-part=segment]"),Ft=(t,e)=>ht(ge(t),e);function $t(t,e){let{state:n,send:r,prop:a,computed:i,context:o,scope:s}=t,l=n.matches("drawing"),p=i("isEmpty"),f=i("isInteractive"),g=!!a("disabled"),h=!!a("required"),m=a("translations");return{empty:p,drawing:l,currentPath:o.get("currentPath"),paths:o.get("paths"),clear(){r({type:"CLEAR"})},getDataUrl(u,E){return i("isEmpty")?Promise.resolve(""):Ft(s,{type:u,quality:E})},getLabelProps(){return e.label({...H.label.attrs,id:ce(s),"data-disabled":D(g),"data-required":D(h),htmlFor:Ut(s),onClick(u){if(!f||u.defaultPrevented)return;B(s)?.focus({preventScroll:!0})}})},getRootProps(){return e.element({...H.root.attrs,"data-disabled":D(g),id:he(s)})},getControlProps(){return e.element({...H.control.attrs,tabIndex:g?void 0:0,id:Vt(s),role:"application","aria-roledescription":"signature pad","aria-label":m.control,"aria-disabled":g,"data-disabled":D(g),onPointerDown(u){if(!gt(u)||ft(u)||!f||ct(u)?.closest("[data-part=clear-trigger]"))return;u.currentTarget.setPointerCapture(u.pointerId);let I={x:u.clientX,y:u.clientY},R=B(s);if(!R)return;let{offset:k}=nt(I,R);r({type:"POINTER_DOWN",point:k,pressure:u.pressure})},onPointerUp(u){f&&u.currentTarget.hasPointerCapture(u.pointerId)&&u.currentTarget.releasePointerCapture(u.pointerId)},style:{position:"relative",touchAction:"none",userSelect:"none",WebkitUserSelect:"none"}})},getSegmentProps(){return e.svg({...H.segment.attrs,style:{position:"absolute",top:0,left:0,width:"100%",height:"100%",pointerEvents:"none",fill:a("drawing").fill}})},getSegmentPathProps(u){return e.path({...H.segmentPath.attrs,d:u.path})},getGuideProps(){return e.element({...H.guide.attrs,"data-disabled":D(g)})},getClearTriggerProps(){return e.button({...H.clearTrigger.attrs,type:"button","aria-label":m.clearTrigger,hidden:!o.get("paths").length||l,disabled:g,onClick(){r({type:"CLEAR"})}})},getHiddenInputProps(u){return e.input({id:Ut(s),type:"text",hidden:!0,disabled:g,required:a("required"),readOnly:!0,name:a("name"),value:u.value})}}}var G=(t,e)=>(t+e)/2;function fe(t,e=!0){let n=t.length;if(n<4)return"";let r=t[0],a=t[1],i=t[2],o=`M${r[0].toFixed(2)},${r[1].toFixed(2)} Q${a[0].toFixed(2)},${a[1].toFixed(2)} ${G(a[0],i[0]).toFixed(2)},${G(a[1],i[1]).toFixed(2)} T`;for(let s=2,l=n-1;s<l;s++)r=t[s],a=t[s+1],o+=`${G(r[0],a[0]).toFixed(2)},${G(r[1],a[1]).toFixed(2)} `;return e&&(o+="Z"),o}var jt={props({props:t}){return{defaultPaths:[],...t,drawing:{size:2,simulatePressure:!1,thinning:.7,smoothing:.4,streamline:.6,...t.drawing},translations:{control:"signature pad",clearTrigger:"clear signature",...t.translations}}},initialState(){return"idle"},context({prop:t,bindable:e}){return{paths:e(()=>({defaultValue:t("defaultPaths"),value:t("paths"),sync:!0,onChange(n){t("onDraw")?.({paths:n})}})),currentPoints:e(()=>({defaultValue:[]})),currentPath:e(()=>({defaultValue:null}))}},computed:{isInteractive:({prop:t})=>!(t("disabled")||t("readOnly")),isEmpty:({context:t})=>t.get("paths").length===0},on:{CLEAR:{actions:["clearPoints","invokeOnDrawEnd","focusCanvasEl"]}},states:{idle:{on:{POINTER_DOWN:{target:"drawing",actions:["addPoint"]}}},drawing:{effects:["trackPointerMove"],on:{POINTER_MOVE:{actions:["addPoint","invokeOnDraw"]},POINTER_UP:{target:"idle",actions:["endStroke","invokeOnDrawEnd"]}}}},implementations:{effects:{trackPointerMove({scope:t,send:e}){let n=t.getDoc();return mt(n,{onPointerMove({event:r,point:a}){let i=B(t);if(!i)return;let{offset:o}=nt(a,i);e({type:"POINTER_MOVE",point:o,pressure:r.pressure})},onPointerUp(){e({type:"POINTER_UP"})}})}},actions:{addPoint({context:t,event:e,prop:n}){let r=[...t.get("currentPoints"),e.point];t.set("currentPoints",r);let a=xt(r,n("drawing"));t.set("currentPath",fe(a))},endStroke({context:t}){let e=[...t.get("paths"),t.get("currentPath")];t.set("paths",e),t.set("currentPoints",[]),t.set("currentPath",null)},clearPoints({context:t}){t.set("currentPoints",[]),t.set("paths",[]),t.set("currentPath",null)},focusCanvasEl({scope:t}){queueMicrotask(()=>{t.getActiveElement()?.focus({preventScroll:!0})})},invokeOnDraw({context:t,prop:e}){e("onDraw")?.({paths:[...t.get("paths"),t.get("currentPath")]})},invokeOnDrawEnd({context:t,prop:e,scope:n,computed:r}){e("onDrawEnd")?.({paths:[...t.get("paths")],getDataUrl(a,i=.92){return r("isEmpty")?Promise.resolve(""):Ft(n,{type:a,quality:i})}})}}}},me=Et()(["defaultPaths","dir","disabled","drawing","getRootNode","id","ids","name","onDraw","onDrawEnd","paths","readOnly","required","translations"]),be=vt(me);var J=class extends wt{imageURL="";paths=[];name;initMachine(e){return this.name=e.name,new yt(jt,e)}setName(e){this.name=e}setPaths(e){this.paths=e}initApi(){return $t(this.machine.service,St)}syncPaths=()=>{let e=this.el.querySelector('[data-scope="signature-pad"][data-part="segment"]');if(!e)return;if(this.api.paths.length+(this.api.currentPath?1:0)===0){e.innerHTML="",this.imageURL="",this.paths=[];let r=this.el.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');r&&(r.value="");return}if(e.innerHTML="",this.api.paths.forEach(r=>{let a=document.createElementNS("http://www.w3.org/2000/svg","path");a.setAttribute("data-scope","signature-pad"),a.setAttribute("data-part","path"),this.spreadProps(a,this.api.getSegmentPathProps({path:r})),e.appendChild(a)}),this.api.currentPath){let r=document.createElementNS("http://www.w3.org/2000/svg","path");r.setAttribute("data-scope","signature-pad"),r.setAttribute("data-part","current-path"),this.spreadProps(r,this.api.getSegmentPathProps({path:this.api.currentPath})),e.appendChild(r)}};render(){let e=this.el.querySelector('[data-scope="signature-pad"][data-part="root"]');if(!e)return;this.spreadProps(e,this.api.getRootProps());let n=e.querySelector('[data-scope="signature-pad"][data-part="label"]');n&&this.spreadProps(n,this.api.getLabelProps());let r=e.querySelector('[data-scope="signature-pad"][data-part="control"]');r&&this.spreadProps(r,this.api.getControlProps());let a=e.querySelector('[data-scope="signature-pad"][data-part="segment"]');a&&this.spreadProps(a,this.api.getSegmentProps());let i=e.querySelector('[data-scope="signature-pad"][data-part="guide"]');i&&this.spreadProps(i,this.api.getGuideProps());let o=e.querySelector('[data-scope="signature-pad"][data-part="clear-trigger"]');if(o){this.spreadProps(o,this.api.getClearTriggerProps());let l=this.api.paths.length>0||!!this.api.currentPath;o.hidden=!l}let s=e.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');if(s){let l=this.paths.length>0?this.paths:this.api.paths;this.paths.length===0&&this.api.paths.length>0&&(this.paths=[...this.api.paths]);let p=l.length>0?JSON.stringify(l):"";this.spreadProps(s,this.api.getHiddenInputProps({value:p})),this.name&&(s.name=this.name),s.value=p}this.syncPaths()}};function W(t,e){let n=t.dataset[e];if(!n)return[];try{return JSON.parse(n)}catch{return[]}}function Gt(t){return{fill:O(t,"drawingFill")||"black",size:_(t,"drawingSize")??2,simulatePressure:j(t,"drawingSimulatePressure"),smoothing:_(t,"drawingSmoothing")??.5,thinning:_(t,"drawingThinning")??.7,streamline:_(t,"drawingStreamline")??.65}}var De={mounted(){let t=this.el,e=this.pushEvent.bind(this),n=j(t,"controlled"),r=W(t,"paths"),a=W(t,"defaultPaths"),i=new J(t,{id:t.id,name:O(t,"name"),...n&&r.length>0?{paths:r}:void 0,...!n&&a.length>0?{defaultPaths:a}:void 0,drawing:Gt(t),onDrawEnd:s=>{i.setPaths(s.paths);let l=t.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');l&&(l.value=JSON.stringify(s.paths)),s.getDataUrl("image/png").then(p=>{i.imageURL=p;let f=O(t,"onDrawEnd");f&&this.liveSocket.main.isConnected()&&e(f,{id:t.id,paths:s.paths,url:p});let g=O(t,"onDrawEndClient");g&&t.dispatchEvent(new CustomEvent(g,{bubbles:!0,detail:{id:t.id,paths:s.paths,url:p}}))})}});if(i.init(),this.signaturePad=i,(n?r:a).length>0){let s=t.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');s&&(s.dispatchEvent(new Event("input",{bubbles:!0})),s.dispatchEvent(new Event("change",{bubbles:!0})))}this.onClear=s=>{let{id:l}=s.detail;if(l&&l!==t.id)return;i.api.clear(),i.imageURL="",i.setPaths([]);let p=t.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');p&&(p.value="")},t.addEventListener("phx:signature-pad:clear",this.onClear),this.handlers=[],this.handlers.push(this.handleEvent("signature_pad_clear",s=>{let l=s.signature_pad_id;if(l&&l!==t.id)return;i.api.clear(),i.imageURL="",i.setPaths([]);let p=t.querySelector('[data-scope="signature-pad"][data-part="hidden-input"]');p&&(p.value="")}))},updated(){let t=j(this.el,"controlled"),e=W(this.el,"paths"),n=W(this.el,"defaultPaths"),r=O(this.el,"name");r&&this.signaturePad?.setName(r),this.signaturePad?.updateProps({id:this.el.id,name:r,...t&&e.length>0?{paths:e}:{},...!t&&n.length>0?{defaultPaths:n}:{},drawing:Gt(this.el)})},destroyed(){if(this.onClear&&this.el.removeEventListener("phx:signature-pad:clear",this.onClear),this.handlers)for(let t of this.handlers)this.removeHandleEvent(t);this.signaturePad?.destroy()}};export{De as SignaturePad};
+import {
+  Component,
+  VanillaMachine,
+  createAnatomy,
+  createMachine,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  getBoolean,
+  getDataUrl,
+  getEventTarget,
+  getNumber,
+  getRelativePoint,
+  getString,
+  isLeftClick,
+  isModifierKey,
+  normalizeProps,
+  query,
+  trackPointerMove
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs
+var { PI: e } = Math;
+var t = e + 1e-4;
+var n = 0.5;
+var r = [1, 1];
+function i(e2, t2, n2, r2 = (e3) => e3) {
+  return e2 * r2(0.5 - t2 * (0.5 - n2));
+}
+var { min: a } = Math;
+function o(e2, t2, n2) {
+  let r2 = a(1, t2 / n2);
+  return a(1, e2 + (a(1, 1 - r2) - e2) * (r2 * 0.275));
+}
+function s(e2) {
+  return [-e2[0], -e2[1]];
+}
+function c(e2, t2) {
+  return [e2[0] + t2[0], e2[1] + t2[1]];
+}
+function l(e2, t2, n2) {
+  return e2[0] = t2[0] + n2[0], e2[1] = t2[1] + n2[1], e2;
+}
+function u(e2, t2) {
+  return [e2[0] - t2[0], e2[1] - t2[1]];
+}
+function d(e2, t2, n2) {
+  return e2[0] = t2[0] - n2[0], e2[1] = t2[1] - n2[1], e2;
+}
+function f(e2, t2) {
+  return [e2[0] * t2, e2[1] * t2];
+}
+function p(e2, t2, n2) {
+  return e2[0] = t2[0] * n2, e2[1] = t2[1] * n2, e2;
+}
+function m(e2, t2) {
+  return [e2[0] / t2, e2[1] / t2];
+}
+function h(e2) {
+  return [e2[1], -e2[0]];
+}
+function g(e2, t2) {
+  let n2 = t2[0];
+  return e2[0] = t2[1], e2[1] = -n2, e2;
+}
+function ee(e2, t2) {
+  return e2[0] * t2[0] + e2[1] * t2[1];
+}
+function _(e2, t2) {
+  return e2[0] === t2[0] && e2[1] === t2[1];
+}
+function v(e2) {
+  return Math.hypot(e2[0], e2[1]);
+}
+function y(e2, t2) {
+  let n2 = e2[0] - t2[0], r2 = e2[1] - t2[1];
+  return n2 * n2 + r2 * r2;
+}
+function b(e2) {
+  return m(e2, v(e2));
+}
+function x(e2, t2) {
+  return Math.hypot(e2[1] - t2[1], e2[0] - t2[0]);
+}
+function S(e2, t2, n2) {
+  let r2 = Math.sin(n2), i2 = Math.cos(n2), a2 = e2[0] - t2[0], o2 = e2[1] - t2[1], s2 = a2 * i2 - o2 * r2, c2 = a2 * r2 + o2 * i2;
+  return [s2 + t2[0], c2 + t2[1]];
+}
+function C(e2, t2, n2, r2) {
+  let i2 = Math.sin(r2), a2 = Math.cos(r2), o2 = t2[0] - n2[0], s2 = t2[1] - n2[1], c2 = o2 * a2 - s2 * i2, l2 = o2 * i2 + s2 * a2;
+  return e2[0] = c2 + n2[0], e2[1] = l2 + n2[1], e2;
+}
+function w(e2, t2, n2) {
+  return c(e2, f(u(t2, e2), n2));
+}
+function te(e2, t2, n2, r2) {
+  let i2 = n2[0] - t2[0], a2 = n2[1] - t2[1];
+  return e2[0] = t2[0] + i2 * r2, e2[1] = t2[1] + a2 * r2, e2;
+}
+function T(e2, t2, n2) {
+  return c(e2, f(t2, n2));
+}
+var E = [0, 0];
+var D = [0, 0];
+var O = [0, 0];
+function k(e2, n2) {
+  let r2 = T(e2, b(h(u(e2, c(e2, [1, 1])))), -n2), i2 = [], a2 = 1 / 13;
+  for (let n3 = a2; n3 <= 1; n3 += a2) i2.push(S(r2, e2, t * 2 * n3));
+  return i2;
+}
+function A(e2, n2, r2) {
+  let i2 = [], a2 = 1 / r2;
+  for (let r3 = a2; r3 <= 1; r3 += a2) i2.push(S(n2, e2, t * r3));
+  return i2;
+}
+function j(e2, t2, n2) {
+  let r2 = u(t2, n2), i2 = f(r2, 0.5), a2 = f(r2, 0.51);
+  return [u(e2, i2), u(e2, a2), c(e2, a2), c(e2, i2)];
+}
+function M(e2, n2, r2, i2) {
+  let a2 = [], o2 = T(e2, n2, r2), s2 = 1 / i2;
+  for (let n3 = s2; n3 < 1; n3 += s2) a2.push(S(o2, e2, t * 3 * n3));
+  return a2;
+}
+function ne(e2, t2, n2) {
+  return [c(e2, f(t2, n2)), c(e2, f(t2, n2 * 0.99)), u(e2, f(t2, n2 * 0.99)), u(e2, f(t2, n2))];
+}
+function N(e2, t2, n2) {
+  return e2 === false || e2 === void 0 ? 0 : e2 === true ? Math.max(t2, n2) : e2;
+}
+function re(e2, t2, n2) {
+  return e2.slice(0, 10).reduce((e3, r2) => {
+    let i2 = r2.pressure;
+    return t2 && (i2 = o(e3, r2.distance, n2)), (e3 + i2) / 2;
+  }, e2[0].pressure);
+}
+function P(e2, n2 = {}) {
+  let { size: r2 = 16, smoothing: a2 = 0.5, thinning: f2 = 0.5, simulatePressure: m2 = true, easing: _2 = (e3) => e3, start: v2 = {}, end: b2 = {}, last: x2 = false } = n2, { cap: S2 = true, easing: w2 = (e3) => e3 * (2 - e3) } = v2, { cap: T2 = true, easing: P2 = (e3) => --e3 * e3 * e3 + 1 } = b2;
+  if (e2.length === 0 || r2 <= 0) return [];
+  let F2 = e2[e2.length - 1].runningLength, I2 = N(v2.taper, r2, F2), L2 = N(b2.taper, r2, F2), R2 = (r2 * a2) ** 2, z2 = [], B = [], V = re(e2, m2, r2), H = i(r2, f2, e2[e2.length - 1].pressure, _2), U, W = e2[0].vector, G = e2[0].point, K = G, q = G, J = K, Y = false;
+  for (let n3 = 0; n3 < e2.length; n3++) {
+    let { pressure: a3 } = e2[n3], { point: s2, vector: h2, distance: v3, runningLength: b3 } = e2[n3], x3 = n3 === e2.length - 1;
+    if (!x3 && F2 - b3 < 3) continue;
+    f2 ? (m2 && (a3 = o(V, v3, r2)), H = i(r2, f2, a3, _2)) : H = r2 / 2, U === void 0 && (U = H);
+    let S3 = b3 < I2 ? w2(b3 / I2) : 1, T3 = F2 - b3 < L2 ? P2((F2 - b3) / L2) : 1;
+    H = Math.max(0.01, H * Math.min(S3, T3));
+    let k2 = (x3 ? e2[n3] : e2[n3 + 1]).vector, A2 = x3 ? 1 : ee(h2, k2), j2 = ee(h2, W) < 0 && !Y, M2 = A2 !== null && A2 < 0;
+    if (j2 || M2) {
+      g(E, W), p(E, E, H);
+      for (let e3 = 0; e3 <= 1; e3 += 0.07692307692307693) d(D, s2, E), C(D, D, s2, t * e3), q = [D[0], D[1]], z2.push(q), l(O, s2, E), C(O, O, s2, t * -e3), J = [O[0], O[1]], B.push(J);
+      G = q, K = J, M2 && (Y = true);
+      continue;
+    }
+    if (Y = false, x3) {
+      g(E, h2), p(E, E, H), z2.push(u(s2, E)), B.push(c(s2, E));
+      continue;
+    }
+    te(E, k2, h2, A2), g(E, E), p(E, E, H), d(D, s2, E), q = [D[0], D[1]], (n3 <= 1 || y(G, q) > R2) && (z2.push(q), G = q), l(O, s2, E), J = [O[0], O[1]], (n3 <= 1 || y(K, J) > R2) && (B.push(J), K = J), V = a3, W = h2;
+  }
+  let X = [e2[0].point[0], e2[0].point[1]], Z = e2.length > 1 ? [e2[e2.length - 1].point[0], e2[e2.length - 1].point[1]] : c(e2[0].point, [1, 1]), Q = [], $ = [];
+  if (e2.length === 1) {
+    if (!(I2 || L2) || x2) return k(X, U || H);
+  } else {
+    I2 || L2 && e2.length === 1 || (S2 ? Q.push(...A(X, B[0], 13)) : Q.push(...j(X, z2[0], B[0])));
+    let t2 = h(s(e2[e2.length - 1].vector));
+    L2 || I2 && e2.length === 1 ? $.push(Z) : T2 ? $.push(...M(Z, t2, H, 29)) : $.push(...ne(Z, t2, H));
+  }
+  return z2.concat($, B.reverse(), Q);
+}
+var F = [0, 0];
+function I(e2) {
+  return e2 != null && e2 >= 0;
+}
+function L(e2, t2 = {}) {
+  let { streamline: i2 = 0.5, size: a2 = 16, last: o2 = false } = t2;
+  if (e2.length === 0) return [];
+  let s2 = 0.15 + (1 - i2) * 0.85, l2 = Array.isArray(e2[0]) ? e2 : e2.map(({ x: e3, y: t3, pressure: r2 = n }) => [e3, t3, r2]);
+  if (l2.length === 2) {
+    let e3 = l2[1];
+    l2 = l2.slice(0, -1);
+    for (let t3 = 1; t3 < 5; t3++) l2.push(w(l2[0], e3, t3 / 4));
+  }
+  l2.length === 1 && (l2 = [...l2, [...c(l2[0], r), ...l2[0].slice(2)]]);
+  let u2 = [{ point: [l2[0][0], l2[0][1]], pressure: I(l2[0][2]) ? l2[0][2] : 0.25, vector: [...r], distance: 0, runningLength: 0 }], f2 = false, p2 = 0, m2 = u2[0], h2 = l2.length - 1;
+  for (let e3 = 1; e3 < l2.length; e3++) {
+    let t3 = o2 && e3 === h2 ? [l2[e3][0], l2[e3][1]] : w(m2.point, l2[e3], s2);
+    if (_(m2.point, t3)) continue;
+    let r2 = x(t3, m2.point);
+    if (p2 += r2, e3 < h2 && !f2) {
+      if (p2 < a2) continue;
+      f2 = true;
+    }
+    d(F, m2.point, t3), m2 = { point: t3, pressure: I(l2[e3][2]) ? l2[e3][2] : n, vector: b(F), distance: r2, runningLength: p2 }, u2.push(m2);
+  }
+  return u2[0].vector = u2[1]?.vector || [0, 0], u2;
+}
+function R(e2, t2 = {}) {
+  return P(L(e2, t2), t2);
+}
+var z = R;
+
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.33.1/node_modules/@zag-js/signature-pad/dist/index.mjs
+var anatomy = createAnatomy("signature-pad").parts(
+  "root",
+  "control",
+  "segment",
+  "segmentPath",
+  "guide",
+  "clearTrigger",
+  "label"
+);
+var parts = anatomy.build();
+var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
+var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
+var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `signature-input-${ctx.id}`;
+var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
+var getSegmentEl = (ctx) => query(getControlEl(ctx), "[data-part=segment]");
+var getDataUrl2 = (ctx, options) => {
+  return getDataUrl(getSegmentEl(ctx), options);
+};
+function connect(service, normalize) {
+  const { state, send, prop, computed, context, scope } = service;
+  const drawing = state.matches("drawing");
+  const empty = computed("isEmpty");
+  const interactive = computed("isInteractive");
+  const disabled = !!prop("disabled");
+  const required = !!prop("required");
+  const translations = prop("translations");
+  return {
+    empty,
+    drawing,
+    currentPath: context.get("currentPath"),
+    paths: context.get("paths"),
+    clear() {
+      send({ type: "CLEAR" });
+    },
+    getDataUrl(type, quality) {
+      if (computed("isEmpty")) return Promise.resolve("");
+      return getDataUrl2(scope, { type, quality });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts.label.attrs,
+        id: getLabelId(scope),
+        "data-disabled": dataAttr(disabled),
+        "data-required": dataAttr(required),
+        htmlFor: getHiddenInputId(scope),
+        onClick(event) {
+          if (!interactive) return;
+          if (event.defaultPrevented) return;
+          const controlEl = getControlEl(scope);
+          controlEl?.focus({ preventScroll: true });
+        }
+      });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        "data-disabled": dataAttr(disabled),
+        id: getRootId(scope)
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        tabIndex: disabled ? void 0 : 0,
+        id: getControlId(scope),
+        role: "application",
+        "aria-roledescription": "signature pad",
+        "aria-label": translations.control,
+        "aria-disabled": disabled,
+        "data-disabled": dataAttr(disabled),
+        onPointerDown(event) {
+          if (!isLeftClick(event)) return;
+          if (isModifierKey(event)) return;
+          if (!interactive) return;
+          const target = getEventTarget(event);
+          if (target?.closest("[data-part=clear-trigger]")) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          const point = { x: event.clientX, y: event.clientY };
+          const controlEl = getControlEl(scope);
+          if (!controlEl) return;
+          const { offset } = getRelativePoint(point, controlEl);
+          send({ type: "POINTER_DOWN", point: offset, pressure: event.pressure });
+        },
+        onPointerUp(event) {
+          if (!interactive) return;
+          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+          }
+        },
+        style: {
+          position: "relative",
+          touchAction: "none",
+          userSelect: "none",
+          WebkitUserSelect: "none"
+        }
+      });
+    },
+    getSegmentProps() {
+      return normalize.svg({
+        ...parts.segment.attrs,
+        style: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          fill: prop("drawing").fill
+        }
+      });
+    },
+    getSegmentPathProps(props2) {
+      return normalize.path({
+        ...parts.segmentPath.attrs,
+        d: props2.path
+      });
+    },
+    getGuideProps() {
+      return normalize.element({
+        ...parts.guide.attrs,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getClearTriggerProps() {
+      return normalize.button({
+        ...parts.clearTrigger.attrs,
+        type: "button",
+        "aria-label": translations.clearTrigger,
+        hidden: !context.get("paths").length || drawing,
+        disabled,
+        onClick() {
+          send({ type: "CLEAR" });
+        }
+      });
+    },
+    getHiddenInputProps(props2) {
+      return normalize.input({
+        id: getHiddenInputId(scope),
+        type: "text",
+        hidden: true,
+        disabled,
+        required: prop("required"),
+        readOnly: true,
+        name: prop("name"),
+        value: props2.value
+      });
+    }
+  };
+}
+var average = (a2, b2) => (a2 + b2) / 2;
+function getSvgPathFromStroke(points, closed = true) {
+  const len = points.length;
+  if (len < 4) {
+    return "";
+  }
+  let a2 = points[0];
+  let b2 = points[1];
+  const c2 = points[2];
+  let result = `M${a2[0].toFixed(2)},${a2[1].toFixed(2)} Q${b2[0].toFixed(2)},${b2[1].toFixed(2)} ${average(b2[0], c2[0]).toFixed(2)},${average(
+    b2[1],
+    c2[1]
+  ).toFixed(2)} T`;
+  for (let i2 = 2, max = len - 1; i2 < max; i2++) {
+    a2 = points[i2];
+    b2 = points[i2 + 1];
+    result += `${average(a2[0], b2[0]).toFixed(2)},${average(a2[1], b2[1]).toFixed(2)} `;
+  }
+  if (closed) {
+    result += "Z";
+  }
+  return result;
+}
+var machine = createMachine({
+  props({ props: props2 }) {
+    return {
+      defaultPaths: [],
+      ...props2,
+      drawing: {
+        size: 2,
+        simulatePressure: false,
+        thinning: 0.7,
+        smoothing: 0.4,
+        streamline: 0.6,
+        ...props2.drawing
+      },
+      translations: {
+        control: "signature pad",
+        clearTrigger: "clear signature",
+        ...props2.translations
+      }
+    };
+  },
+  initialState() {
+    return "idle";
+  },
+  context({ prop, bindable }) {
+    return {
+      paths: bindable(() => ({
+        defaultValue: prop("defaultPaths"),
+        value: prop("paths"),
+        sync: true,
+        onChange(value) {
+          prop("onDraw")?.({ paths: value });
+        }
+      })),
+      currentPoints: bindable(() => ({
+        defaultValue: []
+      })),
+      currentPath: bindable(() => ({
+        defaultValue: null
+      }))
+    };
+  },
+  computed: {
+    isInteractive: ({ prop }) => !(prop("disabled") || prop("readOnly")),
+    isEmpty: ({ context }) => context.get("paths").length === 0
+  },
+  on: {
+    CLEAR: {
+      actions: ["clearPoints", "invokeOnDrawEnd", "focusCanvasEl"]
+    }
+  },
+  states: {
+    idle: {
+      on: {
+        POINTER_DOWN: {
+          target: "drawing",
+          actions: ["addPoint"]
+        }
+      }
+    },
+    drawing: {
+      effects: ["trackPointerMove"],
+      on: {
+        POINTER_MOVE: {
+          actions: ["addPoint", "invokeOnDraw"]
+        },
+        POINTER_UP: {
+          target: "idle",
+          actions: ["endStroke", "invokeOnDrawEnd"]
+        }
+      }
+    }
+  },
+  implementations: {
+    effects: {
+      trackPointerMove({ scope, send }) {
+        const doc = scope.getDoc();
+        return trackPointerMove(doc, {
+          onPointerMove({ event, point }) {
+            const controlEl = getControlEl(scope);
+            if (!controlEl) return;
+            const { offset } = getRelativePoint(point, controlEl);
+            send({ type: "POINTER_MOVE", point: offset, pressure: event.pressure });
+          },
+          onPointerUp() {
+            send({ type: "POINTER_UP" });
+          }
+        });
+      }
+    },
+    actions: {
+      addPoint({ context, event, prop }) {
+        const nextPoints = [...context.get("currentPoints"), event.point];
+        context.set("currentPoints", nextPoints);
+        const stroke = z(nextPoints, prop("drawing"));
+        context.set("currentPath", getSvgPathFromStroke(stroke));
+      },
+      endStroke({ context }) {
+        const nextPaths = [...context.get("paths"), context.get("currentPath")];
+        context.set("paths", nextPaths);
+        context.set("currentPoints", []);
+        context.set("currentPath", null);
+      },
+      clearPoints({ context }) {
+        context.set("currentPoints", []);
+        context.set("paths", []);
+        context.set("currentPath", null);
+      },
+      focusCanvasEl({ scope }) {
+        queueMicrotask(() => {
+          scope.getActiveElement()?.focus({ preventScroll: true });
+        });
+      },
+      invokeOnDraw({ context, prop }) {
+        prop("onDraw")?.({
+          paths: [...context.get("paths"), context.get("currentPath")]
+        });
+      },
+      invokeOnDrawEnd({ context, prop, scope, computed }) {
+        prop("onDrawEnd")?.({
+          paths: [...context.get("paths")],
+          getDataUrl(type, quality = 0.92) {
+            if (computed("isEmpty")) return Promise.resolve("");
+            return getDataUrl2(scope, { type, quality });
+          }
+        });
+      }
+    }
+  }
+});
+var props = createProps()([
+  "defaultPaths",
+  "dir",
+  "disabled",
+  "drawing",
+  "getRootNode",
+  "id",
+  "ids",
+  "name",
+  "onDraw",
+  "onDrawEnd",
+  "paths",
+  "readOnly",
+  "required",
+  "translations"
+]);
+var splitProps = createSplitProps(props);
+
+// components/signature-pad.ts
+var SignaturePad = class extends Component {
+  imageURL = "";
+  paths = [];
+  name;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    this.name = props2.name;
+    return new VanillaMachine(machine, props2);
+  }
+  setName(name) {
+    this.name = name;
+  }
+  setPaths(paths) {
+    this.paths = paths;
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  syncPaths = () => {
+    const segment = this.el.querySelector(
+      '[data-scope="signature-pad"][data-part="segment"]'
+    );
+    if (!segment) return;
+    const totalPaths = this.api.paths.length + (this.api.currentPath ? 1 : 0);
+    if (totalPaths === 0) {
+      segment.innerHTML = "";
+      this.imageURL = "";
+      this.paths = [];
+      const hiddenInput = this.el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
+      if (hiddenInput) hiddenInput.value = "";
+      return;
+    }
+    segment.innerHTML = "";
+    this.api.paths.forEach((pathData) => {
+      const pathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      pathEl.setAttribute("data-scope", "signature-pad");
+      pathEl.setAttribute("data-part", "path");
+      this.spreadProps(pathEl, this.api.getSegmentPathProps({ path: pathData }));
+      segment.appendChild(pathEl);
+    });
+    if (this.api.currentPath) {
+      const currentPathEl = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      currentPathEl.setAttribute("data-scope", "signature-pad");
+      currentPathEl.setAttribute("data-part", "current-path");
+      this.spreadProps(currentPathEl, this.api.getSegmentPathProps({ path: this.api.currentPath }));
+      segment.appendChild(currentPathEl);
+    }
+  };
+  render() {
+    const rootEl = this.el.querySelector(
+      '[data-scope="signature-pad"][data-part="root"]'
+    );
+    if (!rootEl) return;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const label = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="label"]'
+    );
+    if (label) this.spreadProps(label, this.api.getLabelProps());
+    const control = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="control"]'
+    );
+    if (control) this.spreadProps(control, this.api.getControlProps());
+    const segment = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="segment"]'
+    );
+    if (segment) this.spreadProps(segment, this.api.getSegmentProps());
+    const guide = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="guide"]'
+    );
+    if (guide) this.spreadProps(guide, this.api.getGuideProps());
+    const clearBtn = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="clear-trigger"]'
+    );
+    if (clearBtn) {
+      this.spreadProps(clearBtn, this.api.getClearTriggerProps());
+      const hasPaths = this.api.paths.length > 0 || !!this.api.currentPath;
+      clearBtn.hidden = !hasPaths;
+    }
+    const hiddenInput = rootEl.querySelector(
+      '[data-scope="signature-pad"][data-part="hidden-input"]'
+    );
+    if (hiddenInput) {
+      const pathsForValue = this.paths.length > 0 ? this.paths : this.api.paths;
+      if (this.paths.length === 0 && this.api.paths.length > 0) {
+        this.paths = [...this.api.paths];
+      }
+      const pathsValue = pathsForValue.length > 0 ? JSON.stringify(pathsForValue) : "";
+      this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
+      if (this.name) {
+        hiddenInput.name = this.name;
+      }
+      hiddenInput.value = pathsValue;
+    }
+    this.syncPaths();
+  }
+};
+
+// hooks/signature-pad.ts
+function getPaths(el, attr) {
+  const value = el.dataset[attr];
+  if (!value) return [];
+  try {
+    return JSON.parse(value);
+  } catch {
+    return [];
+  }
+}
+function buildDrawingOptions(el) {
+  return {
+    fill: getString(el, "drawingFill") || "black",
+    size: getNumber(el, "drawingSize") ?? 2,
+    simulatePressure: getBoolean(el, "drawingSimulatePressure"),
+    smoothing: getNumber(el, "drawingSmoothing") ?? 0.5,
+    thinning: getNumber(el, "drawingThinning") ?? 0.7,
+    streamline: getNumber(el, "drawingStreamline") ?? 0.65
+  };
+}
+var SignaturePadHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const controlled = getBoolean(el, "controlled");
+    const paths = getPaths(el, "paths");
+    const defaultPaths = getPaths(el, "defaultPaths");
+    const signaturePad = new SignaturePad(el, {
+      id: el.id,
+      name: getString(el, "name"),
+      ...controlled && paths.length > 0 ? { paths } : void 0,
+      ...!controlled && defaultPaths.length > 0 ? { defaultPaths } : void 0,
+      drawing: buildDrawingOptions(el),
+      onDrawEnd: (details) => {
+        signaturePad.setPaths(details.paths);
+        const hiddenInput = el.querySelector(
+          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        );
+        if (hiddenInput) {
+          hiddenInput.value = JSON.stringify(details.paths);
+        }
+        details.getDataUrl("image/png").then((url) => {
+          signaturePad.imageURL = url;
+          const eventName = getString(el, "onDrawEnd");
+          if (eventName && this.liveSocket.main.isConnected()) {
+            pushEvent(eventName, {
+              id: el.id,
+              paths: details.paths,
+              url
+            });
+          }
+          const eventNameClient = getString(el, "onDrawEndClient");
+          if (eventNameClient) {
+            el.dispatchEvent(
+              new CustomEvent(eventNameClient, {
+                bubbles: true,
+                detail: {
+                  id: el.id,
+                  paths: details.paths,
+                  url
+                }
+              })
+            );
+          }
+        });
+      }
+    });
+    signaturePad.init();
+    this.signaturePad = signaturePad;
+    const initialPaths = controlled ? paths : defaultPaths;
+    if (initialPaths.length > 0) {
+      const hiddenInput = el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
+      if (hiddenInput) {
+        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    }
+    this.onClear = (event) => {
+      const { id: targetId } = event.detail;
+      if (targetId && targetId !== el.id) return;
+      signaturePad.api.clear();
+      signaturePad.imageURL = "";
+      signaturePad.setPaths([]);
+      const hiddenInput = el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
+      if (hiddenInput) {
+        hiddenInput.value = "";
+      }
+    };
+    el.addEventListener("phx:signature-pad:clear", this.onClear);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("signature_pad_clear", (payload) => {
+        const targetId = payload.signature_pad_id;
+        if (targetId && targetId !== el.id) return;
+        signaturePad.api.clear();
+        signaturePad.imageURL = "";
+        signaturePad.setPaths([]);
+        const hiddenInput = el.querySelector(
+          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        );
+        if (hiddenInput) {
+          hiddenInput.value = "";
+        }
+      })
+    );
+  },
+  updated() {
+    const controlled = getBoolean(this.el, "controlled");
+    const paths = getPaths(this.el, "paths");
+    const defaultPaths = getPaths(this.el, "defaultPaths");
+    const name = getString(this.el, "name");
+    if (name) {
+      this.signaturePad?.setName(name);
+    }
+    this.signaturePad?.updateProps({
+      id: this.el.id,
+      name,
+      ...controlled && paths.length > 0 ? { paths } : {},
+      ...!controlled && defaultPaths.length > 0 ? { defaultPaths } : {},
+      drawing: buildDrawingOptions(this.el)
+    });
+  },
+  destroyed() {
+    if (this.onClear) {
+      this.el.removeEventListener("phx:signature-pad:clear", this.onClear);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.signaturePad?.destroy();
+  }
+};
+export {
+  SignaturePadHook as SignaturePad
+};

@@ -1,1 +1,340 @@
-import{Bb as C,Cb as V,Db as T,Eb as m,Fb as u,I,Ib as o,Za as w,a as f,d as a,e as y,nb as P,yb as E}from"./chunk-IYURAQ6S.mjs";var q=f("password-input").parts("root","input","label","control","indicator","visibilityTrigger"),c=q.build(),h=t=>t.ids?.input??`p-input-${t.id}-input`,v=t=>t.getById(h(t));function S(t,e){let{scope:n,prop:i,context:l}=t,s=l.get("visible"),r=!!i("disabled"),p=!!i("invalid"),d=!!i("readOnly"),L=!!i("required"),k=!(d||r),M=i("translations");return{visible:s,disabled:r,invalid:p,focus(){v(n)?.focus()},setVisible(b){t.send({type:"VISIBILITY.SET",value:b})},toggleVisible(){t.send({type:"VISIBILITY.SET",value:!s})},getRootProps(){return e.element({...c.root.attrs,dir:i("dir"),"data-disabled":a(r),"data-invalid":a(p),"data-readonly":a(d)})},getLabelProps(){return e.label({...c.label.attrs,htmlFor:h(n),"data-disabled":a(r),"data-invalid":a(p),"data-readonly":a(d),"data-required":a(L)})},getInputProps(){return e.input({...c.input.attrs,id:h(n),autoCapitalize:"off",name:i("name"),required:i("required"),autoComplete:i("autoComplete"),spellCheck:!1,readOnly:d,disabled:r,type:s?"text":"password","data-state":s?"visible":"hidden","aria-invalid":y(p),"data-disabled":a(r),"data-invalid":a(p),"data-readonly":a(d),...i("ignorePasswordManagers")?x:{}})},getVisibilityTriggerProps(){return e.button({...c.visibilityTrigger.attrs,type:"button",tabIndex:-1,"aria-controls":h(n),"aria-expanded":s,"data-readonly":a(d),disabled:r,"data-disabled":a(r),"data-state":s?"visible":"hidden","aria-label":M?.visibilityTrigger?.(s),onPointerDown(b){I(b)&&k&&(b.preventDefault(),t.send({type:"TRIGGER.CLICK"}))}})},getIndicatorProps(){return e.element({...c.indicator.attrs,"aria-hidden":!0,"data-state":s?"visible":"hidden","data-disabled":a(r),"data-invalid":a(p),"data-readonly":a(d)})},getControlProps(){return e.element({...c.control.attrs,"data-disabled":a(r),"data-invalid":a(p),"data-readonly":a(d)})}}}var x={"data-1p-ignore":"","data-lpignore":"true","data-bwignore":"true","data-form-type":"other","data-protonpass-ignore":"true"},H={props({props:t}){return{id:w(),defaultVisible:!1,autoComplete:"current-password",ignorePasswordManagers:!1,...t,translations:{visibilityTrigger(e){return e?"Hide password":"Show password"},...t.translations}}},context({prop:t,bindable:e}){return{visible:e(()=>({value:t("visible"),defaultValue:t("defaultVisible"),onChange(n){t("onVisibilityChange")?.({visible:n})}}))}},initialState(){return"idle"},effects:["trackFormEvents"],states:{idle:{on:{"VISIBILITY.SET":{actions:["setVisibility"]},"TRIGGER.CLICK":{actions:["toggleVisibility","focusInputEl"]}}}},implementations:{actions:{setVisibility({context:t,event:e}){t.set("visible",e.value)},toggleVisibility({context:t}){t.set("visible",e=>!e)},focusInputEl({scope:t}){v(t)?.focus()}},effects:{trackFormEvents({scope:t,send:e}){let i=v(t)?.form;if(!i)return;let l=t.getWin(),s=new l.AbortController;return i.addEventListener("reset",r=>{r.defaultPrevented||e({type:"VISIBILITY.SET",value:!1})},{signal:s.signal}),i.addEventListener("submit",()=>{e({type:"VISIBILITY.SET",value:!1})},{signal:s.signal}),()=>s.abort()}}}},A=E()(["defaultVisible","dir","id","onVisibilityChange","visible","ids","getRootNode","disabled","invalid","required","readOnly","translations","ignorePasswordManagers","autoComplete","name"]),D=P(A);var g=class extends T{initMachine(e){return new V(H,e)}initApi(){return S(this.machine.service,C)}render(){let e=this.el.querySelector('[data-scope="password-input"][data-part="root"]')??this.el;this.spreadProps(e,this.api.getRootProps());let n=this.el.querySelector('[data-scope="password-input"][data-part="label"]');n&&this.spreadProps(n,this.api.getLabelProps());let i=this.el.querySelector('[data-scope="password-input"][data-part="control"]');i&&this.spreadProps(i,this.api.getControlProps());let l=this.el.querySelector('[data-scope="password-input"][data-part="input"]');l&&this.spreadProps(l,this.api.getInputProps());let s=this.el.querySelector('[data-scope="password-input"][data-part="visibility-trigger"]');s&&this.spreadProps(s,this.api.getVisibilityTriggerProps());let r=this.el.querySelector('[data-scope="password-input"][data-part="indicator"]');r&&this.spreadProps(r,this.api.getIndicatorProps())}};var $={mounted(){let t=this.el,e=new g(t,{id:t.id,...o(t,"controlledVisible")?{visible:o(t,"visible")}:{defaultVisible:o(t,"defaultVisible")},disabled:o(t,"disabled"),invalid:o(t,"invalid"),readOnly:o(t,"readOnly"),required:o(t,"required"),ignorePasswordManagers:o(t,"ignorePasswordManagers"),name:u(t,"name"),dir:m(t),autoComplete:u(t,"autoComplete",["current-password","new-password"]),onVisibilityChange:n=>{let i=u(t,"onVisibilityChange");i&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&this.pushEvent(i,{visible:n.visible,id:t.id});let l=u(t,"onVisibilityChangeClient");l&&t.dispatchEvent(new CustomEvent(l,{bubbles:!0,detail:{value:n,id:t.id}}))}});e.init(),this.passwordInput=e,this.handlers=[]},updated(){this.passwordInput?.updateProps({id:this.el.id,...o(this.el,"controlledVisible")?{visible:o(this.el,"visible")}:{},disabled:o(this.el,"disabled"),invalid:o(this.el,"invalid"),readOnly:o(this.el,"readOnly"),required:o(this.el,"required"),name:u(this.el,"name"),form:u(this.el,"form"),dir:m(this.el)})},destroyed(){if(this.handlers)for(let t of this.handlers)this.removeHandleEvent(t);this.passwordInput?.destroy()}};export{$ as PasswordInput};
+import {
+  Component,
+  VanillaMachine,
+  ariaAttr,
+  createAnatomy,
+  createMachine,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  getBoolean,
+  getDir,
+  getString,
+  isLeftClick,
+  normalizeProps,
+  uuid
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/@zag-js+password-input@1.33.1/node_modules/@zag-js/password-input/dist/index.mjs
+var anatomy = createAnatomy("password-input").parts(
+  "root",
+  "input",
+  "label",
+  "control",
+  "indicator",
+  "visibilityTrigger"
+);
+var parts = anatomy.build();
+var getInputId = (ctx) => ctx.ids?.input ?? `p-input-${ctx.id}-input`;
+var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
+function connect(service, normalize) {
+  const { scope, prop, context } = service;
+  const visible = context.get("visible");
+  const disabled = !!prop("disabled");
+  const invalid = !!prop("invalid");
+  const readOnly = !!prop("readOnly");
+  const required = !!prop("required");
+  const interactive = !(readOnly || disabled);
+  const translations = prop("translations");
+  return {
+    visible,
+    disabled,
+    invalid,
+    focus() {
+      getInputEl(scope)?.focus();
+    },
+    setVisible(value) {
+      service.send({ type: "VISIBILITY.SET", value });
+    },
+    toggleVisible() {
+      service.send({ type: "VISIBILITY.SET", value: !visible });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-readonly": dataAttr(readOnly)
+      });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts.label.attrs,
+        htmlFor: getInputId(scope),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-readonly": dataAttr(readOnly),
+        "data-required": dataAttr(required)
+      });
+    },
+    getInputProps() {
+      return normalize.input({
+        ...parts.input.attrs,
+        id: getInputId(scope),
+        autoCapitalize: "off",
+        name: prop("name"),
+        required: prop("required"),
+        autoComplete: prop("autoComplete"),
+        spellCheck: false,
+        readOnly,
+        disabled,
+        type: visible ? "text" : "password",
+        "data-state": visible ? "visible" : "hidden",
+        "aria-invalid": ariaAttr(invalid),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-readonly": dataAttr(readOnly),
+        ...prop("ignorePasswordManagers") ? passwordManagerProps : {}
+      });
+    },
+    getVisibilityTriggerProps() {
+      return normalize.button({
+        ...parts.visibilityTrigger.attrs,
+        type: "button",
+        tabIndex: -1,
+        "aria-controls": getInputId(scope),
+        "aria-expanded": visible,
+        "data-readonly": dataAttr(readOnly),
+        disabled,
+        "data-disabled": dataAttr(disabled),
+        "data-state": visible ? "visible" : "hidden",
+        "aria-label": translations?.visibilityTrigger?.(visible),
+        onPointerDown(event) {
+          if (!isLeftClick(event)) return;
+          if (!interactive) return;
+          event.preventDefault();
+          service.send({ type: "TRIGGER.CLICK" });
+        }
+      });
+    },
+    getIndicatorProps() {
+      return normalize.element({
+        ...parts.indicator.attrs,
+        "aria-hidden": true,
+        "data-state": visible ? "visible" : "hidden",
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-readonly": dataAttr(readOnly)
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-readonly": dataAttr(readOnly)
+      });
+    }
+  };
+}
+var passwordManagerProps = {
+  // 1Password
+  "data-1p-ignore": "",
+  // LastPass
+  "data-lpignore": "true",
+  // Bitwarden
+  "data-bwignore": "true",
+  // Dashlane
+  "data-form-type": "other",
+  // Proton Pass
+  "data-protonpass-ignore": "true"
+};
+var machine = createMachine({
+  props({ props: props2 }) {
+    return {
+      id: uuid(),
+      defaultVisible: false,
+      autoComplete: "current-password",
+      ignorePasswordManagers: false,
+      ...props2,
+      translations: {
+        visibilityTrigger(visible) {
+          return visible ? "Hide password" : "Show password";
+        },
+        ...props2.translations
+      }
+    };
+  },
+  context({ prop, bindable }) {
+    return {
+      visible: bindable(() => ({
+        value: prop("visible"),
+        defaultValue: prop("defaultVisible"),
+        onChange(value) {
+          prop("onVisibilityChange")?.({ visible: value });
+        }
+      }))
+    };
+  },
+  initialState() {
+    return "idle";
+  },
+  effects: ["trackFormEvents"],
+  states: {
+    idle: {
+      on: {
+        "VISIBILITY.SET": {
+          actions: ["setVisibility"]
+        },
+        "TRIGGER.CLICK": {
+          actions: ["toggleVisibility", "focusInputEl"]
+        }
+      }
+    }
+  },
+  implementations: {
+    actions: {
+      setVisibility({ context, event }) {
+        context.set("visible", event.value);
+      },
+      toggleVisibility({ context }) {
+        context.set("visible", (c) => !c);
+      },
+      focusInputEl({ scope }) {
+        const inputEl = getInputEl(scope);
+        inputEl?.focus();
+      }
+    },
+    effects: {
+      trackFormEvents({ scope, send }) {
+        const inputEl = getInputEl(scope);
+        const form = inputEl?.form;
+        if (!form) return;
+        const win = scope.getWin();
+        const controller = new win.AbortController();
+        form.addEventListener(
+          "reset",
+          (event) => {
+            if (event.defaultPrevented) return;
+            send({ type: "VISIBILITY.SET", value: false });
+          },
+          { signal: controller.signal }
+        );
+        form.addEventListener(
+          "submit",
+          () => {
+            send({ type: "VISIBILITY.SET", value: false });
+          },
+          { signal: controller.signal }
+        );
+        return () => controller.abort();
+      }
+    }
+  }
+});
+var props = createProps()([
+  "defaultVisible",
+  "dir",
+  "id",
+  "onVisibilityChange",
+  "visible",
+  "ids",
+  "getRootNode",
+  "disabled",
+  "invalid",
+  "required",
+  "readOnly",
+  "translations",
+  "ignorePasswordManagers",
+  "autoComplete",
+  "name"
+]);
+var splitProps = createSplitProps(props);
+
+// components/password-input.ts
+var PasswordInput = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    return new VanillaMachine(machine, props2);
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="password-input"][data-part="root"]') ?? this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const labelEl = this.el.querySelector(
+      '[data-scope="password-input"][data-part="label"]'
+    );
+    if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+    const controlEl = this.el.querySelector(
+      '[data-scope="password-input"][data-part="control"]'
+    );
+    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+    const inputEl = this.el.querySelector(
+      '[data-scope="password-input"][data-part="input"]'
+    );
+    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    const triggerEl = this.el.querySelector(
+      '[data-scope="password-input"][data-part="visibility-trigger"]'
+    );
+    if (triggerEl) this.spreadProps(triggerEl, this.api.getVisibilityTriggerProps());
+    const indicatorEl = this.el.querySelector(
+      '[data-scope="password-input"][data-part="indicator"]'
+    );
+    if (indicatorEl) this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+  }
+};
+
+// hooks/password-input.ts
+var PasswordInputHook = {
+  mounted() {
+    const el = this.el;
+    const zag = new PasswordInput(el, {
+      id: el.id,
+      ...getBoolean(el, "controlledVisible") ? { visible: getBoolean(el, "visible") } : { defaultVisible: getBoolean(el, "defaultVisible") },
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
+      name: getString(el, "name"),
+      dir: getDir(el),
+      autoComplete: getString(el, "autoComplete", [
+        "current-password",
+        "new-password"
+      ]),
+      onVisibilityChange: (details) => {
+        const eventName = getString(el, "onVisibilityChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, { visible: details.visible, id: el.id });
+        }
+        const clientName = getString(el, "onVisibilityChangeClient");
+        if (clientName) {
+          el.dispatchEvent(
+            new CustomEvent(clientName, {
+              bubbles: true,
+              detail: { value: details, id: el.id }
+            })
+          );
+        }
+      }
+    });
+    zag.init();
+    this.passwordInput = zag;
+    this.handlers = [];
+  },
+  updated() {
+    this.passwordInput?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlledVisible") ? { visible: getBoolean(this.el, "visible") } : {},
+      disabled: getBoolean(this.el, "disabled"),
+      invalid: getBoolean(this.el, "invalid"),
+      readOnly: getBoolean(this.el, "readOnly"),
+      required: getBoolean(this.el, "required"),
+      name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
+      dir: getDir(this.el)
+    });
+  },
+  destroyed() {
+    if (this.handlers) {
+      for (const h of this.handlers) this.removeHandleEvent(h);
+    }
+    this.passwordInput?.destroy();
+  }
+};
+export {
+  PasswordInputHook as PasswordInput
+};

@@ -1,1 +1,1723 @@
-import{l as He,m as ie}from"./chunk-UBXVV7GZ.mjs";import{a as De,b as oe,c as _e}from"./chunk-S6MRQC6S.mjs";import{a as we}from"./chunk-5MNNWH4C.mjs";import"./chunk-L4HS2GN2.mjs";import{$ as fe,B as U,Ba as ye,Bb as Le,C as Z,Ca as Ce,Cb as Ae,D as z,Db as Ne,Fb as v,G as pe,Ib as g,J as he,Ja as Se,K as me,L as ee,La as Me,O as D,Oa as Re,P as Oe,Ua as $,Wa as ne,_ as Ee,a as le,ba as W,d as A,da as Te,e as ce,f as de,fa as Ie,ha as Pe,i as ue,j as Q,k as F,m as ge,nb as _,oa as ve,ub as be,wb as ke,xa as te,yb as w}from"./chunk-IYURAQ6S.mjs";var $e=le("menu").parts("arrow","arrowTip","content","contextTrigger","indicator","item","itemGroup","itemGroupLabel","itemIndicator","itemText","positioner","separator","trigger","triggerItem"),E=$e.build(),Y=e=>e.ids?.trigger??`menu:${e.id}:trigger`,We=e=>e.ids?.contextTrigger??`menu:${e.id}:ctx-trigger`,V=e=>e.ids?.content??`menu:${e.id}:content`,Ke=e=>e.ids?.arrow??`menu:${e.id}:arrow`,xe=e=>e.ids?.positioner??`menu:${e.id}:popper`,Xe=(e,t)=>e.ids?.group?.(t)??`menu:${e.id}:group:${t}`,x=(e,t)=>`${e.id}/${t}`,N=e=>e?.dataset.value??null,Ge=(e,t)=>e.ids?.groupLabel?.(t)??`menu:${e.id}:group-label:${t}`,C=e=>e.getById(V(e)),Ve=e=>e.getById(xe(e)),K=e=>e.getById(Y(e)),Ye=(e,t)=>t?e.getById(x(e,t)):null,re=e=>e.getById(We(e)),q=e=>{let o=`[role^="menuitem"][data-ownedby=${CSS.escape(V(e))}]:not([data-disabled])`;return ve(C(e),o)},je=e=>ye(q(e)),Je=e=>Ce(q(e)),ae=(e,t)=>t?e.id===t||e.dataset.value===t:!1,Qe=(e,t)=>{let o=q(e),n=o.findIndex(a=>ae(a,t.value));return Se(o,n,{loop:t.loop??t.loopFocus})},Ze=(e,t)=>{let o=q(e),n=o.findIndex(a=>ae(a,t.value));return Me(o,n,{loop:t.loop??t.loopFocus})},ze=(e,t)=>{let o=q(e),n=o.find(a=>ae(a,t.value));return te(o,{state:t.typeaheadState,key:t.key,activeId:n?.id??null})},X=e=>de(e)&&(e.dataset.disabled===""||e.hasAttribute("disabled")),Fe=e=>!!e?.getAttribute("role")?.startsWith("menuitem")&&!!e?.hasAttribute("data-controls"),se="menu:select";function et(e,t){if(!e)return;let o=ge(e),n=new o.CustomEvent(se,{detail:{value:t}});e.dispatchEvent(n)}function qe(e,t){let{context:o,send:n,state:a,computed:c,prop:r,scope:s}=e,d=a.hasTag("open"),m=o.get("isSubmenu"),h=c("isTypingAhead"),p=r("composite"),M=o.get("currentPlacement"),R=o.get("anchorPoint"),b=o.get("highlightedValue"),k=_e({...r("positioning"),placement:R?"bottom":M});function S(i){return{id:x(s,i.value),disabled:!!i.disabled,highlighted:b===i.value}}function j(i){let l=i.valueText??i.value;return{...i,id:i.value,valueText:l}}function L(i){return{...S(j(i)),checked:!!i.checked}}function H(i){let{closeOnSelect:l,valueText:O,value:P}=i,f=S(i),I=x(s,P);return t.element({...E.item.attrs,id:I,role:"menuitem","aria-disabled":ce(f.disabled),"data-disabled":A(f.disabled),"data-ownedby":V(s),"data-highlighted":A(f.highlighted),"data-value":P,"data-valuetext":O,onDragStart(u){u.currentTarget.matches("a[href]")&&u.preventDefault()},onPointerMove(u){if(f.disabled||u.pointerType!=="mouse")return;let y=u.currentTarget;if(f.highlighted)return;let J=D(u);n({type:"ITEM_POINTERMOVE",id:I,target:y,closeOnSelect:l,point:J})},onPointerLeave(u){if(f.disabled||u.pointerType!=="mouse"||!e.event.previous()?.type.includes("POINTER"))return;let J=u.currentTarget;n({type:"ITEM_POINTERLEAVE",id:I,target:J,closeOnSelect:l})},onPointerDown(u){if(f.disabled)return;let y=u.currentTarget;n({type:"ITEM_POINTERDOWN",target:y,id:I,closeOnSelect:l})},onClick(u){if(z(u)||Z(u)||f.disabled)return;let y=u.currentTarget;n({type:"ITEM_CLICK",target:y,id:I,closeOnSelect:l})}})}return{highlightedValue:b,open:d,setOpen(i){a.hasTag("open")!==i&&n({type:i?"OPEN":"CLOSE"})},setHighlightedValue(i){n({type:"HIGHLIGHTED.SET",value:i})},setParent(i){n({type:"PARENT.SET",value:i,id:i.prop("id")})},setChild(i){n({type:"CHILD.SET",value:i,id:i.prop("id")})},reposition(i={}){n({type:"POSITIONING.SET",options:i})},addItemListener(i){let l=s.getById(i.id);if(!l)return;let O=()=>i.onSelect?.();return l.addEventListener(se,O),()=>l.removeEventListener(se,O)},getContextTriggerProps(){return t.element({...E.contextTrigger.attrs,dir:r("dir"),id:We(s),"data-state":d?"open":"closed",onPointerDown(i){if(i.pointerType==="mouse")return;let l=D(i);n({type:"CONTEXT_MENU_START",point:l})},onPointerCancel(i){i.pointerType!=="mouse"&&n({type:"CONTEXT_MENU_CANCEL"})},onPointerMove(i){i.pointerType!=="mouse"&&n({type:"CONTEXT_MENU_CANCEL"})},onPointerUp(i){i.pointerType!=="mouse"&&n({type:"CONTEXT_MENU_CANCEL"})},onContextMenu(i){let l=D(i);n({type:"CONTEXT_MENU",point:l}),i.preventDefault()},style:{WebkitTouchCallout:"none",WebkitUserSelect:"none",userSelect:"none"}})},getTriggerItemProps(i){let l=i.getTriggerProps();return be(H({value:l.id}),l)},getTriggerProps(){return t.button({...m?E.triggerItem.attrs:E.trigger.attrs,"data-placement":o.get("currentPlacement"),type:"button",dir:r("dir"),id:Y(s),"data-uid":r("id"),"aria-haspopup":p?"menu":"dialog","aria-controls":V(s),"data-controls":V(s),"aria-expanded":d||void 0,"data-state":d?"open":"closed",onPointerMove(i){if(i.pointerType!=="mouse"||X(i.currentTarget)||!m)return;let O=D(i);n({type:"TRIGGER_POINTERMOVE",target:i.currentTarget,point:O})},onPointerLeave(i){if(X(i.currentTarget)||i.pointerType!=="mouse"||!m)return;let l=D(i);n({type:"TRIGGER_POINTERLEAVE",target:i.currentTarget,point:l})},onPointerDown(i){X(i.currentTarget)||he(i)||i.preventDefault()},onClick(i){i.defaultPrevented||X(i.currentTarget)||n({type:"TRIGGER_CLICK",target:i.currentTarget})},onBlur(){n({type:"TRIGGER_BLUR"})},onFocus(){n({type:"TRIGGER_FOCUS"})},onKeyDown(i){if(i.defaultPrevented)return;let l={ArrowDown(){n({type:"ARROW_DOWN"})},ArrowUp(){n({type:"ARROW_UP"})},Enter(){n({type:"ARROW_DOWN",src:"enter"})},Space(){n({type:"ARROW_DOWN",src:"space"})}},O=ee(i,{orientation:"vertical",dir:r("dir")}),P=l[O];P&&(i.preventDefault(),P(i))}})},getIndicatorProps(){return t.element({...E.indicator.attrs,dir:r("dir"),"data-state":d?"open":"closed"})},getPositionerProps(){return t.element({...E.positioner.attrs,dir:r("dir"),id:xe(s),style:k.floating})},getArrowProps(){return t.element({id:Ke(s),...E.arrow.attrs,dir:r("dir"),style:k.arrow})},getArrowTipProps(){return t.element({...E.arrowTip.attrs,dir:r("dir"),style:k.arrowTip})},getContentProps(){return t.element({...E.content.attrs,id:V(s),"aria-label":r("aria-label"),hidden:!d,"data-state":d?"open":"closed",role:p?"menu":"dialog",tabIndex:0,dir:r("dir"),"aria-activedescendant":c("highlightedId")||void 0,"aria-labelledby":Y(s),"data-placement":M,onPointerEnter(i){i.pointerType==="mouse"&&n({type:"MENU_POINTERENTER"})},onKeyDown(i){if(i.defaultPrevented||!F(i.currentTarget,U(i)))return;let l=U(i);if(!(l?.closest("[role=menu]")===i.currentTarget||l===i.currentTarget))return;if(i.key==="Tab"&&!fe(i)){i.preventDefault();return}let P={ArrowDown(){n({type:"ARROW_DOWN"})},ArrowUp(){n({type:"ARROW_UP"})},ArrowLeft(){n({type:"ARROW_LEFT"})},ArrowRight(){n({type:"ARROW_RIGHT"})},Enter(){n({type:"ENTER"})},Space(u){h?n({type:"TYPEAHEAD",key:u.key}):P.Enter?.(u)},Home(){n({type:"HOME"})},End(){n({type:"END"})}},f=ee(i,{dir:r("dir")}),I=P[f];if(I){I(i),i.stopPropagation(),i.preventDefault();return}r("typeahead")&&pe(i)&&(me(i)||Q(l)||(n({type:"TYPEAHEAD",key:i.key}),i.preventDefault()))}})},getSeparatorProps(){return t.element({...E.separator.attrs,role:"separator",dir:r("dir"),"aria-orientation":"horizontal"})},getItemState:S,getItemProps:H,getOptionItemState:L,getOptionItemProps(i){let{type:l,disabled:O,closeOnSelect:P}=i,f=j(i),I=L(i);return{...H(f),...t.element({"data-type":l,...E.item.attrs,dir:r("dir"),"data-value":f.value,role:`menuitem${l}`,"aria-checked":!!I.checked,"data-state":I.checked?"checked":"unchecked",onClick(u){if(O||z(u)||Z(u))return;let y=u.currentTarget;n({type:"ITEM_CLICK",target:y,option:f,closeOnSelect:P})}})}},getItemIndicatorProps(i){let l=L(ne(i)),O=l.checked?"checked":"unchecked";return t.element({...E.itemIndicator.attrs,dir:r("dir"),"data-disabled":A(l.disabled),"data-highlighted":A(l.highlighted),"data-state":$(i,"checked")?O:void 0,hidden:$(i,"checked")?!l.checked:void 0})},getItemTextProps(i){let l=L(ne(i)),O=l.checked?"checked":"unchecked";return t.element({...E.itemText.attrs,dir:r("dir"),"data-disabled":A(l.disabled),"data-highlighted":A(l.highlighted),"data-state":$(i,"checked")?O:void 0})},getItemGroupLabelProps(i){return t.element({...E.itemGroupLabel.attrs,id:Ge(s,i.htmlFor),dir:r("dir")})},getItemGroupProps(i){return t.element({id:Xe(s,i.id),...E.itemGroup.attrs,dir:r("dir"),"aria-labelledby":Ge(s,i.id),role:"group"})}}}var{not:T,and:G,or:tt}=ke(),Be={props({props:e}){return{closeOnSelect:!0,typeahead:!0,composite:!0,loopFocus:!1,navigate(t){Ie(t.node)},...e,positioning:{placement:"bottom-start",gutter:8,...e.positioning}}},initialState({prop:e}){return e("open")||e("defaultOpen")?"open":"idle"},context({bindable:e,prop:t}){return{suspendPointer:e(()=>({defaultValue:!1})),highlightedValue:e(()=>({defaultValue:t("defaultHighlightedValue")||null,value:t("highlightedValue"),onChange(o){t("onHighlightChange")?.({highlightedValue:o})}})),lastHighlightedValue:e(()=>({defaultValue:null})),currentPlacement:e(()=>({defaultValue:void 0})),intentPolygon:e(()=>({defaultValue:null})),anchorPoint:e(()=>({defaultValue:null,hash(o){return`x: ${o?.x}, y: ${o?.y}`}})),isSubmenu:e(()=>({defaultValue:!1}))}},refs(){return{parent:null,children:{},typeaheadState:{...te.defaultOptions},positioningOverride:{}}},computed:{isRtl:({prop:e})=>e("dir")==="rtl",isTypingAhead:({refs:e})=>e.get("typeaheadState").keysSoFar!=="",highlightedId:({context:e,scope:t,refs:o})=>it(o.get("children"),e.get("highlightedValue"),t)},watch({track:e,action:t,context:o,prop:n}){e([()=>o.get("isSubmenu")],()=>{t(["setSubmenuPlacement"])}),e([()=>o.hash("anchorPoint")],()=>{o.get("anchorPoint")&&t(["reposition"])}),e([()=>n("open")],()=>{t(["toggleVisibility"])})},on:{"PARENT.SET":{actions:["setParentMenu"]},"CHILD.SET":{actions:["setChildMenu"]},OPEN:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["invokeOnOpen"]}],OPEN_AUTOFOCUS:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["highlightFirstItem","invokeOnOpen"]}],CLOSE:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose"]}],"HIGHLIGHTED.RESTORE":{actions:["restoreHighlightedItem"]},"HIGHLIGHTED.SET":{actions:["setHighlightedItem"]}},states:{idle:{tags:["closed"],on:{"CONTROLLED.OPEN":{target:"open"},"CONTROLLED.CLOSE":{target:"closed"},CONTEXT_MENU_START:{target:"opening:contextmenu",actions:["setAnchorPoint"]},CONTEXT_MENU:[{guard:"isOpenControlled",actions:["setAnchorPoint","invokeOnOpen"]},{target:"open",actions:["setAnchorPoint","invokeOnOpen"]}],TRIGGER_CLICK:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["invokeOnOpen"]}],TRIGGER_FOCUS:{guard:T("isSubmenu"),target:"closed"},TRIGGER_POINTERMOVE:{guard:"isSubmenu",target:"opening"}}},"opening:contextmenu":{tags:["closed"],effects:["waitForLongPress"],on:{"CONTROLLED.OPEN":{target:"open"},"CONTROLLED.CLOSE":{target:"closed"},CONTEXT_MENU_CANCEL:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose"]}],"LONG_PRESS.OPEN":[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["invokeOnOpen"]}]}},opening:{tags:["closed"],effects:["waitForOpenDelay"],on:{"CONTROLLED.OPEN":{target:"open"},"CONTROLLED.CLOSE":{target:"closed"},BLUR:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose"]}],TRIGGER_POINTERLEAVE:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose"]}],"DELAY.OPEN":[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["invokeOnOpen"]}]}},closing:{tags:["open"],effects:["trackPointerMove","trackInteractOutside","waitForCloseDelay"],on:{"CONTROLLED.OPEN":{target:"open"},"CONTROLLED.CLOSE":{target:"closed",actions:["focusParentMenu","restoreParentHighlightedItem"]},MENU_POINTERENTER:{target:"open",actions:["clearIntentPolygon"]},POINTER_MOVED_AWAY_FROM_SUBMENU:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"closed",actions:["focusParentMenu","restoreParentHighlightedItem"]}],"DELAY.CLOSE":[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"closed",actions:["focusParentMenu","restoreParentHighlightedItem","invokeOnClose"]}]}},closed:{tags:["closed"],entry:["clearHighlightedItem","focusTrigger","resumePointer","clearAnchorPoint"],on:{"CONTROLLED.OPEN":[{guard:tt("isOpenAutoFocusEvent","isArrowDownEvent"),target:"open",actions:["highlightFirstItem"]},{guard:"isArrowUpEvent",target:"open",actions:["highlightLastItem"]},{target:"open"}],CONTEXT_MENU_START:{target:"opening:contextmenu",actions:["setAnchorPoint"]},CONTEXT_MENU:[{guard:"isOpenControlled",actions:["setAnchorPoint","invokeOnOpen"]},{target:"open",actions:["setAnchorPoint","invokeOnOpen"]}],TRIGGER_CLICK:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["invokeOnOpen"]}],TRIGGER_POINTERMOVE:{guard:"isTriggerItem",target:"opening"},TRIGGER_BLUR:{target:"idle"},ARROW_DOWN:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["highlightFirstItem","invokeOnOpen"]}],ARROW_UP:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["highlightLastItem","invokeOnOpen"]}]}},open:{tags:["open"],effects:["trackInteractOutside","trackPositioning","scrollToHighlightedItem"],entry:["focusMenu","resumePointer"],on:{"CONTROLLED.CLOSE":[{target:"closed",guard:"isArrowLeftEvent",actions:["focusParentMenu"]},{target:"closed"}],TRIGGER_CLICK:[{guard:G(T("isTriggerItem"),"isOpenControlled"),actions:["invokeOnClose"]},{guard:T("isTriggerItem"),target:"closed",actions:["invokeOnClose"]}],CONTEXT_MENU:{actions:["setAnchorPoint","focusMenu"]},ARROW_UP:{actions:["highlightPrevItem","focusMenu"]},ARROW_DOWN:{actions:["highlightNextItem","focusMenu"]},ARROW_LEFT:[{guard:G("isSubmenu","isOpenControlled"),actions:["invokeOnClose"]},{guard:"isSubmenu",target:"closed",actions:["focusParentMenu","invokeOnClose"]}],HOME:{actions:["highlightFirstItem","focusMenu"]},END:{actions:["highlightLastItem","focusMenu"]},ARROW_RIGHT:{guard:"isTriggerItemHighlighted",actions:["openSubmenu"]},ENTER:[{guard:"isTriggerItemHighlighted",actions:["openSubmenu"]},{actions:["clickHighlightedItem"]}],ITEM_POINTERMOVE:[{guard:T("isPointerSuspended"),actions:["setHighlightedItem","focusMenu","closeSiblingMenus"]},{actions:["setLastHighlightedItem","closeSiblingMenus"]}],ITEM_POINTERLEAVE:{guard:G(T("isPointerSuspended"),T("isTriggerItem")),actions:["clearHighlightedItem"]},ITEM_CLICK:[{guard:G(T("isTriggerItemHighlighted"),T("isHighlightedItemEditable"),"closeOnSelect","isOpenControlled"),actions:["invokeOnSelect","setOptionState","closeRootMenu","invokeOnClose"]},{guard:G(T("isTriggerItemHighlighted"),T("isHighlightedItemEditable"),"closeOnSelect"),target:"closed",actions:["invokeOnSelect","setOptionState","closeRootMenu","invokeOnClose"]},{guard:G(T("isTriggerItemHighlighted"),T("isHighlightedItemEditable")),actions:["invokeOnSelect","setOptionState"]},{actions:["setHighlightedItem"]}],TRIGGER_POINTERMOVE:{guard:"isTriggerItem",actions:["setIntentPolygon"]},TRIGGER_POINTERLEAVE:{target:"closing",actions:["setIntentPolygon"]},ITEM_POINTERDOWN:{actions:["setHighlightedItem"]},TYPEAHEAD:{actions:["highlightMatchedItem"]},FOCUS_MENU:{actions:["focusMenu"]},"POSITIONING.SET":{actions:["reposition"]}}}},implementations:{guards:{closeOnSelect:({prop:e,event:t})=>!!(t?.closeOnSelect??e("closeOnSelect")),isTriggerItem:({event:e})=>Fe(e.target),isTriggerItemHighlighted:({event:e,scope:t,computed:o})=>!!(e.target??t.getById(o("highlightedId")))?.hasAttribute("data-controls"),isSubmenu:({context:e})=>e.get("isSubmenu"),isPointerSuspended:({context:e})=>e.get("suspendPointer"),isHighlightedItemEditable:({scope:e,computed:t})=>Q(e.getById(t("highlightedId"))),isOpenControlled:({prop:e})=>e("open")!==void 0,isArrowLeftEvent:({event:e})=>e.previousEvent?.type==="ARROW_LEFT",isArrowUpEvent:({event:e})=>e.previousEvent?.type==="ARROW_UP",isArrowDownEvent:({event:e})=>e.previousEvent?.type==="ARROW_DOWN",isOpenAutoFocusEvent:({event:e})=>e.previousEvent?.type==="OPEN_AUTOFOCUS"},effects:{waitForOpenDelay({send:e}){let t=setTimeout(()=>{e({type:"DELAY.OPEN"})},200);return()=>clearTimeout(t)},waitForCloseDelay({send:e}){let t=setTimeout(()=>{e({type:"DELAY.CLOSE"})},100);return()=>clearTimeout(t)},waitForLongPress({send:e}){let t=setTimeout(()=>{e({type:"LONG_PRESS.OPEN"})},700);return()=>clearTimeout(t)},trackPositioning({context:e,prop:t,scope:o,refs:n}){if(re(o))return;let a={...t("positioning"),...n.get("positioningOverride")};e.set("currentPlacement",a.placement);let c=()=>Ve(o);return oe(K(o),c,{...a,defer:!0,onComplete(r){e.set("currentPlacement",r.placement)}})},trackInteractOutside({refs:e,scope:t,prop:o,context:n,send:a}){let c=()=>C(t),r=!0;return we(c,{type:"menu",defer:!0,exclude:[K(t)],onInteractOutside:o("onInteractOutside"),onRequestDismiss:o("onRequestDismiss"),onFocusOutside(s){o("onFocusOutside")?.(s);let d=U(s.detail.originalEvent);if(F(re(t),d)){s.preventDefault();return}},onEscapeKeyDown(s){o("onEscapeKeyDown")?.(s),n.get("isSubmenu")&&s.preventDefault(),Ue({parent:e.get("parent")})},onPointerDownOutside(s){o("onPointerDownOutside")?.(s);let d=U(s.detail.originalEvent);if(F(re(t),d)&&s.detail.contextmenu){s.preventDefault();return}r=!s.detail.focusable},onDismiss(){a({type:"CLOSE",src:"interact-outside",restoreFocus:r})}})},trackPointerMove({context:e,scope:t,send:o,refs:n,flush:a}){let c=n.get("parent");a(()=>{c.context.set("suspendPointer",!0)});let r=t.getDoc();return Oe(r,"pointermove",s=>{nt(e.get("intentPolygon"),{x:s.clientX,y:s.clientY})||(o({type:"POINTER_MOVED_AWAY_FROM_SUBMENU"}),c.context.set("suspendPointer",!1))})},scrollToHighlightedItem({event:e,scope:t,computed:o}){let n=()=>{if(e.current().type.startsWith("ITEM_POINTER"))return;let c=t.getById(o("highlightedId")),r=C(t);Pe(c,{rootEl:r,block:"nearest"})};return W(()=>n()),Te(()=>C(t),{defer:!0,attributes:["aria-activedescendant"],callback:n})}},actions:{setAnchorPoint({context:e,event:t}){e.set("anchorPoint",o=>Re(o,t.point)?o:t.point)},setSubmenuPlacement({context:e,computed:t,refs:o}){if(!e.get("isSubmenu"))return;let n=t("isRtl")?"left-start":"right-start";o.set("positioningOverride",{placement:n,gutter:0})},reposition({context:e,scope:t,prop:o,event:n,refs:a}){let c=()=>Ve(t),r=e.get("anchorPoint"),s=r?()=>({width:0,height:0,...r}):void 0,d={...o("positioning"),...a.get("positioningOverride")};oe(K(t),c,{...d,defer:!0,getAnchorRect:s,...n.options??{},listeners:!1,onComplete(m){e.set("currentPlacement",m.placement)}})},setOptionState({event:e}){if(!e.option)return;let{checked:t,onCheckedChange:o,type:n}=e.option;n==="radio"?o?.(!0):n==="checkbox"&&o?.(!t)},clickHighlightedItem({scope:e,computed:t,prop:o,context:n}){let a=e.getById(t("highlightedId"));if(!a||a.dataset.disabled)return;let c=n.get("highlightedValue");ue(a)?o("navigate")?.({value:c,node:a,href:a.href}):queueMicrotask(()=>a.click())},setIntentPolygon({context:e,scope:t,event:o}){let n=C(t),a=e.get("currentPlacement");if(!n||!a)return;let c=n.getBoundingClientRect(),r=He(c,a);if(!r)return;let d=De(a)==="right"?-5:5;e.set("intentPolygon",[{...o.point,x:o.point.x+d},...r])},clearIntentPolygon({context:e}){e.set("intentPolygon",null)},clearAnchorPoint({context:e}){e.set("anchorPoint",null)},resumePointer({refs:e,flush:t}){let o=e.get("parent");o&&t(()=>{o.context.set("suspendPointer",!1)})},setHighlightedItem({context:e,event:t}){let o=t.value||N(t.target);e.set("highlightedValue",o)},clearHighlightedItem({context:e}){e.set("highlightedValue",null)},focusMenu({scope:e}){W(()=>{let t=C(e);Ee({root:t,enabled:!F(t,e.getActiveElement()),filter(n){return!n.role?.startsWith("menuitem")}})?.focus({preventScroll:!0})})},highlightFirstItem({context:e,scope:t}){(C(t)?queueMicrotask:W)(()=>{let n=je(t);n&&e.set("highlightedValue",N(n))})},highlightLastItem({context:e,scope:t}){(C(t)?queueMicrotask:W)(()=>{let n=Je(t);n&&e.set("highlightedValue",N(n))})},highlightNextItem({context:e,scope:t,event:o,prop:n}){let a=Qe(t,{loop:o.loop,value:e.get("highlightedValue"),loopFocus:n("loopFocus")});e.set("highlightedValue",N(a))},highlightPrevItem({context:e,scope:t,event:o,prop:n}){let a=Ze(t,{loop:o.loop,value:e.get("highlightedValue"),loopFocus:n("loopFocus")});e.set("highlightedValue",N(a))},invokeOnSelect({context:e,prop:t,scope:o}){let n=e.get("highlightedValue");if(n==null)return;let a=Ye(o,n);et(a,n),t("onSelect")?.({value:n})},focusTrigger({scope:e,context:t,event:o}){t.get("isSubmenu")||t.get("anchorPoint")||o.restoreFocus===!1||queueMicrotask(()=>K(e)?.focus({preventScroll:!0}))},highlightMatchedItem({scope:e,context:t,event:o,refs:n}){let a=ze(e,{key:o.key,value:t.get("highlightedValue"),typeaheadState:n.get("typeaheadState")});a&&t.set("highlightedValue",N(a))},setParentMenu({refs:e,event:t,context:o}){e.set("parent",t.value),o.set("isSubmenu",!0)},setChildMenu({refs:e,event:t}){let o=e.get("children");o[t.id]=t.value,e.set("children",o)},closeSiblingMenus({refs:e,event:t,scope:o}){let n=t.target;if(!Fe(n))return;let a=n?.getAttribute("data-uid"),c=e.get("children");for(let r in c){if(r===a)continue;let s=c[r],d=s.context.get("intentPolygon");d&&t.point&&ie(d,t.point)||(C(o)?.focus({preventScroll:!0}),s.send({type:"CLOSE"}))}},closeRootMenu({refs:e}){Ue({parent:e.get("parent")})},openSubmenu({refs:e,scope:t,computed:o}){let a=t.getById(o("highlightedId"))?.getAttribute("data-uid"),c=e.get("children");(a?c[a]:null)?.send({type:"OPEN_AUTOFOCUS"})},focusParentMenu({refs:e}){e.get("parent")?.send({type:"FOCUS_MENU"})},setLastHighlightedItem({context:e,event:t}){e.set("lastHighlightedValue",N(t.target))},restoreHighlightedItem({context:e}){e.get("lastHighlightedValue")&&(e.set("highlightedValue",e.get("lastHighlightedValue")),e.set("lastHighlightedValue",null))},restoreParentHighlightedItem({refs:e}){e.get("parent")?.send({type:"HIGHLIGHTED.RESTORE"})},invokeOnOpen({prop:e}){e("onOpenChange")?.({open:!0})},invokeOnClose({prop:e}){e("onOpenChange")?.({open:!1})},toggleVisibility({prop:e,event:t,send:o}){o({type:e("open")?"CONTROLLED.OPEN":"CONTROLLED.CLOSE",previousEvent:t})}}}};function Ue(e){let t=e.parent;for(;t&&t.context.get("isSubmenu");)t=t.refs.get("parent");t?.send({type:"CLOSE"})}function nt(e,t){return e?ie(e,t):!1}function it(e,t,o){let n=Object.keys(e).length>0;if(!t)return null;if(!n)return x(o,t);for(let a in e){let c=e[a],r=Y(c.scope);if(r===t)return r}return x(o,t)}var ot=w()(["anchorPoint","aria-label","closeOnSelect","composite","defaultHighlightedValue","defaultOpen","dir","getRootNode","highlightedValue","id","ids","loopFocus","navigate","onEscapeKeyDown","onFocusOutside","onHighlightChange","onInteractOutside","onOpenChange","onPointerDownOutside","onRequestDismiss","onSelect","open","positioning","typeahead"]),ft=_(ot),rt=w()(["closeOnSelect","disabled","value","valueText"]),Tt=_(rt),st=w()(["htmlFor"]),It=_(st),at=w()(["id"]),Pt=_(at),lt=w()(["checked","closeOnSelect","disabled","onCheckedChange","type","value","valueText"]),vt=_(lt);var B=class extends Ne{children=[];initMachine(t){return new Ae(Be,t)}initApi(){return qe(this.machine.service,Le)}setChild(t){this.api.setChild(t.machine.service),this.children.includes(t)||this.children.push(t)}setParent(t){this.api.setParent(t.machine.service)}isOwnElement(t){return t.closest('[phx-hook="Menu"]')===this.el}renderSubmenuTriggers(){let t=this.el.querySelector('[data-scope="menu"][data-part="content"]');if(!t)return;let o=t.querySelectorAll('[data-scope="menu"][data-nested-menu]');for(let n of o){if(!this.isOwnElement(n))continue;let a=n.dataset.nestedMenu;if(!a)continue;let c=this.children.find(s=>s.el.id===`menu:${a}`);if(!c)continue;let r=()=>{let s=this.api.getTriggerItemProps(c.api);this.spreadProps(n,s)};r(),this.machine.subscribe(r),c.machine.subscribe(r)}}render(){let t=this.el.querySelector('[data-scope="menu"][data-part="trigger"]');t&&this.spreadProps(t,this.api.getTriggerProps());let o=this.el.querySelector('[data-scope="menu"][data-part="positioner"]'),n=this.el.querySelector('[data-scope="menu"][data-part="content"]');if(o&&n){this.spreadProps(o,this.api.getPositionerProps()),this.spreadProps(n,this.api.getContentProps()),n.style.pointerEvents="auto",o.hidden=!this.api.open;let c=!this.el.querySelector('[data-scope="menu"][data-part="trigger"]');(this.api.open||c)&&(n.querySelectorAll('[data-scope="menu"][data-part="item"]').forEach(h=>{if(!this.isOwnElement(h))return;let p=h.dataset.value;if(p){let M=h.hasAttribute("data-disabled");this.spreadProps(h,this.api.getItemProps({value:p,disabled:M||void 0}))}}),n.querySelectorAll('[data-scope="menu"][data-part="item-group"]').forEach(h=>{if(!this.isOwnElement(h))return;let p=h.id;p&&this.spreadProps(h,this.api.getItemGroupProps({id:p}))}),n.querySelectorAll('[data-scope="menu"][data-part="separator"]').forEach(h=>{this.isOwnElement(h)&&this.spreadProps(h,this.api.getSeparatorProps())}))}let a=this.el.querySelector('[data-scope="menu"][data-part="indicator"]');a&&this.spreadProps(a,this.api.getIndicatorProps())}};var Lt={mounted(){let e=this.el;if(e.hasAttribute("data-nested"))return;let t=this.pushEvent.bind(this),o=()=>this.liveSocket?.main,n=new B(e,{id:e.id.replace("menu:",""),...g(e,"controlled")?{open:g(e,"open")}:{defaultOpen:g(e,"defaultOpen")},closeOnSelect:g(e,"closeOnSelect"),loopFocus:g(e,"loopFocus"),typeahead:g(e,"typeahead"),composite:g(e,"composite"),dir:v(e,"dir",["ltr","rtl"]),onSelect:r=>{let s=g(e,"redirect"),d=[...e.querySelectorAll('[data-scope="menu"][data-part="item"]')].find(k=>k.getAttribute("data-value")===r.value),m=d?.getAttribute("data-redirect"),h=d?.hasAttribute("data-new-tab"),p=o();s&&r.value&&(p?.isDead??!0)&&m!=="false"&&(h?window.open(r.value,"_blank","noopener,noreferrer"):window.location.href=r.value);let R=v(e,"onSelect");R&&p&&!p.isDead&&p.isConnected()&&t(R,{id:e.id,value:r.value??null});let b=v(e,"onSelectClient");b&&e.dispatchEvent(new CustomEvent(b,{bubbles:!0,detail:{id:e.id,value:r.value??null}}))},onOpenChange:r=>{let s=o(),d=v(e,"onOpenChange");d&&s&&!s.isDead&&s.isConnected()&&t(d,{id:e.id,open:r.open??!1});let m=v(e,"onOpenChangeClient");m&&e.dispatchEvent(new CustomEvent(m,{bubbles:!0,detail:{id:e.id,open:r.open??!1}}))}});n.init(),this.menu=n,this.nestedMenus=new Map;let a=e.querySelectorAll('[data-scope="menu"][data-nested="menu"]'),c=[];a.forEach((r,s)=>{let d=r.id;if(d){let m=`${d}-${s}`,h=new B(r,{id:m,dir:v(r,"dir",["ltr","rtl"]),closeOnSelect:g(r,"closeOnSelect"),loopFocus:g(r,"loopFocus"),typeahead:g(r,"typeahead"),composite:g(r,"composite"),onSelect:p=>{let M=g(e,"redirect"),R=[...e.querySelectorAll('[data-scope="menu"][data-part="item"]')].find(i=>i.getAttribute("data-value")===p.value),b=R?.getAttribute("data-redirect"),k=R?.hasAttribute("data-new-tab"),S=o();M&&p.value&&(S?.isDead??!0)&&b!=="false"&&(k?window.open(p.value,"_blank","noopener,noreferrer"):window.location.href=p.value);let L=v(e,"onSelect");L&&S&&!S.isDead&&S.isConnected()&&t(L,{id:e.id,value:p.value??null});let H=v(e,"onSelectClient");H&&e.dispatchEvent(new CustomEvent(H,{bubbles:!0,detail:{id:e.id,value:p.value??null}}))}});h.init(),this.nestedMenus?.set(d,h),c.push(h)}}),setTimeout(()=>{c.forEach(r=>{this.menu&&(this.menu.setChild(r),r.setParent(this.menu))}),this.menu&&this.menu.children.length>0&&this.menu.renderSubmenuTriggers()},0),this.onSetOpen=r=>{let{open:s}=r.detail;n.api.open!==s&&n.api.setOpen(s)},e.addEventListener("phx:menu:set-open",this.onSetOpen),this.handlers=[],this.handlers.push(this.handleEvent("menu_set_open",r=>{let s=r.menu_id;(!s||e.id===s||e.id===`menu:${s}`)&&n.api.setOpen(r.open)})),this.handlers.push(this.handleEvent("menu_open",()=>{this.pushEvent("menu_open_response",{open:n.api.open})}))},updated(){this.el.hasAttribute("data-nested")||this.menu?.updateProps({id:this.el.id,...g(this.el,"controlled")?{open:g(this.el,"open")}:{defaultOpen:g(this.el,"defaultOpen")},closeOnSelect:g(this.el,"closeOnSelect"),loopFocus:g(this.el,"loopFocus"),typeahead:g(this.el,"typeahead"),composite:g(this.el,"composite"),dir:v(this.el,"dir",["ltr","rtl"])})},destroyed(){if(!this.el.hasAttribute("data-nested")){if(this.onSetOpen&&this.el.removeEventListener("phx:menu:set-open",this.onSetOpen),this.handlers)for(let e of this.handlers)this.removeHandleEvent(e);if(this.nestedMenus)for(let[,e]of this.nestedMenus)e.destroy();this.menu?.destroy()}}};export{Lt as Menu};
+import {
+  getElementPolygon,
+  isPointInPolygon
+} from "./chunk-BMVNROAE.mjs";
+import {
+  getPlacement,
+  getPlacementSide,
+  getPlacementStyles
+} from "./chunk-EENFWNGI.mjs";
+import {
+  trackDismissableElement
+} from "./chunk-RR7TJIQ5.mjs";
+import "./chunk-ER3INIAI.mjs";
+import {
+  Component,
+  VanillaMachine,
+  addDomEvent,
+  ariaAttr,
+  cast,
+  clickIfLink,
+  contains,
+  createAnatomy,
+  createGuards,
+  createMachine,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  first,
+  getBoolean,
+  getByTypeahead,
+  getEventKey,
+  getEventPoint,
+  getEventTarget,
+  getInitialFocus,
+  getString,
+  getWindow,
+  hasProp,
+  isAnchorElement,
+  isContextMenuEvent,
+  isDownloadingEvent,
+  isEditableElement,
+  isEqual,
+  isHTMLElement,
+  isModifierKey,
+  isOpeningInNewTab,
+  isPrintableKey,
+  isValidTabEvent,
+  last,
+  mergeProps,
+  next,
+  normalizeProps,
+  observeAttributes,
+  prev,
+  queryAll,
+  raf,
+  scrollIntoView
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/@zag-js+menu@1.33.1/node_modules/@zag-js/menu/dist/index.mjs
+var anatomy = createAnatomy("menu").parts(
+  "arrow",
+  "arrowTip",
+  "content",
+  "contextTrigger",
+  "indicator",
+  "item",
+  "itemGroup",
+  "itemGroupLabel",
+  "itemIndicator",
+  "itemText",
+  "positioner",
+  "separator",
+  "trigger",
+  "triggerItem"
+);
+var parts = anatomy.build();
+var getTriggerId = (ctx) => ctx.ids?.trigger ?? `menu:${ctx.id}:trigger`;
+var getContextTriggerId = (ctx) => ctx.ids?.contextTrigger ?? `menu:${ctx.id}:ctx-trigger`;
+var getContentId = (ctx) => ctx.ids?.content ?? `menu:${ctx.id}:content`;
+var getArrowId = (ctx) => ctx.ids?.arrow ?? `menu:${ctx.id}:arrow`;
+var getPositionerId = (ctx) => ctx.ids?.positioner ?? `menu:${ctx.id}:popper`;
+var getGroupId = (ctx, id) => ctx.ids?.group?.(id) ?? `menu:${ctx.id}:group:${id}`;
+var getItemId = (ctx, id) => `${ctx.id}/${id}`;
+var getItemValue = (el) => el?.dataset.value ?? null;
+var getGroupLabelId = (ctx, id) => ctx.ids?.groupLabel?.(id) ?? `menu:${ctx.id}:group-label:${id}`;
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
+var getItemEl = (ctx, value) => value ? ctx.getById(getItemId(ctx, value)) : null;
+var getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
+var getElements = (ctx) => {
+  const ownerId = CSS.escape(getContentId(ctx));
+  const selector = `[role^="menuitem"][data-ownedby=${ownerId}]:not([data-disabled])`;
+  return queryAll(getContentEl(ctx), selector);
+};
+var getFirstEl = (ctx) => first(getElements(ctx));
+var getLastEl = (ctx) => last(getElements(ctx));
+var isMatch = (el, value) => {
+  if (!value) return false;
+  return el.id === value || el.dataset.value === value;
+};
+var getNextEl = (ctx, opts) => {
+  const items = getElements(ctx);
+  const index = items.findIndex((el) => isMatch(el, opts.value));
+  return next(items, index, { loop: opts.loop ?? opts.loopFocus });
+};
+var getPrevEl = (ctx, opts) => {
+  const items = getElements(ctx);
+  const index = items.findIndex((el) => isMatch(el, opts.value));
+  return prev(items, index, { loop: opts.loop ?? opts.loopFocus });
+};
+var getElemByKey = (ctx, opts) => {
+  const items = getElements(ctx);
+  const item = items.find((el) => isMatch(el, opts.value));
+  return getByTypeahead(items, { state: opts.typeaheadState, key: opts.key, activeId: item?.id ?? null });
+};
+var isTargetDisabled = (v) => {
+  return isHTMLElement(v) && (v.dataset.disabled === "" || v.hasAttribute("disabled"));
+};
+var isTriggerItem = (el) => {
+  return !!el?.getAttribute("role")?.startsWith("menuitem") && !!el?.hasAttribute("data-controls");
+};
+var itemSelectEvent = "menu:select";
+function dispatchSelectionEvent(el, value) {
+  if (!el) return;
+  const win = getWindow(el);
+  const event = new win.CustomEvent(itemSelectEvent, { detail: { value } });
+  el.dispatchEvent(event);
+}
+function connect(service, normalize) {
+  const { context, send, state, computed, prop, scope } = service;
+  const open = state.hasTag("open");
+  const isSubmenu = context.get("isSubmenu");
+  const isTypingAhead = computed("isTypingAhead");
+  const composite = prop("composite");
+  const currentPlacement = context.get("currentPlacement");
+  const anchorPoint = context.get("anchorPoint");
+  const highlightedValue = context.get("highlightedValue");
+  const popperStyles = getPlacementStyles({
+    ...prop("positioning"),
+    placement: anchorPoint ? "bottom" : currentPlacement
+  });
+  function getItemState(props2) {
+    return {
+      id: getItemId(scope, props2.value),
+      disabled: !!props2.disabled,
+      highlighted: highlightedValue === props2.value
+    };
+  }
+  function getOptionItemProps(props2) {
+    const valueText = props2.valueText ?? props2.value;
+    return { ...props2, id: props2.value, valueText };
+  }
+  function getOptionItemState(props2) {
+    const itemState = getItemState(getOptionItemProps(props2));
+    return {
+      ...itemState,
+      checked: !!props2.checked
+    };
+  }
+  function getItemProps(props2) {
+    const { closeOnSelect, valueText, value } = props2;
+    const itemState = getItemState(props2);
+    const id = getItemId(scope, value);
+    return normalize.element({
+      ...parts.item.attrs,
+      id,
+      role: "menuitem",
+      "aria-disabled": ariaAttr(itemState.disabled),
+      "data-disabled": dataAttr(itemState.disabled),
+      "data-ownedby": getContentId(scope),
+      "data-highlighted": dataAttr(itemState.highlighted),
+      "data-value": value,
+      "data-valuetext": valueText,
+      onDragStart(event) {
+        const isLink = event.currentTarget.matches("a[href]");
+        if (isLink) event.preventDefault();
+      },
+      onPointerMove(event) {
+        if (itemState.disabled) return;
+        if (event.pointerType !== "mouse") return;
+        const target = event.currentTarget;
+        if (itemState.highlighted) return;
+        const point = getEventPoint(event);
+        send({ type: "ITEM_POINTERMOVE", id, target, closeOnSelect, point });
+      },
+      onPointerLeave(event) {
+        if (itemState.disabled) return;
+        if (event.pointerType !== "mouse") return;
+        const pointerMoved = service.event.previous()?.type.includes("POINTER");
+        if (!pointerMoved) return;
+        const target = event.currentTarget;
+        send({ type: "ITEM_POINTERLEAVE", id, target, closeOnSelect });
+      },
+      onPointerDown(event) {
+        if (itemState.disabled) return;
+        const target = event.currentTarget;
+        send({ type: "ITEM_POINTERDOWN", target, id, closeOnSelect });
+      },
+      onClick(event) {
+        if (isDownloadingEvent(event)) return;
+        if (isOpeningInNewTab(event)) return;
+        if (itemState.disabled) return;
+        const target = event.currentTarget;
+        send({ type: "ITEM_CLICK", target, id, closeOnSelect });
+      }
+    });
+  }
+  return {
+    highlightedValue,
+    open,
+    setOpen(nextOpen) {
+      const open2 = state.hasTag("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE" });
+    },
+    setHighlightedValue(value) {
+      send({ type: "HIGHLIGHTED.SET", value });
+    },
+    setParent(parent) {
+      send({ type: "PARENT.SET", value: parent, id: parent.prop("id") });
+    },
+    setChild(child) {
+      send({ type: "CHILD.SET", value: child, id: child.prop("id") });
+    },
+    reposition(options = {}) {
+      send({ type: "POSITIONING.SET", options });
+    },
+    addItemListener(props2) {
+      const node = scope.getById(props2.id);
+      if (!node) return;
+      const listener = () => props2.onSelect?.();
+      node.addEventListener(itemSelectEvent, listener);
+      return () => node.removeEventListener(itemSelectEvent, listener);
+    },
+    getContextTriggerProps() {
+      return normalize.element({
+        ...parts.contextTrigger.attrs,
+        dir: prop("dir"),
+        id: getContextTriggerId(scope),
+        "data-state": open ? "open" : "closed",
+        onPointerDown(event) {
+          if (event.pointerType === "mouse") return;
+          const point = getEventPoint(event);
+          send({ type: "CONTEXT_MENU_START", point });
+        },
+        onPointerCancel(event) {
+          if (event.pointerType === "mouse") return;
+          send({ type: "CONTEXT_MENU_CANCEL" });
+        },
+        onPointerMove(event) {
+          if (event.pointerType === "mouse") return;
+          send({ type: "CONTEXT_MENU_CANCEL" });
+        },
+        onPointerUp(event) {
+          if (event.pointerType === "mouse") return;
+          send({ type: "CONTEXT_MENU_CANCEL" });
+        },
+        onContextMenu(event) {
+          const point = getEventPoint(event);
+          send({ type: "CONTEXT_MENU", point });
+          event.preventDefault();
+        },
+        style: {
+          WebkitTouchCallout: "none",
+          WebkitUserSelect: "none",
+          userSelect: "none"
+        }
+      });
+    },
+    getTriggerItemProps(childApi) {
+      const triggerProps = childApi.getTriggerProps();
+      return mergeProps(getItemProps({ value: triggerProps.id }), triggerProps);
+    },
+    getTriggerProps() {
+      return normalize.button({
+        ...isSubmenu ? parts.triggerItem.attrs : parts.trigger.attrs,
+        "data-placement": context.get("currentPlacement"),
+        type: "button",
+        dir: prop("dir"),
+        id: getTriggerId(scope),
+        "data-uid": prop("id"),
+        "aria-haspopup": composite ? "menu" : "dialog",
+        "aria-controls": getContentId(scope),
+        "data-controls": getContentId(scope),
+        "aria-expanded": open || void 0,
+        "data-state": open ? "open" : "closed",
+        onPointerMove(event) {
+          if (event.pointerType !== "mouse") return;
+          const disabled = isTargetDisabled(event.currentTarget);
+          if (disabled || !isSubmenu) return;
+          const point = getEventPoint(event);
+          send({ type: "TRIGGER_POINTERMOVE", target: event.currentTarget, point });
+        },
+        onPointerLeave(event) {
+          if (isTargetDisabled(event.currentTarget)) return;
+          if (event.pointerType !== "mouse") return;
+          if (!isSubmenu) return;
+          const point = getEventPoint(event);
+          send({
+            type: "TRIGGER_POINTERLEAVE",
+            target: event.currentTarget,
+            point
+          });
+        },
+        onPointerDown(event) {
+          if (isTargetDisabled(event.currentTarget)) return;
+          if (isContextMenuEvent(event)) return;
+          event.preventDefault();
+        },
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (isTargetDisabled(event.currentTarget)) return;
+          send({ type: "TRIGGER_CLICK", target: event.currentTarget });
+        },
+        onBlur() {
+          send({ type: "TRIGGER_BLUR" });
+        },
+        onFocus() {
+          send({ type: "TRIGGER_FOCUS" });
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          const keyMap = {
+            ArrowDown() {
+              send({ type: "ARROW_DOWN" });
+            },
+            ArrowUp() {
+              send({ type: "ARROW_UP" });
+            },
+            Enter() {
+              send({ type: "ARROW_DOWN", src: "enter" });
+            },
+            Space() {
+              send({ type: "ARROW_DOWN", src: "space" });
+            }
+          };
+          const key = getEventKey(event, {
+            orientation: "vertical",
+            dir: prop("dir")
+          });
+          const exec = keyMap[key];
+          if (exec) {
+            event.preventDefault();
+            exec(event);
+          }
+        }
+      });
+    },
+    getIndicatorProps() {
+      return normalize.element({
+        ...parts.indicator.attrs,
+        dir: prop("dir"),
+        "data-state": open ? "open" : "closed"
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId(scope),
+        style: popperStyles.floating
+      });
+    },
+    getArrowProps() {
+      return normalize.element({
+        id: getArrowId(scope),
+        ...parts.arrow.attrs,
+        dir: prop("dir"),
+        style: popperStyles.arrow
+      });
+    },
+    getArrowTipProps() {
+      return normalize.element({
+        ...parts.arrowTip.attrs,
+        dir: prop("dir"),
+        style: popperStyles.arrowTip
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        ...parts.content.attrs,
+        id: getContentId(scope),
+        "aria-label": prop("aria-label"),
+        hidden: !open,
+        "data-state": open ? "open" : "closed",
+        role: composite ? "menu" : "dialog",
+        tabIndex: 0,
+        dir: prop("dir"),
+        "aria-activedescendant": computed("highlightedId") || void 0,
+        "aria-labelledby": getTriggerId(scope),
+        "data-placement": currentPlacement,
+        onPointerEnter(event) {
+          if (event.pointerType !== "mouse") return;
+          send({ type: "MENU_POINTERENTER" });
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (!contains(event.currentTarget, getEventTarget(event))) return;
+          const target = getEventTarget(event);
+          const sameMenu = target?.closest("[role=menu]") === event.currentTarget || target === event.currentTarget;
+          if (!sameMenu) return;
+          if (event.key === "Tab") {
+            const valid = isValidTabEvent(event);
+            if (!valid) {
+              event.preventDefault();
+              return;
+            }
+          }
+          const keyMap = {
+            ArrowDown() {
+              send({ type: "ARROW_DOWN" });
+            },
+            ArrowUp() {
+              send({ type: "ARROW_UP" });
+            },
+            ArrowLeft() {
+              send({ type: "ARROW_LEFT" });
+            },
+            ArrowRight() {
+              send({ type: "ARROW_RIGHT" });
+            },
+            Enter() {
+              send({ type: "ENTER" });
+            },
+            Space(event2) {
+              if (isTypingAhead) {
+                send({ type: "TYPEAHEAD", key: event2.key });
+              } else {
+                keyMap.Enter?.(event2);
+              }
+            },
+            Home() {
+              send({ type: "HOME" });
+            },
+            End() {
+              send({ type: "END" });
+            }
+          };
+          const key = getEventKey(event, { dir: prop("dir") });
+          const exec = keyMap[key];
+          if (exec) {
+            exec(event);
+            event.stopPropagation();
+            event.preventDefault();
+            return;
+          }
+          if (!prop("typeahead")) return;
+          if (!isPrintableKey(event)) return;
+          if (isModifierKey(event)) return;
+          if (isEditableElement(target)) return;
+          send({ type: "TYPEAHEAD", key: event.key });
+          event.preventDefault();
+        }
+      });
+    },
+    getSeparatorProps() {
+      return normalize.element({
+        ...parts.separator.attrs,
+        role: "separator",
+        dir: prop("dir"),
+        "aria-orientation": "horizontal"
+      });
+    },
+    getItemState,
+    getItemProps,
+    getOptionItemState,
+    getOptionItemProps(props2) {
+      const { type, disabled, closeOnSelect } = props2;
+      const option = getOptionItemProps(props2);
+      const itemState = getOptionItemState(props2);
+      return {
+        ...getItemProps(option),
+        ...normalize.element({
+          "data-type": type,
+          ...parts.item.attrs,
+          dir: prop("dir"),
+          "data-value": option.value,
+          role: `menuitem${type}`,
+          "aria-checked": !!itemState.checked,
+          "data-state": itemState.checked ? "checked" : "unchecked",
+          onClick(event) {
+            if (disabled) return;
+            if (isDownloadingEvent(event)) return;
+            if (isOpeningInNewTab(event)) return;
+            const target = event.currentTarget;
+            send({ type: "ITEM_CLICK", target, option, closeOnSelect });
+          }
+        })
+      };
+    },
+    getItemIndicatorProps(props2) {
+      const itemState = getOptionItemState(cast(props2));
+      const dataState = itemState.checked ? "checked" : "unchecked";
+      return normalize.element({
+        ...parts.itemIndicator.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(itemState.disabled),
+        "data-highlighted": dataAttr(itemState.highlighted),
+        "data-state": hasProp(props2, "checked") ? dataState : void 0,
+        hidden: hasProp(props2, "checked") ? !itemState.checked : void 0
+      });
+    },
+    getItemTextProps(props2) {
+      const itemState = getOptionItemState(cast(props2));
+      const dataState = itemState.checked ? "checked" : "unchecked";
+      return normalize.element({
+        ...parts.itemText.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(itemState.disabled),
+        "data-highlighted": dataAttr(itemState.highlighted),
+        "data-state": hasProp(props2, "checked") ? dataState : void 0
+      });
+    },
+    getItemGroupLabelProps(props2) {
+      return normalize.element({
+        ...parts.itemGroupLabel.attrs,
+        id: getGroupLabelId(scope, props2.htmlFor),
+        dir: prop("dir")
+      });
+    },
+    getItemGroupProps(props2) {
+      return normalize.element({
+        id: getGroupId(scope, props2.id),
+        ...parts.itemGroup.attrs,
+        dir: prop("dir"),
+        "aria-labelledby": getGroupLabelId(scope, props2.id),
+        role: "group"
+      });
+    }
+  };
+}
+var { not, and, or } = createGuards();
+var machine = createMachine({
+  props({ props: props2 }) {
+    return {
+      closeOnSelect: true,
+      typeahead: true,
+      composite: true,
+      loopFocus: false,
+      navigate(details) {
+        clickIfLink(details.node);
+      },
+      ...props2,
+      positioning: {
+        placement: "bottom-start",
+        gutter: 8,
+        ...props2.positioning
+      }
+    };
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "open" : "idle";
+  },
+  context({ bindable, prop }) {
+    return {
+      suspendPointer: bindable(() => ({
+        defaultValue: false
+      })),
+      highlightedValue: bindable(() => ({
+        defaultValue: prop("defaultHighlightedValue") || null,
+        value: prop("highlightedValue"),
+        onChange(value) {
+          prop("onHighlightChange")?.({ highlightedValue: value });
+        }
+      })),
+      lastHighlightedValue: bindable(() => ({
+        defaultValue: null
+      })),
+      currentPlacement: bindable(() => ({
+        defaultValue: void 0
+      })),
+      intentPolygon: bindable(() => ({
+        defaultValue: null
+      })),
+      anchorPoint: bindable(() => ({
+        defaultValue: null,
+        hash(value) {
+          return `x: ${value?.x}, y: ${value?.y}`;
+        }
+      })),
+      isSubmenu: bindable(() => ({
+        defaultValue: false
+      }))
+    };
+  },
+  refs() {
+    return {
+      parent: null,
+      children: {},
+      typeaheadState: { ...getByTypeahead.defaultOptions },
+      positioningOverride: {}
+    };
+  },
+  computed: {
+    isRtl: ({ prop }) => prop("dir") === "rtl",
+    isTypingAhead: ({ refs }) => refs.get("typeaheadState").keysSoFar !== "",
+    highlightedId: ({ context, scope, refs }) => resolveItemId(refs.get("children"), context.get("highlightedValue"), scope)
+  },
+  watch({ track, action, context, prop }) {
+    track([() => context.get("isSubmenu")], () => {
+      action(["setSubmenuPlacement"]);
+    });
+    track([() => context.hash("anchorPoint")], () => {
+      if (!context.get("anchorPoint")) return;
+      action(["reposition"]);
+    });
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+  },
+  on: {
+    "PARENT.SET": {
+      actions: ["setParentMenu"]
+    },
+    "CHILD.SET": {
+      actions: ["setChildMenu"]
+    },
+    OPEN: [
+      {
+        guard: "isOpenControlled",
+        actions: ["invokeOnOpen"]
+      },
+      {
+        target: "open",
+        actions: ["invokeOnOpen"]
+      }
+    ],
+    OPEN_AUTOFOCUS: [
+      {
+        guard: "isOpenControlled",
+        actions: ["invokeOnOpen"]
+      },
+      {
+        // internal: true,
+        target: "open",
+        actions: ["highlightFirstItem", "invokeOnOpen"]
+      }
+    ],
+    CLOSE: [
+      {
+        guard: "isOpenControlled",
+        actions: ["invokeOnClose"]
+      },
+      {
+        target: "closed",
+        actions: ["invokeOnClose"]
+      }
+    ],
+    "HIGHLIGHTED.RESTORE": {
+      actions: ["restoreHighlightedItem"]
+    },
+    "HIGHLIGHTED.SET": {
+      actions: ["setHighlightedItem"]
+    }
+  },
+  states: {
+    idle: {
+      tags: ["closed"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open"
+        },
+        "CONTROLLED.CLOSE": {
+          target: "closed"
+        },
+        CONTEXT_MENU_START: {
+          target: "opening:contextmenu",
+          actions: ["setAnchorPoint"]
+        },
+        CONTEXT_MENU: [
+          {
+            guard: "isOpenControlled",
+            actions: ["setAnchorPoint", "invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setAnchorPoint", "invokeOnOpen"]
+          }
+        ],
+        TRIGGER_CLICK: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        TRIGGER_FOCUS: {
+          guard: not("isSubmenu"),
+          target: "closed"
+        },
+        TRIGGER_POINTERMOVE: {
+          guard: "isSubmenu",
+          target: "opening"
+        }
+      }
+    },
+    "opening:contextmenu": {
+      tags: ["closed"],
+      effects: ["waitForLongPress"],
+      on: {
+        "CONTROLLED.OPEN": { target: "open" },
+        "CONTROLLED.CLOSE": { target: "closed" },
+        CONTEXT_MENU_CANCEL: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "LONG_PRESS.OPEN": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    opening: {
+      tags: ["closed"],
+      effects: ["waitForOpenDelay"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open"
+        },
+        "CONTROLLED.CLOSE": {
+          target: "closed"
+        },
+        BLUR: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        TRIGGER_POINTERLEAVE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "DELAY.OPEN": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    closing: {
+      tags: ["open"],
+      effects: ["trackPointerMove", "trackInteractOutside", "waitForCloseDelay"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open"
+        },
+        "CONTROLLED.CLOSE": {
+          target: "closed",
+          actions: ["focusParentMenu", "restoreParentHighlightedItem"]
+        },
+        // don't invoke on open here since the menu is still open (we're only keeping it open)
+        MENU_POINTERENTER: {
+          target: "open",
+          actions: ["clearIntentPolygon"]
+        },
+        POINTER_MOVED_AWAY_FROM_SUBMENU: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["focusParentMenu", "restoreParentHighlightedItem"]
+          }
+        ],
+        "DELAY.CLOSE": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["focusParentMenu", "restoreParentHighlightedItem", "invokeOnClose"]
+          }
+        ]
+      }
+    },
+    closed: {
+      tags: ["closed"],
+      entry: ["clearHighlightedItem", "focusTrigger", "resumePointer", "clearAnchorPoint"],
+      on: {
+        "CONTROLLED.OPEN": [
+          {
+            guard: or("isOpenAutoFocusEvent", "isArrowDownEvent"),
+            target: "open",
+            actions: ["highlightFirstItem"]
+          },
+          {
+            guard: "isArrowUpEvent",
+            target: "open",
+            actions: ["highlightLastItem"]
+          },
+          {
+            target: "open"
+          }
+        ],
+        CONTEXT_MENU_START: {
+          target: "opening:contextmenu",
+          actions: ["setAnchorPoint"]
+        },
+        CONTEXT_MENU: [
+          {
+            guard: "isOpenControlled",
+            actions: ["setAnchorPoint", "invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["setAnchorPoint", "invokeOnOpen"]
+          }
+        ],
+        TRIGGER_CLICK: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        TRIGGER_POINTERMOVE: {
+          guard: "isTriggerItem",
+          target: "opening"
+        },
+        TRIGGER_BLUR: { target: "idle" },
+        ARROW_DOWN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["highlightFirstItem", "invokeOnOpen"]
+          }
+        ],
+        ARROW_UP: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["highlightLastItem", "invokeOnOpen"]
+          }
+        ]
+      }
+    },
+    open: {
+      tags: ["open"],
+      effects: ["trackInteractOutside", "trackPositioning", "scrollToHighlightedItem"],
+      entry: ["focusMenu", "resumePointer"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            target: "closed",
+            guard: "isArrowLeftEvent",
+            actions: ["focusParentMenu"]
+          },
+          {
+            target: "closed"
+          }
+        ],
+        TRIGGER_CLICK: [
+          {
+            guard: and(not("isTriggerItem"), "isOpenControlled"),
+            actions: ["invokeOnClose"]
+          },
+          {
+            guard: not("isTriggerItem"),
+            target: "closed",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        CONTEXT_MENU: {
+          actions: ["setAnchorPoint", "focusMenu"]
+        },
+        ARROW_UP: {
+          actions: ["highlightPrevItem", "focusMenu"]
+        },
+        ARROW_DOWN: {
+          actions: ["highlightNextItem", "focusMenu"]
+        },
+        ARROW_LEFT: [
+          {
+            guard: and("isSubmenu", "isOpenControlled"),
+            actions: ["invokeOnClose"]
+          },
+          {
+            guard: "isSubmenu",
+            target: "closed",
+            actions: ["focusParentMenu", "invokeOnClose"]
+          }
+        ],
+        HOME: {
+          actions: ["highlightFirstItem", "focusMenu"]
+        },
+        END: {
+          actions: ["highlightLastItem", "focusMenu"]
+        },
+        ARROW_RIGHT: {
+          guard: "isTriggerItemHighlighted",
+          actions: ["openSubmenu"]
+        },
+        ENTER: [
+          {
+            guard: "isTriggerItemHighlighted",
+            actions: ["openSubmenu"]
+          },
+          {
+            actions: ["clickHighlightedItem"]
+          }
+        ],
+        ITEM_POINTERMOVE: [
+          {
+            guard: not("isPointerSuspended"),
+            actions: ["setHighlightedItem", "focusMenu", "closeSiblingMenus"]
+          },
+          {
+            actions: ["setLastHighlightedItem", "closeSiblingMenus"]
+          }
+        ],
+        ITEM_POINTERLEAVE: {
+          guard: and(not("isPointerSuspended"), not("isTriggerItem")),
+          actions: ["clearHighlightedItem"]
+        },
+        ITEM_CLICK: [
+          // == grouped ==
+          {
+            guard: and(
+              not("isTriggerItemHighlighted"),
+              not("isHighlightedItemEditable"),
+              "closeOnSelect",
+              "isOpenControlled"
+            ),
+            actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
+          },
+          {
+            guard: and(not("isTriggerItemHighlighted"), not("isHighlightedItemEditable"), "closeOnSelect"),
+            target: "closed",
+            actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
+          },
+          //
+          {
+            guard: and(not("isTriggerItemHighlighted"), not("isHighlightedItemEditable")),
+            actions: ["invokeOnSelect", "setOptionState"]
+          },
+          { actions: ["setHighlightedItem"] }
+        ],
+        TRIGGER_POINTERMOVE: {
+          guard: "isTriggerItem",
+          actions: ["setIntentPolygon"]
+        },
+        TRIGGER_POINTERLEAVE: {
+          target: "closing",
+          actions: ["setIntentPolygon"]
+        },
+        ITEM_POINTERDOWN: {
+          actions: ["setHighlightedItem"]
+        },
+        TYPEAHEAD: {
+          actions: ["highlightMatchedItem"]
+        },
+        FOCUS_MENU: {
+          actions: ["focusMenu"]
+        },
+        "POSITIONING.SET": {
+          actions: ["reposition"]
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      closeOnSelect: ({ prop, event }) => !!(event?.closeOnSelect ?? prop("closeOnSelect")),
+      // whether the trigger is also a menu item
+      isTriggerItem: ({ event }) => isTriggerItem(event.target),
+      // whether the trigger item is the active item
+      isTriggerItemHighlighted: ({ event, scope, computed }) => {
+        const target = event.target ?? scope.getById(computed("highlightedId"));
+        return !!target?.hasAttribute("data-controls");
+      },
+      isSubmenu: ({ context }) => context.get("isSubmenu"),
+      isPointerSuspended: ({ context }) => context.get("suspendPointer"),
+      isHighlightedItemEditable: ({ scope, computed }) => isEditableElement(scope.getById(computed("highlightedId"))),
+      // guard assertions (for controlled mode)
+      isOpenControlled: ({ prop }) => prop("open") !== void 0,
+      isArrowLeftEvent: ({ event }) => event.previousEvent?.type === "ARROW_LEFT",
+      isArrowUpEvent: ({ event }) => event.previousEvent?.type === "ARROW_UP",
+      isArrowDownEvent: ({ event }) => event.previousEvent?.type === "ARROW_DOWN",
+      isOpenAutoFocusEvent: ({ event }) => event.previousEvent?.type === "OPEN_AUTOFOCUS"
+    },
+    effects: {
+      waitForOpenDelay({ send }) {
+        const timer = setTimeout(() => {
+          send({ type: "DELAY.OPEN" });
+        }, 200);
+        return () => clearTimeout(timer);
+      },
+      waitForCloseDelay({ send }) {
+        const timer = setTimeout(() => {
+          send({ type: "DELAY.CLOSE" });
+        }, 100);
+        return () => clearTimeout(timer);
+      },
+      waitForLongPress({ send }) {
+        const timer = setTimeout(() => {
+          send({ type: "LONG_PRESS.OPEN" });
+        }, 700);
+        return () => clearTimeout(timer);
+      },
+      trackPositioning({ context, prop, scope, refs }) {
+        if (!!getContextTriggerEl(scope)) return;
+        const positioning = {
+          ...prop("positioning"),
+          ...refs.get("positioningOverride")
+        };
+        context.set("currentPlacement", positioning.placement);
+        const getPositionerEl2 = () => getPositionerEl(scope);
+        return getPlacement(getTriggerEl(scope), getPositionerEl2, {
+          ...positioning,
+          defer: true,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      trackInteractOutside({ refs, scope, prop, context, send }) {
+        const getContentEl2 = () => getContentEl(scope);
+        let restoreFocus = true;
+        return trackDismissableElement(getContentEl2, {
+          type: "menu",
+          defer: true,
+          exclude: [getTriggerEl(scope)],
+          onInteractOutside: prop("onInteractOutside"),
+          onRequestDismiss: prop("onRequestDismiss"),
+          onFocusOutside(event) {
+            prop("onFocusOutside")?.(event);
+            const target = getEventTarget(event.detail.originalEvent);
+            const isWithinContextTrigger = contains(getContextTriggerEl(scope), target);
+            if (isWithinContextTrigger) {
+              event.preventDefault();
+              return;
+            }
+          },
+          onEscapeKeyDown(event) {
+            prop("onEscapeKeyDown")?.(event);
+            if (context.get("isSubmenu")) event.preventDefault();
+            closeRootMenu({ parent: refs.get("parent") });
+          },
+          onPointerDownOutside(event) {
+            prop("onPointerDownOutside")?.(event);
+            const target = getEventTarget(event.detail.originalEvent);
+            const isWithinContextTrigger = contains(getContextTriggerEl(scope), target);
+            if (isWithinContextTrigger && event.detail.contextmenu) {
+              event.preventDefault();
+              return;
+            }
+            restoreFocus = !event.detail.focusable;
+          },
+          onDismiss() {
+            send({ type: "CLOSE", src: "interact-outside", restoreFocus });
+          }
+        });
+      },
+      trackPointerMove({ context, scope, send, refs, flush }) {
+        const parent = refs.get("parent");
+        flush(() => {
+          parent.context.set("suspendPointer", true);
+        });
+        const doc = scope.getDoc();
+        return addDomEvent(doc, "pointermove", (e) => {
+          const isMovingToSubmenu = isWithinPolygon(context.get("intentPolygon"), {
+            x: e.clientX,
+            y: e.clientY
+          });
+          if (!isMovingToSubmenu) {
+            send({ type: "POINTER_MOVED_AWAY_FROM_SUBMENU" });
+            parent.context.set("suspendPointer", false);
+          }
+        });
+      },
+      scrollToHighlightedItem({ event, scope, computed }) {
+        const exec = () => {
+          if (event.current().type.startsWith("ITEM_POINTER")) return;
+          const itemEl = scope.getById(computed("highlightedId"));
+          const contentEl2 = getContentEl(scope);
+          scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
+        };
+        raf(() => exec());
+        const contentEl = () => getContentEl(scope);
+        return observeAttributes(contentEl, {
+          defer: true,
+          attributes: ["aria-activedescendant"],
+          callback: exec
+        });
+      }
+    },
+    actions: {
+      setAnchorPoint({ context, event }) {
+        context.set("anchorPoint", (prev2) => isEqual(prev2, event.point) ? prev2 : event.point);
+      },
+      setSubmenuPlacement({ context, computed, refs }) {
+        if (!context.get("isSubmenu")) return;
+        const placement = computed("isRtl") ? "left-start" : "right-start";
+        refs.set("positioningOverride", { placement, gutter: 0 });
+      },
+      reposition({ context, scope, prop, event, refs }) {
+        const getPositionerEl2 = () => getPositionerEl(scope);
+        const anchorPoint = context.get("anchorPoint");
+        const getAnchorRect = anchorPoint ? () => ({ width: 0, height: 0, ...anchorPoint }) : void 0;
+        const positioning = {
+          ...prop("positioning"),
+          ...refs.get("positioningOverride")
+        };
+        getPlacement(getTriggerEl(scope), getPositionerEl2, {
+          ...positioning,
+          defer: true,
+          getAnchorRect,
+          ...event.options ?? {},
+          listeners: false,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      setOptionState({ event }) {
+        if (!event.option) return;
+        const { checked, onCheckedChange, type } = event.option;
+        if (type === "radio") {
+          onCheckedChange?.(true);
+        } else if (type === "checkbox") {
+          onCheckedChange?.(!checked);
+        }
+      },
+      clickHighlightedItem({ scope, computed, prop, context }) {
+        const itemEl = scope.getById(computed("highlightedId"));
+        if (!itemEl || itemEl.dataset.disabled) return;
+        const highlightedValue = context.get("highlightedValue");
+        if (isAnchorElement(itemEl)) {
+          prop("navigate")?.({ value: highlightedValue, node: itemEl, href: itemEl.href });
+        } else {
+          queueMicrotask(() => itemEl.click());
+        }
+      },
+      setIntentPolygon({ context, scope, event }) {
+        const menu = getContentEl(scope);
+        const placement = context.get("currentPlacement");
+        if (!menu || !placement) return;
+        const rect = menu.getBoundingClientRect();
+        const polygon = getElementPolygon(rect, placement);
+        if (!polygon) return;
+        const rightSide = getPlacementSide(placement) === "right";
+        const bleed = rightSide ? -5 : 5;
+        context.set("intentPolygon", [{ ...event.point, x: event.point.x + bleed }, ...polygon]);
+      },
+      clearIntentPolygon({ context }) {
+        context.set("intentPolygon", null);
+      },
+      clearAnchorPoint({ context }) {
+        context.set("anchorPoint", null);
+      },
+      resumePointer({ refs, flush }) {
+        const parent = refs.get("parent");
+        if (!parent) return;
+        flush(() => {
+          parent.context.set("suspendPointer", false);
+        });
+      },
+      setHighlightedItem({ context, event }) {
+        const value = event.value || getItemValue(event.target);
+        context.set("highlightedValue", value);
+      },
+      clearHighlightedItem({ context }) {
+        context.set("highlightedValue", null);
+      },
+      focusMenu({ scope }) {
+        raf(() => {
+          const contentEl = getContentEl(scope);
+          const initialFocusEl = getInitialFocus({
+            root: contentEl,
+            enabled: !contains(contentEl, scope.getActiveElement()),
+            filter(node) {
+              return !node.role?.startsWith("menuitem");
+            }
+          });
+          initialFocusEl?.focus({ preventScroll: true });
+        });
+      },
+      highlightFirstItem({ context, scope }) {
+        const fn = getContentEl(scope) ? queueMicrotask : raf;
+        fn(() => {
+          const first2 = getFirstEl(scope);
+          if (!first2) return;
+          context.set("highlightedValue", getItemValue(first2));
+        });
+      },
+      highlightLastItem({ context, scope }) {
+        const fn = getContentEl(scope) ? queueMicrotask : raf;
+        fn(() => {
+          const last2 = getLastEl(scope);
+          if (!last2) return;
+          context.set("highlightedValue", getItemValue(last2));
+        });
+      },
+      highlightNextItem({ context, scope, event, prop }) {
+        const next2 = getNextEl(scope, {
+          loop: event.loop,
+          value: context.get("highlightedValue"),
+          loopFocus: prop("loopFocus")
+        });
+        context.set("highlightedValue", getItemValue(next2));
+      },
+      highlightPrevItem({ context, scope, event, prop }) {
+        const prev2 = getPrevEl(scope, {
+          loop: event.loop,
+          value: context.get("highlightedValue"),
+          loopFocus: prop("loopFocus")
+        });
+        context.set("highlightedValue", getItemValue(prev2));
+      },
+      invokeOnSelect({ context, prop, scope }) {
+        const value = context.get("highlightedValue");
+        if (value == null) return;
+        const node = getItemEl(scope, value);
+        dispatchSelectionEvent(node, value);
+        prop("onSelect")?.({ value });
+      },
+      focusTrigger({ scope, context, event }) {
+        if (context.get("isSubmenu") || context.get("anchorPoint") || event.restoreFocus === false) return;
+        queueMicrotask(() => getTriggerEl(scope)?.focus({ preventScroll: true }));
+      },
+      highlightMatchedItem({ scope, context, event, refs }) {
+        const node = getElemByKey(scope, {
+          key: event.key,
+          value: context.get("highlightedValue"),
+          typeaheadState: refs.get("typeaheadState")
+        });
+        if (!node) return;
+        context.set("highlightedValue", getItemValue(node));
+      },
+      setParentMenu({ refs, event, context }) {
+        refs.set("parent", event.value);
+        context.set("isSubmenu", true);
+      },
+      setChildMenu({ refs, event }) {
+        const children = refs.get("children");
+        children[event.id] = event.value;
+        refs.set("children", children);
+      },
+      closeSiblingMenus({ refs, event, scope }) {
+        const target = event.target;
+        if (!isTriggerItem(target)) return;
+        const hoveredChildId = target?.getAttribute("data-uid");
+        const children = refs.get("children");
+        for (const id in children) {
+          if (id === hoveredChildId) continue;
+          const child = children[id];
+          const intentPolygon = child.context.get("intentPolygon");
+          if (intentPolygon && event.point && isPointInPolygon(intentPolygon, event.point)) {
+            continue;
+          }
+          getContentEl(scope)?.focus({ preventScroll: true });
+          child.send({ type: "CLOSE" });
+        }
+      },
+      closeRootMenu({ refs }) {
+        closeRootMenu({ parent: refs.get("parent") });
+      },
+      openSubmenu({ refs, scope, computed }) {
+        const item = scope.getById(computed("highlightedId"));
+        const id = item?.getAttribute("data-uid");
+        const children = refs.get("children");
+        const child = id ? children[id] : null;
+        child?.send({ type: "OPEN_AUTOFOCUS" });
+      },
+      focusParentMenu({ refs }) {
+        refs.get("parent")?.send({ type: "FOCUS_MENU" });
+      },
+      setLastHighlightedItem({ context, event }) {
+        context.set("lastHighlightedValue", getItemValue(event.target));
+      },
+      restoreHighlightedItem({ context }) {
+        if (!context.get("lastHighlightedValue")) return;
+        context.set("highlightedValue", context.get("lastHighlightedValue"));
+        context.set("lastHighlightedValue", null);
+      },
+      restoreParentHighlightedItem({ refs }) {
+        refs.get("parent")?.send({ type: "HIGHLIGHTED.RESTORE" });
+      },
+      invokeOnOpen({ prop }) {
+        prop("onOpenChange")?.({ open: true });
+      },
+      invokeOnClose({ prop }) {
+        prop("onOpenChange")?.({ open: false });
+      },
+      toggleVisibility({ prop, event, send }) {
+        send({
+          type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE",
+          previousEvent: event
+        });
+      }
+    }
+  }
+});
+function closeRootMenu(ctx) {
+  let parent = ctx.parent;
+  while (parent && parent.context.get("isSubmenu")) {
+    parent = parent.refs.get("parent");
+  }
+  parent?.send({ type: "CLOSE" });
+}
+function isWithinPolygon(polygon, point) {
+  if (!polygon) return false;
+  return isPointInPolygon(polygon, point);
+}
+function resolveItemId(children, value, scope) {
+  const hasChildren = Object.keys(children).length > 0;
+  if (!value) return null;
+  if (!hasChildren) {
+    return getItemId(scope, value);
+  }
+  for (const id in children) {
+    const childMenu = children[id];
+    const childTriggerId = getTriggerId(childMenu.scope);
+    if (childTriggerId === value) {
+      return childTriggerId;
+    }
+  }
+  return getItemId(scope, value);
+}
+var props = createProps()([
+  "anchorPoint",
+  "aria-label",
+  "closeOnSelect",
+  "composite",
+  "defaultHighlightedValue",
+  "defaultOpen",
+  "dir",
+  "getRootNode",
+  "highlightedValue",
+  "id",
+  "ids",
+  "loopFocus",
+  "navigate",
+  "onEscapeKeyDown",
+  "onFocusOutside",
+  "onHighlightChange",
+  "onInteractOutside",
+  "onOpenChange",
+  "onPointerDownOutside",
+  "onRequestDismiss",
+  "onSelect",
+  "open",
+  "positioning",
+  "typeahead"
+]);
+var splitProps = createSplitProps(props);
+var itemProps = createProps()(["closeOnSelect", "disabled", "value", "valueText"]);
+var splitItemProps = createSplitProps(itemProps);
+var itemGroupLabelProps = createProps()(["htmlFor"]);
+var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
+var itemGroupProps = createProps()(["id"]);
+var splitItemGroupProps = createSplitProps(itemGroupProps);
+var optionItemProps = createProps()([
+  "checked",
+  "closeOnSelect",
+  "disabled",
+  "onCheckedChange",
+  "type",
+  "value",
+  "valueText"
+]);
+var splitOptionItemProps = createSplitProps(optionItemProps);
+
+// components/menu.ts
+var Menu = class extends Component {
+  children = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    return new VanillaMachine(machine, props2);
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  setChild(child) {
+    this.api.setChild(child.machine.service);
+    if (!this.children.includes(child)) {
+      this.children.push(child);
+    }
+  }
+  setParent(parent) {
+    this.api.setParent(parent.machine.service);
+  }
+  /**
+   * Check if an element belongs to THIS menu instance.
+   * Uses the nearest phx-hook="Menu" ancestor to determine ownership.
+   */
+  isOwnElement(el) {
+    const nearestHook = el.closest('[phx-hook="Menu"]');
+    return nearestHook === this.el;
+  }
+  renderSubmenuTriggers() {
+    const contentEl = this.el.querySelector(
+      '[data-scope="menu"][data-part="content"]'
+    );
+    if (!contentEl) return;
+    const triggerItems = contentEl.querySelectorAll(
+      '[data-scope="menu"][data-nested-menu]'
+    );
+    for (const triggerEl of triggerItems) {
+      if (!this.isOwnElement(triggerEl)) continue;
+      const nestedMenuId = triggerEl.dataset.nestedMenu;
+      if (!nestedMenuId) continue;
+      const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
+      if (!childMenu) continue;
+      const applyProps = () => {
+        const triggerProps = this.api.getTriggerItemProps(childMenu.api);
+        this.spreadProps(triggerEl, triggerProps);
+      };
+      applyProps();
+      this.machine.subscribe(applyProps);
+      childMenu.machine.subscribe(applyProps);
+    }
+  }
+  render() {
+    const triggerEl = this.el.querySelector(
+      '[data-scope="menu"][data-part="trigger"]'
+    );
+    if (triggerEl) {
+      this.spreadProps(triggerEl, this.api.getTriggerProps());
+    }
+    const positionerEl = this.el.querySelector(
+      '[data-scope="menu"][data-part="positioner"]'
+    );
+    const contentEl = this.el.querySelector(
+      '[data-scope="menu"][data-part="content"]'
+    );
+    if (positionerEl && contentEl) {
+      this.spreadProps(positionerEl, this.api.getPositionerProps());
+      this.spreadProps(contentEl, this.api.getContentProps());
+      contentEl.style.pointerEvents = "auto";
+      positionerEl.hidden = !this.api.open;
+      const isNested = !this.el.querySelector(
+        '[data-scope="menu"][data-part="trigger"]'
+      );
+      const shouldApplyItems = this.api.open || isNested;
+      if (shouldApplyItems) {
+        const items = contentEl.querySelectorAll(
+          '[data-scope="menu"][data-part="item"]'
+        );
+        items.forEach((itemEl) => {
+          if (!this.isOwnElement(itemEl)) return;
+          const value = itemEl.dataset.value;
+          if (value) {
+            const disabled = itemEl.hasAttribute("data-disabled");
+            this.spreadProps(
+              itemEl,
+              this.api.getItemProps({ value, disabled: disabled || void 0 })
+            );
+          }
+        });
+        const itemGroups = contentEl.querySelectorAll(
+          '[data-scope="menu"][data-part="item-group"]'
+        );
+        itemGroups.forEach((groupEl) => {
+          if (!this.isOwnElement(groupEl)) return;
+          const groupId = groupEl.id;
+          if (groupId) {
+            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+          }
+        });
+        const separators = contentEl.querySelectorAll(
+          '[data-scope="menu"][data-part="separator"]'
+        );
+        separators.forEach((separatorEl) => {
+          if (!this.isOwnElement(separatorEl)) return;
+          this.spreadProps(separatorEl, this.api.getSeparatorProps());
+        });
+      }
+    }
+    const indicatorEl = this.el.querySelector(
+      '[data-scope="menu"][data-part="indicator"]'
+    );
+    if (indicatorEl) {
+      this.spreadProps(indicatorEl, this.api.getIndicatorProps());
+    }
+  }
+};
+
+// hooks/menu.ts
+var MenuHook = {
+  mounted() {
+    const el = this.el;
+    if (el.hasAttribute("data-nested")) {
+      return;
+    }
+    const pushEvent = this.pushEvent.bind(this);
+    const getMain = () => this.liveSocket?.main;
+    const menu = new Menu(el, {
+      id: el.id.replace("menu:", ""),
+      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      typeahead: getBoolean(el, "typeahead"),
+      composite: getBoolean(el, "composite"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      onSelect: (details) => {
+        const redirect = getBoolean(el, "redirect");
+        const itemEl = [
+          ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+        ].find((node) => node.getAttribute("data-value") === details.value);
+        const itemRedirect = itemEl?.getAttribute("data-redirect");
+        const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+        const main = getMain();
+        const doRedirect = redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
+        if (doRedirect) {
+          if (itemNewTab) {
+            window.open(details.value, "_blank", "noopener,noreferrer");
+          } else {
+            window.location.href = details.value;
+          }
+        }
+        const eventName = getString(el, "onSelect");
+        if (eventName && main && !main.isDead && main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            value: details.value ?? null
+          });
+        }
+        const eventNameClient = getString(el, "onSelectClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value ?? null
+              }
+            })
+          );
+        }
+      },
+      onOpenChange: (details) => {
+        const main = getMain();
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && main && !main.isDead && main.isConnected()) {
+          pushEvent(eventName, {
+            id: el.id,
+            open: details.open ?? false
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                open: details.open ?? false
+              }
+            })
+          );
+        }
+      }
+    });
+    menu.init();
+    this.menu = menu;
+    this.nestedMenus = /* @__PURE__ */ new Map();
+    const nestedMenuElements = el.querySelectorAll(
+      '[data-scope="menu"][data-nested="menu"]'
+    );
+    const nestedMenuInstances = [];
+    nestedMenuElements.forEach((nestedEl, index) => {
+      const nestedId = nestedEl.id;
+      if (nestedId) {
+        const nestedMenuId = `${nestedId}-${index}`;
+        const nestedMenu = new Menu(nestedEl, {
+          id: nestedMenuId,
+          dir: getString(nestedEl, "dir", ["ltr", "rtl"]),
+          closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
+          loopFocus: getBoolean(nestedEl, "loopFocus"),
+          typeahead: getBoolean(nestedEl, "typeahead"),
+          composite: getBoolean(nestedEl, "composite"),
+          onSelect: (details) => {
+            const redirect = getBoolean(el, "redirect");
+            const itemEl = [
+              ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
+            ].find((node) => node.getAttribute("data-value") === details.value);
+            const itemRedirect = itemEl?.getAttribute("data-redirect");
+            const itemNewTab = itemEl?.hasAttribute("data-new-tab");
+            const main = getMain();
+            const doRedirect = redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
+            if (doRedirect) {
+              if (itemNewTab) {
+                window.open(details.value, "_blank", "noopener,noreferrer");
+              } else {
+                window.location.href = details.value;
+              }
+            }
+            const eventName = getString(el, "onSelect");
+            if (eventName && main && !main.isDead && main.isConnected()) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: details.value ?? null
+              });
+            }
+            const eventNameClient = getString(el, "onSelectClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: details.value ?? null
+                  }
+                })
+              );
+            }
+          }
+        });
+        nestedMenu.init();
+        this.nestedMenus?.set(nestedId, nestedMenu);
+        nestedMenuInstances.push(nestedMenu);
+      }
+    });
+    setTimeout(() => {
+      nestedMenuInstances.forEach((nestedMenu) => {
+        if (this.menu) {
+          this.menu.setChild(nestedMenu);
+          nestedMenu.setParent(this.menu);
+        }
+      });
+      if (this.menu && this.menu.children.length > 0) {
+        this.menu.renderSubmenuTriggers();
+      }
+    }, 0);
+    this.onSetOpen = (event) => {
+      const { open } = event.detail;
+      if (menu.api.open !== open) menu.api.setOpen(open);
+    };
+    el.addEventListener("phx:menu:set-open", this.onSetOpen);
+    this.handlers = [];
+    this.handlers.push(
+      this.handleEvent("menu_set_open", (payload) => {
+        const targetId = payload.menu_id;
+        const matches = !targetId || el.id === targetId || el.id === `menu:${targetId}`;
+        if (!matches) return;
+        menu.api.setOpen(payload.open);
+      })
+    );
+    this.handlers.push(
+      this.handleEvent("menu_open", () => {
+        this.pushEvent("menu_open_response", {
+          open: menu.api.open
+        });
+      })
+    );
+  },
+  updated() {
+    if (this.el.hasAttribute("data-nested")) return;
+    this.menu?.updateProps({
+      id: this.el.id,
+      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
+      closeOnSelect: getBoolean(this.el, "closeOnSelect"),
+      loopFocus: getBoolean(this.el, "loopFocus"),
+      typeahead: getBoolean(this.el, "typeahead"),
+      composite: getBoolean(this.el, "composite"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
+    });
+  },
+  destroyed() {
+    if (this.el.hasAttribute("data-nested")) return;
+    if (this.onSetOpen) {
+      this.el.removeEventListener("phx:menu:set-open", this.onSetOpen);
+    }
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    if (this.nestedMenus) {
+      for (const [, nestedMenu] of this.nestedMenus) {
+        nestedMenu.destroy();
+      }
+    }
+    this.menu?.destroy();
+  }
+};
+export {
+  MenuHook as Menu
+};

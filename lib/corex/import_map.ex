@@ -30,6 +30,21 @@ defmodule Corex.ImportMap do
   )
 
   @doc """
+  Returns an import map for the single-bundle setup: `"corex"` and all `"corex/<hook>"` entries
+  pointing to `corex.mjs`. Supports both `import corex from "corex"` and per-hook imports.
+
+  Use with a single Plug.Static at `/corex`. Pass the result to `Jason.encode!/1` in your root layout.
+  """
+  def import_map_single_bundle(base \\ "/corex") do
+    base = base |> to_string() |> String.trim_trailing("/")
+    bundle = "#{base}/corex.mjs"
+    imports =
+      Map.new(@hooks, fn name -> {"corex/#{name}", bundle} end)
+      |> Map.put("corex", bundle)
+    %{"imports" => imports}
+  end
+
+  @doc """
   Returns an import map (map of maps) for the given base path and optional list of hooks.
 
   - `base` – Path prefix for script URLs (default `"/corex"`). No trailing slash.

@@ -1,1 +1,998 @@
-import{a as ae,c as se}from"./chunk-XQAZHZIC.mjs";import{a as O,b as K,c as V,d as ne}from"./chunk-MMRG4CGO.mjs";import{B as G,Bb as le,Cb as ie,Db as oe,E as z,F as w,Fb as y,Gb as P,Ib as b,L as J,M as W,Oa as Z,a as q,ba as Y,d as f,da as Q,e as B,ha as X,j,k as $,nb as S,sb as ee,xa as F,xb as te,yb as H}from"./chunk-IYURAQ6S.mjs";var be=q("listbox").parts("label","input","item","itemText","itemIndicator","itemGroup","itemGroupLabel","content","root","valueText"),v=be.build(),E=e=>new O(e);E.empty=()=>new O({items:[]});var ye=e=>new K(e);ye.empty=()=>new K({items:[],columnCount:0});var Ve=e=>e.ids?.root??`select:${e.id}`,R=e=>e.ids?.content??`select:${e.id}:content`,re=e=>e.ids?.label??`select:${e.id}:label`,U=(e,l)=>e.ids?.item?.(l)??`select:${e.id}:option:${l}`,Ee=(e,l)=>e.ids?.itemGroup?.(l)??`select:${e.id}:optgroup:${l}`,ce=(e,l)=>e.ids?.itemGroupLabel?.(l)??`select:${e.id}:optgroup-label:${l}`,C=e=>e.getById(R(e)),ue=(e,l)=>e.getById(U(e,l));function de(e,l){let{context:t,prop:i,scope:a,computed:c,send:o,refs:h}=e,m=i("disabled"),r=i("collection"),A=V(r)?"grid":"list",T=t.get("focused"),_=h.get("focusVisible")&&T,pe=h.get("inputState"),k=t.get("value"),me=t.get("selectedItems"),u=t.get("highlightedValue"),fe=t.get("highlightedItem"),Ie=c("isTypingAhead"),ve=c("isInteractive"),N=u?U(a,u):void 0;function x(n){let s=r.getItemDisabled(n.item),g=r.getItemValue(n.item);ee(g,()=>`[zag-js] No value found for item ${JSON.stringify(n.item)}`);let I=u===g;return{value:g,disabled:!!(m||s),focused:I&&T,focusVisible:I&&_,highlighted:I&&(pe.focused?T:_),selected:t.get("value").includes(g)}}return{empty:k.length===0,highlightedItem:fe,highlightedValue:u,clearHighlightedValue(){o({type:"HIGHLIGHTED_VALUE.SET",value:null})},selectedItems:me,hasSelectedItems:c("hasSelectedItems"),value:k,valueAsString:c("valueAsString"),collection:r,disabled:!!m,selectValue(n){o({type:"ITEM.SELECT",value:n})},setValue(n){o({type:"VALUE.SET",value:n})},selectAll(){if(!c("multiple"))throw new Error("[zag-js] Cannot select all items in a single-select listbox");o({type:"VALUE.SET",value:r.getValues()})},highlightValue(n){o({type:"HIGHLIGHTED_VALUE.SET",value:n})},clearValue(n){o(n?{type:"ITEM.CLEAR",value:n}:{type:"VALUE.CLEAR"})},getItemState:x,getRootProps(){return l.element({...v.root.attrs,dir:i("dir"),id:Ve(a),"data-orientation":i("orientation"),"data-disabled":f(m)})},getInputProps(n={}){return l.input({...v.input.attrs,dir:i("dir"),disabled:m,"data-disabled":f(m),autoComplete:"off",autoCorrect:"off","aria-haspopup":"listbox","aria-controls":R(a),"aria-autocomplete":"list","aria-activedescendant":N,spellCheck:!1,enterKeyHint:"go",onFocus(){queueMicrotask(()=>{o({type:"INPUT.FOCUS",autoHighlight:!!n?.autoHighlight})})},onBlur(){o({type:"CONTENT.BLUR",src:"input"})},onInput(s){n?.autoHighlight&&(s.currentTarget.value.trim()||queueMicrotask(()=>{o({type:"HIGHLIGHTED_VALUE.SET",value:null})}))},onKeyDown(s){if(s.defaultPrevented||z(s))return;let g=W(s),I=()=>{s.preventDefault();let D=a.getWin(),d=new D.KeyboardEvent(g.type,g);C(a)?.dispatchEvent(d)};switch(g.key){case"ArrowLeft":case"ArrowRight":{if(!V(r)||s.ctrlKey)return;I()}case"Home":case"End":{if(u==null&&s.shiftKey)return;I()}case"ArrowDown":case"ArrowUp":{I();break}case"Enter":u!=null&&(s.preventDefault(),o({type:"ITEM.CLICK",value:u}));break}}})},getLabelProps(){return l.element({dir:i("dir"),id:re(a),...v.label.attrs,"data-disabled":f(m)})},getValueTextProps(){return l.element({...v.valueText.attrs,dir:i("dir"),"data-disabled":f(m)})},getItemProps(n){let s=x(n);return l.element({id:U(a,s.value),role:"option",...v.item.attrs,dir:i("dir"),"data-value":s.value,"aria-selected":s.selected,"data-selected":f(s.selected),"data-layout":A,"data-state":s.selected?"checked":"unchecked","data-orientation":i("orientation"),"data-highlighted":f(s.highlighted),"data-disabled":f(s.disabled),"aria-disabled":B(s.disabled),onPointerMove(g){n.highlightOnHover&&(s.disabled||g.pointerType!=="mouse"||s.highlighted||o({type:"ITEM.POINTER_MOVE",value:s.value}))},onMouseDown(g){g.preventDefault(),C(a)?.focus()},onClick(g){g.defaultPrevented||s.disabled||o({type:"ITEM.CLICK",value:s.value,shiftKey:g.shiftKey,anchorValue:u,metaKey:w(g)})}})},getItemTextProps(n){let s=x(n);return l.element({...v.itemText.attrs,"data-state":s.selected?"checked":"unchecked","data-disabled":f(s.disabled),"data-highlighted":f(s.highlighted)})},getItemIndicatorProps(n){let s=x(n);return l.element({...v.itemIndicator.attrs,"aria-hidden":!0,"data-state":s.selected?"checked":"unchecked",hidden:!s.selected})},getItemGroupLabelProps(n){let{htmlFor:s}=n;return l.element({...v.itemGroupLabel.attrs,id:ce(a,s),dir:i("dir"),role:"presentation"})},getItemGroupProps(n){let{id:s}=n;return l.element({...v.itemGroup.attrs,"data-disabled":f(m),"data-orientation":i("orientation"),"data-empty":f(r.size===0),id:Ee(a,s),"aria-labelledby":ce(a,s),role:"group",dir:i("dir")})},getContentProps(){return l.element({dir:i("dir"),id:R(a),role:"listbox",...v.content.attrs,"data-activedescendant":N,"aria-activedescendant":N,"data-orientation":i("orientation"),"aria-multiselectable":c("multiple")?!0:void 0,"aria-labelledby":re(a),tabIndex:0,"data-layout":A,"data-empty":f(r.size===0),style:{"--column-count":V(r)?r.columnCount:1},onFocus(){o({type:"CONTENT.FOCUS"})},onBlur(){o({type:"CONTENT.BLUR"})},onKeyDown(n){if(!ve||!$(n.currentTarget,G(n)))return;let s=n.shiftKey,g={ArrowUp(d){let p=null;V(r)&&u?p=r.getPreviousRowValue(u):u&&(p=r.getPreviousValue(u)),!p&&(i("loopFocus")||!u)&&(p=r.lastValue),p&&(d.preventDefault(),o({type:"NAVIGATE",value:p,shiftKey:s,anchorValue:u}))},ArrowDown(d){let p=null;V(r)&&u?p=r.getNextRowValue(u):u&&(p=r.getNextValue(u)),!p&&(i("loopFocus")||!u)&&(p=r.firstValue),p&&(d.preventDefault(),o({type:"NAVIGATE",value:p,shiftKey:s,anchorValue:u}))},ArrowLeft(){if(!V(r)&&i("orientation")==="vertical")return;let d=u?r.getPreviousValue(u):null;!d&&i("loopFocus")&&(d=r.lastValue),d&&(n.preventDefault(),o({type:"NAVIGATE",value:d,shiftKey:s,anchorValue:u}))},ArrowRight(){if(!V(r)&&i("orientation")==="vertical")return;let d=u?r.getNextValue(u):null;!d&&i("loopFocus")&&(d=r.firstValue),d&&(n.preventDefault(),o({type:"NAVIGATE",value:d,shiftKey:s,anchorValue:u}))},Home(d){d.preventDefault();let p=r.firstValue;o({type:"NAVIGATE",value:p,shiftKey:s,anchorValue:u})},End(d){d.preventDefault();let p=r.lastValue;o({type:"NAVIGATE",value:p,shiftKey:s,anchorValue:u})},Enter(){o({type:"ITEM.CLICK",value:u})},a(d){w(d)&&c("multiple")&&!i("disallowSelectAll")&&(d.preventDefault(),o({type:"VALUE.SET",value:r.getValues()}))},Space(d){Ie&&i("typeahead")?o({type:"CONTENT.TYPEAHEAD",key:d.key}):g.Enter?.(d)},Escape(d){i("deselectable")&&k.length>0&&(d.preventDefault(),d.stopPropagation(),o({type:"VALUE.CLEAR"}))}},I=g[J(n)];if(I){I(n);return}let D=G(n);j(D)||F.isValidEvent(n)&&i("typeahead")&&(o({type:"CONTENT.TYPEAHEAD",key:n.key}),n.preventDefault())}})}}}var{guards:Te,createMachine:Se}=te(),{or:He}=Te,he=Se({props({props:e}){return{loopFocus:!1,composite:!0,defaultValue:[],multiple:!1,typeahead:!0,collection:E.empty(),orientation:"vertical",selectionMode:"single",...e}},context({prop:e,bindable:l}){return{value:l(()=>({defaultValue:e("defaultValue"),value:e("value"),isEqual:Z,onChange(t){let i=e("collection").findMany(t);return e("onValueChange")?.({value:t,items:i})}})),highlightedValue:l(()=>({defaultValue:e("defaultHighlightedValue")||null,value:e("highlightedValue"),sync:!0,onChange(t){e("onHighlightChange")?.({highlightedValue:t,highlightedItem:e("collection").find(t),highlightedIndex:e("collection").indexOf(t)})}})),highlightedItem:l(()=>({defaultValue:null})),selectedItems:l(()=>{let t=e("value")??e("defaultValue")??[];return{defaultValue:e("collection").findMany(t)}}),focused:l(()=>({sync:!0,defaultValue:!1}))}},refs(){return{typeahead:{...F.defaultOptions},focusVisible:!1,inputState:{autoHighlight:!1,focused:!1}}},computed:{hasSelectedItems:({context:e})=>e.get("value").length>0,isTypingAhead:({refs:e})=>e.get("typeahead").keysSoFar!=="",isInteractive:({prop:e})=>!e("disabled"),selection:({context:e,prop:l})=>{let t=new ne(e.get("value"));return t.selectionMode=l("selectionMode"),t.deselectable=!!l("deselectable"),t},multiple:({prop:e})=>e("selectionMode")==="multiple"||e("selectionMode")==="extended",valueAsString:({context:e,prop:l})=>l("collection").stringifyItems(e.get("selectedItems"))},initialState(){return"idle"},watch({context:e,prop:l,track:t,action:i}){t([()=>e.get("value").toString()],()=>{i(["syncSelectedItems"])}),t([()=>e.get("highlightedValue")],()=>{i(["syncHighlightedItem"])}),t([()=>l("collection").toString()],()=>{i(["syncHighlightedValue"])})},effects:["trackFocusVisible"],on:{"HIGHLIGHTED_VALUE.SET":{actions:["setHighlightedItem"]},"ITEM.SELECT":{actions:["selectItem"]},"ITEM.CLEAR":{actions:["clearItem"]},"VALUE.SET":{actions:["setSelectedItems"]},"VALUE.CLEAR":{actions:["clearSelectedItems"]}},states:{idle:{effects:["scrollToHighlightedItem"],on:{"INPUT.FOCUS":{actions:["setFocused","setInputState"]},"CONTENT.FOCUS":[{guard:He("hasSelectedValue","hasHighlightedValue"),actions:["setFocused"]},{actions:["setFocused","setDefaultHighlightedValue"]}],"CONTENT.BLUR":{actions:["clearFocused","clearInputState"]},"ITEM.CLICK":{actions:["setHighlightedItem","selectHighlightedItem"]},"CONTENT.TYPEAHEAD":{actions:["setFocused","highlightMatchingItem"]},"ITEM.POINTER_MOVE":{actions:["highlightItem"]},"ITEM.POINTER_LEAVE":{actions:["clearHighlightedItem"]},NAVIGATE:{actions:["setFocused","setHighlightedItem","selectWithKeyboard"]}}}},implementations:{guards:{hasSelectedValue:({context:e})=>e.get("value").length>0,hasHighlightedValue:({context:e})=>e.get("highlightedValue")!=null},effects:{trackFocusVisible:({scope:e,refs:l})=>se({root:e.getRootNode?.(),onChange(t){l.set("focusVisible",t.isFocusVisible)}}),scrollToHighlightedItem({context:e,prop:l,scope:t}){let i=c=>{let o=e.get("highlightedValue");if(o==null||ae()!=="keyboard")return;let m=C(t),r=l("scrollToIndexFn");if(r){let T=l("collection").indexOf(o);r?.({index:T,immediate:c,getElement(){return ue(t,o)}});return}let A=ue(t,o);X(A,{rootEl:m,block:"nearest"})};return Y(()=>i(!0)),Q(()=>C(t),{defer:!0,attributes:["data-activedescendant"],callback(){i(!1)}})}},actions:{selectHighlightedItem({context:e,prop:l,event:t,computed:i}){let a=t.value??e.get("highlightedValue"),c=l("collection");if(a==null||!c.has(a))return;let o=i("selection");if(t.shiftKey&&i("multiple")&&t.anchorValue){let h=o.extendSelection(c,t.anchorValue,a);L(o,h,l("onSelect")),e.set("value",Array.from(h))}else{let h=o.select(c,a,t.metaKey);L(o,h,l("onSelect")),e.set("value",Array.from(h))}},selectWithKeyboard({context:e,prop:l,event:t,computed:i}){let a=i("selection"),c=l("collection");if(t.shiftKey&&i("multiple")&&t.anchorValue){let o=a.extendSelection(c,t.anchorValue,t.value);L(a,o,l("onSelect")),e.set("value",Array.from(o));return}if(l("selectOnHighlight")){let o=a.replaceSelection(c,t.value);L(a,o,l("onSelect")),e.set("value",Array.from(o))}},highlightItem({context:e,event:l}){e.set("highlightedValue",l.value)},highlightMatchingItem({context:e,prop:l,event:t,refs:i}){let a=l("collection").search(t.key,{state:i.get("typeahead"),currentValue:e.get("highlightedValue")});a!=null&&e.set("highlightedValue",a)},setHighlightedItem({context:e,event:l}){e.set("highlightedValue",l.value)},clearHighlightedItem({context:e}){e.set("highlightedValue",null)},selectItem({context:e,prop:l,event:t,computed:i}){let a=l("collection"),c=i("selection"),o=c.select(a,t.value);L(c,o,l("onSelect")),e.set("value",Array.from(o))},clearItem({context:e,event:l,computed:t}){let a=t("selection").deselect(l.value);e.set("value",Array.from(a))},setSelectedItems({context:e,event:l}){e.set("value",l.value)},clearSelectedItems({context:e}){e.set("value",[])},syncSelectedItems({context:e,prop:l}){let t=l("collection"),i=e.get("selectedItems"),c=e.get("value").map(o=>i.find(m=>t.getItemValue(m)===o)||t.find(o));e.set("selectedItems",c)},syncHighlightedItem({context:e,prop:l}){let t=l("collection"),i=e.get("highlightedValue"),a=i?t.find(i):null;e.set("highlightedItem",a)},syncHighlightedValue({context:e,prop:l,refs:t}){let i=l("collection"),a=e.get("highlightedValue"),{autoHighlight:c}=t.get("inputState");if(c){queueMicrotask(()=>{e.set("highlightedValue",l("collection").firstValue??null)});return}a!=null&&!i.has(a)&&queueMicrotask(()=>{e.set("highlightedValue",null)})},setFocused({context:e}){e.set("focused",!0)},setDefaultHighlightedValue({context:e,prop:l}){let i=l("collection").firstValue;i!=null&&e.set("highlightedValue",i)},clearFocused({context:e}){e.set("focused",!1)},setInputState({refs:e,event:l}){e.set("inputState",{autoHighlight:!!l.autoHighlight,focused:!0})},clearInputState({refs:e}){e.set("inputState",{autoHighlight:!1,focused:!1})}}}}),Le=(e,l)=>{let t=new Set(e);for(let i of l)t.delete(i);return t};function L(e,l,t){let i=Le(l,e);for(let a of i)t?.({value:a})}var Ae=H()(["collection","defaultHighlightedValue","defaultValue","dir","disabled","deselectable","disallowSelectAll","getRootNode","highlightedValue","id","ids","loopFocus","onHighlightChange","onSelect","onValueChange","orientation","scrollToIndexFn","selectionMode","selectOnHighlight","typeahead","value"]),Oe=S(Ae),xe=H()(["item","highlightOnHover"]),Ke=S(xe),Pe=H()(["id"]),Re=S(Pe),Ce=H()(["htmlFor"]),Ue=S(Ce);var M=class extends oe{_options=[];hasGroups=!1;constructor(l,t){super(l,t);let i=t.collection;this._options=i?.items??[]}get options(){return Array.isArray(this._options)?this._options:[]}setOptions(l){this._options=Array.isArray(l)?l:[]}getCollection(){let l=this.options;return this.hasGroups?E({items:l,itemToValue:t=>t.id??t.value??"",itemToString:t=>t.label,isItemDisabled:t=>!!t.disabled,groupBy:t=>t.group??""}):E({items:l,itemToValue:t=>t.id??t.value??"",itemToString:t=>t.label,isItemDisabled:t=>!!t.disabled})}initMachine(l){let t=this.getCollection.bind(this),i=l.collection;return new ie(he,{...l,get collection(){return i??t()}})}initApi(){return de(this.machine.service,le)}init=()=>{this.machine.start(),this.render(),this.machine.subscribe(()=>{this.api=this.initApi(),this.render()})};applyItemProps(){let l=this.el.querySelector('[data-scope="listbox"][data-part="content"]');l&&(l.querySelectorAll('[data-scope="listbox"][data-part="item-group"]').forEach(t=>{let i=t.dataset.id??"";this.spreadProps(t,this.api.getItemGroupProps({id:i}));let a=t.querySelector('[data-scope="listbox"][data-part="item-group-label"]');a&&this.spreadProps(a,this.api.getItemGroupLabelProps({htmlFor:i}))}),l.querySelectorAll('[data-scope="listbox"][data-part="item"]').forEach(t=>{let i=t.dataset.value??"",a=this.options.find(h=>String(h.id??h.value??"")===String(i));if(!a)return;this.spreadProps(t,this.api.getItemProps({item:a}));let c=t.querySelector('[data-scope="listbox"][data-part="item-text"]');c&&this.spreadProps(c,this.api.getItemTextProps({item:a}));let o=t.querySelector('[data-scope="listbox"][data-part="item-indicator"]');o&&this.spreadProps(o,this.api.getItemIndicatorProps({item:a}))}))}render(){let l=this.el.querySelector('[data-scope="listbox"][data-part="root"]')??this.el;this.spreadProps(l,this.api.getRootProps());let t=this.el.querySelector('[data-scope="listbox"][data-part="label"]');t&&this.spreadProps(t,this.api.getLabelProps());let i=this.el.querySelector('[data-scope="listbox"][data-part="value-text"]');i&&this.spreadProps(i,this.api.getValueTextProps());let a=this.el.querySelector('[data-scope="listbox"][data-part="input"]');a&&this.spreadProps(a,this.api.getInputProps());let c=this.el.querySelector('[data-scope="listbox"][data-part="content"]');c&&(this.spreadProps(c,this.api.getContentProps()),this.applyItemProps())}};function ge(e,l){return l?E({items:e,itemToValue:t=>t.id??t.value??"",itemToString:t=>t.label,isItemDisabled:t=>!!t.disabled,groupBy:t=>t.group??""}):E({items:e,itemToValue:t=>t.id??t.value??"",itemToString:t=>t.label,isItemDisabled:t=>!!t.disabled})}var Ye={mounted(){let e=this.el,l=JSON.parse(e.dataset.collection??"[]"),t=l.some(h=>h.group!==void 0),i=P(e,"value"),a=P(e,"defaultValue"),c=b(e,"controlled"),o=new M(e,{id:e.id,collection:ge(l,t),...c&&i?{value:i}:{defaultValue:a??[]},disabled:b(e,"disabled"),dir:y(e,"dir",["ltr","rtl"]),orientation:y(e,"orientation",["horizontal","vertical"]),loopFocus:b(e,"loopFocus"),selectionMode:y(e,"selectionMode",["single","multiple","extended"]),selectOnHighlight:b(e,"selectOnHighlight"),deselectable:b(e,"deselectable"),typeahead:b(e,"typeahead"),onValueChange:h=>{let m=y(e,"onValueChange");m&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&this.pushEvent(m,{value:h.value,items:h.items,id:e.id});let r=y(e,"onValueChangeClient");r&&e.dispatchEvent(new CustomEvent(r,{bubbles:!0,detail:{value:h,id:e.id}}))}});o.hasGroups=t,o.setOptions(l),o.init(),this.listbox=o,this.handlers=[]},updated(){let e=JSON.parse(this.el.dataset.collection??"[]"),l=e.some(a=>a.group!==void 0),t=P(this.el,"value"),i=b(this.el,"controlled");this.listbox&&(this.listbox.hasGroups=l,this.listbox.setOptions(e),this.listbox.updateProps({collection:ge(e,l),id:this.el.id,...i&&t?{value:t}:{},disabled:b(this.el,"disabled"),dir:y(this.el,"dir",["ltr","rtl"]),orientation:y(this.el,"orientation",["horizontal","vertical"])}))},destroyed(){if(this.handlers)for(let e of this.handlers)this.removeHandleEvent(e);this.listbox?.destroy()}};export{Ye as Listbox};
+import {
+  getInteractionModality,
+  trackFocusVisible
+} from "./chunk-TEV2GE3U.mjs";
+import {
+  GridCollection,
+  ListCollection,
+  Selection,
+  isGridCollection
+} from "./chunk-2PO3TGCF.mjs";
+import {
+  Component,
+  VanillaMachine,
+  ariaAttr,
+  contains,
+  createAnatomy,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  ensure,
+  getBoolean,
+  getByTypeahead,
+  getEventKey,
+  getEventTarget,
+  getNativeEvent,
+  getString,
+  getStringList,
+  isComposingEvent,
+  isCtrlOrMetaKey,
+  isEditableElement,
+  isEqual,
+  normalizeProps,
+  observeAttributes,
+  raf,
+  scrollIntoView,
+  setup
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/@zag-js+listbox@1.33.1/node_modules/@zag-js/listbox/dist/index.mjs
+var anatomy = createAnatomy("listbox").parts(
+  "label",
+  "input",
+  "item",
+  "itemText",
+  "itemIndicator",
+  "itemGroup",
+  "itemGroupLabel",
+  "content",
+  "root",
+  "valueText"
+);
+var parts = anatomy.build();
+var collection = (options) => {
+  return new ListCollection(options);
+};
+collection.empty = () => {
+  return new ListCollection({ items: [] });
+};
+var gridCollection = (options) => {
+  return new GridCollection(options);
+};
+gridCollection.empty = () => {
+  return new GridCollection({ items: [], columnCount: 0 });
+};
+var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
+var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `select:${ctx.id}:label`;
+var getItemId = (ctx, id) => ctx.ids?.item?.(id) ?? `select:${ctx.id}:option:${id}`;
+var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `select:${ctx.id}:optgroup:${id}`;
+var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `select:${ctx.id}:optgroup-label:${id}`;
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getItemEl = (ctx, id) => ctx.getById(getItemId(ctx, id));
+function connect(service, normalize) {
+  const { context, prop, scope, computed, send, refs } = service;
+  const disabled = prop("disabled");
+  const collection2 = prop("collection");
+  const layout = isGridCollection(collection2) ? "grid" : "list";
+  const focused = context.get("focused");
+  const focusVisible = refs.get("focusVisible") && focused;
+  const inputState = refs.get("inputState");
+  const value = context.get("value");
+  const selectedItems = context.get("selectedItems");
+  const highlightedValue = context.get("highlightedValue");
+  const highlightedItem = context.get("highlightedItem");
+  const isTypingAhead = computed("isTypingAhead");
+  const interactive = computed("isInteractive");
+  const ariaActiveDescendant = highlightedValue ? getItemId(scope, highlightedValue) : void 0;
+  function getItemState(props2) {
+    const itemDisabled = collection2.getItemDisabled(props2.item);
+    const value2 = collection2.getItemValue(props2.item);
+    ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props2.item)}`);
+    const highlighted = highlightedValue === value2;
+    return {
+      value: value2,
+      disabled: Boolean(disabled || itemDisabled),
+      focused: highlighted && focused,
+      focusVisible: highlighted && focusVisible,
+      // deprecated
+      highlighted: highlighted && (inputState.focused ? focused : focusVisible),
+      selected: context.get("value").includes(value2)
+    };
+  }
+  return {
+    empty: value.length === 0,
+    highlightedItem,
+    highlightedValue,
+    clearHighlightedValue() {
+      send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+    },
+    selectedItems,
+    hasSelectedItems: computed("hasSelectedItems"),
+    value,
+    valueAsString: computed("valueAsString"),
+    collection: collection2,
+    disabled: !!disabled,
+    selectValue(value2) {
+      send({ type: "ITEM.SELECT", value: value2 });
+    },
+    setValue(value2) {
+      send({ type: "VALUE.SET", value: value2 });
+    },
+    selectAll() {
+      if (!computed("multiple")) {
+        throw new Error("[zag-js] Cannot select all items in a single-select listbox");
+      }
+      send({ type: "VALUE.SET", value: collection2.getValues() });
+    },
+    highlightValue(value2) {
+      send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
+    },
+    clearValue(value2) {
+      if (value2) {
+        send({ type: "ITEM.CLEAR", value: value2 });
+      } else {
+        send({ type: "VALUE.CLEAR" });
+      }
+    },
+    getItemState,
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        dir: prop("dir"),
+        id: getRootId(scope),
+        "data-orientation": prop("orientation"),
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getInputProps(props2 = {}) {
+      return normalize.input({
+        ...parts.input.attrs,
+        dir: prop("dir"),
+        disabled,
+        "data-disabled": dataAttr(disabled),
+        autoComplete: "off",
+        autoCorrect: "off",
+        "aria-haspopup": "listbox",
+        "aria-controls": getContentId(scope),
+        "aria-autocomplete": "list",
+        "aria-activedescendant": ariaActiveDescendant,
+        spellCheck: false,
+        enterKeyHint: "go",
+        onFocus() {
+          queueMicrotask(() => {
+            send({ type: "INPUT.FOCUS", autoHighlight: !!props2?.autoHighlight });
+          });
+        },
+        onBlur() {
+          send({ type: "CONTENT.BLUR", src: "input" });
+        },
+        onInput(event) {
+          if (!props2?.autoHighlight) return;
+          if (event.currentTarget.value.trim()) return;
+          queueMicrotask(() => {
+            send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
+          });
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (isComposingEvent(event)) return;
+          const nativeEvent = getNativeEvent(event);
+          const forwardEvent = () => {
+            event.preventDefault();
+            const win = scope.getWin();
+            const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
+            getContentEl(scope)?.dispatchEvent(keyboardEvent);
+          };
+          switch (nativeEvent.key) {
+            case "ArrowLeft":
+            case "ArrowRight": {
+              if (!isGridCollection(collection2)) return;
+              if (event.ctrlKey) return;
+              forwardEvent();
+            }
+            case "Home":
+            case "End": {
+              if (highlightedValue == null && event.shiftKey) return;
+              forwardEvent();
+            }
+            case "ArrowDown":
+            case "ArrowUp": {
+              forwardEvent();
+              break;
+            }
+            case "Enter":
+              if (highlightedValue != null) {
+                event.preventDefault();
+                send({ type: "ITEM.CLICK", value: highlightedValue });
+              }
+              break;
+          }
+        }
+      });
+    },
+    getLabelProps() {
+      return normalize.element({
+        dir: prop("dir"),
+        id: getLabelId(scope),
+        ...parts.label.attrs,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getValueTextProps() {
+      return normalize.element({
+        ...parts.valueText.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getItemProps(props2) {
+      const itemState = getItemState(props2);
+      return normalize.element({
+        id: getItemId(scope, itemState.value),
+        role: "option",
+        ...parts.item.attrs,
+        dir: prop("dir"),
+        "data-value": itemState.value,
+        "aria-selected": itemState.selected,
+        "data-selected": dataAttr(itemState.selected),
+        "data-layout": layout,
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "data-orientation": prop("orientation"),
+        "data-highlighted": dataAttr(itemState.highlighted),
+        "data-disabled": dataAttr(itemState.disabled),
+        "aria-disabled": ariaAttr(itemState.disabled),
+        onPointerMove(event) {
+          if (!props2.highlightOnHover) return;
+          if (itemState.disabled || event.pointerType !== "mouse") return;
+          if (itemState.highlighted) return;
+          send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
+        },
+        onMouseDown(event) {
+          event.preventDefault();
+          getContentEl(scope)?.focus();
+        },
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (itemState.disabled) return;
+          send({
+            type: "ITEM.CLICK",
+            value: itemState.value,
+            shiftKey: event.shiftKey,
+            anchorValue: highlightedValue,
+            metaKey: isCtrlOrMetaKey(event)
+          });
+        }
+      });
+    },
+    getItemTextProps(props2) {
+      const itemState = getItemState(props2);
+      return normalize.element({
+        ...parts.itemText.attrs,
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "data-disabled": dataAttr(itemState.disabled),
+        "data-highlighted": dataAttr(itemState.highlighted)
+      });
+    },
+    getItemIndicatorProps(props2) {
+      const itemState = getItemState(props2);
+      return normalize.element({
+        ...parts.itemIndicator.attrs,
+        "aria-hidden": true,
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        hidden: !itemState.selected
+      });
+    },
+    getItemGroupLabelProps(props2) {
+      const { htmlFor } = props2;
+      return normalize.element({
+        ...parts.itemGroupLabel.attrs,
+        id: getItemGroupLabelId(scope, htmlFor),
+        dir: prop("dir"),
+        role: "presentation"
+      });
+    },
+    getItemGroupProps(props2) {
+      const { id } = props2;
+      return normalize.element({
+        ...parts.itemGroup.attrs,
+        "data-disabled": dataAttr(disabled),
+        "data-orientation": prop("orientation"),
+        "data-empty": dataAttr(collection2.size === 0),
+        id: getItemGroupId(scope, id),
+        "aria-labelledby": getItemGroupLabelId(scope, id),
+        role: "group",
+        dir: prop("dir")
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        dir: prop("dir"),
+        id: getContentId(scope),
+        role: "listbox",
+        ...parts.content.attrs,
+        "data-activedescendant": ariaActiveDescendant,
+        "aria-activedescendant": ariaActiveDescendant,
+        "data-orientation": prop("orientation"),
+        "aria-multiselectable": computed("multiple") ? true : void 0,
+        "aria-labelledby": getLabelId(scope),
+        tabIndex: 0,
+        "data-layout": layout,
+        "data-empty": dataAttr(collection2.size === 0),
+        style: {
+          "--column-count": isGridCollection(collection2) ? collection2.columnCount : 1
+        },
+        onFocus() {
+          send({ type: "CONTENT.FOCUS" });
+        },
+        onBlur() {
+          send({ type: "CONTENT.BLUR" });
+        },
+        onKeyDown(event) {
+          if (!interactive) return;
+          if (!contains(event.currentTarget, getEventTarget(event))) return;
+          const shiftKey = event.shiftKey;
+          const keyMap = {
+            ArrowUp(event2) {
+              let nextValue = null;
+              if (isGridCollection(collection2) && highlightedValue) {
+                nextValue = collection2.getPreviousRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection2.getPreviousValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection2.lastValue;
+              }
+              if (!nextValue) return;
+              event2.preventDefault();
+              send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+            },
+            ArrowDown(event2) {
+              let nextValue = null;
+              if (isGridCollection(collection2) && highlightedValue) {
+                nextValue = collection2.getNextRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection2.getNextValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection2.firstValue;
+              }
+              if (!nextValue) return;
+              event2.preventDefault();
+              send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+            },
+            ArrowLeft() {
+              if (!isGridCollection(collection2) && prop("orientation") === "vertical") return;
+              let nextValue = highlightedValue ? collection2.getPreviousValue(highlightedValue) : null;
+              if (!nextValue && prop("loopFocus")) {
+                nextValue = collection2.lastValue;
+              }
+              if (!nextValue) return;
+              event.preventDefault();
+              send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+            },
+            ArrowRight() {
+              if (!isGridCollection(collection2) && prop("orientation") === "vertical") return;
+              let nextValue = highlightedValue ? collection2.getNextValue(highlightedValue) : null;
+              if (!nextValue && prop("loopFocus")) {
+                nextValue = collection2.firstValue;
+              }
+              if (!nextValue) return;
+              event.preventDefault();
+              send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+            },
+            Home(event2) {
+              event2.preventDefault();
+              let nextValue = collection2.firstValue;
+              send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+            },
+            End(event2) {
+              event2.preventDefault();
+              let nextValue = collection2.lastValue;
+              send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
+            },
+            Enter() {
+              send({ type: "ITEM.CLICK", value: highlightedValue });
+            },
+            a(event2) {
+              if (isCtrlOrMetaKey(event2) && computed("multiple") && !prop("disallowSelectAll")) {
+                event2.preventDefault();
+                send({ type: "VALUE.SET", value: collection2.getValues() });
+              }
+            },
+            Space(event2) {
+              if (isTypingAhead && prop("typeahead")) {
+                send({ type: "CONTENT.TYPEAHEAD", key: event2.key });
+              } else {
+                keyMap.Enter?.(event2);
+              }
+            },
+            Escape(event2) {
+              if (prop("deselectable") && value.length > 0) {
+                event2.preventDefault();
+                event2.stopPropagation();
+                send({ type: "VALUE.CLEAR" });
+              }
+            }
+          };
+          const exec = keyMap[getEventKey(event)];
+          if (exec) {
+            exec(event);
+            return;
+          }
+          const target = getEventTarget(event);
+          if (isEditableElement(target)) {
+            return;
+          }
+          if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
+            send({ type: "CONTENT.TYPEAHEAD", key: event.key });
+            event.preventDefault();
+          }
+        }
+      });
+    }
+  };
+}
+var { guards, createMachine } = setup();
+var { or } = guards;
+var machine = createMachine({
+  props({ props: props2 }) {
+    return {
+      loopFocus: false,
+      composite: true,
+      defaultValue: [],
+      multiple: false,
+      typeahead: true,
+      collection: collection.empty(),
+      orientation: "vertical",
+      selectionMode: "single",
+      ...props2
+    };
+  },
+  context({ prop, bindable }) {
+    return {
+      value: bindable(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        isEqual,
+        onChange(value) {
+          const items = prop("collection").findMany(value);
+          return prop("onValueChange")?.({ value, items });
+        }
+      })),
+      highlightedValue: bindable(() => ({
+        defaultValue: prop("defaultHighlightedValue") || null,
+        value: prop("highlightedValue"),
+        sync: true,
+        onChange(value) {
+          prop("onHighlightChange")?.({
+            highlightedValue: value,
+            highlightedItem: prop("collection").find(value),
+            highlightedIndex: prop("collection").indexOf(value)
+          });
+        }
+      })),
+      highlightedItem: bindable(() => ({
+        defaultValue: null
+      })),
+      selectedItems: bindable(() => {
+        const value = prop("value") ?? prop("defaultValue") ?? [];
+        const items = prop("collection").findMany(value);
+        return { defaultValue: items };
+      }),
+      focused: bindable(() => ({
+        sync: true,
+        defaultValue: false
+      }))
+    };
+  },
+  refs() {
+    return {
+      typeahead: { ...getByTypeahead.defaultOptions },
+      focusVisible: false,
+      inputState: { autoHighlight: false, focused: false }
+    };
+  },
+  computed: {
+    hasSelectedItems: ({ context }) => context.get("value").length > 0,
+    isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
+    isInteractive: ({ prop }) => !prop("disabled"),
+    selection: ({ context, prop }) => {
+      const selection = new Selection(context.get("value"));
+      selection.selectionMode = prop("selectionMode");
+      selection.deselectable = !!prop("deselectable");
+      return selection;
+    },
+    multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
+    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+  },
+  initialState() {
+    return "idle";
+  },
+  watch({ context, prop, track, action }) {
+    track([() => context.get("value").toString()], () => {
+      action(["syncSelectedItems"]);
+    });
+    track([() => context.get("highlightedValue")], () => {
+      action(["syncHighlightedItem"]);
+    });
+    track([() => prop("collection").toString()], () => {
+      action(["syncHighlightedValue"]);
+    });
+  },
+  effects: ["trackFocusVisible"],
+  on: {
+    "HIGHLIGHTED_VALUE.SET": {
+      actions: ["setHighlightedItem"]
+    },
+    "ITEM.SELECT": {
+      actions: ["selectItem"]
+    },
+    "ITEM.CLEAR": {
+      actions: ["clearItem"]
+    },
+    "VALUE.SET": {
+      actions: ["setSelectedItems"]
+    },
+    "VALUE.CLEAR": {
+      actions: ["clearSelectedItems"]
+    }
+  },
+  states: {
+    idle: {
+      effects: ["scrollToHighlightedItem"],
+      on: {
+        "INPUT.FOCUS": {
+          actions: ["setFocused", "setInputState"]
+        },
+        "CONTENT.FOCUS": [
+          {
+            guard: or("hasSelectedValue", "hasHighlightedValue"),
+            actions: ["setFocused"]
+          },
+          {
+            actions: ["setFocused", "setDefaultHighlightedValue"]
+          }
+        ],
+        "CONTENT.BLUR": {
+          actions: ["clearFocused", "clearInputState"]
+        },
+        "ITEM.CLICK": {
+          actions: ["setHighlightedItem", "selectHighlightedItem"]
+        },
+        "CONTENT.TYPEAHEAD": {
+          actions: ["setFocused", "highlightMatchingItem"]
+        },
+        "ITEM.POINTER_MOVE": {
+          actions: ["highlightItem"]
+        },
+        "ITEM.POINTER_LEAVE": {
+          actions: ["clearHighlightedItem"]
+        },
+        NAVIGATE: {
+          actions: ["setFocused", "setHighlightedItem", "selectWithKeyboard"]
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      hasSelectedValue: ({ context }) => context.get("value").length > 0,
+      hasHighlightedValue: ({ context }) => context.get("highlightedValue") != null
+    },
+    effects: {
+      trackFocusVisible: ({ scope, refs }) => {
+        return trackFocusVisible({
+          root: scope.getRootNode?.(),
+          onChange(details) {
+            refs.set("focusVisible", details.isFocusVisible);
+          }
+        });
+      },
+      scrollToHighlightedItem({ context, prop, scope }) {
+        const exec = (immediate) => {
+          const highlightedValue = context.get("highlightedValue");
+          if (highlightedValue == null) return;
+          const modality = getInteractionModality();
+          if (modality !== "keyboard") return;
+          const contentEl2 = getContentEl(scope);
+          const scrollToIndexFn = prop("scrollToIndexFn");
+          if (scrollToIndexFn) {
+            const highlightedIndex = prop("collection").indexOf(highlightedValue);
+            scrollToIndexFn?.({
+              index: highlightedIndex,
+              immediate,
+              getElement() {
+                return getItemEl(scope, highlightedValue);
+              }
+            });
+            return;
+          }
+          const itemEl = getItemEl(scope, highlightedValue);
+          scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
+        };
+        raf(() => exec(true));
+        const contentEl = () => getContentEl(scope);
+        return observeAttributes(contentEl, {
+          defer: true,
+          attributes: ["data-activedescendant"],
+          callback() {
+            exec(false);
+          }
+        });
+      }
+    },
+    actions: {
+      selectHighlightedItem({ context, prop, event, computed }) {
+        const value = event.value ?? context.get("highlightedValue");
+        const collection2 = prop("collection");
+        if (value == null || !collection2.has(value)) return;
+        const selection = computed("selection");
+        if (event.shiftKey && computed("multiple") && event.anchorValue) {
+          const next = selection.extendSelection(collection2, event.anchorValue, value);
+          invokeOnSelect(selection, next, prop("onSelect"));
+          context.set("value", Array.from(next));
+        } else {
+          const next = selection.select(collection2, value, event.metaKey);
+          invokeOnSelect(selection, next, prop("onSelect"));
+          context.set("value", Array.from(next));
+        }
+      },
+      selectWithKeyboard({ context, prop, event, computed }) {
+        const selection = computed("selection");
+        const collection2 = prop("collection");
+        if (event.shiftKey && computed("multiple") && event.anchorValue) {
+          const next = selection.extendSelection(collection2, event.anchorValue, event.value);
+          invokeOnSelect(selection, next, prop("onSelect"));
+          context.set("value", Array.from(next));
+          return;
+        }
+        if (prop("selectOnHighlight")) {
+          const next = selection.replaceSelection(collection2, event.value);
+          invokeOnSelect(selection, next, prop("onSelect"));
+          context.set("value", Array.from(next));
+        }
+      },
+      highlightItem({ context, event }) {
+        context.set("highlightedValue", event.value);
+      },
+      highlightMatchingItem({ context, prop, event, refs }) {
+        const value = prop("collection").search(event.key, {
+          state: refs.get("typeahead"),
+          currentValue: context.get("highlightedValue")
+        });
+        if (value == null) return;
+        context.set("highlightedValue", value);
+      },
+      setHighlightedItem({ context, event }) {
+        context.set("highlightedValue", event.value);
+      },
+      clearHighlightedItem({ context }) {
+        context.set("highlightedValue", null);
+      },
+      selectItem({ context, prop, event, computed }) {
+        const collection2 = prop("collection");
+        const selection = computed("selection");
+        const next = selection.select(collection2, event.value);
+        invokeOnSelect(selection, next, prop("onSelect"));
+        context.set("value", Array.from(next));
+      },
+      clearItem({ context, event, computed }) {
+        const selection = computed("selection");
+        const value = selection.deselect(event.value);
+        context.set("value", Array.from(value));
+      },
+      setSelectedItems({ context, event }) {
+        context.set("value", event.value);
+      },
+      clearSelectedItems({ context }) {
+        context.set("value", []);
+      },
+      syncSelectedItems({ context, prop }) {
+        const collection2 = prop("collection");
+        const prevSelectedItems = context.get("selectedItems");
+        const value = context.get("value");
+        const selectedItems = value.map((value2) => {
+          const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === value2);
+          return item || collection2.find(value2);
+        });
+        context.set("selectedItems", selectedItems);
+      },
+      syncHighlightedItem({ context, prop }) {
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        const highlightedItem = highlightedValue ? collection2.find(highlightedValue) : null;
+        context.set("highlightedItem", highlightedItem);
+      },
+      syncHighlightedValue({ context, prop, refs }) {
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        const { autoHighlight } = refs.get("inputState");
+        if (autoHighlight) {
+          queueMicrotask(() => {
+            context.set("highlightedValue", prop("collection").firstValue ?? null);
+          });
+          return;
+        }
+        if (highlightedValue != null && !collection2.has(highlightedValue)) {
+          queueMicrotask(() => {
+            context.set("highlightedValue", null);
+          });
+        }
+      },
+      setFocused({ context }) {
+        context.set("focused", true);
+      },
+      setDefaultHighlightedValue({ context, prop }) {
+        const collection2 = prop("collection");
+        const firstValue = collection2.firstValue;
+        if (firstValue != null) {
+          context.set("highlightedValue", firstValue);
+        }
+      },
+      clearFocused({ context }) {
+        context.set("focused", false);
+      },
+      setInputState({ refs, event }) {
+        refs.set("inputState", { autoHighlight: !!event.autoHighlight, focused: true });
+      },
+      clearInputState({ refs }) {
+        refs.set("inputState", { autoHighlight: false, focused: false });
+      }
+    }
+  }
+});
+var diff = (a, b) => {
+  const result = new Set(a);
+  for (const item of b) result.delete(item);
+  return result;
+};
+function invokeOnSelect(current, next, onSelect) {
+  const added = diff(next, current);
+  for (const item of added) {
+    onSelect?.({ value: item });
+  }
+}
+var props = createProps()([
+  "collection",
+  "defaultHighlightedValue",
+  "defaultValue",
+  "dir",
+  "disabled",
+  "deselectable",
+  "disallowSelectAll",
+  "getRootNode",
+  "highlightedValue",
+  "id",
+  "ids",
+  "loopFocus",
+  "onHighlightChange",
+  "onSelect",
+  "onValueChange",
+  "orientation",
+  "scrollToIndexFn",
+  "selectionMode",
+  "selectOnHighlight",
+  "typeahead",
+  "value"
+]);
+var splitProps = createSplitProps(props);
+var itemProps = createProps()(["item", "highlightOnHover"]);
+var splitItemProps = createSplitProps(itemProps);
+var itemGroupProps = createProps()(["id"]);
+var splitItemGroupProps = createSplitProps(itemGroupProps);
+var itemGroupLabelProps = createProps()(["htmlFor"]);
+var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
+
+// components/listbox.ts
+var Listbox = class extends Component {
+  _options = [];
+  hasGroups = false;
+  constructor(el, props2) {
+    super(el, props2);
+    const collectionFromProps = props2.collection;
+    this._options = collectionFromProps?.items ?? [];
+  }
+  get options() {
+    return Array.isArray(this._options) ? this._options : [];
+  }
+  setOptions(options) {
+    this._options = Array.isArray(options) ? options : [];
+  }
+  getCollection() {
+    const items = this.options;
+    if (this.hasGroups) {
+      return collection({
+        items,
+        itemToValue: (item) => item.id ?? item.value ?? "",
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => item.group ?? ""
+      });
+    }
+    return collection({
+      items,
+      itemToValue: (item) => item.id ?? item.value ?? "",
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    });
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    const getCollection = this.getCollection.bind(this);
+    const collectionFromProps = props2.collection;
+    return new VanillaMachine(machine, {
+      ...props2,
+      get collection() {
+        return collectionFromProps ?? getCollection();
+      }
+    });
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  init = () => {
+    this.machine.start();
+    this.render();
+    this.machine.subscribe(() => {
+      this.api = this.initApi();
+      this.render();
+    });
+  };
+  applyItemProps() {
+    const contentEl = this.el.querySelector(
+      '[data-scope="listbox"][data-part="content"]'
+    );
+    if (!contentEl) return;
+    contentEl.querySelectorAll('[data-scope="listbox"][data-part="item-group"]').forEach((groupEl) => {
+      const groupId = groupEl.dataset.id ?? "";
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+      const labelEl = groupEl.querySelector(
+        '[data-scope="listbox"][data-part="item-group-label"]'
+      );
+      if (labelEl) {
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+      }
+    });
+    contentEl.querySelectorAll('[data-scope="listbox"][data-part="item"]').forEach((itemEl) => {
+      const value = itemEl.dataset.value ?? "";
+      const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
+      if (!item) return;
+      this.spreadProps(itemEl, this.api.getItemProps({ item }));
+      const textEl = itemEl.querySelector(
+        '[data-scope="listbox"][data-part="item-text"]'
+      );
+      if (textEl) {
+        this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+      }
+      const indicatorEl = itemEl.querySelector(
+        '[data-scope="listbox"][data-part="item-indicator"]'
+      );
+      if (indicatorEl) {
+        this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
+      }
+    });
+  }
+  render() {
+    const rootEl = this.el.querySelector('[data-scope="listbox"][data-part="root"]') ?? this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const labelEl = this.el.querySelector('[data-scope="listbox"][data-part="label"]');
+    if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+    const valueTextEl = this.el.querySelector(
+      '[data-scope="listbox"][data-part="value-text"]'
+    );
+    if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
+    const inputEl = this.el.querySelector('[data-scope="listbox"][data-part="input"]');
+    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    const contentEl = this.el.querySelector(
+      '[data-scope="listbox"][data-part="content"]'
+    );
+    if (contentEl) {
+      this.spreadProps(contentEl, this.api.getContentProps());
+      this.applyItemProps();
+    }
+  }
+};
+
+// hooks/listbox.ts
+function buildCollection(items, hasGroups) {
+  if (hasGroups) {
+    return collection({
+      items,
+      itemToValue: (item) => item.id ?? item.value ?? "",
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled,
+      groupBy: (item) => item.group ?? ""
+    });
+  }
+  return collection({
+    items,
+    itemToValue: (item) => item.id ?? item.value ?? "",
+    itemToString: (item) => item.label,
+    isItemDisabled: (item) => !!item.disabled
+  });
+}
+var ListboxHook = {
+  mounted() {
+    const el = this.el;
+    const allItems = JSON.parse(el.dataset.collection ?? "[]");
+    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const valueList = getStringList(el, "value");
+    const defaultValueList = getStringList(el, "defaultValue");
+    const controlled = getBoolean(el, "controlled");
+    const zag = new Listbox(el, {
+      id: el.id,
+      collection: buildCollection(allItems, hasGroups),
+      ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
+      disabled: getBoolean(el, "disabled"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      orientation: getString(el, "orientation", [
+        "horizontal",
+        "vertical"
+      ]),
+      loopFocus: getBoolean(el, "loopFocus"),
+      selectionMode: getString(el, "selectionMode", [
+        "single",
+        "multiple",
+        "extended"
+      ]),
+      selectOnHighlight: getBoolean(el, "selectOnHighlight"),
+      deselectable: getBoolean(el, "deselectable"),
+      typeahead: getBoolean(el, "typeahead"),
+      onValueChange: (details) => {
+        const eventName = getString(el, "onValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            value: details.value,
+            items: details.items,
+            id: el.id
+          });
+        }
+        const clientName = getString(el, "onValueChangeClient");
+        if (clientName) {
+          el.dispatchEvent(
+            new CustomEvent(clientName, {
+              bubbles: true,
+              detail: { value: details, id: el.id }
+            })
+          );
+        }
+      }
+    });
+    zag.hasGroups = hasGroups;
+    zag.setOptions(allItems);
+    zag.init();
+    this.listbox = zag;
+    this.handlers = [];
+  },
+  updated() {
+    const newItems = JSON.parse(this.el.dataset.collection ?? "[]");
+    const hasGroups = newItems.some((item) => item.group !== void 0);
+    const valueList = getStringList(this.el, "value");
+    const controlled = getBoolean(this.el, "controlled");
+    if (this.listbox) {
+      this.listbox.hasGroups = hasGroups;
+      this.listbox.setOptions(newItems);
+      this.listbox.updateProps({
+        collection: buildCollection(newItems, hasGroups),
+        id: this.el.id,
+        ...controlled && valueList ? { value: valueList } : {},
+        disabled: getBoolean(this.el, "disabled"),
+        dir: getString(this.el, "dir", ["ltr", "rtl"]),
+        orientation: getString(this.el, "orientation", [
+          "horizontal",
+          "vertical"
+        ])
+      });
+    }
+  },
+  destroyed() {
+    if (this.handlers) {
+      for (const h of this.handlers) this.removeHandleEvent(h);
+    }
+    this.listbox?.destroy();
+  }
+};
+export {
+  ListboxHook as Listbox
+};

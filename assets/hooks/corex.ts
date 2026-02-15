@@ -27,7 +27,6 @@ function hooks(importFn: () => Promise<HookModule>, exportName: string): Hook {
     },
   };
 }
-
 export const Hooks = {
   Accordion: hooks(() => import("corex/accordion"), "Accordion"),
   AngleSlider: hooks(() => import("corex/angle-slider"), "AngleSlider"),
@@ -60,3 +59,4 @@ export const Hooks = {
 export { hooks };
 
 export default Hooks;
+

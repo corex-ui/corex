@@ -1,1 +1,1182 @@
-import{b as R,c as w,d as Z,e as de,f as j,g as le,h as ge,i as ce,j as G,k as pe,n as ue}from"./chunk-UBXVV7GZ.mjs";import{Ab as ne,B,Bb as oe,Cb as re,Db as ae,Eb as V,Fb as C,I as $,Ib as m,L as X,N as W,P as Y,_a as I,a as U,ba as x,d as p,eb as F,f as N,kb as T,ma as J,mb as E,nb as _,rb as ee,ta as Q,tb as te,wb as ie,yb as q,zb as se}from"./chunk-IYURAQ6S.mjs";var Re=U("floating-panel").parts("trigger","positioner","content","header","body","title","resizeTrigger","dragTrigger","stageTrigger","closeTrigger","control"),z=Re.build(),Ee=e=>e.ids?.trigger??`float:${e.id}:trigger`,Se=e=>e.ids?.positioner??`float:${e.id}:positioner`,K=e=>e.ids?.content??`float:${e.id}:content`,he=e=>e.ids?.title??`float:${e.id}:title`,ve=e=>e.ids?.header??`float:${e.id}:header`,fe=e=>e.getById(Ee(e)),me=e=>e.getById(Se(e)),Pe=e=>e.getById(K(e)),we=e=>e.getById(ve(e)),S=(e,t,s)=>{let i;return N(t)?i=G(t):i=pe(e.getWin()),s&&(i=j({x:-i.width,y:i.minY,width:i.width*3,height:i.height*2})),E(i,["x","y","width","height"])};function ke(e){switch(e){case"n":return{cursor:"n-resize",width:"100%",top:0,left:"50%",translate:"-50%"};case"e":return{cursor:"e-resize",height:"100%",right:0,top:"50%",translate:"0 -50%"};case"s":return{cursor:"s-resize",width:"100%",bottom:0,left:"50%",translate:"-50%"};case"w":return{cursor:"w-resize",height:"100%",left:0,top:"50%",translate:"0 -50%"};case"se":return{cursor:"se-resize",bottom:0,right:0};case"sw":return{cursor:"sw-resize",bottom:0,left:0};case"ne":return{cursor:"ne-resize",top:0,right:0};case"nw":return{cursor:"nw-resize",top:0,left:0};default:throw new Error(`Invalid axis: ${e}`)}}var ze=new Set(["minimized","maximized","default"]);function Oe(e,t){let{state:s,send:i,scope:o,prop:n,computed:a,context:c}=e,u=s.hasTag("open"),l=s.matches("open.dragging"),g=s.matches("open.resizing"),h=c.get("isTopmost"),f=c.get("size"),P=c.get("position"),v=a("isMaximized"),O=a("isMinimized"),y=a("isStaged"),L=a("canResize"),H=a("canDrag");return{open:u,resizable:n("resizable"),draggable:n("draggable"),setOpen(r){s.hasTag("open")!==r&&i({type:r?"OPEN":"CLOSE"})},dragging:l,resizing:g,position:P,size:f,setPosition(r){i({type:"SET_POSITION",position:r})},setSize(r){i({type:"SET_SIZE",size:r})},minimize(){i({type:"MINIMIZE"})},maximize(){i({type:"MAXIMIZE"})},restore(){i({type:"RESTORE"})},getTriggerProps(){return t.button({...z.trigger.attrs,dir:n("dir"),type:"button",disabled:n("disabled"),id:Ee(o),"data-state":u?"open":"closed","data-dragging":p(l),"aria-controls":K(o),onClick(r){if(r.defaultPrevented||n("disabled"))return;let d=s.hasTag("open");i({type:d?"CLOSE":"OPEN",src:"trigger"})}})},getPositionerProps(){return t.element({...z.positioner.attrs,dir:n("dir"),id:Se(o),style:{"--width":T(f?.width),"--height":T(f?.height),"--x":T(P?.x),"--y":T(P?.y),position:n("strategy"),top:"var(--y)",left:"var(--x)"}})},getContentProps(){return t.element({...z.content.attrs,dir:n("dir"),role:"dialog",tabIndex:0,hidden:!u,id:K(o),"aria-labelledby":he(o),"data-state":u?"open":"closed","data-dragging":p(l),"data-topmost":p(h),"data-behind":p(!h),"data-minimized":p(O),"data-maximized":p(v),"data-staged":p(y),style:{width:"var(--width)",height:"var(--height)",overflow:O?"hidden":void 0},onFocus(){i({type:"CONTENT_FOCUS"})},onKeyDown(r){if(r.defaultPrevented||r.currentTarget!==B(r))return;let d=W(r)*n("gridSize"),M={Escape(){h&&i({type:"ESCAPE"})},ArrowLeft(){i({type:"MOVE",direction:"left",step:d})},ArrowRight(){i({type:"MOVE",direction:"right",step:d})},ArrowUp(){i({type:"MOVE",direction:"up",step:d})},ArrowDown(){i({type:"MOVE",direction:"down",step:d})}}[X(r,{dir:n("dir")})];M&&(r.preventDefault(),M(r))}})},getCloseTriggerProps(){return t.button({...z.closeTrigger.attrs,dir:n("dir"),disabled:n("disabled"),"aria-label":"Close Window",type:"button",onClick(r){r.defaultPrevented||i({type:"CLOSE"})}})},getStageTriggerProps(r){if(!ze.has(r.stage))throw new Error(`[zag-js] Invalid stage: ${r.stage}. Must be one of: ${Array.from(ze).join(", ")}`);let d=n("translations"),b=I(r.stage,{minimized:()=>({"aria-label":d.minimize,hidden:y}),maximized:()=>({"aria-label":d.maximize,hidden:y}),default:()=>({"aria-label":d.restore,hidden:!y})});return t.button({...z.stageTrigger.attrs,dir:n("dir"),disabled:n("disabled"),"data-stage":r.stage,...b,type:"button",onClick(M){if(M.defaultPrevented||!n("resizable"))return;let Te=I(r.stage,{minimized:()=>"MINIMIZE",maximized:()=>"MAXIMIZE",default:()=>"RESTORE"});i({type:Te.toUpperCase()})}})},getResizeTriggerProps(r){return t.element({...z.resizeTrigger.attrs,dir:n("dir"),"data-disabled":p(!L),"data-axis":r.axis,onPointerDown(d){L&&$(d)&&(d.currentTarget.setPointerCapture(d.pointerId),d.stopPropagation(),i({type:"RESIZE_START",axis:r.axis,position:{x:d.clientX,y:d.clientY}}))},onPointerUp(d){if(!L)return;let b=d.currentTarget;b.hasPointerCapture(d.pointerId)&&b.releasePointerCapture(d.pointerId)},style:{position:"absolute",touchAction:"none",...ke(r.axis)}})},getDragTriggerProps(){return t.element({...z.dragTrigger.attrs,dir:n("dir"),"data-disabled":p(!H),onPointerDown(r){if(!H||!$(r))return;let d=B(r);d?.closest("button")||d?.closest("[data-no-drag]")||(r.currentTarget.setPointerCapture(r.pointerId),r.stopPropagation(),i({type:"DRAG_START",pointerId:r.pointerId,position:{x:r.clientX,y:r.clientY}}))},onPointerUp(r){if(!H)return;let d=r.currentTarget;d.hasPointerCapture(r.pointerId)&&d.releasePointerCapture(r.pointerId)},onDoubleClick(r){r.defaultPrevented||n("resizable")&&i({type:y?"RESTORE":"MAXIMIZE"})},style:{WebkitUserSelect:"none",userSelect:"none",touchAction:"none",cursor:"move"}})},getControlProps(){return t.element({...z.control.attrs,dir:n("dir"),"data-disabled":p(n("disabled")),"data-stage":c.get("stage"),"data-minimized":p(O),"data-maximized":p(v),"data-staged":p(y)})},getTitleProps(){return t.element({...z.title.attrs,dir:n("dir"),id:he(o)})},getHeaderProps(){return t.element({...z.header.attrs,dir:n("dir"),id:ve(o),"data-dragging":p(l),"data-topmost":p(h),"data-behind":p(!h),"data-minimized":p(O),"data-maximized":p(v),"data-staged":p(y)})},getBodyProps(){return t.element({...z.body.attrs,dir:n("dir"),"data-dragging":p(l),"data-minimized":p(O),"data-maximized":p(v),"data-staged":p(y),hidden:O})}}}var k=se({stack:[],count(){return this.stack.length},add(e){this.stack.includes(e)||this.stack.push(e)},remove(e){let t=this.stack.indexOf(e);t<0||this.stack.splice(t,1)},bringToFront(e){this.remove(e),this.add(e)},isTopmost(e){return this.stack[this.stack.length-1]===e},indexOf(e){return this.stack.indexOf(e)}}),{not:ye,and:Me}=ie(),xe={minimize:"Minimize window",maximize:"Maximize window",restore:"Restore window"},Ce={props({props:e}){return te(e,["id"],"floating-panel"),{strategy:"fixed",gridSize:1,defaultSize:{width:320,height:240},defaultPosition:{x:300,y:100},allowOverflow:!0,resizable:!0,draggable:!0,...e,hasSpecifiedPosition:!!e.defaultPosition||!!e.position,translations:{...xe,...e.translations}}},initialState({prop:e}){return e("open")||e("defaultOpen")?"open":"closed"},context({prop:e,bindable:t}){return{size:t(()=>({defaultValue:e("defaultSize"),value:e("size"),isEqual:ge,sync:!0,hash(s){return`W:${s.width} H:${s.height}`},onChange(s){e("onSizeChange")?.({size:s})}})),position:t(()=>({defaultValue:e("defaultPosition"),value:e("position"),isEqual:ce,sync:!0,hash(s){return`X:${s.x} Y:${s.y}`},onChange(s){e("onPositionChange")?.({position:s})}})),stage:t(()=>({defaultValue:"default",onChange(s){e("onStageChange")?.({stage:s})}})),lastEventPosition:t(()=>({defaultValue:null})),prevPosition:t(()=>({defaultValue:null})),prevSize:t(()=>({defaultValue:null})),isTopmost:t(()=>({defaultValue:void 0}))}},computed:{isMaximized:({context:e})=>e.get("stage")==="maximized",isMinimized:({context:e})=>e.get("stage")==="minimized",isStaged:({context:e})=>e.get("stage")!=="default",canResize:({context:e,prop:t})=>t("resizable")&&!t("disabled")&&e.get("stage")==="default",canDrag:({prop:e,computed:t})=>e("draggable")&&!e("disabled")&&!t("isMaximized")},watch({track:e,context:t,action:s,prop:i}){e([()=>t.hash("position")],()=>{s(["setPositionStyle"])}),e([()=>t.hash("size")],()=>{s(["setSizeStyle"])}),e([()=>i("open")],()=>{s(["toggleVisibility"])})},effects:["trackPanelStack"],on:{CONTENT_FOCUS:{actions:["bringToFrontOfPanelStack"]},SET_POSITION:{actions:["setPosition"]},SET_SIZE:{actions:["setSize"]}},states:{closed:{tags:["closed"],on:{"CONTROLLED.OPEN":{target:"open",actions:["setAnchorPosition","setPositionStyle","setSizeStyle","focusContentEl"]},OPEN:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"open",actions:["invokeOnOpen","setAnchorPosition","setPositionStyle","setSizeStyle","focusContentEl"]}]}},open:{tags:["open"],entry:["bringToFrontOfPanelStack"],effects:["trackBoundaryRect"],on:{DRAG_START:{guard:ye("isMaximized"),target:"open.dragging",actions:["setPrevPosition"]},RESIZE_START:{guard:ye("isMinimized"),target:"open.resizing",actions:["setPrevSize"]},"CONTROLLED.CLOSE":{target:"closed",actions:["resetRect","focusTriggerEl"]},CLOSE:[{guard:"isOpenControlled",target:"closed",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose","resetRect","focusTriggerEl"]}],ESCAPE:[{guard:Me("isOpenControlled","closeOnEsc"),actions:["invokeOnClose"]},{guard:"closeOnEsc",target:"closed",actions:["invokeOnClose","resetRect","focusTriggerEl"]}],MINIMIZE:{actions:["setMinimized"]},MAXIMIZE:{actions:["setMaximized"]},RESTORE:{actions:["setRestored"]},MOVE:{actions:["setPositionFromKeyboard"]}}},"open.dragging":{tags:["open"],effects:["trackPointerMove"],exit:["clearPrevPosition"],on:{DRAG:{actions:["setPosition"]},DRAG_END:{target:"open",actions:["invokeOnDragEnd"]},"CONTROLLED.CLOSE":{target:"closed",actions:["resetRect"]},CLOSE:[{guard:"isOpenControlled",target:"closed",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose","resetRect"]}],ESCAPE:{target:"open"}}},"open.resizing":{tags:["open"],effects:["trackPointerMove"],exit:["clearPrevSize"],on:{DRAG:{actions:["setSize"]},DRAG_END:{target:"open",actions:["invokeOnResizeEnd"]},"CONTROLLED.CLOSE":{target:"closed",actions:["resetRect"]},CLOSE:[{guard:"isOpenControlled",target:"closed",actions:["invokeOnClose"]},{target:"closed",actions:["invokeOnClose","resetRect"]}],ESCAPE:{target:"open"}}}},implementations:{guards:{closeOnEsc:({prop:e})=>!!e("closeOnEscape"),isMaximized:({context:e})=>e.get("stage")==="maximized",isMinimized:({context:e})=>e.get("stage")==="minimized",isOpenControlled:({prop:e})=>e("open")!=null},effects:{trackPointerMove({scope:e,send:t,event:s,prop:i}){let o=e.getDoc(),n=i("getBoundaryEl")?.(),a=S(e,n,!1);return J(o,{onPointerMove({point:c,event:u}){let{altKey:l,shiftKey:g}=u,h=F(c.x,a.x,a.x+a.width),f=F(c.y,a.y,a.y+a.height);t({type:"DRAG",position:{x:h,y:f},axis:s.axis,altKey:l,shiftKey:g})},onPointerUp(){t({type:"DRAG_END"})}})},trackBoundaryRect({context:e,scope:t,prop:s,computed:i}){let o=t.getWin(),n=!0,a=()=>{if(n){n=!1;return}let u=s("getBoundaryEl")?.(),l=S(t,u,!1);if(!i("isMaximized")){let g={...e.get("position"),...e.get("size")};l=le(g,l)}e.set("size",E(l,["width","height"])),e.set("position",E(l,["x","y"]))},c=s("getBoundaryEl")?.();return N(c)?Q.observe(c,a):Y(o,"resize",a)},trackPanelStack({context:e,scope:t}){let s=ne(k,()=>{e.set("isTopmost",k.isTopmost(t.id));let i=Pe(t);if(!i)return;let o=k.indexOf(t.id);o!==-1&&i.style.setProperty("--z-index",`${o+1}`)});return()=>{k.remove(t.id),s()}}},actions:{setAnchorPosition({context:e,prop:t,scope:s}){if(t("hasSpecifiedPosition"))return;let i=e.get("prevPosition")||e.get("prevSize");t("persistRect")&&i||x(()=>{let o=fe(s),n=S(s,t("getBoundaryEl")?.(),!1),a=t("getAnchorPosition")?.({triggerRect:o?DOMRect.fromRect(G(o)):null,boundaryRect:DOMRect.fromRect(n)});if(!a){let c=e.get("size");a={x:n.x+(n.width-c.width)/2,y:n.y+(n.height-c.height)/2}}a&&e.set("position",a)})},setPrevPosition({context:e,event:t}){e.set("prevPosition",{...e.get("position")}),e.set("lastEventPosition",t.position)},clearPrevPosition({context:e,prop:t}){t("persistRect")||e.set("prevPosition",null),e.set("lastEventPosition",null)},setPosition({context:e,event:t,prop:s,scope:i}){let o=Z(t.position,e.get("lastEventPosition"));o.x=Math.round(o.x/s("gridSize"))*s("gridSize"),o.y=Math.round(o.y/s("gridSize"))*s("gridSize");let n=e.get("prevPosition");if(!n)return;let a=de(n,o),c=s("getBoundaryEl")?.(),u=S(i,c,s("allowOverflow"));a=R(a,e.get("size"),u),e.set("position",a)},setPositionStyle({scope:e,context:t}){let s=me(e),i=t.get("position");s?.style.setProperty("--x",`${i.x}px`),s?.style.setProperty("--y",`${i.y}px`)},resetRect({context:e,prop:t}){e.set("stage","default"),t("persistRect")||(e.set("position",e.initial("position")),e.set("size",e.initial("size")))},setPrevSize({context:e,event:t}){e.set("prevSize",{...e.get("size")}),e.set("prevPosition",{...e.get("position")}),e.set("lastEventPosition",t.position)},clearPrevSize({context:e}){e.set("prevSize",null),e.set("prevPosition",null),e.set("lastEventPosition",null)},setSize({context:e,event:t,scope:s,prop:i}){let o=e.get("prevSize"),n=e.get("prevPosition"),a=e.get("lastEventPosition");if(!o||!n||!a)return;let c=j({...n,...o}),u=Z(t.position,a),l=ue(c,u,t.axis,{scalingOriginMode:t.altKey?"center":"extent",lockAspectRatio:!!i("lockAspectRatio")||t.shiftKey}),g=E(l,["width","height"]),h=E(l,["x","y"]),f=i("getBoundaryEl")?.(),P=S(s,f,!1);if(g=w(g,i("minSize"),i("maxSize")),g=w(g,i("minSize"),P),e.set("size",g),h){let v=R(h,g,P);e.set("position",v)}},setSizeStyle({scope:e,context:t}){queueMicrotask(()=>{let s=me(e),i=t.get("size");s?.style.setProperty("--width",`${i.width}px`),s?.style.setProperty("--height",`${i.height}px`)})},setMaximized({context:e,prop:t,scope:s}){e.set("stage","maximized"),e.set("prevSize",e.get("size")),e.set("prevPosition",e.get("position"));let i=t("getBoundaryEl")?.(),o=S(s,i,!1);e.set("position",E(o,["x","y"])),e.set("size",E(o,["height","width"]))},setMinimized({context:e,scope:t}){e.set("stage","minimized"),e.set("prevSize",e.get("size")),e.set("prevPosition",e.get("position"));let s=we(t);if(!s)return;let i={...e.get("size"),height:s?.offsetHeight};e.set("size",i)},setRestored({context:e,prop:t,scope:s}){let i=S(s,t("getBoundaryEl")?.(),!1);e.set("stage","default");let o=e.get("prevSize");if(o){let n=o;n=w(n,t("minSize"),t("maxSize")),n=w(n,t("minSize"),i),e.set("size",n),e.set("prevSize",null)}if(e.get("prevPosition")){let n=e.get("prevPosition");n=R(n,e.get("size"),i),e.set("position",n),e.set("prevPosition",null)}},setPositionFromKeyboard({context:e,event:t,prop:s,scope:i}){ee(t.step==null,"step is required");let o=e.get("position"),n=t.step,a=I(t.direction,{left:{x:o.x-n,y:o.y},right:{x:o.x+n,y:o.y},up:{x:o.x,y:o.y-n},down:{x:o.x,y:o.y+n}}),c=s("getBoundaryEl")?.(),u=S(i,c,!1);a=R(a,e.get("size"),u),e.set("position",a)},bringToFrontOfPanelStack({prop:e}){k.bringToFront(e("id"))},invokeOnOpen({prop:e}){e("onOpenChange")?.({open:!0})},invokeOnClose({prop:e}){e("onOpenChange")?.({open:!1})},invokeOnDragEnd({context:e,prop:t}){t("onPositionChangeEnd")?.({position:e.get("position")})},invokeOnResizeEnd({context:e,prop:t}){t("onSizeChangeEnd")?.({size:e.get("size")})},focusTriggerEl({scope:e}){x(()=>{fe(e)?.focus()})},focusContentEl({scope:e}){x(()=>{Pe(e)?.focus()})},toggleVisibility({send:e,prop:t,event:s}){e({type:t("open")?"CONTROLLED.OPEN":"CONTROLLED.CLOSE",previousEvent:s})}}}},Ie=q()(["allowOverflow","closeOnEscape","defaultOpen","defaultPosition","defaultSize","dir","disabled","draggable","getAnchorPosition","getBoundaryEl","getRootNode","gridSize","id","ids","lockAspectRatio","maxSize","minSize","onOpenChange","onPositionChange","onPositionChangeEnd","onSizeChange","onSizeChangeEnd","onStageChange","open","persistRect","position","resizable","size","strategy","translations"]),qe=_(Ie),De=q()(["axis"]),Ve=_(De);var D=class extends ae{initMachine(t){return new re(Ce,t)}initApi(){return Oe(this.machine.service,oe)}render(){let t=this.el.querySelector('[data-scope="floating-panel"][data-part="trigger"]');t&&this.spreadProps(t,this.api.getTriggerProps());let s=this.el.querySelector('[data-scope="floating-panel"][data-part="positioner"]');s&&this.spreadProps(s,this.api.getPositionerProps());let i=this.el.querySelector('[data-scope="floating-panel"][data-part="content"]');i&&this.spreadProps(i,this.api.getContentProps());let o=this.el.querySelector('[data-scope="floating-panel"][data-part="title"]');o&&this.spreadProps(o,this.api.getTitleProps());let n=this.el.querySelector('[data-scope="floating-panel"][data-part="header"]');n&&this.spreadProps(n,this.api.getHeaderProps());let a=this.el.querySelector('[data-scope="floating-panel"][data-part="body"]');a&&this.spreadProps(a,this.api.getBodyProps());let c=this.el.querySelector('[data-scope="floating-panel"][data-part="drag-trigger"]');c&&this.spreadProps(c,this.api.getDragTriggerProps()),["s","w","e","n","sw","nw","se","ne"].forEach(f=>{let P=this.el.querySelector(`[data-scope="floating-panel"][data-part="resize-trigger"][data-axis="${f}"]`);P&&this.spreadProps(P,this.api.getResizeTriggerProps({axis:f}))});let l=this.el.querySelector('[data-scope="floating-panel"][data-part="close-trigger"]');l&&this.spreadProps(l,this.api.getCloseTriggerProps());let g=this.el.querySelector('[data-scope="floating-panel"][data-part="control"]');g&&this.spreadProps(g,this.api.getControlProps()),["minimized","maximized","default"].forEach(f=>{let P=this.el.querySelector(`[data-scope="floating-panel"][data-part="stage-trigger"][data-stage="${f}"]`);P&&this.spreadProps(P,this.api.getStageTriggerProps({stage:f}))})}};function A(e){if(e)try{let t=JSON.parse(e);if(typeof t.width=="number"&&typeof t.height=="number")return{width:t.width,height:t.height}}catch{}}function be(e){if(e)try{let t=JSON.parse(e);if(typeof t.x=="number"&&typeof t.y=="number")return{x:t.x,y:t.y}}catch{}}var Ye={mounted(){let e=this.el,t=m(e,"open"),s=m(e,"defaultOpen"),i=m(e,"controlled"),o=A(e.dataset.size),n=A(e.dataset.defaultSize),a=be(e.dataset.position),c=be(e.dataset.defaultPosition),u=new D(e,{id:e.id,...i?{open:t}:{defaultOpen:s},draggable:m(e,"draggable")!==!1,resizable:m(e,"resizable")!==!1,allowOverflow:m(e,"allowOverflow")!==!1,closeOnEscape:m(e,"closeOnEscape")!==!1,disabled:m(e,"disabled"),dir:V(e),size:o,defaultSize:n,position:a,defaultPosition:c,minSize:A(e.dataset.minSize),maxSize:A(e.dataset.maxSize),persistRect:m(e,"persistRect"),gridSize:Number(e.dataset.gridSize)||1,onOpenChange:l=>{let g=C(e,"onOpenChange");g&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&this.pushEvent(g,{open:l.open,id:e.id});let h=C(e,"onOpenChangeClient");h&&e.dispatchEvent(new CustomEvent(h,{bubbles:!0,detail:{value:l,id:e.id}}))},onPositionChange:l=>{let g=C(e,"onPositionChange");g&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&this.pushEvent(g,{position:l.position,id:e.id})},onSizeChange:l=>{let g=C(e,"onSizeChange");g&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&this.pushEvent(g,{size:l.size,id:e.id})},onStageChange:l=>{let g=C(e,"onStageChange");g&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&this.pushEvent(g,{stage:l.stage,id:e.id})}});u.init(),this.floatingPanel=u,this.handlers=[]},updated(){let e=m(this.el,"open"),t=m(this.el,"controlled");this.floatingPanel?.updateProps({id:this.el.id,...t?{open:e}:{},disabled:m(this.el,"disabled"),dir:V(this.el)})},destroyed(){if(this.handlers)for(let e of this.handlers)this.removeHandleEvent(e);this.floatingPanel?.destroy()}};export{Ye as FloatingPanel};
+import {
+  addPoints,
+  clampPoint,
+  clampSize,
+  constrainRect,
+  createRect,
+  getElementRect,
+  getWindowRect,
+  isPointEqual,
+  isSizeEqual,
+  resizeRect,
+  subtractPoints
+} from "./chunk-BMVNROAE.mjs";
+import {
+  Component,
+  VanillaMachine,
+  addDomEvent,
+  clampValue,
+  createAnatomy,
+  createGuards,
+  createMachine,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  ensureProps,
+  getBoolean,
+  getDir,
+  getEventKey,
+  getEventStep,
+  getEventTarget,
+  getString,
+  invariant,
+  isHTMLElement,
+  isLeftClick,
+  match,
+  normalizeProps,
+  pick,
+  proxy,
+  raf,
+  resizeObserverBorderBox,
+  subscribe,
+  toPx,
+  trackPointerMove
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.33.1/node_modules/@zag-js/floating-panel/dist/index.mjs
+var anatomy = createAnatomy("floating-panel").parts(
+  "trigger",
+  "positioner",
+  "content",
+  "header",
+  "body",
+  "title",
+  "resizeTrigger",
+  "dragTrigger",
+  "stageTrigger",
+  "closeTrigger",
+  "control"
+);
+var parts = anatomy.build();
+var getTriggerId = (ctx) => ctx.ids?.trigger ?? `float:${ctx.id}:trigger`;
+var getPositionerId = (ctx) => ctx.ids?.positioner ?? `float:${ctx.id}:positioner`;
+var getContentId = (ctx) => ctx.ids?.content ?? `float:${ctx.id}:content`;
+var getTitleId = (ctx) => ctx.ids?.title ?? `float:${ctx.id}:title`;
+var getHeaderId = (ctx) => ctx.ids?.header ?? `float:${ctx.id}:header`;
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
+var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
+var getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
+  let boundaryRect;
+  if (isHTMLElement(boundaryEl)) {
+    boundaryRect = getElementRect(boundaryEl);
+  } else {
+    boundaryRect = getWindowRect(ctx.getWin());
+  }
+  if (allowOverflow) {
+    boundaryRect = createRect({
+      x: -boundaryRect.width,
+      // empty(left)
+      y: boundaryRect.minY,
+      width: boundaryRect.width * 3,
+      // empty(left) + win + empty(right)
+      height: boundaryRect.height * 2
+      // win + empty(bottom)
+    });
+  }
+  return pick(boundaryRect, ["x", "y", "width", "height"]);
+};
+function getResizeAxisStyle(axis) {
+  switch (axis) {
+    case "n":
+      return {
+        cursor: "n-resize",
+        width: "100%",
+        top: 0,
+        left: "50%",
+        translate: "-50%"
+      };
+    case "e":
+      return {
+        cursor: "e-resize",
+        height: "100%",
+        right: 0,
+        top: "50%",
+        translate: "0 -50%"
+      };
+    case "s":
+      return {
+        cursor: "s-resize",
+        width: "100%",
+        bottom: 0,
+        left: "50%",
+        translate: "-50%"
+      };
+    case "w":
+      return {
+        cursor: "w-resize",
+        height: "100%",
+        left: 0,
+        top: "50%",
+        translate: "0 -50%"
+      };
+    case "se":
+      return {
+        cursor: "se-resize",
+        bottom: 0,
+        right: 0
+      };
+    case "sw":
+      return {
+        cursor: "sw-resize",
+        bottom: 0,
+        left: 0
+      };
+    case "ne":
+      return {
+        cursor: "ne-resize",
+        top: 0,
+        right: 0
+      };
+    case "nw":
+      return {
+        cursor: "nw-resize",
+        top: 0,
+        left: 0
+      };
+    default:
+      throw new Error(`Invalid axis: ${axis}`);
+  }
+}
+var validStages = /* @__PURE__ */ new Set(["minimized", "maximized", "default"]);
+function connect(service, normalize) {
+  const { state, send, scope, prop, computed, context } = service;
+  const open = state.hasTag("open");
+  const dragging = state.matches("open.dragging");
+  const resizing = state.matches("open.resizing");
+  const isTopmost = context.get("isTopmost");
+  const size = context.get("size");
+  const position = context.get("position");
+  const isMaximized = computed("isMaximized");
+  const isMinimized = computed("isMinimized");
+  const isStaged = computed("isStaged");
+  const canResize = computed("canResize");
+  const canDrag = computed("canDrag");
+  return {
+    open,
+    resizable: prop("resizable"),
+    draggable: prop("draggable"),
+    setOpen(nextOpen) {
+      const open2 = state.hasTag("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE" });
+    },
+    dragging,
+    resizing,
+    position,
+    size,
+    setPosition(position2) {
+      send({ type: "SET_POSITION", position: position2 });
+    },
+    setSize(size2) {
+      send({ type: "SET_SIZE", size: size2 });
+    },
+    minimize() {
+      send({ type: "MINIMIZE" });
+    },
+    maximize() {
+      send({ type: "MAXIMIZE" });
+    },
+    restore() {
+      send({ type: "RESTORE" });
+    },
+    getTriggerProps() {
+      return normalize.button({
+        ...parts.trigger.attrs,
+        dir: prop("dir"),
+        type: "button",
+        disabled: prop("disabled"),
+        id: getTriggerId(scope),
+        "data-state": open ? "open" : "closed",
+        "data-dragging": dataAttr(dragging),
+        "aria-controls": getContentId(scope),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (prop("disabled")) return;
+          const open2 = state.hasTag("open");
+          send({ type: open2 ? "CLOSE" : "OPEN", src: "trigger" });
+        }
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId(scope),
+        style: {
+          "--width": toPx(size?.width),
+          "--height": toPx(size?.height),
+          "--x": toPx(position?.x),
+          "--y": toPx(position?.y),
+          position: prop("strategy"),
+          top: "var(--y)",
+          left: "var(--x)"
+        }
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        ...parts.content.attrs,
+        dir: prop("dir"),
+        role: "dialog",
+        tabIndex: 0,
+        hidden: !open,
+        id: getContentId(scope),
+        "aria-labelledby": getTitleId(scope),
+        "data-state": open ? "open" : "closed",
+        "data-dragging": dataAttr(dragging),
+        "data-topmost": dataAttr(isTopmost),
+        "data-behind": dataAttr(!isTopmost),
+        "data-minimized": dataAttr(isMinimized),
+        "data-maximized": dataAttr(isMaximized),
+        "data-staged": dataAttr(isStaged),
+        style: {
+          width: "var(--width)",
+          height: "var(--height)",
+          overflow: isMinimized ? "hidden" : void 0
+        },
+        onFocus() {
+          send({ type: "CONTENT_FOCUS" });
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (event.currentTarget !== getEventTarget(event)) return;
+          const step = getEventStep(event) * prop("gridSize");
+          const keyMap = {
+            Escape() {
+              if (!isTopmost) return;
+              send({ type: "ESCAPE" });
+            },
+            ArrowLeft() {
+              send({ type: "MOVE", direction: "left", step });
+            },
+            ArrowRight() {
+              send({ type: "MOVE", direction: "right", step });
+            },
+            ArrowUp() {
+              send({ type: "MOVE", direction: "up", step });
+            },
+            ArrowDown() {
+              send({ type: "MOVE", direction: "down", step });
+            }
+          };
+          const handler = keyMap[getEventKey(event, { dir: prop("dir") })];
+          if (handler) {
+            event.preventDefault();
+            handler(event);
+          }
+        }
+      });
+    },
+    getCloseTriggerProps() {
+      return normalize.button({
+        ...parts.closeTrigger.attrs,
+        dir: prop("dir"),
+        disabled: prop("disabled"),
+        "aria-label": "Close Window",
+        type: "button",
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "CLOSE" });
+        }
+      });
+    },
+    getStageTriggerProps(props2) {
+      if (!validStages.has(props2.stage)) {
+        throw new Error(`[zag-js] Invalid stage: ${props2.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
+      }
+      const translations = prop("translations");
+      const actionProps = match(props2.stage, {
+        minimized: () => ({
+          "aria-label": translations.minimize,
+          hidden: isStaged
+        }),
+        maximized: () => ({
+          "aria-label": translations.maximize,
+          hidden: isStaged
+        }),
+        default: () => ({
+          "aria-label": translations.restore,
+          hidden: !isStaged
+        })
+      });
+      return normalize.button({
+        ...parts.stageTrigger.attrs,
+        dir: prop("dir"),
+        disabled: prop("disabled"),
+        "data-stage": props2.stage,
+        ...actionProps,
+        type: "button",
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!prop("resizable")) return;
+          const type = match(props2.stage, {
+            minimized: () => "MINIMIZE",
+            maximized: () => "MAXIMIZE",
+            default: () => "RESTORE"
+          });
+          send({ type: type.toUpperCase() });
+        }
+      });
+    },
+    getResizeTriggerProps(props2) {
+      return normalize.element({
+        ...parts.resizeTrigger.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(!canResize),
+        "data-axis": props2.axis,
+        onPointerDown(event) {
+          if (!canResize) return;
+          if (!isLeftClick(event)) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          event.stopPropagation();
+          send({
+            type: "RESIZE_START",
+            axis: props2.axis,
+            position: { x: event.clientX, y: event.clientY }
+          });
+        },
+        onPointerUp(event) {
+          if (!canResize) return;
+          const node = event.currentTarget;
+          if (node.hasPointerCapture(event.pointerId)) {
+            node.releasePointerCapture(event.pointerId);
+          }
+        },
+        style: {
+          position: "absolute",
+          touchAction: "none",
+          ...getResizeAxisStyle(props2.axis)
+        }
+      });
+    },
+    getDragTriggerProps() {
+      return normalize.element({
+        ...parts.dragTrigger.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(!canDrag),
+        onPointerDown(event) {
+          if (!canDrag) return;
+          if (!isLeftClick(event)) return;
+          const target = getEventTarget(event);
+          if (target?.closest("button") || target?.closest("[data-no-drag]")) {
+            return;
+          }
+          event.currentTarget.setPointerCapture(event.pointerId);
+          event.stopPropagation();
+          send({
+            type: "DRAG_START",
+            pointerId: event.pointerId,
+            position: { x: event.clientX, y: event.clientY }
+          });
+        },
+        onPointerUp(event) {
+          if (!canDrag) return;
+          const node = event.currentTarget;
+          if (node.hasPointerCapture(event.pointerId)) {
+            node.releasePointerCapture(event.pointerId);
+          }
+        },
+        onDoubleClick(event) {
+          if (event.defaultPrevented) return;
+          if (!prop("resizable")) return;
+          send({ type: isStaged ? "RESTORE" : "MAXIMIZE" });
+        },
+        style: {
+          WebkitUserSelect: "none",
+          userSelect: "none",
+          touchAction: "none",
+          cursor: "move"
+        }
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(prop("disabled")),
+        "data-stage": context.get("stage"),
+        "data-minimized": dataAttr(isMinimized),
+        "data-maximized": dataAttr(isMaximized),
+        "data-staged": dataAttr(isStaged)
+      });
+    },
+    getTitleProps() {
+      return normalize.element({
+        ...parts.title.attrs,
+        dir: prop("dir"),
+        id: getTitleId(scope)
+      });
+    },
+    getHeaderProps() {
+      return normalize.element({
+        ...parts.header.attrs,
+        dir: prop("dir"),
+        id: getHeaderId(scope),
+        "data-dragging": dataAttr(dragging),
+        "data-topmost": dataAttr(isTopmost),
+        "data-behind": dataAttr(!isTopmost),
+        "data-minimized": dataAttr(isMinimized),
+        "data-maximized": dataAttr(isMaximized),
+        "data-staged": dataAttr(isStaged)
+      });
+    },
+    getBodyProps() {
+      return normalize.element({
+        ...parts.body.attrs,
+        dir: prop("dir"),
+        "data-dragging": dataAttr(dragging),
+        "data-minimized": dataAttr(isMinimized),
+        "data-maximized": dataAttr(isMaximized),
+        "data-staged": dataAttr(isStaged),
+        hidden: isMinimized
+      });
+    }
+  };
+}
+var panelStack = proxy({
+  stack: [],
+  count() {
+    return this.stack.length;
+  },
+  add(panelId) {
+    if (this.stack.includes(panelId)) return;
+    this.stack.push(panelId);
+  },
+  remove(panelId) {
+    const index = this.stack.indexOf(panelId);
+    if (index < 0) return;
+    this.stack.splice(index, 1);
+  },
+  bringToFront(id) {
+    this.remove(id);
+    this.add(id);
+  },
+  isTopmost(id) {
+    return this.stack[this.stack.length - 1] === id;
+  },
+  indexOf(id) {
+    return this.stack.indexOf(id);
+  }
+});
+var { not, and } = createGuards();
+var defaultTranslations = {
+  minimize: "Minimize window",
+  maximize: "Maximize window",
+  restore: "Restore window"
+};
+var machine = createMachine({
+  props({ props: props2 }) {
+    ensureProps(props2, ["id"], "floating-panel");
+    return {
+      strategy: "fixed",
+      gridSize: 1,
+      defaultSize: { width: 320, height: 240 },
+      defaultPosition: { x: 300, y: 100 },
+      allowOverflow: true,
+      resizable: true,
+      draggable: true,
+      ...props2,
+      hasSpecifiedPosition: !!props2.defaultPosition || !!props2.position,
+      translations: {
+        ...defaultTranslations,
+        ...props2.translations
+      }
+    };
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "open" : "closed";
+  },
+  context({ prop, bindable }) {
+    return {
+      size: bindable(() => ({
+        defaultValue: prop("defaultSize"),
+        value: prop("size"),
+        isEqual: isSizeEqual,
+        sync: true,
+        hash(v) {
+          return `W:${v.width} H:${v.height}`;
+        },
+        onChange(value) {
+          prop("onSizeChange")?.({ size: value });
+        }
+      })),
+      position: bindable(() => ({
+        defaultValue: prop("defaultPosition"),
+        value: prop("position"),
+        isEqual: isPointEqual,
+        sync: true,
+        hash(v) {
+          return `X:${v.x} Y:${v.y}`;
+        },
+        onChange(value) {
+          prop("onPositionChange")?.({ position: value });
+        }
+      })),
+      stage: bindable(() => ({
+        defaultValue: "default",
+        onChange(value) {
+          prop("onStageChange")?.({ stage: value });
+        }
+      })),
+      lastEventPosition: bindable(() => ({
+        defaultValue: null
+      })),
+      prevPosition: bindable(() => ({
+        defaultValue: null
+      })),
+      prevSize: bindable(() => ({
+        defaultValue: null
+      })),
+      isTopmost: bindable(() => ({
+        defaultValue: void 0
+      }))
+    };
+  },
+  computed: {
+    isMaximized: ({ context }) => context.get("stage") === "maximized",
+    isMinimized: ({ context }) => context.get("stage") === "minimized",
+    isStaged: ({ context }) => context.get("stage") !== "default",
+    canResize: ({ context, prop }) => prop("resizable") && !prop("disabled") && context.get("stage") === "default",
+    canDrag: ({ prop, computed }) => prop("draggable") && !prop("disabled") && !computed("isMaximized")
+  },
+  watch({ track, context, action, prop }) {
+    track([() => context.hash("position")], () => {
+      action(["setPositionStyle"]);
+    });
+    track([() => context.hash("size")], () => {
+      action(["setSizeStyle"]);
+    });
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+  },
+  effects: ["trackPanelStack"],
+  on: {
+    CONTENT_FOCUS: {
+      actions: ["bringToFrontOfPanelStack"]
+    },
+    SET_POSITION: {
+      actions: ["setPosition"]
+    },
+    SET_SIZE: {
+      actions: ["setSize"]
+    }
+  },
+  states: {
+    closed: {
+      tags: ["closed"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "open",
+          actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+        },
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "open",
+            actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+          }
+        ]
+      }
+    },
+    open: {
+      tags: ["open"],
+      entry: ["bringToFrontOfPanelStack"],
+      effects: ["trackBoundaryRect"],
+      on: {
+        DRAG_START: {
+          guard: not("isMaximized"),
+          target: "open.dragging",
+          actions: ["setPrevPosition"]
+        },
+        RESIZE_START: {
+          guard: not("isMinimized"),
+          target: "open.resizing",
+          actions: ["setPrevSize"]
+        },
+        "CONTROLLED.CLOSE": {
+          target: "closed",
+          actions: ["resetRect", "focusTriggerEl"]
+        },
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            target: "closed",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+          }
+        ],
+        ESCAPE: [
+          {
+            guard: and("isOpenControlled", "closeOnEsc"),
+            actions: ["invokeOnClose"]
+          },
+          {
+            guard: "closeOnEsc",
+            target: "closed",
+            actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+          }
+        ],
+        MINIMIZE: {
+          actions: ["setMinimized"]
+        },
+        MAXIMIZE: {
+          actions: ["setMaximized"]
+        },
+        RESTORE: {
+          actions: ["setRestored"]
+        },
+        MOVE: {
+          actions: ["setPositionFromKeyboard"]
+        }
+      }
+    },
+    "open.dragging": {
+      tags: ["open"],
+      effects: ["trackPointerMove"],
+      exit: ["clearPrevPosition"],
+      on: {
+        DRAG: {
+          actions: ["setPosition"]
+        },
+        DRAG_END: {
+          target: "open",
+          actions: ["invokeOnDragEnd"]
+        },
+        "CONTROLLED.CLOSE": {
+          target: "closed",
+          actions: ["resetRect"]
+        },
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            target: "closed",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose", "resetRect"]
+          }
+        ],
+        ESCAPE: {
+          target: "open"
+        }
+      }
+    },
+    "open.resizing": {
+      tags: ["open"],
+      effects: ["trackPointerMove"],
+      exit: ["clearPrevSize"],
+      on: {
+        DRAG: {
+          actions: ["setSize"]
+        },
+        DRAG_END: {
+          target: "open",
+          actions: ["invokeOnResizeEnd"]
+        },
+        "CONTROLLED.CLOSE": {
+          target: "closed",
+          actions: ["resetRect"]
+        },
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            target: "closed",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose", "resetRect"]
+          }
+        ],
+        ESCAPE: {
+          target: "open"
+        }
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      closeOnEsc: ({ prop }) => !!prop("closeOnEscape"),
+      isMaximized: ({ context }) => context.get("stage") === "maximized",
+      isMinimized: ({ context }) => context.get("stage") === "minimized",
+      isOpenControlled: ({ prop }) => prop("open") != void 0
+    },
+    effects: {
+      trackPointerMove({ scope, send, event: evt, prop }) {
+        const doc = scope.getDoc();
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+        return trackPointerMove(doc, {
+          onPointerMove({ point, event }) {
+            const { altKey, shiftKey } = event;
+            let x = clampValue(point.x, boundaryRect.x, boundaryRect.x + boundaryRect.width);
+            let y = clampValue(point.y, boundaryRect.y, boundaryRect.y + boundaryRect.height);
+            send({ type: "DRAG", position: { x, y }, axis: evt.axis, altKey, shiftKey });
+          },
+          onPointerUp() {
+            send({ type: "DRAG_END" });
+          }
+        });
+      },
+      trackBoundaryRect({ context, scope, prop, computed }) {
+        const win = scope.getWin();
+        let skip = true;
+        const exec = () => {
+          if (skip) {
+            skip = false;
+            return;
+          }
+          const boundaryEl2 = prop("getBoundaryEl")?.();
+          let boundaryRect = getBoundaryRect(scope, boundaryEl2, false);
+          if (!computed("isMaximized")) {
+            const rect = { ...context.get("position"), ...context.get("size") };
+            boundaryRect = constrainRect(rect, boundaryRect);
+          }
+          context.set("size", pick(boundaryRect, ["width", "height"]));
+          context.set("position", pick(boundaryRect, ["x", "y"]));
+        };
+        const boundaryEl = prop("getBoundaryEl")?.();
+        if (isHTMLElement(boundaryEl)) {
+          return resizeObserverBorderBox.observe(boundaryEl, exec);
+        }
+        return addDomEvent(win, "resize", exec);
+      },
+      trackPanelStack({ context, scope }) {
+        const unsub = subscribe(panelStack, () => {
+          context.set("isTopmost", panelStack.isTopmost(scope.id));
+          const contentEl = getContentEl(scope);
+          if (!contentEl) return;
+          const index = panelStack.indexOf(scope.id);
+          if (index === -1) return;
+          contentEl.style.setProperty("--z-index", `${index + 1}`);
+        });
+        return () => {
+          panelStack.remove(scope.id);
+          unsub();
+        };
+      }
+    },
+    actions: {
+      setAnchorPosition({ context, prop, scope }) {
+        if (prop("hasSpecifiedPosition")) return;
+        const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
+        if (prop("persistRect") && hasPrevRect) return;
+        raf(() => {
+          const triggerRect = getTriggerEl(scope);
+          const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
+          let anchorPosition = prop("getAnchorPosition")?.({
+            triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
+            boundaryRect: DOMRect.fromRect(boundaryRect)
+          });
+          if (!anchorPosition) {
+            const size = context.get("size");
+            anchorPosition = {
+              x: boundaryRect.x + (boundaryRect.width - size.width) / 2,
+              y: boundaryRect.y + (boundaryRect.height - size.height) / 2
+            };
+          }
+          if (!anchorPosition) return;
+          context.set("position", anchorPosition);
+        });
+      },
+      setPrevPosition({ context, event }) {
+        context.set("prevPosition", { ...context.get("position") });
+        context.set("lastEventPosition", event.position);
+      },
+      clearPrevPosition({ context, prop }) {
+        if (!prop("persistRect")) context.set("prevPosition", null);
+        context.set("lastEventPosition", null);
+      },
+      setPosition({ context, event, prop, scope }) {
+        let diff = subtractPoints(event.position, context.get("lastEventPosition"));
+        diff.x = Math.round(diff.x / prop("gridSize")) * prop("gridSize");
+        diff.y = Math.round(diff.y / prop("gridSize")) * prop("gridSize");
+        const prevPosition = context.get("prevPosition");
+        if (!prevPosition) return;
+        let position = addPoints(prevPosition, diff);
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, prop("allowOverflow"));
+        position = clampPoint(position, context.get("size"), boundaryRect);
+        context.set("position", position);
+      },
+      setPositionStyle({ scope, context }) {
+        const el = getPositionerEl(scope);
+        const position = context.get("position");
+        el?.style.setProperty("--x", `${position.x}px`);
+        el?.style.setProperty("--y", `${position.y}px`);
+      },
+      resetRect({ context, prop }) {
+        context.set("stage", "default");
+        if (!prop("persistRect")) {
+          context.set("position", context.initial("position"));
+          context.set("size", context.initial("size"));
+        }
+      },
+      setPrevSize({ context, event }) {
+        context.set("prevSize", { ...context.get("size") });
+        context.set("prevPosition", { ...context.get("position") });
+        context.set("lastEventPosition", event.position);
+      },
+      clearPrevSize({ context }) {
+        context.set("prevSize", null);
+        context.set("prevPosition", null);
+        context.set("lastEventPosition", null);
+      },
+      setSize({ context, event, scope, prop }) {
+        const prevSize = context.get("prevSize");
+        const prevPosition = context.get("prevPosition");
+        const lastEventPosition = context.get("lastEventPosition");
+        if (!prevSize || !prevPosition || !lastEventPosition) return;
+        const prevRect = createRect({ ...prevPosition, ...prevSize });
+        const offset = subtractPoints(event.position, lastEventPosition);
+        const nextRect = resizeRect(prevRect, offset, event.axis, {
+          scalingOriginMode: event.altKey ? "center" : "extent",
+          lockAspectRatio: !!prop("lockAspectRatio") || event.shiftKey
+        });
+        let nextSize = pick(nextRect, ["width", "height"]);
+        let nextPosition = pick(nextRect, ["x", "y"]);
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+        nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+        nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+        context.set("size", nextSize);
+        if (nextPosition) {
+          const point = clampPoint(nextPosition, nextSize, boundaryRect);
+          context.set("position", point);
+        }
+      },
+      setSizeStyle({ scope, context }) {
+        queueMicrotask(() => {
+          const el = getPositionerEl(scope);
+          const size = context.get("size");
+          el?.style.setProperty("--width", `${size.width}px`);
+          el?.style.setProperty("--height", `${size.height}px`);
+        });
+      },
+      setMaximized({ context, prop, scope }) {
+        context.set("stage", "maximized");
+        context.set("prevSize", context.get("size"));
+        context.set("prevPosition", context.get("position"));
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+        context.set("position", pick(boundaryRect, ["x", "y"]));
+        context.set("size", pick(boundaryRect, ["height", "width"]));
+      },
+      setMinimized({ context, scope }) {
+        context.set("stage", "minimized");
+        context.set("prevSize", context.get("size"));
+        context.set("prevPosition", context.get("position"));
+        const headerEl = getHeaderEl(scope);
+        if (!headerEl) return;
+        const size = {
+          ...context.get("size"),
+          height: headerEl?.offsetHeight
+        };
+        context.set("size", size);
+      },
+      setRestored({ context, prop, scope }) {
+        const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
+        context.set("stage", "default");
+        const prevSize = context.get("prevSize");
+        if (prevSize) {
+          let nextSize = prevSize;
+          nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+          nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+          context.set("size", nextSize);
+          context.set("prevSize", null);
+        }
+        if (context.get("prevPosition")) {
+          let nextPosition = context.get("prevPosition");
+          nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
+          context.set("position", nextPosition);
+          context.set("prevPosition", null);
+        }
+      },
+      setPositionFromKeyboard({ context, event, prop, scope }) {
+        invariant(event.step == null, "step is required");
+        const position = context.get("position");
+        const step = event.step;
+        let nextPosition = match(event.direction, {
+          left: { x: position.x - step, y: position.y },
+          right: { x: position.x + step, y: position.y },
+          up: { x: position.x, y: position.y - step },
+          down: { x: position.x, y: position.y + step }
+        });
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+        nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
+        context.set("position", nextPosition);
+      },
+      bringToFrontOfPanelStack({ prop }) {
+        panelStack.bringToFront(prop("id"));
+      },
+      invokeOnOpen({ prop }) {
+        prop("onOpenChange")?.({ open: true });
+      },
+      invokeOnClose({ prop }) {
+        prop("onOpenChange")?.({ open: false });
+      },
+      invokeOnDragEnd({ context, prop }) {
+        prop("onPositionChangeEnd")?.({ position: context.get("position") });
+      },
+      invokeOnResizeEnd({ context, prop }) {
+        prop("onSizeChangeEnd")?.({ size: context.get("size") });
+      },
+      focusTriggerEl({ scope }) {
+        raf(() => {
+          getTriggerEl(scope)?.focus();
+        });
+      },
+      focusContentEl({ scope }) {
+        raf(() => {
+          getContentEl(scope)?.focus();
+        });
+      },
+      toggleVisibility({ send, prop, event }) {
+        send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+      }
+    }
+  }
+});
+var props = createProps()([
+  "allowOverflow",
+  "closeOnEscape",
+  "defaultOpen",
+  "defaultPosition",
+  "defaultSize",
+  "dir",
+  "disabled",
+  "draggable",
+  "getAnchorPosition",
+  "getBoundaryEl",
+  "getRootNode",
+  "gridSize",
+  "id",
+  "ids",
+  "lockAspectRatio",
+  "maxSize",
+  "minSize",
+  "onOpenChange",
+  "onPositionChange",
+  "onPositionChangeEnd",
+  "onSizeChange",
+  "onSizeChangeEnd",
+  "onStageChange",
+  "open",
+  "persistRect",
+  "position",
+  "resizable",
+  "size",
+  "strategy",
+  "translations"
+]);
+var splitProps = createSplitProps(props);
+var resizeTriggerProps = createProps()(["axis"]);
+var splitResizeTriggerProps = createSplitProps(resizeTriggerProps);
+
+// components/floating-panel.ts
+var FloatingPanel = class extends Component {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    return new VanillaMachine(machine, props2);
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  render() {
+    const triggerEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="trigger"]'
+    );
+    if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+    const positionerEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="positioner"]'
+    );
+    if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+    const contentEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="content"]'
+    );
+    if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+    const titleEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="title"]'
+    );
+    if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
+    const headerEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="header"]'
+    );
+    if (headerEl) this.spreadProps(headerEl, this.api.getHeaderProps());
+    const bodyEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="body"]'
+    );
+    if (bodyEl) this.spreadProps(bodyEl, this.api.getBodyProps());
+    const dragTriggerEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="drag-trigger"]'
+    );
+    if (dragTriggerEl) this.spreadProps(dragTriggerEl, this.api.getDragTriggerProps());
+    const resizeAxes = ["s", "w", "e", "n", "sw", "nw", "se", "ne"];
+    resizeAxes.forEach((axis) => {
+      const resizeEl = this.el.querySelector(
+        `[data-scope="floating-panel"][data-part="resize-trigger"][data-axis="${axis}"]`
+      );
+      if (resizeEl)
+        this.spreadProps(resizeEl, this.api.getResizeTriggerProps({ axis }));
+    });
+    const closeTriggerEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="close-trigger"]'
+    );
+    if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
+    const controlEl = this.el.querySelector(
+      '[data-scope="floating-panel"][data-part="control"]'
+    );
+    if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
+    const stages = ["minimized", "maximized", "default"];
+    stages.forEach((stage) => {
+      const stageTriggerEl = this.el.querySelector(
+        `[data-scope="floating-panel"][data-part="stage-trigger"][data-stage="${stage}"]`
+      );
+      if (stageTriggerEl)
+        this.spreadProps(
+          stageTriggerEl,
+          this.api.getStageTriggerProps({ stage })
+        );
+    });
+  }
+};
+
+// hooks/floating-panel.ts
+function parseSize(val) {
+  if (!val) return void 0;
+  try {
+    const parsed = JSON.parse(val);
+    if (typeof parsed.width === "number" && typeof parsed.height === "number") {
+      return { width: parsed.width, height: parsed.height };
+    }
+  } catch {
+  }
+  return void 0;
+}
+function parsePoint(val) {
+  if (!val) return void 0;
+  try {
+    const parsed = JSON.parse(val);
+    if (typeof parsed.x === "number" && typeof parsed.y === "number") {
+      return { x: parsed.x, y: parsed.y };
+    }
+  } catch {
+  }
+  return void 0;
+}
+var FloatingPanelHook = {
+  mounted() {
+    const el = this.el;
+    const open = getBoolean(el, "open");
+    const defaultOpen = getBoolean(el, "defaultOpen");
+    const controlled = getBoolean(el, "controlled");
+    const size = parseSize(el.dataset.size);
+    const defaultSize = parseSize(el.dataset.defaultSize);
+    const position = parsePoint(el.dataset.position);
+    const defaultPosition = parsePoint(el.dataset.defaultPosition);
+    const zag = new FloatingPanel(el, {
+      id: el.id,
+      ...controlled ? { open } : { defaultOpen },
+      draggable: getBoolean(el, "draggable") !== false,
+      resizable: getBoolean(el, "resizable") !== false,
+      allowOverflow: getBoolean(el, "allowOverflow") !== false,
+      closeOnEscape: getBoolean(el, "closeOnEscape") !== false,
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      size,
+      defaultSize,
+      position,
+      defaultPosition,
+      minSize: parseSize(el.dataset.minSize),
+      maxSize: parseSize(el.dataset.maxSize),
+      persistRect: getBoolean(el, "persistRect"),
+      gridSize: Number(el.dataset.gridSize) || 1,
+      onOpenChange: (details) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, { open: details.open, id: el.id });
+        }
+        const clientName = getString(el, "onOpenChangeClient");
+        if (clientName) {
+          el.dispatchEvent(
+            new CustomEvent(clientName, {
+              bubbles: true,
+              detail: { value: details, id: el.id }
+            })
+          );
+        }
+      },
+      onPositionChange: (details) => {
+        const eventName = getString(el, "onPositionChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            position: details.position,
+            id: el.id
+          });
+        }
+      },
+      onSizeChange: (details) => {
+        const eventName = getString(el, "onSizeChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            size: details.size,
+            id: el.id
+          });
+        }
+      },
+      onStageChange: (details) => {
+        const eventName = getString(el, "onStageChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            stage: details.stage,
+            id: el.id
+          });
+        }
+      }
+    });
+    zag.init();
+    this.floatingPanel = zag;
+    this.handlers = [];
+  },
+  updated() {
+    const open = getBoolean(this.el, "open");
+    const controlled = getBoolean(this.el, "controlled");
+    this.floatingPanel?.updateProps({
+      id: this.el.id,
+      ...controlled ? { open } : {},
+      disabled: getBoolean(this.el, "disabled"),
+      dir: getDir(this.el)
+    });
+  },
+  destroyed() {
+    if (this.handlers) {
+      for (const h of this.handlers) this.removeHandleEvent(h);
+    }
+    this.floatingPanel?.destroy();
+  }
+};
+export {
+  FloatingPanelHook as FloatingPanel
+};

@@ -18,11 +18,11 @@ defmodule E2eWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :e2e,
-    gzip: not code_reloading?,
+    gzip: true,
     only: E2eWeb.static_paths(),
     raise_on_missing_only: code_reloading?
 
-    plug Plug.Static,
+  plug Plug.Static,
   at: "/corex",
   from: {:corex, "priv/static"},
   gzip: true

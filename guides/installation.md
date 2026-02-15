@@ -62,7 +62,7 @@ config :corex,
 
 ### Import Corex Hooks
 
-In your `assets/js/app.js`, import and register the Corex hooks. Each component chunk loads when first mounted:
+In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocket:
 
 ```javascript
 import corex from "corex"
@@ -75,6 +75,36 @@ const liveSocket = new LiveSocket("/live", Socket, {
   hooks: {...colocatedHooks, ...corex}
 })
 ```
+
+### Serve Corex assets and import map
+
+In your `endpoint.ex`, enable gzip on your main static plug so the Corex bundle is served compressed in development, then add a plug to serve Corex assets from the dependency:
+
+```elixir
+  plug Plug.Static,
+    at: "/",
+    from: :my_app,
+    gzip: true,
+    only: MyAppWeb.static_paths(),
+    raise_on_missing_only: code_reloading?
+
+  plug Plug.Static,
+    at: "/corex",
+    from: {:corex, "priv/static"},
+    gzip: true
+```
+
+In your root layout (e.g. `root.html.heex`), add an import map so the browser can resolve `"corex"` to the script. Use `Corex.ImportMap.import_map_single_bundle/1`:
+
+```heex
+  <script type="importmap">
+    <%= raw Jason.encode!(Corex.ImportMap.import_map_single_bundle(), pretty: true) %>
+  </script>
+```
+
+You can pass a custom path prefix if you serve Corex at a different path, e.g. `Corex.ImportMap.import_map_single_bundle("/assets/corex")`.
+
+In your esbuild config, keep Corex external so the browser loads it from the import map: add `--external:corex` to your esbuild args.
 
 ## Import Components
 
@@ -367,17 +397,8 @@ config :esbuild,
 
 Run `mix assets.build` and see the magic happening
 
-### 2.Enable gzip for Plug.Static
+### 2. Enable gzip for Plug.Static
 
-In your `endpoint.ex` enable gzip for developement also
-
-```elexir
-  plug Plug.Static,
-    at: "/",
-    from: :e2e,
-    gzip: true,
-    only: E2eWeb.static_paths(),
-    raise_on_missing_only: code_reloading?
-```
+The "Serve Corex assets and import map" section above already uses `gzip: true` on both static plugs so that the Corex bundle and app assets are served compressed in development.
 
 See the [Production guide](production.html) for the final build in production environnement

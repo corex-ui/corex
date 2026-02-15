@@ -1,1 +1,1982 @@
-import{a as Z}from"./chunk-MMRG4CGO.mjs";import{b as z,c as Ee}from"./chunk-S6MRQC6S.mjs";import{a as be}from"./chunk-5MNNWH4C.mjs";import"./chunk-L4HS2GN2.mjs";import{Bb as ve,C as ie,Cb as fe,D as le,Db as Ce,E as ae,Ea as ge,Fb as C,Gb as F,Ha as X,I as U,Ib as p,J as se,L as J,Oa as he,Qa as pe,_a as S,a as te,b as oe,ba as y,ca as re,d as g,da as ue,e as K,fa as ce,ha as Q,i as ne,nb as w,pa as de,sb as me,xb as Ie,yb as G}from"./chunk-IYURAQ6S.mjs";var Ge=te("combobox").parts("root","clearTrigger","content","control","input","item","itemGroup","itemGroupLabel","itemIndicator","itemText","label","list","positioner","trigger"),E=Ge.build(),q=e=>new Z(e);q.empty=()=>new Z({items:[]});var _e=e=>e.ids?.root??`combobox:${e.id}`,ee=e=>e.ids?.label??`combobox:${e.id}:label`,Le=e=>e.ids?.control??`combobox:${e.id}:control`,$=e=>e.ids?.input??`combobox:${e.id}:input`,W=e=>e.ids?.content??`combobox:${e.id}:content`,ke=e=>e.ids?.positioner??`combobox:${e.id}:popper`,He=e=>e.ids?.trigger??`combobox:${e.id}:toggle-btn`,Ne=e=>e.ids?.clearTrigger??`combobox:${e.id}:clear-btn`,qe=(e,t)=>e.ids?.itemGroup?.(t)??`combobox:${e.id}:optgroup:${t}`,Oe=(e,t)=>e.ids?.itemGroupLabel?.(t)??`combobox:${e.id}:optgroup-label:${t}`,Ve=(e,t)=>e.ids?.item?.(t)??`combobox:${e.id}:option:${t}`,x=e=>e.getById(W(e)),A=e=>e.getById($(e)),ye=e=>e.getById(ke(e)),Te=e=>e.getById(Le(e)),_=e=>e.getById(He(e)),Be=e=>e.getById(Ne(e)),R=(e,t)=>{if(t==null)return null;let o=`[role=option][data-value="${CSS.escape(t)}"]`;return de(x(e),o)},Se=e=>{let t=A(e);e.isActiveElement(t)||t?.focus({preventScroll:!0})},Ke=e=>{let t=_(e);e.isActiveElement(t)||t?.focus({preventScroll:!0})};function Fe(e,t){let{context:o,prop:n,state:i,send:l,scope:a,computed:r,event:c}=e,d=n("translations"),b=n("collection"),h=!!n("disabled"),T=r("isInteractive"),v=!!n("invalid"),D=!!n("required"),P=!!n("readOnly"),m=i.hasTag("open"),H=i.hasTag("focused"),N=n("composite"),L=o.get("highlightedValue"),Ae=Ee({...n("positioning"),placement:o.get("currentPlacement")});function B(s){let u=b.getItemDisabled(s.item),f=b.getItemValue(s.item);return me(f,()=>`[zag-js] No value found for item ${JSON.stringify(s.item)}`),{value:f,disabled:!!(u||u),highlighted:L===f,selected:o.get("value").includes(f)}}return{focused:H,open:m,inputValue:o.get("inputValue"),highlightedValue:L,highlightedItem:o.get("highlightedItem"),value:o.get("value"),valueAsString:r("valueAsString"),hasSelectedItems:r("hasSelectedItems"),selectedItems:o.get("selectedItems"),collection:n("collection"),multiple:!!n("multiple"),disabled:!!h,syncSelectedItems(){l({type:"SELECTED_ITEMS.SYNC"})},reposition(s={}){l({type:"POSITIONING.SET",options:s})},setHighlightValue(s){l({type:"HIGHLIGHTED_VALUE.SET",value:s})},clearHighlightValue(){l({type:"HIGHLIGHTED_VALUE.CLEAR"})},selectValue(s){l({type:"ITEM.SELECT",value:s})},setValue(s){l({type:"VALUE.SET",value:s})},setInputValue(s,u="script"){l({type:"INPUT_VALUE.SET",value:s,src:u})},clearValue(s){s!=null?l({type:"ITEM.CLEAR",value:s}):l({type:"VALUE.CLEAR"})},focus(){A(a)?.focus()},setOpen(s,u="script"){i.hasTag("open")!==s&&l({type:s?"OPEN":"CLOSE",src:u})},getRootProps(){return t.element({...E.root.attrs,dir:n("dir"),id:_e(a),"data-invalid":g(v),"data-readonly":g(P)})},getLabelProps(){return t.label({...E.label.attrs,dir:n("dir"),htmlFor:$(a),id:ee(a),"data-readonly":g(P),"data-disabled":g(h),"data-invalid":g(v),"data-required":g(D),"data-focus":g(H),onClick(s){N||(s.preventDefault(),_(a)?.focus({preventScroll:!0}))}})},getControlProps(){return t.element({...E.control.attrs,dir:n("dir"),id:Le(a),"data-state":m?"open":"closed","data-focus":g(H),"data-disabled":g(h),"data-invalid":g(v)})},getPositionerProps(){return t.element({...E.positioner.attrs,dir:n("dir"),id:ke(a),style:Ae.floating})},getInputProps(){return t.input({...E.input.attrs,dir:n("dir"),"aria-invalid":K(v),"data-invalid":g(v),"data-autofocus":g(n("autoFocus")),name:n("name"),form:n("form"),disabled:h,required:n("required"),autoComplete:"off",autoCorrect:"off",autoCapitalize:"none",spellCheck:"false",readOnly:P,placeholder:n("placeholder"),id:$(a),type:"text",role:"combobox",defaultValue:o.get("inputValue"),"aria-autocomplete":r("autoComplete")?"both":"list","aria-controls":W(a),"aria-expanded":m,"data-state":m?"open":"closed","aria-activedescendant":L?Ve(a,L):void 0,onClick(s){s.defaultPrevented||n("openOnClick")&&T&&l({type:"INPUT.CLICK",src:"input-click"})},onFocus(){h||l({type:"INPUT.FOCUS"})},onBlur(){h||l({type:"INPUT.BLUR"})},onChange(s){l({type:"INPUT.CHANGE",value:s.currentTarget.value,src:"input-change"})},onKeyDown(s){if(s.defaultPrevented||!T||s.ctrlKey||s.shiftKey||ae(s))return;let u=n("openOnKeyPress"),f=s.ctrlKey||s.metaKey||s.shiftKey,O=!0,M={ArrowDown(k){!u&&!m||(l({type:k.altKey?"OPEN":"INPUT.ARROW_DOWN",keypress:O,src:"arrow-key"}),k.preventDefault())},ArrowUp(){!u&&!m||(l({type:s.altKey?"CLOSE":"INPUT.ARROW_UP",keypress:O,src:"arrow-key"}),s.preventDefault())},Home(k){f||(l({type:"INPUT.HOME",keypress:O}),m&&k.preventDefault())},End(k){f||(l({type:"INPUT.END",keypress:O}),m&&k.preventDefault())},Enter(k){l({type:"INPUT.ENTER",keypress:O,src:"item-select"});let Me=r("isCustomValue")&&n("allowCustomValue"),Ue=L!=null,we=n("alwaysSubmitOnEnter");if(m&&!Me&&!we&&Ue&&k.preventDefault(),L==null)return;let Y=R(a,L);ne(Y)&&n("navigate")?.({value:L,node:Y,href:Y.href})},Escape(){l({type:"INPUT.ESCAPE",keypress:O,src:"escape-key"}),s.preventDefault()}},Re=J(s,{dir:n("dir")}),De=M[Re];De?.(s)}})},getTriggerProps(s={}){return t.button({...E.trigger.attrs,dir:n("dir"),id:He(a),"aria-haspopup":N?"listbox":"dialog",type:"button",tabIndex:s.focusable?void 0:-1,"aria-label":d.triggerLabel,"aria-expanded":m,"data-state":m?"open":"closed","aria-controls":m?W(a):void 0,disabled:h,"data-invalid":g(v),"data-focusable":g(s.focusable),"data-readonly":g(P),"data-disabled":g(h),onFocus(){s.focusable&&l({type:"INPUT.FOCUS",src:"trigger"})},onClick(u){u.defaultPrevented||T&&U(u)&&l({type:"TRIGGER.CLICK",src:"trigger-click"})},onPointerDown(u){T&&u.pointerType!=="touch"&&U(u)&&(u.preventDefault(),queueMicrotask(()=>{A(a)?.focus({preventScroll:!0})}))},onKeyDown(u){if(u.defaultPrevented||N)return;let f={ArrowDown(){l({type:"INPUT.ARROW_DOWN",src:"arrow-key"})},ArrowUp(){l({type:"INPUT.ARROW_UP",src:"arrow-key"})}},O=J(u,{dir:n("dir")}),M=f[O];M&&(M(u),u.preventDefault())}})},getContentProps(){return t.element({...E.content.attrs,dir:n("dir"),id:W(a),role:N?"listbox":"dialog",tabIndex:-1,hidden:!m,"data-state":m?"open":"closed","data-placement":o.get("currentPlacement"),"aria-labelledby":ee(a),"aria-multiselectable":n("multiple")&&N?!0:void 0,"data-empty":g(b.size===0),onPointerDown(s){U(s)&&s.preventDefault()}})},getListProps(){return t.element({...E.list.attrs,role:N?void 0:"listbox","data-empty":g(b.size===0),"aria-labelledby":ee(a),"aria-multiselectable":n("multiple")&&!N?!0:void 0})},getClearTriggerProps(){return t.button({...E.clearTrigger.attrs,dir:n("dir"),id:Ne(a),type:"button",tabIndex:-1,disabled:h,"data-invalid":g(v),"aria-label":d.clearTriggerLabel,"aria-controls":$(a),hidden:!o.get("value").length,onPointerDown(s){U(s)&&s.preventDefault()},onClick(s){s.defaultPrevented||T&&l({type:"VALUE.CLEAR",src:"clear-trigger"})}})},getItemState:B,getItemProps(s){let u=B(s),f=u.value;return t.element({...E.item.attrs,dir:n("dir"),id:Ve(a,f),role:"option",tabIndex:-1,"data-highlighted":g(u.highlighted),"data-state":u.selected?"checked":"unchecked","aria-selected":K(u.highlighted),"aria-disabled":K(u.disabled),"data-disabled":g(u.disabled),"data-value":u.value,onPointerMove(){u.disabled||u.highlighted||l({type:"ITEM.POINTER_MOVE",value:f})},onPointerLeave(){s.persistFocus||u.disabled||!c.previous()?.type.includes("POINTER")||l({type:"ITEM.POINTER_LEAVE",value:f})},onClick(O){le(O)||ie(O)||se(O)||u.disabled||l({type:"ITEM.CLICK",src:"item-select",value:f})}})},getItemTextProps(s){let u=B(s);return t.element({...E.itemText.attrs,dir:n("dir"),"data-state":u.selected?"checked":"unchecked","data-disabled":g(u.disabled),"data-highlighted":g(u.highlighted)})},getItemIndicatorProps(s){let u=B(s);return t.element({"aria-hidden":!0,...E.itemIndicator.attrs,dir:n("dir"),"data-state":u.selected?"checked":"unchecked",hidden:!u.selected})},getItemGroupProps(s){let{id:u}=s;return t.element({...E.itemGroup.attrs,dir:n("dir"),id:qe(a,u),"aria-labelledby":Oe(a,u),"data-empty":g(b.size===0),role:"group"})},getItemGroupLabelProps(s){let{htmlFor:u}=s;return t.element({...E.itemGroupLabel.attrs,dir:n("dir"),id:Oe(a,u),role:"presentation"})}}}var{guards:$e,createMachine:We,choose:je}=Ie(),{and:I,not:V}=$e,xe=We({props({props:e}){return{loopFocus:!0,openOnClick:!1,defaultValue:[],defaultInputValue:"",closeOnSelect:!e.multiple,allowCustomValue:!1,alwaysSubmitOnEnter:!1,inputBehavior:"none",selectionBehavior:e.multiple?"clear":"replace",openOnKeyPress:!0,openOnChange:!0,composite:!0,navigate({node:t}){ce(t)},collection:q.empty(),...e,positioning:{placement:"bottom",sameWidth:!0,...e.positioning},translations:{triggerLabel:"Toggle suggestions",clearTriggerLabel:"Clear value",...e.translations}}},initialState({prop:e}){return e("open")||e("defaultOpen")?"suggesting":"idle"},context({prop:e,bindable:t,getContext:o,getEvent:n}){return{currentPlacement:t(()=>({defaultValue:void 0})),value:t(()=>({defaultValue:e("defaultValue"),value:e("value"),isEqual:he,hash(i){return i.join(",")},onChange(i){let l=o(),a=l.get("selectedItems"),r=e("collection"),c=i.map(d=>a.find(h=>r.getItemValue(h)===d)||r.find(d));l.set("selectedItems",c),e("onValueChange")?.({value:i,items:c})}})),highlightedValue:t(()=>({defaultValue:e("defaultHighlightedValue")||null,value:e("highlightedValue"),onChange(i){let l=e("collection").find(i);e("onHighlightChange")?.({highlightedValue:i,highlightedItem:l})}})),inputValue:t(()=>{let i=e("inputValue")||e("defaultInputValue"),l=e("value")||e("defaultValue");if(!i.trim()&&!e("multiple")){let a=e("collection").stringifyMany(l);i=S(e("selectionBehavior"),{preserve:i||a,replace:a,clear:""})}return{defaultValue:i,value:e("inputValue"),onChange(a){let r=n(),c=(r.previousEvent||r).src;e("onInputValueChange")?.({inputValue:a,reason:c})}}}),highlightedItem:t(()=>{let i=e("highlightedValue");return{defaultValue:e("collection").find(i)}}),selectedItems:t(()=>{let i=e("value")||e("defaultValue")||[];return{defaultValue:e("collection").findMany(i)}})}},computed:{isInputValueEmpty:({context:e})=>e.get("inputValue").length===0,isInteractive:({prop:e})=>!(e("readOnly")||e("disabled")),autoComplete:({prop:e})=>e("inputBehavior")==="autocomplete",autoHighlight:({prop:e})=>e("inputBehavior")==="autohighlight",hasSelectedItems:({context:e})=>e.get("value").length>0,valueAsString:({context:e,prop:t})=>t("collection").stringifyItems(e.get("selectedItems")),isCustomValue:({context:e,computed:t})=>e.get("inputValue")!==t("valueAsString")},watch({context:e,prop:t,track:o,action:n,send:i}){o([()=>e.hash("value")],()=>{n(["syncSelectedItems"])}),o([()=>e.get("inputValue")],()=>{n(["syncInputValue"])}),o([()=>e.get("highlightedValue")],()=>{n(["syncHighlightedItem","autofillInputValue"])}),o([()=>t("open")],()=>{n(["toggleVisibility"])}),o([()=>t("collection").toString()],()=>{i({type:"CHILDREN_CHANGE"})})},on:{"SELECTED_ITEMS.SYNC":{actions:["syncSelectedItems"]},"HIGHLIGHTED_VALUE.SET":{actions:["setHighlightedValue"]},"HIGHLIGHTED_VALUE.CLEAR":{actions:["clearHighlightedValue"]},"ITEM.SELECT":{actions:["selectItem"]},"ITEM.CLEAR":{actions:["clearItem"]},"VALUE.SET":{actions:["setValue"]},"INPUT_VALUE.SET":{actions:["setInputValue"]},"POSITIONING.SET":{actions:["reposition"]}},entry:je([{guard:"autoFocus",actions:["setInitialFocus"]}]),states:{idle:{tags:["idle","closed"],entry:["scrollContentToTop","clearHighlightedValue"],on:{"CONTROLLED.OPEN":{target:"interacting"},"TRIGGER.CLICK":[{guard:"isOpenControlled",actions:["setInitialFocus","highlightFirstSelectedItem","invokeOnOpen"]},{target:"interacting",actions:["setInitialFocus","highlightFirstSelectedItem","invokeOnOpen"]}],"INPUT.CLICK":[{guard:"isOpenControlled",actions:["highlightFirstSelectedItem","invokeOnOpen"]},{target:"interacting",actions:["highlightFirstSelectedItem","invokeOnOpen"]}],"INPUT.FOCUS":{target:"focused"},OPEN:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"interacting",actions:["invokeOnOpen"]}],"VALUE.CLEAR":{target:"focused",actions:["clearInputValue","clearSelectedItems","setInitialFocus"]}}},focused:{tags:["focused","closed"],entry:["scrollContentToTop","clearHighlightedValue"],on:{"CONTROLLED.OPEN":[{guard:"isChangeEvent",target:"suggesting"},{target:"interacting"}],"INPUT.CHANGE":[{guard:I("isOpenControlled","openOnChange"),actions:["setInputValue","invokeOnOpen","highlightFirstItemIfNeeded"]},{guard:"openOnChange",target:"suggesting",actions:["setInputValue","invokeOnOpen","highlightFirstItemIfNeeded"]},{actions:["setInputValue"]}],"LAYER.INTERACT_OUTSIDE":{target:"idle"},"INPUT.ESCAPE":{guard:I("isCustomValue",V("allowCustomValue")),actions:["revertInputValue"]},"INPUT.BLUR":{target:"idle"},"INPUT.CLICK":[{guard:"isOpenControlled",actions:["highlightFirstSelectedItem","invokeOnOpen"]},{target:"interacting",actions:["highlightFirstSelectedItem","invokeOnOpen"]}],"TRIGGER.CLICK":[{guard:"isOpenControlled",actions:["setInitialFocus","highlightFirstSelectedItem","invokeOnOpen"]},{target:"interacting",actions:["setInitialFocus","highlightFirstSelectedItem","invokeOnOpen"]}],"INPUT.ARROW_DOWN":[{guard:I("isOpenControlled","autoComplete"),actions:["invokeOnOpen"]},{guard:"autoComplete",target:"interacting",actions:["invokeOnOpen"]},{guard:"isOpenControlled",actions:["highlightFirstOrSelectedItem","invokeOnOpen"]},{target:"interacting",actions:["highlightFirstOrSelectedItem","invokeOnOpen"]}],"INPUT.ARROW_UP":[{guard:"autoComplete",target:"interacting",actions:["invokeOnOpen"]},{guard:"autoComplete",target:"interacting",actions:["invokeOnOpen"]},{target:"interacting",actions:["highlightLastOrSelectedItem","invokeOnOpen"]},{target:"interacting",actions:["highlightLastOrSelectedItem","invokeOnOpen"]}],OPEN:[{guard:"isOpenControlled",actions:["invokeOnOpen"]},{target:"interacting",actions:["invokeOnOpen"]}],"VALUE.CLEAR":{actions:["clearInputValue","clearSelectedItems"]}}},interacting:{tags:["open","focused"],entry:["setInitialFocus"],effects:["scrollToHighlightedItem","trackDismissableLayer","trackPlacement"],on:{"CONTROLLED.CLOSE":[{guard:"restoreFocus",target:"focused",actions:["setFinalFocus"]},{target:"idle"}],CHILDREN_CHANGE:[{guard:"isHighlightedItemRemoved",actions:["clearHighlightedValue"]},{actions:["scrollToHighlightedItem"]}],"INPUT.HOME":{actions:["highlightFirstItem"]},"INPUT.END":{actions:["highlightLastItem"]},"INPUT.ARROW_DOWN":[{guard:I("autoComplete","isLastItemHighlighted"),actions:["clearHighlightedValue","scrollContentToTop"]},{actions:["highlightNextItem"]}],"INPUT.ARROW_UP":[{guard:I("autoComplete","isFirstItemHighlighted"),actions:["clearHighlightedValue"]},{actions:["highlightPrevItem"]}],"INPUT.ENTER":[{guard:I("isOpenControlled","isCustomValue",V("hasHighlightedItem"),V("allowCustomValue")),actions:["revertInputValue","invokeOnClose"]},{guard:I("isCustomValue",V("hasHighlightedItem"),V("allowCustomValue")),target:"focused",actions:["revertInputValue","invokeOnClose"]},{guard:I("isOpenControlled","closeOnSelect"),actions:["selectHighlightedItem","invokeOnClose"]},{guard:"closeOnSelect",target:"focused",actions:["selectHighlightedItem","invokeOnClose","setFinalFocus"]},{actions:["selectHighlightedItem"]}],"INPUT.CHANGE":[{guard:"autoComplete",target:"suggesting",actions:["setInputValue"]},{target:"suggesting",actions:["clearHighlightedValue","setInputValue"]}],"ITEM.POINTER_MOVE":{actions:["setHighlightedValue"]},"ITEM.POINTER_LEAVE":{actions:["clearHighlightedValue"]},"ITEM.CLICK":[{guard:I("isOpenControlled","closeOnSelect"),actions:["selectItem","invokeOnClose"]},{guard:"closeOnSelect",target:"focused",actions:["selectItem","invokeOnClose","setFinalFocus"]},{actions:["selectItem"]}],"LAYER.ESCAPE":[{guard:I("isOpenControlled","autoComplete"),actions:["syncInputValue","invokeOnClose"]},{guard:"autoComplete",target:"focused",actions:["syncInputValue","invokeOnClose"]},{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"focused",actions:["invokeOnClose","setFinalFocus"]}],"TRIGGER.CLICK":[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"focused",actions:["invokeOnClose"]}],"LAYER.INTERACT_OUTSIDE":[{guard:I("isOpenControlled","isCustomValue",V("allowCustomValue")),actions:["revertInputValue","invokeOnClose"]},{guard:I("isCustomValue",V("allowCustomValue")),target:"idle",actions:["revertInputValue","invokeOnClose"]},{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"idle",actions:["invokeOnClose"]}],CLOSE:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"focused",actions:["invokeOnClose","setFinalFocus"]}],"VALUE.CLEAR":[{guard:"isOpenControlled",actions:["clearInputValue","clearSelectedItems","invokeOnClose"]},{target:"focused",actions:["clearInputValue","clearSelectedItems","invokeOnClose","setFinalFocus"]}]}},suggesting:{tags:["open","focused"],effects:["trackDismissableLayer","scrollToHighlightedItem","trackPlacement"],entry:["setInitialFocus"],on:{"CONTROLLED.CLOSE":[{guard:"restoreFocus",target:"focused",actions:["setFinalFocus"]},{target:"idle"}],CHILDREN_CHANGE:[{guard:I("isHighlightedItemRemoved","hasCollectionItems","autoHighlight"),actions:["clearHighlightedValue","highlightFirstItem"]},{guard:"isHighlightedItemRemoved",actions:["clearHighlightedValue"]},{guard:"autoHighlight",actions:["highlightFirstItem"]}],"INPUT.ARROW_DOWN":{target:"interacting",actions:["highlightNextItem"]},"INPUT.ARROW_UP":{target:"interacting",actions:["highlightPrevItem"]},"INPUT.HOME":{target:"interacting",actions:["highlightFirstItem"]},"INPUT.END":{target:"interacting",actions:["highlightLastItem"]},"INPUT.ENTER":[{guard:I("isOpenControlled","isCustomValue",V("hasHighlightedItem"),V("allowCustomValue")),actions:["revertInputValue","invokeOnClose"]},{guard:I("isCustomValue",V("hasHighlightedItem"),V("allowCustomValue")),target:"focused",actions:["revertInputValue","invokeOnClose"]},{guard:I("isOpenControlled","closeOnSelect"),actions:["selectHighlightedItem","invokeOnClose"]},{guard:"closeOnSelect",target:"focused",actions:["selectHighlightedItem","invokeOnClose","setFinalFocus"]},{actions:["selectHighlightedItem"]}],"INPUT.CHANGE":{actions:["setInputValue"]},"LAYER.ESCAPE":[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"focused",actions:["invokeOnClose"]}],"ITEM.POINTER_MOVE":{target:"interacting",actions:["setHighlightedValue"]},"ITEM.POINTER_LEAVE":{actions:["clearHighlightedValue"]},"LAYER.INTERACT_OUTSIDE":[{guard:I("isOpenControlled","isCustomValue",V("allowCustomValue")),actions:["revertInputValue","invokeOnClose"]},{guard:I("isCustomValue",V("allowCustomValue")),target:"idle",actions:["revertInputValue","invokeOnClose"]},{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"idle",actions:["invokeOnClose"]}],"TRIGGER.CLICK":[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"focused",actions:["invokeOnClose"]}],"ITEM.CLICK":[{guard:I("isOpenControlled","closeOnSelect"),actions:["selectItem","invokeOnClose"]},{guard:"closeOnSelect",target:"focused",actions:["selectItem","invokeOnClose","setFinalFocus"]},{actions:["selectItem"]}],CLOSE:[{guard:"isOpenControlled",actions:["invokeOnClose"]},{target:"focused",actions:["invokeOnClose","setFinalFocus"]}],"VALUE.CLEAR":[{guard:"isOpenControlled",actions:["clearInputValue","clearSelectedItems","invokeOnClose"]},{target:"focused",actions:["clearInputValue","clearSelectedItems","invokeOnClose","setFinalFocus"]}]}}},implementations:{guards:{isInputValueEmpty:({computed:e})=>e("isInputValueEmpty"),autoComplete:({computed:e,prop:t})=>e("autoComplete")&&!t("multiple"),autoHighlight:({computed:e})=>e("autoHighlight"),isFirstItemHighlighted:({prop:e,context:t})=>e("collection").firstValue===t.get("highlightedValue"),isLastItemHighlighted:({prop:e,context:t})=>e("collection").lastValue===t.get("highlightedValue"),isCustomValue:({computed:e})=>e("isCustomValue"),allowCustomValue:({prop:e})=>!!e("allowCustomValue"),hasHighlightedItem:({context:e})=>e.get("highlightedValue")!=null,closeOnSelect:({prop:e})=>!!e("closeOnSelect"),isOpenControlled:({prop:e})=>e("open")!=null,openOnChange:({prop:e,context:t})=>{let o=e("openOnChange");return pe(o)?o:!!o?.({inputValue:t.get("inputValue")})},restoreFocus:({event:e})=>{let t=e.restoreFocus??e.previousEvent?.restoreFocus;return t==null?!0:!!t},isChangeEvent:({event:e})=>e.previousEvent?.type==="INPUT.CHANGE",autoFocus:({prop:e})=>!!e("autoFocus"),isHighlightedItemRemoved:({prop:e,context:t})=>!e("collection").has(t.get("highlightedValue")),hasCollectionItems:({prop:e})=>e("collection").size>0},effects:{trackDismissableLayer({send:e,prop:t,scope:o}){return t("disableLayer")?void 0:be(()=>x(o),{type:"listbox",defer:!0,exclude:()=>[A(o),_(o),Be(o)],onFocusOutside:t("onFocusOutside"),onPointerDownOutside:t("onPointerDownOutside"),onInteractOutside:t("onInteractOutside"),onEscapeKeyDown(i){i.preventDefault(),i.stopPropagation(),e({type:"LAYER.ESCAPE",src:"escape-key"})},onDismiss(){e({type:"LAYER.INTERACT_OUTSIDE",src:"interact-outside",restoreFocus:!1})}})},trackPlacement({context:e,prop:t,scope:o}){let n=()=>Te(o)||_(o),i=()=>ye(o);return e.set("currentPlacement",t("positioning").placement),z(n,i,{...t("positioning"),defer:!0,onComplete(l){e.set("currentPlacement",l.placement)}})},scrollToHighlightedItem({context:e,prop:t,scope:o,event:n}){let i=A(o),l=[],a=d=>{let b=n.current().type.includes("POINTER"),h=e.get("highlightedValue");if(b||!h)return;let T=x(o),v=t("scrollToIndexFn");if(v){let m=t("collection").indexOf(h);v({index:m,immediate:d,getElement:()=>R(o,h)});return}let D=R(o,h),P=y(()=>{Q(D,{rootEl:T,block:"nearest"})});l.push(P)},r=y(()=>a(!0));l.push(r);let c=ue(i,{attributes:["aria-activedescendant"],callback:()=>a(!1)});return l.push(c),()=>{l.forEach(d=>d())}}},actions:{reposition({context:e,prop:t,scope:o,event:n}){z(()=>Te(o),()=>ye(o),{...t("positioning"),...n.options,defer:!0,listeners:!1,onComplete(a){e.set("currentPlacement",a.placement)}})},setHighlightedValue({context:e,event:t}){t.value!=null&&e.set("highlightedValue",t.value)},clearHighlightedValue({context:e}){e.set("highlightedValue",null)},selectHighlightedItem(e){let{context:t,prop:o}=e,n=o("collection"),i=t.get("highlightedValue");if(!i||!n.has(i))return;let l=o("multiple")?X(t.get("value"),i):[i];o("onSelect")?.({value:l,itemValue:i}),t.set("value",l);let a=S(o("selectionBehavior"),{preserve:t.get("inputValue"),replace:n.stringifyMany(l),clear:""});t.set("inputValue",a)},scrollToHighlightedItem({context:e,prop:t,scope:o}){re(()=>{let n=e.get("highlightedValue");if(n==null)return;let i=R(o,n),l=x(o),a=t("scrollToIndexFn");if(a){let r=t("collection").indexOf(n);a({index:r,immediate:!0,getElement:()=>R(o,n)});return}Q(i,{rootEl:l,block:"nearest"})})},selectItem(e){let{context:t,event:o,flush:n,prop:i}=e;o.value!=null&&n(()=>{let l=i("multiple")?X(t.get("value"),o.value):[o.value];i("onSelect")?.({value:l,itemValue:o.value}),t.set("value",l);let a=S(i("selectionBehavior"),{preserve:t.get("inputValue"),replace:i("collection").stringifyMany(l),clear:""});t.set("inputValue",a)})},clearItem(e){let{context:t,event:o,flush:n,prop:i}=e;o.value!=null&&n(()=>{let l=ge(t.get("value"),o.value);t.set("value",l);let a=S(i("selectionBehavior"),{preserve:t.get("inputValue"),replace:i("collection").stringifyMany(l),clear:""});t.set("inputValue",a)})},setInitialFocus({scope:e}){y(()=>{Se(e)})},setFinalFocus({scope:e}){y(()=>{_(e)?.dataset.focusable==null?Se(e):Ke(e)})},syncInputValue({context:e,scope:t,event:o}){let n=A(t);n&&(n.value=e.get("inputValue"),queueMicrotask(()=>{o.current().type!=="INPUT.CHANGE"&&oe(n)}))},setInputValue({context:e,event:t}){e.set("inputValue",t.value)},clearInputValue({context:e}){e.set("inputValue","")},revertInputValue({context:e,prop:t,computed:o}){let n=t("selectionBehavior"),i=S(n,{replace:o("hasSelectedItems")?o("valueAsString"):"",preserve:e.get("inputValue"),clear:""});e.set("inputValue",i)},setValue(e){let{context:t,flush:o,event:n,prop:i}=e;o(()=>{t.set("value",n.value);let l=S(i("selectionBehavior"),{preserve:t.get("inputValue"),replace:i("collection").stringifyMany(n.value),clear:""});t.set("inputValue",l)})},clearSelectedItems(e){let{context:t,flush:o,prop:n}=e;o(()=>{t.set("value",[]);let i=S(n("selectionBehavior"),{preserve:t.get("inputValue"),replace:n("collection").stringifyMany([]),clear:""});t.set("inputValue",i)})},scrollContentToTop({prop:e,scope:t}){let o=e("scrollToIndexFn");if(o){let n=e("collection").firstValue;o({index:0,immediate:!0,getElement:()=>R(t,n)})}else{let n=x(t);if(!n)return;n.scrollTop=0}},invokeOnOpen({prop:e,event:t,context:o}){let n=Pe(t);e("onOpenChange")?.({open:!0,reason:n,value:o.get("value")})},invokeOnClose({prop:e,event:t,context:o}){let n=Pe(t);e("onOpenChange")?.({open:!1,reason:n,value:o.get("value")})},highlightFirstItem({context:e,prop:t,scope:o}){(x(o)?queueMicrotask:y)(()=>{let i=t("collection").firstValue;i&&e.set("highlightedValue",i)})},highlightFirstItemIfNeeded({computed:e,action:t}){e("autoHighlight")&&t(["highlightFirstItem"])},highlightLastItem({context:e,prop:t,scope:o}){(x(o)?queueMicrotask:y)(()=>{let i=t("collection").lastValue;i&&e.set("highlightedValue",i)})},highlightNextItem({context:e,prop:t}){let o=null,n=e.get("highlightedValue"),i=t("collection");n?(o=i.getNextValue(n),!o&&t("loopFocus")&&(o=i.firstValue)):o=i.firstValue,o&&e.set("highlightedValue",o)},highlightPrevItem({context:e,prop:t}){let o=null,n=e.get("highlightedValue"),i=t("collection");n?(o=i.getPreviousValue(n),!o&&t("loopFocus")&&(o=i.lastValue)):o=i.lastValue,o&&e.set("highlightedValue",o)},highlightFirstSelectedItem({context:e,prop:t}){y(()=>{let[o]=t("collection").sort(e.get("value"));o&&e.set("highlightedValue",o)})},highlightFirstOrSelectedItem({context:e,prop:t,computed:o}){y(()=>{let n=null;o("hasSelectedItems")?n=t("collection").sort(e.get("value"))[0]:n=t("collection").firstValue,n&&e.set("highlightedValue",n)})},highlightLastOrSelectedItem({context:e,prop:t,computed:o}){y(()=>{let n=t("collection"),i=null;o("hasSelectedItems")?i=n.sort(e.get("value"))[0]:i=n.lastValue,i&&e.set("highlightedValue",i)})},autofillInputValue({context:e,computed:t,prop:o,event:n,scope:i}){let l=A(i),a=o("collection");if(!t("autoComplete")||!l||!n.keypress)return;let r=a.stringify(e.get("highlightedValue"));y(()=>{l.value=r||e.get("inputValue")})},syncSelectedItems(e){queueMicrotask(()=>{let{context:t,prop:o}=e,n=o("collection"),i=t.get("value"),l=i.map(r=>t.get("selectedItems").find(d=>n.getItemValue(d)===r)||n.find(r));t.set("selectedItems",l);let a=S(o("selectionBehavior"),{preserve:t.get("inputValue"),replace:n.stringifyMany(i),clear:""});t.set("inputValue",a)})},syncHighlightedItem({context:e,prop:t}){let o=t("collection").find(e.get("highlightedValue"));e.set("highlightedItem",o)},toggleVisibility({event:e,send:t,prop:o}){t({type:o("open")?"CONTROLLED.OPEN":"CONTROLLED.CLOSE",previousEvent:e})}}}});function Pe(e){return(e.previousEvent||e).src}var Ye=G()(["allowCustomValue","autoFocus","closeOnSelect","collection","composite","defaultHighlightedValue","defaultInputValue","defaultOpen","defaultValue","dir","disabled","disableLayer","form","getRootNode","highlightedValue","id","ids","inputBehavior","inputValue","invalid","loopFocus","multiple","name","navigate","onFocusOutside","onHighlightChange","onInputValueChange","onInteractOutside","onOpenChange","onOpenChange","onPointerDownOutside","onSelect","onValueChange","open","openOnChange","openOnClick","openOnKeyPress","placeholder","positioning","readOnly","required","scrollToIndexFn","selectionBehavior","translations","value","alwaysSubmitOnEnter"]),rt=w(Ye),Je=G()(["htmlFor"]),ut=w(Je),Qe=G()(["id"]),ct=w(Qe),Xe=G()(["item","persistFocus"]),dt=w(Xe);var j=class extends Ce{options=[];allOptions=[];hasGroups=!1;setAllOptions(t){this.allOptions=t,this.options=t}getCollection(){let t=this.options||this.allOptions||[];return this.hasGroups?q({items:t,itemToValue:o=>o.id??"",itemToString:o=>o.label,isItemDisabled:o=>o.disabled??!1,groupBy:o=>o.group}):q({items:t,itemToValue:o=>o.id??"",itemToString:o=>o.label,isItemDisabled:o=>o.disabled??!1})}initMachine(t){let o=this.getCollection.bind(this);return new fe(xe,{...t,get collection(){return o()},onOpenChange:n=>{n.open&&(this.options=this.allOptions),t.onOpenChange&&t.onOpenChange(n)},onInputValueChange:n=>{let i=this.allOptions.filter(l=>l.label.toLowerCase().includes(n.inputValue.toLowerCase()));this.options=i.length>0?i:this.allOptions,t.onInputValueChange&&t.onInputValueChange(n)}})}initApi(){return Fe(this.machine.service,ve)}renderItems(){let t=this.el.querySelector('[data-scope="combobox"][data-part="content"]');if(!t)return;let o=this.el.querySelector('[data-templates="combobox"]');if(!o)return;t.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach(a=>a.remove()),t.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach(a=>a.remove());let n=this.api.collection.items,i=this.api.collection.group?.()??[];i.some(([a])=>a!=null)?this.renderGroupedItems(t,o,i):this.renderFlatItems(t,o,n)}renderGroupedItems(t,o,n){for(let[i,l]of n){if(i==null)continue;let a=o.querySelector(`[data-scope="combobox"][data-part="item-group"][data-id="${i}"][data-template]`);if(!a)continue;let r=a.cloneNode(!0);r.removeAttribute("data-template"),this.spreadProps(r,this.api.getItemGroupProps({id:i}));let c=r.querySelector('[data-scope="combobox"][data-part="item-group-label"]');c&&this.spreadProps(c,this.api.getItemGroupLabelProps({htmlFor:i}));let d=r.querySelector('[data-scope="combobox"][data-part="item-group-content"]');if(d){d.innerHTML="";for(let b of l){let h=this.cloneItem(o,b);h&&d.appendChild(h)}t.appendChild(r)}}}renderFlatItems(t,o,n){for(let i of n){let l=this.cloneItem(o,i);l&&t.appendChild(l)}}cloneItem(t,o){let n=this.api.collection.getItemValue(o),i=t.querySelector(`[data-scope="combobox"][data-part="item"][data-value="${n}"][data-template]`);if(!i)return null;let l=i.cloneNode(!0);l.removeAttribute("data-template"),this.spreadProps(l,this.api.getItemProps({item:o}));let a=l.querySelector('[data-scope="combobox"][data-part="item-text"]');a&&(this.spreadProps(a,this.api.getItemTextProps({item:o})),a.children.length===0&&(a.textContent=o.label||""));let r=l.querySelector('[data-scope="combobox"][data-part="item-indicator"]');return r&&this.spreadProps(r,this.api.getItemIndicatorProps({item:o})),l}render(){let t=this.el.querySelector('[data-scope="combobox"][data-part="root"]');if(!t)return;this.spreadProps(t,this.api.getRootProps()),["label","control","input","trigger","clear-trigger","positioner"].forEach(n=>{let i=this.el.querySelector(`[data-scope="combobox"][data-part="${n}"]`);if(!i)return;let l="get"+n.split("-").map(a=>a[0].toUpperCase()+a.slice(1)).join("")+"Props";this.spreadProps(i,this.api[l]())});let o=this.el.querySelector('[data-scope="combobox"][data-part="content"]');o&&(this.spreadProps(o,this.api.getContentProps()),this.renderItems())}};function Ze(e){return e.replace(/_([a-z])/g,(t,o)=>o.toUpperCase())}function ze(e){let t={};for(let[o,n]of Object.entries(e)){let i=Ze(o);t[i]=n}return t}var Ct={mounted(){let e=this.el,t=this.pushEvent.bind(this),o=JSON.parse(e.dataset.collection||"[]"),n=o.some(r=>r.group!==void 0),i={id:e.id,...p(e,"controlled")?{value:F(e,"value")}:{defaultValue:F(e,"defaultValue")},disabled:p(e,"disabled"),placeholder:C(e,"placeholder"),alwaysSubmitOnEnter:p(e,"alwaysSubmitOnEnter"),autoFocus:p(e,"autoFocus"),closeOnSelect:p(e,"closeOnSelect"),dir:C(e,"dir",["ltr","rtl"]),inputBehavior:C(e,"inputBehavior",["autohighlight","autocomplete","none"]),loopFocus:p(e,"loopFocus"),multiple:p(e,"multiple"),invalid:p(e,"invalid"),allowCustomValue:!1,selectionBehavior:"replace",name:C(e,"name"),form:C(e,"form"),readOnly:p(e,"readOnly"),required:p(e,"required"),positioning:(()=>{let r=e.dataset.positioning;if(r)try{let c=JSON.parse(r);return ze(c)}catch{return}})(),onOpenChange:r=>{let c=C(e,"onOpenChange");c&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&t(c,{open:r.open,reason:r.reason,value:r.value,id:e.id});let d=C(e,"onOpenChangeClient");d&&e.dispatchEvent(new CustomEvent(d,{bubbles:p(e,"bubble"),detail:{open:r.open,reason:r.reason,value:r.value,id:e.id}}))},onInputValueChange:r=>{let c=C(e,"onInputValueChange");c&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&t(c,{value:r.inputValue,reason:r.reason,id:e.id});let d=C(e,"onInputValueChangeClient");d&&e.dispatchEvent(new CustomEvent(d,{bubbles:p(e,"bubble"),detail:{value:r.inputValue,reason:r.reason,id:e.id}}))},onValueChange:r=>{let c=e.querySelector('[data-scope="combobox"][data-part="value-input"]');if(c){let h=r.value.length===0?"":r.value.length===1?String(r.value[0]):r.value.map(String).join(",");c.value=h;let T=c.getAttribute("form"),v=null;T?v=document.getElementById(T):v=c.closest("form");let D=new Event("change",{bubbles:!0,cancelable:!0});c.dispatchEvent(D);let P=new Event("input",{bubbles:!0,cancelable:!0});c.dispatchEvent(P),v&&v.hasAttribute("phx-change")&&requestAnimationFrame(()=>{let m=v.querySelector("input, select, textarea");if(m){let H=new Event("change",{bubbles:!0,cancelable:!0});m.dispatchEvent(H)}else{let H=new Event("change",{bubbles:!0,cancelable:!0});v.dispatchEvent(H)}})}let d=C(e,"onValueChange");d&&!this.liveSocket.main.isDead&&this.liveSocket.main.isConnected()&&t(d,{value:r.value,items:r.items,id:e.id});let b=C(e,"onValueChangeClient");b&&e.dispatchEvent(new CustomEvent(b,{bubbles:p(e,"bubble"),detail:{value:r.value,items:r.items,id:e.id}}))}},l=new j(e,i);l.hasGroups=n,l.setAllOptions(o),l.init();let a=p(e,"controlled")?F(e,"value"):F(e,"defaultValue");if(a&&a.length>0){let r=o.filter(c=>a.includes(c.id??""));if(r.length>0){let c=r.map(d=>d.label??"").join(", ");if(l.api&&typeof l.api.setInputValue=="function")l.api.setInputValue(c);else{let d=e.querySelector('[data-scope="combobox"][data-part="input"]');d&&(d.value=c)}}}this.combobox=l,this.handlers=[]},updated(){let e=JSON.parse(this.el.dataset.collection||"[]"),t=e.some(o=>o.group!==void 0);if(this.combobox){this.combobox.hasGroups=t,this.combobox.setAllOptions(e),this.combobox.updateProps({...p(this.el,"controlled")?{value:F(this.el,"value")}:{defaultValue:F(this.el,"defaultValue")},name:C(this.el,"name"),form:C(this.el,"form"),disabled:p(this.el,"disabled"),multiple:p(this.el,"multiple"),dir:C(this.el,"dir",["ltr","rtl"]),invalid:p(this.el,"invalid"),required:p(this.el,"required"),readOnly:p(this.el,"readOnly")});let o=this.el.querySelector('[data-scope="combobox"][data-part="input"]');o&&(o.removeAttribute("name"),o.removeAttribute("form"),o.name="")}},destroyed(){if(this.handlers)for(let e of this.handlers)this.removeHandleEvent(e);this.combobox?.destroy()}};export{Ct as Combobox};
+import {
+  ListCollection
+} from "./chunk-2PO3TGCF.mjs";
+import {
+  getPlacement,
+  getPlacementStyles
+} from "./chunk-EENFWNGI.mjs";
+import {
+  trackDismissableElement
+} from "./chunk-RR7TJIQ5.mjs";
+import "./chunk-ER3INIAI.mjs";
+import {
+  Component,
+  VanillaMachine,
+  addOrRemove,
+  ariaAttr,
+  clickIfLink,
+  createAnatomy,
+  createProps,
+  createSplitProps,
+  dataAttr,
+  ensure,
+  getBoolean,
+  getEventKey,
+  getString,
+  getStringList,
+  isAnchorElement,
+  isBoolean,
+  isComposingEvent,
+  isContextMenuEvent,
+  isDownloadingEvent,
+  isEqual,
+  isLeftClick,
+  isOpeningInNewTab,
+  match,
+  nextTick,
+  normalizeProps,
+  observeAttributes,
+  query,
+  raf,
+  remove,
+  scrollIntoView,
+  setCaretToEnd,
+  setup
+} from "./chunk-IXOYOLUJ.mjs";
+
+// ../node_modules/.pnpm/@zag-js+combobox@1.33.1/node_modules/@zag-js/combobox/dist/index.mjs
+var anatomy = createAnatomy("combobox").parts(
+  "root",
+  "clearTrigger",
+  "content",
+  "control",
+  "input",
+  "item",
+  "itemGroup",
+  "itemGroupLabel",
+  "itemIndicator",
+  "itemText",
+  "label",
+  "list",
+  "positioner",
+  "trigger"
+);
+var parts = anatomy.build();
+var collection = (options) => {
+  return new ListCollection(options);
+};
+collection.empty = () => {
+  return new ListCollection({ items: [] });
+};
+var getRootId = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
+var getControlId = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
+var getInputId = (ctx) => ctx.ids?.input ?? `combobox:${ctx.id}:input`;
+var getContentId = (ctx) => ctx.ids?.content ?? `combobox:${ctx.id}:content`;
+var getPositionerId = (ctx) => ctx.ids?.positioner ?? `combobox:${ctx.id}:popper`;
+var getTriggerId = (ctx) => ctx.ids?.trigger ?? `combobox:${ctx.id}:toggle-btn`;
+var getClearTriggerId = (ctx) => ctx.ids?.clearTrigger ?? `combobox:${ctx.id}:clear-btn`;
+var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `combobox:${ctx.id}:optgroup:${id}`;
+var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `combobox:${ctx.id}:optgroup-label:${id}`;
+var getItemId = (ctx, id) => ctx.ids?.item?.(id) ?? `combobox:${ctx.id}:option:${id}`;
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
+var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
+var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
+var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
+var getItemEl = (ctx, value) => {
+  if (value == null) return null;
+  const selector = `[role=option][data-value="${CSS.escape(value)}"]`;
+  return query(getContentEl(ctx), selector);
+};
+var focusInputEl = (ctx) => {
+  const inputEl = getInputEl(ctx);
+  if (ctx.isActiveElement(inputEl)) return;
+  inputEl?.focus({ preventScroll: true });
+};
+var focusTriggerEl = (ctx) => {
+  const triggerEl = getTriggerEl(ctx);
+  if (ctx.isActiveElement(triggerEl)) return;
+  triggerEl?.focus({ preventScroll: true });
+};
+function connect(service, normalize) {
+  const { context, prop, state, send, scope, computed, event } = service;
+  const translations = prop("translations");
+  const collection2 = prop("collection");
+  const disabled = !!prop("disabled");
+  const interactive = computed("isInteractive");
+  const invalid = !!prop("invalid");
+  const required = !!prop("required");
+  const readOnly = !!prop("readOnly");
+  const open = state.hasTag("open");
+  const focused = state.hasTag("focused");
+  const composite = prop("composite");
+  const highlightedValue = context.get("highlightedValue");
+  const popperStyles = getPlacementStyles({
+    ...prop("positioning"),
+    placement: context.get("currentPlacement")
+  });
+  function getItemState(props2) {
+    const disabled2 = collection2.getItemDisabled(props2.item);
+    const value = collection2.getItemValue(props2.item);
+    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props2.item)}`);
+    return {
+      value,
+      disabled: Boolean(disabled2 || disabled2),
+      highlighted: highlightedValue === value,
+      selected: context.get("value").includes(value)
+    };
+  }
+  return {
+    focused,
+    open,
+    inputValue: context.get("inputValue"),
+    highlightedValue,
+    highlightedItem: context.get("highlightedItem"),
+    value: context.get("value"),
+    valueAsString: computed("valueAsString"),
+    hasSelectedItems: computed("hasSelectedItems"),
+    selectedItems: context.get("selectedItems"),
+    collection: prop("collection"),
+    multiple: !!prop("multiple"),
+    disabled: !!disabled,
+    syncSelectedItems() {
+      send({ type: "SELECTED_ITEMS.SYNC" });
+    },
+    reposition(options = {}) {
+      send({ type: "POSITIONING.SET", options });
+    },
+    setHighlightValue(value) {
+      send({ type: "HIGHLIGHTED_VALUE.SET", value });
+    },
+    clearHighlightValue() {
+      send({ type: "HIGHLIGHTED_VALUE.CLEAR" });
+    },
+    selectValue(value) {
+      send({ type: "ITEM.SELECT", value });
+    },
+    setValue(value) {
+      send({ type: "VALUE.SET", value });
+    },
+    setInputValue(value, reason = "script") {
+      send({ type: "INPUT_VALUE.SET", value, src: reason });
+    },
+    clearValue(value) {
+      if (value != null) {
+        send({ type: "ITEM.CLEAR", value });
+      } else {
+        send({ type: "VALUE.CLEAR" });
+      }
+    },
+    focus() {
+      getInputEl(scope)?.focus();
+    },
+    setOpen(nextOpen, reason = "script") {
+      const open2 = state.hasTag("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE", src: reason });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        dir: prop("dir"),
+        id: getRootId(scope),
+        "data-invalid": dataAttr(invalid),
+        "data-readonly": dataAttr(readOnly)
+      });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts.label.attrs,
+        dir: prop("dir"),
+        htmlFor: getInputId(scope),
+        id: getLabelId(scope),
+        "data-readonly": dataAttr(readOnly),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-required": dataAttr(required),
+        "data-focus": dataAttr(focused),
+        onClick(event2) {
+          if (composite) return;
+          event2.preventDefault();
+          getTriggerEl(scope)?.focus({ preventScroll: true });
+        }
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        dir: prop("dir"),
+        id: getControlId(scope),
+        "data-state": open ? "open" : "closed",
+        "data-focus": dataAttr(focused),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid)
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId(scope),
+        style: popperStyles.floating
+      });
+    },
+    getInputProps() {
+      return normalize.input({
+        ...parts.input.attrs,
+        dir: prop("dir"),
+        "aria-invalid": ariaAttr(invalid),
+        "data-invalid": dataAttr(invalid),
+        "data-autofocus": dataAttr(prop("autoFocus")),
+        name: prop("name"),
+        form: prop("form"),
+        disabled,
+        required: prop("required"),
+        autoComplete: "off",
+        autoCorrect: "off",
+        autoCapitalize: "none",
+        spellCheck: "false",
+        readOnly,
+        placeholder: prop("placeholder"),
+        id: getInputId(scope),
+        type: "text",
+        role: "combobox",
+        defaultValue: context.get("inputValue"),
+        "aria-autocomplete": computed("autoComplete") ? "both" : "list",
+        "aria-controls": getContentId(scope),
+        "aria-expanded": open,
+        "data-state": open ? "open" : "closed",
+        "aria-activedescendant": highlightedValue ? getItemId(scope, highlightedValue) : void 0,
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
+          if (!prop("openOnClick")) return;
+          if (!interactive) return;
+          send({ type: "INPUT.CLICK", src: "input-click" });
+        },
+        onFocus() {
+          if (disabled) return;
+          send({ type: "INPUT.FOCUS" });
+        },
+        onBlur() {
+          if (disabled) return;
+          send({ type: "INPUT.BLUR" });
+        },
+        onChange(event2) {
+          send({ type: "INPUT.CHANGE", value: event2.currentTarget.value, src: "input-change" });
+        },
+        onKeyDown(event2) {
+          if (event2.defaultPrevented) return;
+          if (!interactive) return;
+          if (event2.ctrlKey || event2.shiftKey || isComposingEvent(event2)) return;
+          const openOnKeyPress = prop("openOnKeyPress");
+          const isModifierKey = event2.ctrlKey || event2.metaKey || event2.shiftKey;
+          const keypress = true;
+          const keymap = {
+            ArrowDown(event3) {
+              if (!openOnKeyPress && !open) return;
+              send({ type: event3.altKey ? "OPEN" : "INPUT.ARROW_DOWN", keypress, src: "arrow-key" });
+              event3.preventDefault();
+            },
+            ArrowUp() {
+              if (!openOnKeyPress && !open) return;
+              send({ type: event2.altKey ? "CLOSE" : "INPUT.ARROW_UP", keypress, src: "arrow-key" });
+              event2.preventDefault();
+            },
+            Home(event3) {
+              if (isModifierKey) return;
+              send({ type: "INPUT.HOME", keypress });
+              if (open) {
+                event3.preventDefault();
+              }
+            },
+            End(event3) {
+              if (isModifierKey) return;
+              send({ type: "INPUT.END", keypress });
+              if (open) {
+                event3.preventDefault();
+              }
+            },
+            Enter(event3) {
+              send({ type: "INPUT.ENTER", keypress, src: "item-select" });
+              const submittable = computed("isCustomValue") && prop("allowCustomValue");
+              const hasHighlight = highlightedValue != null;
+              const alwaysSubmit = prop("alwaysSubmitOnEnter");
+              if (open && !submittable && !alwaysSubmit && hasHighlight) {
+                event3.preventDefault();
+              }
+              if (highlightedValue == null) return;
+              const itemEl = getItemEl(scope, highlightedValue);
+              if (isAnchorElement(itemEl)) {
+                prop("navigate")?.({ value: highlightedValue, node: itemEl, href: itemEl.href });
+              }
+            },
+            Escape() {
+              send({ type: "INPUT.ESCAPE", keypress, src: "escape-key" });
+              event2.preventDefault();
+            }
+          };
+          const key = getEventKey(event2, { dir: prop("dir") });
+          const exec = keymap[key];
+          exec?.(event2);
+        }
+      });
+    },
+    getTriggerProps(props2 = {}) {
+      return normalize.button({
+        ...parts.trigger.attrs,
+        dir: prop("dir"),
+        id: getTriggerId(scope),
+        "aria-haspopup": composite ? "listbox" : "dialog",
+        type: "button",
+        tabIndex: props2.focusable ? void 0 : -1,
+        "aria-label": translations.triggerLabel,
+        "aria-expanded": open,
+        "data-state": open ? "open" : "closed",
+        "aria-controls": open ? getContentId(scope) : void 0,
+        disabled,
+        "data-invalid": dataAttr(invalid),
+        "data-focusable": dataAttr(props2.focusable),
+        "data-readonly": dataAttr(readOnly),
+        "data-disabled": dataAttr(disabled),
+        onFocus() {
+          if (!props2.focusable) return;
+          send({ type: "INPUT.FOCUS", src: "trigger" });
+        },
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
+          if (!interactive) return;
+          if (!isLeftClick(event2)) return;
+          send({ type: "TRIGGER.CLICK", src: "trigger-click" });
+        },
+        onPointerDown(event2) {
+          if (!interactive) return;
+          if (event2.pointerType === "touch") return;
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
+          queueMicrotask(() => {
+            getInputEl(scope)?.focus({ preventScroll: true });
+          });
+        },
+        onKeyDown(event2) {
+          if (event2.defaultPrevented) return;
+          if (composite) return;
+          const keyMap = {
+            ArrowDown() {
+              send({ type: "INPUT.ARROW_DOWN", src: "arrow-key" });
+            },
+            ArrowUp() {
+              send({ type: "INPUT.ARROW_UP", src: "arrow-key" });
+            }
+          };
+          const key = getEventKey(event2, { dir: prop("dir") });
+          const exec = keyMap[key];
+          if (exec) {
+            exec(event2);
+            event2.preventDefault();
+          }
+        }
+      });
+    },
+    getContentProps() {
+      return normalize.element({
+        ...parts.content.attrs,
+        dir: prop("dir"),
+        id: getContentId(scope),
+        role: !composite ? "dialog" : "listbox",
+        tabIndex: -1,
+        hidden: !open,
+        "data-state": open ? "open" : "closed",
+        "data-placement": context.get("currentPlacement"),
+        "aria-labelledby": getLabelId(scope),
+        "aria-multiselectable": prop("multiple") && composite ? true : void 0,
+        "data-empty": dataAttr(collection2.size === 0),
+        onPointerDown(event2) {
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
+        }
+      });
+    },
+    getListProps() {
+      return normalize.element({
+        ...parts.list.attrs,
+        role: !composite ? "listbox" : void 0,
+        "data-empty": dataAttr(collection2.size === 0),
+        "aria-labelledby": getLabelId(scope),
+        "aria-multiselectable": prop("multiple") && !composite ? true : void 0
+      });
+    },
+    getClearTriggerProps() {
+      return normalize.button({
+        ...parts.clearTrigger.attrs,
+        dir: prop("dir"),
+        id: getClearTriggerId(scope),
+        type: "button",
+        tabIndex: -1,
+        disabled,
+        "data-invalid": dataAttr(invalid),
+        "aria-label": translations.clearTriggerLabel,
+        "aria-controls": getInputId(scope),
+        hidden: !context.get("value").length,
+        onPointerDown(event2) {
+          if (!isLeftClick(event2)) return;
+          event2.preventDefault();
+        },
+        onClick(event2) {
+          if (event2.defaultPrevented) return;
+          if (!interactive) return;
+          send({ type: "VALUE.CLEAR", src: "clear-trigger" });
+        }
+      });
+    },
+    getItemState,
+    getItemProps(props2) {
+      const itemState = getItemState(props2);
+      const value = itemState.value;
+      return normalize.element({
+        ...parts.item.attrs,
+        dir: prop("dir"),
+        id: getItemId(scope, value),
+        role: "option",
+        tabIndex: -1,
+        "data-highlighted": dataAttr(itemState.highlighted),
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "aria-selected": ariaAttr(itemState.highlighted),
+        "aria-disabled": ariaAttr(itemState.disabled),
+        "data-disabled": dataAttr(itemState.disabled),
+        "data-value": itemState.value,
+        onPointerMove() {
+          if (itemState.disabled) return;
+          if (itemState.highlighted) return;
+          send({ type: "ITEM.POINTER_MOVE", value });
+        },
+        onPointerLeave() {
+          if (props2.persistFocus) return;
+          if (itemState.disabled) return;
+          const prev = event.previous();
+          const mouseMoved = prev?.type.includes("POINTER");
+          if (!mouseMoved) return;
+          send({ type: "ITEM.POINTER_LEAVE", value });
+        },
+        onClick(event2) {
+          if (isDownloadingEvent(event2)) return;
+          if (isOpeningInNewTab(event2)) return;
+          if (isContextMenuEvent(event2)) return;
+          if (itemState.disabled) return;
+          send({ type: "ITEM.CLICK", src: "item-select", value });
+        }
+      });
+    },
+    getItemTextProps(props2) {
+      const itemState = getItemState(props2);
+      return normalize.element({
+        ...parts.itemText.attrs,
+        dir: prop("dir"),
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        "data-disabled": dataAttr(itemState.disabled),
+        "data-highlighted": dataAttr(itemState.highlighted)
+      });
+    },
+    getItemIndicatorProps(props2) {
+      const itemState = getItemState(props2);
+      return normalize.element({
+        "aria-hidden": true,
+        ...parts.itemIndicator.attrs,
+        dir: prop("dir"),
+        "data-state": itemState.selected ? "checked" : "unchecked",
+        hidden: !itemState.selected
+      });
+    },
+    getItemGroupProps(props2) {
+      const { id } = props2;
+      return normalize.element({
+        ...parts.itemGroup.attrs,
+        dir: prop("dir"),
+        id: getItemGroupId(scope, id),
+        "aria-labelledby": getItemGroupLabelId(scope, id),
+        "data-empty": dataAttr(collection2.size === 0),
+        role: "group"
+      });
+    },
+    getItemGroupLabelProps(props2) {
+      const { htmlFor } = props2;
+      return normalize.element({
+        ...parts.itemGroupLabel.attrs,
+        dir: prop("dir"),
+        id: getItemGroupLabelId(scope, htmlFor),
+        role: "presentation"
+      });
+    }
+  };
+}
+var { guards, createMachine, choose } = setup();
+var { and, not } = guards;
+var machine = createMachine({
+  props({ props: props2 }) {
+    return {
+      loopFocus: true,
+      openOnClick: false,
+      defaultValue: [],
+      defaultInputValue: "",
+      closeOnSelect: !props2.multiple,
+      allowCustomValue: false,
+      alwaysSubmitOnEnter: false,
+      inputBehavior: "none",
+      selectionBehavior: props2.multiple ? "clear" : "replace",
+      openOnKeyPress: true,
+      openOnChange: true,
+      composite: true,
+      navigate({ node }) {
+        clickIfLink(node);
+      },
+      collection: collection.empty(),
+      ...props2,
+      positioning: {
+        placement: "bottom",
+        sameWidth: true,
+        ...props2.positioning
+      },
+      translations: {
+        triggerLabel: "Toggle suggestions",
+        clearTriggerLabel: "Clear value",
+        ...props2.translations
+      }
+    };
+  },
+  initialState({ prop }) {
+    const open = prop("open") || prop("defaultOpen");
+    return open ? "suggesting" : "idle";
+  },
+  context({ prop, bindable, getContext, getEvent }) {
+    return {
+      currentPlacement: bindable(() => ({
+        defaultValue: void 0
+      })),
+      value: bindable(() => ({
+        defaultValue: prop("defaultValue"),
+        value: prop("value"),
+        isEqual,
+        hash(value) {
+          return value.join(",");
+        },
+        onChange(value) {
+          const context = getContext();
+          const prevSelectedItems = context.get("selectedItems");
+          const collection2 = prop("collection");
+          const nextItems = value.map((v) => {
+            const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === v);
+            return item || collection2.find(v);
+          });
+          context.set("selectedItems", nextItems);
+          prop("onValueChange")?.({ value, items: nextItems });
+        }
+      })),
+      highlightedValue: bindable(() => ({
+        defaultValue: prop("defaultHighlightedValue") || null,
+        value: prop("highlightedValue"),
+        onChange(value) {
+          const item = prop("collection").find(value);
+          prop("onHighlightChange")?.({ highlightedValue: value, highlightedItem: item });
+        }
+      })),
+      inputValue: bindable(() => {
+        let inputValue = prop("inputValue") || prop("defaultInputValue");
+        const value = prop("value") || prop("defaultValue");
+        if (!inputValue.trim() && !prop("multiple")) {
+          const valueAsString = prop("collection").stringifyMany(value);
+          inputValue = match(prop("selectionBehavior"), {
+            preserve: inputValue || valueAsString,
+            replace: valueAsString,
+            clear: ""
+          });
+        }
+        return {
+          defaultValue: inputValue,
+          value: prop("inputValue"),
+          onChange(value2) {
+            const event = getEvent();
+            const reason = (event.previousEvent || event).src;
+            prop("onInputValueChange")?.({ inputValue: value2, reason });
+          }
+        };
+      }),
+      highlightedItem: bindable(() => {
+        const highlightedValue = prop("highlightedValue");
+        const highlightedItem = prop("collection").find(highlightedValue);
+        return { defaultValue: highlightedItem };
+      }),
+      selectedItems: bindable(() => {
+        const value = prop("value") || prop("defaultValue") || [];
+        const selectedItems = prop("collection").findMany(value);
+        return { defaultValue: selectedItems };
+      })
+    };
+  },
+  computed: {
+    isInputValueEmpty: ({ context }) => context.get("inputValue").length === 0,
+    isInteractive: ({ prop }) => !(prop("readOnly") || prop("disabled")),
+    autoComplete: ({ prop }) => prop("inputBehavior") === "autocomplete",
+    autoHighlight: ({ prop }) => prop("inputBehavior") === "autohighlight",
+    hasSelectedItems: ({ context }) => context.get("value").length > 0,
+    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems")),
+    isCustomValue: ({ context, computed }) => context.get("inputValue") !== computed("valueAsString")
+  },
+  watch({ context, prop, track, action, send }) {
+    track([() => context.hash("value")], () => {
+      action(["syncSelectedItems"]);
+    });
+    track([() => context.get("inputValue")], () => {
+      action(["syncInputValue"]);
+    });
+    track([() => context.get("highlightedValue")], () => {
+      action(["syncHighlightedItem", "autofillInputValue"]);
+    });
+    track([() => prop("open")], () => {
+      action(["toggleVisibility"]);
+    });
+    track([() => prop("collection").toString()], () => {
+      send({ type: "CHILDREN_CHANGE" });
+    });
+  },
+  on: {
+    "SELECTED_ITEMS.SYNC": {
+      actions: ["syncSelectedItems"]
+    },
+    "HIGHLIGHTED_VALUE.SET": {
+      actions: ["setHighlightedValue"]
+    },
+    "HIGHLIGHTED_VALUE.CLEAR": {
+      actions: ["clearHighlightedValue"]
+    },
+    "ITEM.SELECT": {
+      actions: ["selectItem"]
+    },
+    "ITEM.CLEAR": {
+      actions: ["clearItem"]
+    },
+    "VALUE.SET": {
+      actions: ["setValue"]
+    },
+    "INPUT_VALUE.SET": {
+      actions: ["setInputValue"]
+    },
+    "POSITIONING.SET": {
+      actions: ["reposition"]
+    }
+  },
+  entry: choose([
+    {
+      guard: "autoFocus",
+      actions: ["setInitialFocus"]
+    }
+  ]),
+  states: {
+    idle: {
+      tags: ["idle", "closed"],
+      entry: ["scrollContentToTop", "clearHighlightedValue"],
+      on: {
+        "CONTROLLED.OPEN": {
+          target: "interacting"
+        },
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.FOCUS": {
+          target: "focused"
+        },
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        "VALUE.CLEAR": {
+          target: "focused",
+          actions: ["clearInputValue", "clearSelectedItems", "setInitialFocus"]
+        }
+      }
+    },
+    focused: {
+      tags: ["focused", "closed"],
+      entry: ["scrollContentToTop", "clearHighlightedValue"],
+      on: {
+        "CONTROLLED.OPEN": [
+          {
+            guard: "isChangeEvent",
+            target: "suggesting"
+          },
+          {
+            target: "interacting"
+          }
+        ],
+        "INPUT.CHANGE": [
+          {
+            guard: and("isOpenControlled", "openOnChange"),
+            actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+          },
+          {
+            guard: "openOnChange",
+            target: "suggesting",
+            actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+          },
+          {
+            actions: ["setInputValue"]
+          }
+        ],
+        "LAYER.INTERACT_OUTSIDE": {
+          target: "idle"
+        },
+        "INPUT.ESCAPE": {
+          guard: and("isCustomValue", not("allowCustomValue")),
+          actions: ["revertInputValue"]
+        },
+        "INPUT.BLUR": {
+          target: "idle"
+        },
+        "INPUT.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.ARROW_DOWN": [
+          // == group 1 ==
+          {
+            guard: and("isOpenControlled", "autoComplete"),
+            actions: ["invokeOnOpen"]
+          },
+          {
+            guard: "autoComplete",
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          },
+          // == group 2 ==
+          {
+            guard: "isOpenControlled",
+            actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        "INPUT.ARROW_UP": [
+          // == group 1 ==
+          {
+            guard: "autoComplete",
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            guard: "autoComplete",
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          },
+          // == group 2 ==
+          {
+            target: "interacting",
+            actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+          }
+        ],
+        OPEN: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnOpen"]
+          },
+          {
+            target: "interacting",
+            actions: ["invokeOnOpen"]
+          }
+        ],
+        "VALUE.CLEAR": {
+          actions: ["clearInputValue", "clearSelectedItems"]
+        }
+      }
+    },
+    interacting: {
+      tags: ["open", "focused"],
+      entry: ["setInitialFocus"],
+      effects: ["scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            guard: "restoreFocus",
+            target: "focused",
+            actions: ["setFinalFocus"]
+          },
+          {
+            target: "idle"
+          }
+        ],
+        CHILDREN_CHANGE: [
+          {
+            guard: "isHighlightedItemRemoved",
+            actions: ["clearHighlightedValue"]
+          },
+          {
+            actions: ["scrollToHighlightedItem"]
+          }
+        ],
+        "INPUT.HOME": {
+          actions: ["highlightFirstItem"]
+        },
+        "INPUT.END": {
+          actions: ["highlightLastItem"]
+        },
+        "INPUT.ARROW_DOWN": [
+          {
+            guard: and("autoComplete", "isLastItemHighlighted"),
+            actions: ["clearHighlightedValue", "scrollContentToTop"]
+          },
+          {
+            actions: ["highlightNextItem"]
+          }
+        ],
+        "INPUT.ARROW_UP": [
+          {
+            guard: and("autoComplete", "isFirstItemHighlighted"),
+            actions: ["clearHighlightedValue"]
+          },
+          {
+            actions: ["highlightPrevItem"]
+          }
+        ],
+        "INPUT.ENTER": [
+          // == group 1 ==
+          {
+            guard: and("isOpenControlled", "isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and("isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
+            target: "focused",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: and("isOpenControlled", "closeOnSelect"),
+            actions: ["selectHighlightedItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectHighlightedItem"]
+          }
+        ],
+        "INPUT.CHANGE": [
+          {
+            guard: "autoComplete",
+            target: "suggesting",
+            actions: ["setInputValue"]
+          },
+          {
+            target: "suggesting",
+            actions: ["clearHighlightedValue", "setInputValue"]
+          }
+        ],
+        "ITEM.POINTER_MOVE": {
+          actions: ["setHighlightedValue"]
+        },
+        "ITEM.POINTER_LEAVE": {
+          actions: ["clearHighlightedValue"]
+        },
+        "ITEM.CLICK": [
+          {
+            guard: and("isOpenControlled", "closeOnSelect"),
+            actions: ["selectItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectItem"]
+          }
+        ],
+        "LAYER.ESCAPE": [
+          {
+            guard: and("isOpenControlled", "autoComplete"),
+            actions: ["syncInputValue", "invokeOnClose"]
+          },
+          {
+            guard: "autoComplete",
+            target: "focused",
+            actions: ["syncInputValue", "invokeOnClose"]
+          },
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "LAYER.INTERACT_OUTSIDE": [
+          // == group 1 ==
+          {
+            guard: and("isOpenControlled", "isCustomValue", not("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and("isCustomValue", not("allowCustomValue")),
+            target: "idle",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "idle",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          }
+        ],
+        "VALUE.CLEAR": [
+          {
+            guard: "isOpenControlled",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
+          }
+        ]
+      }
+    },
+    suggesting: {
+      tags: ["open", "focused"],
+      effects: ["trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
+      entry: ["setInitialFocus"],
+      on: {
+        "CONTROLLED.CLOSE": [
+          {
+            guard: "restoreFocus",
+            target: "focused",
+            actions: ["setFinalFocus"]
+          },
+          {
+            target: "idle"
+          }
+        ],
+        CHILDREN_CHANGE: [
+          {
+            guard: and("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
+            actions: ["clearHighlightedValue", "highlightFirstItem"]
+          },
+          {
+            guard: "isHighlightedItemRemoved",
+            actions: ["clearHighlightedValue"]
+          },
+          {
+            guard: "autoHighlight",
+            actions: ["highlightFirstItem"]
+          }
+        ],
+        "INPUT.ARROW_DOWN": {
+          target: "interacting",
+          actions: ["highlightNextItem"]
+        },
+        "INPUT.ARROW_UP": {
+          target: "interacting",
+          actions: ["highlightPrevItem"]
+        },
+        "INPUT.HOME": {
+          target: "interacting",
+          actions: ["highlightFirstItem"]
+        },
+        "INPUT.END": {
+          target: "interacting",
+          actions: ["highlightLastItem"]
+        },
+        "INPUT.ENTER": [
+          // == group 1 ==
+          {
+            guard: and("isOpenControlled", "isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and("isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
+            target: "focused",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: and("isOpenControlled", "closeOnSelect"),
+            actions: ["selectHighlightedItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectHighlightedItem"]
+          }
+        ],
+        "INPUT.CHANGE": {
+          actions: ["setInputValue"]
+        },
+        "LAYER.ESCAPE": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "ITEM.POINTER_MOVE": {
+          target: "interacting",
+          actions: ["setHighlightedValue"]
+        },
+        "ITEM.POINTER_LEAVE": {
+          actions: ["clearHighlightedValue"]
+        },
+        "LAYER.INTERACT_OUTSIDE": [
+          // == group 1 ==
+          {
+            guard: and("isOpenControlled", "isCustomValue", not("allowCustomValue")),
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          {
+            guard: and("isCustomValue", not("allowCustomValue")),
+            target: "idle",
+            actions: ["revertInputValue", "invokeOnClose"]
+          },
+          // == group 2 ==
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "idle",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "TRIGGER.CLICK": [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose"]
+          }
+        ],
+        "ITEM.CLICK": [
+          {
+            guard: and("isOpenControlled", "closeOnSelect"),
+            actions: ["selectItem", "invokeOnClose"]
+          },
+          {
+            guard: "closeOnSelect",
+            target: "focused",
+            actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
+          },
+          {
+            actions: ["selectItem"]
+          }
+        ],
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            actions: ["invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          }
+        ],
+        "VALUE.CLEAR": [
+          {
+            guard: "isOpenControlled",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
+          },
+          {
+            target: "focused",
+            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
+          }
+        ]
+      }
+    }
+  },
+  implementations: {
+    guards: {
+      isInputValueEmpty: ({ computed }) => computed("isInputValueEmpty"),
+      autoComplete: ({ computed, prop }) => computed("autoComplete") && !prop("multiple"),
+      autoHighlight: ({ computed }) => computed("autoHighlight"),
+      isFirstItemHighlighted: ({ prop, context }) => prop("collection").firstValue === context.get("highlightedValue"),
+      isLastItemHighlighted: ({ prop, context }) => prop("collection").lastValue === context.get("highlightedValue"),
+      isCustomValue: ({ computed }) => computed("isCustomValue"),
+      allowCustomValue: ({ prop }) => !!prop("allowCustomValue"),
+      hasHighlightedItem: ({ context }) => context.get("highlightedValue") != null,
+      closeOnSelect: ({ prop }) => !!prop("closeOnSelect"),
+      isOpenControlled: ({ prop }) => prop("open") != null,
+      openOnChange: ({ prop, context }) => {
+        const openOnChange = prop("openOnChange");
+        if (isBoolean(openOnChange)) return openOnChange;
+        return !!openOnChange?.({ inputValue: context.get("inputValue") });
+      },
+      restoreFocus: ({ event }) => {
+        const restoreFocus = event.restoreFocus ?? event.previousEvent?.restoreFocus;
+        return restoreFocus == null ? true : !!restoreFocus;
+      },
+      isChangeEvent: ({ event }) => event.previousEvent?.type === "INPUT.CHANGE",
+      autoFocus: ({ prop }) => !!prop("autoFocus"),
+      isHighlightedItemRemoved: ({ prop, context }) => !prop("collection").has(context.get("highlightedValue")),
+      hasCollectionItems: ({ prop }) => prop("collection").size > 0
+    },
+    effects: {
+      trackDismissableLayer({ send, prop, scope }) {
+        if (prop("disableLayer")) return;
+        const contentEl = () => getContentEl(scope);
+        return trackDismissableElement(contentEl, {
+          type: "listbox",
+          defer: true,
+          exclude: () => [getInputEl(scope), getTriggerEl(scope), getClearTriggerEl(scope)],
+          onFocusOutside: prop("onFocusOutside"),
+          onPointerDownOutside: prop("onPointerDownOutside"),
+          onInteractOutside: prop("onInteractOutside"),
+          onEscapeKeyDown(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            send({ type: "LAYER.ESCAPE", src: "escape-key" });
+          },
+          onDismiss() {
+            send({ type: "LAYER.INTERACT_OUTSIDE", src: "interact-outside", restoreFocus: false });
+          }
+        });
+      },
+      trackPlacement({ context, prop, scope }) {
+        const anchorEl = () => getControlEl(scope) || getTriggerEl(scope);
+        const positionerEl = () => getPositionerEl(scope);
+        context.set("currentPlacement", prop("positioning").placement);
+        return getPlacement(anchorEl, positionerEl, {
+          ...prop("positioning"),
+          defer: true,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      scrollToHighlightedItem({ context, prop, scope, event }) {
+        const inputEl = getInputEl(scope);
+        let cleanups = [];
+        const exec = (immediate) => {
+          const pointer = event.current().type.includes("POINTER");
+          const highlightedValue = context.get("highlightedValue");
+          if (pointer || !highlightedValue) return;
+          const contentEl = getContentEl(scope);
+          const scrollToIndexFn = prop("scrollToIndexFn");
+          if (scrollToIndexFn) {
+            const highlightedIndex = prop("collection").indexOf(highlightedValue);
+            scrollToIndexFn({
+              index: highlightedIndex,
+              immediate,
+              getElement: () => getItemEl(scope, highlightedValue)
+            });
+            return;
+          }
+          const itemEl = getItemEl(scope, highlightedValue);
+          const raf_cleanup = raf(() => {
+            scrollIntoView(itemEl, { rootEl: contentEl, block: "nearest" });
+          });
+          cleanups.push(raf_cleanup);
+        };
+        const rafCleanup = raf(() => exec(true));
+        cleanups.push(rafCleanup);
+        const observerCleanup = observeAttributes(inputEl, {
+          attributes: ["aria-activedescendant"],
+          callback: () => exec(false)
+        });
+        cleanups.push(observerCleanup);
+        return () => {
+          cleanups.forEach((cleanup) => cleanup());
+        };
+      }
+    },
+    actions: {
+      reposition({ context, prop, scope, event }) {
+        const controlEl = () => getControlEl(scope);
+        const positionerEl = () => getPositionerEl(scope);
+        getPlacement(controlEl, positionerEl, {
+          ...prop("positioning"),
+          ...event.options,
+          defer: true,
+          listeners: false,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      setHighlightedValue({ context, event }) {
+        if (event.value == null) return;
+        context.set("highlightedValue", event.value);
+      },
+      clearHighlightedValue({ context }) {
+        context.set("highlightedValue", null);
+      },
+      selectHighlightedItem(params) {
+        const { context, prop } = params;
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        if (!highlightedValue || !collection2.has(highlightedValue)) return;
+        const nextValue = prop("multiple") ? addOrRemove(context.get("value"), highlightedValue) : [highlightedValue];
+        prop("onSelect")?.({ value: nextValue, itemValue: highlightedValue });
+        context.set("value", nextValue);
+        const inputValue = match(prop("selectionBehavior"), {
+          preserve: context.get("inputValue"),
+          replace: collection2.stringifyMany(nextValue),
+          clear: ""
+        });
+        context.set("inputValue", inputValue);
+      },
+      scrollToHighlightedItem({ context, prop, scope }) {
+        nextTick(() => {
+          const highlightedValue = context.get("highlightedValue");
+          if (highlightedValue == null) return;
+          const itemEl = getItemEl(scope, highlightedValue);
+          const contentEl = getContentEl(scope);
+          const scrollToIndexFn = prop("scrollToIndexFn");
+          if (scrollToIndexFn) {
+            const highlightedIndex = prop("collection").indexOf(highlightedValue);
+            scrollToIndexFn({
+              index: highlightedIndex,
+              immediate: true,
+              getElement: () => getItemEl(scope, highlightedValue)
+            });
+            return;
+          }
+          scrollIntoView(itemEl, { rootEl: contentEl, block: "nearest" });
+        });
+      },
+      selectItem(params) {
+        const { context, event, flush, prop } = params;
+        if (event.value == null) return;
+        flush(() => {
+          const nextValue = prop("multiple") ? addOrRemove(context.get("value"), event.value) : [event.value];
+          prop("onSelect")?.({ value: nextValue, itemValue: event.value });
+          context.set("value", nextValue);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany(nextValue),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      clearItem(params) {
+        const { context, event, flush, prop } = params;
+        if (event.value == null) return;
+        flush(() => {
+          const nextValue = remove(context.get("value"), event.value);
+          context.set("value", nextValue);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany(nextValue),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      setInitialFocus({ scope }) {
+        raf(() => {
+          focusInputEl(scope);
+        });
+      },
+      setFinalFocus({ scope }) {
+        raf(() => {
+          const triggerEl = getTriggerEl(scope);
+          if (triggerEl?.dataset.focusable == null) {
+            focusInputEl(scope);
+          } else {
+            focusTriggerEl(scope);
+          }
+        });
+      },
+      syncInputValue({ context, scope, event }) {
+        const inputEl = getInputEl(scope);
+        if (!inputEl) return;
+        inputEl.value = context.get("inputValue");
+        queueMicrotask(() => {
+          if (event.current().type === "INPUT.CHANGE") return;
+          setCaretToEnd(inputEl);
+        });
+      },
+      setInputValue({ context, event }) {
+        context.set("inputValue", event.value);
+      },
+      clearInputValue({ context }) {
+        context.set("inputValue", "");
+      },
+      revertInputValue({ context, prop, computed }) {
+        const selectionBehavior = prop("selectionBehavior");
+        const inputValue = match(selectionBehavior, {
+          replace: computed("hasSelectedItems") ? computed("valueAsString") : "",
+          preserve: context.get("inputValue"),
+          clear: ""
+        });
+        context.set("inputValue", inputValue);
+      },
+      setValue(params) {
+        const { context, flush, event, prop } = params;
+        flush(() => {
+          context.set("value", event.value);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany(event.value),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      clearSelectedItems(params) {
+        const { context, flush, prop } = params;
+        flush(() => {
+          context.set("value", []);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: prop("collection").stringifyMany([]),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      scrollContentToTop({ prop, scope }) {
+        const scrollToIndexFn = prop("scrollToIndexFn");
+        if (scrollToIndexFn) {
+          const firstValue = prop("collection").firstValue;
+          scrollToIndexFn({
+            index: 0,
+            immediate: true,
+            getElement: () => getItemEl(scope, firstValue)
+          });
+        } else {
+          const contentEl = getContentEl(scope);
+          if (!contentEl) return;
+          contentEl.scrollTop = 0;
+        }
+      },
+      invokeOnOpen({ prop, event, context }) {
+        const reason = getOpenChangeReason(event);
+        prop("onOpenChange")?.({ open: true, reason, value: context.get("value") });
+      },
+      invokeOnClose({ prop, event, context }) {
+        const reason = getOpenChangeReason(event);
+        prop("onOpenChange")?.({ open: false, reason, value: context.get("value") });
+      },
+      highlightFirstItem({ context, prop, scope }) {
+        const exec = getContentEl(scope) ? queueMicrotask : raf;
+        exec(() => {
+          const value = prop("collection").firstValue;
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightFirstItemIfNeeded({ computed, action }) {
+        if (!computed("autoHighlight")) return;
+        action(["highlightFirstItem"]);
+      },
+      highlightLastItem({ context, prop, scope }) {
+        const exec = getContentEl(scope) ? queueMicrotask : raf;
+        exec(() => {
+          const value = prop("collection").lastValue;
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightNextItem({ context, prop }) {
+        let value = null;
+        const highlightedValue = context.get("highlightedValue");
+        const collection2 = prop("collection");
+        if (highlightedValue) {
+          value = collection2.getNextValue(highlightedValue);
+          if (!value && prop("loopFocus")) value = collection2.firstValue;
+        } else {
+          value = collection2.firstValue;
+        }
+        if (value) context.set("highlightedValue", value);
+      },
+      highlightPrevItem({ context, prop }) {
+        let value = null;
+        const highlightedValue = context.get("highlightedValue");
+        const collection2 = prop("collection");
+        if (highlightedValue) {
+          value = collection2.getPreviousValue(highlightedValue);
+          if (!value && prop("loopFocus")) value = collection2.lastValue;
+        } else {
+          value = collection2.lastValue;
+        }
+        if (value) context.set("highlightedValue", value);
+      },
+      highlightFirstSelectedItem({ context, prop }) {
+        raf(() => {
+          const [value] = prop("collection").sort(context.get("value"));
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightFirstOrSelectedItem({ context, prop, computed }) {
+        raf(() => {
+          let value = null;
+          if (computed("hasSelectedItems")) {
+            value = prop("collection").sort(context.get("value"))[0];
+          } else {
+            value = prop("collection").firstValue;
+          }
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      highlightLastOrSelectedItem({ context, prop, computed }) {
+        raf(() => {
+          const collection2 = prop("collection");
+          let value = null;
+          if (computed("hasSelectedItems")) {
+            value = collection2.sort(context.get("value"))[0];
+          } else {
+            value = collection2.lastValue;
+          }
+          if (value) context.set("highlightedValue", value);
+        });
+      },
+      autofillInputValue({ context, computed, prop, event, scope }) {
+        const inputEl = getInputEl(scope);
+        const collection2 = prop("collection");
+        if (!computed("autoComplete") || !inputEl || !event.keypress) return;
+        const valueText = collection2.stringify(context.get("highlightedValue"));
+        raf(() => {
+          inputEl.value = valueText || context.get("inputValue");
+        });
+      },
+      syncSelectedItems(params) {
+        queueMicrotask(() => {
+          const { context, prop } = params;
+          const collection2 = prop("collection");
+          const value = context.get("value");
+          const selectedItems = value.map((v) => {
+            const item = context.get("selectedItems").find((item2) => collection2.getItemValue(item2) === v);
+            return item || collection2.find(v);
+          });
+          context.set("selectedItems", selectedItems);
+          const inputValue = match(prop("selectionBehavior"), {
+            preserve: context.get("inputValue"),
+            replace: collection2.stringifyMany(value),
+            clear: ""
+          });
+          context.set("inputValue", inputValue);
+        });
+      },
+      syncHighlightedItem({ context, prop }) {
+        const item = prop("collection").find(context.get("highlightedValue"));
+        context.set("highlightedItem", item);
+      },
+      toggleVisibility({ event, send, prop }) {
+        send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
+      }
+    }
+  }
+});
+function getOpenChangeReason(event) {
+  return (event.previousEvent || event).src;
+}
+var props = createProps()([
+  "allowCustomValue",
+  "autoFocus",
+  "closeOnSelect",
+  "collection",
+  "composite",
+  "defaultHighlightedValue",
+  "defaultInputValue",
+  "defaultOpen",
+  "defaultValue",
+  "dir",
+  "disabled",
+  "disableLayer",
+  "form",
+  "getRootNode",
+  "highlightedValue",
+  "id",
+  "ids",
+  "inputBehavior",
+  "inputValue",
+  "invalid",
+  "loopFocus",
+  "multiple",
+  "name",
+  "navigate",
+  "onFocusOutside",
+  "onHighlightChange",
+  "onInputValueChange",
+  "onInteractOutside",
+  "onOpenChange",
+  "onOpenChange",
+  "onPointerDownOutside",
+  "onSelect",
+  "onValueChange",
+  "open",
+  "openOnChange",
+  "openOnClick",
+  "openOnKeyPress",
+  "placeholder",
+  "positioning",
+  "readOnly",
+  "required",
+  "scrollToIndexFn",
+  "selectionBehavior",
+  "translations",
+  "value",
+  "alwaysSubmitOnEnter"
+]);
+var splitProps = createSplitProps(props);
+var itemGroupLabelProps = createProps()(["htmlFor"]);
+var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
+var itemGroupProps = createProps()(["id"]);
+var splitItemGroupProps = createSplitProps(itemGroupProps);
+var itemProps = createProps()(["item", "persistFocus"]);
+var splitItemProps = createSplitProps(itemProps);
+
+// components/combobox.ts
+var Combobox = class extends Component {
+  options = [];
+  allOptions = [];
+  hasGroups = false;
+  setAllOptions(options) {
+    this.allOptions = options;
+    this.options = options;
+  }
+  getCollection() {
+    const items = this.options || this.allOptions || [];
+    if (this.hasGroups) {
+      return collection({
+        items,
+        itemToValue: (item) => item.id ?? "",
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => item.disabled ?? false,
+        groupBy: (item) => item.group
+      });
+    }
+    return collection({
+      items,
+      itemToValue: (item) => item.id ?? "",
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => item.disabled ?? false
+    });
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  initMachine(props2) {
+    const getCollection = this.getCollection.bind(this);
+    return new VanillaMachine(machine, {
+      ...props2,
+      get collection() {
+        return getCollection();
+      },
+      onOpenChange: (details) => {
+        if (details.open) {
+          this.options = this.allOptions;
+        }
+        if (props2.onOpenChange) {
+          props2.onOpenChange(details);
+        }
+      },
+      onInputValueChange: (details) => {
+        const filtered = this.allOptions.filter(
+          (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+        );
+        this.options = filtered.length > 0 ? filtered : this.allOptions;
+        if (props2.onInputValueChange) {
+          props2.onInputValueChange(details);
+        }
+      }
+    });
+  }
+  initApi() {
+    return connect(this.machine.service, normalizeProps);
+  }
+  renderItems() {
+    const contentEl = this.el.querySelector(
+      '[data-scope="combobox"][data-part="content"]'
+    );
+    if (!contentEl) return;
+    const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
+    if (!templatesContainer) return;
+    contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
+    contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
+    const items = this.api.collection.items;
+    const groups = this.api.collection.group?.() ?? [];
+    const hasGroupsInCollection = groups.some(([group]) => group != null);
+    if (hasGroupsInCollection) {
+      this.renderGroupedItems(contentEl, templatesContainer, groups);
+    } else {
+      this.renderFlatItems(contentEl, templatesContainer, items);
+    }
+  }
+  renderGroupedItems(contentEl, templatesContainer, groups) {
+    for (const [groupId, groupItems] of groups) {
+      if (groupId == null) continue;
+      const groupTemplate = templatesContainer.querySelector(
+        `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
+      );
+      if (!groupTemplate) continue;
+      const groupEl = groupTemplate.cloneNode(true);
+      groupEl.removeAttribute("data-template");
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+      const labelEl = groupEl.querySelector(
+        '[data-scope="combobox"][data-part="item-group-label"]'
+      );
+      if (labelEl) {
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+      }
+      const groupContentEl = groupEl.querySelector(
+        '[data-scope="combobox"][data-part="item-group-content"]'
+      );
+      if (!groupContentEl) continue;
+      groupContentEl.innerHTML = "";
+      for (const item of groupItems) {
+        const itemEl = this.cloneItem(templatesContainer, item);
+        if (itemEl) groupContentEl.appendChild(itemEl);
+      }
+      contentEl.appendChild(groupEl);
+    }
+  }
+  renderFlatItems(contentEl, templatesContainer, items) {
+    for (const item of items) {
+      const itemEl = this.cloneItem(templatesContainer, item);
+      if (itemEl) contentEl.appendChild(itemEl);
+    }
+  }
+  cloneItem(templatesContainer, item) {
+    const value = this.api.collection.getItemValue(item);
+    const template = templatesContainer.querySelector(
+      `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
+    );
+    if (!template) return null;
+    const el = template.cloneNode(true);
+    el.removeAttribute("data-template");
+    this.spreadProps(el, this.api.getItemProps({ item }));
+    const textEl = el.querySelector('[data-scope="combobox"][data-part="item-text"]');
+    if (textEl) {
+      this.spreadProps(textEl, this.api.getItemTextProps({ item }));
+      if (textEl.children.length === 0) {
+        textEl.textContent = item.label || "";
+      }
+    }
+    const indicatorEl = el.querySelector(
+      '[data-scope="combobox"][data-part="item-indicator"]'
+    );
+    if (indicatorEl) {
+      this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
+    }
+    return el;
+  }
+  render() {
+    const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
+    if (!root) return;
+    this.spreadProps(root, this.api.getRootProps());
+    ["label", "control", "input", "trigger", "clear-trigger", "positioner"].forEach((part) => {
+      const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
+      if (!el) return;
+      const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
+      this.spreadProps(el, this.api[apiMethod]());
+    });
+    const contentEl = this.el.querySelector(
+      '[data-scope="combobox"][data-part="content"]'
+    );
+    if (contentEl) {
+      this.spreadProps(contentEl, this.api.getContentProps());
+      this.renderItems();
+    }
+  }
+};
+
+// hooks/combobox.ts
+function snakeToCamel(str) {
+  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+}
+function transformPositioningOptions(obj) {
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const camelKey = snakeToCamel(key);
+    result[camelKey] = value;
+  }
+  return result;
+}
+var ComboboxHook = {
+  mounted() {
+    const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const allItems = JSON.parse(el.dataset.collection || "[]");
+    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const props2 = {
+      id: el.id,
+      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
+      disabled: getBoolean(el, "disabled"),
+      placeholder: getString(el, "placeholder"),
+      alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
+      autoFocus: getBoolean(el, "autoFocus"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getString(el, "dir", ["ltr", "rtl"]),
+      inputBehavior: getString(el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      allowCustomValue: false,
+      selectionBehavior: "replace",
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      positioning: (() => {
+        const positioningJson = el.dataset.positioning;
+        if (positioningJson) {
+          try {
+            const parsed = JSON.parse(positioningJson);
+            return transformPositioningOptions(parsed);
+          } catch {
+            return void 0;
+          }
+        }
+        return void 0;
+      })(),
+      onOpenChange: (details) => {
+        const eventName = getString(el, "onOpenChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            open: details.open,
+            reason: details.reason,
+            value: details.value,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onOpenChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                open: details.open,
+                reason: details.reason,
+                value: details.value,
+                id: el.id
+              }
+            })
+          );
+        }
+      },
+      onInputValueChange: (details) => {
+        const eventName = getString(el, "onInputValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.inputValue,
+            reason: details.reason,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onInputValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.inputValue,
+                reason: details.reason,
+                id: el.id
+              }
+            })
+          );
+        }
+      },
+      onValueChange: (details) => {
+        const valueInput = el.querySelector(
+          '[data-scope="combobox"][data-part="value-input"]'
+        );
+        if (valueInput) {
+          const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+          valueInput.value = idValue;
+          const formId = valueInput.getAttribute("form");
+          let form = null;
+          if (formId) {
+            form = document.getElementById(formId);
+          } else {
+            form = valueInput.closest("form");
+          }
+          const changeEvent = new Event("change", {
+            bubbles: true,
+            cancelable: true
+          });
+          valueInput.dispatchEvent(changeEvent);
+          const inputEvent = new Event("input", {
+            bubbles: true,
+            cancelable: true
+          });
+          valueInput.dispatchEvent(inputEvent);
+          if (form && form.hasAttribute("phx-change")) {
+            requestAnimationFrame(() => {
+              const formElement = form.querySelector("input, select, textarea");
+              if (formElement) {
+                const formChangeEvent = new Event("change", {
+                  bubbles: true,
+                  cancelable: true
+                });
+                formElement.dispatchEvent(formChangeEvent);
+              } else {
+                const formChangeEvent = new Event("change", {
+                  bubbles: true,
+                  cancelable: true
+                });
+                form.dispatchEvent(formChangeEvent);
+              }
+            });
+          }
+        }
+        const eventName = getString(el, "onValueChange");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          pushEvent(eventName, {
+            value: details.value,
+            items: details.items,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: getBoolean(el, "bubble"),
+              detail: {
+                value: details.value,
+                items: details.items,
+                id: el.id
+              }
+            })
+          );
+        }
+      }
+    };
+    const combobox = new Combobox(el, props2);
+    combobox.hasGroups = hasGroups;
+    combobox.setAllOptions(allItems);
+    combobox.init();
+    const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
+    if (initialValue && initialValue.length > 0) {
+      const selectedItems = allItems.filter(
+        (item) => initialValue.includes(item.id ?? "")
+      );
+      if (selectedItems.length > 0) {
+        const inputValue = selectedItems.map((item) => item.label ?? "").join(", ");
+        if (combobox.api && typeof combobox.api.setInputValue === "function") {
+          combobox.api.setInputValue(inputValue);
+        } else {
+          const inputEl = el.querySelector(
+            '[data-scope="combobox"][data-part="input"]'
+          );
+          if (inputEl) {
+            inputEl.value = inputValue;
+          }
+        }
+      }
+    }
+    this.combobox = combobox;
+    this.handlers = [];
+  },
+  updated() {
+    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+    const hasGroups = newCollection.some((item) => item.group !== void 0);
+    if (this.combobox) {
+      this.combobox.hasGroups = hasGroups;
+      this.combobox.setAllOptions(newCollection);
+      this.combobox.updateProps({
+        ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+        name: getString(this.el, "name"),
+        form: getString(this.el, "form"),
+        disabled: getBoolean(this.el, "disabled"),
+        multiple: getBoolean(this.el, "multiple"),
+        dir: getString(this.el, "dir", ["ltr", "rtl"]),
+        invalid: getBoolean(this.el, "invalid"),
+        required: getBoolean(this.el, "required"),
+        readOnly: getBoolean(this.el, "readOnly")
+      });
+      const inputEl = this.el.querySelector(
+        '[data-scope="combobox"][data-part="input"]'
+      );
+      if (inputEl) {
+        inputEl.removeAttribute("name");
+        inputEl.removeAttribute("form");
+        inputEl.name = "";
+      }
+    }
+  },
+  destroyed() {
+    if (this.handlers) {
+      for (const handler of this.handlers) {
+        this.removeHandleEvent(handler);
+      }
+    }
+    this.combobox?.destroy();
+  }
+};
+export {
+  ComboboxHook as Combobox
+};

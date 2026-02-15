@@ -23,16 +23,39 @@ if Mix.env() == :dev do
     ]
   end
 
-  hooks =
-    ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox date-picker
-      dialog editable floating-panel listbox menu number-input password-input pin-input
-      radio-group select signature-pad switch tabs timer toast toggle-group tree-view)
-
-  hooks_entries = Enum.map(hooks, fn name -> "./hooks/#{name}.ts" end)
+  hooks_entries =
+    ~w(
+      ./hooks/accordion.ts
+      ./hooks/angle-slider.ts
+      ./hooks/avatar.ts
+      ./hooks/carousel.ts
+      ./hooks/checkbox.ts
+      ./hooks/clipboard.ts
+      ./hooks/collapsible.ts
+      ./hooks/combobox.ts
+      ./hooks/date-picker.ts
+      ./hooks/dialog.ts
+      ./hooks/editable.ts
+      ./hooks/floating-panel.ts
+      ./hooks/listbox.ts
+      ./hooks/menu.ts
+      ./hooks/number-input.ts
+      ./hooks/password-input.ts
+      ./hooks/pin-input.ts
+      ./hooks/radio-group.ts
+      ./hooks/select.ts
+      ./hooks/signature-pad.ts
+      ./hooks/switch.ts
+      ./hooks/tabs.ts
+      ./hooks/timer.ts
+      ./hooks/toast.ts
+      ./hooks/toggle-group.ts
+      ./hooks/tree-view.ts
+    )
 
   hooks_args =
     hooks_entries ++
-      ~w(--bundle --splitting --format=esm --minify --outdir=../priv/static --out-extension:.js=.mjs)
+      ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs)
 
   config :esbuild,
     version: "0.25.4",
