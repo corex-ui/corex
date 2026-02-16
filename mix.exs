@@ -17,7 +17,7 @@ defmodule Corex.MixProject do
         "Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework.",
       package: package(),
       source_url: "https://github.com/corex-ui/corex",
-      homepage_url: "https://corex-ui.com",
+      homepage_url: "https://corex.gigalixirapp.com/en",
       docs: &docs/0
     ]
   end

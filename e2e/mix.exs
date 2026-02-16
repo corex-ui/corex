@@ -87,6 +87,8 @@ defmodule E2e.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
+        &clean_static_assets/1,
+        &copy_static_images/1,
         "assets.deploy",
         "ecto.drop --quiet",
         "ecto.create --quiet",
