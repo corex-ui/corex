@@ -1,0 +1,116 @@
+@import "../main.css";
+
+@layer components {
+  .switch [data-scope="switch"][data-part="root"] {
+    --switch-track-width: calc(calc(var(--spacing-micro) * 1.5) * 2.5);
+    --switch-track-height: calc(var(--spacing-micro) * 1.5);
+    --switch-track-diff: calc(
+      var(--switch-track-width) - var(--switch-track-height)
+    );
+    --switch-thumb-x: var(--switch-track-diff);
+
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: fit-content;
+    gap: var(--spacing-ui-gap);
+  }
+
+  .switch [data-scope="switch"][data-part="control"] {
+    display: inline-flex;
+    flex-shrink: 0;
+    cursor: pointer;
+    justify-content: flex-start;
+    box-sizing: content-box;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-ui--border);
+    padding: var(--spacing-micro-padding);
+    width: var(--switch-track-width);
+    height: var(--switch-track-height);
+    transition-property:
+      background, border-color, color, fill, stroke, opacity, box-shadow,
+      transform;
+    transition-duration: 150ms;
+    background: var(--color-ui);
+  }
+
+  .switch [data-scope="switch"][data-part="control"][data-disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  .switch [data-scope="switch"][data-part="control"][data-invalid] {
+    border-color: var(--color-ui-alert);
+  }
+
+  .switch [data-scope="switch"][data-part="thumb"][data-invalid] {
+    background: var(--color-ui-alert);
+  }
+
+  .switch [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-ui-accent);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-ui-accent--text);
+    }
+  }
+
+  .switch [data-scope="switch"][data-part="thumb"] {
+    background: var(--color-ui-accent);
+    transition-property: transform, ackground-color;
+    transition-duration: 200ms;
+    border-radius: inherit;
+    width: var(--switch-track-height);
+    height: var(--switch-track-height);
+    position: relative;
+  }
+
+  .switch [data-scope="switch"][data-part="thumb"][data-state="checked"] {
+    transform: translateX(var(--switch-thumb-x));
+    background: var(--color-ui-accent);
+  }
+
+  .switch [data-scope="switch"][data-part="label"] {
+    @apply ui-label;
+
+    cursor: pointer;
+  }
+
+  .switch--square [data-scope="switch"][data-part="control"] {
+    border-radius: var(--radius-none);
+  }
+
+  .switch [data-scope="switch"][data-part="error"] {
+    @apply ui-error;
+  }
+}
+
+@utility switch--* {
+  [data-scope="switch"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+  }
+
+  [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: --value(--color-ui-*, [color]);
+
+    [data-scope="switch"][data-part="thumb"] {
+      background-color: --value(--color-ui-* --text, [color]);
+    }
+  }
+
+  [data-scope="switch"][data-part="control"] {
+    --switch-track-width: calc(
+      calc(--value(--spacing-micro-*, [length]) * 1.5) * 2.5
+    );
+    --switch-track-height: calc(--value(--spacing-micro-*, [length]) * 1.5);
+    --switch-track-diff: calc(
+      var(--switch-track-width) - var(--switch-track-height)
+    );
+    --switch-thumb-x: var(--switch-track-diff);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background: --value(--color-ui-*, [color]);
+    }
+  }
+}

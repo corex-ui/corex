@@ -15,12 +15,48 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title default="E2e" suffix=" · Phoenix Framework">
+    <.live_title default="Corex" suffix=" · Elixir Phoenix Framework UI Library">
       {assigns[:page_title]}
     </.live_title>
+
+    <meta
+      name="description"
+      content="Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework"
+    />
+    <meta name="author" content="Netoum" />
+    <meta name="date" content="2026-02-16" />
+    <meta name="category" content="Components" />
+    <meta
+      name="keywords"
+      content="User Interface, Accessibility, Vanilla JS, Corex, ZagJS, Elixir, Phoenix Framework, Live View"
+    /> <meta name="theme-color" content="#F5F7FA" />
+    <link rel="icon" href={~p"/images/favicon.ico"} />
+    <link rel="apple-touch-icon" sizes="180x180" href={~p"/images/apple-touch-icon-180x180.png"} />
+    <link rel="icon" type="image/png" sizes="192x192" href={~p"/images/pwa-192x192.png"} />
+    <link rel="icon" type="image/png" sizes="512x512" href={~p"/images/pwa-512x512.png"} />
+    <link rel="mask-icon" href={~p"/images/maskable-icon-512x512.png"} color="#F5F7FA" />
+    <link rel="icon" type="image/png" sizes="64x64" href={~p"/images/pwa-64x64.png"} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://corex.gigalixirapp.com/" />
+    <meta property="og:title" content="Corex Elixir Phoenix Framework Library" />
+    <meta
+      property="og:description"
+      content="Unstyled, accessible components for flexible and modern interfaces."
+    />
+    <meta property="og:image" content="https://corex.gigalixirapp.com/corex-ui-og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Corex Elixir Phoenix Framework Library" />
+    <meta
+      name="twitter:description"
+      content="Unstyled, accessible components for flexible and modern interfaces."
+    />
+    <meta name="twitter:image" content="https://corex.gigalixirapp.com/corex-ui-og.jpg" />
+
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
     </script>
+
     <script>
       (() => {
         const getSystemMode = () =>

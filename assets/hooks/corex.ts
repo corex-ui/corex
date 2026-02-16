@@ -2,12 +2,12 @@ import type { Hook } from "phoenix_live_view";
 
 type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
 
-function hooks(importFn: () => Promise<HookModule>, exportName: string): Hook {
+function createLazyHook(importFn: () => Promise<HookModule>, exportName: string): Hook {
   return {
     async mounted() {
       const mod = await importFn();
       const real = mod[exportName];
-      (this as { _realHook?: Hook })._realHook = real;
+      (this as { _realHook?: Hook<object, HTMLElement> })._realHook = real;
       if (real?.mounted) return real.mounted.call(this);
     },
     updated() {
@@ -29,23 +29,40 @@ function hooks(importFn: () => Promise<HookModule>, exportName: string): Hook {
 }
 
 export const Hooks = {
-  Accordion: hooks(() => import("corex/accordion"), "Accordion"),
-  Checkbox: hooks(() => import("corex/checkbox"), "Checkbox"),
-  Clipboard: hooks(() => import("corex/clipboard"), "Clipboard"),
-  Collapsible: hooks(() => import("corex/collapsible"), "Collapsible"),
-  Combobox: hooks(() => import("corex/combobox"), "Combobox"),
-  DatePicker: hooks(() => import("corex/date-picker"), "DatePicker"),
-  Dialog: hooks(() => import("corex/dialog"), "Dialog"),
-  Menu: hooks(() => import("corex/menu"), "Menu"),
-  Select: hooks(() => import("corex/select"), "Select"),
-  SignaturePad: hooks(() => import("corex/signature-pad"), "SignaturePad"),
-  Switch: hooks(() => import("corex/switch"), "Switch"),
-  Tabs: hooks(() => import("corex/tabs"), "Tabs"),
-  Toast: hooks(() => import("corex/toast"), "Toast"),
-  ToggleGroup: hooks(() => import("corex/toggle-group"), "ToggleGroup"),
-  TreeView: hooks(() => import("corex/tree-view"), "TreeView"),
+  Accordion: createLazyHook(() => import("corex/accordion"), "Accordion"),
+  AngleSlider: createLazyHook(() => import("corex/angle-slider"), "AngleSlider"),
+  Avatar: createLazyHook(() => import("corex/avatar"), "Avatar"),
+  Carousel: createLazyHook(() => import("corex/carousel"), "Carousel"),
+  Checkbox: createLazyHook(() => import("corex/checkbox"), "Checkbox"),
+  Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
+  Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
+  Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
+  DatePicker: createLazyHook(() => import("corex/date-picker"), "DatePicker"),
+  Dialog: createLazyHook(() => import("corex/dialog"), "Dialog"),
+  Editable: createLazyHook(() => import("corex/editable"), "Editable"),
+  FloatingPanel: createLazyHook(() => import("corex/floating-panel"), "FloatingPanel"),
+  Listbox: createLazyHook(() => import("corex/listbox"), "Listbox"),
+  Menu: createLazyHook(() => import("corex/menu"), "Menu"),
+  NumberInput: createLazyHook(() => import("corex/number-input"), "NumberInput"),
+  PasswordInput: createLazyHook(() => import("corex/password-input"), "PasswordInput"),
+  PinInput: createLazyHook(() => import("corex/pin-input"), "PinInput"),
+  RadioGroup: createLazyHook(() => import("corex/radio-group"), "RadioGroup"),
+  Select: createLazyHook(() => import("corex/select"), "Select"),
+  SignaturePad: createLazyHook(() => import("corex/signature-pad"), "SignaturePad"),
+  Switch: createLazyHook(() => import("corex/switch"), "Switch"),
+  Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
+  Timer: createLazyHook(() => import("corex/timer"), "Timer"),
+  Toast: createLazyHook(() => import("corex/toast"), "Toast"),
+  ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
+  TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView"),
 };
 
-export { hooks };
+export function hooks<T extends keyof typeof Hooks>(
+  componentNames: readonly T[]
+): Pick<typeof Hooks, T> {
+  return Object.fromEntries(
+    componentNames.filter((name): name is T => name in Hooks).map((name) => [name, Hooks[name]])
+  ) as Pick<typeof Hooks, T>;
+}
 
 export default Hooks;

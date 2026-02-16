@@ -18,7 +18,7 @@ defmodule E2eWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :e2e,
-    gzip: true,
+    gzip: not code_reloading?,
     only: E2eWeb.static_paths(),
     raise_on_missing_only: code_reloading?
 

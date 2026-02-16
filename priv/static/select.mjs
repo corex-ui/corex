@@ -1,13 +1,14 @@
 import {
   ListCollection
-} from "./chunk-2DWEYSRA.mjs";
+} from "./chunk-2PO3TGCF.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-GRHV6R4F.mjs";
+} from "./chunk-EENFWNGI.mjs";
 import {
   trackDismissableElement
-} from "./chunk-BPSX7Z7Y.mjs";
+} from "./chunk-RR7TJIQ5.mjs";
+import "./chunk-ER3INIAI.mjs";
 import {
   Component,
   VanillaMachine,
@@ -37,7 +38,7 @@ import {
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-GFGFZBBD.mjs";
+} from "./chunk-IXOYOLUJ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.33.1/node_modules/@zag-js/select/dist/index.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1260,26 +1261,19 @@ var Select = class extends Component {
       '[data-scope="select"][data-part="content"]'
     );
     if (!contentEl) return;
-    contentEl.querySelectorAll(
-      '[data-scope="select"][data-part="item-group"]'
-    ).forEach((groupEl) => {
+    contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]').forEach((groupEl) => {
       const groupId = groupEl.dataset.id ?? "";
       this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
         '[data-scope="select"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(
-          labelEl,
-          this.api.getItemGroupLabelProps({ htmlFor: groupId })
-        );
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
       }
     });
     contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
       const value = itemEl.dataset.value ?? "";
-      const item = this.options.find(
-        (i) => String(i.id ?? i.value ?? "") === String(value)
-      );
+      const item = this.options.find((i) => String(i.id ?? i.value ?? "") === String(value));
       if (!item) return;
       this.spreadProps(itemEl, this.api.getItemProps({ item }));
       const textEl = itemEl.querySelector(
@@ -1292,10 +1286,7 @@ var Select = class extends Component {
         '[data-scope="select"][data-part="item-indicator"]'
       );
       if (indicatorEl) {
-        this.spreadProps(
-          indicatorEl,
-          this.api.getItemIndicatorProps({ item })
-        );
+        this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
       }
     });
   }
@@ -1320,17 +1311,8 @@ var Select = class extends Component {
     if (hiddenSelect) {
       this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
     }
-    [
-      "label",
-      "control",
-      "trigger",
-      "indicator",
-      "clear-trigger",
-      "positioner"
-    ].forEach((part) => {
-      const el = this.el.querySelector(
-        `[data-scope="select"][data-part="${part}"]`
-      );
+    ["label", "control", "trigger", "indicator", "clear-trigger", "positioner"].forEach((part) => {
+      const el = this.el.querySelector(`[data-scope="select"][data-part="${part}"]`);
       if (!el) return;
       const method = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
       this.spreadProps(el, this.api[method]());

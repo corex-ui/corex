@@ -94,4 +94,48 @@ defmodule E2eWeb.PageController do
   def tree_view_page(conn, _params) do
     render(conn, :tree_view_page)
   end
+
+  def angle_slider_page(conn, _params) do
+    render(conn, :angle_slider_page)
+  end
+
+  def avatar_page(conn, _params) do
+    render(conn, :avatar_page)
+  end
+
+  def carousel_page(conn, _params) do
+    render(conn, :carousel_page)
+  end
+
+  def editable_page(conn, _params) do
+    render(conn, :editable_page, value_text: "My custom value")
+  end
+
+  def floating_panel_page(conn, _params) do
+    render(conn, :floating_panel_page)
+  end
+
+  def listbox_page(conn, _params) do
+    render(conn, :listbox_page)
+  end
+
+  def number_input_page(conn, _params) do
+    render(conn, :number_input_page)
+  end
+
+  def password_input_page(conn, _params) do
+    render(conn, :password_input_page)
+  end
+
+  def pin_input_page(conn, _params) do
+    render(conn, :pin_input_page)
+  end
+
+  def radio_group_page(conn, _params) do
+    render(conn, :radio_group_page)
+  end
+
+  def timer_page(conn, _params) do
+    render(conn, :timer_page)
+  end
 end

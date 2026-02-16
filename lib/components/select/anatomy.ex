@@ -1,9 +1,10 @@
 defmodule Corex.Select.Anatomy do
   @moduledoc false
-  alias Corex.Collection
+  alias Corex.Tree
 
   defmodule Props do
     @moduledoc false
+    alias Corex.Tree
     @enforce_keys [:id]
 
     defstruct [
@@ -31,7 +32,7 @@ defmodule Corex.Select.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            collection: list(Collection.Item.t() | map()),
+            collection: list(Tree.Item.t() | map()),
             controlled: boolean(),
             placeholder: String.t() | nil,
             value: list(String.t()),

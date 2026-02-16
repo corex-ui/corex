@@ -37,7 +37,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.22"}
+    {:corex, "~> 0.1.0-alpha.23"}
   ]
 end
 ```
@@ -62,7 +62,11 @@ config :corex,
 
 ### Import Corex Hooks
 
-In your `assets/js/app.js`, import and register the Corex hooks. Each component chunk loads when first mounted:
+In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocket.
+
+Each hook uses dynamic `import()` so component JavaScript is loaded only when a DOM element with that hook is mounted. If a component never appears on a page, its chunk is never fetched. See the Performance section below for how this works and the required build configuration.
+
+To load all hooks:
 
 ```javascript
 import corex from "corex"
@@ -74,6 +78,29 @@ const liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
   hooks: {...colocatedHooks, ...corex}
 })
+```
+
+To register only the hooks you use:
+
+```javascript
+import { hooks } from "corex"
+```
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: {_csrf_token: csrfToken},
+  hooks: {...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"])}
+})
+```
+
+### Load app script
+
+Load your app script with `type="module"` in your root layout, for example in `root.html.heex`:
+
+```heex
+<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
+</script>
 ```
 
 ## Import Components
@@ -348,11 +375,11 @@ In order to use the API, you must use an id on the component
 
 ## Performance
 
-By default Phoenix esbuild is set to bundle all the JS into a single file.
+Corex hooks load component JavaScript only when a DOM element with that hook is mounted. This requires ESM format and code splitting.
 
-### 1.Enable splitting
+### 1. Build configuration (ESM and splitting)
 
-In order to enable splitting add the following `--format=esm --splitting` to your esbuild config
+Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
 
 ```elixir
 config :esbuild,
@@ -365,19 +392,23 @@ config :esbuild,
   ]
 ```
 
-Run `mix assets.build` and see the magic happening
+### 2. Enable gzip for Plug.Static
 
-### 2.Enable gzip for Plug.Static
+Set `gzip: true` on `Plug.Static` in your endpoint so that pre-compressed `.gz` files are served when the client supports them.
 
-In your `endpoint.ex` enable gzip for developement also
+### 3. How dynamic hook loading works
 
-```elexir
-  plug Plug.Static,
-    at: "/",
-    from: :e2e,
-    gzip: true,
-    only: E2eWeb.static_paths(),
-    raise_on_missing_only: code_reloading?
-```
+1. **App start** – Corex registers small stubs (e.g. Accordion, Combobox) as LiveSocket hooks. Each stub stores a function like `() => import("corex/accordion")` but does not run it yet.
+2. **Page load** – If the page has no Corex components, no component code is loaded.
+3. **Component appears** – When LiveView renders an element with `phx-hook="Accordion"`, LiveSocket mounts that hook and calls the stub's `mounted()`.
+4. **Dynamic load** – Inside `mounted()`, the stub runs `await import("corex/accordion")`. The browser fetches and executes the accordion chunk for the first time. The stub then delegates to the real hook.
+5. **Result** – Each component's JavaScript is loaded only when a DOM element with its `phx-hook` is mounted. If a component never appears on a page, its chunk is never fetched.
 
-See the [Production guide](production.html) for the final build in production environnement
+### 4. Compression and dev performance
+
+In development, watchers output unminified, uncompressed assets. `Plug.Static` with `gzip: true` only serves pre-existing `.gz` files; watchers do not create them. If the app feels slow in development (especially with many nested components):
+
+1. Run `mix assets.deploy` instead of `mix assets.build` before `mix phx.server` for production-like asset output (minified and compressed).
+2. Ensure `gzip: true` is set on `Plug.Static` in your endpoint.
+
+See the [Production guide](production.html) for the final build in production.

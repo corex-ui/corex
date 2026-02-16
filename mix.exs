@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.22"
+  @version "0.1.0-alpha.23"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -17,7 +17,7 @@ defmodule Corex.MixProject do
         "Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework.",
       package: package(),
       source_url: "https://github.com/corex-ui/corex",
-      homepage_url: "https://corex-ui.com",
+      homepage_url: "https://corex.gigalixirapp.com/en",
       docs: &docs/0
     ]
   end
@@ -46,7 +46,10 @@ defmodule Corex.MixProject do
 
   defp aliases do
     [
+      compile: [&copy_design/1, "compile"],
       "assets.build": [
+        &clean_static_assets/1,
+        &copy_design/1,
         "esbuild module",
         "esbuild cdn",
         "esbuild cdn_min",
@@ -55,6 +58,23 @@ defmodule Corex.MixProject do
       ],
       "assets.watch": "esbuild module --watch"
     ]
+  end
+
+  defp clean_static_assets(_) do
+    static = Path.join([__DIR__, "priv", "static"])
+    design_dest = Path.join([__DIR__, "priv", "design"])
+    File.rm_rf(Path.join(static, "cache_manifest.json"))
+    File.rm_rf(design_dest)
+  end
+
+  defp copy_design(_) do
+    source = Path.join([__DIR__, "design"])
+    destination = Path.join([__DIR__, "priv", "design"])
+
+    if File.exists?(source) and File.dir?(source) do
+      File.mkdir_p!(Path.dirname(destination))
+      File.cp_r!(source, destination, force: true)
+    end
   end
 
   defp package do
@@ -96,17 +116,28 @@ defmodule Corex.MixProject do
     [
       Components: [
         Corex.Accordion,
+        Corex.AngleSlider,
+        Corex.Avatar,
+        Corex.Carousel,
         Corex.Checkbox,
-        Corex.Combobox,
         Corex.Clipboard,
+        Corex.Combobox,
         Corex.Collapsible,
         Corex.DatePicker,
         Corex.Dialog,
+        Corex.Editable,
+        Corex.FloatingPanel,
+        Corex.Listbox,
         Corex.Menu,
+        Corex.NumberInput,
+        Corex.PasswordInput,
+        Corex.PinInput,
+        Corex.RadioGroup,
         Corex.Select,
         Corex.SignaturePad,
         Corex.Switch,
         Corex.Tabs,
+        Corex.Timer,
         Corex.Toast,
         Corex.ToggleGroup,
         Corex.TreeView

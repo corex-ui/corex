@@ -17,7 +17,7 @@ import {
   normalizeProps,
   query,
   trackPointerMove
-} from "./chunk-GFGFZBBD.mjs";
+} from "./chunk-IXOYOLUJ.mjs";
 
 // ../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs
 var { PI: e } = Math;

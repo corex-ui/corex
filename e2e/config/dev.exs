@@ -25,8 +25,8 @@ config :e2e, E2eWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "JQ3bjpj3drUYoLh2G4QBZr8KpmxWvAJGLV6DZzv9mIRqOkQqhpZwtu9np9fwDeSX",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch --minify)]},
+    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
   ]
 
 # ## SSL Support
@@ -57,11 +57,8 @@ config :e2e, E2eWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
-      # Static assets, except user uploads
       ~r"priv/static/(?!uploads/).*\.(js|css|png|jpeg|jpg|gif|svg)$"E,
-      # Gettext translations
       ~r"priv/gettext/.*\.po$"E,
-      # Router, Controllers, LiveViews and LiveComponents
       ~r"lib/e2e_web/router\.ex$"E,
       ~r"lib/e2e_web/(controllers|live|components)/.*\.(ex|heex)$"E
     ]

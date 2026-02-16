@@ -1,5 +1,9 @@
 @import "tailwindcss" source(none);
+@plugin "../vendor/heroicons";
+
 @source "../css";
+@source "../corex";
+
 @source "../js";
 @source "../../lib/e2e_web";
 
@@ -28,6 +32,17 @@
 @import "../corex/components/toast.css";
 @import "../corex/components/button.css";
 @import "../corex/components/badge.css";
+@import "../corex/components/angle-slider.css";
+@import "../corex/components/avatar.css";
+@import "../corex/components/carousel.css";
+@import "../corex/components/editable.css";
+@import "../corex/components/floating-panel.css";
+@import "../corex/components/listbox.css";
+@import "../corex/components/number-input.css";
+@import "../corex/components/password-input.css";
+@import "../corex/components/pin-input.css";
+@import "../corex/components/radio-group.css";
+@import "../corex/components/timer.css";
 
 @import "./navigation.css";
 
@@ -39,7 +54,6 @@
     width: auto;
 }
 
-@plugin "../vendor/heroicons";
 
 @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
 @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
