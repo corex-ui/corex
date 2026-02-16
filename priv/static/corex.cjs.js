@@ -35,7 +35,7 @@ __export(corex_exports, {
   hooks: () => hooks
 });
 module.exports = __toCommonJS(corex_exports);
-function hooks(importFn, exportName) {
+function createLazyHook(importFn, exportName) {
   return {
     async mounted() {
       const mod = await importFn();
@@ -61,32 +61,37 @@ function hooks(importFn, exportName) {
   };
 }
 var Hooks = {
-  Accordion: hooks(() => import("corex/accordion"), "Accordion"),
-  AngleSlider: hooks(() => import("corex/angle-slider"), "AngleSlider"),
-  Avatar: hooks(() => import("corex/avatar"), "Avatar"),
-  Carousel: hooks(() => import("corex/carousel"), "Carousel"),
-  Checkbox: hooks(() => import("corex/checkbox"), "Checkbox"),
-  Clipboard: hooks(() => import("corex/clipboard"), "Clipboard"),
-  Collapsible: hooks(() => import("corex/collapsible"), "Collapsible"),
-  Combobox: hooks(() => import("corex/combobox"), "Combobox"),
-  DatePicker: hooks(() => import("corex/date-picker"), "DatePicker"),
-  Dialog: hooks(() => import("corex/dialog"), "Dialog"),
-  Editable: hooks(() => import("corex/editable"), "Editable"),
-  FloatingPanel: hooks(() => import("corex/floating-panel"), "FloatingPanel"),
-  Listbox: hooks(() => import("corex/listbox"), "Listbox"),
-  Menu: hooks(() => import("corex/menu"), "Menu"),
-  NumberInput: hooks(() => import("corex/number-input"), "NumberInput"),
-  PasswordInput: hooks(() => import("corex/password-input"), "PasswordInput"),
-  PinInput: hooks(() => import("corex/pin-input"), "PinInput"),
-  RadioGroup: hooks(() => import("corex/radio-group"), "RadioGroup"),
-  Select: hooks(() => import("corex/select"), "Select"),
-  SignaturePad: hooks(() => import("corex/signature-pad"), "SignaturePad"),
-  Switch: hooks(() => import("corex/switch"), "Switch"),
-  Tabs: hooks(() => import("corex/tabs"), "Tabs"),
-  Timer: hooks(() => import("corex/timer"), "Timer"),
-  Toast: hooks(() => import("corex/toast"), "Toast"),
-  ToggleGroup: hooks(() => import("corex/toggle-group"), "ToggleGroup"),
-  TreeView: hooks(() => import("corex/tree-view"), "TreeView")
+  Accordion: createLazyHook(() => import("corex/accordion"), "Accordion"),
+  AngleSlider: createLazyHook(() => import("corex/angle-slider"), "AngleSlider"),
+  Avatar: createLazyHook(() => import("corex/avatar"), "Avatar"),
+  Carousel: createLazyHook(() => import("corex/carousel"), "Carousel"),
+  Checkbox: createLazyHook(() => import("corex/checkbox"), "Checkbox"),
+  Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
+  Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
+  Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
+  DatePicker: createLazyHook(() => import("corex/date-picker"), "DatePicker"),
+  Dialog: createLazyHook(() => import("corex/dialog"), "Dialog"),
+  Editable: createLazyHook(() => import("corex/editable"), "Editable"),
+  FloatingPanel: createLazyHook(() => import("corex/floating-panel"), "FloatingPanel"),
+  Listbox: createLazyHook(() => import("corex/listbox"), "Listbox"),
+  Menu: createLazyHook(() => import("corex/menu"), "Menu"),
+  NumberInput: createLazyHook(() => import("corex/number-input"), "NumberInput"),
+  PasswordInput: createLazyHook(() => import("corex/password-input"), "PasswordInput"),
+  PinInput: createLazyHook(() => import("corex/pin-input"), "PinInput"),
+  RadioGroup: createLazyHook(() => import("corex/radio-group"), "RadioGroup"),
+  Select: createLazyHook(() => import("corex/select"), "Select"),
+  SignaturePad: createLazyHook(() => import("corex/signature-pad"), "SignaturePad"),
+  Switch: createLazyHook(() => import("corex/switch"), "Switch"),
+  Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
+  Timer: createLazyHook(() => import("corex/timer"), "Timer"),
+  Toast: createLazyHook(() => import("corex/toast"), "Toast"),
+  ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
+  TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView")
 };
+function hooks(componentNames) {
+  return Object.fromEntries(
+    componentNames.filter((name) => name in Hooks).map((name) => [name, Hooks[name]])
+  );
+}
 var corex_default = Hooks;
 //# sourceMappingURL=corex.cjs.js.map

@@ -9,7 +9,9 @@ defmodule Corex.PinInput.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    value_str = if is_list(assigns.value), do: Enum.join(validate_value!(assigns.value), ","), else: ""
+    value_str =
+      if is_list(assigns.value), do: Enum.join(validate_value!(assigns.value), ","), else: ""
+
     default_value_str = if assigns.controlled, do: nil, else: value_str
 
     %{

@@ -14,10 +14,17 @@ defmodule E2eWeb.RadioGroupLive do
       </div>
       <.radio_group
         id="my-radio-group"
-        items={[%{value: "a", label: "Option A"}, %{value: "b", label: "Option B"}, %{value: "c", label: "Option C"}]}
+        items={[
+          %{value: "a", label: "Option A"},
+          %{value: "b", label: "Option B"},
+          %{value: "c", label: "Option C"}
+        ]}
         class="radio-group"
       >
         <:label>Choose one</:label>
+        <:item_control>
+          <.icon name="hero-check" class="data-checked" />
+        </:item_control>
       </.radio_group>
     </Layouts.app>
     """

@@ -49,31 +49,45 @@ defmodule Corex.Timer.Connect do
 
   @spec item(Item.t()) :: map()
   def item(assigns) do
+    value = Map.get(assigns, :value, 0)
+
     %{
       "data-scope" => "timer",
       "data-part" => "item",
       "data-type" => assigns.type,
-      "id" => "timer:#{assigns.id}:item:#{assigns.type}"
+      "style" => "--value:#{value};"
     }
   end
 
   @spec separator(Separator.t()) :: map()
-  def separator(assigns) do
+  def separator(_assigns) do
     %{
       "data-scope" => "timer",
       "data-part" => "separator",
-      "id" => "timer:#{assigns.id}:separator"
+      "aria-hidden" => "true"
     }
   end
 
+  defp action_label("start"), do: "Start"
+  defp action_label("pause"), do: "Pause"
+  defp action_label("resume"), do: "Resume"
+  defp action_label("reset"), do: "Reset"
+  defp action_label(_), do: "Timer action"
+
   @spec action_trigger(ActionTrigger.t()) :: map()
   def action_trigger(assigns) do
-    %{
+    base = %{
       "data-scope" => "timer",
       "data-part" => "action-trigger",
       "data-action" => assigns.action,
       "type" => "button",
-      "id" => "timer:#{assigns.id}:action:#{assigns.action}"
+      "aria-label" => action_label(assigns.action)
     }
+
+    if assigns.hidden do
+      Map.put(base, "hidden", "")
+    else
+      base
+    end
   end
 end

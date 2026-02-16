@@ -5,8 +5,8 @@ defmodule Corex.NumberInput.Connect do
     Root,
     Label,
     Control,
-    ValueText,
     Input,
+    TriggerGroup,
     DecrementTrigger,
     IncrementTrigger,
     Scrubber
@@ -55,7 +55,8 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "label",
-      "id" => "number-input:#{assigns.id}:label"
+      "id" => "number-input:#{assigns.id}:label",
+      "for" => "number-input:#{assigns.id}:input"
     }
   end
 
@@ -68,12 +69,10 @@ defmodule Corex.NumberInput.Connect do
     }
   end
 
-  @spec value_text(ValueText.t()) :: map()
-  def value_text(assigns) do
+  @spec trigger_group(TriggerGroup.t()) :: map()
+  def trigger_group(_assigns) do
     %{
-      "data-scope" => "number-input",
-      "data-part" => "value-text",
-      "id" => "number-input:#{assigns.id}:value-text"
+      "data-part" => "trigger-group"
     }
   end
 
@@ -93,7 +92,7 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "decrement-trigger",
       "type" => "button",
-      "id" => "number-input:#{assigns.id}:decrement"
+      "id" => "number-input:#{assigns.id}:dec"
     }
   end
 
@@ -103,7 +102,7 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "increment-trigger",
       "type" => "button",
-      "id" => "number-input:#{assigns.id}:increment"
+      "id" => "number-input:#{assigns.id}:inc"
     }
   end
 
@@ -112,7 +111,9 @@ defmodule Corex.NumberInput.Connect do
     %{
       "data-scope" => "number-input",
       "data-part" => "scrubber",
-      "id" => "number-input:#{assigns.id}:scrubber"
+      "type" => "button",
+      "id" => "number-input:#{assigns.id}:scrubber",
+      "aria-label" => "Scrub to adjust value"
     }
   end
 end

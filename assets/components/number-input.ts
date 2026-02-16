@@ -51,6 +51,10 @@ export class NumberInput extends Component<Props, Api> {
     const scrubberEl = this.el.querySelector<HTMLElement>(
       '[data-scope="number-input"][data-part="scrubber"]'
     );
-    if (scrubberEl) this.spreadProps(scrubberEl, this.api.getScrubberProps());
+    if (scrubberEl) {
+      this.spreadProps(scrubberEl, this.api.getScrubberProps());
+      scrubberEl.setAttribute("aria-label", "Scrub to adjust value");
+      scrubberEl.removeAttribute("role");
+    }
   }
 }

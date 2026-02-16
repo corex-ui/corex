@@ -45,10 +45,14 @@ defmodule E2eWeb.Layouts do
   slot :inner_block, required: true
 
   def app(assigns) do
+    locale = assigns.locale || "en"
+
     assigns =
       assigns
-      |> assign(:menu, menu_items(assigns.locale))
-      |> assign(:form_menu, form_menu_items(assigns.locale))
+      |> assign(:menu, menu_items(locale))
+      |> assign(:form_menu, form_menu_items(locale))
+      |> assign(:prev_path, prev_next_paths(locale, assigns.current_path || "/", :prev))
+      |> assign(:next_path, prev_next_paths(locale, assigns.current_path || "/", :next))
 
     ~H"""
     <header class="layout__header">
@@ -83,20 +87,6 @@ defmodule E2eWeb.Layouts do
               </div>
               <div class="scrollbar scrollbar--sm overflow-y-auto">
                 <.tree_view
-                  id="components-menu"
-                  on_selection_change="handle_menu"
-                  class="tree-view navigation px-ui-padding "
-                  redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
-                  items={@menu}
-                >
-                  <:label>Corex Components</:label>
-                  <:indicator>
-                    <.icon name="hero-chevron-right" />
-                  </:indicator>
-                </.tree_view>
-
-                <.tree_view
                   id="form-menu"
                   class="tree-view navigation px-ui-padding"
                   on_selection_change="handle_menu"
@@ -105,6 +95,19 @@ defmodule E2eWeb.Layouts do
                   items={@form_menu}
                 >
                   <:label>Phoenix Form</:label>
+                  <:indicator>
+                    <.icon name="hero-chevron-right" />
+                  </:indicator>
+                </.tree_view>
+                <.tree_view
+                  id="components-menu"
+                  on_selection_change="handle_menu"
+                  class="tree-view navigation px-ui-padding "
+                  redirect
+                  value={[@current_path |> String.split("/") |> List.last()]}
+                  items={@menu}
+                >
+                  <:label>Corex Components</:label>
                   <:indicator>
                     <.icon name="hero-chevron-right" />
                   </:indicator>
@@ -135,20 +138,6 @@ defmodule E2eWeb.Layouts do
     <div class="layout__wrapper">
       <aside class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto">
         <.tree_view
-          id="components-menu-side"
-          on_selection_change="handle_menu"
-          class="tree-view navigation px-ui-padding"
-          redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
-          items={@menu}
-        >
-          <:label>Corex Components</:label>
-          <:indicator>
-            <.icon name="hero-chevron-right" />
-          </:indicator>
-        </.tree_view>
-
-        <.tree_view
           id="form-menu-side"
           class="tree-view navigation px-ui-padding"
           on_selection_change="handle_menu"
@@ -161,9 +150,37 @@ defmodule E2eWeb.Layouts do
             <.icon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
+        <.tree_view
+          id="components-menu-side"
+          on_selection_change="handle_menu"
+          class="tree-view navigation px-ui-padding"
+          redirect
+          value={[@current_path |> String.split("/") |> List.last()]}
+          items={@menu}
+        >
+          <:label>Corex Components</:label>
+          <:indicator>
+            <.icon name="hero-chevron-right" />
+          </:indicator>
+        </.tree_view>
       </aside>
 
-      <main class="layout__main">
+      <main class="layout__main py-ui">
+        <nav
+          :if={@prev_path || @next_path}
+          class="layout__page-nav w-full flex justify-between items-center px-ui-padding py-micro"
+        >
+          <div>
+            <.link :if={@prev_path} navigate={@prev_path} class="button button--sm gap-mini-gap">
+              <.icon name="hero-chevron-left" /> Previous
+            </.link>
+          </div>
+          <div>
+            <.link :if={@next_path} navigate={@next_path} class="button button--sm gap-mini-gap">
+              Next <.icon name="hero-chevron-right" />
+            </.link>
+          </div>
+        </nav>
         <div class="layout__content">
           <div class="layout__article">
             {render_slot(@inner_block)}
@@ -261,6 +278,49 @@ defmodule E2eWeb.Layouts do
     """
   end
 
+  defp flat_navigation_paths(locale) do
+    form_paths =
+      form_menu_items(locale)
+      |> flatten_tree_ids()
+
+    menu_paths =
+      menu_items(locale)
+      |> flatten_tree_ids()
+
+    form_paths ++ menu_paths
+  end
+
+  defp flatten_tree_ids(items) when is_list(items) do
+    Enum.flat_map(items, fn
+      %{id: id, children: []} when is_binary(id) ->
+        [id]
+
+      %{id: id, children: nil} when is_binary(id) ->
+        [id]
+
+      %{id: _id, children: children} when is_list(children) and children != [] ->
+        flatten_tree_ids(children)
+
+      _ ->
+        []
+    end)
+  end
+
+  defp prev_next_paths(locale, current_path, direction) do
+    full_path = "/#{locale}#{current_path}"
+    paths = flat_navigation_paths(locale)
+    index = Enum.find_index(paths, &(&1 == full_path))
+
+    case {direction, index} do
+      {:prev, nil} -> nil
+      {:prev, 0} -> nil
+      {:prev, i} when i > 0 -> Enum.at(paths, i - 1)
+      {:next, nil} -> nil
+      {:next, i} when i >= 0 and i < length(paths) - 1 -> Enum.at(paths, i + 1)
+      _ -> nil
+    end
+  end
+
   defp menu_items(locale) do
     Corex.Tree.new([
       [
@@ -272,6 +332,30 @@ defmodule E2eWeb.Layouts do
           [label: "Playground", id: "/#{locale}/playground/accordion"],
           [label: "Controlled", id: "/#{locale}/controlled/accordion"],
           [label: "Async", id: "/#{locale}/async/accordion"]
+        ]
+      ],
+      [
+        label: "Angle Slider",
+        id: "angle-slider",
+        children: [
+          [label: "Controller", id: "/#{locale}/angle-slider"],
+          [label: "Live", id: "/#{locale}/live/angle-slider"]
+        ]
+      ],
+      [
+        label: "Avatar",
+        id: "avatar",
+        children: [
+          [label: "Controller", id: "/#{locale}/avatar"],
+          [label: "Live", id: "/#{locale}/live/avatar"]
+        ]
+      ],
+      [
+        label: "Carousel",
+        id: "carousel",
+        children: [
+          [label: "Controller", id: "/#{locale}/carousel"],
+          [label: "Live", id: "/#{locale}/live/carousel"]
         ]
       ],
       [
@@ -323,94 +407,6 @@ defmodule E2eWeb.Layouts do
         ]
       ],
       [
-        label: "Menu",
-        id: "menu",
-        children: [
-          [label: "Controller", id: "/#{locale}/menu"],
-          [label: "Live", id: "/#{locale}/live/menu"]
-        ]
-      ],
-      [
-        label: "Select",
-        id: "select",
-        children: [
-          [label: "Controller", id: "/#{locale}/select"],
-          [label: "Live", id: "/#{locale}/live/select"]
-        ]
-      ],
-      [
-        label: "Signature",
-        id: "signature",
-        children: [
-          [label: "Controller", id: "/#{locale}/signature"],
-          [label: "Live", id: "/#{locale}/live/signature"]
-        ]
-      ],
-      [
-        label: "Switch",
-        id: "switch",
-        children: [
-          [label: "Controller", id: "/#{locale}/switch"],
-          [label: "Live", id: "/#{locale}/live/switch"]
-        ]
-      ],
-      [
-        label: "Tabs",
-        id: "tabs",
-        children: [
-          [label: "Controller", id: "/#{locale}/tabs"],
-          [label: "Live", id: "/#{locale}/live/tabs"]
-        ]
-      ],
-      [
-        label: "Toast",
-        id: "toast",
-        children: [
-          [label: "Controller", id: "/#{locale}/toast"],
-          [label: "Live", id: "/#{locale}/live/toast"]
-        ]
-      ],
-      [
-        label: "Toggle Group",
-        id: "toggle-group",
-        children: [
-          [label: "Controller", id: "/#{locale}/toggle-group"],
-          [label: "Live", id: "/#{locale}/live/toggle-group"]
-        ]
-      ],
-      [
-        label: "Tree view",
-        id: "tree-view",
-        children: [
-          [label: "Controller", id: "/#{locale}/tree-view"],
-          [label: "Live", id: "/#{locale}/live/tree-view"]
-        ]
-      ],
-      [
-        label: "Angle Slider",
-        id: "angle-slider",
-        children: [
-          [label: "Controller", id: "/#{locale}/angle-slider"],
-          [label: "Live", id: "/#{locale}/live/angle-slider"]
-        ]
-      ],
-      [
-        label: "Avatar",
-        id: "avatar",
-        children: [
-          [label: "Controller", id: "/#{locale}/avatar"],
-          [label: "Live", id: "/#{locale}/live/avatar"]
-        ]
-      ],
-      [
-        label: "Carousel",
-        id: "carousel",
-        children: [
-          [label: "Controller", id: "/#{locale}/carousel"],
-          [label: "Live", id: "/#{locale}/live/carousel"]
-        ]
-      ],
-      [
         label: "Editable",
         id: "editable",
         children: [
@@ -432,6 +428,14 @@ defmodule E2eWeb.Layouts do
         children: [
           [label: "Controller", id: "/#{locale}/listbox"],
           [label: "Live", id: "/#{locale}/live/listbox"]
+        ]
+      ],
+      [
+        label: "Menu",
+        id: "menu",
+        children: [
+          [label: "Controller", id: "/#{locale}/menu"],
+          [label: "Live", id: "/#{locale}/live/menu"]
         ]
       ],
       [
@@ -467,11 +471,67 @@ defmodule E2eWeb.Layouts do
         ]
       ],
       [
+        label: "Select",
+        id: "select",
+        children: [
+          [label: "Controller", id: "/#{locale}/select"],
+          [label: "Live", id: "/#{locale}/live/select"]
+        ]
+      ],
+      [
+        label: "Signature",
+        id: "signature",
+        children: [
+          [label: "Controller", id: "/#{locale}/signature"],
+          [label: "Live", id: "/#{locale}/live/signature"]
+        ]
+      ],
+      [
+        label: "Switch",
+        id: "switch",
+        children: [
+          [label: "Controller", id: "/#{locale}/switch"],
+          [label: "Live", id: "/#{locale}/live/switch"]
+        ]
+      ],
+      [
+        label: "Tabs",
+        id: "tabs",
+        children: [
+          [label: "Controller", id: "/#{locale}/tabs"],
+          [label: "Live", id: "/#{locale}/live/tabs"]
+        ]
+      ],
+      [
         label: "Timer",
         id: "timer",
         children: [
           [label: "Controller", id: "/#{locale}/timer"],
           [label: "Live", id: "/#{locale}/live/timer"]
+        ]
+      ],
+      [
+        label: "Toast",
+        id: "toast",
+        children: [
+          [label: "Controller", id: "/#{locale}/toast"],
+          [label: "Live", id: "/#{locale}/live/toast"]
+        ]
+      ],
+      [
+        label: "Toggle Group",
+        id: "toggle-group",
+        children: [
+          [label: "Controller", id: "/#{locale}/toggle-group"],
+          [label: "Live", id: "/#{locale}/live/toggle-group"]
+        ]
+      ],
+      [
+        label: "Tree view",
+        id: "tree-view",
+        children: [
+          [label: "Controller", id: "/#{locale}/tree-view"],
+          [label: "Live", id: "/#{locale}/live/tree-view"]
         ]
       ]
     ])

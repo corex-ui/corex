@@ -12,9 +12,11 @@ defmodule Corex.NumberInput do
   </.number_input>
   ```
 
+  Optional slots `:decrement_trigger`, `:increment_trigger`, and `:scrubber_trigger` render the button content (e.g. icons). When omitted, no content is shown.
+
   ## Styling
 
-  Use data attributes: `[data-scope="number-input"][data-part="root"]`, `control`, `input`, `decrement-trigger`, `increment-trigger`, `value-text`, `scrubber`.
+  Use data attributes: `[data-scope="number-input"][data-part="root"]`, `control`, `input`, `trigger-group`, `decrement-trigger`, `increment-trigger`, `scrubber`.
   '''
 
   @doc type: :component
@@ -25,12 +27,13 @@ defmodule Corex.NumberInput do
     Root,
     Label,
     Control,
-    ValueText,
     Input,
+    TriggerGroup,
     DecrementTrigger,
     IncrementTrigger,
     Scrubber
   }
+
   alias Corex.NumberInput.Connect
 
   attr(:id, :string, required: false)
@@ -49,9 +52,18 @@ defmodule Corex.NumberInput do
   attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
+
+  attr(:scrubber, :boolean,
+    default: false,
+    doc: "When true, show scrubber instead of increment/decrement buttons"
+  )
+
   attr(:rest, :global)
 
   slot(:label, required: false)
+  slot(:decrement_trigger, required: false)
+  slot(:increment_trigger, required: false)
+  slot(:scrubber_trigger, required: false)
 
   def number_input(assigns) do
     assigns =
@@ -87,11 +99,18 @@ defmodule Corex.NumberInput do
           {render_slot(@label)}
         </label>
         <div {Connect.control(%Control{id: @id})}>
-          <span {Connect.value_text(%ValueText{id: @id})} />
           <input type="text" inputmode="decimal" {Connect.input(%Input{id: @id, disabled: @disabled})} />
-          <button type="button" {Connect.decrement_trigger(%DecrementTrigger{id: @id})}>−</button>
-          <button type="button" {Connect.increment_trigger(%IncrementTrigger{id: @id})}>+</button>
-          <div {Connect.scrubber(%Scrubber{id: @id})} />
+          <div {Connect.trigger_group(%TriggerGroup{})}>
+            <button :if={!@scrubber} type="button" {Connect.increment_trigger(%IncrementTrigger{id: @id})}>
+              {render_slot(@increment_trigger)}
+            </button>
+            <button :if={!@scrubber} type="button" {Connect.decrement_trigger(%DecrementTrigger{id: @id})}>
+            {render_slot(@decrement_trigger)}
+          </button>
+            <button :if={@scrubber} type="button" {Connect.scrubber(%Scrubber{id: @id})}>
+              {render_slot(@scrubber_trigger)}
+            </button>
+          </div>
         </div>
       </div>
     </div>

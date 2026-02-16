@@ -37,14 +37,21 @@ defmodule Corex.RadioGroup.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    %{
+    base = %{
       "data-scope" => "radio-group",
       "data-part" => "root",
       "role" => "radiogroup",
       "dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
-      "id" => "radio-group:#{assigns.id}"
+      "id" => "radio-group:#{assigns.id}",
+      "style" => "position:relative;"
     }
+
+    if assigns.has_label do
+      Map.put(base, "aria-labelledby", "radio-group:#{assigns.id}:label")
+    else
+      base
+    end
   end
 
   @spec label(Label.t()) :: map()
@@ -63,7 +70,10 @@ defmodule Corex.RadioGroup.Connect do
       "data-scope" => "radio-group",
       "data-part" => "indicator",
       "dir" => assigns.dir,
-      "id" => "radio-group:#{assigns.id}:indicator"
+      "id" => "radio-group:#{assigns.id}:indicator",
+      "hidden" => "",
+      "style" =>
+        "position:absolute;width:0;height:0;overflow:hidden;clip:rect(0,0,0,0);margin:-1px;padding:0;border:0;"
     }
   end
 
@@ -97,7 +107,9 @@ defmodule Corex.RadioGroup.Connect do
     %{
       "data-scope" => "radio-group",
       "data-part" => "item-control",
+      "aria-hidden" => "true",
       "data-value" => assigns.value,
+      "data-state" => if(assigns.checked, do: "checked", else: "unchecked"),
       "data-disabled" => data_attr(assigns.disabled),
       "data-invalid" => data_attr(assigns.invalid),
       "id" => "radio-group:#{assigns.id}:item-control:#{assigns.value}"
@@ -118,7 +130,9 @@ defmodule Corex.RadioGroup.Connect do
       "data-value" => assigns.value,
       "data-disabled" => data_attr(assigns.disabled),
       "data-invalid" => data_attr(assigns.invalid),
-      "id" => "radio-group:#{assigns.id}:item-hidden-input:#{assigns.value}"
+      "id" => "radio-group:#{assigns.id}:item-hidden-input:#{assigns.value}",
+      "style" =>
+        "border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;"
     }
   end
 end

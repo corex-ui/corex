@@ -14,6 +14,18 @@ defmodule E2eWeb.NumberInputLive do
       </div>
       <.number_input id="my-number-input" class="number-input">
         <:label>Quantity</:label>
+        <:decrement_trigger>
+          <.icon name="hero-chevron-down" class="icon" />
+        </:decrement_trigger>
+        <:increment_trigger>
+          <.icon name="hero-chevron-up" class="icon" />
+        </:increment_trigger>
+      </.number_input>
+      <.number_input id="scrubber-number-input" class="number-input" scrubber>
+        <:label>Enter Number</:label>
+        <:scrubber_trigger>
+          <.icon name="hero-chevron-up-down" class="icon icon--square rotate-90" />
+        </:scrubber_trigger>
       </.number_input>
     </Layouts.app>
     """

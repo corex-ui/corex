@@ -33,7 +33,8 @@ defmodule Corex.Editable.Connect do
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
       "data-edit" => if(assigns.controlled_edit, do: data_attr(assigns.edit), else: nil),
-      "data-default-edit" => if(assigns.controlled_edit, do: nil, else: data_attr(assigns.default_edit)),
+      "data-default-edit" =>
+        if(assigns.controlled_edit, do: nil, else: data_attr(assigns.default_edit)),
       "data-controlled-edit" => data_attr(assigns.controlled_edit),
       "data-placeholder" => assigns.placeholder,
       "data-activation-mode" => assigns.activation_mode,

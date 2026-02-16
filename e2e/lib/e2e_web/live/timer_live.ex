@@ -12,7 +12,7 @@ defmodule E2eWeb.TimerLive do
         <h1>Timer</h1>
         <h2>Live View</h2>
       </div>
-      <.timer id="my-timer" countdown target_ms={60_000} class="timer" />
+      <.timer id="my-timer" countdown start_ms={60_000} target_ms={0} class="timer" />
     </Layouts.app>
     """
   end

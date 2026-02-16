@@ -370,6 +370,15 @@ var Timer = class extends Component {
   initApi() {
     return connect(this.machine.service, normalizeProps);
   }
+  init = () => {
+    this.machine.subscribe(() => {
+      this.api = this.initApi();
+      this.render();
+    });
+    this.machine.start();
+    this.api = this.initApi();
+    this.render();
+  };
   render() {
     const rootEl = this.el.querySelector('[data-scope="timer"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
@@ -379,26 +388,19 @@ var Timer = class extends Component {
       '[data-scope="timer"][data-part="control"]'
     );
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
-    const timeParts = ["days", "hours", "minutes", "seconds", "milliseconds"];
+    const timeParts = ["days", "hours", "minutes", "seconds"];
     timeParts.forEach((type) => {
       const itemEl = this.el.querySelector(
         `[data-scope="timer"][data-part="item"][data-type="${type}"]`
       );
-      if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ type }));
-      const valueEl = this.el.querySelector(
-        `[data-scope="timer"][data-part="item-value"][data-type="${type}"]`
-      );
-      if (valueEl) this.spreadProps(valueEl, this.api.getItemValueProps({ type }));
-      const labelEl = this.el.querySelector(
-        `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
-      );
-      if (labelEl) this.spreadProps(labelEl, this.api.getItemLabelProps({ type }));
+      if (itemEl) {
+        this.spreadProps(itemEl, this.api.getItemProps({ type }));
+      }
     });
-    const separatorEl = this.el.querySelector(
-      '[data-scope="timer"][data-part="separator"]'
-    );
-    if (separatorEl) this.spreadProps(separatorEl, this.api.getSeparatorProps());
-    const actions = ["start", "pause", "resume", "reset", "restart"];
+    this.el.querySelectorAll('[data-scope="timer"][data-part="separator"]').forEach((separatorEl) => {
+      this.spreadProps(separatorEl, this.api.getSeparatorProps());
+    });
+    const actions = ["start", "pause", "resume", "reset"];
     actions.forEach((action) => {
       const triggerEl = this.el.querySelector(
         `[data-scope="timer"][data-part="action-trigger"][data-action="${action}"]`

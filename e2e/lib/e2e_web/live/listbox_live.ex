@@ -14,7 +14,9 @@ defmodule E2eWeb.ListboxLive do
       </div>
       <.listbox
         id="my-listbox"
-        collection={Corex.List.new([[label: "A", value: "a"], [label: "B", value: "b"], [label: "C", value: "c"]])}
+        collection={
+          Corex.List.new([[label: "A", id: "a"], [label: "B", id: "b"], [label: "C", id: "c"]])
+        }
         class="listbox"
       >
         <:label>Choose</:label>

@@ -29,7 +29,7 @@ export class Editable extends Component<Props, Api> {
     for (const part of PARTS) {
       const el =
         part === "root"
-          ? this.el.querySelector<HTMLElement>(`${PART_SELECTOR}[data-part="root"]`) ?? this.el
+          ? (this.el.querySelector<HTMLElement>(`${PART_SELECTOR}[data-part="root"]`) ?? this.el)
           : this.el.querySelector<HTMLElement>(`${PART_SELECTOR}[data-part="${part}"]`);
       if (!el) continue;
       const props = this.getPartProps(part);
@@ -37,9 +37,7 @@ export class Editable extends Component<Props, Api> {
     }
   }
 
-  private getPartProps(
-    part: (typeof PARTS)[number]
-  ): ReturnType<Api["getRootProps"]> | null {
+  private getPartProps(part: (typeof PARTS)[number]): ReturnType<Api["getRootProps"]> | null {
     switch (part) {
       case "root":
         return this.api.getRootProps();

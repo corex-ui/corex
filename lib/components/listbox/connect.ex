@@ -13,6 +13,7 @@ defmodule Corex.Listbox.Connect do
     ItemText,
     ItemIndicator
   }
+
   import Corex.Helpers, only: [validate_value!: 1]
 
   defp data_attr(true), do: ""
@@ -29,6 +30,7 @@ defmodule Corex.Listbox.Connect do
           "disabled" => !!item.disabled,
           "group" => item.group
         }
+
       m when is_map(m) ->
         %{
           "id" => Map.get(m, :id) || Map.get(m, "id"),
@@ -149,12 +151,14 @@ defmodule Corex.Listbox.Connect do
   end
 
   defp item_value(item) do
-    Map.get(item, :value) || Map.get(item, "value") || Map.get(item, :id) || Map.get(item, "id") || ""
+    Map.get(item, :value) || Map.get(item, "value") || Map.get(item, :id) || Map.get(item, "id") ||
+      ""
   end
 
   @spec item_text(ItemText.t()) :: map()
   def item_text(assigns) do
     val = item_value(assigns.item)
+
     %{
       "data-scope" => "listbox",
       "data-part" => "item-text",
@@ -165,6 +169,7 @@ defmodule Corex.Listbox.Connect do
   @spec item_indicator(ItemIndicator.t()) :: map()
   def item_indicator(assigns) do
     val = item_value(assigns.item)
+
     %{
       "data-scope" => "listbox",
       "data-part" => "item-indicator",

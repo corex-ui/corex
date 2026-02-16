@@ -27,13 +27,26 @@ defmodule Corex.AngleSlider do
 
   ## Styling
 
-  Use data attributes: `[data-scope="angle-slider"][data-part="root"]`, `control`, `thumb`, `value-text`, `marker-group`, `marker`.
+  Use data attributes: `[data-scope="angle-slider"][data-part="root"]`, `control`, `thumb`, `value-text` (with `value` and `text` spans), `marker-group`, `marker`.
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.AngleSlider.Anatomy.{Props, Root, Label, HiddenInput, Control, Thumb, ValueText, MarkerGroup, Marker}
+  alias Corex.AngleSlider.Anatomy.{
+    Props,
+    Root,
+    Label,
+    HiddenInput,
+    Control,
+    Thumb,
+    ValueText,
+    Value,
+    Text,
+    MarkerGroup,
+    Marker
+  }
+
   alias Corex.AngleSlider.Connect
 
   attr(:id, :string, required: false, doc: "The id of the angle slider")
@@ -47,7 +60,12 @@ defmodule Corex.AngleSlider do
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Direction")
   attr(:on_value_change, :string, default: nil, doc: "Server event when value changes")
   attr(:on_value_change_client, :string, default: nil, doc: "Client event when value changes")
-  attr(:marker_values, :list, default: [], doc: "List of angle values to show as markers (e.g. [0, 90, 180, 270])")
+
+  attr(:marker_values, :list,
+    default: [],
+    doc: "List of angle values to show as markers (e.g. [0, 90, 180, 270])"
+  )
+
   attr(:rest, :global)
 
   slot(:label, required: false)
@@ -77,18 +95,21 @@ defmodule Corex.AngleSlider do
         on_value_change_client: @on_value_change_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, value: @value})}>
+        <div :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
-        </label>
-        <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, value: @value, disabled: @disabled})} />
+        </div>
         <div {Connect.control(%Control{id: @id, dir: @dir})}>
           <div {Connect.thumb(%Thumb{id: @id, dir: @dir})} />
-          <span {Connect.value_text(%ValueText{id: @id, dir: @dir})} />
+          <div :if={@marker_values != []} {Connect.marker_group(%MarkerGroup{id: @id, dir: @dir})}>
+            <div :for={val <- @marker_values} {Connect.marker(%Marker{id: @id, value: val})} />
+          </div>
         </div>
-        <div :if={@marker_values != []} {Connect.marker_group(%MarkerGroup{id: @id, dir: @dir})}>
-          <span :for={val <- @marker_values} {Connect.marker(%Marker{id: @id, value: val})} />
+        <div {Connect.value_text(%ValueText{id: @id, dir: @dir, value: @value})}>
+          <span {Connect.value(%Value{})}><%= @value %></span>
+          <span {Connect.text(%Text{})}>°</span>
         </div>
+        <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, value: @value, disabled: @disabled})} />
       </div>
     </div>
     """

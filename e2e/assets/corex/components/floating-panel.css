@@ -8,13 +8,13 @@
 
   .floating-panel
     [data-scope="floating-panel"][data-part="trigger"][data-state="open"]
-    [data-open] {
+    [data-closed] {
     display: none;
   }
 
   .floating-panel
     [data-scope="floating-panel"][data-part="trigger"][data-state="closed"]
-    [data-closed] {
+    [data-open] {
     display: none;
   }
 
@@ -24,6 +24,13 @@
 
   .floating-panel [data-scope="floating-panel"][data-part="positioner"] {
     z-index: 50;
+  }
+
+  .floating-panel
+    [data-scope="floating-panel"][data-part="positioner"]:has(
+      [data-scope="floating-panel"][data-part="content"][data-state="closed"]
+    ) {
+    display: none;
   }
 
   .floating-panel

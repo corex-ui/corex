@@ -20,7 +20,19 @@ defmodule Corex.Editable do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Editable.Anatomy.{Props, Root, Area, Label, Input, Preview, EditTrigger, Triggers, SubmitTrigger, CancelTrigger}
+  alias Corex.Editable.Anatomy.{
+    Props,
+    Root,
+    Area,
+    Label,
+    Input,
+    Preview,
+    EditTrigger,
+    Triggers,
+    SubmitTrigger,
+    CancelTrigger
+  }
+
   alias Corex.Editable.Connect
 
   attr(:id, :string, required: false)

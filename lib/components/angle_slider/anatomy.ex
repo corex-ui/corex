@@ -36,9 +36,9 @@ defmodule Corex.AngleSlider.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, :value]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), value: number()}
   end
 
   defmodule Label do
@@ -52,7 +52,12 @@ defmodule Corex.AngleSlider.Anatomy do
     @moduledoc false
     defstruct [:id, :name, :value, :disabled]
 
-    @type t :: %__MODULE__{id: String.t(), name: String.t() | nil, value: number(), disabled: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            name: String.t() | nil,
+            value: number(),
+            disabled: boolean()
+          }
   end
 
   defmodule Control do
@@ -71,9 +76,23 @@ defmodule Corex.AngleSlider.Anatomy do
 
   defmodule ValueText do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, :value]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), value: number()}
+  end
+
+  defmodule Value do
+    @moduledoc false
+    defstruct []
+
+    @type t :: %__MODULE__{}
+  end
+
+  defmodule Text do
+    @moduledoc false
+    defstruct []
+
+    @type t :: %__MODULE__{}
   end
 
   defmodule MarkerGroup do

@@ -14,6 +14,8 @@ defmodule Corex.RadioGroup do
 
   Items can be a list of `{value, label}` tuples or a list of maps with `:value`, `:label`, and optional `:disabled`, `:invalid`.
 
+  Optional `:item_control` slot renders the check indicator for each item (e.g. `<.icon name="hero-check" class="data-checked" />`). When omitted, no indicator is shown.
+
   ## Styling
 
   Use data attributes: `[data-scope="radio-group"][data-part="root"]`, `label`, `indicator`, `item`, `item-text`, `item-control`, `item-hidden-input`.
@@ -22,7 +24,17 @@ defmodule Corex.RadioGroup do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.RadioGroup.Anatomy.{Props, Root, Label, Indicator, Item, ItemText, ItemControl, ItemHiddenInput}
+  alias Corex.RadioGroup.Anatomy.{
+    Props,
+    Root,
+    Label,
+    Indicator,
+    Item,
+    ItemText,
+    ItemControl,
+    ItemHiddenInput
+  }
+
   alias Corex.RadioGroup.Connect
 
   attr(:id, :string, required: false)
@@ -39,10 +51,16 @@ defmodule Corex.RadioGroup do
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-  attr(:items, :list, required: true, doc: "List of [value, label] or %{value: ..., label: ..., disabled: ..., invalid: ...}")
+
+  attr(:items, :list,
+    required: true,
+    doc: "List of [value, label] or %{value: ..., label: ..., disabled: ..., invalid: ...}"
+  )
+
   attr(:rest, :global)
 
   slot(:label, required: false)
+  slot(:item_control, required: false)
   slot(:item, required: false)
 
   def radio_group(assigns) do
@@ -73,10 +91,10 @@ defmodule Corex.RadioGroup do
         on_value_change_client: @on_value_change_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != []})}>
+        <div :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
           {render_slot(@label)}
-        </label>
+        </div>
         <div {Connect.indicator(%Indicator{id: @id, dir: @dir})} />
         <label :if={@item == []} :for={entry <- @items} {Connect.item(%Item{
           id: @id,
@@ -86,7 +104,9 @@ defmodule Corex.RadioGroup do
           checked: @value == entry.value
         })}>
           <span {Connect.item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid})}>{entry.label}</span>
-          <span {Connect.item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid})} />
+          <div {Connect.item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value})}>
+            {render_slot(@item_control)}
+          </div>
           <input {Connect.item_hidden_input(%ItemHiddenInput{
             id: @id,
             value: entry.value,
@@ -121,10 +141,23 @@ defmodule Corex.RadioGroup do
 
   defp normalize_items(items) when is_list(items) do
     Enum.map(items, fn
-      {value, label} -> %{value: to_string(value), label: to_string(label), disabled: false, invalid: false}
-      [value, label] -> %{value: to_string(value), label: to_string(label), disabled: false, invalid: false}
-      %{value: v, label: l} = m -> %{value: to_string(v), label: to_string(l), disabled: !!Map.get(m, :disabled), invalid: !!Map.get(m, :invalid)}
-      other -> raise ArgumentError, "radio_group items must be {value, label}, [value, label], or %{value: ..., label: ...}, got: #{inspect(other)}"
+      {value, label} ->
+        %{value: to_string(value), label: to_string(label), disabled: false, invalid: false}
+
+      [value, label] ->
+        %{value: to_string(value), label: to_string(label), disabled: false, invalid: false}
+
+      %{value: v, label: l} = m ->
+        %{
+          value: to_string(v),
+          label: to_string(l),
+          disabled: !!Map.get(m, :disabled),
+          invalid: !!Map.get(m, :invalid)
+        }
+
+      other ->
+        raise ArgumentError,
+              "radio_group items must be {value, label}, [value, label], or %{value: ..., label: ...}, got: #{inspect(other)}"
     end)
   end
 end

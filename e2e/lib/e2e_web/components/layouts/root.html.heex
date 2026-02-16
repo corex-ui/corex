@@ -19,12 +19,10 @@
       {assigns[:page_title]}
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
-  <script type="importmap">
-    <%= raw Jason.encode!(Corex.ImportMap.import_map(), pretty: true) %>
-  </script>
 
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
     </script>
+
     <script>
       (() => {
         const getSystemMode = () =>

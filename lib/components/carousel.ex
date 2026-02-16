@@ -27,11 +27,27 @@ defmodule Corex.Carousel do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Carousel.Anatomy.{Props, Root, Control, ItemGroup, Item, PrevTrigger, NextTrigger, IndicatorGroup, Indicator}
+  alias Corex.Carousel.Anatomy.{
+    Props,
+    Root,
+    Control,
+    ItemGroup,
+    Item,
+    PrevTrigger,
+    NextTrigger,
+    IndicatorGroup,
+    Indicator
+  }
+
   alias Corex.Carousel.Connect
 
   attr(:id, :string, required: false)
-  attr(:items, :list, required: true, doc: "List of image URLs (strings) or maps with :url and optional :alt")
+
+  attr(:items, :list,
+    required: true,
+    doc: "List of image URLs (strings) or maps with :url and optional :alt"
+  )
+
   attr(:page, :integer, default: 0)
   attr(:controlled, :boolean, default: false)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
@@ -105,5 +121,4 @@ defmodule Corex.Carousel do
     </div>
     """
   end
-
 end

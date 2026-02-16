@@ -51,22 +51,22 @@ defmodule Corex.Timer.Anatomy do
 
   defmodule Item do
     @moduledoc false
-    defstruct [:id, :type]
+    defstruct [:id, :type, :value]
 
-    @type t :: %__MODULE__{id: String.t(), type: String.t()}
+    @type t :: %__MODULE__{id: String.t(), type: String.t(), value: non_neg_integer()}
   end
 
   defmodule Separator do
     @moduledoc false
-    defstruct [:id]
+    defstruct []
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{}
   end
 
   defmodule ActionTrigger do
     @moduledoc false
-    defstruct [:id, :action]
+    defstruct [:action, hidden: false]
 
-    @type t :: %__MODULE__{id: String.t(), action: String.t()}
+    @type t :: %__MODULE__{action: String.t(), hidden: boolean()}
   end
 end

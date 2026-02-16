@@ -15,6 +15,13 @@ defmodule E2eWeb.AngleSliderLive do
       <.angle_slider id="my-angle-slider" class="angle-slider" marker_values={[0, 90, 180, 270]}>
         <:label>Angle</:label>
       </.angle_slider>
+      <.angle_slider
+        id="wind-direction-slider"
+        class="angle-slider"
+        marker_values={[0, 45, 90, 135, 180, 225, 270, 315]}
+      >
+        <:label>Wind direction</:label>
+      </.angle_slider>
     </Layouts.app>
     """
   end

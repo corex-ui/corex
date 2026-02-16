@@ -13,6 +13,16 @@ export class Timer extends Component<Props, Api> {
     return connect(this.machine.service, normalizeProps);
   }
 
+  init = (): void => {
+    this.machine.subscribe(() => {
+      (this as { api: Api }).api = this.initApi();
+      this.render();
+    });
+    this.machine.start();
+    (this as { api: Api }).api = this.initApi();
+    this.render();
+  };
+
   render(): void {
     const rootEl =
       this.el.querySelector<HTMLElement>('[data-scope="timer"][data-part="root"]') ?? this.el;
@@ -26,28 +36,23 @@ export class Timer extends Component<Props, Api> {
     );
     if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
 
-    const timeParts = ["days", "hours", "minutes", "seconds", "milliseconds"] as const;
+    const timeParts = ["days", "hours", "minutes", "seconds"] as const;
     timeParts.forEach((type) => {
       const itemEl = this.el.querySelector<HTMLElement>(
         `[data-scope="timer"][data-part="item"][data-type="${type}"]`
       );
-      if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ type } as ItemProps));
-      const valueEl = this.el.querySelector<HTMLElement>(
-        `[data-scope="timer"][data-part="item-value"][data-type="${type}"]`
-      );
-      if (valueEl) this.spreadProps(valueEl, this.api.getItemValueProps({ type } as ItemProps));
-      const labelEl = this.el.querySelector<HTMLElement>(
-        `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
-      );
-      if (labelEl) this.spreadProps(labelEl, this.api.getItemLabelProps({ type } as ItemProps));
+      if (itemEl) {
+        this.spreadProps(itemEl, this.api.getItemProps({ type } as ItemProps));
+      }
     });
 
-    const separatorEl = this.el.querySelector<HTMLElement>(
-      '[data-scope="timer"][data-part="separator"]'
-    );
-    if (separatorEl) this.spreadProps(separatorEl, this.api.getSeparatorProps());
+    this.el
+      .querySelectorAll<HTMLElement>('[data-scope="timer"][data-part="separator"]')
+      .forEach((separatorEl) => {
+        this.spreadProps(separatorEl, this.api.getSeparatorProps());
+      });
 
-    const actions = ["start", "pause", "resume", "reset", "restart"] as const;
+    const actions = ["start", "pause", "resume", "reset"] as const;
     actions.forEach((action) => {
       const triggerEl = this.el.querySelector<HTMLElement>(
         `[data-scope="timer"][data-part="action-trigger"][data-action="${action}"]`

@@ -436,7 +436,15 @@ var AngleSlider = class extends Component {
     const valueTextEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="value-text"]'
     );
-    if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
+    if (valueTextEl) {
+      this.spreadProps(valueTextEl, this.api.getValueTextProps());
+      const valueSpan = valueTextEl.querySelector(
+        '[data-scope="angle-slider"][data-part="value"]'
+      );
+      if (valueSpan && valueSpan.textContent !== String(this.api.value)) {
+        valueSpan.textContent = String(this.api.value);
+      }
+    }
     const markerGroupEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="marker-group"]'
     );

@@ -38,9 +38,11 @@ defmodule Corex.ImportMap do
   def import_map_single_bundle(base \\ "/corex") do
     base = base |> to_string() |> String.trim_trailing("/")
     bundle = "#{base}/corex.mjs"
+
     imports =
       Map.new(@hooks, fn name -> {"corex/#{name}", bundle} end)
       |> Map.put("corex", bundle)
+
     %{"imports" => imports}
   end
 
@@ -57,6 +59,7 @@ defmodule Corex.ImportMap do
   def import_map(base, []) do
     base = base |> to_string() |> String.trim_trailing("/")
     core = "#{base}/corex.mjs"
+
     imports =
       Map.new(@hooks, fn name ->
         {"corex/#{name}", "#{base}/#{name}.mjs"}
@@ -72,6 +75,7 @@ defmodule Corex.ImportMap do
     names = MapSet.new(normalized) |> MapSet.intersection(MapSet.new(@hooks)) |> Enum.to_list()
 
     core = "#{base}/corex.mjs"
+
     imports =
       Map.new(names, fn name ->
         {"corex/#{name}", "#{base}/#{name}.mjs"}
@@ -82,6 +86,7 @@ defmodule Corex.ImportMap do
   end
 
   defp normalize_name(name) when is_atom(name), do: name |> to_string() |> normalize_name()
+
   defp normalize_name(name) when is_binary(name) do
     name
     |> String.replace("_", "-")

@@ -21,11 +21,17 @@ defmodule Corex.FloatingPanel.Connect do
   defp data_attr(nil), do: nil
 
   defp encode_size(nil), do: nil
-  defp encode_size(%{width: w, height: h}) when is_number(w) and is_number(h), do: Corex.Json.encode!(%{width: w, height: h})
+
+  defp encode_size(%{width: w, height: h}) when is_number(w) and is_number(h),
+    do: Corex.Json.encode!(%{width: w, height: h})
+
   defp encode_size(_), do: nil
 
   defp encode_point(nil), do: nil
-  defp encode_point(%{x: x, y: y}) when is_number(x) and is_number(y), do: Corex.Json.encode!(%{x: x, y: y})
+
+  defp encode_point(%{x: x, y: y}) when is_number(x) and is_number(y),
+    do: Corex.Json.encode!(%{x: x, y: y})
+
   defp encode_point(_), do: nil
 
   @spec props(Props.t()) :: map()
@@ -69,12 +75,14 @@ defmodule Corex.FloatingPanel.Connect do
 
   @spec trigger(Trigger.t()) :: map()
   def trigger(assigns) do
-    %{
+    base = %{
       "data-scope" => "floating-panel",
       "data-part" => "trigger",
       "type" => "button",
       "id" => "floating-panel:#{assigns.id}:trigger"
     }
+
+    Map.put(base, "data-state", if(assigns.initial_open, do: "open", else: "closed"))
   end
 
   @spec positioner(Positioner.t()) :: map()
@@ -88,11 +96,17 @@ defmodule Corex.FloatingPanel.Connect do
 
   @spec content(Content.t()) :: map()
   def content(assigns) do
-    %{
+    base = %{
       "data-scope" => "floating-panel",
       "data-part" => "content",
       "id" => "floating-panel:#{assigns.id}:content"
     }
+
+    if assigns.initial_open do
+      base
+    else
+      Map.merge(base, %{"data-state" => "closed", "hidden" => ""})
+    end
   end
 
   @spec title(Title.t()) :: map()

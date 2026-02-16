@@ -4019,7 +4019,15 @@ var Corex = (() => {
           const valueTextEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="value-text"]'
           );
-          if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
+          if (valueTextEl) {
+            this.spreadProps(valueTextEl, this.api.getValueTextProps());
+            const valueSpan = valueTextEl.querySelector(
+              '[data-scope="angle-slider"][data-part="value"]'
+            );
+            if (valueSpan && valueSpan.textContent !== String(this.api.value)) {
+              valueSpan.textContent = String(this.api.value);
+            }
+          }
           const markerGroupEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="marker-group"]'
           );
@@ -24201,7 +24209,11 @@ var Corex = (() => {
           const scrubberEl = this.el.querySelector(
             '[data-scope="number-input"][data-part="scrubber"]'
           );
-          if (scrubberEl) this.spreadProps(scrubberEl, this.api.getScrubberProps());
+          if (scrubberEl) {
+            this.spreadProps(scrubberEl, this.api.getScrubberProps());
+            scrubberEl.setAttribute("aria-label", "Scrub to adjust value");
+            scrubberEl.removeAttribute("role");
+          }
         }
       };
       NumberInputHook = {
@@ -29666,6 +29678,18 @@ var Corex = (() => {
       ]);
       splitProps23 = createSplitProps(props23);
       Timer2 = class extends Component {
+        constructor() {
+          super(...arguments);
+          __publicField(this, "init", () => {
+            this.machine.subscribe(() => {
+              this.api = this.initApi();
+              this.render();
+            });
+            this.machine.start();
+            this.api = this.initApi();
+            this.render();
+          });
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props26) {
           return new VanillaMachine(machine23, props26);
@@ -29683,26 +29707,19 @@ var Corex = (() => {
             '[data-scope="timer"][data-part="control"]'
           );
           if (controlEl) this.spreadProps(controlEl, this.api.getControlProps());
-          const timeParts = ["days", "hours", "minutes", "seconds", "milliseconds"];
+          const timeParts = ["days", "hours", "minutes", "seconds"];
           timeParts.forEach((type) => {
             const itemEl = this.el.querySelector(
               `[data-scope="timer"][data-part="item"][data-type="${type}"]`
             );
-            if (itemEl) this.spreadProps(itemEl, this.api.getItemProps({ type }));
-            const valueEl = this.el.querySelector(
-              `[data-scope="timer"][data-part="item-value"][data-type="${type}"]`
-            );
-            if (valueEl) this.spreadProps(valueEl, this.api.getItemValueProps({ type }));
-            const labelEl = this.el.querySelector(
-              `[data-scope="timer"][data-part="item-label"][data-type="${type}"]`
-            );
-            if (labelEl) this.spreadProps(labelEl, this.api.getItemLabelProps({ type }));
+            if (itemEl) {
+              this.spreadProps(itemEl, this.api.getItemProps({ type }));
+            }
           });
-          const separatorEl = this.el.querySelector(
-            '[data-scope="timer"][data-part="separator"]'
-          );
-          if (separatorEl) this.spreadProps(separatorEl, this.api.getSeparatorProps());
-          const actions = ["start", "pause", "resume", "reset", "restart"];
+          this.el.querySelectorAll('[data-scope="timer"][data-part="separator"]').forEach((separatorEl) => {
+            this.spreadProps(separatorEl, this.api.getSeparatorProps());
+          });
+          const actions = ["start", "pause", "resume", "reset"];
           actions.forEach((action) => {
             const triggerEl = this.el.querySelector(
               `[data-scope="timer"][data-part="action-trigger"][data-action="${action}"]`
@@ -33184,7 +33201,7 @@ var Corex = (() => {
     default: () => corex_default,
     hooks: () => hooks
   });
-  function hooks(importFn, exportName) {
+  function createLazyHook(importFn, exportName) {
     return {
       mounted() {
         return __async(this, null, function* () {
@@ -33217,33 +33234,38 @@ var Corex = (() => {
     };
   }
   var Hooks = {
-    Accordion: hooks(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
-    AngleSlider: hooks(() => Promise.resolve().then(() => (init_angle_slider(), angle_slider_exports)), "AngleSlider"),
-    Avatar: hooks(() => Promise.resolve().then(() => (init_avatar(), avatar_exports)), "Avatar"),
-    Carousel: hooks(() => Promise.resolve().then(() => (init_carousel(), carousel_exports)), "Carousel"),
-    Checkbox: hooks(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
-    Clipboard: hooks(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
-    Collapsible: hooks(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
-    Combobox: hooks(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
-    DatePicker: hooks(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
-    Dialog: hooks(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
-    Editable: hooks(() => Promise.resolve().then(() => (init_editable(), editable_exports)), "Editable"),
-    FloatingPanel: hooks(() => Promise.resolve().then(() => (init_floating_panel(), floating_panel_exports)), "FloatingPanel"),
-    Listbox: hooks(() => Promise.resolve().then(() => (init_listbox(), listbox_exports)), "Listbox"),
-    Menu: hooks(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
-    NumberInput: hooks(() => Promise.resolve().then(() => (init_number_input(), number_input_exports)), "NumberInput"),
-    PasswordInput: hooks(() => Promise.resolve().then(() => (init_password_input(), password_input_exports)), "PasswordInput"),
-    PinInput: hooks(() => Promise.resolve().then(() => (init_pin_input(), pin_input_exports)), "PinInput"),
-    RadioGroup: hooks(() => Promise.resolve().then(() => (init_radio_group(), radio_group_exports)), "RadioGroup"),
-    Select: hooks(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
-    SignaturePad: hooks(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
-    Switch: hooks(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
-    Tabs: hooks(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
-    Timer: hooks(() => Promise.resolve().then(() => (init_timer(), timer_exports)), "Timer"),
-    Toast: hooks(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
-    ToggleGroup: hooks(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
-    TreeView: hooks(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
+    Accordion: createLazyHook(() => Promise.resolve().then(() => (init_accordion(), accordion_exports)), "Accordion"),
+    AngleSlider: createLazyHook(() => Promise.resolve().then(() => (init_angle_slider(), angle_slider_exports)), "AngleSlider"),
+    Avatar: createLazyHook(() => Promise.resolve().then(() => (init_avatar(), avatar_exports)), "Avatar"),
+    Carousel: createLazyHook(() => Promise.resolve().then(() => (init_carousel(), carousel_exports)), "Carousel"),
+    Checkbox: createLazyHook(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
+    Clipboard: createLazyHook(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
+    Collapsible: createLazyHook(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
+    Combobox: createLazyHook(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
+    DatePicker: createLazyHook(() => Promise.resolve().then(() => (init_date_picker(), date_picker_exports)), "DatePicker"),
+    Dialog: createLazyHook(() => Promise.resolve().then(() => (init_dialog(), dialog_exports)), "Dialog"),
+    Editable: createLazyHook(() => Promise.resolve().then(() => (init_editable(), editable_exports)), "Editable"),
+    FloatingPanel: createLazyHook(() => Promise.resolve().then(() => (init_floating_panel(), floating_panel_exports)), "FloatingPanel"),
+    Listbox: createLazyHook(() => Promise.resolve().then(() => (init_listbox(), listbox_exports)), "Listbox"),
+    Menu: createLazyHook(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
+    NumberInput: createLazyHook(() => Promise.resolve().then(() => (init_number_input(), number_input_exports)), "NumberInput"),
+    PasswordInput: createLazyHook(() => Promise.resolve().then(() => (init_password_input(), password_input_exports)), "PasswordInput"),
+    PinInput: createLazyHook(() => Promise.resolve().then(() => (init_pin_input(), pin_input_exports)), "PinInput"),
+    RadioGroup: createLazyHook(() => Promise.resolve().then(() => (init_radio_group(), radio_group_exports)), "RadioGroup"),
+    Select: createLazyHook(() => Promise.resolve().then(() => (init_select(), select_exports)), "Select"),
+    SignaturePad: createLazyHook(() => Promise.resolve().then(() => (init_signature_pad(), signature_pad_exports)), "SignaturePad"),
+    Switch: createLazyHook(() => Promise.resolve().then(() => (init_switch(), switch_exports)), "Switch"),
+    Tabs: createLazyHook(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
+    Timer: createLazyHook(() => Promise.resolve().then(() => (init_timer(), timer_exports)), "Timer"),
+    Toast: createLazyHook(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
+    ToggleGroup: createLazyHook(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
+    TreeView: createLazyHook(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
   };
+  function hooks(componentNames) {
+    return Object.fromEntries(
+      componentNames.filter((name) => name in Hooks).map((name) => [name, Hooks[name]])
+    );
+  }
   var corex_default = Hooks;
   return __toCommonJS(corex_exports);
 })();

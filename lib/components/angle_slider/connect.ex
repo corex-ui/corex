@@ -8,6 +8,8 @@ defmodule Corex.AngleSlider.Connect do
     Control,
     Thumb,
     ValueText,
+    Value,
+    Text,
     MarkerGroup,
     Marker
   }
@@ -36,11 +38,15 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
+    value = assigns.value
+    angle = "#{value}deg"
+
     %{
       "data-scope" => "angle-slider",
       "data-part" => "root",
       "dir" => assigns.dir,
-      "id" => "angle-slider:#{assigns.id}"
+      "id" => "angle-slider:#{assigns.id}",
+      "style" => "--value:#{value};--angle:#{angle};"
     }
   end
 
@@ -63,7 +69,7 @@ defmodule Corex.AngleSlider.Connect do
       "name" => assigns.name,
       "value" => to_string(assigns.value),
       "disabled" => data_attr(assigns.disabled),
-      "id" => "angle-slider:#{assigns.id}:hidden-input"
+      "id" => "angle-slider:#{assigns.id}:input"
     }
   end
 
@@ -94,6 +100,22 @@ defmodule Corex.AngleSlider.Connect do
       "data-part" => "value-text",
       "dir" => assigns.dir,
       "id" => "angle-slider:#{assigns.id}:value-text"
+    }
+  end
+
+  @spec value(Value.t()) :: map()
+  def value(_assigns) do
+    %{
+      "data-scope" => "angle-slider",
+      "data-part" => "value"
+    }
+  end
+
+  @spec text(Text.t()) :: map()
+  def text(_assigns) do
+    %{
+      "data-scope" => "angle-slider",
+      "data-part" => "text"
     }
   end
 

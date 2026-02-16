@@ -23,12 +23,30 @@ defmodule Corex.Listbox do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Listbox.Anatomy.{Props, Root, Label, ValueText, Input, Content, ItemGroup, ItemGroupLabel, Item, ItemText, ItemIndicator}
+  alias Corex.Listbox.Anatomy.{
+    Props,
+    Root,
+    Label,
+    ValueText,
+    Input,
+    Content,
+    ItemGroup,
+    ItemGroupLabel,
+    Item,
+    ItemText,
+    ItemIndicator
+  }
+
   alias Corex.Listbox.Connect
   import Corex.Helpers, only: [validate_value!: 1]
 
   attr(:id, :string, required: false)
-  attr(:collection, :list, required: true, doc: "List of Corex.List.Item or maps with id/value, label, disabled, group")
+
+  attr(:collection, :list,
+    required: true,
+    doc: "List of Corex.List.Item or maps with id/value, label, disabled, group"
+  )
+
   attr(:value, :list, default: [], doc: "Selected value(s)")
   attr(:controlled, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
@@ -49,7 +67,11 @@ defmodule Corex.Listbox do
   def listbox(assigns) do
     items = normalize_collection(assigns.collection)
     has_groups = Enum.any?(items, &Map.get(&1, :group))
-    groups = if has_groups, do: items |> Enum.map(& &1.group) |> Enum.uniq() |> Enum.reject(&is_nil/1), else: []
+
+    groups =
+      if has_groups,
+        do: items |> Enum.map(& &1.group) |> Enum.uniq() |> Enum.reject(&is_nil/1),
+        else: []
 
     assigns =
       assigns
@@ -114,13 +136,31 @@ defmodule Corex.Listbox do
   end
 
   defp entry_value(entry) do
-    to_string(Map.get(entry, :value) || Map.get(entry, :id) || Map.get(entry, "value") || Map.get(entry, "id") || "")
+    to_string(
+      Map.get(entry, :value) || Map.get(entry, :id) || Map.get(entry, "value") ||
+        Map.get(entry, "id") || ""
+    )
   end
 
   defp normalize_collection(items) when is_list(items) do
     Enum.map(items, fn
-      %Corex.List.Item{} = item -> %{id: item.id, value: item.id, label: item.label, disabled: item.disabled, group: item.group}
-      m when is_map(m) -> %{id: Map.get(m, :id), value: Map.get(m, :value) || Map.get(m, :id), label: Map.get(m, :label), disabled: !!Map.get(m, :disabled), group: Map.get(m, :group)}
+      %Corex.List.Item{} = item ->
+        %{
+          id: item.id,
+          value: item.id,
+          label: item.label,
+          disabled: item.disabled,
+          group: item.group
+        }
+
+      m when is_map(m) ->
+        %{
+          id: Map.get(m, :id),
+          value: Map.get(m, :value) || Map.get(m, :id),
+          label: Map.get(m, :label),
+          disabled: !!Map.get(m, :disabled),
+          group: Map.get(m, :group)
+        }
     end)
   end
 end

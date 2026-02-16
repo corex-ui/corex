@@ -1,6 +1,16 @@
 defmodule Corex.Carousel.Connect do
   @moduledoc false
-  alias Corex.Carousel.Anatomy.{Props, Root, Control, ItemGroup, Item, PrevTrigger, NextTrigger, IndicatorGroup, Indicator}
+  alias Corex.Carousel.Anatomy.{
+    Props,
+    Root,
+    Control,
+    ItemGroup,
+    Item,
+    PrevTrigger,
+    NextTrigger,
+    IndicatorGroup,
+    Indicator
+  }
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
@@ -29,6 +39,7 @@ defmodule Corex.Carousel.Connect do
   def root(assigns) do
     slides_per_page = assigns.slides_per_page || 1
     spacing = assigns.spacing || "0px"
+
     slide_item_size =
       "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
 

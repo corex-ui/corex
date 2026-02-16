@@ -102,6 +102,11 @@ defmodule Corex.Carousel.Anatomy do
     @moduledoc false
     defstruct [:id, :index, :orientation, :dir]
 
-    @type t :: %__MODULE__{id: String.t(), index: non_neg_integer(), orientation: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            index: non_neg_integer(),
+            orientation: String.t(),
+            dir: String.t()
+          }
   end
 end

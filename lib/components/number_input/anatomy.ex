@@ -79,6 +79,13 @@ defmodule Corex.NumberInput.Anatomy do
     @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
   end
 
+  defmodule TriggerGroup do
+    @moduledoc false
+    defstruct []
+
+    @type t :: %__MODULE__{}
+  end
+
   defmodule DecrementTrigger do
     @moduledoc false
     defstruct [:id]

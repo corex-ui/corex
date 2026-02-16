@@ -25,8 +25,17 @@ defmodule Corex.Avatar do
 
   attr(:id, :string, required: false, doc: "The id of the avatar")
   attr(:src, :string, default: nil, doc: "Image source URL")
-  attr(:on_status_change, :string, default: nil, doc: "Server event when image load status changes")
-  attr(:on_status_change_client, :string, default: nil, doc: "Client event when image load status changes")
+
+  attr(:on_status_change, :string,
+    default: nil,
+    doc: "Server event when image load status changes"
+  )
+
+  attr(:on_status_change_client, :string,
+    default: nil,
+    doc: "Client event when image load status changes"
+  )
+
   attr(:rest, :global)
 
   slot(:fallback, required: true)

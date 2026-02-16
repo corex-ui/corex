@@ -1,6 +1,14 @@
 defmodule Corex.PasswordInput.Connect do
   @moduledoc false
-  alias Corex.PasswordInput.Anatomy.{Props, Root, Label, Control, Input, VisibilityTrigger, Indicator}
+  alias Corex.PasswordInput.Anatomy.{
+    Props,
+    Root,
+    Label,
+    Control,
+    Input,
+    VisibilityTrigger,
+    Indicator
+  }
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
@@ -11,7 +19,8 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "id" => assigns.id,
       "data-visible" => if(assigns.controlled_visible, do: data_attr(assigns.visible), else: nil),
-      "data-default-visible" => if(assigns.controlled_visible, do: nil, else: data_attr(assigns.visible)),
+      "data-default-visible" =>
+        if(assigns.controlled_visible, do: nil, else: data_attr(assigns.visible)),
       "data-controlled-visible" => data_attr(assigns.controlled_visible),
       "data-disabled" => data_attr(assigns.disabled),
       "data-invalid" => data_attr(assigns.invalid),
@@ -43,7 +52,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "label",
       "dir" => assigns.dir,
-      "id" => "password-input:#{assigns.id}:label"
+      "for" => "p-input-#{assigns.id}-input"
     }
   end
 
@@ -63,7 +72,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "input",
       "disabled" => data_attr(assigns.disabled),
-      "id" => "password-input:#{assigns.id}:input"
+      "id" => "p-input-#{assigns.id}-input"
     }
   end
 
@@ -73,8 +82,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "visibility-trigger",
       "type" => "button",
-      "dir" => assigns.dir,
-      "id" => "password-input:#{assigns.id}:visibility-trigger"
+      "dir" => assigns.dir
     }
   end
 
@@ -84,7 +92,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "indicator",
       "dir" => assigns.dir,
-      "id" => "password-input:#{assigns.id}:indicator"
+      "aria-hidden" => "true"
     }
   end
 end

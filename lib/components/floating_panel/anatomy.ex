@@ -67,9 +67,9 @@ defmodule Corex.FloatingPanel.Anatomy do
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, initial_open: true]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), initial_open: boolean()}
   end
 
   defmodule Positioner do
@@ -81,9 +81,9 @@ defmodule Corex.FloatingPanel.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, initial_open: true]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), initial_open: boolean()}
   end
 
   defmodule Title do

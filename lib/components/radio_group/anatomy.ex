@@ -40,9 +40,14 @@ defmodule Corex.RadioGroup.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :orientation]
+    defstruct [:id, :dir, :orientation, :has_label]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t(),
+            has_label: boolean()
+          }
   end
 
   defmodule Label do
@@ -76,14 +81,25 @@ defmodule Corex.RadioGroup.Anatomy do
     @moduledoc false
     defstruct [:id, :value, :disabled, :invalid]
 
-    @type t :: %__MODULE__{id: String.t(), value: String.t(), disabled: boolean(), invalid: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            value: String.t(),
+            disabled: boolean(),
+            invalid: boolean()
+          }
   end
 
   defmodule ItemControl do
     @moduledoc false
-    defstruct [:id, :value, :disabled, :invalid]
+    defstruct [:id, :value, :disabled, :invalid, :checked]
 
-    @type t :: %__MODULE__{id: String.t(), value: String.t(), disabled: boolean(), invalid: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            value: String.t(),
+            disabled: boolean(),
+            invalid: boolean(),
+            checked: boolean()
+          }
   end
 
   defmodule ItemHiddenInput do

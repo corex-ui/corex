@@ -14,6 +14,8 @@ defmodule E2eWeb.PasswordInputLive do
       </div>
       <.password_input id="my-password-input" class="password-input">
         <:label>Password</:label>
+        <:visible_indicator><.icon name="hero-eye" class="icon" /></:visible_indicator>
+        <:hidden_indicator><.icon name="hero-eye-slash" class="icon" /></:hidden_indicator>
       </.password_input>
     </Layouts.app>
     """

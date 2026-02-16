@@ -18,14 +18,9 @@ defmodule E2eWeb.Endpoint do
   plug Plug.Static,
     at: "/",
     from: :e2e,
-    gzip: true,
+    gzip: not code_reloading?,
     only: E2eWeb.static_paths(),
     raise_on_missing_only: code_reloading?
-
-  plug Plug.Static,
-  at: "/corex",
-  from: {:corex, "priv/static"},
-  gzip: true
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

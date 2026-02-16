@@ -33,7 +33,22 @@ defmodule Corex.FloatingPanel do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.FloatingPanel.Anatomy.{Props, Root, Trigger, Positioner, Content, Title, Header, Body, DragTrigger, ResizeTrigger, CloseTrigger, Control, StageTrigger}
+  alias Corex.FloatingPanel.Anatomy.{
+    Props,
+    Root,
+    Trigger,
+    Positioner,
+    Content,
+    Title,
+    Header,
+    Body,
+    DragTrigger,
+    ResizeTrigger,
+    CloseTrigger,
+    Control,
+    StageTrigger
+  }
+
   alias Corex.FloatingPanel.Connect
 
   @resize_axes ~w(n e w s ne se sw nw)
@@ -74,11 +89,14 @@ defmodule Corex.FloatingPanel do
   slot(:content, required: true)
 
   def floating_panel(assigns) do
+    initial_open = if assigns[:controlled], do: assigns[:open], else: assigns[:default_open]
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "floating-panel-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:open, fn -> false end)
+      |> assign(:initial_open, initial_open)
       |> assign(:resize_axes, @resize_axes)
       |> assign(:stages, @stages)
 
@@ -114,7 +132,7 @@ defmodule Corex.FloatingPanel do
       })}
     >
       <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <button type="button" {Connect.trigger(%Trigger{id: @id})}>
+        <button type="button" {Connect.trigger(%Trigger{id: @id, initial_open: @initial_open})}>
           <%= if @open_trigger != [] and @closed_trigger != [] do %>
             <span data-open><%= render_slot(@open_trigger) %></span>
             <span data-closed><%= render_slot(@closed_trigger) %></span>
@@ -127,7 +145,7 @@ defmodule Corex.FloatingPanel do
           <% end %>
         </button>
         <div {Connect.positioner(%Positioner{id: @id})}>
-          <div {Connect.content(%Content{id: @id})}>
+          <div {Connect.content(%Content{id: @id, initial_open: @initial_open})}>
             <div {Connect.drag_trigger(%DragTrigger{id: @id})}>
               <div {Connect.header(%Header{id: @id})}>
                 <div {Connect.title(%Title{id: @id})}>Panel</div>
