@@ -7,23 +7,31 @@ defmodule Corex.FloatingPanel do
   ### Basic
 
   ```heex
-  <.floating_panel id="fp" default_open={false} class="floating-panel">
-    <:trigger>Open panel</:trigger>
-    <:content>Panel content</:content>
-  </.floating_panel>
-  ```
-
-  With different label when open vs closed:
-
-  ```heex
-  <.floating_panel id="fp" default_open={false} class="floating-panel">
+  <.floating_panel id="my-floating-panel" default_open={false} class="floating-panel">
     <:open_trigger>Close panel</:open_trigger>
     <:closed_trigger>Open panel</:closed_trigger>
-    <:content>Panel content</:content>
+    <:minimize_trigger>
+      <.icon name="hero-arrow-down-left" class="icon" />
+    </:minimize_trigger>
+    <:maximize_trigger>
+      <.icon name="hero-arrows-pointing-out" class="icon" />
+    </:maximize_trigger>
+    <:default_trigger>
+      <.icon name="hero-rectangle-stack" class="icon" />
+    </:default_trigger>
+    <:close_trigger>
+      <.icon name="hero-x-mark" class="icon" />
+    </:close_trigger>
+    <:content>
+      <p>
+        Congue molestie ipsum gravida a. Sed ac eros luctus, cursus turpis
+        non, pellentesque elit. Pellentesque sagittis fermentum.
+      </p>
+    </:content>
   </.floating_panel>
   ```
 
-  Optional header control slots: `:minimize_trigger`, `:maximize_trigger`, `:default_trigger`, `:close_trigger` (icons or text).
+  Required slots: `:open_trigger`, `:closed_trigger`, `:minimize_trigger`, `:maximize_trigger`, `:default_trigger`, `:close_trigger`, `:content`.
 
   ## Styling
 
@@ -79,13 +87,12 @@ defmodule Corex.FloatingPanel do
   attr(:on_stage_change, :string, default: nil)
   attr(:rest, :global)
 
-  slot(:trigger, required: false)
-  slot(:open_trigger, required: false)
-  slot(:closed_trigger, required: false)
-  slot(:minimize_trigger, required: false)
-  slot(:maximize_trigger, required: false)
-  slot(:default_trigger, required: false)
-  slot(:close_trigger, required: false)
+  slot(:open_trigger, required: true)
+  slot(:closed_trigger, required: true)
+  slot(:minimize_trigger, required: true)
+  slot(:maximize_trigger, required: true)
+  slot(:default_trigger, required: true)
+  slot(:close_trigger, required: true)
   slot(:content, required: true)
 
   def floating_panel(assigns) do
@@ -133,16 +140,8 @@ defmodule Corex.FloatingPanel do
     >
       <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
         <button type="button" {Connect.trigger(%Trigger{id: @id, initial_open: @initial_open})}>
-          <%= if @open_trigger != [] and @closed_trigger != [] do %>
-            <span data-open><%= render_slot(@open_trigger) %></span>
-            <span data-closed><%= render_slot(@closed_trigger) %></span>
-          <% else %>
-            <%= if @trigger != [] do %>
-              <%= render_slot(@trigger) %>
-            <% else %>
-              Open panel
-            <% end %>
-          <% end %>
+          <span data-open>{render_slot(@open_trigger)}</span>
+          <span data-closed>{render_slot(@closed_trigger)}</span>
         </button>
         <div {Connect.positioner(%Positioner{id: @id})}>
           <div {Connect.content(%Content{id: @id, initial_open: @initial_open})}>
@@ -151,38 +150,22 @@ defmodule Corex.FloatingPanel do
                 <div {Connect.title(%Title{id: @id})}>Panel</div>
                 <div {Connect.control(%Control{id: @id})}>
                   <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized"})} aria-label="Minimize window">
-                    <%= if @minimize_trigger != [] do %>
-                      <%= render_slot(@minimize_trigger) %>
-                    <% else %>
-                      −
-                    <% end %>
+                    {render_slot(@minimize_trigger)}
                   </button>
                   <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized"})} aria-label="Maximize window">
-                    <%= if @maximize_trigger != [] do %>
-                      <%= render_slot(@maximize_trigger) %>
-                    <% else %>
-                      ⊞
-                    <% end %>
+                    {render_slot(@maximize_trigger)}
                   </button>
                   <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default"})} aria-label="Restore window">
-                    <%= if @default_trigger != [] do %>
-                      <%= render_slot(@default_trigger) %>
-                    <% else %>
-                      ⊟
-                    <% end %>
+                    {render_slot(@default_trigger)}
                   </button>
                   <button type="button" {Connect.close_trigger(%CloseTrigger{id: @id})} aria-label="Close window">
-                    <%= if @close_trigger != [] do %>
-                      <%= render_slot(@close_trigger) %>
-                    <% else %>
-                      ×
-                    <% end %>
+                    {render_slot(@close_trigger)}
                   </button>
                 </div>
               </div>
             </div>
             <div {Connect.body(%Body{id: @id})}>
-              <%= render_slot(@content) %>
+              {render_slot(@content)}
             </div>
             <div :for={axis <- @resize_axes} {Connect.resize_trigger(%ResizeTrigger{id: @id, axis: axis})} />
           </div>

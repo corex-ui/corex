@@ -4,6 +4,8 @@ defmodule Corex.NumberInput do
 
   ## Examples
 
+  <!-- tabs-open -->
+
   ### Basic
 
   ```heex
@@ -11,6 +13,27 @@ defmodule Corex.NumberInput do
     <:label>Quantity</:label>
   </.number_input>
   ```
+
+  ### With triggers
+
+  ```heex
+  <.number_input id="num" class="number-input">
+    <:label>Quantity</:label>
+    <:decrement_trigger><.icon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.icon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
+  ```
+
+  ### With scrubber
+
+  ```heex
+  <.number_input id="num" scrubber class="number-input">
+    <:label>Quantity</:label>
+    <:scrubber_trigger><.icon name="hero-arrows-up-down" class="icon rotate-90" /></:scrubber_trigger>
+  </.number_input>
+  ```
+
+  <!-- tabs-close -->
 
   Optional slots `:decrement_trigger`, `:increment_trigger`, and `:scrubber_trigger` render the button content (e.g. icons). When omitted, no content is shown.
 

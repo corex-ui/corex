@@ -4,7 +4,17 @@ defmodule Corex.AngleSlider do
 
   ## Examples
 
+  <!-- tabs-open -->
+
   ### Basic
+
+  ```heex
+  <.angle_slider id="angle" class="angle-slider">
+    <:label>Angle</:label>
+  </.angle_slider>
+  ```
+
+  ### With marks
 
   ```heex
   <.angle_slider id="angle" class="angle-slider" marker_values={[0, 90, 180, 270]}>

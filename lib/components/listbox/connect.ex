@@ -89,7 +89,7 @@ defmodule Corex.Listbox.Connect do
       "data-scope" => "listbox",
       "data-part" => "label",
       "dir" => assigns.dir,
-      "id" => "listbox:#{assigns.id}:label"
+      "id" => "select:#{assigns.id}:label"
     }
   end
 

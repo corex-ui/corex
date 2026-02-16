@@ -4,7 +4,7 @@ defmodule Corex.RadioGroup do
 
   ## Examples
 
-  ### Basic
+  ### Basic (without indicator)
 
   ```heex
   <.radio_group id="rg" name="choice" items={[["1", "Option A"], ["2", "Option B"]]} class="radio-group">
@@ -12,9 +12,16 @@ defmodule Corex.RadioGroup do
   </.radio_group>
   ```
 
-  Items can be a list of `{value, label}` tuples or a list of maps with `:value`, `:label`, and optional `:disabled`, `:invalid`.
+  ### With indicator
 
-  Optional `:item_control` slot renders the check indicator for each item (e.g. `<.icon name="hero-check" class="data-checked" />`). When omitted, no indicator is shown.
+  ```heex
+  <.radio_group id="rg" name="choice" items={[["1", "Option A"], ["2", "Option B"]]} class="radio-group">
+    <:label>Choose one</:label>
+    <:item_control><.icon name="hero-check" class="data-checked" /></:item_control>
+  </.radio_group>
+  ```
+
+  Items can be a list of `{value, label}` tuples or a list of maps with `:value`, `:label`, and optional `:disabled`, `:invalid`. Optional `:item_control` slot renders the check indicator for each item; when omitted, no indicator is shown.
 
   ## Styling
 
@@ -117,22 +124,20 @@ defmodule Corex.RadioGroup do
             checked: @value == entry.value
           })} />
         </label>
-        <label :if={@item != []} :for={entry <- @items} {Connect.item(%Item{
+        <label :if={@item != []} :for={{entry, item_slot} <- Enum.zip(@items, @item || [])} {Connect.item(%Item{
           id: @id,
           value: entry.value,
           disabled: entry.disabled,
           invalid: entry.invalid,
           checked: @value == entry.value
         })}>
-          <%= for item_slot <- @item || [] do %>
-            <%= render_slot(item_slot, %{
-              value: entry.value,
-              label: entry.label,
-              disabled: entry.disabled,
-              invalid: entry.invalid,
-              checked: @value == entry.value
-            }) %>
-          <% end %>
+          {render_slot(item_slot, %{
+            value: entry.value,
+            label: entry.label,
+            disabled: entry.disabled,
+            invalid: entry.invalid,
+            checked: @value == entry.value
+          })}
         </label>
       </div>
     </div>

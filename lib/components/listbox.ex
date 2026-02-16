@@ -156,6 +156,7 @@ defmodule Corex.Listbox do
   attr(:typeahead, :boolean, default: false)
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
+  attr(:aria_label, :string, default: nil, doc: "Accessible name when no label slot is provided")
   attr(:rest, :global)
 
   slot(:label, required: false)
@@ -184,6 +185,7 @@ defmodule Corex.Listbox do
     ~H"""
     <div
       id={@id}
+      phx-hook="Listbox"
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -203,12 +205,16 @@ defmodule Corex.Listbox do
       })}
     >
       <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
-          {render_slot(@label)}
+        <label {Connect.label(%Label{id: @id, dir: @dir})}>
+          <%= if @label != [] do %>
+            {render_slot(@label)}
+          <% else %>
+            {@aria_label}
+          <% end %>
         </label>
         <span {Connect.value_text(%ValueText{id: @id})} />
         <input type="hidden" {Connect.input(%Input{id: @id})} />
-        <div {content_attrs(@id, @dir, @orientation)}>
+        <div {content_attrs(@id, @dir, @orientation, @label != [] || @aria_label != nil)}>
           <div :for={group_id <- @groups} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id})}>
             <div {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id})}>{group_id}</div>
             <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs(@id, entry)}>
@@ -257,10 +263,13 @@ defmodule Corex.Listbox do
     Enum.member?(value_list, entry_value(entry))
   end
 
-  defp content_attrs(id, dir, orientation) do
+  defp content_attrs(id, dir, orientation, has_label) do
     Connect.content(%Content{id: id, dir: dir})
     |> Map.put("data-layout", "list")
     |> Map.put("data-orientation", orientation)
+    |> then(fn attrs ->
+      if has_label, do: Map.put(attrs, "aria-labelledby", "select:#{id}:label"), else: attrs
+    end)
   end
 
   defp item_attrs(id, entry) do

@@ -66,6 +66,18 @@ defmodule Corex.Carousel do
   def carousel(assigns) do
     items = List.wrap(assigns.items)
     slide_count = length(items)
+    slides_per_page = assigns.slides_per_page || 1
+    per_move = slides_per_page
+
+    total_pages =
+      0..max(0, slide_count - 1)
+      |> Enum.take_every(max(1, per_move))
+      |> Enum.count(fn i -> i + slides_per_page <= slide_count end)
+
+    page = assigns.page || 0
+    loop = assigns.loop || false
+    prev_disabled = !loop and page <= 0
+    next_disabled = !loop and (total_pages == 0 or page >= total_pages - 1)
 
     assigns =
       assigns
@@ -73,6 +85,8 @@ defmodule Corex.Carousel do
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, items)
       |> assign(:slide_count, slide_count)
+      |> assign(:prev_disabled, prev_disabled)
+      |> assign(:next_disabled, next_disabled)
 
     ~H"""
     <div
@@ -99,21 +113,18 @@ defmodule Corex.Carousel do
       <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, slides_per_page: @slides_per_page, spacing: @spacing})}>
         <div {Connect.item_group(%ItemGroup{id: @id, orientation: @orientation, dir: @dir})}>
           <div :for={{item, i} <- Enum.with_index(@items)} {Connect.item(%Item{id: @id, index: i, orientation: @orientation, slide_count: @slide_count})} data-index={i}>
-            <%= if is_binary(item) do %>
-              <img src={item} alt="" />
-            <% else %>
-              <img src={Map.get(item, :url) || Map.get(item, "url") || ""} alt={Map.get(item, :alt) || Map.get(item, "alt") || "Slide #{i + 1}"} />
-            <% end %>
+            <img :if={is_binary(item)} src={item} alt="" />
+            <img :if={!is_binary(item)} src={Map.get(item, :url) || Map.get(item, "url") || ""} alt={Map.get(item, :alt) || Map.get(item, "alt") || "Slide #{i + 1}"} />
           </div>
         </div>
         <div {Connect.control(%Control{id: @id, orientation: @orientation})}>
-          <button type="button" {Connect.prev_trigger(%PrevTrigger{id: @id})}>
+          <button type="button" {Connect.prev_trigger(%PrevTrigger{id: @id, disabled: @prev_disabled})}>
             <%= render_slot(@prev_trigger) %>
           </button>
           <div {Connect.indicator_group(%IndicatorGroup{id: @id, orientation: @orientation, dir: @dir})}>
             <button :for={i <- 0..(@slide_count - 1)} type="button" {Connect.indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})} data-index={i} aria-label={"Go to slide #{i + 1}"}></button>
           </div>
-          <button type="button" {Connect.next_trigger(%NextTrigger{id: @id})}>
+          <button type="button" {Connect.next_trigger(%NextTrigger{id: @id, disabled: @next_disabled})}>
             <%= render_slot(@next_trigger) %>
           </button>
         </div>

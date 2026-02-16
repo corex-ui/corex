@@ -9,8 +9,13 @@ defmodule Corex.Editable do
   ```heex
   <.editable id="edit" value="Click to edit" class="editable">
     <:label>Name</:label>
+    <:edit_trigger><.icon name="hero-pencil-square" class="icon" /></:edit_trigger>
+    <:submit_trigger><.icon name="hero-check" class="icon" /></:submit_trigger>
+    <:cancel_trigger><.icon name="hero-x-mark" class="icon" /></:cancel_trigger>
   </.editable>
   ```
+
+  Required slots: `:label`, `:edit_trigger`, `:submit_trigger`, `:cancel_trigger`. Preview value is managed by the component and the Editable TS hook.
 
   ## Styling
 
@@ -55,11 +60,10 @@ defmodule Corex.Editable do
   attr(:on_value_change_client, :string, default: nil)
   attr(:rest, :global)
 
-  slot(:label, required: false)
-  slot(:preview, required: false)
-  slot(:edit_trigger, required: false)
-  slot(:submit_trigger, required: false)
-  slot(:cancel_trigger, required: false)
+  slot(:label, required: true)
+  slot(:edit_trigger, required: true)
+  slot(:submit_trigger, required: true)
+  slot(:cancel_trigger, required: true)
 
   def editable(assigns) do
     empty = String.trim(assigns[:value] || "") == ""
@@ -101,48 +105,26 @@ defmodule Corex.Editable do
       })}
     >
       <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-      <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
-      {render_slot(@label)}
-    </label>
+      <label {Connect.label(%Label{id: @id, dir: @dir})}>
+        {render_slot(@label)}
+      </label>
         <div data-scope="editable" data-part="control">
           <div {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: true})}>
             <input type="text" {Connect.input(%Input{id: @id, disabled: @disabled, value: @value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: "editable input"})} />
             <span {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing})}>
-              <%= if @preview != [] do %>
-                {render_slot(@preview)}
-              <% else %>
-                {@value_text}
-              <% end %>
+              {@value_text}
             </span>
           </div>
           <div {Connect.triggers(%Triggers{})}>
             <button type="button" {Connect.edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing})}>
-            <%= if @edit_trigger != [] do %>
               {render_slot(@edit_trigger)}
-            <% else %>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-              </svg>
-            <% end %>
             </button>
             <button type="button" {Connect.submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing})}>
-              <%= if @submit_trigger != [] do %>
               {render_slot(@submit_trigger)}
-            <% else %>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-              </svg>
-            <% end %>
             </button>
             <button type="button" {Connect.cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing})}>
-              <%= if @cancel_trigger != [] do %>
               {render_slot(@cancel_trigger)}
-            <% else %>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-              </svg>
-            <% end %>
-          </button>
+            </button>
         </div>
         </div>
 

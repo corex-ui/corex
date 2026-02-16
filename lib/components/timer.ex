@@ -7,14 +7,26 @@ defmodule Corex.Timer do
   ### Basic
 
   ```heex
-  <.timer id="t" start_ms={60_000} class="timer" />
+  <.timer id="t" start_ms={60_000} class="timer">
+    <:start_trigger><.icon name="hero-play" class="icon" /></:start_trigger>
+    <:pause_trigger><.icon name="hero-pause" class="icon" /></:pause_trigger>
+    <:resume_trigger><.icon name="hero-play" class="icon" /></:resume_trigger>
+    <:reset_trigger><.icon name="hero-arrow-path" class="icon" /></:reset_trigger>
+  </.timer>
   ```
 
   ### Countdown
 
   ```heex
-  <.timer id="t" countdown start_ms={90_000} target_ms={0} auto_start class="timer" />
+  <.timer id="t" countdown start_ms={90_000} target_ms={0} auto_start class="timer">
+    <:start_trigger><.icon name="hero-play" class="icon" /></:start_trigger>
+    <:pause_trigger><.icon name="hero-pause" class="icon" /></:pause_trigger>
+    <:resume_trigger><.icon name="hero-play" class="icon" /></:resume_trigger>
+    <:reset_trigger><.icon name="hero-arrow-path" class="icon" /></:reset_trigger>
+  </.timer>
   ```
+
+  Required slots: `:start_trigger`, `:pause_trigger`, `:resume_trigger`, `:reset_trigger`.
 
   ## Styling
 
@@ -36,6 +48,11 @@ defmodule Corex.Timer do
   attr(:on_tick, :string, default: nil)
   attr(:on_complete, :string, default: nil)
   attr(:rest, :global)
+
+  slot(:start_trigger, required: true)
+  slot(:pause_trigger, required: true)
+  slot(:resume_trigger, required: true)
+  slot(:reset_trigger, required: true)
 
   def timer(assigns) do
     assigns =
@@ -73,24 +90,16 @@ defmodule Corex.Timer do
         </div>
         <div {Connect.control(%Control{id: @id})}>
           <button type="button" {Connect.action_trigger(%ActionTrigger{action: "start", hidden: @running or @paused})}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-            </svg>
+            {render_slot(@start_trigger)}
           </button>
           <button type="button" {Connect.action_trigger(%ActionTrigger{action: "pause", hidden: not @running})}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
-            </svg>
+            {render_slot(@pause_trigger)}
           </button>
           <button type="button" {Connect.action_trigger(%ActionTrigger{action: "resume", hidden: not @paused})}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-            </svg>
+            {render_slot(@resume_trigger)}
           </button>
           <button type="button" {Connect.action_trigger(%ActionTrigger{action: "reset", hidden: not @running and not @paused})}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 0 0-3.7-3.7 48.678 48.678 0 0 0-7.324 0 4.006 4.006 0 0 0-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 0 0 3.7 3.7 48.656 48.656 0 0 0 7.324 0 4.006 4.006 0 0 0 3.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3-3 3" />
-            </svg>
+            {render_slot(@reset_trigger)}
           </button>
         </div>
       </div>

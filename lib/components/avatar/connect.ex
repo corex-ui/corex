@@ -1,6 +1,6 @@
 defmodule Corex.Avatar.Connect do
   @moduledoc false
-  alias Corex.Avatar.Anatomy.{Props, Root, Image, Fallback}
+  alias Corex.Avatar.Anatomy.{Props, Root, Image, Fallback, Skeleton}
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -36,6 +36,15 @@ defmodule Corex.Avatar.Connect do
       "data-scope" => "avatar",
       "data-part" => "fallback",
       "id" => "avatar:#{assigns.id}:fallback"
+    }
+  end
+
+  @spec skeleton(Skeleton.t()) :: map()
+  def skeleton(assigns) do
+    %{
+      "data-scope" => "avatar",
+      "data-part" => "skeleton",
+      "id" => "avatar:#{assigns.id}:skeleton"
     }
   end
 

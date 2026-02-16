@@ -38,4 +38,11 @@ defmodule Corex.Avatar.Anatomy do
 
     @type t :: %__MODULE__{id: String.t()}
   end
+
+  defmodule Skeleton do
+    @moduledoc false
+    defstruct [:id]
+
+    @type t :: %__MODULE__{id: String.t()}
+  end
 end

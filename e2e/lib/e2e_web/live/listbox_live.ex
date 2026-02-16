@@ -83,6 +83,7 @@ defmodule E2eWeb.ListboxLive do
       <h3>Extended Grouped</h3>
       <.listbox
         class="listbox"
+        aria_label="Extended grouped countries"
         collection={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},

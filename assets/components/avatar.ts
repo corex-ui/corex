@@ -24,5 +24,16 @@ export class Avatar extends Component<Props, Api> {
       '[data-scope="avatar"][data-part="fallback"]'
     );
     if (fallbackEl) this.spreadProps(fallbackEl, this.api.getFallbackProps());
+
+    const skeletonEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="avatar"][data-part="skeleton"]'
+    );
+    if (skeletonEl) {
+      const state = this.machine.service.state;
+      const loaded = state.matches("loaded");
+      const error = state.matches("error");
+      skeletonEl.hidden = loaded || error;
+      skeletonEl.setAttribute("data-state", loaded || error ? "hidden" : "visible");
+    }
   }
 }

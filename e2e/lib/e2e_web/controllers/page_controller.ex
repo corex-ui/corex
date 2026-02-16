@@ -108,7 +108,7 @@ defmodule E2eWeb.PageController do
   end
 
   def editable_page(conn, _params) do
-    render(conn, :editable_page)
+    render(conn, :editable_page, value_text: "My custom value")
   end
 
   def floating_panel_page(conn, _params) do

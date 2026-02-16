@@ -12,7 +12,12 @@ defmodule E2eWeb.TimerLive do
         <h1>Timer</h1>
         <h2>Live View</h2>
       </div>
-      <.timer id="my-timer" countdown start_ms={60_000} target_ms={0} class="timer" />
+      <.timer id="my-timer" countdown start_ms={60_000} target_ms={0} class="timer">
+        <:start_trigger><.icon name="hero-play" class="icon" /></:start_trigger>
+        <:pause_trigger><.icon name="hero-pause" class="icon" /></:pause_trigger>
+        <:resume_trigger><.icon name="hero-play" class="icon" /></:resume_trigger>
+        <:reset_trigger><.icon name="hero-arrow-path" class="icon" /></:reset_trigger>
+      </.timer>
     </Layouts.app>
     """
   end

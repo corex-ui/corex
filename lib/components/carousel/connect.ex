@@ -113,24 +113,36 @@ defmodule Corex.Carousel.Connect do
 
   @spec prev_trigger(PrevTrigger.t()) :: map()
   def prev_trigger(assigns) do
-    %{
+    base = %{
       "data-scope" => "carousel",
       "data-part" => "prev-trigger",
       "type" => "button",
       "aria-label" => "Previous slide",
       "id" => "carousel:#{assigns.id}:prev"
     }
+
+    if Map.get(assigns, :disabled, false) do
+      Map.put(base, "disabled", "")
+    else
+      base
+    end
   end
 
   @spec next_trigger(NextTrigger.t()) :: map()
   def next_trigger(assigns) do
-    %{
+    base = %{
       "data-scope" => "carousel",
       "data-part" => "next-trigger",
       "type" => "button",
       "aria-label" => "Next slide",
       "id" => "carousel:#{assigns.id}:next"
     }
+
+    if Map.get(assigns, :disabled, false) do
+      Map.put(base, "disabled", "")
+    else
+      base
+    end
   end
 
   @spec indicator_group(IndicatorGroup.t()) :: map()

@@ -79,16 +79,16 @@ defmodule Corex.Carousel.Anatomy do
 
   defmodule PrevTrigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :disabled]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
   end
 
   defmodule NextTrigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :disabled]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
   end
 
   defmodule IndicatorGroup do

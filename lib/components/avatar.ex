@@ -14,17 +14,18 @@ defmodule Corex.Avatar do
 
   ## Styling
 
-  Use data attributes: `[data-scope="avatar"][data-part="root"]`, `image`, `fallback`.
+  Use data attributes: `[data-scope="avatar"][data-part="root"]`, `image`, `fallback`, `skeleton`.
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Avatar.Anatomy.{Props, Root, Image, Fallback}
+  alias Corex.Avatar.Anatomy.{Props, Root, Image, Fallback, Skeleton}
   alias Corex.Avatar.Connect
 
   attr(:id, :string, required: false, doc: "The id of the avatar")
   attr(:src, :string, default: nil, doc: "Image source URL")
+  attr(:alt, :string, default: "", doc: "Alternative text for the image")
 
   attr(:on_status_change, :string,
     default: nil,
@@ -58,8 +59,23 @@ defmodule Corex.Avatar do
       })}
     >
       <div phx-update="ignore" {Connect.root(%Root{id: @id})}>
-        <img :if={@src} {Connect.image(%Image{id: @id, src: @src})} />
-        <span {Connect.fallback(%Fallback{id: @id})}>
+        <span
+          :if={@src}
+          data-state="visible"
+          {Connect.skeleton(%Skeleton{id: @id})}
+        />
+        <img
+          :if={@src}
+          hidden
+          data-state="hidden"
+          alt={@alt}
+          {Connect.image(%Image{id: @id, src: @src})}
+        />
+        <span
+          data-state={if @src, do: "hidden", else: "visible"}
+          hidden={@src != nil}
+          {Connect.fallback(%Fallback{id: @id})}
+        >
           {render_slot(@fallback)}
         </span>
       </div>

@@ -12,9 +12,17 @@ defmodule E2eWeb.AvatarLive do
         <h1>Avatar</h1>
         <h2>Live View</h2>
       </div>
-      <.avatar id="my-avatar" src="" class="avatar">
-        <:fallback>JD</:fallback>
-      </.avatar>
+      <div class="layout__row gap-ui-gap">
+        <.avatar id="avatar-fallback" src="" class="avatar">
+          <:fallback>JD</:fallback>
+        </.avatar>
+        <.avatar id="avatar-cat" src={~p"/images/avatar.png"} alt="Avatar" class="avatar">
+          <:fallback>?</:fallback>
+        </.avatar>
+        <.avatar id="avatar-favicon" src={~p"/images/favicon.ico"} alt="Favicon" class="avatar">
+          <:fallback>FX</:fallback>
+        </.avatar>
+      </div>
     </Layouts.app>
     """
   end
