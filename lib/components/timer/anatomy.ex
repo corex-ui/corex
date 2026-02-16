@@ -53,7 +53,7 @@ defmodule Corex.Timer.Anatomy do
     @moduledoc false
     defstruct [:id, :type, :value]
 
-    @type t :: %__MODULE__{id: String.t(), type: String.t(), value: non_neg_integer()}
+    @type t :: %__MODULE__{id: String.t() | nil, type: binary(), value: non_neg_integer()}
   end
 
   defmodule Separator do

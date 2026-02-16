@@ -4,7 +4,7 @@
   .listbox [data-scope="listbox"][data-part="root"] {
     @apply ui-root;
 
-    max-width: var(--container-mini);
+    width: var(--container-mini);
     gap: var(--spacing-mini-gap);
   }
 
@@ -17,9 +17,11 @@
   }
 
   .listbox [data-scope="listbox"][data-part="item-group-label"] {
-    font-size: var(--text-ui-sm);
-    line-height: var(--text-ui-sm--line-height);
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
     text-align: start;
+    padding-inline: var(--spacing-ui-padding);
+    padding-block: var(--spacing-mini-padding-sm);
     background-color: var(--color-root);
     color: var(--color-root--text);
     border-bottom: 1px solid var(--color-ui--border);
@@ -85,7 +87,7 @@
 
 @utility listbox--* {
   [data-scope="listbox"][data-part="root"] {
-    max-width: --value(--container-mini-*, [length]);
+    width: --value(--container-mini-*, [length]);
     gap: --value(--spacing-mini-gap-*, [length]);
   }
 

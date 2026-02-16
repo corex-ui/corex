@@ -100,13 +100,14 @@ defmodule Corex.Carousel.Anatomy do
 
   defmodule Indicator do
     @moduledoc false
-    defstruct [:id, :index, :orientation, :dir]
+    defstruct [:id, :index, :orientation, :dir, :page]
 
     @type t :: %__MODULE__{
             id: String.t(),
             index: non_neg_integer(),
             orientation: String.t(),
-            dir: String.t()
+            dir: String.t(),
+            page: non_neg_integer()
           }
   end
 end

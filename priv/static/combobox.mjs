@@ -1616,7 +1616,7 @@ var Combobox = class extends Component {
         itemToValue: (item) => item.id ?? "",
         itemToString: (item) => item.label,
         isItemDisabled: (item) => item.disabled ?? false,
-        groupBy: (item) => item.group
+        groupBy: (item) => item.group ?? ""
       });
     }
     return collection({

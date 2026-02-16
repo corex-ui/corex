@@ -16,7 +16,9 @@ defmodule Corex.AngleSlider.Anatomy do
       name: nil,
       dir: "ltr",
       on_value_change: nil,
-      on_value_change_client: nil
+      on_value_change_client: nil,
+      on_value_change_end: nil,
+      on_value_change_end_client: nil
     ]
 
     @type t :: %__MODULE__{
@@ -30,7 +32,9 @@ defmodule Corex.AngleSlider.Anatomy do
             name: String.t() | nil,
             dir: String.t(),
             on_value_change: String.t() | nil,
-            on_value_change_client: String.t() | nil
+            on_value_change_client: String.t() | nil,
+            on_value_change_end: String.t() | nil,
+            on_value_change_end_client: String.t() | nil
           }
   end
 
@@ -104,8 +108,8 @@ defmodule Corex.AngleSlider.Anatomy do
 
   defmodule Marker do
     @moduledoc false
-    defstruct [:id, :value]
+    defstruct [:id, :value, :slider_value]
 
-    @type t :: %__MODULE__{id: String.t(), value: number()}
+    @type t :: %__MODULE__{id: String.t(), value: number(), slider_value: number()}
   end
 end

@@ -24,7 +24,7 @@ defmodule E2eWeb.NumberInputLive do
       <.number_input id="scrubber-number-input" class="number-input" scrubber>
         <:label>Enter Number</:label>
         <:scrubber_trigger>
-          <.icon name="hero-chevron-up-down" class="icon icon--square rotate-90" />
+          <.icon name="hero-chevron-up-down" class="icon rotate-90" />
         </:scrubber_trigger>
       </.number_input>
     </Layouts.app>

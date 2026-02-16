@@ -25,10 +25,6 @@ export class Menu extends Component<Props, Api> {
     this.api.setParent(parent.machine.service);
   }
 
-  /**
-   * Check if an element belongs to THIS menu instance.
-   * Uses the nearest phx-hook="Menu" ancestor to determine ownership.
-   */
   private isOwnElement(el: HTMLElement): boolean {
     const nearestHook = el.closest('[phx-hook="Menu"]');
     return nearestHook === this.el;
@@ -107,7 +103,6 @@ export class Menu extends Component<Props, Api> {
           }
         });
 
-        // Handle item groups
         const itemGroups = contentEl.querySelectorAll<HTMLElement>(
           '[data-scope="menu"][data-part="item-group"]'
         );
@@ -120,7 +115,6 @@ export class Menu extends Component<Props, Api> {
           }
         });
 
-        // Handle separators
         const separators = contentEl.querySelectorAll<HTMLElement>(
           '[data-scope="menu"][data-part="separator"]'
         );

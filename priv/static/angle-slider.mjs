@@ -466,6 +466,7 @@ var AngleSliderHook = {
     const value = getNumber(el, "value");
     const defaultValue = getNumber(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
+    let skipNextOnValueChange = false;
     const zag = new AngleSlider(el, {
       id: el.id,
       ...controlled && value !== void 0 ? { value } : { defaultValue: defaultValue ?? 0 },
@@ -476,13 +477,22 @@ var AngleSliderHook = {
       name: getString(el, "name"),
       dir: getString(el, "dir", ["ltr", "rtl"]),
       onValueChange: (details) => {
-        const hiddenInput = el.querySelector(
-          '[data-scope="angle-slider"][data-part="hidden-input"]'
-        );
-        if (hiddenInput) {
-          hiddenInput.value = String(details.value);
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        if (skipNextOnValueChange) {
+          skipNextOnValueChange = false;
+          return;
+        }
+        if (controlled) {
+          skipNextOnValueChange = true;
+          zag.api.setValue(details.value);
+        } else {
+          const hiddenInput = el.querySelector(
+            '[data-scope="angle-slider"][data-part="hidden-input"]'
+          );
+          if (hiddenInput) {
+            hiddenInput.value = String(details.value);
+            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+          }
         }
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
@@ -492,10 +502,39 @@ var AngleSliderHook = {
             id: el.id
           });
         }
-        const clientName = getString(el, "onValueChangeClient");
-        if (clientName) {
+        const eventNameClient = getString(el, "onValueChangeClient");
+        if (eventNameClient) {
           el.dispatchEvent(
-            new CustomEvent(clientName, {
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: { value: details, id: el.id }
+            })
+          );
+        }
+      },
+      onValueChangeEnd: (details) => {
+        if (controlled) {
+          const hiddenInput = el.querySelector(
+            '[data-scope="angle-slider"][data-part="hidden-input"]'
+          );
+          if (hiddenInput) {
+            hiddenInput.value = String(details.value);
+            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+        const eventName = getString(el, "onValueChangeEnd");
+        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+          this.pushEvent(eventName, {
+            value: details.value,
+            valueAsDegree: details.valueAsDegree,
+            id: el.id
+          });
+        }
+        const eventNameClient = getString(el, "onValueChangeEndClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: { value: details, id: el.id }
             })
@@ -506,6 +545,33 @@ var AngleSliderHook = {
     zag.init();
     this.angleSlider = zag;
     this.handlers = [];
+    this.onSetValue = (event) => {
+      const { value: value2 } = event.detail;
+      zag.api.setValue(value2);
+    };
+    el.addEventListener("phx:angle-slider:set-value", this.onSetValue);
+    this.handlers.push(
+      this.handleEvent(
+        "angle_slider_set_value",
+        (payload) => {
+          const targetId = payload.angle_slider_id;
+          if (targetId) {
+            const matches = el.id === targetId || el.id === `angle-slider:${targetId}`;
+            if (!matches) return;
+          }
+          zag.api.setValue(payload.value);
+        }
+      )
+    );
+    this.handlers.push(
+      this.handleEvent("angle_slider_value", () => {
+        this.pushEvent("angle_slider_value_response", {
+          value: zag.api.value,
+          valueAsDegree: zag.api.valueAsDegree,
+          dragging: zag.api.dragging
+        });
+      })
+    );
   },
   updated() {
     const value = getNumber(this.el, "value");
@@ -521,6 +587,9 @@ var AngleSliderHook = {
     });
   },
   destroyed() {
+    if (this.onSetValue) {
+      this.el.removeEventListener("phx:angle-slider:set-value", this.onSetValue);
+    }
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }

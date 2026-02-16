@@ -1,16 +1,36 @@
 <Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
-  <div class="layout__row">
-    <h1>Angle Slider</h1>
-    <h2>Controller View</h2>
-  </div>
+  <h1>Angle Slider</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <section class="layout__section">
+    <div class="layout__row">
+      <button
+        phx-click={Corex.AngleSlider.set_value("my-angle-slider", 0)}
+        class="button button--sm"
+      >
+        Set to 0°
+      </button>
+      <button
+        phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90)}
+        class="button button--sm"
+      >
+        Set to 90°
+      </button>
+      <button
+        phx-click={Corex.AngleSlider.set_value("my-angle-slider", 180)}
+        class="button button--sm"
+      >
+        Set to 180°
+      </button>
+      <button
+        phx-click={Corex.AngleSlider.set_value("my-angle-slider", 270)}
+        class="button button--sm"
+      >
+        Set to 270°
+      </button>
+    </div>
+  </section>
   <.angle_slider id="my-angle-slider" class="angle-slider" marker_values={[0, 90, 180, 270]}>
     <:label>Angle</:label>
-  </.angle_slider>
-  <.angle_slider
-    id="wind-direction-slider"
-    class="angle-slider"
-    marker_values={[0, 45, 90, 135, 180, 225, 270, 315]}
-  >
-    <:label>Wind direction</:label>
   </.angle_slider>
 </Layouts.app>

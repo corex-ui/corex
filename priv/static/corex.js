@@ -4048,6 +4048,7 @@ var Corex = (() => {
           const value = getNumber(el, "value");
           const defaultValue = getNumber(el, "defaultValue");
           const controlled = getBoolean(el, "controlled");
+          let skipNextOnValueChange = false;
           const zag = new AngleSlider(el, __spreadProps(__spreadValues({
             id: el.id
           }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : 0 }), {
@@ -4058,13 +4059,22 @@ var Corex = (() => {
             name: getString(el, "name"),
             dir: getString(el, "dir", ["ltr", "rtl"]),
             onValueChange: (details) => {
-              const hiddenInput = el.querySelector(
-                '[data-scope="angle-slider"][data-part="hidden-input"]'
-              );
-              if (hiddenInput) {
-                hiddenInput.value = String(details.value);
-                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+              if (skipNextOnValueChange) {
+                skipNextOnValueChange = false;
+                return;
+              }
+              if (controlled) {
+                skipNextOnValueChange = true;
+                zag.api.setValue(details.value);
+              } else {
+                const hiddenInput = el.querySelector(
+                  '[data-scope="angle-slider"][data-part="hidden-input"]'
+                );
+                if (hiddenInput) {
+                  hiddenInput.value = String(details.value);
+                  hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                  hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+                }
               }
               const eventName = getString(el, "onValueChange");
               if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
@@ -4074,10 +4084,39 @@ var Corex = (() => {
                   id: el.id
                 });
               }
-              const clientName = getString(el, "onValueChangeClient");
-              if (clientName) {
+              const eventNameClient = getString(el, "onValueChangeClient");
+              if (eventNameClient) {
                 el.dispatchEvent(
-                  new CustomEvent(clientName, {
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
+            },
+            onValueChangeEnd: (details) => {
+              if (controlled) {
+                const hiddenInput = el.querySelector(
+                  '[data-scope="angle-slider"][data-part="hidden-input"]'
+                );
+                if (hiddenInput) {
+                  hiddenInput.value = String(details.value);
+                  hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                  hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+              }
+              const eventName = getString(el, "onValueChangeEnd");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, {
+                  value: details.value,
+                  valueAsDegree: details.valueAsDegree,
+                  id: el.id
+                });
+              }
+              const eventNameClient = getString(el, "onValueChangeEndClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
                     bubbles: true,
                     detail: { value: details, id: el.id }
                   })
@@ -4088,6 +4127,33 @@ var Corex = (() => {
           zag.init();
           this.angleSlider = zag;
           this.handlers = [];
+          this.onSetValue = (event) => {
+            const { value: value2 } = event.detail;
+            zag.api.setValue(value2);
+          };
+          el.addEventListener("phx:angle-slider:set-value", this.onSetValue);
+          this.handlers.push(
+            this.handleEvent(
+              "angle_slider_set_value",
+              (payload) => {
+                const targetId = payload.angle_slider_id;
+                if (targetId) {
+                  const matches = el.id === targetId || el.id === `angle-slider:${targetId}`;
+                  if (!matches) return;
+                }
+                zag.api.setValue(payload.value);
+              }
+            )
+          );
+          this.handlers.push(
+            this.handleEvent("angle_slider_value", () => {
+              this.pushEvent("angle_slider_value_response", {
+                value: zag.api.value,
+                valueAsDegree: zag.api.valueAsDegree,
+                dragging: zag.api.dragging
+              });
+            })
+          );
         },
         updated() {
           var _a, _b;
@@ -4105,6 +4171,9 @@ var Corex = (() => {
         },
         destroyed() {
           var _a;
+          if (this.onSetValue) {
+            this.el.removeEventListener("phx:angle-slider:set-value", this.onSetValue);
+          }
           if (this.handlers) {
             for (const h2 of this.handlers) this.removeHandleEvent(h2);
           }
@@ -12371,7 +12440,10 @@ var Corex = (() => {
                 var _a;
                 return (_a = item.disabled) != null ? _a : false;
               },
-              groupBy: (item) => item.group
+              groupBy: (item) => {
+                var _a;
+                return (_a = item.group) != null ? _a : "";
+              }
             });
           }
           return collection({
@@ -18522,7 +18594,7 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy11, parts11, getRootId10, getAreaId, getLabelId6, getPreviewId, getInputId4, getControlId5, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine11, props11, splitProps11, PARTS, PART_SELECTOR, Editable, EditableHook;
+  var anatomy11, parts11, getRootId10, getAreaId, getLabelId6, getPreviewId, getInputId4, getControlId5, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine11, props11, splitProps11, Editable, EditableHook;
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
@@ -18841,17 +18913,6 @@ var Corex = (() => {
         "value"
       ]);
       splitProps11 = createSplitProps(props11);
-      PARTS = [
-        "root",
-        "area",
-        "label",
-        "input",
-        "preview",
-        "edit-trigger",
-        "submit-trigger",
-        "cancel-trigger"
-      ];
-      PART_SELECTOR = '[data-scope="editable"][data-part]';
       Editable = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props26) {
@@ -18862,34 +18923,34 @@ var Corex = (() => {
         }
         render() {
           var _a;
-          for (const part of PARTS) {
-            const el = part === "root" ? (_a = this.el.querySelector(`${PART_SELECTOR}[data-part="root"]`)) != null ? _a : this.el : this.el.querySelector(`${PART_SELECTOR}[data-part="${part}"]`);
-            if (!el) continue;
-            const props26 = this.getPartProps(part);
-            if (props26) this.spreadProps(el, props26);
-          }
-        }
-        getPartProps(part) {
-          switch (part) {
-            case "root":
-              return this.api.getRootProps();
-            case "area":
-              return this.api.getAreaProps();
-            case "label":
-              return this.api.getLabelProps();
-            case "input":
-              return this.api.getInputProps();
-            case "preview":
-              return this.api.getPreviewProps();
-            case "edit-trigger":
-              return this.api.getEditTriggerProps();
-            case "submit-trigger":
-              return this.api.getSubmitTriggerProps();
-            case "cancel-trigger":
-              return this.api.getCancelTriggerProps();
-            default:
-              return null;
-          }
+          const rootEl = (_a = this.el.querySelector('[data-scope="editable"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
+          if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
+          const labelEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="label"]'
+          );
+          if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+          const inputEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="input"]'
+          );
+          if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+          const previewEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="preview"]'
+          );
+          if (previewEl) this.spreadProps(previewEl, this.api.getPreviewProps());
+          const editTriggerEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="edit-trigger"]'
+          );
+          if (editTriggerEl) this.spreadProps(editTriggerEl, this.api.getEditTriggerProps());
+          const submitTriggerEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="submit-trigger"]'
+          );
+          if (submitTriggerEl) this.spreadProps(submitTriggerEl, this.api.getSubmitTriggerProps());
+          const cancelTriggerEl = this.el.querySelector(
+            '[data-scope="editable"][data-part="cancel-trigger"]'
+          );
+          if (cancelTriggerEl) this.spreadProps(cancelTriggerEl, this.api.getCancelTriggerProps());
         }
       };
       EditableHook = {
@@ -22561,10 +22622,6 @@ var Corex = (() => {
         setParent(parent) {
           this.api.setParent(parent.machine.service);
         }
-        /**
-         * Check if an element belongs to THIS menu instance.
-         * Uses the nearest phx-hook="Menu" ancestor to determine ownership.
-         */
         isOwnElement(el) {
           const nearestHook = el.closest('[phx-hook="Menu"]');
           return nearestHook === this.el;

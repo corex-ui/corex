@@ -32,7 +32,9 @@ defmodule Corex.AngleSlider.Connect do
       "data-name" => assigns.name,
       "data-dir" => assigns.dir,
       "data-on-value-change" => assigns.on_value_change,
-      "data-on-value-change-client" => assigns.on_value_change_client
+      "data-on-value-change-client" => assigns.on_value_change_client,
+      "data-on-value-change-end" => assigns.on_value_change_end,
+      "data-on-value-change-end-client" => assigns.on_value_change_end_client
     }
   end
 
@@ -89,7 +91,8 @@ defmodule Corex.AngleSlider.Connect do
       "data-scope" => "angle-slider",
       "data-part" => "thumb",
       "dir" => assigns.dir,
-      "id" => "angle-slider:#{assigns.id}:thumb"
+      "id" => "angle-slider:#{assigns.id}:thumb",
+      "style" => "rotate:var(--angle);"
     }
   end
 
@@ -131,11 +134,20 @@ defmodule Corex.AngleSlider.Connect do
 
   @spec marker(Marker.t()) :: map()
   def marker(assigns) do
+    state =
+      cond do
+        assigns.value < assigns.slider_value -> "under-value"
+        assigns.value > assigns.slider_value -> "over-value"
+        true -> "at-value"
+      end
+
     %{
       "data-scope" => "angle-slider",
       "data-part" => "marker",
       "data-value" => to_string(assigns.value),
-      "id" => "angle-slider:#{assigns.id}:marker:#{assigns.value}"
+      "data-state" => state,
+      "id" => "angle-slider:#{assigns.id}:marker:#{assigns.value}",
+      "style" => "--marker-value:#{assigns.value};rotate:calc(var(--marker-value) * 1deg);"
     }
   end
 end

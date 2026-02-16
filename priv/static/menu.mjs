@@ -1423,10 +1423,6 @@ var Menu = class extends Component {
   setParent(parent) {
     this.api.setParent(parent.machine.service);
   }
-  /**
-   * Check if an element belongs to THIS menu instance.
-   * Uses the nearest phx-hook="Menu" ancestor to determine ownership.
-   */
   isOwnElement(el) {
     const nearestHook = el.closest('[phx-hook="Menu"]');
     return nearestHook === this.el;

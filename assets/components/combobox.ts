@@ -31,7 +31,7 @@ export class Combobox extends Component<Props, Api> {
         itemToValue: (item: ComboboxItem) => item.id ?? "",
         itemToString: (item: ComboboxItem) => item.label,
         isItemDisabled: (item: ComboboxItem) => item.disabled ?? false,
-        groupBy: (item: ComboboxItem) => item.group,
+        groupBy: (item: ComboboxItem) => item.group ?? "",
       });
     }
 

@@ -2,19 +2,6 @@ import { connect, machine, type Props, type Api } from "@zag-js/editable";
 import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
-const PARTS = [
-  "root",
-  "area",
-  "label",
-  "input",
-  "preview",
-  "edit-trigger",
-  "submit-trigger",
-  "cancel-trigger",
-] as const;
-
-const PART_SELECTOR = '[data-scope="editable"][data-part]';
-
 export class Editable extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
@@ -26,37 +13,41 @@ export class Editable extends Component<Props, Api> {
   }
 
   render(): void {
-    for (const part of PARTS) {
-      const el =
-        part === "root"
-          ? (this.el.querySelector<HTMLElement>(`${PART_SELECTOR}[data-part="root"]`) ?? this.el)
-          : this.el.querySelector<HTMLElement>(`${PART_SELECTOR}[data-part="${part}"]`);
-      if (!el) continue;
-      const props = this.getPartProps(part);
-      if (props) this.spreadProps(el, props);
-    }
-  }
+    const rootEl =
+      this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="root"]') ?? this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
 
-  private getPartProps(part: (typeof PARTS)[number]): ReturnType<Api["getRootProps"]> | null {
-    switch (part) {
-      case "root":
-        return this.api.getRootProps();
-      case "area":
-        return this.api.getAreaProps();
-      case "label":
-        return this.api.getLabelProps();
-      case "input":
-        return this.api.getInputProps();
-      case "preview":
-        return this.api.getPreviewProps();
-      case "edit-trigger":
-        return this.api.getEditTriggerProps();
-      case "submit-trigger":
-        return this.api.getSubmitTriggerProps();
-      case "cancel-trigger":
-        return this.api.getCancelTriggerProps();
-      default:
-        return null;
-    }
+    const areaEl = this.el.querySelector<HTMLElement>('[data-scope="editable"][data-part="area"]');
+    if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
+
+    const labelEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="label"]'
+    );
+    if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+
+    const inputEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="input"]'
+    );
+    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+
+    const previewEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="preview"]'
+    );
+    if (previewEl) this.spreadProps(previewEl, this.api.getPreviewProps());
+
+    const editTriggerEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="edit-trigger"]'
+    );
+    if (editTriggerEl) this.spreadProps(editTriggerEl, this.api.getEditTriggerProps());
+
+    const submitTriggerEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="submit-trigger"]'
+    );
+    if (submitTriggerEl) this.spreadProps(submitTriggerEl, this.api.getSubmitTriggerProps());
+
+    const cancelTriggerEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="editable"][data-part="cancel-trigger"]'
+    );
+    if (cancelTriggerEl) this.spreadProps(cancelTriggerEl, this.api.getCancelTriggerProps());
   }
 }

@@ -4,16 +4,113 @@ defmodule Corex.Listbox do
 
   ## Examples
 
-  ### Basic
+  <!-- tabs-open -->
+
+  ### Minimal
 
   ```heex
   <.listbox
-    id="lb"
-    collection={Corex.List.new([ [label: "A"], [label: "B"], [label: "C"] ])}
-    class="listbox">
-    <:label>Choose</:label>
+    id="my-listbox"
+    class="listbox"
+    collection={[
+      %{label: "France", id: "fra", disabled: true},
+      %{label: "Belgium", id: "bel"},
+      %{label: "Germany", id: "deu"},
+      %{label: "Netherlands", id: "nld"},
+      %{label: "Switzerland", id: "che"},
+      %{label: "Austria", id: "aut"}
+    ]}
+  >
+    <:label>Choose a country</:label>
+    <:item_indicator>
+      <.icon name="hero-check" />
+    </:item_indicator>
   </.listbox>
   ```
+
+  ### Grouped
+
+  ```heex
+  <.listbox
+    class="listbox"
+    collection={[
+      %{label: "France", id: "fra", group: "Europe"},
+      %{label: "Belgium", id: "bel", group: "Europe"},
+      %{label: "Germany", id: "deu", group: "Europe"},
+      %{label: "Netherlands", id: "nld", group: "Europe"},
+      %{label: "Switzerland", id: "che", group: "Europe"},
+      %{label: "Austria", id: "aut", group: "Europe"},
+      %{label: "Japan", id: "jpn", group: "Asia"},
+      %{label: "China", id: "chn", group: "Asia"},
+      %{label: "South Korea", id: "kor", group: "Asia"},
+      %{label: "Thailand", id: "tha", group: "Asia"},
+      %{label: "USA", id: "usa", group: "North America"},
+      %{label: "Canada", id: "can", group: "North America"},
+      %{label: "Mexico", id: "mex", group: "North America"}
+    ]}
+  >
+    <:label>Choose a country</:label>
+    <:item_indicator>
+      <.icon name="hero-check" />
+    </:item_indicator>
+  </.listbox>
+  ```
+
+  ### Custom
+
+  This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack).
+  Use the `:item` slot with `:let={%{item: entry}}` to access the entry map.
+
+  ```heex
+  <.listbox
+    class="listbox"
+    collection={[
+      %{label: "France", id: "fra"},
+      %{label: "Belgium", id: "bel"},
+      %{label: "Germany", id: "deu"},
+      %{label: "Netherlands", id: "nld"},
+      %{label: "Switzerland", id: "che"},
+      %{label: "Austria", id: "aut"}
+    ]}
+  >
+    <:label>
+      Country of residence
+    </:label>
+    <:item :let={%{item: entry}}>
+      <Flagpack.flag name={String.to_atom(entry.id)} />
+      {entry.label}
+    </:item>
+    <:item_indicator>
+      <.icon name="hero-check" />
+    </:item_indicator>
+  </.listbox>
+  ```
+
+  ### Custom Grouped
+
+  ```heex
+  <.listbox
+    class="listbox"
+    collection={[
+      %{label: "France", id: "fra", group: "Europe"},
+      %{label: "Belgium", id: "bel", group: "Europe"},
+      %{label: "Germany", id: "deu", group: "Europe"},
+      %{label: "Japan", id: "jpn", group: "Asia"},
+      %{label: "China", id: "chn", group: "Asia"},
+      %{label: "South Korea", id: "kor", group: "Asia"}
+    ]}
+  >
+    <:item :let={%{item: entry}}>
+      <Flagpack.flag name={String.to_atom(entry.id)} />
+      {entry.label}
+    </:item>
+    <:item_indicator>
+      <.icon name="hero-check" />
+    </:item_indicator>
+  </.listbox>
+  ```
+
+  <!-- tabs-close -->
 
   ## Styling
 
@@ -63,6 +160,7 @@ defmodule Corex.Listbox do
 
   slot(:label, required: false)
   slot(:item, required: false)
+  slot(:item_indicator, required: false)
 
   def listbox(assigns) do
     items = normalize_collection(assigns.collection)
@@ -86,7 +184,6 @@ defmodule Corex.Listbox do
     ~H"""
     <div
       id={@id}
-      phx-hook="Listbox"
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -111,23 +208,37 @@ defmodule Corex.Listbox do
         </label>
         <span {Connect.value_text(%ValueText{id: @id})} />
         <input type="hidden" {Connect.input(%Input{id: @id})} />
-        <div {Connect.content(%Content{id: @id, dir: @dir})}>
+        <div {content_attrs(@id, @dir, @orientation)}>
           <div :for={group_id <- @groups} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id})}>
             <div {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id})}>{group_id}</div>
-            <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {Connect.item(%Item{id: @id, item: entry, value: entry_value(entry)})}>
+            <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs(@id, entry)}>
               <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
-              <span :if={@item == []} {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})} />
               <%= for item_slot <- @item || [] do %>
                 <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
               <% end %>
+              <span
+                {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+                hidden={!entry_selected?(entry, @value)}
+              >
+                <%= if @item_indicator != [] do %>
+                  <%= render_slot(@item_indicator) %>
+                <% end %>
+              </span>
             </div>
           </div>
-          <div :for={entry <- if(@has_groups, do: [], else: @items)} {Connect.item(%Item{id: @id, item: entry, value: entry_value(entry)})}>
+          <div :for={entry <- if(@has_groups, do: [], else: @items)} {item_attrs(@id, entry)}>
             <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
-            <span :if={@item == []} {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})} />
             <%= for item_slot <- @item || [] do %>
               <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
             <% end %>
+            <span
+              {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+              hidden={!entry_selected?(entry, @value)}
+            >
+              <%= if @item_indicator != [] do %>
+                <%= render_slot(@item_indicator) %>
+              <% end %>
+            </span>
           </div>
         </div>
       </div>
@@ -140,6 +251,28 @@ defmodule Corex.Listbox do
       Map.get(entry, :value) || Map.get(entry, :id) || Map.get(entry, "value") ||
         Map.get(entry, "id") || ""
     )
+  end
+
+  defp entry_selected?(entry, value_list) do
+    Enum.member?(value_list, entry_value(entry))
+  end
+
+  defp content_attrs(id, dir, orientation) do
+    Connect.content(%Content{id: id, dir: dir})
+    |> Map.put("data-layout", "list")
+    |> Map.put("data-orientation", orientation)
+  end
+
+  defp item_attrs(id, entry) do
+    base = Connect.item(%Item{id: id, item: entry, value: entry_value(entry)})
+
+    if Map.get(entry, :disabled) do
+      base
+      |> Map.put("data-disabled", "")
+      |> Map.put("aria-disabled", "true")
+    else
+      base
+    end
   end
 
   defp normalize_collection(items) when is_list(items) do

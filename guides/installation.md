@@ -94,6 +94,15 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
+### Load app script
+
+Load your app script with `type="module"` in your root layout, for example in `root.html.heex`:
+
+```heex
+<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
+</script>
+```
+
 ## Import Components
 
 Add `use Corex` into your `MyAppWeb` `html_helpers`
@@ -383,20 +392,11 @@ config :esbuild,
   ]
 ```
 
-### 2. Script type="module"
-
-Load your app script with `type="module"` in your root layout, for example in `root.html.heex`:
-
-```heex
-<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
-</script>
-```
-
-### 3. Enable gzip for Plug.Static
+### 2. Enable gzip for Plug.Static
 
 Set `gzip: true` on `Plug.Static` in your endpoint so that pre-compressed `.gz` files are served when the client supports them.
 
-### 4. How dynamic hook loading works
+### 3. How dynamic hook loading works
 
 1. **App start** – Corex registers small stubs (e.g. Accordion, Combobox) as LiveSocket hooks. Each stub stores a function like `() => import("corex/accordion")` but does not run it yet.
 2. **Page load** – If the page has no Corex components, no component code is loaded.
@@ -404,7 +404,7 @@ Set `gzip: true` on `Plug.Static` in your endpoint so that pre-compressed `.gz` 
 4. **Dynamic load** – Inside `mounted()`, the stub runs `await import("corex/accordion")`. The browser fetches and executes the accordion chunk for the first time. The stub then delegates to the real hook.
 5. **Result** – Each component's JavaScript is loaded only when a DOM element with its `phx-hook` is mounted. If a component never appears on a page, its chunk is never fetched.
 
-### 5. Compression and dev performance
+### 4. Compression and dev performance
 
 In development, watchers output unminified, uncompressed assets. `Plug.Static` with `gzip: true` only serves pre-existing `.gz` files; watchers do not create them. If the app feels slow in development (especially with many nested components):
 

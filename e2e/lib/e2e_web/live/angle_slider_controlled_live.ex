@@ -1,14 +1,16 @@
-defmodule E2eWeb.AngleSliderLive do
+defmodule E2eWeb.AngleSliderControlledLive do
   use E2eWeb, :live_view
 
   def mount(_params, _session, socket) do
     socket =
       socket
-      |> assign(:angle_value, nil)
-      |> assign(:angle_value_as_degree, nil)
-      |> assign(:angle_dragging, nil)
+      |> assign(:angle, 90)
 
     {:ok, socket}
+  end
+
+  def handle_event("angle_changed", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :angle, value)}
   end
 
   def handle_event("set_value", %{"value" => value}, socket) do
@@ -18,21 +20,8 @@ defmodule E2eWeb.AngleSliderLive do
         :error -> 0
       end
 
+    socket = assign(socket, :angle, angle)
     {:noreply, Corex.AngleSlider.set_value(socket, "my-angle-slider", angle)}
-  end
-
-  def handle_event("get_value", _params, socket) do
-    {:noreply, push_event(socket, "angle_slider_value", %{})}
-  end
-
-  def handle_event("angle_slider_value_response", %{"value" => value} = params, socket) do
-    socket =
-      socket
-      |> assign(:angle_value, value)
-      |> assign(:angle_value_as_degree, params["valueAsDegree"])
-      |> assign(:angle_dragging, params["dragging"])
-
-    {:noreply, socket}
   end
 
   def render(assigns) do
@@ -40,7 +29,7 @@ defmodule E2eWeb.AngleSliderLive do
     <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
       <div class="layout__row">
         <h1>Angle Slider</h1>
-        <h2>Live View</h2>
+        <h2>Controlled</h2>
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
@@ -83,22 +72,18 @@ defmodule E2eWeb.AngleSliderLive do
         <button phx-click="set_value" value="270" class="button button--sm">
           Set to 270°
         </button>
-        <button phx-click="get_value" class="button button--sm">
-          Get current value
-        </button>
       </div>
-      <div :if={@angle_value != nil || @angle_value_as_degree != nil} class="layout__row">
-        <p :if={@angle_value != nil}>
-          Current value: <code>{@angle_value}</code>
-        </p>
-        <p :if={@angle_value_as_degree != nil}>
-          Value as degree: <code>{@angle_value_as_degree}</code>
-        </p>
-        <p :if={@angle_dragging != nil}>
-          Dragging: <code>{inspect(@angle_dragging)}</code>
-        </p>
-      </div>
-      <.angle_slider id="my-angle-slider" class="angle-slider" marker_values={[0, 90, 180, 270]}>
+      <p class="layout__row">
+        Current value: <code>{@angle}</code>°
+      </p>
+      <.angle_slider
+        id="my-angle-slider"
+        class="angle-slider"
+        marker_values={[0, 90, 180, 270]}
+        value={@angle}
+        controlled
+        on_value_change="angle_changed"
+      >
         <:label>Angle</:label>
       </.angle_slider>
     </Layouts.app>

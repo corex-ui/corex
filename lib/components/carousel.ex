@@ -111,7 +111,7 @@ defmodule Corex.Carousel do
             <%= render_slot(@prev_trigger) %>
           </button>
           <div {Connect.indicator_group(%IndicatorGroup{id: @id, orientation: @orientation, dir: @dir})}>
-            <button :for={i <- 0..(@slide_count - 1)} type="button" {Connect.indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir})} data-index={i} aria-label={"Go to slide #{i + 1}"}></button>
+            <button :for={i <- 0..(@slide_count - 1)} type="button" {Connect.indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})} data-index={i} aria-label={"Go to slide #{i + 1}"}></button>
           </div>
           <button type="button" {Connect.next_trigger(%NextTrigger{id: @id})}>
             <%= render_slot(@next_trigger) %>

@@ -534,17 +534,6 @@ var props = createProps()([
 var splitProps = createSplitProps(props);
 
 // components/editable.ts
-var PARTS = [
-  "root",
-  "area",
-  "label",
-  "input",
-  "preview",
-  "edit-trigger",
-  "submit-trigger",
-  "cancel-trigger"
-];
-var PART_SELECTOR = '[data-scope="editable"][data-part]';
 var Editable = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
@@ -554,34 +543,34 @@ var Editable = class extends Component {
     return connect(this.machine.service, normalizeProps);
   }
   render() {
-    for (const part of PARTS) {
-      const el = part === "root" ? this.el.querySelector(`${PART_SELECTOR}[data-part="root"]`) ?? this.el : this.el.querySelector(`${PART_SELECTOR}[data-part="${part}"]`);
-      if (!el) continue;
-      const props2 = this.getPartProps(part);
-      if (props2) this.spreadProps(el, props2);
-    }
-  }
-  getPartProps(part) {
-    switch (part) {
-      case "root":
-        return this.api.getRootProps();
-      case "area":
-        return this.api.getAreaProps();
-      case "label":
-        return this.api.getLabelProps();
-      case "input":
-        return this.api.getInputProps();
-      case "preview":
-        return this.api.getPreviewProps();
-      case "edit-trigger":
-        return this.api.getEditTriggerProps();
-      case "submit-trigger":
-        return this.api.getSubmitTriggerProps();
-      case "cancel-trigger":
-        return this.api.getCancelTriggerProps();
-      default:
-        return null;
-    }
+    const rootEl = this.el.querySelector('[data-scope="editable"][data-part="root"]') ?? this.el;
+    this.spreadProps(rootEl, this.api.getRootProps());
+    const areaEl = this.el.querySelector('[data-scope="editable"][data-part="area"]');
+    if (areaEl) this.spreadProps(areaEl, this.api.getAreaProps());
+    const labelEl = this.el.querySelector(
+      '[data-scope="editable"][data-part="label"]'
+    );
+    if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
+    const inputEl = this.el.querySelector(
+      '[data-scope="editable"][data-part="input"]'
+    );
+    if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
+    const previewEl = this.el.querySelector(
+      '[data-scope="editable"][data-part="preview"]'
+    );
+    if (previewEl) this.spreadProps(previewEl, this.api.getPreviewProps());
+    const editTriggerEl = this.el.querySelector(
+      '[data-scope="editable"][data-part="edit-trigger"]'
+    );
+    if (editTriggerEl) this.spreadProps(editTriggerEl, this.api.getEditTriggerProps());
+    const submitTriggerEl = this.el.querySelector(
+      '[data-scope="editable"][data-part="submit-trigger"]'
+    );
+    if (submitTriggerEl) this.spreadProps(submitTriggerEl, this.api.getSubmitTriggerProps());
+    const cancelTriggerEl = this.el.querySelector(
+      '[data-scope="editable"][data-part="cancel-trigger"]'
+    );
+    if (cancelTriggerEl) this.spreadProps(cancelTriggerEl, this.api.getCancelTriggerProps());
   }
 };
 
