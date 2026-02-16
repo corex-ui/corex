@@ -92,7 +92,8 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "decrement-trigger",
       "type" => "button",
-      "id" => "number-input:#{assigns.id}:dec"
+      "id" => "number-input:#{assigns.id}:dec",
+      "aria-label" => "Decrease value"
     }
   end
 
@@ -102,7 +103,8 @@ defmodule Corex.NumberInput.Connect do
       "data-scope" => "number-input",
       "data-part" => "increment-trigger",
       "type" => "button",
-      "id" => "number-input:#{assigns.id}:inc"
+      "id" => "number-input:#{assigns.id}:inc",
+      "aria-label" => "Increase value"
     }
   end
 

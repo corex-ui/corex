@@ -82,7 +82,8 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "visibility-trigger",
       "type" => "button",
-      "dir" => assigns.dir
+      "dir" => assigns.dir,
+      "aria-label" => "Toggle password visibility"
     }
   end
 
