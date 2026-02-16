@@ -84,6 +84,7 @@ defmodule Corex.PinInput.Connect do
   @spec input(Input.t()) :: map()
   def input(assigns) do
     digit = assigns.index + 1
+
     %{
       "data-scope" => "pin-input",
       "data-part" => "input",
