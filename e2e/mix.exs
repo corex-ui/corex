@@ -82,24 +82,53 @@ defmodule E2e.MixProject do
   # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
+      compile: ["compile"],
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
-        "assets.build",
+        "assets.deploy",
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
         "test"
       ],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind e2e", "esbuild e2e"],
+      "assets.digest.clean": ["phx.digest.clean", "--no-compile"],
+      "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
+      "assets.build": [
+        &clean_static_assets/1,
+        &copy_static_images/1,
+        "compile",
+        "tailwind e2e",
+        "esbuild e2e"
+      ],
       "assets.deploy": [
+        &clean_static_assets/1,
+        &copy_static_images/1,
+        "compile",
         "tailwind e2e --minify",
         "esbuild e2e --minify",
         "phx.digest"
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
     ]
+  end
+
+  defp clean_static_assets(_) do
+    static = Path.join([__DIR__, "priv", "static"])
+    File.rm_rf(Path.join(static, "assets"))
+    File.rm_rf(Path.join(static, "cache_manifest.json"))
+    File.rm_rf(Path.join(static, "images"))
+  end
+
+  defp copy_static_images(_) do
+    source = Path.join([__DIR__, "images"])
+    destination = Path.join([__DIR__, "priv", "static", "images"])
+
+    if File.exists?(source) and File.dir?(source) do
+      File.mkdir_p!(Path.dirname(destination))
+      File.cp_r!(source, destination, force: true)
+    end
   end
 end

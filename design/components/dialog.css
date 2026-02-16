@@ -1,0 +1,82 @@
+@import "../main.css";
+
+@layer components {
+  .dialog [data-scope="dialog"][data-part="trigger"] {
+    @apply ui-trigger;
+  }
+
+  .dialog [data-scope="dialog"][data-part="close-trigger"] {
+    @apply ui-trigger ui-trigger--circle ui-trigger--sm;
+
+    flex-shrink: 0;
+    height: fit-content;
+  }
+
+  .dialog [data-scope="dialog"][data-part="backdrop"] {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: --alpha(var(--color-ui-accent) / 95%);
+    z-index: 10;
+  }
+
+  .dialog [data-scope="dialog"][data-part="positioner"] {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+
+  .dialog [data-scope="dialog"][data-part="content"] {
+    @apply ui-content;
+
+    max-width: var(--container-ui);
+    margin: var(--spacing-ui-padding);
+    padding: var(--spacing-ui-padding);
+  }
+
+
+  .dialog [data-scope="dialog"][data-part="header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-ui-gap);
+  }
+
+  .dialog [data-scope="dialog"][data-part="header"] [data-scope="dialog"][data-part="title"] {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .dialog [data-part="row"] {
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .dialog [data-scope="dialog"][data-part="title"],
+  .dialog [data-scope="dialog"][data-part="description"] {
+    margin-block: 0;
+  }
+
+  .dialog.dialog--side [data-scope="dialog"][data-part="positioner"] {
+    align-items: stretch;
+    justify-content: flex-start;
+    height: 100vh;
+  }
+
+  .dialog.dialog--side [data-scope="dialog"][data-part="content"] {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    padding: 0;
+    margin: 0;
+    border-radius: var(--radius-none);
+  }
+}

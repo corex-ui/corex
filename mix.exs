@@ -46,7 +46,10 @@ defmodule Corex.MixProject do
 
   defp aliases do
     [
+      compile: [&copy_design/1, "compile"],
       "assets.build": [
+        &clean_static_assets/1,
+        &copy_design/1,
         "esbuild module",
         "esbuild cdn",
         "esbuild cdn_min",
@@ -55,6 +58,23 @@ defmodule Corex.MixProject do
       ],
       "assets.watch": "esbuild module --watch"
     ]
+  end
+
+  defp clean_static_assets(_) do
+    static = Path.join([__DIR__, "priv", "static"])
+    design_dest = Path.join([__DIR__, "priv", "design"])
+    File.rm_rf(Path.join(static, "cache_manifest.json"))
+    File.rm_rf(design_dest)
+  end
+
+  defp copy_design(_) do
+    source = Path.join([__DIR__, "design"])
+    destination = Path.join([__DIR__, "priv", "design"])
+
+    if File.exists?(source) and File.dir?(source) do
+      File.mkdir_p!(Path.dirname(destination))
+      File.cp_r!(source, destination, force: true)
+    end
   end
 
   defp package do

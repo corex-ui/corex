@@ -1,0 +1,46 @@
+{
+  "text": {
+    "ui": {
+      "default": {
+        "value": "{text.ui.md}",
+        "type": "fontSizes"
+      },
+      "-line-height": {
+        "value": "{text.ui.md--line-height}",
+        "type": "dimension"
+      },
+      "sm": {
+        "value": "1rem",
+        "type": "fontSizes"
+      },
+      "sm--line-height": {
+        "value": "1.7",
+        "type": "dimension"
+      },
+      "md": {
+        "value": "1.125rem",
+        "type": "fontSizes"
+      },
+      "md--line-height": {
+        "value": "1.8",
+        "type": "dimension"
+      },
+      "lg": {
+        "value": "1.25rem",
+        "type": "fontSizes"
+      },
+      "lg--line-height": {
+        "value": "1.9",
+        "type": "dimension"
+      },
+      "xl": {
+        "value": "1.8rem",
+        "type": "fontSizes"
+      },
+      "xl--line-height": {
+        "value": "2",
+        "type": "dimension"
+      }
+    }
+  }
+}
