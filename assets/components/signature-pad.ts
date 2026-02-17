@@ -95,24 +95,18 @@ export class SignaturePad extends Component<Props, Api> {
     );
     if (clearBtn) {
       this.spreadProps(clearBtn, this.api.getClearTriggerProps());
-      const hasPaths = this.api.paths.length > 0 || !!this.api.currentPath;
-      clearBtn.hidden = !hasPaths;
     }
 
     const hiddenInput = rootEl.querySelector<HTMLInputElement>(
       '[data-scope="signature-pad"][data-part="hidden-input"]'
     );
     if (hiddenInput) {
-      const pathsForValue = this.paths.length > 0 ? this.paths : this.api.paths;
-      if (this.paths.length === 0 && this.api.paths.length > 0) {
-        this.paths = [...this.api.paths];
-      }
-      const pathsValue = pathsForValue.length > 0 ? JSON.stringify(pathsForValue) : "";
-      this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
-      if (this.name) {
-        hiddenInput.name = this.name;
-      }
-      hiddenInput.value = pathsValue;
+      this.spreadProps(
+        hiddenInput,
+        this.api.getHiddenInputProps({
+          value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : "",
+        })
+      );
     }
 
     this.syncPaths();

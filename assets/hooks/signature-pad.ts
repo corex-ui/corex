@@ -49,11 +49,14 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
+
         const hiddenInput = el.querySelector<HTMLInputElement>(
           '[data-scope="signature-pad"][data-part="hidden-input"]'
         );
         if (hiddenInput) {
-          hiddenInput.value = JSON.stringify(details.paths);
+          hiddenInput.value = details.paths.length > 0 ? JSON.stringify(details.paths) : "";
+          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
 
         details.getDataUrl("image/png").then((url) => {
@@ -87,29 +90,10 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     signaturePad.init();
     this.signaturePad = signaturePad;
 
-    const initialPaths = controlled ? paths : defaultPaths;
-    if (initialPaths.length > 0) {
-      const hiddenInput = el.querySelector<HTMLInputElement>(
-        '[data-scope="signature-pad"][data-part="hidden-input"]'
-      );
-      if (hiddenInput) {
-        hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-        hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    }
-
     this.onClear = (event: Event) => {
       const { id: targetId } = (event as CustomEvent<{ id: string }>).detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
-      signaturePad.imageURL = "";
-      signaturePad.setPaths([]);
-      const hiddenInput = el.querySelector<HTMLInputElement>(
-        '[data-scope="signature-pad"][data-part="hidden-input"]'
-      );
-      if (hiddenInput) {
-        hiddenInput.value = "";
-      }
     };
     el.addEventListener("phx:signature-pad:clear", this.onClear);
 
@@ -120,14 +104,7 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         const targetId = payload.signature_pad_id;
         if (targetId && targetId !== el.id) return;
         signaturePad.api.clear();
-        signaturePad.imageURL = "";
-        signaturePad.setPaths([]);
-        const hiddenInput = el.querySelector<HTMLInputElement>(
-          '[data-scope="signature-pad"][data-part="hidden-input"]'
-        );
-        if (hiddenInput) {
-          hiddenInput.value = "";
-        }
+       
       })
     );
   },
