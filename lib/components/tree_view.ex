@@ -127,6 +127,7 @@ defmodule Corex.TreeView do
     <div
       id={@id}
       phx-hook="TreeView"
+      phx-update="ignore"
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -141,7 +142,7 @@ defmodule Corex.TreeView do
         on_expanded_change: @on_expanded_change
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir})}>
         <%= if @label != [] do %>
           <h3 {Connect.label(%Label{id: @id, dir: @dir})}>
             <%= render_slot(@label) %>

@@ -36,7 +36,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
 
     const allItems = JSON.parse(el.dataset.collection || "[]");
-    const hasGroups = allItems.some((item: { group?: unknown }) => item.group !== undefined);
+    const hasGroups = allItems.some((item: { group?: unknown }) => Boolean(item.group));
 
     const props: Props = {
       id: el.id,
@@ -55,7 +55,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      name: getString(el, "name"),
+      name: "",
       form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
@@ -126,12 +126,18 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
           '[data-scope="combobox"][data-part="value-input"]'
         );
         if (valueInput) {
+          const toId = (val: string) => {
+            const item = allItems.find(
+              (i: { id?: string; label?: string }) => String(i.id ?? "") === val || i.label === val
+            );
+            return item ? String(item.id ?? "") : val;
+          };
           const idValue =
             details.value.length === 0
               ? ""
               : details.value.length === 1
-                ? String(details.value[0])
-                : details.value.map(String).join(",");
+                ? toId(String(details.value[0]))
+                : details.value.map((v) => toId(String(v))).join(",");
           valueInput.value = idValue;
 
           const formId = valueInput.getAttribute("form");
@@ -205,6 +211,14 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     combobox.setAllOptions(allItems);
     combobox.init();
 
+    const visibleInput = el.querySelector<HTMLInputElement>(
+      '[data-scope="combobox"][data-part="input"]'
+    );
+    if (visibleInput) {
+      visibleInput.removeAttribute("name");
+      visibleInput.removeAttribute("form");
+    }
+
     const initialValue = getBoolean(el, "controlled")
       ? getStringList(el, "value")
       : getStringList(el, "defaultValue");
@@ -236,7 +250,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item: { group?: unknown }) => item.group !== undefined);
+    const hasGroups = newCollection.some((item: { group?: unknown }) => Boolean(item.group));
 
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;

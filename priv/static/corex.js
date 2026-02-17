@@ -12499,7 +12499,7 @@ var Corex = (() => {
           return connect8(this.machine.service, normalizeProps);
         }
         renderItems() {
-          var _a, _b, _c;
+          var _a, _b, _c, _d;
           const contentEl = this.el.querySelector(
             '[data-scope="combobox"][data-part="content"]'
           );
@@ -12508,12 +12508,11 @@ var Corex = (() => {
           if (!templatesContainer) return;
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-          const items = this.api.collection.items;
-          const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
-          const hasGroupsInCollection = groups.some(([group2]) => group2 != null);
-          if (hasGroupsInCollection) {
+          if (this.hasGroups) {
+            const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
             this.renderGroupedItems(contentEl, templatesContainer, groups);
           } else {
+            const items = ((_d = this.options) == null ? void 0 : _d.length) ? this.options : this.allOptions;
             this.renderFlatItems(contentEl, templatesContainer, items);
           }
         }
@@ -12552,7 +12551,8 @@ var Corex = (() => {
           }
         }
         cloneItem(templatesContainer, item) {
-          const value = this.api.collection.getItemValue(item);
+          var _a, _b, _c, _d;
+          const value = (_d = (_c = (_b = (_a = this.api.collection).getItemValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : item.id) != null ? _d : "";
           const template = templatesContainer.querySelector(
             `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
           );
@@ -12599,7 +12599,7 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const allItems = JSON.parse(el.dataset.collection || "[]");
-          const hasGroups = allItems.some((item) => item.group !== void 0);
+          const hasGroups = allItems.some((item) => Boolean(item.group));
           const props26 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
@@ -12615,7 +12615,7 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             allowCustomValue: false,
             selectionBehavior: "replace",
-            name: getString(el, "name"),
+            name: "",
             form: getString(el, "form"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
@@ -12684,7 +12684,17 @@ var Corex = (() => {
                 '[data-scope="combobox"][data-part="value-input"]'
               );
               if (valueInput) {
-                const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+                const toId = (val) => {
+                  var _a;
+                  const item = allItems.find(
+                    (i2) => {
+                      var _a2;
+                      return String((_a2 = i2.id) != null ? _a2 : "") === val || i2.label === val;
+                    }
+                  );
+                  return item ? String((_a = item.id) != null ? _a : "") : val;
+                };
+                const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? toId(String(details.value[0])) : details.value.map((v2) => toId(String(v2))).join(",");
                 valueInput.value = idValue;
                 const formId = valueInput.getAttribute("form");
                 let form = null;
@@ -12749,6 +12759,13 @@ var Corex = (() => {
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
+          const visibleInput = el.querySelector(
+            '[data-scope="combobox"][data-part="input"]'
+          );
+          if (visibleInput) {
+            visibleInput.removeAttribute("name");
+            visibleInput.removeAttribute("form");
+          }
           const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
           if (initialValue && initialValue.length > 0) {
             const selectedItems = allItems.filter(
@@ -12779,7 +12796,7 @@ var Corex = (() => {
         },
         updated() {
           const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-          const hasGroups = newCollection.some((item) => item.group !== void 0);
+          const hasGroups = newCollection.some((item) => Boolean(item.group));
           if (this.combobox) {
             this.combobox.hasGroups = hasGroups;
             this.combobox.setAllOptions(newCollection);
@@ -28116,23 +28133,17 @@ var Corex = (() => {
           );
           if (clearBtn) {
             this.spreadProps(clearBtn, this.api.getClearTriggerProps());
-            const hasPaths = this.api.paths.length > 0 || !!this.api.currentPath;
-            clearBtn.hidden = !hasPaths;
           }
           const hiddenInput = rootEl.querySelector(
             '[data-scope="signature-pad"][data-part="hidden-input"]'
           );
           if (hiddenInput) {
-            const pathsForValue = this.paths.length > 0 ? this.paths : this.api.paths;
-            if (this.paths.length === 0 && this.api.paths.length > 0) {
-              this.paths = [...this.api.paths];
-            }
-            const pathsValue = pathsForValue.length > 0 ? JSON.stringify(pathsForValue) : "";
-            this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: pathsValue }));
-            if (this.name) {
-              hiddenInput.name = this.name;
-            }
-            hiddenInput.value = pathsValue;
+            this.spreadProps(
+              hiddenInput,
+              this.api.getHiddenInputProps({
+                value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : ""
+              })
+            );
           }
           this.syncPaths();
         }
@@ -28155,7 +28166,9 @@ var Corex = (() => {
                 '[data-scope="signature-pad"][data-part="hidden-input"]'
               );
               if (hiddenInput) {
-                hiddenInput.value = JSON.stringify(details.paths);
+                hiddenInput.value = details.paths.length > 0 ? JSON.stringify(details.paths) : "";
+                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
               }
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
@@ -28185,28 +28198,10 @@ var Corex = (() => {
           }));
           signaturePad.init();
           this.signaturePad = signaturePad;
-          const initialPaths = controlled ? paths : defaultPaths;
-          if (initialPaths.length > 0) {
-            const hiddenInput = el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (hiddenInput) {
-              hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-              hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-          }
           this.onClear = (event) => {
             const { id: targetId } = event.detail;
             if (targetId && targetId !== el.id) return;
             signaturePad.api.clear();
-            signaturePad.imageURL = "";
-            signaturePad.setPaths([]);
-            const hiddenInput = el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (hiddenInput) {
-              hiddenInput.value = "";
-            }
           };
           el.addEventListener("phx:signature-pad:clear", this.onClear);
           this.handlers = [];
@@ -28215,14 +28210,6 @@ var Corex = (() => {
               const targetId = payload.signature_pad_id;
               if (targetId && targetId !== el.id) return;
               signaturePad.api.clear();
-              signaturePad.imageURL = "";
-              signaturePad.setPaths([]);
-              const hiddenInput = el.querySelector(
-                '[data-scope="signature-pad"][data-part="hidden-input"]'
-              );
-              if (hiddenInput) {
-                hiddenInput.value = "";
-              }
             })
           );
         },
@@ -33235,12 +33222,6 @@ var Corex = (() => {
           );
         },
         updated() {
-          var _a;
-          if (!getBoolean(this.el, "controlled")) return;
-          (_a = this.treeView) == null ? void 0 : _a.updateProps({
-            expandedValue: getStringList(this.el, "expandedValue"),
-            selectedValue: getStringList(this.el, "selectedValue")
-          });
         },
         destroyed() {
           var _a;

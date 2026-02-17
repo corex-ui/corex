@@ -128,10 +128,6 @@ defmodule Corex.SignaturePad do
 
   ### With Ecto changeset
 
-  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
-
-  This allows the Live View to be the source of truth and the component to be in sync accordingly.
-
   First create your schema and changeset:
 
   ```elixir
@@ -174,7 +170,6 @@ defmodule Corex.SignaturePad do
           field={@form[:signature]}
           id="my-signature-pad"
           class="signature-pad"
-          controlled
         >
           <:label>Sign here</:label>
           <:clear_trigger>
@@ -418,7 +413,13 @@ defmodule Corex.SignaturePad do
           {render_slot(@label)}
         </label>
         <div {Connect.control(%Control{id: @id, dir: @dir})}>
-          <svg {Connect.segment(%Segment{id: @id, dir: @dir})}>
+          <svg {Connect.segment(%Segment{id: @id, dir: @dir})} fill={@drawing_fill}>
+            <path
+              :for={path <- parse_paths(@paths)}
+              data-scope="signature-pad"
+              data-part="path"
+              d={path}
+            />
           </svg>
           <button
             :if={@clear_trigger != []}
@@ -492,4 +493,17 @@ defmodule Corex.SignaturePad do
   end
 
   defp has_paths?(_), do: false
+
+  defp parse_paths(nil), do: []
+  defp parse_paths(""), do: []
+  defp parse_paths(paths) when is_list(paths), do: Enum.filter(paths, &is_binary/1)
+
+  defp parse_paths(paths) when is_binary(paths) do
+    case Corex.Json.encoder().decode(paths) do
+      {:ok, list} when is_list(list) -> Enum.filter(list, &is_binary/1)
+      _ -> []
+    end
+  end
+
+  defp parse_paths(_), do: []
 end

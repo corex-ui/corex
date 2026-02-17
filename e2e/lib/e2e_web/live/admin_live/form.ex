@@ -60,7 +60,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad" controlled>
+        <.signature_pad field={@form[:signature]} class="signature-pad">
           <:label>Sign here</:label>
           <:clear_trigger>
             <.icon name="hero-x-mark" />
