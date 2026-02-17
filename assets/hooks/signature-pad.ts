@@ -104,7 +104,6 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
         const targetId = payload.signature_pad_id;
         if (targetId && targetId !== el.id) return;
         signaturePad.api.clear();
-       
       })
     );
   },

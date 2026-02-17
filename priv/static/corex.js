@@ -12599,7 +12599,7 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const allItems = JSON.parse(el.dataset.collection || "[]");
-          const hasGroups = allItems.some((item) => item.group !== void 0);
+          const hasGroups = allItems.some((item) => Boolean(item.group));
           const props26 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
@@ -12779,7 +12779,7 @@ var Corex = (() => {
         },
         updated() {
           const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-          const hasGroups = newCollection.some((item) => item.group !== void 0);
+          const hasGroups = newCollection.some((item) => Boolean(item.group));
           if (this.combobox) {
             this.combobox.hasGroups = hasGroups;
             this.combobox.setAllOptions(newCollection);
@@ -28121,7 +28121,12 @@ var Corex = (() => {
             '[data-scope="signature-pad"][data-part="hidden-input"]'
           );
           if (hiddenInput) {
-            this.spreadProps(hiddenInput, this.api.getHiddenInputProps({ value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : "" }));
+            this.spreadProps(
+              hiddenInput,
+              this.api.getHiddenInputProps({
+                value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : ""
+              })
+            );
           }
           this.syncPaths();
         }
@@ -28180,14 +28185,6 @@ var Corex = (() => {
             const { id: targetId } = event.detail;
             if (targetId && targetId !== el.id) return;
             signaturePad.api.clear();
-            signaturePad.imageURL = "";
-            signaturePad.setPaths([]);
-            const hiddenInput = el.querySelector(
-              '[data-scope="signature-pad"][data-part="hidden-input"]'
-            );
-            if (hiddenInput) {
-              hiddenInput.value = "";
-            }
           };
           el.addEventListener("phx:signature-pad:clear", this.onClear);
           this.handlers = [];
@@ -28196,14 +28193,6 @@ var Corex = (() => {
               const targetId = payload.signature_pad_id;
               if (targetId && targetId !== el.id) return;
               signaturePad.api.clear();
-              signaturePad.imageURL = "";
-              signaturePad.setPaths([]);
-              const hiddenInput = el.querySelector(
-                '[data-scope="signature-pad"][data-part="hidden-input"]'
-              );
-              if (hiddenInput) {
-                hiddenInput.value = "";
-              }
             })
           );
         },

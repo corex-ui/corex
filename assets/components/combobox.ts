@@ -94,14 +94,11 @@ export class Combobox extends Component<Props, Api> {
       .querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])')
       .forEach((el) => el.remove());
 
-    const items = this.api.collection.items;
-
-    const groups = this.api.collection.group?.() ?? [];
-    const hasGroupsInCollection = groups.some(([group]) => group != null);
-
-    if (hasGroupsInCollection) {
+    if (this.hasGroups) {
+      const groups = this.api.collection.group?.() ?? [];
       this.renderGroupedItems(contentEl, templatesContainer, groups);
     } else {
+      const items = this.options?.length ? this.options : this.allOptions;
       this.renderFlatItems(contentEl, templatesContainer, items);
     }
   }
@@ -159,9 +156,8 @@ export class Combobox extends Component<Props, Api> {
   }
 
   cloneItem(templatesContainer: HTMLElement, item: ComboboxItem): HTMLElement | null {
-    const value = this.api.collection.getItemValue(item);
+    const value = (this.api.collection.getItemValue?.(item) as string | undefined) ?? item.id ?? "";
 
-    // Find template by data-value (templates are rendered per item in Elixir when custom slots are used)
     const template = templatesContainer.querySelector<HTMLElement>(
       `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
     );

@@ -36,7 +36,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
 
     const allItems = JSON.parse(el.dataset.collection || "[]");
-    const hasGroups = allItems.some((item: { group?: unknown }) => item.group !== undefined);
+    const hasGroups = allItems.some((item: { group?: unknown }) => Boolean(item.group));
 
     const props: Props = {
       id: el.id,
@@ -236,7 +236,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & ComboboxHookState) {
     const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item: { group?: unknown }) => item.group !== undefined);
+    const hasGroups = newCollection.some((item: { group?: unknown }) => Boolean(item.group));
 
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;

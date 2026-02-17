@@ -1665,12 +1665,11 @@ var Combobox = class extends Component {
     if (!templatesContainer) return;
     contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
     contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-    const items = this.api.collection.items;
-    const groups = this.api.collection.group?.() ?? [];
-    const hasGroupsInCollection = groups.some(([group]) => group != null);
-    if (hasGroupsInCollection) {
+    if (this.hasGroups) {
+      const groups = this.api.collection.group?.() ?? [];
       this.renderGroupedItems(contentEl, templatesContainer, groups);
     } else {
+      const items = this.options?.length ? this.options : this.allOptions;
       this.renderFlatItems(contentEl, templatesContainer, items);
     }
   }
@@ -1709,7 +1708,7 @@ var Combobox = class extends Component {
     }
   }
   cloneItem(templatesContainer, item) {
-    const value = this.api.collection.getItemValue(item);
+    const value = this.api.collection.getItemValue?.(item) ?? (item.id ?? "");
     const template = templatesContainer.querySelector(
       `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
     );
@@ -1769,7 +1768,7 @@ var ComboboxHook = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
-    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const hasGroups = allItems.some((item) => Boolean(item.group));
     const props2 = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
@@ -1943,7 +1942,7 @@ var ComboboxHook = {
   },
   updated() {
     const newCollection = JSON.parse(this.el.dataset.collection || "[]");
-    const hasGroups = newCollection.some((item) => item.group !== void 0);
+    const hasGroups = newCollection.some((item) => Boolean(item.group));
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
