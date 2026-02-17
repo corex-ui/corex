@@ -1532,11 +1532,6 @@ var TreeViewHook = {
     );
   },
   updated() {
-    if (!getBoolean(this.el, "controlled")) return;
-    this.treeView?.updateProps({
-      expandedValue: getStringList(this.el, "expandedValue"),
-      selectedValue: getStringList(this.el, "selectedValue")
-    });
   },
   destroyed() {
     if (this.onSetExpandedValue) {

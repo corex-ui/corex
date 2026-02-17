@@ -128,8 +128,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         if (valueInput) {
           const toId = (val: string) => {
             const item = allItems.find(
-              (i: { id?: string; label?: string }) =>
-                String(i.id ?? "") === val || i.label === val
+              (i: { id?: string; label?: string }) => String(i.id ?? "") === val || i.label === val
             );
             return item ? String(item.id ?? "") : val;
           };

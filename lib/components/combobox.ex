@@ -268,7 +268,7 @@ defmodule Corex.Combobox do
     raw_value = get_value(field.value)
     value = normalize_value_to_ids(assigns.collection, raw_value)
     selected_label = get_selected_label(assigns.collection, value)
-    IO.inspect(errors)
+
     assigns
     |> assign(field: nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))

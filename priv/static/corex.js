@@ -12615,7 +12615,7 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             allowCustomValue: false,
             selectionBehavior: "replace",
-            name: getString(el, "name"),
+            name: "",
             form: getString(el, "form"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
@@ -12759,6 +12759,13 @@ var Corex = (() => {
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
+          const visibleInput = el.querySelector(
+            '[data-scope="combobox"][data-part="input"]'
+          );
+          if (visibleInput) {
+            visibleInput.removeAttribute("name");
+            visibleInput.removeAttribute("form");
+          }
           const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
           if (initialValue && initialValue.length > 0) {
             const selectedItems = allItems.filter(
@@ -33215,12 +33222,6 @@ var Corex = (() => {
           );
         },
         updated() {
-          var _a;
-          if (!getBoolean(this.el, "controlled")) return;
-          (_a = this.treeView) == null ? void 0 : _a.updateProps({
-            expandedValue: getStringList(this.el, "expandedValue"),
-            selectedValue: getStringList(this.el, "selectedValue")
-          });
         },
         destroyed() {
           var _a;
