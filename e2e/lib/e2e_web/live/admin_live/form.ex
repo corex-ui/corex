@@ -21,8 +21,8 @@ defmodule E2eWeb.AdminLive.Form do
       >
         <.input field={@form[:name]} type="text" label="Name" />
 
-        <.select
-          class="select"
+        <.combobox
+          class="combobox"
           field={@form[:country]}
           controlled
           placeholder_text="Select a country"
@@ -42,7 +42,7 @@ defmodule E2eWeb.AdminLive.Form do
             <.icon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
-        </.select>
+        </.combobox>
 
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Select a date</:label>

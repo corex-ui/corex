@@ -268,7 +268,7 @@ defmodule Corex.Combobox do
     raw_value = get_value(field.value)
     value = normalize_value_to_ids(assigns.collection, raw_value)
     selected_label = get_selected_label(assigns.collection, value)
-
+    IO.inspect(errors)
     assigns
     |> assign(field: nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
@@ -319,7 +319,7 @@ defmodule Corex.Combobox do
       bubble: @bubble, disabled: @disabled
     })}>
       <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
-        <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="combobox" data-part="value-input" value={@value_for_hidden_input} />
+        <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="combobox" data-part="value-input" value={@value_for_hidden_input} required={@required} />
 
         <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}

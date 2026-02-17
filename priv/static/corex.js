@@ -12499,7 +12499,7 @@ var Corex = (() => {
           return connect8(this.machine.service, normalizeProps);
         }
         renderItems() {
-          var _a, _b, _c;
+          var _a, _b, _c, _d;
           const contentEl = this.el.querySelector(
             '[data-scope="combobox"][data-part="content"]'
           );
@@ -12508,12 +12508,11 @@ var Corex = (() => {
           if (!templatesContainer) return;
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-          const items = this.api.collection.items;
-          const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
-          const hasGroupsInCollection = groups.some(([group2]) => group2 != null);
-          if (hasGroupsInCollection) {
+          if (this.hasGroups) {
+            const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
             this.renderGroupedItems(contentEl, templatesContainer, groups);
           } else {
+            const items = ((_d = this.options) == null ? void 0 : _d.length) ? this.options : this.allOptions;
             this.renderFlatItems(contentEl, templatesContainer, items);
           }
         }
@@ -12552,7 +12551,8 @@ var Corex = (() => {
           }
         }
         cloneItem(templatesContainer, item) {
-          const value = this.api.collection.getItemValue(item);
+          var _a, _b, _c, _d;
+          const value = (_d = (_c = (_b = (_a = this.api.collection).getItemValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : item.id) != null ? _d : "";
           const template = templatesContainer.querySelector(
             `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
           );
@@ -12684,7 +12684,17 @@ var Corex = (() => {
                 '[data-scope="combobox"][data-part="value-input"]'
               );
               if (valueInput) {
-                const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+                const toId = (val) => {
+                  var _a;
+                  const item = allItems.find(
+                    (i2) => {
+                      var _a2;
+                      return String((_a2 = i2.id) != null ? _a2 : "") === val || i2.label === val;
+                    }
+                  );
+                  return item ? String((_a = item.id) != null ? _a : "") : val;
+                };
+                const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? toId(String(details.value[0])) : details.value.map((v2) => toId(String(v2))).join(",");
                 valueInput.value = idValue;
                 const formId = valueInput.getAttribute("form");
                 let form = null;

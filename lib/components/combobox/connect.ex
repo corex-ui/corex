@@ -106,7 +106,6 @@ defmodule Corex.Combobox.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "aria-controls" => "combobox:#{assigns.id}:content",
       "placeholder" => assigns.placeholder,
-      "required" => get_boolean(assigns.required),
       "autoFocus" => get_boolean(assigns.auto_focus)
     }
   end

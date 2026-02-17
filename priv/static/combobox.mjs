@@ -1708,7 +1708,7 @@ var Combobox = class extends Component {
     }
   }
   cloneItem(templatesContainer, item) {
-    const value = this.api.collection.getItemValue?.(item) ?? (item.id ?? "");
+    const value = this.api.collection.getItemValue?.(item) ?? item.id ?? "";
     const template = templatesContainer.querySelector(
       `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
     );
@@ -1784,7 +1784,7 @@ var ComboboxHook = {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      name: getString(el, "name"),
+      name: "",
       form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
@@ -1853,7 +1853,13 @@ var ComboboxHook = {
           '[data-scope="combobox"][data-part="value-input"]'
         );
         if (valueInput) {
-          const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+          const toId = (val) => {
+            const item = allItems.find(
+              (i) => String(i.id ?? "") === val || i.label === val
+            );
+            return item ? String(item.id ?? "") : val;
+          };
+          const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? toId(String(details.value[0])) : details.value.map((v) => toId(String(v))).join(",");
           valueInput.value = idValue;
           const formId = valueInput.getAttribute("form");
           let form = null;
@@ -1918,6 +1924,13 @@ var ComboboxHook = {
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();
+    const visibleInput = el.querySelector(
+      '[data-scope="combobox"][data-part="input"]'
+    );
+    if (visibleInput) {
+      visibleInput.removeAttribute("name");
+      visibleInput.removeAttribute("form");
+    }
     const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
     if (initialValue && initialValue.length > 0) {
       const selectedItems = allItems.filter(
