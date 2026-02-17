@@ -124,11 +124,11 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
-    // if (!getBoolean(this.el, "controlled")) return;
-    // this.treeView?.updateProps({
-    //   expandedValue: getStringList(this.el, "expandedValue"),
-    //   selectedValue: getStringList(this.el, "selectedValue"),
-    // });
+    if (!getBoolean(this.el, "controlled")) return;
+    this.treeView?.updateProps({
+      expandedValue: getStringList(this.el, "expandedValue"),
+      selectedValue: getStringList(this.el, "selectedValue"),
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
