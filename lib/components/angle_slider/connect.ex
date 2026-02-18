@@ -47,7 +47,6 @@ defmodule Corex.AngleSlider.Connect do
       "data-scope" => "angle-slider",
       "data-part" => "root",
       "dir" => assigns.dir,
-      "id" => "angle-slider:#{assigns.id}",
       "style" => "--value:#{value};--angle:#{angle};"
     }
   end

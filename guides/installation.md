@@ -18,11 +18,18 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 > You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 > 
 
+## Live Demo
 
-This guide will walk you through installing and configuring Corex in your Phoenix application.
+To preview the components, a Live Demo is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
+
+This is still in an early stage and will evolve with future stable releases.
+
+Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*. 
 
 
 ## Phoenix App
+
+This guide will walk you through installing and configuring Corex in your Phoenix application.
 
 If you don't already have a [Phoenix app up and running](https://hexdocs.pm/phoenix/up_and_running.html) you can run
 
@@ -66,7 +73,7 @@ In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocke
 
 Each hook uses dynamic `import()` so component JavaScript is loaded only when a DOM element with that hook is mounted. If a component never appears on a page, its chunk is never fetched. See the Performance section below for how this works and the required build configuration.
 
-To load all hooks:
+To load all hooks (in dev only):
 
 ```javascript
 import corex from "corex"
@@ -80,7 +87,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-To register only the hooks you use:
+To register only the hooks you use (recommended for production):
 
 ```javascript
 import { hooks } from "corex"
@@ -94,13 +101,25 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-### Load app script
+### Esbuild
 
-Load your app script with `type="module"` in your root layout, for example in `root.html.heex`:
+- Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
+
+```elixir
+config :esbuild,
+  version: "0.25.4",
+  e2e: [
+    args:
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+- Load your app script with `type="module"` in your root layout in `root.html.heex`:
 
 ```heex
-<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
-</script>
+<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
 ```
 
 ## Import Components
@@ -375,40 +394,29 @@ In order to use the API, you must use an id on the component
 
 ## Performance
 
-Corex hooks load component JavaScript only when a DOM element with that hook is mounted. This requires ESM format and code splitting.
+During development only, you may experience a slowdown in performance and reactivity, especially on low specification local machines.
+This is due to Esbuild and Tailwind compiler serving unminified assets during development.
+In order to improve performance during development, you can `minify` assets.
+You may not need to minify both; in my case, only Tailwind needs to be minified in order to improve performance.
 
-### 1. Build configuration (ESM and splitting)
-
-Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
+- In your `mix.exs` add `--minify` option to Tailwind and/or Esbuild
 
 ```elixir
-config :esbuild,
-  version: "0.25.4",
-  e2e: [
-    args:
-      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+     "assets.build": [
+        "compile",
+        "tailwind e2e --minify",
+        "esbuild e2e --minify"
+      ]
+```
+
+- In your `config/dev.exs` add `--minify` option to Tailwind and/or Esbuild watchers
+
+```elixir
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch --minify)]},
+    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
   ]
 ```
 
-### 2. Enable gzip for Plug.Static
-
-Set `gzip: true` on `Plug.Static` in your endpoint so that pre-compressed `.gz` files are served when the client supports them.
-
-### 3. How dynamic hook loading works
-
-1. **App start** – Corex registers small stubs (e.g. Accordion, Combobox) as LiveSocket hooks. Each stub stores a function like `() => import("corex/accordion")` but does not run it yet.
-2. **Page load** – If the page has no Corex components, no component code is loaded.
-3. **Component appears** – When LiveView renders an element with `phx-hook="Accordion"`, LiveSocket mounts that hook and calls the stub's `mounted()`.
-4. **Dynamic load** – Inside `mounted()`, the stub runs `await import("corex/accordion")`. The browser fetches and executes the accordion chunk for the first time. The stub then delegates to the real hook.
-5. **Result** – Each component's JavaScript is loaded only when a DOM element with its `phx-hook` is mounted. If a component never appears on a page, its chunk is never fetched.
-
-### 4. Compression and dev performance
-
-In development, watchers output unminified, uncompressed assets. `Plug.Static` with `gzip: true` only serves pre-existing `.gz` files; watchers do not create them. If the app feels slow in development (especially with many nested components):
-
-1. Run `mix assets.deploy` instead of `mix assets.build` before `mix phx.server` for production-like asset output (minified and compressed).
-2. Ensure `gzip: true` is set on `Plug.Static` in your endpoint.
 
 See the [Production guide](production.html) for the final build in production.

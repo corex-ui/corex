@@ -340,6 +340,7 @@ defmodule E2eWeb.Layouts do
         children: [
           [label: "Controller", id: "/#{locale}/angle-slider"],
           [label: "Live", id: "/#{locale}/live/angle-slider"],
+          [label: "Playground", id: "/#{locale}/playground/angle-slider"],
           [label: "Controlled", id: "/#{locale}/controlled/angle-slider"]
         ]
       ],

@@ -47,6 +47,7 @@ defmodule E2eWeb.Router do
       live "/live/toggle-group", ToggleGroupLive
       live "/live/tree-view", TreeViewLive
       live "/live/angle-slider", AngleSliderLive
+      live "/playground/angle-slider", AngleSliderPlayLive
       live "/controlled/angle-slider", AngleSliderControlledLive
       live "/live/avatar", AvatarLive
       live "/live/carousel", CarouselLive

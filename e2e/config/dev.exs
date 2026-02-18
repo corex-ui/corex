@@ -25,7 +25,7 @@ config :e2e, E2eWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "JQ3bjpj3drUYoLh2G4QBZr8KpmxWvAJGLV6DZzv9mIRqOkQqhpZwtu9np9fwDeSX",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch --minify)]},
+    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
   ]
 

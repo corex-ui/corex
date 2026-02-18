@@ -11,7 +11,15 @@
     color: var(--color-root--text);
     border-radius: var(--radius-ui);
     border: 1px solid var(--color-root--border);
+    position: relative;
   }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
 
   .angle-slider [data-scope="angle-slider"][data-part="label"] {
     @apply ui-label;
@@ -139,11 +147,14 @@
 
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-invalid]
-    [data-scope="angle-slider"][data-part="value-text"]
-    [data-part="text"] {
-    color: var(--color-root--alert);
+    [data-scope="angle-slider"][data-part="control"] {
+    border-color: var(--color-root--alert);
   }
 
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-invalid]
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="text"],
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-invalid]
     [data-scope="angle-slider"][data-part="value-text"]
@@ -154,7 +165,37 @@
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-invalid]
     [data-scope="angle-slider"][data-part="thumb"]::before {
-    color: var(--color-root--alert);
+    background-color: var(--color-root--alert);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-invalid]
+    [data-scope="angle-slider"][data-part="marker"][data-state="under-value"] {
+    --marker-color: var(--color-root--alert);
+  }
+
+  /* .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-readonly],
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-read-only] {
+    padding-inline-end: var(--spacing-ui-padding);
+  } */
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-readonly]::after,
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-read-only]::after {
+    content: "";
+    position: absolute;
+    bottom: var(--spacing-ui-padding);
+    right: var(--spacing-ui-padding);
+    width: 1em;
+    height: 1em;
+    background-color: var(--color-ui--muted);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1ZM8.5 5.5V9H14V5.5a3.5 3.5 0 1 0-7 0Z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="hidden-input"] {

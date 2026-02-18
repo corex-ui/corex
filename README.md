@@ -17,6 +17,14 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 > It's not recommended for production use at this time.
 > You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 
+## Live Demo
+
+To preview the components, a Live Demo is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
+
+This is still in an early stage and will evolve with future stable releases.
+
+Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*. 
+
 
 ## Documentation
 
@@ -68,7 +76,11 @@ config :corex,
 
 ### Import Corex Hooks
 
-In your `assets/js/app.js`, import and register the Corex hooks.
+In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocket.
+
+Each hook uses dynamic `import()` so component JavaScript is loaded only when a DOM element with that hook is mounted. If a component never appears on a page, its chunk is never fetched. See the Performance section below for how this works and the required build configuration.
+
+To load all hooks (in dev only):
 
 ```javascript
 import corex from "corex"
@@ -82,7 +94,40 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-Each component chunk loads when first mounted.
+To register only the hooks you use (recommended for production):
+
+```javascript
+import { hooks } from "corex"
+```
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: {_csrf_token: csrfToken},
+  hooks: {...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"])}
+})
+```
+
+### Esbuild
+
+- Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
+
+```elixir
+config :esbuild,
+  version: "0.25.4",
+  e2e: [
+    args:
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+- Load your app script with `type="module"` in your root layout in `root.html.heex`:
+
+```heex
+<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
+```
 
 ## Import Components
 
@@ -357,36 +402,28 @@ In order to use the API, you must use an id on the component
 
 ## Performance
 
-By default Phoenix esbuild is set to bundle all the JS into a single file.
+During development only, you may experience a slowdown in performance and reactivity, especially on low specification local machines.
+This is due to Esbuild and Tailwind compiler serving unminified assets during development.
+In order to improve performance during development, you can `minify` assets.
+You may not need to minify both; in my case, only Tailwind needs to be minified in order to improve performance.
 
-### 1.Enable splitting
-
-In order to enable splitting add the following `--format=esm --splitting` to your esbuild config
+- In your `mix.exs` add `--minify` option to Tailwind and/or Esbuild
 
 ```elixir
-config :esbuild,
-  version: "0.25.4",
-  e2e: [
-    args:
-      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
-  ]
+     "assets.build": [
+        "compile",
+        "tailwind e2e --minify",
+        "esbuild e2e --minify"
+      ]
 ```
 
-Run `mix assets.build` and see the magic happening
+- In your `config/dev.exs` add `--minify` option to Tailwind and/or Esbuild watchers
 
-### 2.Enable gzip for Plug.Static
-
-In your `endpoint.ex` enable gzip for developement also
-
-```elexir
-  plug Plug.Static,
-    at: "/",
-    from: :e2e,
-    gzip: true,
-    only: E2eWeb.static_paths(),
-    raise_on_missing_only: code_reloading?
+```elixir
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch --minify)]},
+    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
+  ]
 ```
 
 See the [Production guide](https://hexdocs.pm/corex/production.html) for the final build in production environnement

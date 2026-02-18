@@ -16,7 +16,6 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
     const value = getNumber(el, "value");
     const defaultValue = getNumber(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
-    let skipNextOnValueChange = false;
 
     const zag = new AngleSlider(el, {
       id: el.id,
@@ -28,23 +27,42 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
       name: getString(el, "name"),
       dir: getString<"ltr" | "rtl">(el, "dir", ["ltr", "rtl"]),
       onValueChange: (details: ValueChangeDetails) => {
-        if (skipNextOnValueChange) {
-          skipNextOnValueChange = false;
-          return;
-        }
-        if (controlled) {
-          skipNextOnValueChange = true;
-          zag.api.setValue(details.value);
-        } else {
-          const hiddenInput = el.querySelector<HTMLInputElement>(
-            '[data-scope="angle-slider"][data-part="hidden-input"]'
-          );
-          if (hiddenInput) {
-            hiddenInput.value = String(details.value);
-            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
+        // if (skipNextOnValueChange) {
+        //   skipNextOnValueChange = false;
+        //   return;
+        // }
+        // if (controlled) {
+        //   skipNextOnValueChange = true;
+        //   zag.api.setValue(details.value);
+        // } else {
+        //   const hiddenInput = el.querySelector<HTMLInputElement>(
+        //     '[data-scope="angle-slider"][data-part="hidden-input"]'
+        //   );
+        //   if (hiddenInput) {
+        //     hiddenInput.value = String(details.value);
+        //     hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        //     hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        //   }
+        // }
+        //  if (skipNextOnValueChange) {
+        //   skipNextOnValueChange = false;
+        //   return;
+        // }
+        // if (controlled) {
+        //   skipNextOnValueChange = true;
+        //   zag.api.setValue(details.value);
+        // } 
+                //   const hiddenInput = el.querySelector<HTMLInputElement>(
+        //     '[data-scope="angle-slider"][data-part="hidden-input"]'
+        //   );
+          //    const hiddenInput = el.querySelector<HTMLInputElement>(
+          //   '[data-scope="angle-slider"][data-part="hidden-input"]'
+          // );
+          // if (hiddenInput) {
+          //   hiddenInput.value = String(details.value);
+          //   hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+          //   hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+          // }
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           this.pushEvent(eventName, {
@@ -64,16 +82,16 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
         }
       },
       onValueChangeEnd: (details: ValueChangeDetails) => {
-        if (controlled) {
-          const hiddenInput = el.querySelector<HTMLInputElement>(
-            '[data-scope="angle-slider"][data-part="hidden-input"]'
-          );
-          if (hiddenInput) {
-            hiddenInput.value = String(details.value);
-            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
+        // if (controlled) {
+        //   const hiddenInput = el.querySelector<HTMLInputElement>(
+        //     '[data-scope="angle-slider"][data-part="hidden-input"]'
+        //   );
+        //   if (hiddenInput) {
+        //     hiddenInput.value = String(details.value);
+        //     hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        //     hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        //   }
+        // }
         const eventName = getString(el, "onValueChangeEnd");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           this.pushEvent(eventName, {
@@ -130,16 +148,20 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
     const value = getNumber(this.el, "value");
+    const defaultValue = getNumber(this.el, "defaultValue");
+
     const controlled = getBoolean(this.el, "controlled");
     this.angleSlider?.updateProps({
       id: this.el.id,
-      ...(controlled && value !== undefined ? { value } : {}),
+      ...(controlled && value !== undefined ? { value } : { defaultValue: defaultValue ?? 0 }),
       step: getNumber(this.el, "step") ?? 1,
       disabled: getBoolean(this.el, "disabled"),
       readOnly: getBoolean(this.el, "readOnly"),
       invalid: getBoolean(this.el, "invalid"),
       name: getString(this.el, "name"),
+      dir: getString<"ltr" | "rtl">(this.el, "dir", ["ltr", "rtl"]),
     } as Partial<Props>);
+
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {

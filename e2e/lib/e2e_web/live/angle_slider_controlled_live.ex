@@ -81,7 +81,7 @@ defmodule E2eWeb.AngleSliderControlledLive do
         class="angle-slider"
         marker_values={[0, 90, 180, 270]}
         value={@angle}
-        controlled
+
         on_value_change="angle_changed"
       >
         <:label>Angle</:label>
