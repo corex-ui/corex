@@ -466,7 +466,6 @@ var AngleSliderHook = {
     const value = getNumber(el, "value");
     const defaultValue = getNumber(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
-    let skipNextOnValueChange = false;
     const zag = new AngleSlider(el, {
       id: el.id,
       ...controlled && value !== void 0 ? { value } : { defaultValue: defaultValue ?? 0 },
@@ -476,24 +475,9 @@ var AngleSliderHook = {
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       dir: getString(el, "dir", ["ltr", "rtl"]),
+      "aria-label": getString(el, "aria-label"),
+      "aria-labelledby": getString(el, "aria-labelledby"),
       onValueChange: (details) => {
-        if (skipNextOnValueChange) {
-          skipNextOnValueChange = false;
-          return;
-        }
-        if (controlled) {
-          skipNextOnValueChange = true;
-          zag.api.setValue(details.value);
-        } else {
-          const hiddenInput = el.querySelector(
-            '[data-scope="angle-slider"][data-part="hidden-input"]'
-          );
-          if (hiddenInput) {
-            hiddenInput.value = String(details.value);
-            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           this.pushEvent(eventName, {
@@ -513,16 +497,6 @@ var AngleSliderHook = {
         }
       },
       onValueChangeEnd: (details) => {
-        if (controlled) {
-          const hiddenInput = el.querySelector(
-            '[data-scope="angle-slider"][data-part="hidden-input"]'
-          );
-          if (hiddenInput) {
-            hiddenInput.value = String(details.value);
-            hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-            hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-        }
         const eventName = getString(el, "onValueChangeEnd");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           this.pushEvent(eventName, {
@@ -575,15 +549,17 @@ var AngleSliderHook = {
   },
   updated() {
     const value = getNumber(this.el, "value");
+    const defaultValue = getNumber(this.el, "defaultValue");
     const controlled = getBoolean(this.el, "controlled");
     this.angleSlider?.updateProps({
       id: this.el.id,
-      ...controlled && value !== void 0 ? { value } : {},
+      ...controlled && value !== void 0 ? { value } : { defaultValue: defaultValue ?? 0 },
       step: getNumber(this.el, "step") ?? 1,
       disabled: getBoolean(this.el, "disabled"),
       readOnly: getBoolean(this.el, "readOnly"),
       invalid: getBoolean(this.el, "invalid"),
-      name: getString(this.el, "name")
+      name: getString(this.el, "name"),
+      dir: getString(this.el, "dir", ["ltr", "rtl"])
     });
   },
   destroyed() {

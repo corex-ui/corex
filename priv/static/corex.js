@@ -4048,7 +4048,6 @@ var Corex = (() => {
           const value = getNumber(el, "value");
           const defaultValue = getNumber(el, "defaultValue");
           const controlled = getBoolean(el, "controlled");
-          let skipNextOnValueChange = false;
           const zag = new AngleSlider(el, __spreadProps(__spreadValues({
             id: el.id
           }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : 0 }), {
@@ -4058,24 +4057,9 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             dir: getString(el, "dir", ["ltr", "rtl"]),
+            "aria-label": getString(el, "aria-label"),
+            "aria-labelledby": getString(el, "aria-labelledby"),
             onValueChange: (details) => {
-              if (skipNextOnValueChange) {
-                skipNextOnValueChange = false;
-                return;
-              }
-              if (controlled) {
-                skipNextOnValueChange = true;
-                zag.api.setValue(details.value);
-              } else {
-                const hiddenInput = el.querySelector(
-                  '[data-scope="angle-slider"][data-part="hidden-input"]'
-                );
-                if (hiddenInput) {
-                  hiddenInput.value = String(details.value);
-                  hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                  hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
               const eventName = getString(el, "onValueChange");
               if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
                 this.pushEvent(eventName, {
@@ -4095,16 +4079,6 @@ var Corex = (() => {
               }
             },
             onValueChangeEnd: (details) => {
-              if (controlled) {
-                const hiddenInput = el.querySelector(
-                  '[data-scope="angle-slider"][data-part="hidden-input"]'
-                );
-                if (hiddenInput) {
-                  hiddenInput.value = String(details.value);
-                  hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                  hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-                }
-              }
               const eventName = getString(el, "onValueChangeEnd");
               if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
                 this.pushEvent(eventName, {
@@ -4158,15 +4132,17 @@ var Corex = (() => {
         updated() {
           var _a, _b;
           const value = getNumber(this.el, "value");
+          const defaultValue = getNumber(this.el, "defaultValue");
           const controlled = getBoolean(this.el, "controlled");
           (_b = this.angleSlider) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled && value !== void 0 ? { value } : {}), {
+          }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : 0 }), {
             step: (_a = getNumber(this.el, "step")) != null ? _a : 1,
             disabled: getBoolean(this.el, "disabled"),
             readOnly: getBoolean(this.el, "readOnly"),
             invalid: getBoolean(this.el, "invalid"),
-            name: getString(this.el, "name")
+            name: getString(this.el, "name"),
+            dir: getString(this.el, "dir", ["ltr", "rtl"])
           }));
         },
         destroyed() {
@@ -33222,6 +33198,12 @@ var Corex = (() => {
           );
         },
         updated() {
+          var _a;
+          if (!getBoolean(this.el, "controlled")) return;
+          (_a = this.treeView) == null ? void 0 : _a.updateProps({
+            expandedValue: getStringList(this.el, "expandedValue"),
+            selectedValue: getStringList(this.el, "selectedValue")
+          });
         },
         destroyed() {
           var _a;

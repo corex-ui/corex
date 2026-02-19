@@ -157,17 +157,9 @@ defmodule E2eWeb.AccordionPlayLive do
         orientation={@controls.orientation}
         dir={@controls.dir}
       >
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            {item.data.trigger}
-            <:indicator>
-              <.icon name="hero-chevron-right" />
-            </:indicator>
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            {item.data.content}
-          </.accordion_content>
-        </:item>
+        <:indicator :let={_item}>
+          <.icon name="hero-chevron-right" />
+        </:indicator>
       </.accordion>
     </Layouts.app>
     """

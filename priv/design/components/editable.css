@@ -1,0 +1,111 @@
+@import "../main.css";
+
+@layer components {
+  .editable [data-scope="editable"][data-part="root"] {
+    @apply ui-root;
+
+    width: 100%;
+    max-width: var(--container-ui);
+  }
+  .editable [data-scope="editable"][data-part="control"] {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-mini-gap);
+    min-height: var(--spacing-ui);
+    width: 100%;
+    align-items: center;
+    justify-content: start;
+    max-width: var(--container-mini);
+
+  }
+
+  .editable [data-scope="editable"][data-part="area"] {
+    display: flex;
+    min-height: var(--spacing-ui);
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: start;
+    max-width: var(--container-mini);
+    gap: var(--spacing-mini-gap);
+  }
+
+  .editable [data-scope="editable"][data-part="input"] {
+    @apply ui-input;
+
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: none;
+  }
+
+  .editable [data-scope="editable"][data-part="preview"] {
+    @apply ui-input;
+
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    text-wrap: nowrap;
+  }
+
+  .editable [data-part="triggers"] {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--spacing-ui);
+    flex: 1 1 auto;
+    gap: var(--spacing-mini-gap);
+  }
+
+  .editable [data-scope="editable"][data-part="edit-trigger"],
+  .editable [data-scope="editable"][data-part="cancel-trigger"],
+  .editable [data-scope="editable"][data-part="submit-trigger"] {
+    @apply ui-trigger ui-trigger--square;
+  }
+
+  .editable [data-scope="editable"][data-part="cancel-trigger"] {
+    @apply ui-trigger--alert;
+  }
+
+  .editable [data-scope="editable"][data-part="submit-trigger"] {
+    @apply ui-trigger--success;
+  }
+}
+
+@utility editable--* {
+  [data-scope="editable"][data-part="root"] {
+    max-width: --value(--container-mini-*, [length]);
+    gap: --value(--spacing-mini-gap-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="edit-trigger"],
+  [data-scope="editable"][data-part="cancel-trigger"],
+  [data-scope="editable"][data-part="submit-trigger"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+    padding-inline: --value(--spacing-ui-padding-*, [length]);
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="edit-trigger"]::placeholder,
+  [data-scope="editable"][data-part="cancel-trigger"]::placeholder,
+  [data-scope="editable"][data-part="submit-trigger"]::placeholder {
+    color: --value(--color-root--*, [color]);
+  }
+
+  /* [data-scope="editable"][data-part="area"] {
+    max-height: --value(--spacing-ui-*, [length]);
+  } */
+
+  [data-scope="editable"][data-part="preview"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+    max-width: --value(--container-mini-*, [length]);
+  }
+
+  [data-scope="editable"][data-part="input"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+}

@@ -95,14 +95,8 @@ defmodule E2eWeb.AccordionControlledLive do
         on_value_change="on_value_change"
         on_focus_change="on_focus_change"
       >
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            {item.data.trigger}
-          </.accordion_trigger>
-          <.accordion_content item={item}>
-            {item.data.content}
-          </.accordion_content>
-        </:item>
+        <:trigger :let={item}>{item.data.trigger}</:trigger>
+        <:content :let={item}>{item.data.content}</:content>
       </.accordion>
     </Layouts.app>
     """

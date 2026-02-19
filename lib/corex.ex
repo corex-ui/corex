@@ -6,8 +6,6 @@ defmodule Corex do
       {Corex.Accordion,
        [
          accordion: 1,
-         accordion_trigger: 1,
-         accordion_content: 1,
          accordion_skeleton: 1
        ]},
     combobox: {Corex.Combobox, [combobox: 1]},

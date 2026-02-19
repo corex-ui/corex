@@ -40,16 +40,29 @@ defmodule Corex.AngleSlider.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :value]
+    defstruct [:id, :dir, :value, disabled: false, read_only: false, invalid: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), value: number()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            value: number(),
+            disabled: boolean(),
+            read_only: boolean(),
+            invalid: boolean()
+          }
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, disabled: false, read_only: false, invalid: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            read_only: boolean(),
+            invalid: boolean()
+          }
   end
 
   defmodule HiddenInput do
@@ -66,16 +79,28 @@ defmodule Corex.AngleSlider.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, disabled: false, read_only: false, invalid: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            read_only: boolean(),
+            invalid: boolean()
+          }
   end
 
   defmodule Thumb do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, disabled: false, read_only: false, invalid: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            disabled: boolean(),
+            read_only: boolean(),
+            invalid: boolean()
+          }
   end
 
   defmodule ValueText do
@@ -108,8 +133,13 @@ defmodule Corex.AngleSlider.Anatomy do
 
   defmodule Marker do
     @moduledoc false
-    defstruct [:id, :value, :slider_value]
+    defstruct [:id, :value, :slider_value, disabled: false]
 
-    @type t :: %__MODULE__{id: String.t(), value: number(), slider_value: number()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            value: number(),
+            slider_value: number(),
+            disabled: boolean()
+          }
   end
 end

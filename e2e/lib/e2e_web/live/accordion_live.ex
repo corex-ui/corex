@@ -111,18 +111,9 @@ defmodule E2eWeb.AccordionLive do
           ])
         }
       >
-        <:item :let={item}>
-          <.accordion_trigger item={item}>
-            {item.data.trigger}
-            <:indicator>
-              <.icon name={item.data.meta.indicator} />
-            </:indicator>
-          </.accordion_trigger>
-
-          <.accordion_content item={item}>
-            {item.data.content}
-          </.accordion_content>
-        </:item>
+        <:indicator :let={item}>
+          <.icon name={item.data.meta.indicator} />
+        </:indicator>
       </.accordion>
     </Layouts.app>
     """

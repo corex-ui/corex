@@ -17,6 +17,14 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 > It's not recommended for production use at this time.
 > You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 
+## Live Demo
+
+To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
+
+This is still in an early stage and will evolve with future stable releases.
+
+Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*. 
+
 
 ## Documentation
 
@@ -43,7 +51,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.24"}
+    {:corex, "~> 0.1.0-alpha.25"}
   ]
 end
 ```
@@ -68,7 +76,11 @@ config :corex,
 
 ### Import Corex Hooks
 
-In your `assets/js/app.js`, import and register the Corex hooks.
+In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocket.
+
+Each hook uses dynamic `import()` so component JavaScript is loaded only when a DOM element with that hook is mounted. If a component never appears on a page, its chunk is never fetched. See the Performance section below for how this works and the required build configuration.
+
+To load all hooks (in dev only):
 
 ```javascript
 import corex from "corex"
@@ -82,7 +94,40 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-Each component chunk loads when first mounted.
+To register only the hooks you use (recommended for production):
+
+```javascript
+import { hooks } from "corex"
+```
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: {_csrf_token: csrfToken},
+  hooks: {...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"])}
+})
+```
+
+### Esbuild
+
+- Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
+
+```elixir
+config :esbuild,
+  version: "0.25.4",
+  e2e: [
+    args:
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+- Load your app script with `type="module"` in your root layout in `root.html.heex`:
+
+```heex
+<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
+```
 
 ## Import Components
 
@@ -162,7 +207,7 @@ Add the following Accordion example to your application.
 
 <!-- tabs-open -->
 
-### List
+  ### Basic
 
   You can use `Corex.Content.new/1` to create a list of content items.
 
@@ -181,13 +226,11 @@ Add the following Accordion example to your application.
   />
   ```
 
-### List Custom
+  ### With indicator
 
-  Similar to List but render a custom item slot that will be used for all items.
+  Use the optional `:indicator` slot to add an icon after each trigger.
 
-  Use `{item.data.trigger}` and `{item.data.content}` to render the trigger and content for each item.
-
-  This example assumes the import of `.icon` from Core Components.
+  This example assumes the import of `.icon` from `Core Components`
 
   ```heex
   <.accordion
@@ -196,43 +239,72 @@ Add the following Accordion example to your application.
       [
         id: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-        meta: %{indicator: "hero-chevron-right"}
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       ],
       [
         trigger: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus.",
-        meta: %{indicator: "hero-chevron-right"}
+        content: "Nullam eget vestibulum ligula, at interdum tellus."
       ],
       [
         id: "donec",
         trigger: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-        disabled: true,
-        meta: %{indicator: "hero-chevron-right"}
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       ]
     ])}
   >
-    <:item :let={item}>
-      <.accordion_trigger item={item}>
-        {item.data.trigger}
-        <:indicator>
-          <.icon name={item.data.meta.indicator} />
-        </:indicator>
-      </.accordion_trigger>
-
-      <.accordion_content item={item}>
-        {item.data.content}
-      </.accordion_content>
-    </:item>
+    <:indicator>
+      <.icon name="hero-chevron-right" />
+    </:indicator>
   </.accordion>
   ```
 
-### Controlled
+  ### Custom
+
+  Use `:trigger` and `:content` together to fully customize how each item is rendered. Add the `:indicator` slot to show an icon after each trigger. Use `:let={item}` on slots to access the item and its `data` (including `meta` for per-item customization).
+
+  ```heex
+  <.accordion
+    class="accordion"
+    items={
+      Corex.Content.new([
+        [
+          id: "lorem",
+          trigger: "Lorem ipsum dolor sit amet",
+          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+          meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
+        ],
+        [
+          trigger: "Duis dictum gravida ?",
+          content: "Nullam eget vestibulum ligula, at interdum tellus.",
+          meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
+        ],
+        [
+          id: "donec",
+          trigger: "Donec condimentum ex mi",
+          content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+          disabled: true,
+          meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
+        ]
+      ])
+    }
+  >
+    <:trigger :let={item}>
+      <.icon name={item.data.meta.icon} />{item.data.trigger}
+    </:trigger>
+    <:content :let={item}>{item.data.content}</:content>
+    <:indicator :let={item}>
+      <.icon name={item.data.meta.indicator} />
+    </:indicator>
+  </.accordion>
+  ```
+
+  ### Controlled
 
   Render an accordion controlled by the server.
 
-  Use the `on_value_change` event to update the value on the server and pass the value as a list of strings. The event receives a map with the key `value` and the id of the accordion.
+  You must use the `on_value_change` event to update the value on the server and pass the value as a list of strings.
+
+  The event will receive the value as a map with the key `value` and the id of the accordion.
 
   ```elixir
   defmodule MyAppWeb.AccordionLive do
@@ -263,9 +335,11 @@ Add the following Accordion example to your application.
   end
   ```
 
-### Async
+  ### Async
 
-  When the initial props are not available on mount, use `Phoenix.LiveView.assign_async/3` to assign the props asynchronously. You can use `Corex.Accordion.accordion_skeleton/1` to render a loading or error state.
+  When the initial props are not available on mount, you can use the `Phoenix.LiveView.assign_async` function to assign the props asynchronously
+
+  You can use the optional `Corex.Accordion.accordion_skeleton/1` to render a loading or error state
 
   ```elixir
   defmodule MyAppWeb.AccordionAsyncLive do
@@ -277,25 +351,24 @@ Add the following Accordion example to your application.
         |> assign_async(:accordion, fn ->
           Process.sleep(1000)
 
-          items =
-            Corex.Content.new([
-              [
-                id: "lorem",
-                trigger: "Lorem ipsum dolor sit amet",
-                content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-                disabled: true
-              ],
-              [
-                id: "duis",
-                trigger: "Duis dictum gravida odio ac pharetra?",
-                content: "Nullam eget vestibulum ligula, at interdum tellus."
-              ],
-              [
-                id: "donec",
-                trigger: "Donec condimentum ex mi",
-                content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-              ]
-            ])
+          items = Corex.Content.new([
+            [
+              id: "lorem",
+              trigger: "Lorem ipsum dolor sit amet",
+              content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+              disabled: true
+            ],
+            [
+              id: "duis",
+              trigger: "Duis dictum gravida odio ac pharetra?",
+              content: "Nullam eget vestibulum ligula, at interdum tellus."
+            ],
+            [
+              id: "donec",
+              trigger: "Donec condimentum ex mi",
+              content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+            ]
+          ])
 
           {:ok,
            %{
@@ -357,36 +430,28 @@ In order to use the API, you must use an id on the component
 
 ## Performance
 
-By default Phoenix esbuild is set to bundle all the JS into a single file.
+During development only, you may experience a slowdown in performance and reactivity, especially on low specification local machines.
+This is due to Esbuild and Tailwind compiler serving unminified assets during development.
+In order to improve performance during development, you can `minify` assets.
+You may not need to minify both; in my case, only Tailwind needs to be minified in order to improve performance.
 
-### 1.Enable splitting
-
-In order to enable splitting add the following `--format=esm --splitting` to your esbuild config
+- In your `mix.exs` add `--minify` option to Tailwind and/or Esbuild
 
 ```elixir
-config :esbuild,
-  version: "0.25.4",
-  e2e: [
-    args:
-      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
-    cd: Path.expand("../assets", __DIR__),
-    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
-  ]
+     "assets.build": [
+        "compile",
+        "tailwind e2e --minify",
+        "esbuild e2e --minify"
+      ]
 ```
 
-Run `mix assets.build` and see the magic happening
+- In your `config/dev.exs` add `--minify` option to Tailwind and/or Esbuild watchers
 
-### 2.Enable gzip for Plug.Static
-
-In your `endpoint.ex` enable gzip for developement also
-
-```elexir
-  plug Plug.Static,
-    at: "/",
-    from: :e2e,
-    gzip: true,
-    only: E2eWeb.static_paths(),
-    raise_on_missing_only: code_reloading?
+```elixir
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch --minify)]},
+    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
+  ]
 ```
 
 See the [Production guide](https://hexdocs.pm/corex/production.html) for the final build in production environnement

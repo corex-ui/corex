@@ -102,7 +102,7 @@ defmodule E2e.MixProject do
         &clean_static_assets/1,
         &copy_static_images/1,
         "compile",
-        "tailwind e2e",
+        "tailwind e2e --minify",
         "esbuild e2e"
       ],
       "assets.deploy": [
