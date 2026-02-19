@@ -1,6 +1,6 @@
 {
   "name": "corex",
-  "version": "0.1.0-alpha.24",
+  "version": "0.1.0-alpha.25",
   "description": "The official JavaScript client for the Corex Phoenix Hooks.",
   "license": "MIT",
   "module": "./priv/static/corex.mjs",
