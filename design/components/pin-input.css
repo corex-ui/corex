@@ -1,0 +1,41 @@
+@import "../main.css";
+
+@layer components {
+  .pin-input [data-scope="pin-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-ui-gap);
+    max-width: var(--container-ui);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: var(--spacing-ui-gap);
+    align-items: center;
+    margin-inline: auto;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"] {
+    @apply ui-input;
+
+    height: var(--spacing-ui);
+    width: var(--spacing-ui);
+    flex-shrink: 0;
+    text-align: center;
+
+    &[data-complete] {
+      color: var(--color-root--success);
+      border-color: var(--color-root--success);
+    }
+
+    &[data-invalid] {
+      color: var(--color-root--alert);
+      border-color: var(--color-root--alert);
+    }
+  }
+}
