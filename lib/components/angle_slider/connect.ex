@@ -46,8 +46,12 @@ defmodule Corex.AngleSlider.Connect do
     %{
       "data-scope" => "angle-slider",
       "data-part" => "root",
+      "id" => "angle-slider:#{assigns.id}",
       "dir" => assigns.dir,
-      "style" => "--value:#{value};--angle:#{angle};"
+      "style" => "--value:#{value};--angle:#{angle};",
+      "data-disabled" => data_attr(assigns.disabled),
+      "data-invalid" => data_attr(assigns.invalid),
+      "data-readonly" => data_attr(assigns.read_only)
     }
   end
 
@@ -56,8 +60,12 @@ defmodule Corex.AngleSlider.Connect do
     %{
       "data-scope" => "angle-slider",
       "data-part" => "label",
+      "id" => "angle-slider:#{assigns.id}:label",
+      "for" => "angle-slider:#{assigns.id}:input",
       "dir" => assigns.dir,
-      "id" => "angle-slider:#{assigns.id}:label"
+      "data-disabled" => data_attr(assigns.disabled),
+      "data-invalid" => data_attr(assigns.invalid),
+      "data-readonly" => data_attr(assigns.read_only)
     }
   end
 
@@ -79,8 +87,12 @@ defmodule Corex.AngleSlider.Connect do
     %{
       "data-scope" => "angle-slider",
       "data-part" => "control",
+      "role" => "presentation",
+      "id" => "angle-slider:#{assigns.id}:control",
       "dir" => assigns.dir,
-      "id" => "angle-slider:#{assigns.id}:control"
+      "data-disabled" => data_attr(assigns.disabled),
+      "data-invalid" => data_attr(assigns.invalid),
+      "data-readonly" => data_attr(assigns.read_only)
     }
   end
 
@@ -89,9 +101,12 @@ defmodule Corex.AngleSlider.Connect do
     %{
       "data-scope" => "angle-slider",
       "data-part" => "thumb",
-      "dir" => assigns.dir,
       "id" => "angle-slider:#{assigns.id}:thumb",
-      "style" => "rotate:var(--angle);"
+      "dir" => assigns.dir,
+      "style" => "rotate:var(--angle);",
+      "data-disabled" => data_attr(assigns.disabled),
+      "data-invalid" => data_attr(assigns.invalid),
+      "data-readonly" => data_attr(assigns.read_only)
     }
   end
 
@@ -146,7 +161,8 @@ defmodule Corex.AngleSlider.Connect do
       "data-value" => to_string(assigns.value),
       "data-state" => state,
       "id" => "angle-slider:#{assigns.id}:marker:#{assigns.value}",
-      "style" => "--marker-value:#{assigns.value};rotate:calc(var(--marker-value) * 1deg);"
+      "style" => "--marker-value:#{assigns.value};rotate:calc(var(--marker-value) * 1deg);",
+      "data-disabled" => data_attr(assigns.disabled)
     }
   end
 end

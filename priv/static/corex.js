@@ -4057,6 +4057,8 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             dir: getString(el, "dir", ["ltr", "rtl"]),
+            "aria-label": getString(el, "aria-label"),
+            "aria-labelledby": getString(el, "aria-labelledby"),
             onValueChange: (details) => {
               const eventName = getString(el, "onValueChange");
               if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {

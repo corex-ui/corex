@@ -100,7 +100,6 @@ defmodule E2eWeb.AngleSliderPlayLive do
         <.switch
           class="switch"
           id="disabled"
-
           checked={@controls.disabled}
           on_checked_change="control_changed"
         >
@@ -128,7 +127,6 @@ defmodule E2eWeb.AngleSliderPlayLive do
         <.switch
           class="switch"
           id="show_markers"
-
           checked={@controls.show_markers}
           on_checked_change="control_changed"
         >
@@ -165,7 +163,6 @@ defmodule E2eWeb.AngleSliderPlayLive do
         disabled={@controls.disabled}
         read_only={@controls.read_only}
         invalid={@controls.invalid}
-
         on_value_change="angle_changed"
       >
         <:label>Angle</:label>

@@ -39,9 +39,17 @@ defmodule E2eWeb.Plugs.Locale do
   end
 
   def call(conn, _opts) do
-    locale = determine_locale(conn)
-    redirect_with_locale(conn, locale, conn.request_path)
+    if skip_locale_redirect?(conn.request_path) do
+      locale = determine_locale(conn)
+      set_locale(conn, locale)
+    else
+      locale = determine_locale(conn)
+      redirect_with_locale(conn, locale, conn.request_path)
+    end
   end
+
+  defp skip_locale_redirect?("/captures" <> _), do: true
+  defp skip_locale_redirect?(_), do: false
 
   defp determine_locale(conn) do
     conn.cookies[@cookie_key] ||

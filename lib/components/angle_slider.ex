@@ -177,14 +177,14 @@ defmodule Corex.AngleSlider do
         on_value_change_end_client: @on_value_change_end_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, value: @value})}>
-        <div :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div {Connect.root(%Root{id: @id, dir: @dir, value: @value, disabled: @disabled, read_only: @read_only, invalid: @invalid})}>
+        <div :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.control(%Control{id: @id, dir: @dir})}>
-          <div {Connect.thumb(%Thumb{id: @id, dir: @dir})} />
+        <div {Connect.control(%Control{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid})}>
+          <div {Connect.thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid})} />
           <div :if={@marker_values != []} {Connect.marker_group(%MarkerGroup{id: @id, dir: @dir})}>
-            <div :for={val <- @marker_values} {Connect.marker(%Marker{id: @id, value: val, slider_value: @value})} />
+            <div :for={val <- @marker_values} {Connect.marker(%Marker{id: @id, value: val, slider_value: @value, disabled: @disabled})} />
           </div>
         </div>
         <div {Connect.value_text(%ValueText{id: @id, dir: @dir, value: @value})}>

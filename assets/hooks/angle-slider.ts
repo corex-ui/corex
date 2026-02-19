@@ -26,6 +26,9 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
       dir: getString<"ltr" | "rtl">(el, "dir", ["ltr", "rtl"]),
+      "aria-label": getString(el, "aria-label"),
+      "aria-labelledby": getString(el, "aria-labelledby"),
+
       onValueChange: (details: ValueChangeDetails) => {
         // if (skipNextOnValueChange) {
         //   skipNextOnValueChange = false;
@@ -51,18 +54,18 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
         // if (controlled) {
         //   skipNextOnValueChange = true;
         //   zag.api.setValue(details.value);
-        // } 
-                //   const hiddenInput = el.querySelector<HTMLInputElement>(
+        // }
+        //   const hiddenInput = el.querySelector<HTMLInputElement>(
         //     '[data-scope="angle-slider"][data-part="hidden-input"]'
         //   );
-          //    const hiddenInput = el.querySelector<HTMLInputElement>(
-          //   '[data-scope="angle-slider"][data-part="hidden-input"]'
-          // );
-          // if (hiddenInput) {
-          //   hiddenInput.value = String(details.value);
-          //   hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          //   hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-          // }
+        //    const hiddenInput = el.querySelector<HTMLInputElement>(
+        //   '[data-scope="angle-slider"][data-part="hidden-input"]'
+        // );
+        // if (hiddenInput) {
+        //   hiddenInput.value = String(details.value);
+        //   hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+        //   hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        // }
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           this.pushEvent(eventName, {
@@ -161,7 +164,6 @@ const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
       name: getString(this.el, "name"),
       dir: getString<"ltr" | "rtl">(this.el, "dir", ["ltr", "rtl"]),
     } as Partial<Props>);
-
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {

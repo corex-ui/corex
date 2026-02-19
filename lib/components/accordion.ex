@@ -6,7 +6,7 @@ defmodule Corex.Accordion do
 
   <!-- tabs-open -->
 
-  ### List
+  ### Basic
 
   You can use `Corex.Content.new/1` to create a list of content items.
 
@@ -25,11 +25,9 @@ defmodule Corex.Accordion do
   />
   ```
 
-  ### List Custom
+  ### With indicator
 
-  Similar to List but render a custom item slot that will be used for all items.
-
-  Use `{item.data.trigger}` and `{item.data.content}` to render the trigger and content for each item.
+  Use the optional `:indicator` slot to add an icon after each trigger.
 
   This example assumes the import of `.icon` from `Core Components`
 
@@ -40,35 +38,94 @@ defmodule Corex.Accordion do
       [
         id: "lorem",
         trigger: "Lorem ipsum dolor sit amet",
-        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-        meta: %{indicator: "hero-chevron-right"}
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
       ],
       [
         trigger: "Duis dictum gravida odio ac pharetra?",
-        content: "Nullam eget vestibulum ligula, at interdum tellus.",
-        meta: %{indicator: "hero-chevron-right"}
+        content: "Nullam eget vestibulum ligula, at interdum tellus."
       ],
       [
         id: "donec",
         trigger: "Donec condimentum ex mi",
-        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-        disabled: true,
-        meta: %{indicator: "hero-chevron-right"}
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
       ]
     ])}
   >
-    <:item :let={item}>
-      <.accordion_trigger item={item}>
-        {item.data.trigger}
-        <:indicator>
-          <.icon name={item.data.meta.indicator} />
-        </:indicator>
-      </.accordion_trigger>
+    <:indicator>
+      <.icon name="hero-chevron-right" />
+    </:indicator>
+  </.accordion>
+  ```
 
-      <.accordion_content item={item}>
-        {item.data.content}
-      </.accordion_content>
-    </:item>
+  You can use switching indicator using css classes `state-open` and `state-closed` on the indicator icon.
+  This classes simply target the data-state attribute of the item indicator.
+
+  ```heex
+    <.accordion
+    class="accordion"
+    items={
+      Corex.Content.new([
+        [
+          id: "lorem",
+          trigger: "Lorem ipsum dolor sit amet",
+          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+        ],
+        [
+          trigger: "Duis dictum gravida odio ac pharetra?",
+          content: "Nullam eget vestibulum ligula, at interdum tellus."
+        ],
+        [
+          id: "donec",
+          trigger: "Donec condimentum ex mi",
+          content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+        ]
+      ])
+    }
+  >
+    <:indicator>
+      <.icon name="hero-plus" class="state-closed"/>
+      <.icon name="hero-minus" class="state-open"/>
+    </:indicator>
+  </.accordion>
+  ```
+
+  ### Custom
+
+  Use `:trigger` and `:content` together to fully customize how each item is rendered. Add the `:indicator` slot to show an icon after each trigger. Use `:let={item}` on slots to access the item and its `data` (including `meta` for per-item customization).
+
+  ```heex
+  <.accordion
+    class="accordion"
+    items={
+      Corex.Content.new([
+        [
+          id: "lorem",
+          trigger: "Lorem ipsum dolor sit amet",
+          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+          meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
+        ],
+        [
+          trigger: "Duis dictum gravida ?",
+          content: "Nullam eget vestibulum ligula, at interdum tellus.",
+          meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
+        ],
+        [
+          id: "donec",
+          trigger: "Donec condimentum ex mi",
+          content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+          disabled: true,
+          meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
+        ]
+      ])
+    }
+  >
+    <:trigger :let={item}>
+      <.icon name={item.data.meta.icon} />{item.data.trigger}
+    </:trigger>
+    <:content :let={item}>{item.data.content}</:content>
+    <:indicator :let={item}>
+      <.icon name={item.data.meta.indicator} />
+    </:indicator>
   </.accordion>
   ```
 
@@ -240,7 +297,7 @@ defmodule Corex.Accordion do
   @doc """
   Renders an accordion component.
 
-  Pass `items` as a list of `%Corex.Content.Item{}` structs. Optionally provide an `:item` slot to customize how each item is rendered (trigger and content).
+  Pass `items` as a list of `%Corex.Content.Item{}` structs. Use the optional `:indicator` slot to add content after each trigger. Use `:trigger` and `:content` together to fully customize item rendering.
 
   Each item MUST be a `%Corex.Content.Item{}` struct with:
   - `:id` (optional, auto-generated) - unique identifier for the item
@@ -313,10 +370,22 @@ defmodule Corex.Accordion do
 
   attr(:rest, :global)
 
-  slot(:item,
+  slot(:indicator,
     required: false,
     doc:
-      "Optional slot to customize how each item is rendered. Receives the item (list entry) as argument."
+      "Optional slot for content after each trigger. Use :let={item} for per-item customization."
+  )
+
+  slot(:trigger,
+    required: false,
+    doc:
+      "Optional slot for custom trigger rendering. When provided with content, replaces default item rendering. Use :let={item} to access the item."
+  )
+
+  slot(:content,
+    required: false,
+    doc:
+      "Optional slot for custom content rendering. When provided with trigger, replaces default item rendering. Use :let={item} to access the item."
   )
 
   def accordion(assigns) do
@@ -341,7 +410,7 @@ defmodule Corex.Accordion do
       on_focus_change_client: @on_focus_change_client
     })}>
       <div phx-update="ignore" {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}>
-        <div :if={@item == []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
+        <div :if={@trigger == [] or @content == []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
           id: @id,
           value: item_entry.id || "item-#{index}",
           disabled: item_entry.disabled,
@@ -349,39 +418,57 @@ defmodule Corex.Accordion do
           orientation: @orientation,
           dir: @dir,
         })}>
-          <.accordion_trigger item={%Item{
+          <h3>
+            <button {Connect.trigger(%Item{
+              id: @id,
+              value: item_entry.id || "item-#{index}",
+              disabled: item_entry.disabled,
+              values: @value,
+              orientation: @orientation,
+              dir: @dir
+            })}>
+              <span data-scope="accordion" data-part="item-text">
+                {item_entry.trigger}
+              </span>
+              <span :if={@indicator != []} {Connect.indicator(%Item{
+                id: @id,
+                value: item_entry.id || "item-#{index}",
+                disabled: item_entry.disabled,
+                values: @value,
+                orientation: @orientation,
+                dir: @dir
+              })}>
+                <%= for indicator <- @indicator do %>
+                  <%= render_slot(indicator, %Item{
+                    id: @id,
+                    value: item_entry.id || "item-#{index}",
+                    disabled: item_entry.disabled,
+                    values: @value,
+                    orientation: @orientation,
+                    dir: @dir,
+                    data: %{
+                      trigger: item_entry.trigger,
+                      content: item_entry.content,
+                      meta: item_entry.meta
+                    }
+                  }) %>
+                <% end %>
+              </span>
+            </button>
+          </h3>
+          <div {Connect.content(%Item{
             id: @id,
             value: item_entry.id || "item-#{index}",
             disabled: item_entry.disabled,
             values: @value,
             orientation: @orientation,
-            dir: @dir,
-            data: %{
-              trigger: item_entry.trigger,
-              content: item_entry.content,
-              meta: item_entry.meta
-            }
-          }}>
-            {item_entry.trigger}
-          </.accordion_trigger>
-          <.accordion_content item={%Item{
-            id: @id,
-            value: item_entry.id || "item-#{index}",
-            disabled: item_entry.disabled,
-            values: @value,
-            orientation: @orientation,
-            dir: @dir,
-            data: %{
-              trigger: item_entry.trigger,
-              content: item_entry.content,
-              meta: item_entry.meta
-            }
-          }}>
+            dir: @dir
+          })}>
             {item_entry.content}
-          </.accordion_content>
+          </div>
         </div>
 
-        <div :if={@item != []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
+        <div :if={@trigger != [] and @content != []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.item(%Item{
           id: @id,
           value: item_entry.id || "item-#{index}",
           disabled: item_entry.disabled,
@@ -394,21 +481,82 @@ defmodule Corex.Accordion do
             meta: item_entry.meta
           }
         })}>
-          <%= for item_slot <- @item || [] do %>
-            <%= render_slot(item_slot, %Item{
+          <h3>
+            <button {Connect.trigger(%Item{
               id: @id,
               value: item_entry.id || "item-#{index}",
-              disabled: Map.get(item_entry, :disabled, false),
+              disabled: item_entry.disabled,
               values: @value,
               orientation: @orientation,
-              dir: @dir,
-              data: %{
-                trigger: item_entry.trigger,
-                content: item_entry.content,
-                meta: item_entry.meta
-              }
-            }) %>
-          <% end %>
+              dir: @dir
+            })}>
+              <span data-scope="accordion" data-part="item-text">
+                <%= for slot <- @trigger do %>
+                  <%= render_slot(slot, %Item{
+                    id: @id,
+                    value: item_entry.id || "item-#{index}",
+                    disabled: item_entry.disabled,
+                    values: @value,
+                    orientation: @orientation,
+                    dir: @dir,
+                    data: %{
+                      trigger: item_entry.trigger,
+                      content: item_entry.content,
+                      meta: item_entry.meta
+                    }
+                  }) %>
+                <% end %>
+              </span>
+              <span :if={@indicator != []} {Connect.indicator(%Item{
+                id: @id,
+                value: item_entry.id || "item-#{index}",
+                disabled: item_entry.disabled,
+                values: @value,
+                orientation: @orientation,
+                dir: @dir
+              })}>
+                <%= for indicator <- @indicator do %>
+                  <%= render_slot(indicator, %Item{
+                    id: @id,
+                    value: item_entry.id || "item-#{index}",
+                    disabled: item_entry.disabled,
+                    values: @value,
+                    orientation: @orientation,
+                    dir: @dir,
+                    data: %{
+                      trigger: item_entry.trigger,
+                      content: item_entry.content,
+                      meta: item_entry.meta
+                    }
+                  }) %>
+                <% end %>
+              </span>
+            </button>
+          </h3>
+          <div {Connect.content(%Item{
+            id: @id,
+            value: item_entry.id || "item-#{index}",
+            disabled: item_entry.disabled,
+            values: @value,
+            orientation: @orientation,
+            dir: @dir
+          })}>
+            <%= for slot <- @content do %>
+              <%= render_slot(slot, %Item{
+                id: @id,
+                value: item_entry.id || "item-#{index}",
+                disabled: item_entry.disabled,
+                values: @value,
+                orientation: @orientation,
+                dir: @dir,
+                data: %{
+                  trigger: item_entry.trigger,
+                  content: item_entry.content,
+                  meta: item_entry.meta
+                }
+              }) %>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>
@@ -457,45 +605,6 @@ defmodule Corex.Accordion do
       %{"value" => item.id || "item-#{i}", "disabled" => !!item.disabled}
     end)
     |> Jason.encode!()
-  end
-
-  @doc type: :component
-  @doc """
-  Renders the accordion trigger button. Includes optional `:indicator` slot.
-  """
-  attr(:item, :map, required: true)
-  slot(:inner_block, required: true)
-  slot(:indicator, required: false)
-
-  def accordion_trigger(assigns) do
-    ~H"""
-    <h3>
-      <button {Connect.trigger(@item)}>
-      <span data-scope="accordion" data-part="item-text">
-      {render_slot(@inner_block)}
-      </span>
-        <span :if={@indicator} {Connect.indicator(@item)}>
-          {render_slot(@indicator)}
-        </span>
-      </button>
-    </h3>
-    """
-  end
-
-  @doc type: :component
-  @doc """
-  Renders the accordion content area.
-  """
-
-  attr(:item, :map, required: true)
-  slot(:inner_block, required: true)
-
-  def accordion_content(assigns) do
-    ~H"""
-    <div {Connect.content(@item)} >
-      {render_slot(@inner_block)}
-    </div>
-    """
   end
 
   @doc type: :component
