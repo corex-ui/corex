@@ -35,25 +35,17 @@
   .accordion [data-scope="accordion"][data-part="item-text"] {
 
     width: 100%;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-ui-gap);
   }
 
-  .accordion [data-scope="accordion"][data-part="item"][data-state="closed"] [data-scope="accordion"][data-part="item-indicator"] .state-open,
-  .accordion [data-scope="accordion"][data-part="item"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"] .state-closed {
-    @apply ui-icon;
-
-    display: none!important;
-    
+  .accordion [data-scope="accordion"][data-part="item"][data-state="closed"] [data-scope="accordion"][data-part="item-indicator"][data-open],
+  .accordion [data-scope="accordion"][data-part="item"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"][data-closed] {
+    display: none;
+    transform: none;
   }
 
-  .accordion [data-scope="accordion"][data-part="item"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"] .state-open,
-  .accordion [data-scope="accordion"][data-part="item"][data-state="closed"] [data-scope="accordion"][data-part="item-indicator"] .state-closed {
-    @apply ui-icon;
-
-    display: inline-block;
-    transform: rotate(-90deg)!important;
+  .accordion [data-scope="accordion"][data-part="item"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"][data-open],
+  .accordion [data-scope="accordion"][data-part="item"][data-state="closed"] [data-scope="accordion"][data-part="item-indicator"][data-closed] {
+    transform: none;
   }
 
   .accordion [data-scope="accordion"][data-part="item-content"] {
