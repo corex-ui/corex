@@ -19,7 +19,7 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 
 ## Live Demo
 
-To preview the components, a Live Demo is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
+To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
 
 This is still in an early stage and will evolve with future stable releases.
 
