@@ -1,14 +1,19 @@
 import {
   ListCollection
-} from "./chunk-2PO3TGCF.mjs";
+} from "./chunk-4RWUEBEQ.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-EENFWNGI.mjs";
+} from "./chunk-LOW5KGCT.mjs";
 import {
   trackDismissableElement
-} from "./chunk-RR7TJIQ5.mjs";
-import "./chunk-ER3INIAI.mjs";
+} from "./chunk-NF3CDGDL.mjs";
+import "./chunk-OSSFSUET.mjs";
+import {
+  getInteractionModality,
+  setInteractionModality,
+  trackFocusVisible
+} from "./chunk-GXGJDSCU.mjs";
 import {
   Component,
   VanillaMachine,
@@ -27,20 +32,23 @@ import {
   getEventKey,
   getEventTarget,
   getInitialFocus,
+  getNativeEvent,
   getString,
   getStringList,
   isEditableElement,
   isEqual,
+  isInternalChangeEvent,
   isValidTabEvent,
+  markAsInternalChangeEvent,
   normalizeProps,
   observeAttributes,
   raf,
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.33.1/node_modules/@zag-js/select/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.34.0/node_modules/@zag-js/select/dist/index.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -391,6 +399,11 @@ function connect(service, normalize) {
     getHiddenSelectProps() {
       const value = context.get("value");
       const defaultValue = prop("multiple") ? value : value?.[0];
+      const handleChange = (e) => {
+        const evt = getNativeEvent(e);
+        if (isInternalChangeEvent(evt)) return;
+        send({ type: "VALUE.SET", value: getSelectedValues(e.currentTarget) });
+      };
       return normalize.select({
         name: prop("name"),
         form: prop("form"),
@@ -402,6 +415,9 @@ function connect(service, normalize) {
         defaultValue,
         style: visuallyHiddenStyle,
         tabIndex: -1,
+        autoComplete: prop("autoComplete"),
+        onChange: handleChange,
+        onInput: handleChange,
         // Some browser extensions will focus the hidden select.
         // Let's forward the focus to the trigger.
         onFocus() {
@@ -495,6 +511,9 @@ function connect(service, normalize) {
     }
   };
 }
+var getSelectedValues = (el) => {
+  return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
+};
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props: props2 }) {
@@ -759,7 +778,7 @@ var machine = createMachine({
     open: {
       tags: ["open"],
       exit: ["scrollContentToTop"],
-      effects: ["trackDismissableElement", "computePlacement", "scrollToHighlightedItem"],
+      effects: ["trackDismissableElement", "trackFocusVisible", "computePlacement", "scrollToHighlightedItem"],
       on: {
         "CONTROLLED.CLOSE": [
           {
@@ -876,6 +895,9 @@ var machine = createMachine({
       isTriggerArrowDownEvent: ({ event }) => event.previousEvent?.type === "TRIGGER.ARROW_DOWN"
     },
     effects: {
+      trackFocusVisible({ scope }) {
+        return trackFocusVisible({ root: scope.getRootNode?.() });
+      },
       trackFormControlState({ context, scope }) {
         return trackFormControl(getHiddenSelectEl(scope), {
           onFieldsetDisabledChange(disabled) {
@@ -918,11 +940,12 @@ var machine = createMachine({
           }
         });
       },
-      scrollToHighlightedItem({ context, prop, scope, event }) {
+      scrollToHighlightedItem({ context, prop, scope }) {
         const exec = (immediate) => {
           const highlightedValue = context.get("highlightedValue");
           if (highlightedValue == null) return;
-          if (event.current().type.includes("POINTER")) return;
+          const modality = getInteractionModality();
+          if (modality === "pointer") return;
           const contentEl2 = getContentEl(scope);
           const scrollToIndexFn = prop("scrollToIndexFn");
           if (scrollToIndexFn) {
@@ -937,7 +960,10 @@ var machine = createMachine({
           const itemEl = getItemEl(scope, highlightedValue);
           scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
         };
-        raf(() => exec(true));
+        raf(() => {
+          setInteractionModality("virtual");
+          exec(true);
+        });
         const contentEl = () => getContentEl(scope);
         return observeAttributes(contentEl, {
           defer: true,
@@ -1147,8 +1173,8 @@ var machine = createMachine({
           const node = getHiddenSelectEl(scope);
           if (!node) return;
           const win = scope.getWin();
-          const changeEvent = new win.Event("change", { bubbles: true, composed: true });
-          node.dispatchEvent(changeEvent);
+          const evt = new win.Event("change", { bubbles: true, composed: true });
+          node.dispatchEvent(markAsInternalChangeEvent(evt));
         });
       }
     }
@@ -1159,6 +1185,7 @@ function restoreFocusFn(event) {
   return v == null || !!v;
 }
 var props = createProps()([
+  "autoComplete",
   "closeOnSelect",
   "collection",
   "composite",

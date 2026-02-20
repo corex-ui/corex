@@ -21,7 +21,36 @@ defmodule Corex.Carousel do
 
   ## Styling
 
-  Use data attributes: `[data-scope="carousel"][data-part="root"]`, `control`, `item-group`, `item`, `prev-trigger`, `next-trigger`, `indicator-group`, `indicator`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="carousel"][data-part="root"] {}
+  [data-scope="carousel"][data-part="control"] {}
+  [data-scope="carousel"][data-part="item-group"] {}
+  [data-scope="carousel"][data-part="item"] {}
+  [data-scope="carousel"][data-part="prev-trigger"] {}
+  [data-scope="carousel"][data-part="next-trigger"] {}
+  [data-scope="carousel"][data-part="indicator-group"] {}
+  [data-scope="carousel"][data-part="indicator"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `carousel` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/carousel.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.carousel class="carousel carousel--accent carousel--lg" items={[]}>
+  </.carousel>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/carousel#modifiers)
   '''
 
   @doc type: :component

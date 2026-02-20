@@ -1,6 +1,6 @@
 import {
   TreeCollection
-} from "./chunk-2PO3TGCF.mjs";
+} from "./chunk-4RWUEBEQ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -38,9 +38,9 @@ import {
   setElementValue,
   toArray,
   uniq
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.33.1/node_modules/@zag-js/tree-view/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.34.0/node_modules/@zag-js/tree-view/dist/index.mjs
 var anatomy = createAnatomy("tree-view").parts(
   "branch",
   "branchContent",

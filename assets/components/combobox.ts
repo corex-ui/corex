@@ -22,7 +22,7 @@ export class Combobox extends Component<Props, Api> {
     this.options = options;
   }
 
-  private getCollection() {
+  getCollection() {
     const items = this.options || this.allOptions || [];
 
     if (this.hasGroups) {
@@ -45,7 +45,7 @@ export class Combobox extends Component<Props, Api> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
-    const getCollection = this.getCollection.bind(this);
+    const getCollection = () => this.getCollection();
 
     return new VanillaMachine(machine, {
       ...props,
@@ -61,13 +61,16 @@ export class Combobox extends Component<Props, Api> {
         }
       },
       onInputValueChange: (details: InputValueChangeDetails) => {
-        const filtered = this.allOptions.filter((item: ComboboxItem) =>
-          item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-        );
-        this.options = filtered.length > 0 ? filtered : this.allOptions;
-
         if (props.onInputValueChange) {
           props.onInputValueChange(details);
+        }
+        if (this.el.hasAttribute("data-filter")) {
+          const filtered = this.allOptions.filter((item: ComboboxItem) =>
+            item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+          );
+          this.options = filtered.length > 0 ? filtered : this.allOptions;
+        } else {
+          this.options = this.allOptions;
         }
       },
     });
@@ -94,38 +97,88 @@ export class Combobox extends Component<Props, Api> {
       .querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])')
       .forEach((el) => el.remove());
 
-    if (this.hasGroups) {
+    contentEl
+      .querySelectorAll('[data-scope="combobox"][data-part="empty"]:not([data-template])')
+      .forEach((el) => el.remove());
+
+    const items = this.options?.length ? this.options : this.allOptions;
+
+    if (items.length === 0) {
+      const emptyTemplate = templatesContainer.querySelector<HTMLElement>(
+        '[data-scope="combobox"][data-part="empty"][data-template]'
+      );
+      if (emptyTemplate) {
+        const emptyEl = emptyTemplate.cloneNode(true) as HTMLElement;
+        emptyEl.removeAttribute("data-template");
+        contentEl.appendChild(emptyEl);
+      }
+    } else if (this.hasGroups) {
       const groups = this.api.collection.group?.() ?? [];
       this.renderGroupedItems(contentEl, templatesContainer, groups);
     } else {
-      const items = this.options?.length ? this.options : this.allOptions;
       this.renderFlatItems(contentEl, templatesContainer, items);
     }
+  }
+
+  buildOrderedBlocks(
+    items: ComboboxItem[]
+  ): (
+    | { type: "default"; items: ComboboxItem[] }
+    | { type: "group"; groupId: string; items: ComboboxItem[] }
+  )[] {
+    const blocks: (
+      | { type: "default"; items: ComboboxItem[] }
+      | { type: "group"; groupId: string; items: ComboboxItem[] }
+    )[] = [];
+    let current:
+      | { type: "default"; items: ComboboxItem[] }
+      | { type: "group"; groupId: string; items: ComboboxItem[] }
+      | null = null;
+
+    for (const item of items) {
+      const groupKey = item.group ?? "";
+      if (groupKey === "") {
+        if (current?.type !== "default") {
+          current = { type: "default", items: [] };
+          blocks.push(current);
+        }
+        current.items.push(item);
+      } else {
+        if (current?.type !== "group" || current.groupId !== groupKey) {
+          current = { type: "group", groupId: groupKey, items: [] };
+          blocks.push(current);
+        }
+        current.items.push(item);
+      }
+    }
+    return blocks;
   }
 
   renderGroupedItems(
     contentEl: HTMLElement,
     templatesContainer: HTMLElement,
-    groups: [string | null, ComboboxItem[]][]
+    _groups: [string | null, ComboboxItem[]][]
   ): void {
-    for (const [groupId, groupItems] of groups) {
-      if (groupId == null) continue;
+    const items = this.options?.length ? this.options : this.allOptions;
+    const blocks = this.buildOrderedBlocks(items);
 
+    for (const block of blocks) {
+      const templateId = block.type === "default" ? "default" : block.groupId;
       const groupTemplate = templatesContainer.querySelector<HTMLElement>(
-        `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
+        `[data-scope="combobox"][data-part="item-group"][data-id="${templateId}"][data-template]`
       );
       if (!groupTemplate) continue;
 
       const groupEl = groupTemplate.cloneNode(true) as HTMLElement;
       groupEl.removeAttribute("data-template");
 
-      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: templateId }));
 
       const labelEl = groupEl.querySelector<HTMLElement>(
         '[data-scope="combobox"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: templateId }));
       }
 
       const groupContentEl = groupEl.querySelector<HTMLElement>(
@@ -135,7 +188,7 @@ export class Combobox extends Component<Props, Api> {
 
       groupContentEl.innerHTML = "";
 
-      for (const item of groupItems) {
+      for (const item of block.items) {
         const itemEl = this.cloneItem(templatesContainer, item);
         if (itemEl) groupContentEl.appendChild(itemEl);
       }
@@ -171,7 +224,6 @@ export class Combobox extends Component<Props, Api> {
     const textEl = el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="item-text"]');
     if (textEl) {
       this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-      // Only set textContent if there are no child elements (custom HTML slots preserve their structure)
       if (textEl.children.length === 0) {
         textEl.textContent = item.label || "";
       }

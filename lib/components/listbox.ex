@@ -114,7 +114,35 @@ defmodule Corex.Listbox do
 
   ## Styling
 
-  Use data attributes: `[data-scope="listbox"][data-part="root"]`, `content`, `item`, `item-text`, `item-indicator`, `item-group`, `item-group-label`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="listbox"][data-part="root"] {}
+  [data-scope="listbox"][data-part="content"] {}
+  [data-scope="listbox"][data-part="item"] {}
+  [data-scope="listbox"][data-part="item-text"] {}
+  [data-scope="listbox"][data-part="item-indicator"] {}
+  [data-scope="listbox"][data-part="item-group"] {}
+  [data-scope="listbox"][data-part="item-group-label"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `listbox` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/listbox.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.listbox class="listbox listbox--accent listbox--lg" collection={[]}>
+  </.listbox>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/listbox#modifiers)
   '''
 
   @doc type: :component

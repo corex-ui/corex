@@ -41,7 +41,36 @@ defmodule Corex.TreeView do
 
   ## Styling
 
-  Target with `[data-scope="tree-view"][data-part="root"]`, `[data-part="tree"]`, `[data-part="item"]`, `[data-part="branch"]`, `[data-part="branch-control"]`, `[data-part="branch-content"]`, `[data-part="branch-indicator"]`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="tree-view"][data-part="root"] {}
+  [data-scope="tree-view"][data-part="tree"] {}
+  [data-scope="tree-view"][data-part="item"] {}
+  [data-scope="tree-view"][data-part="branch"] {}
+  [data-scope="tree-view"][data-part="branch-control"] {}
+  [data-scope="tree-view"][data-part="branch-content"] {}
+  [data-scope="tree-view"][data-part="branch-indicator"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `tree-view` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/tree-view.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.tree_view class="tree-view tree-view--accent tree-view--lg" items={[]}>
+    <:label>Label</:label>
+  </.tree_view>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/tree-view#modifiers)
   '''
 
   @doc type: :component

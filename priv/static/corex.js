@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-IXOYOLUJ.mjs
+  // ../priv/static/chunk-TZXIWZZ7.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -449,7 +449,8 @@ var Corex = (() => {
     const win = getWindow(el);
     if (!(el instanceof win.HTMLInputElement)) return;
     setElementValue(el, `${value}`);
-    el.dispatchEvent(new win.Event("input", { bubbles }));
+    const event = new win.Event("input", { bubbles });
+    el.dispatchEvent(markAsInternalChangeEvent(event));
   }
   function dispatchInputCheckedEvent(el, options) {
     const { checked, bubbles = true } = options;
@@ -457,17 +458,15 @@ var Corex = (() => {
     const win = getWindow(el);
     if (!(el instanceof win.HTMLInputElement)) return;
     setElementChecked(el, checked);
-    el.dispatchEvent(new win.Event("click", { bubbles }));
-  }
-  function getClosestForm(el) {
-    return isFormElement(el) ? el.form : el.closest("form");
+    const event = new win.Event("click", { bubbles });
+    el.dispatchEvent(markAsInternalChangeEvent(event));
   }
   function isFormElement(el) {
     return el.matches("textarea, input, select, button");
   }
   function trackFormReset(el, callback) {
     if (!el) return;
-    const form = getClosestForm(el);
+    const form = isFormElement(el) ? el.form : el.closest("form");
     const onReset = (e2) => {
       if (e2.defaultPrevented) return;
       callback();
@@ -492,6 +491,14 @@ var Corex = (() => {
     const { onFieldsetDisabledChange, onFormReset } = options;
     const cleanups = [trackFormReset(el, onFormReset), trackFieldsetDisabled(el, onFieldsetDisabledChange)];
     return () => cleanups.forEach((cleanup) => cleanup == null ? void 0 : cleanup());
+  }
+  function isInternalChangeEvent(e2) {
+    return Object.prototype.hasOwnProperty.call(e2, INTERNAL_CHANGE_EVENT);
+  }
+  function markAsInternalChangeEvent(event) {
+    if (isInternalChangeEvent(event)) return event;
+    Object.defineProperty(event, INTERNAL_CHANGE_EVENT, { value: true });
+    return event;
   }
   function parseTabIndex(el) {
     const attr = el.getAttribute("tabindex");
@@ -1596,9 +1603,9 @@ var Corex = (() => {
     }
     return result;
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, clampValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, countDecimals, decimalOp, incrementValue, decrementValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
-  var init_chunk_IXOYOLUJ = __esm({
-    "../priv/static/chunk-IXOYOLUJ.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, clampValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, countDecimals, decimalOp, incrementValue, decrementValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
+  var init_chunk_TZXIWZZ7 = __esm({
+    "../priv/static/chunk-TZXIWZZ7.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1737,6 +1744,7 @@ var Corex = (() => {
           node == null ? void 0 : node.removeEventListener(eventName, handler, options);
         };
       };
+      INTERNAL_CHANGE_EVENT = /* @__PURE__ */ Symbol.for("zag.changeEvent");
       isFrame = (el) => isHTMLElement(el) && el.tagName === "IFRAME";
       NATURALLY_TABBABLE_REGEX = /^(audio|video|details)$/;
       hasTabIndex = (el) => !Number.isNaN(parseTabIndex(el));
@@ -2807,7 +2815,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3160,7 +3168,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-BMVNROAE.mjs
+  // ../priv/static/chunk-FEZIYMNT.mjs
   function getPointAngle(rect, point, reference = rect.center) {
     const x2 = point.x - reference.x;
     const y2 = point.y - reference.y;
@@ -3348,8 +3356,8 @@ var Corex = (() => {
     return createRectFromPoints(p1, p2, normalized);
   }
   var __defProp4, __defNormalProp4, __publicField4, AffineTransform, clamp2, clampPoint, defaultMinSize, defaultMaxSize, clampSize, createPoint, subtractPoints, addPoints, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, min2, max2, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min22;
-  var init_chunk_BMVNROAE = __esm({
-    "../priv/static/chunk-BMVNROAE.mjs"() {
+  var init_chunk_FEZIYMNT = __esm({
+    "../priv/static/chunk-FEZIYMNT.mjs"() {
       "use strict";
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -3771,8 +3779,8 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_BMVNROAE();
-      init_chunk_IXOYOLUJ();
+      init_chunk_FEZIYMNT();
+      init_chunk_TZXIWZZ7();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -4216,7 +4224,7 @@ var Corex = (() => {
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4837,7 +4845,7 @@ var Corex = (() => {
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       getDirection = (element) => getComputedStyle2(element).direction;
       uniq2 = (arr) => [...new Set(arr)];
       clamp3 = (min4, max4) => (value) => Math.max(min4, Math.min(max4, value));
@@ -5518,14 +5526,16 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-TEV2GE3U.mjs
+  // ../priv/static/chunk-GXGJDSCU.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
   function isKeyboardFocusEvent(isTextInput, modality, e2) {
-    const target = e2 ? getEventTarget(e2) : null;
-    const win = getWindow(target);
-    isTextInput = isTextInput || target instanceof win.HTMLInputElement && !nonTextInputTypes.has(target == null ? void 0 : target.type) || target instanceof win.HTMLTextAreaElement || target instanceof win.HTMLElement && target.isContentEditable;
+    const eventTarget = e2 ? getEventTarget(e2) : null;
+    const doc = getDocument(eventTarget);
+    const win = getWindow(eventTarget);
+    const activeElement = getActiveElement(doc);
+    isTextInput = isTextInput || activeElement instanceof win.HTMLInputElement && !nonTextInputTypes.has(activeElement == null ? void 0 : activeElement.type) || activeElement instanceof win.HTMLTextAreaElement || activeElement instanceof win.HTMLElement && activeElement.isContentEditable;
     return !(isTextInput && modality === "keyboard" && e2 instanceof win.KeyboardEvent && !Reflect.has(FOCUS_VISIBLE_INPUT_KEYS, e2.key));
   }
   function triggerChangeHandlers(modality, e2) {
@@ -5555,7 +5565,7 @@ var Corex = (() => {
   }
   function handleFocusEvent(e2) {
     const target = getEventTarget(e2);
-    if (target === getWindow(target) || target === getDocument(target)) {
+    if (target === getWindow(target) || target === getDocument(target) || ignoreFocusEvent || !e2.isTrusted) {
       return;
     }
     if (!hasEventBeforeFocus && !hasBlurredWindowRecently) {
@@ -5577,8 +5587,6 @@ var Corex = (() => {
     const doc = getDocument(root);
     let focus = win.HTMLElement.prototype.focus;
     function patchedFocus() {
-      currentModality = "virtual";
-      triggerChangeHandlers("virtual", null);
       hasEventBeforeFocus = true;
       focus.apply(this, arguments);
     }
@@ -5615,8 +5623,12 @@ var Corex = (() => {
   function getInteractionModality() {
     return currentModality;
   }
+  function setInteractionModality(modality) {
+    currentModality = modality;
+    triggerChangeHandlers(modality, null);
+  }
   function isFocusVisible() {
-    return currentModality === "keyboard";
+    return currentModality === "keyboard" || currentModality === "virtual";
   }
   function trackFocusVisible(props26 = {}) {
     const { isTextInput, autoFocus, onChange, root } = props26;
@@ -5631,17 +5643,18 @@ var Corex = (() => {
       changeHandlers.delete(handler);
     };
   }
-  var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_TEV2GE3U = __esm({
-    "../priv/static/chunk-TEV2GE3U.mjs"() {
+  var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
+  var init_chunk_GXGJDSCU = __esm({
+    "../priv/static/chunk-GXGJDSCU.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
       listenerMap = /* @__PURE__ */ new Map();
       hasEventBeforeFocus = false;
       hasBlurredWindowRecently = false;
+      ignoreFocusEvent = false;
       FOCUS_VISIBLE_INPUT_KEYS = {
         Tab: true,
         Escape: true
@@ -5800,8 +5813,8 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_TEV2GE3U();
-      init_chunk_IXOYOLUJ();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -6245,7 +6258,7 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6605,7 +6618,7 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6996,7 +7009,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-2PO3TGCF.mjs
+  // ../priv/static/chunk-4RWUEBEQ.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -7341,10 +7354,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_2PO3TGCF = __esm({
-    "../priv/static/chunk-2PO3TGCF.mjs"() {
+  var init_chunk_4RWUEBEQ = __esm({
+    "../priv/static/chunk-4RWUEBEQ.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -8042,12 +8055,6 @@ var Corex = (() => {
               return acc;
             }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
           });
-          __publicField5(this, "getIndexPath", (value) => {
-            return findIndexPath(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === value
-            });
-          });
           __publicField5(this, "getValue", (indexPath) => {
             const node = this.at(indexPath);
             return node ? this.getNodeValue(node) : void 0;
@@ -8298,6 +8305,29 @@ var Corex = (() => {
           });
           this.rootNode = options.rootNode;
         }
+        getIndexPath(valueOrValuePath) {
+          if (Array.isArray(valueOrValuePath)) {
+            if (valueOrValuePath.length === 0) return [];
+            const indexPath = [];
+            let currentChildren = this.getNodeChildren(this.rootNode);
+            for (let i2 = 0; i2 < valueOrValuePath.length; i2++) {
+              const currentValue = valueOrValuePath[i2];
+              const matchingChildIndex = currentChildren.findIndex((child) => this.getNodeValue(child) === currentValue);
+              if (matchingChildIndex === -1) break;
+              indexPath.push(matchingChildIndex);
+              if (i2 < valueOrValuePath.length - 1) {
+                const currentNode = currentChildren[matchingChildIndex];
+                currentChildren = this.getNodeChildren(currentNode);
+              }
+            }
+            return indexPath;
+          } else {
+            return findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === valueOrValuePath
+            });
+          }
+        }
       };
       fallbackMethods = {
         nodeToValue(node) {
@@ -8324,7 +8354,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-EENFWNGI.mjs
+  // ../priv/static/chunk-LOW5KGCT.mjs
   function clamp4(start, value, end) {
     return max3(start, min3(value, end));
   }
@@ -9379,6 +9409,9 @@ var Corex = (() => {
     const dpr = win.devicePixelRatio || 1;
     return Math.round(value * dpr) / dpr;
   }
+  function isApproximatelyEqual(a2, b2) {
+    return a2 != null && Math.abs(a2 - b2) < 0.5;
+  }
   function resolveBoundaryOption(boundary) {
     if (typeof boundary === "function") return boundary();
     if (boundary === "clipping-ancestors") return "clippingAncestors";
@@ -9425,6 +9458,11 @@ var Corex = (() => {
     }));
   }
   function getSizeMiddleware(opts) {
+    if (opts.sizeMiddleware === false && !opts.sameWidth && !opts.fitViewport) return;
+    let lastReferenceWidth;
+    let lastReferenceHeight;
+    let lastAvailableWidth;
+    let lastAvailableHeight;
     return size2({
       padding: opts.overflowPadding,
       apply({ elements, rects, availableHeight, availableWidth }) {
@@ -9433,10 +9471,22 @@ var Corex = (() => {
         const referenceHeight = Math.round(rects.reference.height);
         availableWidth = Math.floor(availableWidth);
         availableHeight = Math.floor(availableHeight);
-        floating.style.setProperty("--reference-width", `${referenceWidth}px`);
-        floating.style.setProperty("--reference-height", `${referenceHeight}px`);
-        floating.style.setProperty("--available-width", `${availableWidth}px`);
-        floating.style.setProperty("--available-height", `${availableHeight}px`);
+        if (!isApproximatelyEqual(lastReferenceWidth, referenceWidth)) {
+          floating.style.setProperty("--reference-width", `${referenceWidth}px`);
+          lastReferenceWidth = referenceWidth;
+        }
+        if (!isApproximatelyEqual(lastReferenceHeight, referenceHeight)) {
+          floating.style.setProperty("--reference-height", `${referenceHeight}px`);
+          lastReferenceHeight = referenceHeight;
+        }
+        if (!isApproximatelyEqual(lastAvailableWidth, availableWidth)) {
+          floating.style.setProperty("--available-width", `${availableWidth}px`);
+          lastAvailableWidth = availableWidth;
+        }
+        if (!isApproximatelyEqual(lastAvailableHeight, availableHeight)) {
+          floating.style.setProperty("--available-height", `${availableHeight}px`);
+          lastAvailableHeight = availableHeight;
+        }
       }
     });
   }
@@ -9474,6 +9524,9 @@ var Corex = (() => {
       rectMiddleware
     ];
     const { placement, strategy, onComplete, onPositioned } = options;
+    let lastX;
+    let lastY;
+    let zIndexComputed = false;
     const updatePosition = () => __async(null, null, function* () {
       var _a2;
       if (!reference || !floating) return;
@@ -9483,12 +9536,18 @@ var Corex = (() => {
         strategy
       });
       onComplete == null ? void 0 : onComplete(pos);
-      onPositioned == null ? void 0 : onPositioned({ placed: true });
       const win = getWindow(floating);
       const x2 = roundByDpr(win, pos.x);
       const y2 = roundByDpr(win, pos.y);
-      floating.style.setProperty("--x", `${x2}px`);
-      floating.style.setProperty("--y", `${y2}px`);
+      floating.style.transform = `translate3d(${x2}px, ${y2}px, 0)`;
+      if (!isApproximatelyEqual(lastX, x2)) {
+        floating.style.setProperty("--x", `${x2}px`);
+        lastX = x2;
+      }
+      if (!isApproximatelyEqual(lastY, y2)) {
+        floating.style.setProperty("--y", `${y2}px`);
+        lastY = y2;
+      }
       if (options.hideWhenDetached) {
         const isHidden = (_a2 = pos.middlewareData.hide) == null ? void 0 : _a2.referenceHidden;
         if (isHidden) {
@@ -9499,10 +9558,12 @@ var Corex = (() => {
           floating.style.removeProperty("pointer-events");
         }
       }
-      const contentEl = floating.firstElementChild;
-      if (contentEl) {
-        const styles = getComputedStyle2(contentEl);
-        floating.style.setProperty("--z-index", styles.zIndex);
+      if (!zIndexComputed) {
+        const contentEl = floating.firstElementChild;
+        if (contentEl) {
+          floating.style.setProperty("--z-index", getComputedStyle2(contentEl).zIndex);
+          zIndexComputed = true;
+        }
       }
     });
     const update = () => __async(null, null, function* () {
@@ -9574,10 +9635,10 @@ var Corex = (() => {
     };
   }
   var sides, min3, max3, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_EENFWNGI = __esm({
-    "../priv/static/chunk-EENFWNGI.mjs"() {
+  var init_chunk_LOW5KGCT = __esm({
+    "../priv/static/chunk-LOW5KGCT.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       sides = ["top", "right", "bottom", "left"];
       min3 = Math.min;
       max3 = Math.max;
@@ -10280,7 +10341,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-ER3INIAI.mjs
+  // ../priv/static/chunk-OSSFSUET.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10497,17 +10558,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_ER3INIAI = __esm({
-    "../priv/static/chunk-ER3INIAI.mjs"() {
+  var init_chunk_OSSFSUET = __esm({
+    "../priv/static/chunk-OSSFSUET.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-RR7TJIQ5.mjs
+  // ../priv/static/chunk-NF3CDGDL.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10666,11 +10727,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_RR7TJIQ5 = __esm({
-    "../priv/static/chunk-RR7TJIQ5.mjs"() {
+  var init_chunk_NF3CDGDL = __esm({
+    "../priv/static/chunk-NF3CDGDL.mjs"() {
       "use strict";
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_OSSFSUET();
+      init_chunk_TZXIWZZ7();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10816,12 +10877,12 @@ var Corex = (() => {
       placement: context.get("currentPlacement")
     }));
     function getItemState(props26) {
-      const disabled2 = collection22.getItemDisabled(props26.item);
+      const itemDisabled = collection22.getItemDisabled(props26.item);
       const value = collection22.getItemValue(props26.item);
       ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
       return {
         value,
-        disabled: Boolean(disabled2 || disabled2),
+        disabled: Boolean(disabled || itemDisabled),
         highlighted: highlightedValue === value,
         selected: context.get("value").includes(value)
       };
@@ -11051,8 +11112,7 @@ var Corex = (() => {
             if (!isLeftClick(event2)) return;
             event2.preventDefault();
             queueMicrotask(() => {
-              var _a;
-              (_a = getInputEl2(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+              focusInputEl(scope);
             });
           },
           onKeyDown(event2) {
@@ -11134,7 +11194,7 @@ var Corex = (() => {
           tabIndex: -1,
           "data-highlighted": dataAttr(itemState.highlighted),
           "data-state": itemState.selected ? "checked" : "unchecked",
-          "aria-selected": ariaAttr(itemState.highlighted),
+          "aria-selected": ariaAttr(itemState.selected),
           "aria-disabled": ariaAttr(itemState.disabled),
           "data-disabled": dataAttr(itemState.disabled),
           "data-value": itemState.value,
@@ -11217,11 +11277,12 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_2PO3TGCF();
-      init_chunk_EENFWNGI();
-      init_chunk_RR7TJIQ5();
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_4RWUEBEQ();
+      init_chunk_LOW5KGCT();
+      init_chunk_NF3CDGDL();
+      init_chunk_OSSFSUET();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -11302,8 +11363,10 @@ var Corex = (() => {
       };
       focusInputEl = (ctx) => {
         const inputEl = getInputEl2(ctx);
-        if (ctx.isActiveElement(inputEl)) return;
-        inputEl == null ? void 0 : inputEl.focus({ preventScroll: true });
+        if (!ctx.isActiveElement(inputEl)) {
+          inputEl == null ? void 0 : inputEl.focus({ preventScroll: true });
+        }
+        setCaretToEnd(inputEl);
       };
       focusTriggerEl = (ctx) => {
         const triggerEl = getTriggerEl(ctx);
@@ -11363,7 +11426,8 @@ var Corex = (() => {
                 const context = getContext();
                 const prevSelectedItems = context.get("selectedItems");
                 const collection22 = prop("collection");
-                const nextItems = value.map((v2) => {
+                const effectiveValue = prop("value") || value;
+                const nextItems = effectiveValue.map((v2) => {
                   const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === v2);
                   return item || collection22.find(v2);
                 });
@@ -11600,8 +11664,7 @@ var Corex = (() => {
               "INPUT.ARROW_UP": [
                 // == group 1 ==
                 {
-                  guard: "autoComplete",
-                  target: "interacting",
+                  guard: and2("isOpenControlled", "autoComplete"),
                   actions: ["invokeOnOpen"]
                 },
                 {
@@ -11611,7 +11674,7 @@ var Corex = (() => {
                 },
                 // == group 2 ==
                 {
-                  target: "interacting",
+                  guard: "isOpenControlled",
                   actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
                 },
                 {
@@ -11637,7 +11700,7 @@ var Corex = (() => {
           interacting: {
             tags: ["open", "focused"],
             entry: ["setInitialFocus"],
-            effects: ["scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
+            effects: ["trackFocusVisible", "scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
             on: {
               "CONTROLLED.CLOSE": [
                 {
@@ -11812,7 +11875,7 @@ var Corex = (() => {
           },
           suggesting: {
             tags: ["open", "focused"],
-            effects: ["trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
+            effects: ["trackFocusVisible", "trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
             entry: ["setInitialFocus"],
             on: {
               "CONTROLLED.CLOSE": [
@@ -11999,6 +12062,10 @@ var Corex = (() => {
             hasCollectionItems: ({ prop }) => prop("collection").size > 0
           },
           effects: {
+            trackFocusVisible({ scope }) {
+              var _a;
+              return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
+            },
             trackDismissableLayer({ send, prop, scope }) {
               if (prop("disableLayer")) return;
               const contentEl = () => getContentEl2(scope);
@@ -12030,13 +12097,14 @@ var Corex = (() => {
                 }
               }));
             },
-            scrollToHighlightedItem({ context, prop, scope, event }) {
+            scrollToHighlightedItem({ context, prop, scope }) {
               const inputEl = getInputEl2(scope);
               let cleanups = [];
               const exec = (immediate) => {
-                const pointer = event.current().type.includes("POINTER");
+                const modality = getInteractionModality();
+                if (modality === "pointer") return;
                 const highlightedValue = context.get("highlightedValue");
-                if (pointer || !highlightedValue) return;
+                if (!highlightedValue) return;
                 const contentEl = getContentEl2(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
@@ -12054,7 +12122,10 @@ var Corex = (() => {
                 });
                 cleanups.push(raf_cleanup);
               };
-              const rafCleanup = raf(() => exec(true));
+              const rafCleanup = raf(() => {
+                setInteractionModality("virtual");
+                exec(true);
+              });
               cleanups.push(rafCleanup);
               const observerCleanup = observeAttributes(inputEl, {
                 attributes: ["aria-activedescendant"],
@@ -12447,7 +12518,7 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props26) {
-          const getCollection = this.getCollection.bind(this);
+          const getCollection = () => this.getCollection();
           return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props26), {
             get collection() {
               return getCollection();
@@ -12461,12 +12532,16 @@ var Corex = (() => {
               }
             },
             onInputValueChange: (details) => {
-              const filtered = this.allOptions.filter(
-                (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-              );
-              this.options = filtered.length > 0 ? filtered : this.allOptions;
               if (props26.onInputValueChange) {
                 props26.onInputValueChange(details);
+              }
+              if (this.el.hasAttribute("data-filter")) {
+                const filtered = this.allOptions.filter(
+                  (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+                );
+                this.options = filtered.length > 0 ? filtered : this.allOptions;
+              } else {
+                this.options = this.allOptions;
               }
             }
           }));
@@ -12484,36 +12559,71 @@ var Corex = (() => {
           if (!templatesContainer) return;
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-          if (this.hasGroups) {
-            const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
+          contentEl.querySelectorAll('[data-scope="combobox"][data-part="empty"]:not([data-template])').forEach((el) => el.remove());
+          const items = ((_a = this.options) == null ? void 0 : _a.length) ? this.options : this.allOptions;
+          if (items.length === 0) {
+            const emptyTemplate = templatesContainer.querySelector(
+              '[data-scope="combobox"][data-part="empty"][data-template]'
+            );
+            if (emptyTemplate) {
+              const emptyEl = emptyTemplate.cloneNode(true);
+              emptyEl.removeAttribute("data-template");
+              contentEl.appendChild(emptyEl);
+            }
+          } else if (this.hasGroups) {
+            const groups = (_d = (_c = (_b = this.api.collection).group) == null ? void 0 : _c.call(_b)) != null ? _d : [];
             this.renderGroupedItems(contentEl, templatesContainer, groups);
           } else {
-            const items = ((_d = this.options) == null ? void 0 : _d.length) ? this.options : this.allOptions;
             this.renderFlatItems(contentEl, templatesContainer, items);
           }
         }
-        renderGroupedItems(contentEl, templatesContainer, groups) {
-          for (const [groupId, groupItems] of groups) {
-            if (groupId == null) continue;
+        buildOrderedBlocks(items) {
+          var _a;
+          const blocks = [];
+          let current = null;
+          for (const item of items) {
+            const groupKey = (_a = item.group) != null ? _a : "";
+            if (groupKey === "") {
+              if ((current == null ? void 0 : current.type) !== "default") {
+                current = { type: "default", items: [] };
+                blocks.push(current);
+              }
+              current.items.push(item);
+            } else {
+              if ((current == null ? void 0 : current.type) !== "group" || current.groupId !== groupKey) {
+                current = { type: "group", groupId: groupKey, items: [] };
+                blocks.push(current);
+              }
+              current.items.push(item);
+            }
+          }
+          return blocks;
+        }
+        renderGroupedItems(contentEl, templatesContainer, _groups) {
+          var _a;
+          const items = ((_a = this.options) == null ? void 0 : _a.length) ? this.options : this.allOptions;
+          const blocks = this.buildOrderedBlocks(items);
+          for (const block of blocks) {
+            const templateId = block.type === "default" ? "default" : block.groupId;
             const groupTemplate = templatesContainer.querySelector(
-              `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
+              `[data-scope="combobox"][data-part="item-group"][data-id="${templateId}"][data-template]`
             );
             if (!groupTemplate) continue;
             const groupEl = groupTemplate.cloneNode(true);
             groupEl.removeAttribute("data-template");
-            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: templateId }));
             const labelEl = groupEl.querySelector(
               '[data-scope="combobox"][data-part="item-group-label"]'
             );
             if (labelEl) {
-              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: templateId }));
             }
             const groupContentEl = groupEl.querySelector(
               '[data-scope="combobox"][data-part="item-group-content"]'
             );
             if (!groupContentEl) continue;
             groupContentEl.innerHTML = "";
-            for (const item of groupItems) {
+            for (const item of block.items) {
               const itemEl = this.cloneItem(templatesContainer, item);
               if (itemEl) groupContentEl.appendChild(itemEl);
             }
@@ -12591,7 +12701,7 @@ var Corex = (() => {
             invalid: getBoolean(el, "invalid"),
             allowCustomValue: false,
             selectionBehavior: "replace",
-            name: "",
+            name: getString(el, "name"),
             form: getString(el, "form"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
@@ -12656,57 +12766,11 @@ var Corex = (() => {
               }
             },
             onValueChange: (details) => {
-              const valueInput = el.querySelector(
-                '[data-scope="combobox"][data-part="value-input"]'
+              const hiddenInput = el.querySelector(
+                '[data-scope="combobox"][data-part="input"]'
               );
-              if (valueInput) {
-                const toId = (val) => {
-                  var _a;
-                  const item = allItems.find(
-                    (i2) => {
-                      var _a2;
-                      return String((_a2 = i2.id) != null ? _a2 : "") === val || i2.label === val;
-                    }
-                  );
-                  return item ? String((_a = item.id) != null ? _a : "") : val;
-                };
-                const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? toId(String(details.value[0])) : details.value.map((v2) => toId(String(v2))).join(",");
-                valueInput.value = idValue;
-                const formId = valueInput.getAttribute("form");
-                let form = null;
-                if (formId) {
-                  form = document.getElementById(formId);
-                } else {
-                  form = valueInput.closest("form");
-                }
-                const changeEvent = new Event("change", {
-                  bubbles: true,
-                  cancelable: true
-                });
-                valueInput.dispatchEvent(changeEvent);
-                const inputEvent = new Event("input", {
-                  bubbles: true,
-                  cancelable: true
-                });
-                valueInput.dispatchEvent(inputEvent);
-                if (form && form.hasAttribute("phx-change")) {
-                  requestAnimationFrame(() => {
-                    const formElement = form.querySelector("input, select, textarea");
-                    if (formElement) {
-                      const formChangeEvent = new Event("change", {
-                        bubbles: true,
-                        cancelable: true
-                      });
-                      formElement.dispatchEvent(formChangeEvent);
-                    } else {
-                      const formChangeEvent = new Event("change", {
-                        bubbles: true,
-                        cancelable: true
-                      });
-                      form.dispatchEvent(formChangeEvent);
-                    }
-                  });
-                }
+              if (hiddenInput) {
+                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
               }
               const eventName = getString(el, "onValueChange");
               if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
@@ -12735,38 +12799,6 @@ var Corex = (() => {
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
-          const visibleInput = el.querySelector(
-            '[data-scope="combobox"][data-part="input"]'
-          );
-          if (visibleInput) {
-            visibleInput.removeAttribute("name");
-            visibleInput.removeAttribute("form");
-          }
-          const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
-          if (initialValue && initialValue.length > 0) {
-            const selectedItems = allItems.filter(
-              (item) => {
-                var _a;
-                return initialValue.includes((_a = item.id) != null ? _a : "");
-              }
-            );
-            if (selectedItems.length > 0) {
-              const inputValue = selectedItems.map((item) => {
-                var _a;
-                return (_a = item.label) != null ? _a : "";
-              }).join(", ");
-              if (combobox.api && typeof combobox.api.setInputValue === "function") {
-                combobox.api.setInputValue(inputValue);
-              } else {
-                const inputEl = el.querySelector(
-                  '[data-scope="combobox"][data-part="input"]'
-                );
-                if (inputEl) {
-                  inputEl.value = inputValue;
-                }
-              }
-            }
-          }
           this.combobox = combobox;
           this.handlers = [];
         },
@@ -12776,7 +12808,9 @@ var Corex = (() => {
           if (this.combobox) {
             this.combobox.hasGroups = hasGroups;
             this.combobox.setAllOptions(newCollection);
+            this.combobox.render();
             this.combobox.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+              collection: this.combobox.getCollection(),
               name: getString(this.el, "name"),
               form: getString(this.el, "form"),
               disabled: getBoolean(this.el, "disabled"),
@@ -12786,14 +12820,6 @@ var Corex = (() => {
               required: getBoolean(this.el, "required"),
               readOnly: getBoolean(this.el, "readOnly")
             }));
-            const inputEl = this.el.querySelector(
-              '[data-scope="combobox"][data-part="input"]'
-            );
-            if (inputEl) {
-              inputEl.removeAttribute("name");
-              inputEl.removeAttribute("form");
-              inputEl.name = "";
-            }
           }
         },
         destroyed() {
@@ -13608,14 +13634,27 @@ var Corex = (() => {
     return aligned;
   }
   function constrainValue(date, minValue, maxValue) {
-    let constrainedDate = $11d87f3f76e88657$export$93522d1a439f3617(date);
-    if (minValue) {
-      constrainedDate = $14e0f24ef4ac5c92$export$a75f2bff57811055(constrainedDate, $11d87f3f76e88657$export$93522d1a439f3617(minValue));
+    const dateOnly = $11d87f3f76e88657$export$93522d1a439f3617(date);
+    const minOnly = minValue ? $11d87f3f76e88657$export$93522d1a439f3617(minValue) : void 0;
+    const maxOnly = maxValue ? $11d87f3f76e88657$export$93522d1a439f3617(maxValue) : void 0;
+    let constrainedDateOnly = dateOnly;
+    if (minOnly) {
+      constrainedDateOnly = $14e0f24ef4ac5c92$export$a75f2bff57811055(constrainedDateOnly, minOnly);
     }
-    if (maxValue) {
-      constrainedDate = $14e0f24ef4ac5c92$export$5c333a116e949cdd(constrainedDate, $11d87f3f76e88657$export$93522d1a439f3617(maxValue));
+    if (maxOnly) {
+      constrainedDateOnly = $14e0f24ef4ac5c92$export$5c333a116e949cdd(constrainedDateOnly, maxOnly);
     }
-    return constrainedDate;
+    if (constrainedDateOnly.compare(dateOnly) === 0) {
+      return date;
+    }
+    if ("hour" in date) {
+      return date.set({
+        year: constrainedDateOnly.year,
+        month: constrainedDateOnly.month,
+        day: constrainedDateOnly.day
+      });
+    }
+    return constrainedDateOnly;
   }
   function alignDate(date, alignment, duration, locale, min4, max4) {
     switch (alignment) {
@@ -13768,6 +13807,21 @@ var Corex = (() => {
       date.setMonth(date.getMonth() + 1);
     }
     return monthNames;
+  }
+  function getWeekOfYear(date, locale) {
+    const mondayOfWeek = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale, "mon");
+    const year = mondayOfWeek.year;
+    const jan4 = mondayOfWeek.set({ month: 1, day: 4 });
+    const week1Monday = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(jan4, locale, "mon");
+    const julianMonday = mondayOfWeek.calendar.toJulianDay(mondayOfWeek);
+    const julianWeek1 = week1Monday.calendar.toJulianDay(week1Monday);
+    if (julianMonday >= julianWeek1) {
+      return 1 + Math.floor((julianMonday - julianWeek1) / 7);
+    }
+    const prevJan4 = mondayOfWeek.set({ year: year - 1, month: 1, day: 4 });
+    const prevWeek1Monday = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(prevJan4, locale, "mon");
+    const julianPrevWeek1 = prevWeek1Monday.calendar.toJulianDay(prevWeek1Monday);
+    return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
   }
   function getYearsRange(range) {
     const years = [];
@@ -14115,7 +14169,10 @@ var Corex = (() => {
     const focused = state2.matches("focused");
     const open = state2.matches("open");
     const isRangePicker = prop("selectionMode") === "range";
+    const isMultiPicker = prop("selectionMode") === "multiple";
     const isDateUnavailableFn = prop("isDateUnavailable");
+    const maxSelectedDates = prop("maxSelectedDates");
+    const isMaxSelected = isMultiPicker && maxSelectedDates != null && selectedValue.length >= maxSelectedDates;
     const currentPlacement = context.get("currentPlacement");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: currentPlacement
@@ -14206,10 +14263,12 @@ var Corex = (() => {
       const isInHoveredRange = hasHoveredRange && isDateWithinRange(value, hoveredRangeValue);
       const isFirstInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[0]);
       const isLastInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[1]);
+      const isSelected = selectedValue.some((date) => isDateEqual(value, date));
       const cellState = {
         invalid: isDateOutsideRange(value, min4, max4),
-        disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min4, max4),
-        selected: selectedValue.some((date) => isDateEqual(value, date)),
+        disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min4, max4) || // Disable unselected dates when max is reached in multiple selection mode
+        isMaxSelected && !isSelected,
+        selected: isSelected,
         unavailable: isDateUnavailable(value, isDateUnavailableFn, locale, min4, max4) && !disabled2,
         outsideRange: isOutsideRange,
         today: $14e0f24ef4ac5c92$export$629b0a497aa65267(value, timeZone),
@@ -14247,10 +14306,17 @@ var Corex = (() => {
       readOnly,
       inline: !!prop("inline"),
       numOfMonths: prop("numOfMonths"),
+      showWeekNumbers: !!prop("showWeekNumbers"),
       selectionMode: prop("selectionMode"),
+      maxSelectedDates,
+      isMaxSelected,
       view: context.get("view"),
       getRangePresetValue(preset) {
         return getDateRangePreset(preset, locale, timeZone);
+      },
+      getWeekNumber(week) {
+        const firstDay = week[0];
+        return firstDay ? getWeekOfYear(firstDay, locale) : 0;
       },
       getDaysInWeek(week, from = startValue) {
         return getDaysInWeek(week, from, locale, startOfWeek);
@@ -14282,14 +14348,32 @@ var Corex = (() => {
       visibleRange: computed("visibleRange"),
       selectToday() {
         const value = constrainValue(getTodayDate(timeZone), min4, max4);
-        send({ type: "VALUE.SET", value });
+        send({ type: "VALUE.SET", value: [value] });
       },
       setValue(values) {
         const computedValue = values.map((date) => constrainValue(date, min4, max4));
         send({ type: "VALUE.SET", value: computedValue });
       },
-      clearValue() {
-        send({ type: "VALUE.CLEAR" });
+      setTime(time, index = 0) {
+        var _a, _b, _c, _d;
+        const values = Array.from(selectedValue);
+        let dateValue = values[index];
+        if (!dateValue) return;
+        if (!("hour" in dateValue)) {
+          dateValue = $11d87f3f76e88657$export$b21e0b124e224484(dateValue);
+        }
+        dateValue = dateValue.set({
+          hour: (_a = time.hour) != null ? _a : "hour" in dateValue ? dateValue.hour : 0,
+          minute: (_b = time.minute) != null ? _b : "minute" in dateValue ? dateValue.minute : 0,
+          second: (_c = time.second) != null ? _c : "second" in dateValue ? dateValue.second : 0,
+          millisecond: (_d = time.millisecond) != null ? _d : "millisecond" in dateValue ? dateValue.millisecond : 0
+        });
+        values[index] = constrainValue(dateValue, min4, max4);
+        send({ type: "VALUE.SET", value: values });
+      },
+      clearValue(options = {}) {
+        const { focus = true } = options;
+        send({ type: "VALUE.CLEAR", focus });
       },
       setFocusedValue(value) {
         send({ type: "FOCUS.SET", value });
@@ -14486,6 +14570,27 @@ var Corex = (() => {
           "aria-disabled": ariaAttr(disabled),
           "data-disabled": dataAttr(disabled),
           "data-view": view
+        }));
+      },
+      getWeekNumberHeaderCellProps(props26 = {}) {
+        const { view = "day" } = props26;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
+          scope: "col",
+          "aria-label": translations.weekColumnHeader,
+          "data-view": view,
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getWeekNumberCellProps(props26) {
+        var _a;
+        const { weekIndex, week } = props26;
+        const weekNumber = week[0] ? getWeekOfYear(week[0], locale) : 0;
+        return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
+          role: "rowheader",
+          "aria-label": (_a = translations.weekNumberCell) == null ? void 0 : _a.call(translations, weekNumber),
+          "data-view": "day",
+          "data-week-index": weekIndex,
+          "data-disabled": dataAttr(disabled)
         }));
       },
       getDayTableCellState,
@@ -14750,6 +14855,12 @@ var Corex = (() => {
               event.preventDefault();
             }
           },
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (!prop("openOnClick")) return;
+            if (!interactive) return;
+            send({ type: "OPEN", src: "input.click" });
+          },
           onFocus() {
             send({ type: "INPUT.FOCUS", index });
           },
@@ -14873,14 +14984,14 @@ var Corex = (() => {
     const pad = (n2) => String(n2).padStart(2, "0");
     return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
   }
-  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, ID, anatomy9, parts9, getLabelId5, getRootId9, getTableId, getContentId3, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId4, getInputId3, getTriggerId3, getPositionerId2, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl2, getContentEl3, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl2, getControlEl3, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and3, machine9, normalizeValue, props9, splitProps9, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps, DatePicker, DatePickerHook;
+  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, ID, anatomy9, parts9, getLabelId5, getRootId9, getTableId, getContentId3, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId4, getInputId3, getTriggerId3, getPositionerId2, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl2, getContentEl3, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl2, getControlEl3, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and3, machine9, normalizeValue, preserveTime, props9, splitProps9, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps, DatePicker, DatePickerHook;
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_EENFWNGI();
-      init_chunk_RR7TJIQ5();
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_LOW5KGCT();
+      init_chunk_NF3CDGDL();
+      init_chunk_OSSFSUET();
+      init_chunk_TZXIWZZ7();
       $3b62074eb05584b2$var$EPOCH = 1721426;
       $3b62074eb05584b2$var$daysInMonth = {
         standard: [
@@ -15574,7 +15685,11 @@ var Corex = (() => {
         content: "calendar",
         monthSelect: "Select month",
         yearSelect: "Select year",
-        clearTrigger: "Clear selected dates"
+        clearTrigger: "Clear selected dates",
+        weekColumnHeader: "Wk",
+        weekNumberCell(weekNumber) {
+          return `Week ${weekNumber}`;
+        }
       };
       views = ["day", "month", "year"];
       getVisibleRangeText = memo(
@@ -15958,8 +16073,12 @@ var Corex = (() => {
                   actions: ["setFocusedDate", "setSelectedDate", "setActiveIndexToEnd"]
                 },
                 {
-                  guard: "isMultiPicker",
+                  guard: and3("isMultiPicker", "canSelectDate"),
                   actions: ["setFocusedDate", "toggleSelectedDate"]
+                },
+                {
+                  guard: "isMultiPicker",
+                  actions: ["setFocusedDate"]
                 },
                 // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
                 {
@@ -16035,8 +16154,11 @@ var Corex = (() => {
                   actions: ["setSelectedDate", "setActiveIndexToEnd", "focusNextDay"]
                 },
                 {
-                  guard: "isMultiPicker",
+                  guard: and3("isMultiPicker", "canSelectDate"),
                   actions: ["toggleSelectedDate"]
+                },
+                {
+                  guard: "isMultiPicker"
                 },
                 // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
                 {
@@ -16187,6 +16309,16 @@ var Corex = (() => {
             isRangePicker: ({ prop }) => prop("selectionMode") === "range",
             hasSelectedRange: ({ context }) => context.get("value").length === 2,
             isMultiPicker: ({ prop }) => prop("selectionMode") === "multiple",
+            canSelectDate: ({ context, prop, event }) => {
+              var _a;
+              const maxSelectedDates = prop("maxSelectedDates");
+              if (maxSelectedDates == null) return true;
+              const existingValues = context.get("value");
+              const currentValue = (_a = event.value) != null ? _a : context.get("focusedValue");
+              const isDeselecting = existingValues.some((date) => isDateEqual(date, currentValue));
+              if (isDeselecting) return true;
+              return existingValues.length < maxSelectedDates;
+            },
             shouldRestoreFocus: ({ context }) => !!context.get("restoreFocus"),
             isSelectingEndDate: ({ context }) => context.get("activeIndex") === 1,
             closeOnSelect: ({ prop }) => !!prop("closeOnSelect"),
@@ -16331,25 +16463,30 @@ var Corex = (() => {
               var _a;
               const { context, event } = params;
               const values = Array.from(context.get("value"));
-              values[context.get("activeIndex")] = normalizeValue(params, (_a = event.value) != null ? _a : context.get("focusedValue"));
+              const activeIndex = context.get("activeIndex");
+              const existingValue = values[activeIndex];
+              const newValue = normalizeValue(params, (_a = event.value) != null ? _a : context.get("focusedValue"));
+              values[activeIndex] = preserveTime(existingValue, newValue);
               context.set("value", adjustStartAndEndDate(values));
             },
             resetSelection(params) {
               var _a;
               const { context, event } = params;
-              const value = normalizeValue(params, (_a = event.value) != null ? _a : context.get("focusedValue"));
-              context.set("value", [value]);
+              const existingValue = context.get("value")[0];
+              const newValue = normalizeValue(params, (_a = event.value) != null ? _a : context.get("focusedValue"));
+              context.set("value", [preserveTime(existingValue, newValue)]);
             },
             toggleSelectedDate(params) {
               var _a;
               const { context, event } = params;
               const currentValue = normalizeValue(params, (_a = event.value) != null ? _a : context.get("focusedValue"));
-              const index = context.get("value").findIndex((date) => isDateEqual(date, currentValue));
+              const existingValues = context.get("value");
+              const index = existingValues.findIndex((date) => isDateEqual(date, currentValue));
               if (index === -1) {
-                const values = [...context.get("value"), currentValue];
+                const values = [...existingValues, currentValue];
                 context.set("value", sortDates(values));
               } else {
-                const values = Array.from(context.get("value"));
+                const values = Array.from(existingValues);
                 values.splice(index, 1);
                 context.set("value", sortDates(values));
               }
@@ -16363,7 +16500,9 @@ var Corex = (() => {
             selectFocusedDate({ context, computed }) {
               const values = Array.from(context.get("value"));
               const activeIndex = context.get("activeIndex");
-              values[activeIndex] = context.get("focusedValue").copy();
+              const existingValue = values[activeIndex];
+              const newValue = context.get("focusedValue").copy();
+              values[activeIndex] = preserveTime(existingValue, newValue);
               context.set("value", adjustStartAndEndDate(values));
               const valueAsString = computed("valueAsString");
               context.set("inputValue", valueAsString[activeIndex]);
@@ -16523,7 +16662,8 @@ var Corex = (() => {
             setActiveIndexToStart({ context }) {
               context.set("activeIndex", 0);
             },
-            focusActiveCell({ scope, context }) {
+            focusActiveCell({ scope, context, event }) {
+              if (event.src === "input.click") return;
               raf(() => {
                 var _a;
                 const view = context.get("view");
@@ -16549,15 +16689,22 @@ var Corex = (() => {
                 (_a = getTriggerEl2(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
               });
             },
-            focusFirstInputElement({ scope }) {
+            focusFirstInputElement({ scope, event }) {
+              if (event.focus === false) return;
               raf(() => {
                 const [inputEl] = getInputEls(scope);
-                inputEl == null ? void 0 : inputEl.focus({ preventScroll: true });
+                const elementToFocus = inputEl != null ? inputEl : getTriggerEl2(scope);
+                elementToFocus == null ? void 0 : elementToFocus.focus({ preventScroll: true });
               });
             },
             focusInputElement({ scope }) {
               raf(() => {
+                var _a;
                 const inputEls = getInputEls(scope);
+                if (inputEls.length === 0) {
+                  (_a = getTriggerEl2(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+                  return;
+                }
                 const lastIndexWithValue = inputEls.findLastIndex((inputEl2) => inputEl2.value !== "");
                 const indexToFocus = Math.max(lastIndexWithValue, 0);
                 const inputEl = inputEls[indexToFocus];
@@ -16654,6 +16801,26 @@ var Corex = (() => {
         });
         return dateValue;
       };
+      preserveTime = (existingDate, newDate) => {
+        if (!existingDate || !("hour" in existingDate)) {
+          return newDate;
+        }
+        const isZoned = "timeZone" in existingDate;
+        let dateWithTime = newDate;
+        if (!("hour" in newDate)) {
+          if (isZoned) {
+            dateWithTime = $11d87f3f76e88657$export$84c95a83c799e074($11d87f3f76e88657$export$b21e0b124e224484(newDate), existingDate.timeZone);
+          } else {
+            dateWithTime = $11d87f3f76e88657$export$b21e0b124e224484(newDate);
+          }
+        }
+        return dateWithTime.set({
+          hour: existingDate.hour,
+          minute: existingDate.minute,
+          second: existingDate.second,
+          millisecond: existingDate.millisecond
+        });
+      };
       props9 = createProps()([
         "closeOnSelect",
         "dir",
@@ -16671,6 +16838,7 @@ var Corex = (() => {
         "isDateUnavailable",
         "locale",
         "max",
+        "maxSelectedDates",
         "min",
         "name",
         "numOfMonths",
@@ -16680,11 +16848,13 @@ var Corex = (() => {
         "onViewChange",
         "onVisibleRangeChange",
         "open",
+        "openOnClick",
         "defaultOpen",
         "positioning",
         "readOnly",
         "required",
         "selectionMode",
+        "showWeekNumbers",
         "startOfWeek",
         "timeZone",
         "translations",
@@ -17284,9 +17454,9 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_RR7TJIQ5();
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_NF3CDGDL();
+      init_chunk_OSSFSUET();
+      init_chunk_TZXIWZZ7();
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -18034,7 +18204,7 @@ var Corex = (() => {
             modal,
             trapFocus: modal,
             preventScroll: modal,
-            closeOnInteractOutside: !alertDialog,
+            closeOnInteractOutside: modal && !alertDialog,
             closeOnEscape: true,
             restoreFocus: true,
             initialFocusEl
@@ -18601,8 +18771,8 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_OSSFSUET();
+      init_chunk_TZXIWZZ7();
       anatomy11 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -19404,8 +19574,8 @@ var Corex = (() => {
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_BMVNROAE();
-      init_chunk_IXOYOLUJ();
+      init_chunk_FEZIYMNT();
+      init_chunk_TZXIWZZ7();
       anatomy12 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -20590,9 +20760,9 @@ var Corex = (() => {
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_TEV2GE3U();
-      init_chunk_2PO3TGCF();
-      init_chunk_IXOYOLUJ();
+      init_chunk_4RWUEBEQ();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy13 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -20620,27 +20790,27 @@ var Corex = (() => {
       };
       getRootId11 = (ctx) => {
         var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `select:${ctx.id}`;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `listbox:${ctx.id}`;
       };
       getContentId6 = (ctx) => {
         var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `select:${ctx.id}:content`;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `listbox:${ctx.id}:content`;
       };
       getLabelId7 = (ctx) => {
         var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `select:${ctx.id}:label`;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `listbox:${ctx.id}:label`;
       };
       getItemId4 = (ctx, id) => {
         var _a, _b, _c;
-        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:option:${id}`;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.item) == null ? void 0 : _b.call(_a, id)) != null ? _c : `listbox:${ctx.id}:item:${id}`;
       };
       getItemGroupId3 = (ctx, id) => {
         var _a, _b, _c;
-        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroup) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:optgroup:${id}`;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroup) == null ? void 0 : _b.call(_a, id)) != null ? _c : `listbox:${ctx.id}:item-group:${id}`;
       };
       getItemGroupLabelId2 = (ctx, id) => {
         var _a, _b, _c;
-        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroupLabel) == null ? void 0 : _b.call(_a, id)) != null ? _c : `select:${ctx.id}:optgroup-label:${id}`;
+        return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.itemGroupLabel) == null ? void 0 : _b.call(_a, id)) != null ? _c : `listbox:${ctx.id}:item-group-label:${id}`;
       };
       getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
       getItemEl2 = (ctx, id) => ctx.getById(getItemId4(ctx, id));
@@ -20808,7 +20978,7 @@ var Corex = (() => {
                 const highlightedValue = context.get("highlightedValue");
                 if (highlightedValue == null) return;
                 const modality = getInteractionModality();
-                if (modality !== "keyboard") return;
+                if (modality === "pointer") return;
                 const contentEl2 = getContentEl6(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
@@ -20825,7 +20995,10 @@ var Corex = (() => {
                 const itemEl = getItemEl2(scope, highlightedValue);
                 scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
               };
-              raf(() => exec(true));
+              raf(() => {
+                setInteractionModality("virtual");
+                exec(true);
+              });
               const contentEl = () => getContentEl6(scope);
               return observeAttributes(contentEl, {
                 defer: true,
@@ -21637,11 +21810,12 @@ var Corex = (() => {
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_BMVNROAE();
-      init_chunk_EENFWNGI();
-      init_chunk_RR7TJIQ5();
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_FEZIYMNT();
+      init_chunk_LOW5KGCT();
+      init_chunk_NF3CDGDL();
+      init_chunk_OSSFSUET();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy14 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -22083,7 +22257,7 @@ var Corex = (() => {
           },
           open: {
             tags: ["open"],
-            effects: ["trackInteractOutside", "trackPositioning", "scrollToHighlightedItem"],
+            effects: ["trackInteractOutside", "trackFocusVisible", "trackPositioning", "scrollToHighlightedItem"],
             entry: ["focusMenu", "resumePointer"],
             on: {
               "CONTROLLED.CLOSE": [
@@ -22260,6 +22434,10 @@ var Corex = (() => {
               }, 700);
               return () => clearTimeout(timer);
             },
+            trackFocusVisible({ scope }) {
+              var _a;
+              return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
+            },
             trackPositioning({ context, prop, scope, refs }) {
               if (!!getContextTriggerEl(scope)) return;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
@@ -22330,14 +22508,18 @@ var Corex = (() => {
                 }
               });
             },
-            scrollToHighlightedItem({ event, scope, computed }) {
+            scrollToHighlightedItem({ scope, computed }) {
               const exec = () => {
-                if (event.current().type.startsWith("ITEM_POINTER")) return;
+                const modality = getInteractionModality();
+                if (modality === "pointer") return;
                 const itemEl = scope.getById(computed("highlightedId"));
                 const contentEl2 = getContentEl7(scope);
                 scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
               };
-              raf(() => exec());
+              raf(() => {
+                setInteractionModality("virtual");
+                exec();
+              });
               const contentEl = () => getContentEl7(scope);
               return observeAttributes(contentEl, {
                 defer: true,
@@ -23139,7 +23321,7 @@ var Corex = (() => {
     const required = !!prop("required");
     const scrubbing = state2.matches("scrubbing");
     const empty = computed("isValueEmpty");
-    const invalid = computed("isOutOfRange") || !!prop("invalid");
+    const invalid = prop("invalid") !== void 0 ? !!prop("invalid") : computed("isOutOfRange");
     const isIncrementDisabled = disabled || !computed("canIncrement") || readOnly;
     const isDecrementDisabled = disabled || !computed("canDecrement") || readOnly;
     const translations = prop("translations");
@@ -23396,7 +23578,7 @@ var Corex = (() => {
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
       $488c6ddbf4ef74c2$var$supportsSignDisplay = false;
       try {
@@ -24461,7 +24643,7 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy16 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -24909,7 +25091,7 @@ var Corex = (() => {
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy17 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts17 = anatomy17.build();
       getRootId13 = (ctx) => {
@@ -25583,8 +25765,8 @@ var Corex = (() => {
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_TEV2GE3U();
-      init_chunk_IXOYOLUJ();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy18 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -26268,6 +26450,11 @@ var Corex = (() => {
       getHiddenSelectProps() {
         const value = context.get("value");
         const defaultValue = prop("multiple") ? value : value == null ? void 0 : value[0];
+        const handleChange = (e2) => {
+          const evt = getNativeEvent(e2);
+          if (isInternalChangeEvent(evt)) return;
+          send({ type: "VALUE.SET", value: getSelectedValues(e2.currentTarget) });
+        };
         return normalize.select({
           name: prop("name"),
           form: prop("form"),
@@ -26279,6 +26466,9 @@ var Corex = (() => {
           defaultValue,
           style: visuallyHiddenStyle,
           tabIndex: -1,
+          autoComplete: prop("autoComplete"),
+          onChange: handleChange,
+          onInput: handleChange,
           // Some browser extensions will focus the hidden select.
           // Let's forward the focus to the trigger.
           onFocus() {
@@ -26414,15 +26604,16 @@ var Corex = (() => {
     }
     return result;
   }
-  var anatomy19, parts19, collection3, getRootId15, getContentId8, getTriggerId7, getClearTriggerId3, getLabelId11, getControlId7, getItemId7, getHiddenSelectId, getPositionerId6, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl8, getTriggerEl6, getClearTriggerEl3, getPositionerEl6, getItemEl4, and7, not8, or3, machine19, props19, splitProps19, itemProps7, splitItemProps7, itemGroupProps4, splitItemGroupProps4, itemGroupLabelProps4, splitItemGroupLabelProps4, Select, SelectHook;
+  var anatomy19, parts19, collection3, getRootId15, getContentId8, getTriggerId7, getClearTriggerId3, getLabelId11, getControlId7, getItemId7, getHiddenSelectId, getPositionerId6, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl8, getTriggerEl6, getClearTriggerEl3, getPositionerEl6, getItemEl4, getSelectedValues, and7, not8, or3, machine19, props19, splitProps19, itemProps7, splitItemProps7, itemGroupProps4, splitItemGroupProps4, itemGroupLabelProps4, splitItemGroupLabelProps4, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_2PO3TGCF();
-      init_chunk_EENFWNGI();
-      init_chunk_RR7TJIQ5();
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_4RWUEBEQ();
+      init_chunk_LOW5KGCT();
+      init_chunk_NF3CDGDL();
+      init_chunk_OSSFSUET();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy19 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -26499,6 +26690,9 @@ var Corex = (() => {
       getItemEl4 = (ctx, id) => {
         if (id == null) return null;
         return ctx.getById(getItemId7(ctx, id));
+      };
+      getSelectedValues = (el) => {
+        return el.multiple ? Array.from(el.selectedOptions, (o2) => o2.value) : el.value ? [el.value] : [];
       };
       ({ and: and7, not: not8, or: or3 } = createGuards());
       machine19 = createMachine({
@@ -26767,7 +26961,7 @@ var Corex = (() => {
           open: {
             tags: ["open"],
             exit: ["scrollContentToTop"],
-            effects: ["trackDismissableElement", "computePlacement", "scrollToHighlightedItem"],
+            effects: ["trackDismissableElement", "trackFocusVisible", "computePlacement", "scrollToHighlightedItem"],
             on: {
               "CONTROLLED.CLOSE": [
                 {
@@ -26899,6 +27093,10 @@ var Corex = (() => {
             }
           },
           effects: {
+            trackFocusVisible({ scope }) {
+              var _a;
+              return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
+            },
             trackFormControlState({ context, scope }) {
               return trackFormControl(getHiddenSelectEl(scope), {
                 onFieldsetDisabledChange(disabled) {
@@ -26942,11 +27140,12 @@ var Corex = (() => {
                 }
               }));
             },
-            scrollToHighlightedItem({ context, prop, scope, event }) {
+            scrollToHighlightedItem({ context, prop, scope }) {
               const exec = (immediate) => {
                 const highlightedValue = context.get("highlightedValue");
                 if (highlightedValue == null) return;
-                if (event.current().type.includes("POINTER")) return;
+                const modality = getInteractionModality();
+                if (modality === "pointer") return;
                 const contentEl2 = getContentEl8(scope);
                 const scrollToIndexFn = prop("scrollToIndexFn");
                 if (scrollToIndexFn) {
@@ -26961,7 +27160,10 @@ var Corex = (() => {
                 const itemEl = getItemEl4(scope, highlightedValue);
                 scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
               };
-              raf(() => exec(true));
+              raf(() => {
+                setInteractionModality("virtual");
+                exec(true);
+              });
               const contentEl = () => getContentEl8(scope);
               return observeAttributes(contentEl, {
                 defer: true,
@@ -27174,14 +27376,15 @@ var Corex = (() => {
                 const node = getHiddenSelectEl(scope);
                 if (!node) return;
                 const win = scope.getWin();
-                const changeEvent = new win.Event("change", { bubbles: true, composed: true });
-                node.dispatchEvent(changeEvent);
+                const evt = new win.Event("change", { bubbles: true, composed: true });
+                node.dispatchEvent(markAsInternalChangeEvent(evt));
               });
             }
           }
         }
       });
       props19 = createProps()([
+        "autoComplete",
         "closeOnSelect",
         "collection",
         "composite",
@@ -27838,7 +28041,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       ({ PI: e } = Math);
       t = e + 1e-4;
       n = 0.5;
@@ -28338,8 +28541,8 @@ var Corex = (() => {
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_TEV2GE3U();
-      init_chunk_IXOYOLUJ();
+      init_chunk_GXGJDSCU();
+      init_chunk_TZXIWZZ7();
       anatomy21 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts21 = anatomy21.build();
       getRootId17 = (ctx) => {
@@ -28874,7 +29077,7 @@ var Corex = (() => {
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy22 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts22 = anatomy22.build();
       getRootId18 = (ctx) => {
@@ -29522,7 +29725,7 @@ var Corex = (() => {
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy23 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -30402,9 +30605,9 @@ var Corex = (() => {
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_RR7TJIQ5();
-      init_chunk_ER3INIAI();
-      init_chunk_IXOYOLUJ();
+      init_chunk_NF3CDGDL();
+      init_chunk_OSSFSUET();
+      init_chunk_TZXIWZZ7();
       anatomy24 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -31361,7 +31564,7 @@ var Corex = (() => {
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_IXOYOLUJ();
+      init_chunk_TZXIWZZ7();
       anatomy25 = createAnatomy("toggle-group").parts("root", "item");
       parts25 = anatomy25.build();
       getRootId21 = (ctx) => {
@@ -32303,8 +32506,8 @@ var Corex = (() => {
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_2PO3TGCF();
-      init_chunk_IXOYOLUJ();
+      init_chunk_4RWUEBEQ();
+      init_chunk_TZXIWZZ7();
       anatomy26 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",

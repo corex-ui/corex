@@ -106,7 +106,7 @@ defmodule Corex.Dialog do
   ```
 
   If you wish to use the default Corex styling, you can use the class `dialog` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";

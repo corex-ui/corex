@@ -34,6 +34,7 @@ defmodule E2eWeb.ComboboxLive do
           %{label: "Austria", id: "aut"}
         ]}
       >
+        <:empty>No results</:empty>
         <:trigger>
           <.icon name="hero-chevron-down" />
         </:trigger>
@@ -59,6 +60,7 @@ defmodule E2eWeb.ComboboxLive do
           %{label: "Mexico", id: "mex", group: "North America"}
         ]}
       >
+        <:empty>No results</:empty>
         <:trigger>
           <.icon name="hero-chevron-down" />
         </:trigger>
@@ -77,6 +79,7 @@ defmodule E2eWeb.ComboboxLive do
           %{label: "Austria", id: "aut"}
         ]}
       >
+        <:empty>No results</:empty>
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
           {item.label}
@@ -105,6 +108,7 @@ defmodule E2eWeb.ComboboxLive do
           %{label: "South Korea", id: "kor", group: "Asia"}
         ]}
       >
+        <:empty>No results</:empty>
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
           {item.label}

@@ -1,14 +1,19 @@
 import {
   ListCollection
-} from "./chunk-2PO3TGCF.mjs";
+} from "./chunk-4RWUEBEQ.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-EENFWNGI.mjs";
+} from "./chunk-LOW5KGCT.mjs";
 import {
   trackDismissableElement
-} from "./chunk-RR7TJIQ5.mjs";
-import "./chunk-ER3INIAI.mjs";
+} from "./chunk-NF3CDGDL.mjs";
+import "./chunk-OSSFSUET.mjs";
+import {
+  getInteractionModality,
+  setInteractionModality,
+  trackFocusVisible
+} from "./chunk-GXGJDSCU.mjs";
 import {
   Component,
   VanillaMachine,
@@ -42,9 +47,9 @@ import {
   scrollIntoView,
   setCaretToEnd,
   setup
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.33.1/node_modules/@zag-js/combobox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.34.0/node_modules/@zag-js/combobox/dist/index.mjs
 var anatomy = createAnatomy("combobox").parts(
   "root",
   "clearTrigger",
@@ -92,8 +97,10 @@ var getItemEl = (ctx, value) => {
 };
 var focusInputEl = (ctx) => {
   const inputEl = getInputEl(ctx);
-  if (ctx.isActiveElement(inputEl)) return;
-  inputEl?.focus({ preventScroll: true });
+  if (!ctx.isActiveElement(inputEl)) {
+    inputEl?.focus({ preventScroll: true });
+  }
+  setCaretToEnd(inputEl);
 };
 var focusTriggerEl = (ctx) => {
   const triggerEl = getTriggerEl(ctx);
@@ -118,12 +125,12 @@ function connect(service, normalize) {
     placement: context.get("currentPlacement")
   });
   function getItemState(props2) {
-    const disabled2 = collection2.getItemDisabled(props2.item);
+    const itemDisabled = collection2.getItemDisabled(props2.item);
     const value = collection2.getItemValue(props2.item);
     ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props2.item)}`);
     return {
       value,
-      disabled: Boolean(disabled2 || disabled2),
+      disabled: Boolean(disabled || itemDisabled),
       highlighted: highlightedValue === value,
       selected: context.get("value").includes(value)
     };
@@ -356,7 +363,7 @@ function connect(service, normalize) {
           if (!isLeftClick(event2)) return;
           event2.preventDefault();
           queueMicrotask(() => {
-            getInputEl(scope)?.focus({ preventScroll: true });
+            focusInputEl(scope);
           });
         },
         onKeyDown(event2) {
@@ -442,7 +449,7 @@ function connect(service, normalize) {
         tabIndex: -1,
         "data-highlighted": dataAttr(itemState.highlighted),
         "data-state": itemState.selected ? "checked" : "unchecked",
-        "aria-selected": ariaAttr(itemState.highlighted),
+        "aria-selected": ariaAttr(itemState.selected),
         "aria-disabled": ariaAttr(itemState.disabled),
         "data-disabled": dataAttr(itemState.disabled),
         "data-value": itemState.value,
@@ -564,7 +571,8 @@ var machine = createMachine({
           const context = getContext();
           const prevSelectedItems = context.get("selectedItems");
           const collection2 = prop("collection");
-          const nextItems = value.map((v) => {
+          const effectiveValue = prop("value") || value;
+          const nextItems = effectiveValue.map((v) => {
             const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === v);
             return item || collection2.find(v);
           });
@@ -799,8 +807,7 @@ var machine = createMachine({
         "INPUT.ARROW_UP": [
           // == group 1 ==
           {
-            guard: "autoComplete",
-            target: "interacting",
+            guard: and("isOpenControlled", "autoComplete"),
             actions: ["invokeOnOpen"]
           },
           {
@@ -810,7 +817,7 @@ var machine = createMachine({
           },
           // == group 2 ==
           {
-            target: "interacting",
+            guard: "isOpenControlled",
             actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
           },
           {
@@ -836,7 +843,7 @@ var machine = createMachine({
     interacting: {
       tags: ["open", "focused"],
       entry: ["setInitialFocus"],
-      effects: ["scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
+      effects: ["trackFocusVisible", "scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
       on: {
         "CONTROLLED.CLOSE": [
           {
@@ -1011,7 +1018,7 @@ var machine = createMachine({
     },
     suggesting: {
       tags: ["open", "focused"],
-      effects: ["trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
+      effects: ["trackFocusVisible", "trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
       entry: ["setInitialFocus"],
       on: {
         "CONTROLLED.CLOSE": [
@@ -1194,6 +1201,9 @@ var machine = createMachine({
       hasCollectionItems: ({ prop }) => prop("collection").size > 0
     },
     effects: {
+      trackFocusVisible({ scope }) {
+        return trackFocusVisible({ root: scope.getRootNode?.() });
+      },
       trackDismissableLayer({ send, prop, scope }) {
         if (prop("disableLayer")) return;
         const contentEl = () => getContentEl(scope);
@@ -1226,13 +1236,14 @@ var machine = createMachine({
           }
         });
       },
-      scrollToHighlightedItem({ context, prop, scope, event }) {
+      scrollToHighlightedItem({ context, prop, scope }) {
         const inputEl = getInputEl(scope);
         let cleanups = [];
         const exec = (immediate) => {
-          const pointer = event.current().type.includes("POINTER");
+          const modality = getInteractionModality();
+          if (modality === "pointer") return;
           const highlightedValue = context.get("highlightedValue");
-          if (pointer || !highlightedValue) return;
+          if (!highlightedValue) return;
           const contentEl = getContentEl(scope);
           const scrollToIndexFn = prop("scrollToIndexFn");
           if (scrollToIndexFn) {
@@ -1250,7 +1261,10 @@ var machine = createMachine({
           });
           cleanups.push(raf_cleanup);
         };
-        const rafCleanup = raf(() => exec(true));
+        const rafCleanup = raf(() => {
+          setInteractionModality("virtual");
+          exec(true);
+        });
         cleanups.push(rafCleanup);
         const observerCleanup = observeAttributes(inputEl, {
           attributes: ["aria-activedescendant"],
@@ -1628,7 +1642,7 @@ var Combobox = class extends Component {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
-    const getCollection = this.getCollection.bind(this);
+    const getCollection = () => this.getCollection();
     return new VanillaMachine(machine, {
       ...props2,
       get collection() {
@@ -1643,12 +1657,16 @@ var Combobox = class extends Component {
         }
       },
       onInputValueChange: (details) => {
-        const filtered = this.allOptions.filter(
-          (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-        );
-        this.options = filtered.length > 0 ? filtered : this.allOptions;
         if (props2.onInputValueChange) {
           props2.onInputValueChange(details);
+        }
+        if (this.el.hasAttribute("data-filter")) {
+          const filtered = this.allOptions.filter(
+            (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
+          );
+          this.options = filtered.length > 0 ? filtered : this.allOptions;
+        } else {
+          this.options = this.allOptions;
         }
       }
     });
@@ -1665,36 +1683,69 @@ var Combobox = class extends Component {
     if (!templatesContainer) return;
     contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
     contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-    if (this.hasGroups) {
+    contentEl.querySelectorAll('[data-scope="combobox"][data-part="empty"]:not([data-template])').forEach((el) => el.remove());
+    const items = this.options?.length ? this.options : this.allOptions;
+    if (items.length === 0) {
+      const emptyTemplate = templatesContainer.querySelector(
+        '[data-scope="combobox"][data-part="empty"][data-template]'
+      );
+      if (emptyTemplate) {
+        const emptyEl = emptyTemplate.cloneNode(true);
+        emptyEl.removeAttribute("data-template");
+        contentEl.appendChild(emptyEl);
+      }
+    } else if (this.hasGroups) {
       const groups = this.api.collection.group?.() ?? [];
       this.renderGroupedItems(contentEl, templatesContainer, groups);
     } else {
-      const items = this.options?.length ? this.options : this.allOptions;
       this.renderFlatItems(contentEl, templatesContainer, items);
     }
   }
-  renderGroupedItems(contentEl, templatesContainer, groups) {
-    for (const [groupId, groupItems] of groups) {
-      if (groupId == null) continue;
+  buildOrderedBlocks(items) {
+    const blocks = [];
+    let current = null;
+    for (const item of items) {
+      const groupKey = item.group ?? "";
+      if (groupKey === "") {
+        if (current?.type !== "default") {
+          current = { type: "default", items: [] };
+          blocks.push(current);
+        }
+        current.items.push(item);
+      } else {
+        if (current?.type !== "group" || current.groupId !== groupKey) {
+          current = { type: "group", groupId: groupKey, items: [] };
+          blocks.push(current);
+        }
+        current.items.push(item);
+      }
+    }
+    return blocks;
+  }
+  renderGroupedItems(contentEl, templatesContainer, _groups) {
+    const items = this.options?.length ? this.options : this.allOptions;
+    const blocks = this.buildOrderedBlocks(items);
+    for (const block of blocks) {
+      const templateId = block.type === "default" ? "default" : block.groupId;
       const groupTemplate = templatesContainer.querySelector(
-        `[data-scope="combobox"][data-part="item-group"][data-id="${groupId}"][data-template]`
+        `[data-scope="combobox"][data-part="item-group"][data-id="${templateId}"][data-template]`
       );
       if (!groupTemplate) continue;
       const groupEl = groupTemplate.cloneNode(true);
       groupEl.removeAttribute("data-template");
-      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: templateId }));
       const labelEl = groupEl.querySelector(
         '[data-scope="combobox"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: templateId }));
       }
       const groupContentEl = groupEl.querySelector(
         '[data-scope="combobox"][data-part="item-group-content"]'
       );
       if (!groupContentEl) continue;
       groupContentEl.innerHTML = "";
-      for (const item of groupItems) {
+      for (const item of block.items) {
         const itemEl = this.cloneItem(templatesContainer, item);
         if (itemEl) groupContentEl.appendChild(itemEl);
       }
@@ -1784,7 +1835,7 @@ var ComboboxHook = {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      name: "",
+      name: getString(el, "name"),
       form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
@@ -1849,53 +1900,11 @@ var ComboboxHook = {
         }
       },
       onValueChange: (details) => {
-        const valueInput = el.querySelector(
-          '[data-scope="combobox"][data-part="value-input"]'
+        const hiddenInput = el.querySelector(
+          '[data-scope="combobox"][data-part="input"]'
         );
-        if (valueInput) {
-          const toId = (val) => {
-            const item = allItems.find(
-              (i) => String(i.id ?? "") === val || i.label === val
-            );
-            return item ? String(item.id ?? "") : val;
-          };
-          const idValue = details.value.length === 0 ? "" : details.value.length === 1 ? toId(String(details.value[0])) : details.value.map((v) => toId(String(v))).join(",");
-          valueInput.value = idValue;
-          const formId = valueInput.getAttribute("form");
-          let form = null;
-          if (formId) {
-            form = document.getElementById(formId);
-          } else {
-            form = valueInput.closest("form");
-          }
-          const changeEvent = new Event("change", {
-            bubbles: true,
-            cancelable: true
-          });
-          valueInput.dispatchEvent(changeEvent);
-          const inputEvent = new Event("input", {
-            bubbles: true,
-            cancelable: true
-          });
-          valueInput.dispatchEvent(inputEvent);
-          if (form && form.hasAttribute("phx-change")) {
-            requestAnimationFrame(() => {
-              const formElement = form.querySelector("input, select, textarea");
-              if (formElement) {
-                const formChangeEvent = new Event("change", {
-                  bubbles: true,
-                  cancelable: true
-                });
-                formElement.dispatchEvent(formChangeEvent);
-              } else {
-                const formChangeEvent = new Event("change", {
-                  bubbles: true,
-                  cancelable: true
-                });
-                form.dispatchEvent(formChangeEvent);
-              }
-            });
-          }
+        if (hiddenInput) {
+          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
@@ -1924,32 +1933,6 @@ var ComboboxHook = {
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();
-    const visibleInput = el.querySelector(
-      '[data-scope="combobox"][data-part="input"]'
-    );
-    if (visibleInput) {
-      visibleInput.removeAttribute("name");
-      visibleInput.removeAttribute("form");
-    }
-    const initialValue = getBoolean(el, "controlled") ? getStringList(el, "value") : getStringList(el, "defaultValue");
-    if (initialValue && initialValue.length > 0) {
-      const selectedItems = allItems.filter(
-        (item) => initialValue.includes(item.id ?? "")
-      );
-      if (selectedItems.length > 0) {
-        const inputValue = selectedItems.map((item) => item.label ?? "").join(", ");
-        if (combobox.api && typeof combobox.api.setInputValue === "function") {
-          combobox.api.setInputValue(inputValue);
-        } else {
-          const inputEl = el.querySelector(
-            '[data-scope="combobox"][data-part="input"]'
-          );
-          if (inputEl) {
-            inputEl.value = inputValue;
-          }
-        }
-      }
-    }
     this.combobox = combobox;
     this.handlers = [];
   },
@@ -1959,8 +1942,10 @@ var ComboboxHook = {
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
+      this.combobox.render();
       this.combobox.updateProps({
         ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
+        collection: this.combobox.getCollection(),
         name: getString(this.el, "name"),
         form: getString(this.el, "form"),
         disabled: getBoolean(this.el, "disabled"),
@@ -1970,14 +1955,6 @@ var ComboboxHook = {
         required: getBoolean(this.el, "required"),
         readOnly: getBoolean(this.el, "readOnly")
       });
-      const inputEl = this.el.querySelector(
-        '[data-scope="combobox"][data-part="input"]'
-      );
-      if (inputEl) {
-        inputEl.removeAttribute("name");
-        inputEl.removeAttribute("form");
-        inputEl.name = "";
-      }
     }
   },
   destroyed() {

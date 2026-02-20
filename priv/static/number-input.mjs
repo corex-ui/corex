@@ -36,7 +36,7 @@ import {
   setup,
   trackFormControl,
   wrap
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
 // ../node_modules/.pnpm/@internationalized+number@3.6.5/node_modules/@internationalized/number/dist/NumberFormatter.mjs
 var $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
@@ -400,7 +400,7 @@ function $6c7bd7858deea686$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.33.1/node_modules/@zag-js/number-input/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.34.0/node_modules/@zag-js/number-input/dist/index.mjs
 var anatomy = createAnatomy("numberInput").parts(
   "root",
   "label",
@@ -584,7 +584,7 @@ function connect(service, normalize) {
   const required = !!prop("required");
   const scrubbing = state.matches("scrubbing");
   const empty = computed("isValueEmpty");
-  const invalid = computed("isOutOfRange") || !!prop("invalid");
+  const invalid = prop("invalid") !== void 0 ? !!prop("invalid") : computed("isOutOfRange");
   const isIncrementDisabled = disabled || !computed("canIncrement") || readOnly;
   const isDecrementDisabled = disabled || !computed("canDecrement") || readOnly;
   const translations = prop("translations");

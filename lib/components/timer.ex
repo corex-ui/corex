@@ -30,7 +30,34 @@ defmodule Corex.Timer do
 
   ## Styling
 
-  Use data attributes: `[data-scope="timer"][data-part="root"]`, `area`, `item`, `separator`, `control`, `action-trigger`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="timer"][data-part="root"] {}
+  [data-scope="timer"][data-part="area"] {}
+  [data-scope="timer"][data-part="item"] {}
+  [data-scope="timer"][data-part="separator"] {}
+  [data-scope="timer"][data-part="control"] {}
+  [data-scope="timer"][data-part="action-trigger"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `timer` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/timer.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.timer class="timer timer--accent timer--lg">
+  </.timer>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/timer#modifiers)
   '''
 
   @doc type: :component

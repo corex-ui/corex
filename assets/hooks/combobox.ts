@@ -55,7 +55,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
       invalid: getBoolean(el, "invalid"),
       allowCustomValue: false,
       selectionBehavior: "replace",
-      name: "",
+      name: getString(el, "name"),
       form: getString(el, "form"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
@@ -122,65 +122,12 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         }
       },
       onValueChange: (details: ValueChangeDetails) => {
-        const valueInput = el.querySelector<HTMLInputElement>(
-          '[data-scope="combobox"][data-part="value-input"]'
+        const hiddenInput = el.querySelector<HTMLInputElement>(
+          '[data-scope="combobox"][data-part="input"]'
         );
-        if (valueInput) {
-          const toId = (val: string) => {
-            const item = allItems.find(
-              (i: { id?: string; label?: string }) => String(i.id ?? "") === val || i.label === val
-            );
-            return item ? String(item.id ?? "") : val;
-          };
-          const idValue =
-            details.value.length === 0
-              ? ""
-              : details.value.length === 1
-                ? toId(String(details.value[0]))
-                : details.value.map((v) => toId(String(v))).join(",");
-          valueInput.value = idValue;
-
-          const formId = valueInput.getAttribute("form");
-          let form: HTMLFormElement | null = null;
-
-          if (formId) {
-            form = document.getElementById(formId) as HTMLFormElement;
-          } else {
-            form = valueInput.closest("form");
-          }
-
-          const changeEvent = new Event("change", {
-            bubbles: true,
-            cancelable: true,
-          });
-          valueInput.dispatchEvent(changeEvent);
-
-          const inputEvent = new Event("input", {
-            bubbles: true,
-            cancelable: true,
-          });
-          valueInput.dispatchEvent(inputEvent);
-
-          if (form && form.hasAttribute("phx-change")) {
-            requestAnimationFrame(() => {
-              const formElement = form.querySelector("input, select, textarea") as HTMLElement;
-              if (formElement) {
-                const formChangeEvent = new Event("change", {
-                  bubbles: true,
-                  cancelable: true,
-                });
-                formElement.dispatchEvent(formChangeEvent);
-              } else {
-                const formChangeEvent = new Event("change", {
-                  bubbles: true,
-                  cancelable: true,
-                });
-                form.dispatchEvent(formChangeEvent);
-              }
-            });
-          }
+        if (hiddenInput) {
+          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
-
         const eventName = getString(el, "onValueChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -211,39 +158,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     combobox.setAllOptions(allItems);
     combobox.init();
 
-    const visibleInput = el.querySelector<HTMLInputElement>(
-      '[data-scope="combobox"][data-part="input"]'
-    );
-    if (visibleInput) {
-      visibleInput.removeAttribute("name");
-      visibleInput.removeAttribute("form");
-    }
-
-    const initialValue = getBoolean(el, "controlled")
-      ? getStringList(el, "value")
-      : getStringList(el, "defaultValue");
-
-    if (initialValue && initialValue.length > 0) {
-      const selectedItems = allItems.filter((item: { id?: string }) =>
-        initialValue.includes(item.id ?? "")
-      );
-      if (selectedItems.length > 0) {
-        const inputValue = selectedItems
-          .map((item: { label?: string }) => item.label ?? "")
-          .join(", ");
-        if (combobox.api && typeof combobox.api.setInputValue === "function") {
-          combobox.api.setInputValue(inputValue);
-        } else {
-          const inputEl = el.querySelector<HTMLInputElement>(
-            '[data-scope="combobox"][data-part="input"]'
-          );
-          if (inputEl) {
-            inputEl.value = inputValue;
-          }
-        }
-      }
-    }
-
     this.combobox = combobox;
     this.handlers = [];
   },
@@ -255,10 +169,12 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
     if (this.combobox) {
       this.combobox.hasGroups = hasGroups;
       this.combobox.setAllOptions(newCollection);
+      this.combobox.render();
       this.combobox.updateProps({
         ...(getBoolean(this.el, "controlled")
           ? { value: getStringList(this.el, "value") }
           : { defaultValue: getStringList(this.el, "defaultValue") }),
+        collection: this.combobox.getCollection(),
         name: getString(this.el, "name"),
         form: getString(this.el, "form"),
         disabled: getBoolean(this.el, "disabled"),
@@ -268,15 +184,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         required: getBoolean(this.el, "required"),
         readOnly: getBoolean(this.el, "readOnly"),
       });
-
-      const inputEl = this.el.querySelector<HTMLInputElement>(
-        '[data-scope="combobox"][data-part="input"]'
-      );
-      if (inputEl) {
-        inputEl.removeAttribute("name");
-        inputEl.removeAttribute("form");
-        inputEl.name = "";
-      }
     }
   },
 
@@ -286,7 +193,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         this.removeHandleEvent(handler);
       }
     }
-
     this.combobox?.destroy();
   },
 };

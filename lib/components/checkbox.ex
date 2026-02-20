@@ -195,21 +195,17 @@ defmodule Corex.Checkbox do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="checkbox"][data-part="root"]` - Label wrapper
-  - `[data-scope="checkbox"][data-part="control"]` - Checkbox control
-  - `[data-scope="checkbox"][data-part="label"]` - Label text
-  - `[data-scope="checkbox"][data-part="input"]` - Hidden input
-  - `[data-scope="checkbox"][data-part="error"]` - Error message
 
-  State-specific styling:
-  - `[data-state="checked"]` - When checkbox is checked
-  - `[data-state="unchecked"]` - When checkbox is unchecked
-  - `[data-disabled]` - When checkbox is disabled
-  - `[data-readonly]` - When checkbox is read-only
-  - `[data-invalid]` - When checkbox has validation errors
+  ```css
+  [data-scope="checkbox"][data-part="root"] {}
+  [data-scope="checkbox"][data-part="control"] {}
+  [data-scope="checkbox"][data-part="label"] {}
+  [data-scope="checkbox"][data-part="input"] {}
+  [data-scope="checkbox"][data-part="error"] {}
+  ```
 
   If you wish to use the default Corex styling, you can use the class `checkbox` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";

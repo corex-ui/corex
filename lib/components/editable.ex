@@ -19,7 +19,41 @@ defmodule Corex.Editable do
 
   ## Styling
 
-  Use data attributes: `[data-scope="editable"][data-part="root"]`, `area`, `label`, `input`, `preview`, `edit-trigger`, `control`, `submit-trigger`, `cancel-trigger`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="editable"][data-part="root"] {}
+  [data-scope="editable"][data-part="area"] {}
+  [data-scope="editable"][data-part="label"] {}
+  [data-scope="editable"][data-part="input"] {}
+  [data-scope="editable"][data-part="preview"] {}
+  [data-scope="editable"][data-part="edit-trigger"] {}
+  [data-scope="editable"][data-part="control"] {}
+  [data-scope="editable"][data-part="submit-trigger"] {}
+  [data-scope="editable"][data-part="cancel-trigger"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `editable` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/editable.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.editable class="editable editable--accent editable--lg" value="">
+    <:label>Label</:label>
+    <:edit_trigger>Edit</:edit_trigger>
+    <:submit_trigger>Save</:submit_trigger>
+    <:cancel_trigger>Cancel</:cancel_trigger>
+  </.editable>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/editable#modifiers)
   '''
 
   @doc type: :component

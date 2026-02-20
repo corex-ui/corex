@@ -173,22 +173,18 @@ defmodule Corex.Switch do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="switch"][data-part="root"]` - Label wrapper
-  - `[data-scope="switch"][data-part="control"]` - Switch track
-  - `[data-scope="switch"][data-part="thumb"]` - Switch thumb/handle
-  - `[data-scope="switch"][data-part="label"]` - Label text
-  - `[data-scope="switch"][data-part="input"]` - Hidden input
-  - `[data-scope="switch"][data-part="error"]` - Error message
 
-  State-specific styling:
-  - `[data-state="checked"]` - When switch is on
-  - `[data-state="unchecked"]` - When switch is off
-  - `[data-disabled]` - When switch is disabled
-  - `[data-readonly]` - When switch is read-only
-  - `[data-invalid]` - When switch has validation errors
+  ```css
+  [data-scope="switch"][data-part="root"] {}
+  [data-scope="switch"][data-part="control"] {}
+  [data-scope="switch"][data-part="thumb"] {}
+  [data-scope="switch"][data-part="label"] {}
+  [data-scope="switch"][data-part="input"] {}
+  [data-scope="switch"][data-part="error"] {}
+  ```
 
   If you wish to use the default Corex styling, you can use the class `switch` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";

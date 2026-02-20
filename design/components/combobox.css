@@ -14,6 +14,14 @@
     @apply ui-label;
   }
 
+  .combobox [data-scope="combobox"][data-part="empty"] {
+    @apply ui-label;
+
+    list-style: none;
+    padding-inline: var(--spacing-ui-padding);
+    padding-block: var(--spacing-mini-padding-sm);
+  }
+
   .combobox [data-scope="combobox"][data-part="control"] {
     display: flex;
     width: 100%;
@@ -66,6 +74,13 @@
   .combobox [data-scope="combobox"][data-part="item-group"] {
     display: flex;
     flex-direction: column;
+    min-height: fit-content;
+  }
+
+  .combobox [data-scope="combobox"][data-part="item-group-content"] {
+    min-height: fit-content;
+    display: flex;
+    flex-direction: column;
   }
 
   .combobox [data-scope="combobox"][data-part="item-group-label"] {
@@ -81,6 +96,13 @@
 
   .combobox [data-scope="combobox"][data-part="item"] {
     @apply ui-item;
+
+    align-items: flex-start;
+    min-height: fit-content;
+  }
+
+  .combobox [data-scope="combobox"][data-part="item"] [data-part="item-text"] {
+    min-height: fit-content;
   }
 
   .combobox [data-scope="combobox"][data-part="error"] {

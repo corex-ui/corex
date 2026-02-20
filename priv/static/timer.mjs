@@ -14,9 +14,9 @@ import {
   normalizeProps,
   setRafInterval,
   setRafTimeout
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+timer@1.33.1/node_modules/@zag-js/timer/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.34.0/node_modules/@zag-js/timer/dist/index.mjs
 var anatomy = createAnatomy("timer").parts(
   "root",
   "area",

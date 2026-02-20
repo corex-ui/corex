@@ -331,21 +331,23 @@ defmodule Corex.Select do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="select"][data-part="root"]` - Label wrapper
-  - `[data-scope="select"][data-part="control"]` - Select control
-  - `[data-scope="select"][data-part="label"]` - Label text
-  - `[data-scope="select"][data-part="input"]` - Hidden input
-  - `[data-scope="select"][data-part="error"]` - Error message
 
-  State-specific styling:
-  - `[data-state="open"]` - When select is open
-  - `[data-state="closed"]` - When select is closed
-  - `[data-disabled]` - When select is disabled
-  - `[data-readonly]` - When select is read-only
-  - `[data-invalid]` - When select has validation errors
+  ```css
+  [data-scope="select"][data-part="root"] {}
+  [data-scope="select"][data-part="control"] {}
+  [data-scope="select"][data-part="label"] {}
+  [data-scope="select"][data-part="input"] {}
+  [data-scope="select"][data-part="error"] {}
+  [data-scope="select"][data-part="trigger"] {}
+  [data-scope="select"][data-part="item-group"] {}
+  [data-scope="select"][data-part="item-group-label"] {}
+  [data-scope="select"][data-part="item"] {}
+  [data-scope="select"][data-part="item-text"] {}
+  [data-scope="select"][data-part="item-indicator"] {}
+  ```
 
   If you wish to use the default Corex styling, you can use the class `select` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";

@@ -1,16 +1,21 @@
 import {
   getElementPolygon,
   isPointInPolygon
-} from "./chunk-BMVNROAE.mjs";
+} from "./chunk-FEZIYMNT.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunk-EENFWNGI.mjs";
+} from "./chunk-LOW5KGCT.mjs";
 import {
   trackDismissableElement
-} from "./chunk-RR7TJIQ5.mjs";
-import "./chunk-ER3INIAI.mjs";
+} from "./chunk-NF3CDGDL.mjs";
+import "./chunk-OSSFSUET.mjs";
+import {
+  getInteractionModality,
+  setInteractionModality,
+  trackFocusVisible
+} from "./chunk-GXGJDSCU.mjs";
 import {
   Component,
   VanillaMachine,
@@ -54,9 +59,9 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+menu@1.33.1/node_modules/@zag-js/menu/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.34.0/node_modules/@zag-js/menu/dist/index.mjs
 var anatomy = createAnatomy("menu").parts(
   "arrow",
   "arrowTip",
@@ -879,7 +884,7 @@ var machine = createMachine({
     },
     open: {
       tags: ["open"],
-      effects: ["trackInteractOutside", "trackPositioning", "scrollToHighlightedItem"],
+      effects: ["trackInteractOutside", "trackFocusVisible", "trackPositioning", "scrollToHighlightedItem"],
       entry: ["focusMenu", "resumePointer"],
       on: {
         "CONTROLLED.CLOSE": [
@@ -1040,6 +1045,9 @@ var machine = createMachine({
         }, 700);
         return () => clearTimeout(timer);
       },
+      trackFocusVisible({ scope }) {
+        return trackFocusVisible({ root: scope.getRootNode?.() });
+      },
       trackPositioning({ context, prop, scope, refs }) {
         if (!!getContextTriggerEl(scope)) return;
         const positioning = {
@@ -1111,14 +1119,18 @@ var machine = createMachine({
           }
         });
       },
-      scrollToHighlightedItem({ event, scope, computed }) {
+      scrollToHighlightedItem({ scope, computed }) {
         const exec = () => {
-          if (event.current().type.startsWith("ITEM_POINTER")) return;
+          const modality = getInteractionModality();
+          if (modality === "pointer") return;
           const itemEl = scope.getById(computed("highlightedId"));
           const contentEl2 = getContentEl(scope);
           scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
         };
-        raf(() => exec());
+        raf(() => {
+          setInteractionModality("virtual");
+          exec();
+        });
         const contentEl = () => getContentEl(scope);
         return observeAttributes(contentEl, {
           defer: true,

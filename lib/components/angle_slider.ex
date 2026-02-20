@@ -55,6 +55,7 @@ defmodule Corex.AngleSlider do
     end
   end
   ```
+  <!-- tabs-close -->
 
   ## API Control
 
@@ -76,20 +77,35 @@ defmodule Corex.AngleSlider do
   end
   ```
 
-  ## Machine API
-
-  The slider API exposes the following methods:
-
-  | Method | Type | Description |
-  |--------|------|-------------|
-  | value | number | The current value of the angle slider |
-  | valueAsDegree | string | The current value as a degree string |
-  | setValue | (value: number) => void | Sets the value of the angle slider |
-  | dragging | boolean | Whether the slider is being dragged |
-
   ## Styling
 
-  Use data attributes: `[data-scope="angle-slider"][data-part="root"]`, `control`, `thumb`, `value-text` (with `value` and `text` spans), `marker-group`, `marker`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="angle-slider"][data-part="root"] {}
+  [data-scope="angle-slider"][data-part="control"] {}
+  [data-scope="angle-slider"][data-part="thumb"] {}
+  [data-scope="angle-slider"][data-part="value-text"] {}
+  [data-scope="angle-slider"][data-part="marker-group"] {}
+  [data-scope="angle-slider"][data-part="marker"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `angle-slider` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/angle-slider.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.angle_slider class="angle-slider angle-slider--accent angle-slider--lg" value={0} />
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/angle-slider#modifiers)
   '''
 
   @doc type: :component

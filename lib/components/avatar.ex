@@ -14,7 +14,33 @@ defmodule Corex.Avatar do
 
   ## Styling
 
-  Use data attributes: `[data-scope="avatar"][data-part="root"]`, `image`, `fallback`, `skeleton`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="avatar"][data-part="root"] {}
+  [data-scope="avatar"][data-part="image"] {}
+  [data-scope="avatar"][data-part="fallback"] {}
+  [data-scope="avatar"][data-part="skeleton"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `avatar` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/avatar.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.avatar class="avatar avatar--accent avatar--lg">
+    <:fallback>JD</:fallback>
+  </.avatar>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/avatar#modifiers)
   '''
 
   @doc type: :component

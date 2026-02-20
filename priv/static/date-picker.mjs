@@ -1,11 +1,11 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-EENFWNGI.mjs";
+} from "./chunk-LOW5KGCT.mjs";
 import {
   trackDismissableElement
-} from "./chunk-RR7TJIQ5.mjs";
-import "./chunk-ER3INIAI.mjs";
+} from "./chunk-NF3CDGDL.mjs";
+import "./chunk-OSSFSUET.mjs";
 import {
   Component,
   VanillaMachine,
@@ -35,7 +35,7 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
 // ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/utils.mjs
 function $2b4dce13dd5a17fa$export$842a2cf37af977e1(amount, numerator) {
@@ -1344,7 +1344,7 @@ function $fb18d541ea1ad717$var$getResolvedHourCycle(locale, options) {
   throw new Error("Unexpected hour cycle result");
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.34.0_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/index.mjs
 function alignCenter(date, duration, locale, min, max) {
   const halfDuration = {};
   for (let prop in duration) {
@@ -1394,14 +1394,27 @@ function constrainStart(date, aligned, duration, locale, min, max) {
   return aligned;
 }
 function constrainValue(date, minValue, maxValue) {
-  let constrainedDate = $11d87f3f76e88657$export$93522d1a439f3617(date);
-  if (minValue) {
-    constrainedDate = $14e0f24ef4ac5c92$export$a75f2bff57811055(constrainedDate, $11d87f3f76e88657$export$93522d1a439f3617(minValue));
+  const dateOnly = $11d87f3f76e88657$export$93522d1a439f3617(date);
+  const minOnly = minValue ? $11d87f3f76e88657$export$93522d1a439f3617(minValue) : void 0;
+  const maxOnly = maxValue ? $11d87f3f76e88657$export$93522d1a439f3617(maxValue) : void 0;
+  let constrainedDateOnly = dateOnly;
+  if (minOnly) {
+    constrainedDateOnly = $14e0f24ef4ac5c92$export$a75f2bff57811055(constrainedDateOnly, minOnly);
   }
-  if (maxValue) {
-    constrainedDate = $14e0f24ef4ac5c92$export$5c333a116e949cdd(constrainedDate, $11d87f3f76e88657$export$93522d1a439f3617(maxValue));
+  if (maxOnly) {
+    constrainedDateOnly = $14e0f24ef4ac5c92$export$5c333a116e949cdd(constrainedDateOnly, maxOnly);
   }
-  return constrainedDate;
+  if (constrainedDateOnly.compare(dateOnly) === 0) {
+    return date;
+  }
+  if ("hour" in date) {
+    return date.set({
+      year: constrainedDateOnly.year,
+      month: constrainedDateOnly.month,
+      day: constrainedDateOnly.day
+    });
+  }
+  return constrainedDateOnly;
 }
 function alignDate(date, alignment, duration, locale, min, max) {
   switch (alignment) {
@@ -1555,6 +1568,21 @@ function getMonthNames(locale, format = "long") {
     date.setMonth(date.getMonth() + 1);
   }
   return monthNames;
+}
+function getWeekOfYear(date, locale) {
+  const mondayOfWeek = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale, "mon");
+  const year = mondayOfWeek.year;
+  const jan4 = mondayOfWeek.set({ month: 1, day: 4 });
+  const week1Monday = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(jan4, locale, "mon");
+  const julianMonday = mondayOfWeek.calendar.toJulianDay(mondayOfWeek);
+  const julianWeek1 = week1Monday.calendar.toJulianDay(week1Monday);
+  if (julianMonday >= julianWeek1) {
+    return 1 + Math.floor((julianMonday - julianWeek1) / 7);
+  }
+  const prevJan4 = mondayOfWeek.set({ year: year - 1, month: 1, day: 4 });
+  const prevWeek1Monday = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(prevJan4, locale, "mon");
+  const julianPrevWeek1 = prevWeek1Monday.calendar.toJulianDay(prevWeek1Monday);
+  return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
 }
 function getYearsRange(range) {
   const years = [];
@@ -1776,7 +1804,7 @@ function getDateRangePreset(preset, locale, timeZone) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+live-region@1.33.1/node_modules/@zag-js/live-region/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+live-region@1.34.0/node_modules/@zag-js/live-region/dist/index.mjs
 var ID = "__live-region__";
 function createLiveRegion(opts = {}) {
   const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
@@ -1822,7 +1850,7 @@ function createLiveRegion(opts = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.33.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.34.0_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/index.mjs
 var anatomy = createAnatomy("date-picker").parts(
   "clearTrigger",
   "content",
@@ -1961,7 +1989,11 @@ var defaultTranslations = {
   content: "calendar",
   monthSelect: "Select month",
   yearSelect: "Select year",
-  clearTrigger: "Clear selected dates"
+  clearTrigger: "Clear selected dates",
+  weekColumnHeader: "Wk",
+  weekNumberCell(weekNumber) {
+    return `Week ${weekNumber}`;
+  }
 };
 function viewToNumber(view, fallback) {
   if (!view) return fallback || 0;
@@ -2038,7 +2070,10 @@ function connect(service, normalize) {
   const focused = state.matches("focused");
   const open = state.matches("open");
   const isRangePicker = prop("selectionMode") === "range";
+  const isMultiPicker = prop("selectionMode") === "multiple";
   const isDateUnavailableFn = prop("isDateUnavailable");
+  const maxSelectedDates = prop("maxSelectedDates");
+  const isMaxSelected = isMultiPicker && maxSelectedDates != null && selectedValue.length >= maxSelectedDates;
   const currentPlacement = context.get("currentPlacement");
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
@@ -2129,10 +2164,12 @@ function connect(service, normalize) {
     const isInHoveredRange = hasHoveredRange && isDateWithinRange(value, hoveredRangeValue);
     const isFirstInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[0]);
     const isLastInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[1]);
+    const isSelected = selectedValue.some((date) => isDateEqual(value, date));
     const cellState = {
       invalid: isDateOutsideRange(value, min, max),
-      disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min, max),
-      selected: selectedValue.some((date) => isDateEqual(value, date)),
+      disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min, max) || // Disable unselected dates when max is reached in multiple selection mode
+      isMaxSelected && !isSelected,
+      selected: isSelected,
       unavailable: isDateUnavailable(value, isDateUnavailableFn, locale, min, max) && !disabled2,
       outsideRange: isOutsideRange,
       today: $14e0f24ef4ac5c92$export$629b0a497aa65267(value, timeZone),
@@ -2170,10 +2207,17 @@ function connect(service, normalize) {
     readOnly,
     inline: !!prop("inline"),
     numOfMonths: prop("numOfMonths"),
+    showWeekNumbers: !!prop("showWeekNumbers"),
     selectionMode: prop("selectionMode"),
+    maxSelectedDates,
+    isMaxSelected,
     view: context.get("view"),
     getRangePresetValue(preset) {
       return getDateRangePreset(preset, locale, timeZone);
+    },
+    getWeekNumber(week) {
+      const firstDay = week[0];
+      return firstDay ? getWeekOfYear(firstDay, locale) : 0;
     },
     getDaysInWeek(week, from = startValue) {
       return getDaysInWeek(week, from, locale, startOfWeek);
@@ -2205,14 +2249,31 @@ function connect(service, normalize) {
     visibleRange: computed("visibleRange"),
     selectToday() {
       const value = constrainValue(getTodayDate(timeZone), min, max);
-      send({ type: "VALUE.SET", value });
+      send({ type: "VALUE.SET", value: [value] });
     },
     setValue(values) {
       const computedValue = values.map((date) => constrainValue(date, min, max));
       send({ type: "VALUE.SET", value: computedValue });
     },
-    clearValue() {
-      send({ type: "VALUE.CLEAR" });
+    setTime(time, index = 0) {
+      const values = Array.from(selectedValue);
+      let dateValue = values[index];
+      if (!dateValue) return;
+      if (!("hour" in dateValue)) {
+        dateValue = $11d87f3f76e88657$export$b21e0b124e224484(dateValue);
+      }
+      dateValue = dateValue.set({
+        hour: time.hour ?? ("hour" in dateValue ? dateValue.hour : 0),
+        minute: time.minute ?? ("minute" in dateValue ? dateValue.minute : 0),
+        second: time.second ?? ("second" in dateValue ? dateValue.second : 0),
+        millisecond: time.millisecond ?? ("millisecond" in dateValue ? dateValue.millisecond : 0)
+      });
+      values[index] = constrainValue(dateValue, min, max);
+      send({ type: "VALUE.SET", value: values });
+    },
+    clearValue(options = {}) {
+      const { focus = true } = options;
+      send({ type: "VALUE.CLEAR", focus });
     },
     setFocusedValue(value) {
       send({ type: "FOCUS.SET", value });
@@ -2419,6 +2480,28 @@ function connect(service, normalize) {
         "aria-disabled": ariaAttr(disabled),
         "data-disabled": dataAttr(disabled),
         "data-view": view
+      });
+    },
+    getWeekNumberHeaderCellProps(props2 = {}) {
+      const { view = "day" } = props2;
+      return normalize.element({
+        ...parts.tableCell.attrs,
+        scope: "col",
+        "aria-label": translations.weekColumnHeader,
+        "data-view": view,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getWeekNumberCellProps(props2) {
+      const { weekIndex, week } = props2;
+      const weekNumber = week[0] ? getWeekOfYear(week[0], locale) : 0;
+      return normalize.element({
+        ...parts.tableCell.attrs,
+        role: "rowheader",
+        "aria-label": translations.weekNumberCell?.(weekNumber),
+        "data-view": "day",
+        "data-week-index": weekIndex,
+        "data-disabled": dataAttr(disabled)
       });
     },
     getDayTableCellState,
@@ -2696,6 +2779,12 @@ function connect(service, normalize) {
           if (!isValidCharacter(data, separator)) {
             event.preventDefault();
           }
+        },
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (!prop("openOnClick")) return;
+          if (!interactive) return;
+          send({ type: "OPEN", src: "input.click" });
         },
         onFocus() {
           send({ type: "INPUT.FOCUS", index });
@@ -3142,8 +3231,12 @@ var machine = createMachine({
             actions: ["setFocusedDate", "setSelectedDate", "setActiveIndexToEnd"]
           },
           {
-            guard: "isMultiPicker",
+            guard: and("isMultiPicker", "canSelectDate"),
             actions: ["setFocusedDate", "toggleSelectedDate"]
+          },
+          {
+            guard: "isMultiPicker",
+            actions: ["setFocusedDate"]
           },
           // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
           {
@@ -3219,8 +3312,11 @@ var machine = createMachine({
             actions: ["setSelectedDate", "setActiveIndexToEnd", "focusNextDay"]
           },
           {
-            guard: "isMultiPicker",
+            guard: and("isMultiPicker", "canSelectDate"),
             actions: ["toggleSelectedDate"]
+          },
+          {
+            guard: "isMultiPicker"
           },
           // === Grouped transitions (based on `closeOnSelect` and `isOpenControlled`) ===
           {
@@ -3371,6 +3467,15 @@ var machine = createMachine({
       isRangePicker: ({ prop }) => prop("selectionMode") === "range",
       hasSelectedRange: ({ context }) => context.get("value").length === 2,
       isMultiPicker: ({ prop }) => prop("selectionMode") === "multiple",
+      canSelectDate: ({ context, prop, event }) => {
+        const maxSelectedDates = prop("maxSelectedDates");
+        if (maxSelectedDates == null) return true;
+        const existingValues = context.get("value");
+        const currentValue = event.value ?? context.get("focusedValue");
+        const isDeselecting = existingValues.some((date) => isDateEqual(date, currentValue));
+        if (isDeselecting) return true;
+        return existingValues.length < maxSelectedDates;
+      },
       shouldRestoreFocus: ({ context }) => !!context.get("restoreFocus"),
       isSelectingEndDate: ({ context }) => context.get("activeIndex") === 1,
       closeOnSelect: ({ prop }) => !!prop("closeOnSelect"),
@@ -3507,23 +3612,28 @@ var machine = createMachine({
       setSelectedDate(params) {
         const { context, event } = params;
         const values = Array.from(context.get("value"));
-        values[context.get("activeIndex")] = normalizeValue(params, event.value ?? context.get("focusedValue"));
+        const activeIndex = context.get("activeIndex");
+        const existingValue = values[activeIndex];
+        const newValue = normalizeValue(params, event.value ?? context.get("focusedValue"));
+        values[activeIndex] = preserveTime(existingValue, newValue);
         context.set("value", adjustStartAndEndDate(values));
       },
       resetSelection(params) {
         const { context, event } = params;
-        const value = normalizeValue(params, event.value ?? context.get("focusedValue"));
-        context.set("value", [value]);
+        const existingValue = context.get("value")[0];
+        const newValue = normalizeValue(params, event.value ?? context.get("focusedValue"));
+        context.set("value", [preserveTime(existingValue, newValue)]);
       },
       toggleSelectedDate(params) {
         const { context, event } = params;
         const currentValue = normalizeValue(params, event.value ?? context.get("focusedValue"));
-        const index = context.get("value").findIndex((date) => isDateEqual(date, currentValue));
+        const existingValues = context.get("value");
+        const index = existingValues.findIndex((date) => isDateEqual(date, currentValue));
         if (index === -1) {
-          const values = [...context.get("value"), currentValue];
+          const values = [...existingValues, currentValue];
           context.set("value", sortDates(values));
         } else {
-          const values = Array.from(context.get("value"));
+          const values = Array.from(existingValues);
           values.splice(index, 1);
           context.set("value", sortDates(values));
         }
@@ -3537,7 +3647,9 @@ var machine = createMachine({
       selectFocusedDate({ context, computed }) {
         const values = Array.from(context.get("value"));
         const activeIndex = context.get("activeIndex");
-        values[activeIndex] = context.get("focusedValue").copy();
+        const existingValue = values[activeIndex];
+        const newValue = context.get("focusedValue").copy();
+        values[activeIndex] = preserveTime(existingValue, newValue);
         context.set("value", adjustStartAndEndDate(values));
         const valueAsString = computed("valueAsString");
         context.set("inputValue", valueAsString[activeIndex]);
@@ -3697,7 +3809,8 @@ var machine = createMachine({
       setActiveIndexToStart({ context }) {
         context.set("activeIndex", 0);
       },
-      focusActiveCell({ scope, context }) {
+      focusActiveCell({ scope, context, event }) {
+        if (event.src === "input.click") return;
         raf(() => {
           const view = context.get("view");
           getFocusedCell(scope, view)?.focus({ preventScroll: true });
@@ -3720,15 +3833,21 @@ var machine = createMachine({
           getTriggerEl(scope)?.focus({ preventScroll: true });
         });
       },
-      focusFirstInputElement({ scope }) {
+      focusFirstInputElement({ scope, event }) {
+        if (event.focus === false) return;
         raf(() => {
           const [inputEl] = getInputEls(scope);
-          inputEl?.focus({ preventScroll: true });
+          const elementToFocus = inputEl ?? getTriggerEl(scope);
+          elementToFocus?.focus({ preventScroll: true });
         });
       },
       focusInputElement({ scope }) {
         raf(() => {
           const inputEls = getInputEls(scope);
+          if (inputEls.length === 0) {
+            getTriggerEl(scope)?.focus({ preventScroll: true });
+            return;
+          }
           const lastIndexWithValue = inputEls.findLastIndex((inputEl2) => inputEl2.value !== "");
           const indexToFocus = Math.max(lastIndexWithValue, 0);
           const inputEl = inputEls[indexToFocus];
@@ -3821,6 +3940,26 @@ var normalizeValue = (ctx, value) => {
   });
   return dateValue;
 };
+var preserveTime = (existingDate, newDate) => {
+  if (!existingDate || !("hour" in existingDate)) {
+    return newDate;
+  }
+  const isZoned = "timeZone" in existingDate;
+  let dateWithTime = newDate;
+  if (!("hour" in newDate)) {
+    if (isZoned) {
+      dateWithTime = $11d87f3f76e88657$export$84c95a83c799e074($11d87f3f76e88657$export$b21e0b124e224484(newDate), existingDate.timeZone);
+    } else {
+      dateWithTime = $11d87f3f76e88657$export$b21e0b124e224484(newDate);
+    }
+  }
+  return dateWithTime.set({
+    hour: existingDate.hour,
+    minute: existingDate.minute,
+    second: existingDate.second,
+    millisecond: existingDate.millisecond
+  });
+};
 function setFocusedValue(ctx, mixedValue) {
   const { context, prop, computed } = ctx;
   if (!mixedValue) return;
@@ -3867,6 +4006,7 @@ var props = createProps()([
   "isDateUnavailable",
   "locale",
   "max",
+  "maxSelectedDates",
   "min",
   "name",
   "numOfMonths",
@@ -3876,11 +4016,13 @@ var props = createProps()([
   "onViewChange",
   "onVisibleRangeChange",
   "open",
+  "openOnClick",
   "defaultOpen",
   "positioning",
   "readOnly",
   "required",
   "selectionMode",
+  "showWeekNumbers",
   "startOfWeek",
   "timeZone",
   "translations",

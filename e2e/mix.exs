@@ -70,7 +70,9 @@ defmodule E2e.MixProject do
       {:corex, path: "../../corex"},
       {:wallaby, "~> 0.30", only: :test},
       {:a11y_audit, "~> 0.3.1", only: :test},
-      {:flagpack, "~> 0.6.0"}
+      {:flagpack, "~> 0.6.0"},
+      {:ex_cldr, "~> 2.47"},
+      {:ex_cldr_territories, "~> 2.10.0"}
     ]
   end
 

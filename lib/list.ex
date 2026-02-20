@@ -1,7 +1,14 @@
 defmodule Corex.List do
-  @moduledoc """
-  List item structure for flat selectable items.
-  """
+  @moduledoc ~S'''
+  List items for flat selectable items to be used with:
+
+  - [Combobox](Corex.Combobox.html)
+  - [Listbox](Corex.Listbox.html)
+  - [Select](Corex.Select.html)
+
+  Use `Corex.List.new/1` to build a list of items from keyword lists or maps.
+
+  '''
 
   defmodule Item do
     @moduledoc """
@@ -9,6 +16,7 @@ defmodule Corex.List do
 
     Use it to create flat lists of selectable items for:
     - [Combobox](Corex.Combobox.html)
+    - [Listbox](Corex.Listbox.html)
     - [Select](Corex.Select.html)
 
     ## Fields

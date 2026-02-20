@@ -35,7 +35,40 @@ defmodule Corex.FloatingPanel do
 
   ## Styling
 
-  Use data attributes: `[data-scope="floating-panel"][data-part="root"]`, `trigger`, `positioner`, `content`, `title`, `header`, `body`, `drag-trigger`, `resize-trigger`, `close-trigger`, `control`, `stage-trigger`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="floating-panel"][data-part="root"] {}
+  [data-scope="floating-panel"][data-part="trigger"] {}
+  [data-scope="floating-panel"][data-part="positioner"] {}
+  [data-scope="floating-panel"][data-part="content"] {}
+  [data-scope="floating-panel"][data-part="title"] {}
+  [data-scope="floating-panel"][data-part="header"] {}
+  [data-scope="floating-panel"][data-part="body"] {}
+  [data-scope="floating-panel"][data-part="drag-trigger"] {}
+  [data-scope="floating-panel"][data-part="resize-trigger"] {}
+  [data-scope="floating-panel"][data-part="close-trigger"] {}
+  [data-scope="floating-panel"][data-part="control"] {}
+  [data-scope="floating-panel"][data-part="stage-trigger"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `floating-panel` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/floating-panel.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.floating_panel class="floating-panel floating-panel--accent floating-panel--lg">
+  </.floating_panel>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/floating-panel#modifiers)
   '''
 
   @doc type: :component

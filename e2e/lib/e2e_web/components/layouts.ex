@@ -389,7 +389,9 @@ defmodule E2eWeb.Layouts do
         id: "combobox",
         children: [
           [label: "Controller", id: "/#{locale}/combobox"],
-          [label: "Live", id: "/#{locale}/live/combobox"]
+          [label: "Live", id: "/#{locale}/live/combobox"],
+          [label: "Fetch", id: "/#{locale}/live/combobox-fetch"],
+          [label: "Form", id: "/#{locale}/live/combobox-form"]
         ]
       ],
       [
