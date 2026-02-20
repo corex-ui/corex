@@ -55,6 +55,7 @@ defmodule Corex.AngleSlider do
     end
   end
   ```
+  <!-- tabs-close -->
 
   ## API Control
 
