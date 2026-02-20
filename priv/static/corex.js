@@ -12518,14 +12518,14 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props26) {
-          const self2 = this;
+          const getCollection = () => this.getCollection();
           return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props26), {
             get collection() {
-              return self2.getCollection();
+              return getCollection();
             },
             onOpenChange: (details) => {
               if (details.open) {
-                self2.options = self2.allOptions;
+                this.options = this.allOptions;
               }
               if (props26.onOpenChange) {
                 props26.onOpenChange(details);
@@ -12534,11 +12534,14 @@ var Corex = (() => {
             onInputValueChange: (details) => {
               if (props26.onInputValueChange) {
                 props26.onInputValueChange(details);
-              } else {
-                const filtered = self2.allOptions.filter(
+              }
+              if (this.el.hasAttribute("data-filter")) {
+                const filtered = this.allOptions.filter(
                   (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
                 );
-                self2.options = filtered.length > 0 ? filtered : self2.allOptions;
+                this.options = filtered.length > 0 ? filtered : this.allOptions;
+              } else {
+                this.options = this.allOptions;
               }
             }
           }));
@@ -12556,11 +12559,21 @@ var Corex = (() => {
           if (!templatesContainer) return;
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
           contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-          if (this.hasGroups) {
-            const groups = (_c = (_b = (_a = this.api.collection).group) == null ? void 0 : _b.call(_a)) != null ? _c : [];
+          contentEl.querySelectorAll('[data-scope="combobox"][data-part="empty"]:not([data-template])').forEach((el) => el.remove());
+          const items = ((_a = this.options) == null ? void 0 : _a.length) ? this.options : this.allOptions;
+          if (items.length === 0) {
+            const emptyTemplate = templatesContainer.querySelector(
+              '[data-scope="combobox"][data-part="empty"][data-template]'
+            );
+            if (emptyTemplate) {
+              const emptyEl = emptyTemplate.cloneNode(true);
+              emptyEl.removeAttribute("data-template");
+              contentEl.appendChild(emptyEl);
+            }
+          } else if (this.hasGroups) {
+            const groups = (_d = (_c = (_b = this.api.collection).group) == null ? void 0 : _c.call(_b)) != null ? _d : [];
             this.renderGroupedItems(contentEl, templatesContainer, groups);
           } else {
-            const items = ((_d = this.options) == null ? void 0 : _d.length) ? this.options : this.allOptions;
             this.renderFlatItems(contentEl, templatesContainer, items);
           }
         }

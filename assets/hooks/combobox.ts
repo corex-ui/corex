@@ -7,7 +7,6 @@ import type {
   OpenChangeDetails,
   ValueChangeDetails,
   PositioningOptions,
-  SelectionDetails,
 } from "@zag-js/combobox";
 import type { Direction } from "@zag-js/types";
 
@@ -73,7 +72,6 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         return undefined;
       })(),
       onOpenChange: (details: OpenChangeDetails) => {
-        
         const eventName = getString(el, "onOpenChange");
         if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
           pushEvent(eventName, {
@@ -152,7 +150,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
             })
           );
         }
-      }
+      },
     };
 
     const combobox = new Combobox(el, props);
@@ -185,7 +183,7 @@ const ComboboxHook: Hook<object & ComboboxHookState, HTMLElement> = {
         invalid: getBoolean(this.el, "invalid"),
         required: getBoolean(this.el, "required"),
         readOnly: getBoolean(this.el, "readOnly"),
-      });      
+      });
     }
   },
 

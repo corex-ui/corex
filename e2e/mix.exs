@@ -73,7 +73,6 @@ defmodule E2e.MixProject do
       {:flagpack, "~> 0.6.0"},
       {:ex_cldr, "~> 2.47"},
       {:ex_cldr_territories, "~> 2.10.0"}
-
     ]
   end
 

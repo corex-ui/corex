@@ -128,6 +128,56 @@ defmodule Corex.Combobox do
         </:item_indicator>
       </.combobox>
   ```
+
+  ### Server-side Filtering
+
+  Use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
+
+  ```heex
+  defmodule MyAppWeb.CountryCombobox do
+    use MyAppWeb, :live_view
+
+    @items [
+      %{id: "fra", label: "France"},
+      %{id: "bel", label: "Belgium"},
+      %{id: "deu", label: "Germany"},
+      %{id: "usa", label: "USA"},
+      %{id: "jpn", label: "Japan"}
+    ]
+
+    def mount(_params, _session, socket) do
+      {:ok, assign(socket, items: [])}
+    end
+
+    def handle_event("search", %{"value" => value, "reason" => "input-change"}, socket) do
+      filtered =
+        if byte_size(value) < 1 do
+          []
+        else
+          term = String.downcase(value)
+          Enum.filter(@items, fn item ->
+            String.contains?(String.downcase(item.label), term)
+          end)
+        end
+
+      {:noreply, assign(socket, items: filtered)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.combobox
+        id="country-combobox"
+        collection={@items}
+        on_input_value_change="search"
+      >
+        <:empty>No results</:empty>
+        <:trigger><.icon name="hero-chevron-down" /></:trigger>
+      </.combobox>
+      """
+    end
+  end
+  ```
+
   <!-- tabs-close -->
 
   ## Styling
@@ -235,6 +285,12 @@ defmodule Corex.Combobox do
   attr(:read_only, :boolean, default: false, doc: "Whether the combobox is read only")
   attr(:required, :boolean, default: false, doc: "Whether the combobox is required")
 
+  attr(:filter, :boolean,
+    default: true,
+    doc:
+      "When true, filter options client-side by input value. Set to false when using on_input_value_change for server-side filtering"
+  )
+
   attr(:on_input_value_change, :string,
     default: nil,
     doc: "The server event name to trigger on input value change"
@@ -327,7 +383,7 @@ defmodule Corex.Combobox do
      name: @name, read_only: @read_only, required: @required,
       on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
       open: @open, positioning: @positioning,
-      bubble: @bubble, disabled: @disabled
+      bubble: @bubble, disabled: @disabled, filter: @filter
     })}>
       <div phx-update="ignore" {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
 

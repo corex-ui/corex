@@ -45,7 +45,8 @@ defmodule Corex.Combobox.Connect do
       "data-on-input-value-change" => assigns.on_input_value_change,
       "data-on-value-change" => assigns.on_value_change,
       "data-positioning" => Corex.Json.encode!(assigns.positioning),
-      "data-bubble" => get_boolean(assigns.bubble)
+      "data-bubble" => get_boolean(assigns.bubble),
+      "data-filter" => get_boolean(assigns.filter)
     }
   end
 

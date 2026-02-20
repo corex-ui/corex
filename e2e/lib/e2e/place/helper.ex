@@ -45,7 +45,4 @@ defmodule E2e.Place.Helper do
       end
     end
   end
-
-
-
 end

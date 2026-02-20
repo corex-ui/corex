@@ -31,7 +31,8 @@ defmodule Corex.Combobox.Anatomy do
       on_open_change_client: nil,
       on_input_value_change: nil,
       on_value_change: nil,
-      bubble: false
+      bubble: false,
+      filter: true
     ]
 
     @type t :: %__MODULE__{

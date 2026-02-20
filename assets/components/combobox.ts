@@ -45,16 +45,16 @@ export class Combobox extends Component<Props, Api> {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props): VanillaMachine<any> {
-    const self = this;
+    const getCollection = () => this.getCollection();
 
     return new VanillaMachine(machine, {
       ...props,
       get collection() {
-        return self.getCollection();
+        return getCollection();
       },
       onOpenChange: (details: OpenChangeDetails) => {
         if (details.open) {
-          self.options = self.allOptions;
+          this.options = this.allOptions;
         }
         if (props.onOpenChange) {
           props.onOpenChange(details);
@@ -63,11 +63,14 @@ export class Combobox extends Component<Props, Api> {
       onInputValueChange: (details: InputValueChangeDetails) => {
         if (props.onInputValueChange) {
           props.onInputValueChange(details);
-        } else {
-          const filtered = self.allOptions.filter((item: ComboboxItem) =>
+        }
+        if (this.el.hasAttribute("data-filter")) {
+          const filtered = this.allOptions.filter((item: ComboboxItem) =>
             item.label.toLowerCase().includes(details.inputValue.toLowerCase())
           );
-          self.options = filtered.length > 0 ? filtered : self.allOptions;
+          this.options = filtered.length > 0 ? filtered : this.allOptions;
+        } else {
+          this.options = this.allOptions;
         }
       },
     });
@@ -117,9 +120,20 @@ export class Combobox extends Component<Props, Api> {
     }
   }
 
-  buildOrderedBlocks(items: ComboboxItem[]): ({ type: "default"; items: ComboboxItem[] } | { type: "group"; groupId: string; items: ComboboxItem[] })[] {
-    const blocks: ({ type: "default"; items: ComboboxItem[] } | { type: "group"; groupId: string; items: ComboboxItem[] })[] = [];
-    let current: { type: "default"; items: ComboboxItem[] } | { type: "group"; groupId: string; items: ComboboxItem[] } | null = null;
+  buildOrderedBlocks(
+    items: ComboboxItem[]
+  ): (
+    | { type: "default"; items: ComboboxItem[] }
+    | { type: "group"; groupId: string; items: ComboboxItem[] }
+  )[] {
+    const blocks: (
+      | { type: "default"; items: ComboboxItem[] }
+      | { type: "group"; groupId: string; items: ComboboxItem[] }
+    )[] = [];
+    let current:
+      | { type: "default"; items: ComboboxItem[] }
+      | { type: "group"; groupId: string; items: ComboboxItem[] }
+      | null = null;
 
     for (const item of items) {
       const groupKey = item.group ?? "";
@@ -210,7 +224,6 @@ export class Combobox extends Component<Props, Api> {
     const textEl = el.querySelector<HTMLElement>('[data-scope="combobox"][data-part="item-text"]');
     if (textEl) {
       this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-      // Only set textContent if there are no child elements (custom HTML slots preserve their structure)
       if (textEl.children.length === 0) {
         textEl.textContent = item.label || "";
       }

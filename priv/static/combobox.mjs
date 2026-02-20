@@ -1642,15 +1642,15 @@ var Combobox = class extends Component {
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props2) {
-    const self = this;
+    const getCollection = () => this.getCollection();
     return new VanillaMachine(machine, {
       ...props2,
       get collection() {
-        return self.getCollection();
+        return getCollection();
       },
       onOpenChange: (details) => {
         if (details.open) {
-          self.options = self.allOptions;
+          this.options = this.allOptions;
         }
         if (props2.onOpenChange) {
           props2.onOpenChange(details);
@@ -1659,11 +1659,14 @@ var Combobox = class extends Component {
       onInputValueChange: (details) => {
         if (props2.onInputValueChange) {
           props2.onInputValueChange(details);
-        } else {
-          const filtered = self.allOptions.filter(
+        }
+        if (this.el.hasAttribute("data-filter")) {
+          const filtered = this.allOptions.filter(
             (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
           );
-          self.options = filtered.length > 0 ? filtered : self.allOptions;
+          this.options = filtered.length > 0 ? filtered : this.allOptions;
+        } else {
+          this.options = this.allOptions;
         }
       }
     });

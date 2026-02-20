@@ -103,7 +103,6 @@ defmodule E2e.Place do
     City.changeset(city, attrs)
   end
 
-
   def list_cities(query) when is_binary(query) do
     City
     |> where([c], ilike(c.name, ^"#{query}%") or ilike(c.iata_code, ^"#{query}%"))
@@ -117,6 +116,7 @@ defmodule E2e.Place do
     |> limit(50)
     |> Repo.all()
   end
+
   @doc """
   Returns the list of airports.
 
@@ -163,7 +163,8 @@ defmodule E2e.Place do
     end
   end
 
-  def search_airports(term, limit, offset) when is_binary(term) and is_integer(limit) and is_integer(offset) do
+  def search_airports(term, limit, offset)
+      when is_binary(term) and is_integer(limit) and is_integer(offset) do
     search = "%#{term}%"
 
     Airport
@@ -173,7 +174,6 @@ defmodule E2e.Place do
     |> offset(^offset)
     |> Repo.all()
   end
-
 
   @doc """
   Gets a single airport.

@@ -52,7 +52,11 @@ defmodule E2eWeb.ComboboxForm do
 
         {:noreply,
          socket
-         |> Toast.push_toast("Saved", "Name: #{combobox.name}, Airport: #{combobox.airport}", :success)
+         |> Toast.push_toast(
+           "Saved",
+           "Name: #{combobox.name}, Airport: #{combobox.airport}",
+           :success
+         )
          |> assign(:combobox, combobox)
          |> assign(:form, saved_form)
          |> assign(:value, if(combobox.airport != "", do: [combobox.airport], else: []))}
@@ -104,22 +108,8 @@ defmodule E2eWeb.ComboboxForm do
   end
 
   def handle_event("airport_selected", %{"value" => value}, socket) do
-    # airport = if is_list(value) and value != [], do: List.first(value), else: ""
-
-    # params = %{
-    #   "name" => socket.assigns.form.params["name"] || "",
-    #   "airport" => airport
-    # }
-
-    # changeset =
-    #   socket.assigns.combobox
-    #   |> Combobox.change_combobox(params)
-    #   |> Map.put(:action, :validate)
-
     {:noreply,
      socket
-    #  |> assign(:form, to_form(changeset, as: :combobox))
-    #  |> assign(:combobox, Ecto.Changeset.apply_changes(changeset))
      |> assign(:value, value)}
   end
 
@@ -136,7 +126,7 @@ defmodule E2eWeb.ComboboxForm do
   defp format_airports(airports) do
     sorted =
       Enum.sort_by(airports, fn a ->
-        {(a.city_name || "Other"), a.name}
+        {a.city_name || "Other", a.name}
       end)
 
     city_counts =
@@ -167,7 +157,7 @@ defmodule E2eWeb.ComboboxForm do
 
       <.header>
         Combobox form
-        <:subtitle>Phoenix form with embedded Ecto validation and airport fetch combobox.</:subtitle>
+        <:subtitle>Phoenix form with Ecto validation, database fetching and server side fitlering combobox.</:subtitle>
       </.header>
 
       <.form
@@ -185,7 +175,7 @@ defmodule E2eWeb.ComboboxForm do
           class="combobox"
           placeholder="Search airports..."
           collection={@airports}
-
+          filter={false}
           on_input_value_change="search_airports"
         >
           <:label>Airport</:label>
