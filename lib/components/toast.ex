@@ -45,14 +45,17 @@ defmodule Corex.Toast do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="toast"][data-part="group"]` - Toast container
-  - `[data-scope="toast"][data-part="root"]` - Individual toast root
-  - `[data-scope="toast"][data-part="title"]` - Toast title
-  - `[data-scope="toast"][data-part="description"]` - Toast description
-  - `[data-scope="toast"][data-part="close-trigger"]` - Close button
+
+  ```css
+  [data-scope="toast"][data-part="group"] {}
+  [data-scope="toast"][data-part="root"] {}
+  [data-scope="toast"][data-part="title"] {}
+  [data-scope="toast"][data-part="description"] {}
+  [data-scope="toast"][data-part="close-trigger"] {}
+  ```
 
   If you wish to use the default Corex styling, you can use the class `toast` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";

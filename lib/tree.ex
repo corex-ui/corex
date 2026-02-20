@@ -1,7 +1,13 @@
 defmodule Corex.Tree do
-  @moduledoc """
-  Tree item structure for hierarchical/nested items.
-  """
+  @moduledoc ~S'''
+  Tree items for hierarchical/nested structures to be used with:
+
+  - [Menu](Corex.Menu.html)
+  - [TreeView](Corex.TreeView.html)
+
+  Use `Corex.Tree.new/1` to build a list of items from keyword lists or maps.
+
+  '''
 
   defmodule Item do
     @moduledoc """
@@ -9,6 +15,7 @@ defmodule Corex.Tree do
 
     Use it to create hierarchical/nested structures for:
     - [Menu](Corex.Menu.html)
+    - [TreeView](Corex.TreeView.html)
 
     ## Fields
 

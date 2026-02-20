@@ -104,11 +104,14 @@ defmodule Corex.ToggleGroup do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="toggle-group"][data-part="root"]` - Container
-  - `[data-scope="toggle-group"][data-part="item"]` - Item wrapper
+
+  ```css
+  [data-scope="toggle-group"][data-part="root"] {}
+  [data-scope="toggle-group"][data-part="item"] {}
+  ```
 
   If you wish to use the default Corex styling, you can use the class `toggle-group` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";

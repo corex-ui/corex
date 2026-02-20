@@ -229,6 +229,24 @@ defmodule Corex.DatePicker do
   [data-scope="date-picker"][data-part="positioner"] {}
   [data-scope="date-picker"][data-part="content"] {}
   ```
+
+  If you wish to use the default Corex styling, you can use the class `date-picker` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/date-picker.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.date_picker class="date-picker date-picker--accent date-picker--lg" id="my-date-picker">
+  </.date_picker>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/date-picker#modifiers)
   '''
 
   use Phoenix.Component

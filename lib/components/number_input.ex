@@ -39,7 +39,34 @@ defmodule Corex.NumberInput do
 
   ## Styling
 
-  Use data attributes: `[data-scope="number-input"][data-part="root"]`, `control`, `input`, `trigger-group`, `decrement-trigger`, `increment-trigger`, `scrubber`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="number-input"][data-part="root"] {}
+  [data-scope="number-input"][data-part="control"] {}
+  [data-scope="number-input"][data-part="input"] {}
+  [data-scope="number-input"][data-part="trigger-group"] {}
+  [data-scope="number-input"][data-part="decrement-trigger"] {}
+  [data-scope="number-input"][data-part="increment-trigger"] {}
+  [data-scope="number-input"][data-part="scrubber"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `number-input` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/number-input.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.number_input class="number-input number-input--accent number-input--lg" />
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/number-input#modifiers)
   '''
 
   @doc type: :component

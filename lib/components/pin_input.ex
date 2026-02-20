@@ -14,7 +14,33 @@ defmodule Corex.PinInput do
 
   ## Styling
 
-  Use data attributes: `[data-scope="pin-input"][data-part="root"]`, `label`, `control`, `input` (per index).
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="pin-input"][data-part="root"] {}
+  [data-scope="pin-input"][data-part="label"] {}
+  [data-scope="pin-input"][data-part="control"] {}
+  [data-scope="pin-input"][data-part="input"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `pin-input` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/pin-input.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.pin_input class="pin-input pin-input--accent pin-input--lg" count={4}>
+    <:label>Code</:label>
+  </.pin_input>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/pin-input#modifiers)
   '''
 
   @doc type: :component

@@ -25,7 +25,35 @@ defmodule Corex.RadioGroup do
 
   ## Styling
 
-  Use data attributes: `[data-scope="radio-group"][data-part="root"]`, `label`, `indicator`, `item`, `item-text`, `item-control`, `item-hidden-input`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="radio-group"][data-part="root"] {}
+  [data-scope="radio-group"][data-part="label"] {}
+  [data-scope="radio-group"][data-part="indicator"] {}
+  [data-scope="radio-group"][data-part="item"] {}
+  [data-scope="radio-group"][data-part="item-text"] {}
+  [data-scope="radio-group"][data-part="item-control"] {}
+  [data-scope="radio-group"][data-part="item-hidden-input"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `radio-group` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/radio-group.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.radio_group class="radio-group radio-group--accent radio-group--lg" items={[]}>
+  </.radio_group>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/radio-group#modifiers)
   '''
 
   @doc type: :component

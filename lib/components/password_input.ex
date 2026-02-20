@@ -16,7 +16,36 @@ defmodule Corex.PasswordInput do
 
   ## Styling
 
-  Use data attributes: `[data-scope="password-input"][data-part="root"]`, `label`, `control`, `input`, `visibility-trigger`, `indicator`.
+  Use data attributes to target elements:
+
+  ```css
+  [data-scope="password-input"][data-part="root"] {}
+  [data-scope="password-input"][data-part="label"] {}
+  [data-scope="password-input"][data-part="control"] {}
+  [data-scope="password-input"][data-part="input"] {}
+  [data-scope="password-input"][data-part="visibility-trigger"] {}
+  [data-scope="password-input"][data-part="indicator"] {}
+  ```
+
+  If you wish to use the default Corex styling, you can use the class `password-input` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/password-input.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.password_input class="password-input password-input--accent password-input--lg">
+    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+  </.password_input>
+  ```
+
+  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/password-input#modifiers)
   '''
 
   @doc type: :component

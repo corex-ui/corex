@@ -226,12 +226,19 @@ defmodule Corex.Menu do
   ```
 
   If you wish to use the default Corex styling, you can use the class `menu` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";
   @import "../corex/tokens/themes/neo/light.css";
   @import "../corex/components/menu.css";
+  ```
+
+  You can then use modifiers
+
+  ```heex
+  <.menu class="menu menu--accent menu--lg">
+  </.menu>
   ```
 
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/menu#modifiers)

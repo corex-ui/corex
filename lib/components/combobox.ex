@@ -183,21 +183,24 @@ defmodule Corex.Combobox do
   ## Styling
 
   Use data attributes to target elements:
-  - `[data-scope="combobox"][data-part="root"]` - Container
-  - `[data-scope="combobox"][data-part="control"]` - Control wrapper
-  - `[data-scope="combobox"][data-part="input"]` - Input field
-  - `[data-scope="combobox"][data-part="trigger"]` - Trigger button
-  - `[data-scope="combobox"][data-part="clear-trigger"]` - Clear button
-  - `[data-scope="combobox"][data-part="content"]` - Dropdown content
-  - `[data-scope="combobox"][data-part="empty"]` - Empty state when no results
-  - `[data-scope="combobox"][data-part="item-group"]` - Group container
-  - `[data-scope="combobox"][data-part="item-group-label"]` - Group label
-  - `[data-scope="combobox"][data-part="item"]` - Item wrapper
-  - `[data-scope="combobox"][data-part="item-text"]` - Item text
-  - `[data-scope="combobox"][data-part="item-indicator"]` - Optional indicator
+
+  ```css
+  [data-scope="combobox"][data-part="root"] {}
+  [data-scope="combobox"][data-part="control"] {}
+  [data-scope="combobox"][data-part="input"] {}
+  [data-scope="combobox"][data-part="trigger"] {}
+  [data-scope="combobox"][data-part="clear-trigger"] {}
+  [data-scope="combobox"][data-part="content"] {}
+  [data-scope="combobox"][data-part="empty"] {}
+  [data-scope="combobox"][data-part="item-group"] {}
+  [data-scope="combobox"][data-part="item-group-label"] {}
+  [data-scope="combobox"][data-part="item"] {}
+  [data-scope="combobox"][data-part="item-text"] {}
+  [data-scope="combobox"][data-part="item-indicator"] {}
+  ```
 
   If you wish to use the default Corex styling, you can use the class `combobox` on the component.
-  This requires to install mix corex.design first and import the component css file.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";
