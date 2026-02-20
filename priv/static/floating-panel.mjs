@@ -10,7 +10,7 @@ import {
   isSizeEqual,
   resizeRect,
   subtractPoints
-} from "./chunk-BMVNROAE.mjs";
+} from "./chunk-FEZIYMNT.mjs";
 import {
   Component,
   VanillaMachine,
@@ -41,9 +41,9 @@ import {
   subscribe,
   toPx,
   trackPointerMove
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.33.1/node_modules/@zag-js/floating-panel/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.34.0/node_modules/@zag-js/floating-panel/dist/index.mjs
 var anatomy = createAnatomy("floating-panel").parts(
   "trigger",
   "positioner",

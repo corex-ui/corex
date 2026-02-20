@@ -1,6 +1,6 @@
 import {
   trackInteractOutside
-} from "./chunk-ER3INIAI.mjs";
+} from "./chunk-OSSFSUET.mjs";
 import {
   Component,
   VanillaMachine,
@@ -19,9 +19,9 @@ import {
   normalizeProps,
   raf,
   setElementValue
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+editable@1.33.1/node_modules/@zag-js/editable/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.34.0/node_modules/@zag-js/editable/dist/index.mjs
 var anatomy = createAnatomy("editable").parts(
   "root",
   "area",

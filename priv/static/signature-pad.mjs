@@ -17,7 +17,7 @@ import {
   normalizeProps,
   query,
   trackPointerMove
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
 // ../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs
 var { PI: e } = Math;
@@ -199,7 +199,7 @@ function R(e2, t2 = {}) {
 }
 var z = R;
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.33.1/node_modules/@zag-js/signature-pad/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.34.0/node_modules/@zag-js/signature-pad/dist/index.mjs
 var anatomy = createAnatomy("signature-pad").parts(
   "root",
   "control",

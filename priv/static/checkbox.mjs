@@ -1,7 +1,7 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-TEV2GE3U.mjs";
+} from "./chunk-GXGJDSCU.mjs";
 import {
   Component,
   VanillaMachine,
@@ -21,9 +21,9 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.33.1/node_modules/@zag-js/checkbox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+checkbox@1.34.0/node_modules/@zag-js/checkbox/dist/index.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
 var parts = anatomy.build();
 var getRootId = (ctx) => ctx.ids?.root ?? `checkbox:${ctx.id}`;

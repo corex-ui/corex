@@ -19,6 +19,7 @@
       %{label: "Austria", id: "aut"}
     ]}
   >
+    <:empty>No results</:empty>
     <:trigger>
       <.icon name="hero-chevron-down" />
     </:trigger>
@@ -44,6 +45,7 @@
       %{label: "Mexico", id: "mex", group: "North America"}
     ]}
   >
+    <:empty>No results</:empty>
     <:trigger>
       <.icon name="hero-chevron-down" />
     </:trigger>
@@ -62,6 +64,7 @@
       %{label: "Austria", id: "aut"}
     ]}
   >
+    <:empty>No results</:empty>
     <:label>
       Country of residence
     </:label>
@@ -93,6 +96,7 @@
       %{label: "South Korea", id: "kor", group: "Asia"}
     ]}
   >
+    <:empty>No results</:empty>
     <:item :let={item}>
       <Flagpack.flag name={String.to_atom(item.id)} />
       {item.label}

@@ -9,9 +9,9 @@ import {
   normalizeProps,
   observeAttributes,
   observeChildren
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.33.1/node_modules/@zag-js/avatar/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.34.0/node_modules/@zag-js/avatar/dist/index.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
 var parts = anatomy.build();
 var getRootId = (ctx) => ctx.ids?.root ?? `avatar:${ctx.id}`;

@@ -34,9 +34,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.33.1/node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.34.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
 function getScrollPadding(element) {
   const style = getComputedStyle2(element);
@@ -198,7 +198,7 @@ function findSnapPoint(parent, axis, predicate) {
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.33.1/node_modules/@zag-js/carousel/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.34.0/node_modules/@zag-js/carousel/dist/index.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",

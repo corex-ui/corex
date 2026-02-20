@@ -21,6 +21,7 @@ defmodule Corex.Combobox do
           %{label: "Austria", id: "aut"}
         ]}
       >
+        <:empty>No results</:empty>
         <:trigger>
           <.icon name="hero-chevron-down" />
         </:trigger>
@@ -49,6 +50,7 @@ defmodule Corex.Combobox do
           %{label: "Mexico", id: "mex", group: "North America"}
         ]}
       >
+        <:empty>No results</:empty>
         <:trigger>
           <.icon name="hero-chevron-down" />
         </:trigger>
@@ -74,6 +76,7 @@ defmodule Corex.Combobox do
           %{label: "Austria", id: "aut"}
         ]}
       >
+        <:empty>No results</:empty>
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
           {item.label}
@@ -109,6 +112,7 @@ defmodule Corex.Combobox do
           %{label: "South Korea", id: "kor", group: "Asia"}
         ]}
       >
+        <:empty>No results</:empty>
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
           {item.label}
@@ -135,6 +139,7 @@ defmodule Corex.Combobox do
   - `[data-scope="combobox"][data-part="trigger"]` - Trigger button
   - `[data-scope="combobox"][data-part="clear-trigger"]` - Clear button
   - `[data-scope="combobox"][data-part="content"]` - Dropdown content
+  - `[data-scope="combobox"][data-part="empty"]` - Empty state when no results
   - `[data-scope="combobox"][data-part="item-group"]` - Group container
   - `[data-scope="combobox"][data-part="item-group-label"]` - Group label
   - `[data-scope="combobox"][data-part="item"]` - Item wrapper
@@ -153,7 +158,12 @@ defmodule Corex.Combobox do
   You can then use modifiers
 
   ```heex
-  <.combobox class="combobox combobox--accent combobox--lg">
+  <.combobox class="combobox combobox--accent combobox--lg" collection={[]}>
+    <:empty>No results</:empty>
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+  </.combobox>
   ```
 
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/combobox#modifiers)
@@ -240,6 +250,7 @@ defmodule Corex.Combobox do
   attr(:rest, :global)
 
   slot(:label, required: false, doc: "The label content")
+  slot(:empty, required: true, doc: "Content to display when there are no results")
   slot(:trigger, required: true, doc: "The trigger button content")
   slot(:clear_trigger, required: false, doc: "The clear button content")
   slot(:item_indicator, required: false, doc: "Optional indicator for selected items")
@@ -318,13 +329,12 @@ defmodule Corex.Combobox do
       open: @open, positioning: @positioning,
       bubble: @bubble, disabled: @disabled
     })}>
-      <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
-        <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="combobox" data-part="value-input" value={@value_for_hidden_input} required={@required} />
+      <div phx-update="ignore" {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
 
-        <div :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+        <div phx-update="ignore" :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.control(%Control{id: @id, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
+        <div phx-update="ignore" {Connect.control(%Control{id: @id, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
           <input {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
           <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
@@ -333,34 +343,25 @@ defmodule Corex.Combobox do
             {render_slot(@trigger)}
           </button>
         </div>
-        <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
-          {render_slot(@error, msg)}
-        </div>
-        <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
-          <ul {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
+
+        <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
+          <ul phx-update="ignore" {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
           </ul>
-
-          <div style="display: none;" data-templates="combobox">
-            <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"} data-template="true">
-              <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>
-                {group}
-              </div>
-              <div data-scope="combobox" data-part="item-group-content">
-                <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
-                  <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                    {render_slot(@item, item)}
-                  </span>
-                  <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                    {item.label}
-                  </span>
-                  <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
-                    {render_slot(@item_indicator)}
-                  </span>
-                </li>
-              </div>
-            </div>
-
-            <li :if={!@has_groups} :for={item <- @collection} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
+        </div>
+      </div>
+      <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
+        {render_slot(@error, msg)}
+      </div>
+      <div style="display: none;" data-templates="combobox">
+        <li data-scope="combobox" data-part="empty" data-template="true">
+          {render_slot(@empty)}
+        </li>
+        <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"} data-template="true">
+          <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>
+            {group}
+          </div>
+          <div data-scope="combobox" data-part="item-group-content">
+            <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
               <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
                 {render_slot(@item, item)}
               </span>
@@ -373,6 +374,18 @@ defmodule Corex.Combobox do
             </li>
           </div>
         </div>
+
+        <li :if={!@has_groups} :for={item <- @collection} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
+          <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
+            {render_slot(@item, item)}
+          </span>
+          <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
+            {item.label}
+          </span>
+          <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
+            {render_slot(@item_indicator)}
+          </span>
+        </li>
       </div>
     </div>
     """

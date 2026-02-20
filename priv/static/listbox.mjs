@@ -1,13 +1,14 @@
 import {
-  getInteractionModality,
-  trackFocusVisible
-} from "./chunk-TEV2GE3U.mjs";
-import {
   GridCollection,
   ListCollection,
   Selection,
   isGridCollection
-} from "./chunk-2PO3TGCF.mjs";
+} from "./chunk-4RWUEBEQ.mjs";
+import {
+  getInteractionModality,
+  setInteractionModality,
+  trackFocusVisible
+} from "./chunk-GXGJDSCU.mjs";
 import {
   Component,
   VanillaMachine,
@@ -34,9 +35,9 @@ import {
   raf,
   scrollIntoView,
   setup
-} from "./chunk-IXOYOLUJ.mjs";
+} from "./chunk-TZXIWZZ7.mjs";
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.33.1/node_modules/@zag-js/listbox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.34.0/node_modules/@zag-js/listbox/dist/index.mjs
 var anatomy = createAnatomy("listbox").parts(
   "label",
   "input",
@@ -62,12 +63,12 @@ var gridCollection = (options) => {
 gridCollection.empty = () => {
   return new GridCollection({ items: [], columnCount: 0 });
 };
-var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
-var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
-var getLabelId = (ctx) => ctx.ids?.label ?? `select:${ctx.id}:label`;
-var getItemId = (ctx, id) => ctx.ids?.item?.(id) ?? `select:${ctx.id}:option:${id}`;
-var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `select:${ctx.id}:optgroup:${id}`;
-var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `select:${ctx.id}:optgroup-label:${id}`;
+var getRootId = (ctx) => ctx.ids?.root ?? `listbox:${ctx.id}`;
+var getContentId = (ctx) => ctx.ids?.content ?? `listbox:${ctx.id}:content`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `listbox:${ctx.id}:label`;
+var getItemId = (ctx, id) => ctx.ids?.item?.(id) ?? `listbox:${ctx.id}:item:${id}`;
+var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `listbox:${ctx.id}:item-group:${id}`;
+var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `listbox:${ctx.id}:item-group-label:${id}`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getItemEl = (ctx, id) => ctx.getById(getItemId(ctx, id));
 function connect(service, normalize) {
@@ -594,7 +595,7 @@ var machine = createMachine({
           const highlightedValue = context.get("highlightedValue");
           if (highlightedValue == null) return;
           const modality = getInteractionModality();
-          if (modality !== "keyboard") return;
+          if (modality === "pointer") return;
           const contentEl2 = getContentEl(scope);
           const scrollToIndexFn = prop("scrollToIndexFn");
           if (scrollToIndexFn) {
@@ -611,7 +612,10 @@ var machine = createMachine({
           const itemEl = getItemEl(scope, highlightedValue);
           scrollIntoView(itemEl, { rootEl: contentEl2, block: "nearest" });
         };
-        raf(() => exec(true));
+        raf(() => {
+          setInteractionModality("virtual");
+          exec(true);
+        });
         const contentEl = () => getContentEl(scope);
         return observeAttributes(contentEl, {
           defer: true,

@@ -40,6 +40,8 @@ defmodule E2eWeb.Router do
       live "/live/clipboard", ClipboardLive
       live "/live/collapsible", CollapsibleLive
       live "/live/combobox", ComboboxLive
+      live "/live/combobox-fetch", ComboboxFetch
+      live "/live/combobox-form", ComboboxForm
       live "/live/date-picker", DatePickerLive
       live "/live/dialog", DialogLive
       live "/live/menu", MenuLive
