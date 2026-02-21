@@ -1,7 +1,6 @@
 defmodule E2e.Place.Helper do
   @moduledoc false
-  alias E2e.Place
-
+  alias E2e.Repo
   require Logger
 
   def country_name_from_code(country_code) do
@@ -9,40 +8,65 @@ defmodule E2e.Place.Helper do
     country_name
   end
 
-  # Save from seeds
   def fetch_and_insert_cities() do
-    priv_dir = :code.priv_dir(:e2e)
-    file_path = Path.join([priv_dir, "repo", "seeds", "cities.tar.gz"])
+    read_compressed("cities.tar.gz")
+    |> Jason.decode!()
+    |> Enum.chunk_every(500)
+    |> Enum.each(fn batch ->
 
-    {:ok, file} = File.open(file_path, [:read, :utf8, :compressed])
+      entries =
+        Enum.map(batch, fn city ->
+          %{
+            id: city["id"],
+            name: city["name"],
+            iata_code: city["iata_code"],
+            iata_country_code: city["iata_country_code"],
+            # embedded airports stored as jsonb
+            airports: city["airports"] |> encode_embed()
+          }
+        end)
 
-    all_cities = IO.read(file, :eof)
-
-    File.close(file)
-
-    for city <- Jason.decode!(all_cities) do
-      case Place.create_city(city) do
-        {:error, changeset} -> Logger.debug(changeset)
-        {:ok, _city} -> :ok
-      end
-    end
+      Repo.insert_all("cities", entries, on_conflict: :nothing, conflict_target: :id)
+    end)
   end
 
   def fetch_and_insert_airports() do
-    priv_dir = :code.priv_dir(:e2e)
-    file_path = Path.join([priv_dir, "repo", "seeds", "airports.tar.gz"])
+    read_compressed("airports.tar.gz")
+    |> Jason.decode!()
+    |> Enum.chunk_every(500)
+    |> Enum.each(fn batch ->
+      entries =
+        Enum.map(batch, fn airport ->
+          %{
+            id: airport["id"],
+            name: airport["name"],
+            iata_code: airport["iata_code"],
+            city_name: airport["city_name"],
+            iata_city_code: airport["iata_city_code"],
+            iata_country_code: airport["iata_country_code"],
+            icao_code: airport["icao_code"],
+            latitude: airport["latitude"],
+            longitude: airport["longitude"],
+            time_zone: airport["time_zone"],
+            # embedded city stored as jsonb
+            city: airport["city"] |> encode_embed()
+          }
+        end)
 
-    {:ok, file} = File.open(file_path, [:read, :utf8, :compressed])
-
-    all_airports = IO.read(file, :eof)
-
-    File.close(file)
-
-    for airport <- Jason.decode!(all_airports) do
-      case Place.create_airport(airport) do
-        {:error, changeset} -> Logger.debug(changeset)
-        {:ok, _airport} -> :ok
-      end
-    end
+      Repo.insert_all("airports", entries, on_conflict: :nothing, conflict_target: :id)
+    end)
   end
+
+  defp read_compressed(filename) do
+    priv_dir = :code.priv_dir(:e2e)
+    file_path = Path.join([priv_dir, "repo", "seeds", filename])
+    {:ok, file} = File.open(file_path, [:read, :utf8, :compressed])
+    data = IO.read(file, :eof)
+    File.close(file)
+    data
+  end
+
+  defp encode_embed(nil), do: nil
+  defp encode_embed(data) when is_list(data), do: data
+  defp encode_embed(data) when is_map(data), do: data
 end
