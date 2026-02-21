@@ -131,7 +131,7 @@ defmodule Corex.Combobox do
 
   ### Server-side Filtering
 
-  Use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
+  Disable client filtering with `disabled={false}` and use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.
 
   ```heex
   defmodule MyAppWeb.CountryCombobox do
@@ -168,6 +168,7 @@ defmodule Corex.Combobox do
       <.combobox
         id="country-combobox"
         collection={@items}
+        filter={false}
         on_input_value_change="search"
       >
         <:empty>No results</:empty>
