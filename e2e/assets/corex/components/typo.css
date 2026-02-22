@@ -285,17 +285,4 @@
     flex-direction: column;
     gap: var(--spacing-ui-gap-lg);
   }
-
-  /* .typo pre {
-    @apply scrollbar scrollbar--sm;
-
-    font-family: var(--font-code);
-    font-size: var(--text-ui-sm);
-    line-height: var(--text-ui-sm--line-height);
-    padding: var(--spacing-ui-padding-sm);
-    background-color: var(--color-ui);
-    color: var(--color-ui--text);
-    border: 1px solid var(--color-ui--border);
-    overflow: auto;
-  } */
 }
