@@ -1,14 +1,20 @@
-<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
   <h1>Dialog</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
   <div class="layout__row">
-    <button
+    <.action
       phx-click={Corex.Dialog.set_open("my-dialog", true)}
       class="button button--sm"
     >
       Open Dialog
-    </button>
+    </.action>
   </div>
   <.dialog id="my-dialog" class="dialog">
     <:trigger>Open Dialog</:trigger>
@@ -18,12 +24,12 @@
     </:description>
     <:content>
       <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
-      <button
+      <.action
         phx-click={Corex.Dialog.set_open("my-dialog", false)}
         class="button button--sm"
       >
         API Close Dialog
-      </button>
+      </.action>
     </:content>
     <:close_trigger>
       <.icon name="hero-x-mark" class="icon" />

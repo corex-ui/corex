@@ -44,7 +44,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.26"}
+    {:corex, "~> 0.1.0-alpha.27"}
   ]
 end
 ```

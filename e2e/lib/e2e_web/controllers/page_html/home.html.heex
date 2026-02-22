@@ -1,4 +1,10 @@
-<Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
   <section class="gap-ui-sm sm:gap-ui md:gap-ui-lg py-ui sm:py-ui-lg md:py-ui-xl px-ui-padding-xl relative mx-auto flex max-w-(--container-ui-xl) flex-col justify-between">
     <h1 class="my-0 text-4xl md:text-6xl">
       Build <span class="text-root--success">fast</span>,
@@ -38,7 +44,7 @@
           </path>
         </svg>
       </a>
-      <button
+      <.action
         phx-click={Corex.Dialog.set_open("menu-dialog", true)}
         class="button md:button--lg w-full md:w-auto lg:hidden"
       >
@@ -58,9 +64,9 @@
           >
           </path>
         </svg>
-      </button>
-      <.button
-        href={~p"/#{@locale}/accordion"}
+      </.action>
+      <.navigate
+        to={~p"/#{@locale}/accordion"}
         class="button md:button--lg w-full md:w-auto hidden lg:flex"
       >
         Examples
@@ -79,7 +85,7 @@
           >
           </path>
         </svg>
-      </.button>
+      </.navigate>
     </div>
   </section>
 </Layouts.app>

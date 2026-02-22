@@ -1,26 +1,32 @@
-<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
   <h1>Clipboard</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
   <div class="layout__row">
-    <button
+    <.action
       phx-click={Corex.Clipboard.set_value("my-clipboard", "Hello, World!")}
       class="button button--sm"
     >
       Set to "Hello, World!"
-    </button>
-    <button
+    </.action>
+    <.action
       phx-click={Corex.Clipboard.set_value("my-clipboard", "info@netoum.com")}
       class="button button--sm"
     >
       Set to "info@netoum.com"
-    </button>
-    <button
+    </.action>
+    <.action
       phx-click={Corex.Clipboard.copy("my-clipboard")}
       class="button button--sm"
     >
       Copy
-    </button>
+    </.action>
   </div>
   <.clipboard
     id="my-clipboard"

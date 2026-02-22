@@ -13,7 +13,6 @@ defmodule E2e.Place.Helper do
     |> Jason.decode!()
     |> Enum.chunk_every(500)
     |> Enum.each(fn batch ->
-
       entries =
         Enum.map(batch, fn city ->
           %{

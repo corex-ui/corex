@@ -90,7 +90,13 @@ defmodule E2eWeb.AngleSliderPlayLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+    <Layouts.app
+      flash={@flash}
+      mode={@mode}
+      theme={@theme}
+      locale={@locale}
+      current_path={@current_path}
+    >
       <div class="layout__row">
         <h1>Angle Slider</h1>
         <h2>Playground</h2>
@@ -130,7 +136,7 @@ defmodule E2eWeb.AngleSliderPlayLive do
           checked={@controls.show_markers}
           on_checked_change="control_changed"
         >
-          <:label>Show Markers (0°, 90°, 180°, 270°)</:label>
+          <:label>Show Markers</:label>
         </.switch>
 
         <.toggle_group

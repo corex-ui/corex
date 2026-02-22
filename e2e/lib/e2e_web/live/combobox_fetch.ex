@@ -84,7 +84,13 @@ defmodule E2eWeb.ComboboxFetch do
 
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+    <Layouts.app
+      flash={@flash}
+      mode={@mode}
+      theme={@theme}
+      locale={@locale}
+      current_path={@current_path}
+    >
       <div class="layout__row">
         <h1>Combobox</h1>
         <h2>Server-side Filtering</h2>

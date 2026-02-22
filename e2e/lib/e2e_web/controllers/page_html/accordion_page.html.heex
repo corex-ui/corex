@@ -1,24 +1,30 @@
-<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
   <h1>Accordion</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
   <section class="layout__section">
     <div class="layout__row">
-      <button
+      <.action
         phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
         class="button button--sm"
       >
         Open Lorem
-      </button>
-      <button
+      </.action>
+      <.action
         phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "donec"])}
         class="button button--sm"
       >
         Open Lorem & Donec
-      </button>
-      <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
+      </.action>
+      <.action phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
         Close all Items
-      </button>
+      </.action>
     </div>
   </section>
 

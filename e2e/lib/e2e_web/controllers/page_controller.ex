@@ -9,6 +9,14 @@ defmodule E2eWeb.PageController do
     render(conn, :accordion_page)
   end
 
+  def action_page(conn, _params) do
+    render(conn, :action_page)
+  end
+
+  def navigate_page(conn, _params) do
+    render(conn, :navigate_page)
+  end
+
   def switch_page(conn, _params) do
     render(conn, :switch_page)
   end
@@ -77,6 +85,21 @@ defmodule E2eWeb.PageController do
 
   def clipboard_page(conn, _params) do
     render(conn, :clipboard_page)
+  end
+
+  def code_page(conn, _params) do
+    heredoc_example = """
+    defmodule Hello do
+      def world do
+        "Hello, World!"
+      end
+    end
+    """
+
+    conn
+    |> assign(:code_examples, E2eWeb.CodeExamples.all())
+    |> assign(:heredoc_example, heredoc_example)
+    |> render(:code_page)
   end
 
   def date_picker_page(conn, _params) do

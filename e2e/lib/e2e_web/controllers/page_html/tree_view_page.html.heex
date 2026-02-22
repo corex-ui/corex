@@ -1,33 +1,39 @@
-<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
   <h1>Tree View</h1>
   <h2>Controller View</h2>
   <h3>Client Api</h3>
   <section class="layout__section">
     <div class="layout__row">
-      <button
+      <.action
         phx-click={Corex.TreeView.set_expanded_value("my-tree", ["accordion", "checkbox"])}
         class="button button--sm"
       >
         Expand Accordion & Checkbox
-      </button>
-      <button
+      </.action>
+      <.action
         phx-click={Corex.TreeView.set_expanded_value("my-tree", [])}
         class="button button--sm"
       >
         Collapse all
-      </button>
-      <button
+      </.action>
+      <.action
         phx-click={Corex.TreeView.set_selected_value("my-tree", ["/#{@locale}/accordion"])}
         class="button button--sm"
       >
         Select Controller (Accordion)
-      </button>
-      <button
+      </.action>
+      <.action
         phx-click={Corex.TreeView.set_selected_value("my-tree", [])}
         class="button button--sm"
       >
         Clear selection
-      </button>
+      </.action>
     </div>
   </section>
   <.tree_view

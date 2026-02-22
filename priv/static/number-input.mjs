@@ -36,7 +36,7 @@ import {
   setup,
   trackFormControl,
   wrap
-} from "./chunk-TZXIWZZ7.mjs";
+} from "./chunk-RUWIVFVB.mjs";
 
 // ../node_modules/.pnpm/@internationalized+number@3.6.5/node_modules/@internationalized/number/dist/NumberFormatter.mjs
 var $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
@@ -400,7 +400,7 @@ function $6c7bd7858deea686$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.34.0/node_modules/@zag-js/number-input/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.34.1/node_modules/@zag-js/number-input/dist/index.mjs
 var anatomy = createAnatomy("numberInput").parts(
   "root",
   "label",

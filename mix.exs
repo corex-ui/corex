@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.26"
+  @version "0.1.0-alpha.27"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -96,6 +96,7 @@ defmodule Corex.MixProject do
       main: "Corex",
       extras: [
         "guides/installation.md",
+        "guides/theming.md",
         "guides/dark_mode.md",
         "guides/locale.md",
         "guides/rtl.md",
@@ -116,11 +117,13 @@ defmodule Corex.MixProject do
     [
       Components: [
         Corex.Accordion,
+        Corex.Action,
         Corex.AngleSlider,
         Corex.Avatar,
         Corex.Carousel,
         Corex.Checkbox,
         Corex.Clipboard,
+        Corex.Code,
         Corex.Combobox,
         Corex.Collapsible,
         Corex.DatePicker,
@@ -129,6 +132,7 @@ defmodule Corex.MixProject do
         Corex.FloatingPanel,
         Corex.Listbox,
         Corex.Menu,
+        Corex.Navigate,
         Corex.NumberInput,
         Corex.PasswordInput,
         Corex.PinInput,
