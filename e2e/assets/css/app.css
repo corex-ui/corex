@@ -10,6 +10,12 @@
 @import "../corex/main.css";
 @import "../corex/tokens/themes/neo/light.css";
 @import "../corex/tokens/themes/neo/dark.css";
+@import "../corex/tokens/themes/uno/light.css";
+@import "../corex/tokens/themes/uno/dark.css";
+@import "../corex/tokens/themes/duo/light.css";
+@import "../corex/tokens/themes/duo/dark.css";
+@import "../corex/tokens/themes/leo/light.css";
+@import "../corex/tokens/themes/leo/dark.css";
 @import "../corex/components/typo.css";
 @import "../corex/components/accordion.css";
 @import "../corex/components/layout.css";
@@ -43,6 +49,7 @@
 @import "../corex/components/pin-input.css";
 @import "../corex/components/radio-group.css";
 @import "../corex/components/timer.css";
+@import "../corex/components/code.css";
 
 @import "./navigation.css";
 
@@ -50,7 +57,10 @@
 
 #locale-select.select,
 #locale-select.select [data-scope="select"][data-part="root"],
-#locale-select.select [data-scope="select"][data-part="trigger"] {
+#locale-select.select [data-scope="select"][data-part="trigger"],
+#theme-select.select,
+#theme-select.select [data-scope="select"][data-part="root"],
+#theme-select.select [data-scope="select"][data-part="trigger"] {
     width: auto;
 }
 

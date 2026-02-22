@@ -29,9 +29,9 @@ import {
   resizeObserverBorderBox,
   setup,
   toPx
-} from "./chunk-TZXIWZZ7.mjs";
+} from "./chunk-RUWIVFVB.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.34.0/node_modules/@zag-js/tabs/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.34.1/node_modules/@zag-js/tabs/dist/index.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
 var parts = anatomy.build();
 var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;

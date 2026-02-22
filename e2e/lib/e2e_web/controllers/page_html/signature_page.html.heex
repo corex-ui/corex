@@ -1,12 +1,18 @@
-<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
   <h1>Signature Pad</h1>
   <h2>Controller View</h2>
 
   <h3>Client API</h3>
   <div class="layout__row">
-    <button phx-click={Corex.SignaturePad.clear("my-signature-pad")} class="button button--sm">
+    <.action phx-click={Corex.SignaturePad.clear("my-signature-pad")} class="button button--sm">
       Clear Signature
-    </button>
+    </.action>
   </div>
 
   <.signature_pad id="my-signature-pad" on_draw_end="signature_drawn">

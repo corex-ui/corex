@@ -61,3 +61,29 @@
     display: inline-block !important;
   }
 }
+
+@utility clipboard--* {
+  [data-scope="clipboard"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="control"] {
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="trigger"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="label"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="clipboard"][data-part="input"] {
+    max-width: --value(--container-ui-*, [length]);
+  }
+}

@@ -8,6 +8,7 @@ defmodule E2eWeb.Router do
     plug :fetch_flash
     plug :fetch_live_flash
     plug E2eWeb.Plugs.Mode
+    plug E2eWeb.Plugs.Theme
     plug E2eWeb.Plugs.Locale
     plug :put_root_layout, html: {E2eWeb.Layouts, :root}
     plug :protect_from_forgery
@@ -31,13 +32,16 @@ defmodule E2eWeb.Router do
   scope "/:locale", E2eWeb do
     pipe_through :browser
 
-    live_session :default, on_mount: [E2eWeb.ModeLive, E2eWeb.SharedEvents] do
+    live_session :default, on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.SharedEvents] do
       live "/live/accordion", AccordionLive
       live "/playground/accordion", AccordionPlayLive
       live "/controlled/accordion", AccordionControlledLive
       live "/async/accordion", AccordionAsyncLive
       live "/live/checkbox", CheckboxLive
       live "/live/clipboard", ClipboardLive
+      live "/live/code", CodeLive
+      live "/live/action", ActionLive
+      live "/live/navigate", NavigateLive
       live "/live/collapsible", CollapsibleLive
       live "/live/combobox", ComboboxLive
       live "/live/combobox-fetch", ComboboxFetch
@@ -71,9 +75,13 @@ defmodule E2eWeb.Router do
     get "/", PageController, :home
 
     get "/accordion", PageController, :accordion_page
+    get "/action", PageController, :action_page
     get "/checkbox", PageController, :checkbox_page
 
     get "/clipboard", PageController, :clipboard_page
+    get "/code", PageController, :code_page
+
+    get "/navigate", PageController, :navigate_page
 
     get "/collapsible", PageController, :collapsible_page
 
@@ -109,7 +117,7 @@ defmodule E2eWeb.Router do
     get "/radio-group", PageController, :radio_group_page
     get "/timer", PageController, :timer_page
 
-    live_session :browser, on_mount: [E2eWeb.ModeLive, E2eWeb.SharedEvents] do
+    live_session :browser, on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.SharedEvents] do
       live "/admins", AdminLive.Index, :index
       live "/admins/new", AdminLive.Form, :new
       live "/admins/:id", AdminLive.Show, :show

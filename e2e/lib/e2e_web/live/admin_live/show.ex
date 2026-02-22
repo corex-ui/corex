@@ -6,7 +6,13 @@ defmodule E2eWeb.AdminLive.Show do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+    <Layouts.app
+      flash={@flash}
+      mode={@mode}
+      theme={@theme}
+      locale={@locale}
+      current_path={@current_path}
+    >
       <.header>
         Admin {@admin.id}
         <:subtitle>This is a admin record from your database.</:subtitle>

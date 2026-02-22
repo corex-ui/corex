@@ -159,6 +159,11 @@ defmodule Corex.Clipboard do
       "Accessible name for the input when it's not associated with a visible label (e.g. \"Value to copy\")"
   )
 
+  attr(:input, :boolean,
+    default: true,
+    doc: "Whether to render the input element. Set to false when using only the trigger to copy."
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -198,6 +203,7 @@ defmodule Corex.Clipboard do
         </label>
         <div {Connect.control(%Control{id: @id, dir: @dir})}>
           <input
+            :if={@input}
             {Connect.input(%Input{id: @id, dir: @dir, value: @value})}
             aria-label={@input_aria_label}
           />

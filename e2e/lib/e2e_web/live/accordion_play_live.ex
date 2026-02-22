@@ -91,7 +91,13 @@ defmodule E2eWeb.AccordionPlayLive do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+    <Layouts.app
+      flash={@flash}
+      mode={@mode}
+      theme={@theme}
+      locale={@locale}
+      current_path={@current_path}
+    >
       <div class="layout__row">
         <h1>Accordion</h1>
         <h2>Playground</h2>

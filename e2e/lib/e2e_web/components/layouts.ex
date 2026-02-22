@@ -20,7 +20,7 @@ defmodule E2eWeb.Layouts do
 
   ## Examples
 
-      <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+      <Layouts.app flash={@flash} mode={@mode} theme={@theme} locale={@locale} current_path={@current_path}>
         <h1>Content</h1>
       </Layouts.app>
 
@@ -28,6 +28,8 @@ defmodule E2eWeb.Layouts do
   attr :flash, :map, required: true, doc: "the map of flash messages"
 
   attr :mode, :string, default: "light", doc: "the mode (dark or light) from cookie/session"
+
+  attr :theme, :string, default: "neo", doc: "the theme (neo, uno, duo, leo) from cookie/session"
 
   attr :current_scope, :map,
     default: nil,
@@ -56,8 +58,8 @@ defmodule E2eWeb.Layouts do
 
     ~H"""
     <header class="layout__header">
-      <div class="layout__header__content">
-        <div class="layout__row gap-mini-gap">
+      <div class="layout__header__content px-1 sm:px-ui-padding">
+        <div class="layout__row gap-0 sm:gap-1">
           <.dialog id="menu-dialog" class="dialog dialog--side lg:hidden">
             <:trigger class="button button--sm button--circle rounded-full" aria_label="Open menu">
               <.icon name="hero-bars-3" class="icon" />
@@ -126,11 +128,12 @@ defmodule E2eWeb.Layouts do
                 fill="var(--color-layer--brand)"
               />
             </svg>
-            Corex
+            <span class="hidden md:block">Corex</span>
           </a>
         </div>
-        <div class="layout__row">
+        <div class="layout__row gap-0 sm:gap-1">
           <.locale_switcher :if={@locale} locale={@locale} current_path={@current_path} />
+          <.theme_toggle theme={@theme} />
           <.mode_toggle mode={@mode} />
         </div>
       </div>
@@ -253,6 +256,44 @@ defmodule E2eWeb.Layouts do
     """
   end
 
+  attr :theme, :string,
+    default: "neo",
+    values: ["neo", "uno", "duo", "leo"],
+    doc: "the theme from cookie/session"
+
+  @doc """
+  Provides theme selection using the select component.
+  """
+  def theme_toggle(assigns) do
+    ~H"""
+    <.select
+      id="theme-select"
+      class="select select--sm select--micro"
+      collection={[
+        %{id: "neo", label: "Neo"},
+        %{id: "uno", label: "Uno"},
+        %{id: "duo", label: "Duo"},
+        %{id: "leo", label: "Leo"}
+      ]}
+      value={[@theme]}
+      on_value_change_client="phx:set-theme"
+    >
+      <:label class="sr-only">
+        Theme
+      </:label>
+      <:item :let={item}>
+        {item.label}
+      </:item>
+      <:trigger>
+        <.icon name="hero-swatch" />
+      </:trigger>
+      <:item_indicator>
+        <.icon name="hero-check" />
+      </:item_indicator>
+    </.select>
+    """
+  end
+
   attr :mode, :string,
     default: "light",
     values: ["light", "dark"],
@@ -260,7 +301,6 @@ defmodule E2eWeb.Layouts do
 
   @doc """
   Provides dark vs light theme toggle using toggle_group.
-
   """
   def mode_toggle(assigns) do
     ~H"""
@@ -335,6 +375,14 @@ defmodule E2eWeb.Layouts do
         ]
       ],
       [
+        label: "Action",
+        id: "action",
+        children: [
+          [label: "Controller", id: "/#{locale}/action"],
+          [label: "Live", id: "/#{locale}/live/action"]
+        ]
+      ],
+      [
         label: "Angle Slider",
         id: "angle-slider",
         children: [
@@ -374,6 +422,14 @@ defmodule E2eWeb.Layouts do
         children: [
           [label: "Controller", id: "/#{locale}/clipboard"],
           [label: "Live", id: "/#{locale}/live/clipboard"]
+        ]
+      ],
+      [
+        label: "Code",
+        id: "code",
+        children: [
+          [label: "Controller", id: "/#{locale}/code"],
+          [label: "Live", id: "/#{locale}/live/code"]
         ]
       ],
       [
@@ -440,6 +496,14 @@ defmodule E2eWeb.Layouts do
         children: [
           [label: "Controller", id: "/#{locale}/menu"],
           [label: "Live", id: "/#{locale}/live/menu"]
+        ]
+      ],
+      [
+        label: "Navigate",
+        id: "navigate",
+        children: [
+          [label: "Controller", id: "/#{locale}/navigate"],
+          [label: "Live", id: "/#{locale}/live/navigate"]
         ]
       ],
       [

@@ -1,7 +1,7 @@
 import {
   createRect,
   getPointAngle
-} from "./chunk-FEZIYMNT.mjs";
+} from "./chunk-QHOSSHQC.mjs";
 import {
   Component,
   VanillaMachine,
@@ -11,6 +11,7 @@ import {
   createSplitProps,
   dataAttr,
   getBoolean,
+  getEventKey,
   getEventPoint,
   getEventStep,
   getNativeEvent,
@@ -22,9 +23,9 @@ import {
   setElementValue,
   snapValueToStep,
   trackPointerMove
-} from "./chunk-TZXIWZZ7.mjs";
+} from "./chunk-RUWIVFVB.mjs";
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.34.0/node_modules/@zag-js/angle-slider/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.34.1/node_modules/@zag-js/angle-slider/dist/index.mjs
 var anatomy = createAnatomy("angle-slider").parts(
   "root",
   "label",
@@ -47,13 +48,30 @@ var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 var getThumbEl = (ctx) => ctx.getById(getThumbId(ctx));
 var MIN_VALUE = 0;
 var MAX_VALUE = 359;
-function getAngle(controlEl, point, angularOffset) {
+function mirrorAngle(angle) {
+  return (360 - angle) % 360;
+}
+function getAngle(controlEl, point, angularOffset, dir) {
   const rect = createRect(controlEl.getBoundingClientRect());
-  const angle = getPointAngle(rect, point);
+  let angle = getPointAngle(rect, point);
   if (angularOffset != null) {
     return angle - angularOffset;
   }
+  if (dir === "rtl") {
+    angle = mirrorAngle(angle);
+  }
   return angle;
+}
+function getPointerValue(controlEl, point, angularOffset, value, dir) {
+  if (angularOffset == null) {
+    return getAngle(controlEl, point, null, dir);
+  }
+  const angle = getAngle(controlEl, point);
+  const clickAngle = value + angularOffset;
+  return dir === "rtl" ? value + clickAngle - angle : angle - angularOffset;
+}
+function getDisplayAngle(value, dir) {
+  return dir === "rtl" ? mirrorAngle(value) : value;
 }
 function clampAngle(degree) {
   return Math.min(Math.max(degree, MIN_VALUE), MAX_VALUE);
@@ -72,6 +90,8 @@ function connect(service, normalize) {
   const dragging = state.matches("dragging");
   const value = context.get("value");
   const valueAsDegree = computed("valueAsDegree");
+  const dir = prop("dir");
+  const displayAngle = getDisplayAngle(value, dir);
   const disabled = prop("disabled");
   const invalid = prop("invalid");
   const readOnly = prop("readOnly");
@@ -89,12 +109,13 @@ function connect(service, normalize) {
       return normalize.element({
         ...parts.root.attrs,
         id: getRootId(scope),
+        dir: prop("dir"),
         "data-disabled": dataAttr(disabled),
         "data-invalid": dataAttr(invalid),
         "data-readonly": dataAttr(readOnly),
         style: {
           "--value": value,
-          "--angle": valueAsDegree
+          "--angle": `${displayAngle}deg`
         }
       });
     },
@@ -103,6 +124,7 @@ function connect(service, normalize) {
         ...parts.label.attrs,
         id: getLabelId(scope),
         htmlFor: getHiddenInputId(scope),
+        dir: prop("dir"),
         "data-disabled": dataAttr(disabled),
         "data-invalid": dataAttr(invalid),
         "data-readonly": dataAttr(readOnly),
@@ -118,7 +140,8 @@ function connect(service, normalize) {
         type: "hidden",
         value,
         name: prop("name"),
-        id: getHiddenInputId(scope)
+        id: getHiddenInputId(scope),
+        dir: prop("dir")
       });
     },
     getControlProps() {
@@ -126,6 +149,7 @@ function connect(service, normalize) {
         ...parts.control.attrs,
         role: "presentation",
         id: getControlId(scope),
+        dir: prop("dir"),
         "data-disabled": dataAttr(disabled),
         "data-invalid": dataAttr(invalid),
         "data-readonly": dataAttr(readOnly),
@@ -157,6 +181,7 @@ function connect(service, normalize) {
         ...parts.thumb.attrs,
         id: getThumbId(scope),
         role: "slider",
+        dir: prop("dir"),
         "aria-label": ariaLabel,
         "aria-labelledby": ariaLabelledBy ?? getLabelId(scope),
         "aria-valuemax": 360,
@@ -175,25 +200,34 @@ function connect(service, normalize) {
         onKeyDown(event) {
           if (!interactive) return;
           const step = getEventStep(event) * prop("step");
-          switch (event.key) {
-            case "ArrowLeft":
-            case "ArrowUp":
-              event.preventDefault();
+          const keyMap = {
+            ArrowLeft() {
               send({ type: "THUMB.ARROW_DEC", step });
-              break;
-            case "ArrowRight":
-            case "ArrowDown":
-              event.preventDefault();
+            },
+            ArrowUp() {
+              send({ type: "THUMB.ARROW_DEC", step });
+            },
+            ArrowRight() {
               send({ type: "THUMB.ARROW_INC", step });
-              break;
-            case "Home":
-              event.preventDefault();
+            },
+            ArrowDown() {
+              send({ type: "THUMB.ARROW_INC", step });
+            },
+            Home() {
               send({ type: "THUMB.HOME" });
-              break;
-            case "End":
-              event.preventDefault();
+            },
+            End() {
               send({ type: "THUMB.END" });
-              break;
+            }
+          };
+          const key = getEventKey(event, {
+            dir: prop("dir"),
+            orientation: "horizontal"
+          });
+          const exec = keyMap[key];
+          if (exec) {
+            exec(event);
+            event.preventDefault();
           }
         },
         style: {
@@ -204,12 +238,14 @@ function connect(service, normalize) {
     getValueTextProps() {
       return normalize.element({
         ...parts.valueText.attrs,
-        id: getValueTextId(scope)
+        id: getValueTextId(scope),
+        dir: prop("dir")
       });
     },
     getMarkerGroupProps() {
       return normalize.element({
-        ...parts.markerGroup.attrs
+        ...parts.markerGroup.attrs,
+        dir: prop("dir")
       });
     },
     getMarkerProps(props2) {
@@ -221,14 +257,17 @@ function connect(service, normalize) {
       } else {
         markerState = "at-value";
       }
+      const markerDisplayAngle = getDisplayAngle(props2.value, dir);
       return normalize.element({
         ...parts.marker.attrs,
+        dir: prop("dir"),
         "data-value": props2.value,
         "data-state": markerState,
         "data-disabled": dataAttr(disabled),
         style: {
           "--marker-value": props2.value,
-          rotate: `calc(var(--marker-value) * 1deg)`
+          "--marker-display-value": markerDisplayAngle,
+          rotate: `calc(var(--marker-display-value) * 1deg)`
         }
       });
     }
@@ -352,7 +391,8 @@ var machine = createMachine({
         const controlEl = getControlEl(scope);
         if (!controlEl) return;
         const angularOffset = refs.get("thumbDragOffset");
-        const deg = getAngle(controlEl, event.point, angularOffset);
+        const value = context.get("value");
+        const deg = getPointerValue(controlEl, event.point, angularOffset, value, prop("dir"));
         context.set("value", constrainAngle(deg, prop("step")));
       },
       setValueToMin({ context }) {

@@ -3,12 +3,12 @@ import {
   ListCollection,
   Selection,
   isGridCollection
-} from "./chunk-4RWUEBEQ.mjs";
+} from "./chunk-KCOQB3RU.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-GXGJDSCU.mjs";
+} from "./chunk-2QLEEEGG.mjs";
 import {
   Component,
   VanillaMachine,
@@ -35,9 +35,9 @@ import {
   raf,
   scrollIntoView,
   setup
-} from "./chunk-TZXIWZZ7.mjs";
+} from "./chunk-RUWIVFVB.mjs";
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.34.0/node_modules/@zag-js/listbox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.34.1/node_modules/@zag-js/listbox/dist/index.mjs
 var anatomy = createAnatomy("listbox").parts(
   "label",
   "input",

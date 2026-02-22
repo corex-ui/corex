@@ -22,9 +22,9 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunk-TZXIWZZ7.mjs";
+} from "./chunk-RUWIVFVB.mjs";
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.34.0/node_modules/@zag-js/accordion/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.34.1/node_modules/@zag-js/accordion/dist/index.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
 var parts = anatomy.build();
 var getRootId = (ctx) => ctx.ids?.root ?? `accordion:${ctx.id}`;

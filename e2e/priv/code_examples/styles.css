@@ -1,0 +1,8 @@
+.greeting {
+  padding: 1rem;
+  background: var(--color-layer);
+}
+
+.greeting h1 {
+  font-size: 1.5rem;
+}

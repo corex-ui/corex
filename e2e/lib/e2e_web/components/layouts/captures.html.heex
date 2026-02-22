@@ -8,7 +8,7 @@
         else: "ltr"
       )
   }
-  data-theme="neo"
+  data-theme={assigns[:theme] || "neo"}
   data-mode={assigns[:mode]}
 >
   <head>
@@ -78,6 +78,24 @@
           const mode = Array.isArray(value) && value[0] ? value[0] : "light";
           setMode(mode);
         });
+
+        const validThemes = ["neo", "uno", "duo", "leo"];
+        const setTheme = (theme) => {
+          const resolved = validThemes.includes(theme) ? theme : "neo";
+          localStorage.setItem("phx:theme", resolved);
+          document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
+          document.documentElement.setAttribute("data-theme", resolved);
+        };
+
+        setTheme(localStorage.getItem("phx:theme") || document.documentElement.getAttribute("data-theme") || "neo");
+
+        window.addEventListener("storage", (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue));
+
+        window.addEventListener("phx:set-theme", (e) => {
+          const value = e.detail?.value;
+          const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
+          setTheme(theme);
+        });
       })();
     </script>
   </head>
@@ -100,6 +118,7 @@
           </a>
         </div>
         <div class="layout__row">
+          <.theme_toggle theme={assigns[:theme] || "neo"} />
           <.mode_toggle mode={@mode} />
           <div class="layout__row gap-ui-gap">
             <a

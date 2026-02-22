@@ -38,6 +38,13 @@ defmodule E2eWeb.PageHTML do
         ]
       ],
       [
+        label: "Code",
+        id: "code",
+        children: [
+          [label: "Controller", id: "/#{locale}/code"]
+        ]
+      ],
+      [
         label: "Collapsible",
         id: "collapsible",
         children: [

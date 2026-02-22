@@ -2,15 +2,34 @@ defmodule Corex do
   @moduledoc false
 
   @components %{
-    accordion:
-      {Corex.Accordion,
-       [
-         accordion: 1,
-         accordion_skeleton: 1
-       ]},
+    accordion: {Corex.Accordion, [accordion: 1, accordion_skeleton: 1]},
+    action: {Corex.Action, [action: 1]},
+    angle_slider: {Corex.AngleSlider, [angle_slider: 1]},
+    avatar: {Corex.Avatar, [avatar: 1]},
+    carousel: {Corex.Carousel, [carousel: 1]},
+    checkbox: {Corex.Checkbox, [checkbox: 1]},
+    clipboard: {Corex.Clipboard, [clipboard: 1]},
+    code: {Corex.Code, [code: 1]},
+    collapsible: {Corex.Collapsible, [collapsible: 1]},
     combobox: {Corex.Combobox, [combobox: 1]},
+    date_picker: {Corex.DatePicker, [date_picker: 1]},
+    dialog:
+      {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
+    editable: {Corex.Editable, [editable: 1]},
+    floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
+    form: {Corex.Form, [get_form_id: 1]},
+    listbox: {Corex.Listbox, [listbox: 1]},
+    menu: {Corex.Menu, [menu: 1]},
+    navigate: {Corex.Navigate, [navigate: 1]},
+    number_input: {Corex.NumberInput, [number_input: 1]},
+    password_input: {Corex.PasswordInput, [password_input: 1]},
+    pin_input: {Corex.PinInput, [pin_input: 1]},
+    radio_group: {Corex.RadioGroup, [radio_group: 1]},
+    select: {Corex.Select, [select: 1]},
+    signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
     switch: {Corex.Switch, [switch: 1]},
-    toggle_group: {Corex.ToggleGroup, [toggle_group: 1]},
+    tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]},
+    timer: {Corex.Timer, [timer: 1]},
     toast:
       {Corex.Toast,
        [
@@ -20,29 +39,8 @@ defmodule Corex do
          toast_connected: 1,
          toast_disconnected: 1
        ]},
-    form: {Corex.Form, [get_form_id: 1]},
-    select: {Corex.Select, [select: 1]},
-    checkbox: {Corex.Checkbox, [checkbox: 1]},
-    tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]},
-    clipboard: {Corex.Clipboard, [clipboard: 1]},
-    collapsible: {Corex.Collapsible, [collapsible: 1]},
-    dialog:
-      {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
-    date_picker: {Corex.DatePicker, [date_picker: 1]},
-    signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
-    menu: {Corex.Menu, [menu: 1]},
-    tree_view: {Corex.TreeView, [tree_view: 1, tree_item: 1, tree_branch: 1]},
-    angle_slider: {Corex.AngleSlider, [angle_slider: 1]},
-    avatar: {Corex.Avatar, [avatar: 1]},
-    carousel: {Corex.Carousel, [carousel: 1]},
-    editable: {Corex.Editable, [editable: 1]},
-    floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
-    listbox: {Corex.Listbox, [listbox: 1]},
-    number_input: {Corex.NumberInput, [number_input: 1]},
-    password_input: {Corex.PasswordInput, [password_input: 1]},
-    pin_input: {Corex.PinInput, [pin_input: 1]},
-    radio_group: {Corex.RadioGroup, [radio_group: 1]},
-    timer: {Corex.Timer, [timer: 1]}
+    toggle_group: {Corex.ToggleGroup, [toggle_group: 1]},
+    tree_view: {Corex.TreeView, [tree_view: 1, tree_item: 1, tree_branch: 1]}
   }
 
   defmacro __using__(opts \\ []) do
