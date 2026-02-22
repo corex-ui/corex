@@ -491,6 +491,14 @@ defmodule E2eWeb.Layouts do
         ]
       ],
       [
+        label: "Marquee",
+        id: "marquee",
+        children: [
+          [label: "Controller", id: "/#{locale}/marquee"],
+          [label: "Live", id: "/#{locale}/live/marquee"]
+        ]
+      ],
+      [
         label: "Menu",
         id: "menu",
         children: [

@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-TZXIWZZ7.mjs
+  // ../priv/static/chunk-RUWIVFVB.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -1235,16 +1235,16 @@ var Corex = (() => {
     }
     return filtered;
   }
-  function splitProps(props26, keys) {
+  function splitProps(props27, keys) {
     const rest = {};
     const result = {};
     const keySet = new Set(keys);
-    const ownKeys = Reflect.ownKeys(props26);
+    const ownKeys = Reflect.ownKeys(props27);
     for (const key of ownKeys) {
       if (keySet.has(key)) {
-        result[key] = props26[key];
+        result[key] = props27[key];
       } else {
-        rest[key] = props26[key];
+        rest[key] = props27[key];
       }
     }
     return [result, rest];
@@ -1287,41 +1287,41 @@ var Corex = (() => {
   function ensure(c2, m2) {
     if (c2 == null) throw new Error(m2());
   }
-  function ensureProps(props26, keys, scope) {
+  function ensureProps(props27, keys, scope) {
     let missingKeys = [];
     for (const key of keys) {
-      if (props26[key] == null) missingKeys.push(key);
+      if (props27[key] == null) missingKeys.push(key);
     }
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
   function mergeProps(...args) {
     let result = {};
-    for (let props26 of args) {
-      if (!props26) continue;
+    for (let props27 of args) {
+      if (!props27) continue;
       for (let key in result) {
-        if (key.startsWith("on") && typeof result[key] === "function" && typeof props26[key] === "function") {
-          result[key] = callAll(props26[key], result[key]);
+        if (key.startsWith("on") && typeof result[key] === "function" && typeof props27[key] === "function") {
+          result[key] = callAll(props27[key], result[key]);
           continue;
         }
         if (key === "className" || key === "class") {
-          result[key] = clsx(result[key], props26[key]);
+          result[key] = clsx(result[key], props27[key]);
           continue;
         }
         if (key === "style") {
-          result[key] = css(result[key], props26[key]);
+          result[key] = css(result[key], props27[key]);
           continue;
         }
-        result[key] = props26[key] !== void 0 ? props26[key] : result[key];
+        result[key] = props27[key] !== void 0 ? props27[key] : result[key];
       }
-      for (let key in props26) {
+      for (let key in props27) {
         if (result[key] === void 0) {
-          result[key] = props26[key];
+          result[key] = props27[key];
         }
       }
-      const symbols = Object.getOwnPropertySymbols(props26);
+      const symbols = Object.getOwnPropertySymbols(props27);
       for (let symbol of symbols) {
-        result[symbol] = props26[symbol];
+        result[symbol] = props27[symbol];
       }
     }
     return result;
@@ -1376,10 +1376,10 @@ var Corex = (() => {
       }
     };
   }
-  function createScope(props26) {
+  function createScope(props27) {
     const getRootNode2 = () => {
       var _a, _b;
-      return (_b = (_a = props26.getRootNode) == null ? void 0 : _a.call(props26)) != null ? _b : document;
+      return (_b = (_a = props27.getRootNode) == null ? void 0 : _a.call(props27)) != null ? _b : document;
     };
     const getDoc = () => getDocument(getRootNode2());
     const getWin = () => {
@@ -1388,7 +1388,7 @@ var Corex = (() => {
     };
     const getActiveElementFn = () => getActiveElement(getRootNode2());
     const getById = (id) => getRootNode2().getElementById(id);
-    return __spreadProps(__spreadValues({}, props26), {
+    return __spreadProps(__spreadValues({}, props27), {
       getRootNode: getRootNode2,
       getDoc,
       getWin,
@@ -1401,8 +1401,8 @@ var Corex = (() => {
     return new Proxy({}, {
       get(_target, key) {
         if (key === "style")
-          return (props26) => {
-            return fn({ style: props26 }).style;
+          return (props27) => {
+            return fn({ style: props27 }).style;
           };
         return fn;
       }
@@ -1536,40 +1536,40 @@ var Corex = (() => {
       }
     };
   }
-  function bindable(props26) {
+  function bindable(props27) {
     var _a, _b;
-    const initial = (_a = props26().value) != null ? _a : props26().defaultValue;
-    if (props26().debug) {
-      console.log(`[bindable > ${props26().debug}] initial`, initial);
+    const initial = (_a = props27().value) != null ? _a : props27().defaultValue;
+    if (props27().debug) {
+      console.log(`[bindable > ${props27().debug}] initial`, initial);
     }
-    const eq = (_b = props26().isEqual) != null ? _b : Object.is;
+    const eq = (_b = props27().isEqual) != null ? _b : Object.is;
     const store = proxy({ value: initial });
-    const controlled = () => props26().value !== void 0;
+    const controlled = () => props27().value !== void 0;
     return {
       initial,
       ref: store,
       get() {
-        return controlled() ? props26().value : store.value;
+        return controlled() ? props27().value : store.value;
       },
       set(nextValue) {
         var _a2, _b2;
         const prev2 = store.value;
         const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
-        if (props26().debug) {
-          console.log(`[bindable > ${props26().debug}] setValue`, { next: next2, prev: prev2 });
+        if (props27().debug) {
+          console.log(`[bindable > ${props27().debug}] setValue`, { next: next2, prev: prev2 });
         }
         if (!controlled()) store.value = next2;
         if (!eq(next2, prev2)) {
-          (_b2 = (_a2 = props26()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
+          (_b2 = (_a2 = props27()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
         }
       },
       invoke(nextValue, prevValue) {
         var _a2, _b2;
-        (_b2 = (_a2 = props26()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
+        (_b2 = (_a2 = props27()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
       },
       hash(value) {
         var _a2, _b2, _c;
-        return (_c = (_b2 = (_a2 = props26()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
+        return (_c = (_b2 = (_a2 = props27()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
       }
     };
   }
@@ -1604,8 +1604,8 @@ var Corex = (() => {
     return result;
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, floor, abs, round, min, max, pow, sign, isNaN2, nan, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, clampValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, countDecimals, decimalOp, incrementValue, decrementValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
-  var init_chunk_TZXIWZZ7 = __esm({
-    "../priv/static/chunk-TZXIWZZ7.mjs"() {
+  var init_chunk_RUWIVFVB = __esm({
+    "../priv/static/chunk-RUWIVFVB.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1638,18 +1638,18 @@ var Corex = (() => {
         if (element == null ? void 0 : element.id) return element.id;
         return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
       };
-      createAnatomy = (name, parts27 = []) => ({
+      createAnatomy = (name, parts28 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts27)) {
+          if (isEmpty(parts28)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts27, ...values]),
-        omit: (...values) => createAnatomy(name, parts27.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts27),
-        keys: () => parts27,
-        build: () => [...new Set(parts27)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts28, ...values]),
+        omit: (...values) => createAnatomy(name, parts28.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts28),
+        keys: () => parts28,
+        build: () => [...new Set(parts28)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -2004,8 +2004,8 @@ var Corex = (() => {
       decrementValue = (v2, s2) => decimalOp(nan(v2), "-", s2);
       toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
       createSplitProps = (keys) => {
-        return function split(props26) {
-          return splitProps(props26, keys);
+        return function split(props27) {
+          return splitProps(props27, keys);
         };
       };
       currentTime = () => performance.now();
@@ -2093,7 +2093,7 @@ var Corex = (() => {
         return MachineStatus2;
       })(MachineStatus || {});
       INIT_STATE = "__init__";
-      createProps = () => (props26) => Array.from(new Set(props26));
+      createProps = () => (props27) => Array.from(new Set(props27));
       TRACK_MEMO_SYMBOL = Symbol();
       GET_ORIGINAL_SYMBOL = Symbol();
       getProto = Object.getPrototypeOf;
@@ -2306,8 +2306,8 @@ var Corex = (() => {
         }
         return string;
       };
-      normalizeProps = createNormalizer((props26) => {
-        return Object.entries(props26).reduce((acc, [key, value]) => {
+      normalizeProps = createNormalizer((props27) => {
+        return Object.entries(props27).reduce((acc, [key, value]) => {
           if (value === void 0) return acc;
           if (key in propMap) {
             key = propMap[key];
@@ -2355,9 +2355,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine27, userProps = {}) {
+        constructor(machine28, userProps = {}) {
           var _a, _b, _c;
-          this.machine = machine27;
+          this.machine = machine28;
           __publicField3(this, "scope");
           __publicField3(this, "context");
           __publicField3(this, "prop");
@@ -2509,11 +2509,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a2, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props26 = (_b2 = (_a2 = machine27.props) == null ? void 0 : _a2.call(machine27, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
-            return props26[key];
+            const props27 = (_b2 = (_a2 = machine28.props) == null ? void 0 : _a2.call(machine28, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            return props27[key];
           };
           this.prop = prop;
-          const context = (_a = machine27.context) == null ? void 0 : _a.call(machine27, {
+          const context = (_a = machine28.context) == null ? void 0 : _a.call(machine28, {
             prop,
             bindable,
             scope: this.scope,
@@ -2555,7 +2555,7 @@ var Corex = (() => {
           this.context = ctx;
           const computed = (key) => {
             var _a2, _b2;
-            return (_b2 = (_a2 = machine27.computed) == null ? void 0 : _a2[key]({
+            return (_b2 = (_a2 = machine28.computed) == null ? void 0 : _a2[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2565,10 +2565,10 @@ var Corex = (() => {
             })) != null ? _b2 : {};
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine27.refs) == null ? void 0 : _b.call(machine27, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine28.refs) == null ? void 0 : _b.call(machine28, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: machine27.initialState({ prop }),
+            defaultValue: machine28.initialState({ prop }),
             onChange: (nextState, prevState) => {
               var _a2, _b2, _c2, _d;
               if (prevState) {
@@ -2583,8 +2583,8 @@ var Corex = (() => {
               const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
               if (cleanup) this.effects.set(nextState, cleanup);
               if (prevState === INIT_STATE) {
-                this.action(machine27.entry);
-                const cleanup2 = this.effect(machine27.effects);
+                this.action(machine28.entry);
+                const cleanup2 = this.effect(machine28.effects);
                 if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
               }
               this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
@@ -2634,7 +2634,7 @@ var Corex = (() => {
         }
       };
       Component = class {
-        constructor(el, props26) {
+        constructor(el, props27) {
           __publicField(this, "el");
           __publicField(this, "doc");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2651,16 +2651,16 @@ var Corex = (() => {
           __publicField(this, "destroy", () => {
             this.machine.stop();
           });
-          __publicField(this, "spreadProps", (el, props26) => {
-            spreadProps(el, props26, this.machine.scope.id);
+          __publicField(this, "spreadProps", (el, props27) => {
+            spreadProps(el, props27, this.machine.scope.id);
           });
-          __publicField(this, "updateProps", (props26) => {
-            this.machine.updateProps(props26);
+          __publicField(this, "updateProps", (props27) => {
+            this.machine.updateProps(props27);
           });
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
-          this.machine = this.initMachine(props26);
+          this.machine = this.initMachine(props27);
           this.api = this.initApi();
         }
       };
@@ -2684,12 +2684,12 @@ var Corex = (() => {
       }
       send({ type: "VALUE.SET", value: nextValue });
     }
-    function getItemState(props26) {
+    function getItemState(props27) {
       var _a;
       return {
-        expanded: value.includes(props26.value),
-        focused: focusedValue === props26.value,
-        disabled: Boolean((_a = props26.disabled) != null ? _a : prop("disabled"))
+        expanded: value.includes(props27.value),
+        focused: focusedValue === props27.value,
+        disabled: Boolean((_a = props27.disabled) != null ? _a : prop("disabled"))
       };
     }
     return {
@@ -2704,24 +2704,24 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemProps(props26) {
-        const itemState = getItemState(props26);
+      getItemProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts.item.attrs), {
           dir: prop("dir"),
-          id: getItemId(scope, props26.value),
+          id: getItemId(scope, props27.value),
           "data-state": itemState.expanded ? "open" : "closed",
           "data-focus": dataAttr(itemState.focused),
           "data-disabled": dataAttr(itemState.disabled),
           "data-orientation": prop("orientation")
         }));
       },
-      getItemContentProps(props26) {
-        const itemState = getItemState(props26);
+      getItemContentProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts.itemContent.attrs), {
           dir: prop("dir"),
           role: "region",
-          id: getItemContentId(scope, props26.value),
-          "aria-labelledby": getItemTriggerId(scope, props26.value),
+          id: getItemContentId(scope, props27.value),
+          "aria-labelledby": getItemTriggerId(scope, props27.value),
           hidden: !itemState.expanded,
           "data-state": itemState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(itemState.disabled),
@@ -2729,8 +2729,8 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemIndicatorProps(props26) {
-        const itemState = getItemState(props26);
+      getItemIndicatorProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts.itemIndicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
@@ -2740,9 +2740,9 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemTriggerProps(props26) {
-        const { value: value2 } = props26;
-        const itemState = getItemState(props26);
+      getItemTriggerProps(props27) {
+        const { value: value2 } = props27;
+        const itemState = getItemState(props27);
         return normalize.button(__spreadProps(__spreadValues({}, parts.itemTrigger.attrs), {
           type: "button",
           dir: prop("dir"),
@@ -2815,7 +2815,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2846,13 +2846,13 @@ var Corex = (() => {
       getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
       ({ and, not } = createGuards());
       machine = createMachine({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadValues({
             collapsible: false,
             multiple: false,
             orientation: "vertical",
             defaultValue: []
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "idle";
@@ -2996,8 +2996,8 @@ var Corex = (() => {
       splitItemProps = createSplitProps(itemProps);
       Accordion = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine, props27);
         }
         initApi() {
           return connect(this.machine.service, normalizeProps);
@@ -3168,7 +3168,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-FEZIYMNT.mjs
+  // ../priv/static/chunk-QHOSSHQC.mjs
   function getPointAngle(rect, point, reference = rect.center) {
     const x2 = point.x - reference.x;
     const y2 = point.y - reference.y;
@@ -3356,8 +3356,8 @@ var Corex = (() => {
     return createRectFromPoints(p1, p2, normalized);
   }
   var __defProp4, __defNormalProp4, __publicField4, AffineTransform, clamp2, clampPoint, defaultMinSize, defaultMaxSize, clampSize, createPoint, subtractPoints, addPoints, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, min2, max2, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min22;
-  var init_chunk_FEZIYMNT = __esm({
-    "../priv/static/chunk-FEZIYMNT.mjs"() {
+  var init_chunk_QHOSSHQC = __esm({
+    "../priv/static/chunk-QHOSSHQC.mjs"() {
       "use strict";
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -3595,13 +3595,30 @@ var Corex = (() => {
   __export(angle_slider_exports, {
     AngleSlider: () => AngleSliderHook
   });
-  function getAngle(controlEl, point, angularOffset) {
+  function mirrorAngle(angle) {
+    return (360 - angle) % 360;
+  }
+  function getAngle(controlEl, point, angularOffset, dir) {
     const rect = createRect(controlEl.getBoundingClientRect());
-    const angle = getPointAngle(rect, point);
+    let angle = getPointAngle(rect, point);
     if (angularOffset != null) {
       return angle - angularOffset;
     }
+    if (dir === "rtl") {
+      angle = mirrorAngle(angle);
+    }
     return angle;
+  }
+  function getPointerValue(controlEl, point, angularOffset, value, dir) {
+    if (angularOffset == null) {
+      return getAngle(controlEl, point, null, dir);
+    }
+    const angle = getAngle(controlEl, point);
+    const clickAngle = value + angularOffset;
+    return dir === "rtl" ? value + clickAngle - angle : angle - angularOffset;
+  }
+  function getDisplayAngle(value, dir) {
+    return dir === "rtl" ? mirrorAngle(value) : value;
   }
   function clampAngle(degree) {
     return Math.min(Math.max(degree, MIN_VALUE), MAX_VALUE);
@@ -3620,6 +3637,8 @@ var Corex = (() => {
     const dragging = state2.matches("dragging");
     const value = context.get("value");
     const valueAsDegree = computed("valueAsDegree");
+    const dir = prop("dir");
+    const displayAngle = getDisplayAngle(value, dir);
     const disabled = prop("disabled");
     const invalid = prop("invalid");
     const readOnly = prop("readOnly");
@@ -3636,12 +3655,13 @@ var Corex = (() => {
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts2.root.attrs), {
           id: getRootId2(scope),
+          dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
           style: {
             "--value": value,
-            "--angle": valueAsDegree
+            "--angle": `${displayAngle}deg`
           }
         }));
       },
@@ -3649,6 +3669,7 @@ var Corex = (() => {
         return normalize.label(__spreadProps(__spreadValues({}, parts2.label.attrs), {
           id: getLabelId(scope),
           htmlFor: getHiddenInputId(scope),
+          dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -3665,13 +3686,15 @@ var Corex = (() => {
           type: "hidden",
           value,
           name: prop("name"),
-          id: getHiddenInputId(scope)
+          id: getHiddenInputId(scope),
+          dir: prop("dir")
         });
       },
       getControlProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts2.control.attrs), {
           role: "presentation",
           id: getControlId(scope),
+          dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -3702,6 +3725,7 @@ var Corex = (() => {
         return normalize.element(__spreadProps(__spreadValues({}, parts2.thumb.attrs), {
           id: getThumbId(scope),
           role: "slider",
+          dir: prop("dir"),
           "aria-label": ariaLabel,
           "aria-labelledby": ariaLabelledBy != null ? ariaLabelledBy : getLabelId(scope),
           "aria-valuemax": 360,
@@ -3720,25 +3744,34 @@ var Corex = (() => {
           onKeyDown(event) {
             if (!interactive) return;
             const step = getEventStep(event) * prop("step");
-            switch (event.key) {
-              case "ArrowLeft":
-              case "ArrowUp":
-                event.preventDefault();
+            const keyMap2 = {
+              ArrowLeft() {
                 send({ type: "THUMB.ARROW_DEC", step });
-                break;
-              case "ArrowRight":
-              case "ArrowDown":
-                event.preventDefault();
+              },
+              ArrowUp() {
+                send({ type: "THUMB.ARROW_DEC", step });
+              },
+              ArrowRight() {
                 send({ type: "THUMB.ARROW_INC", step });
-                break;
-              case "Home":
-                event.preventDefault();
+              },
+              ArrowDown() {
+                send({ type: "THUMB.ARROW_INC", step });
+              },
+              Home() {
                 send({ type: "THUMB.HOME" });
-                break;
-              case "End":
-                event.preventDefault();
+              },
+              End() {
                 send({ type: "THUMB.END" });
-                break;
+              }
+            };
+            const key = getEventKey(event, {
+              dir: prop("dir"),
+              orientation: "horizontal"
+            });
+            const exec = keyMap2[key];
+            if (exec) {
+              exec(event);
+              event.preventDefault();
             }
           },
           style: {
@@ -3748,28 +3781,34 @@ var Corex = (() => {
       },
       getValueTextProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts2.valueText.attrs), {
-          id: getValueTextId(scope)
+          id: getValueTextId(scope),
+          dir: prop("dir")
         }));
       },
       getMarkerGroupProps() {
-        return normalize.element(__spreadValues({}, parts2.markerGroup.attrs));
+        return normalize.element(__spreadProps(__spreadValues({}, parts2.markerGroup.attrs), {
+          dir: prop("dir")
+        }));
       },
-      getMarkerProps(props26) {
+      getMarkerProps(props27) {
         let markerState;
-        if (props26.value < value) {
+        if (props27.value < value) {
           markerState = "under-value";
-        } else if (props26.value > value) {
+        } else if (props27.value > value) {
           markerState = "over-value";
         } else {
           markerState = "at-value";
         }
+        const markerDisplayAngle = getDisplayAngle(props27.value, dir);
         return normalize.element(__spreadProps(__spreadValues({}, parts2.marker.attrs), {
-          "data-value": props26.value,
+          dir: prop("dir"),
+          "data-value": props27.value,
           "data-state": markerState,
           "data-disabled": dataAttr(disabled),
           style: {
-            "--marker-value": props26.value,
-            rotate: `calc(var(--marker-value) * 1deg)`
+            "--marker-value": props27.value,
+            "--marker-display-value": markerDisplayAngle,
+            rotate: `calc(var(--marker-display-value) * 1deg)`
           }
         }));
       }
@@ -3779,8 +3818,8 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_FEZIYMNT();
-      init_chunk_TZXIWZZ7();
+      init_chunk_QHOSSHQC();
+      init_chunk_RUWIVFVB();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -3822,11 +3861,11 @@ var Corex = (() => {
       MIN_VALUE = 0;
       MAX_VALUE = 359;
       machine2 = createMachine({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadValues({
             step: 1,
             defaultValue: 0
-          }, props26);
+          }, props27);
         },
         context({ prop, bindable: bindable2 }) {
           return {
@@ -3940,7 +3979,8 @@ var Corex = (() => {
               const controlEl = getControlEl(scope);
               if (!controlEl) return;
               const angularOffset = refs.get("thumbDragOffset");
-              const deg = getAngle(controlEl, event.point, angularOffset);
+              const value = context.get("value");
+              const deg = getPointerValue(controlEl, event.point, angularOffset, value, prop("dir"));
               context.set("value", constrainAngle(deg, prop("step")));
             },
             setValueToMin({ context }) {
@@ -3998,8 +4038,8 @@ var Corex = (() => {
       splitProps3 = createSplitProps(props2);
       AngleSlider = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine2, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine2, props27);
         }
         initApi() {
           return connect2(this.machine.service, normalizeProps);
@@ -4224,7 +4264,7 @@ var Corex = (() => {
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4333,8 +4373,8 @@ var Corex = (() => {
       splitProps4 = createSplitProps(props3);
       Avatar = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine3, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine3, props27);
         }
         initApi() {
           return connect3(this.machine.service, normalizeProps);
@@ -4684,27 +4724,27 @@ var Corex = (() => {
           }
         }));
       },
-      getItemProps(props26) {
-        const isInView = context.get("slidesInView").includes(props26.index);
+      getItemProps(props27) {
+        const isInView = context.get("slidesInView").includes(props27.index);
         return normalize.element(__spreadProps(__spreadValues({}, parts4.item.attrs), {
-          id: getItemId2(scope, props26.index),
+          id: getItemId2(scope, props27.index),
           dir: prop("dir"),
           role: "group",
-          "data-index": props26.index,
+          "data-index": props27.index,
           "data-inview": dataAttr(isInView),
           "aria-roledescription": "slide",
           "data-orientation": prop("orientation"),
-          "aria-label": translations.item(props26.index, prop("slideCount")),
+          "aria-label": translations.item(props27.index, prop("slideCount")),
           "aria-hidden": ariaAttr(!isInView),
           style: {
             flex: "0 0 auto",
             [horizontal ? "maxWidth" : "maxHeight"]: "100%",
             scrollSnapAlign: (() => {
               var _a;
-              const snapAlign = (_a = props26.snapAlign) != null ? _a : "start";
+              const snapAlign = (_a = props27.snapAlign) != null ? _a : "start";
               const slidesPerMove = prop("slidesPerMove");
               const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
-              const shouldSnap = (props26.index + perMove) % perMove === 0;
+              const shouldSnap = (props27.index + perMove) % perMove === 0;
               return shouldSnap ? snapAlign : void 0;
             })()
           }
@@ -4792,20 +4832,20 @@ var Corex = (() => {
           }
         }));
       },
-      getIndicatorProps(props26) {
+      getIndicatorProps(props27) {
         return normalize.button(__spreadProps(__spreadValues({}, parts4.indicator.attrs), {
           dir: prop("dir"),
-          id: getIndicatorId(scope, props26.index),
+          id: getIndicatorId(scope, props27.index),
           type: "button",
           "data-orientation": prop("orientation"),
-          "data-index": props26.index,
-          "data-readonly": dataAttr(props26.readOnly),
-          "data-current": dataAttr(props26.index === page),
-          "aria-label": translations.indicator(props26.index),
+          "data-index": props27.index,
+          "data-readonly": dataAttr(props27.readOnly),
+          "data-current": dataAttr(props27.index === page),
+          "aria-label": translations.indicator(props27.index),
           onClick(event) {
             if (event.defaultPrevented) return;
-            if (props26.readOnly) return;
-            send({ type: "PAGE.SET", index: props26.index, src: "indicator" });
+            if (props27.readOnly) return;
+            send({ type: "PAGE.SET", index: props27.index, src: "indicator" });
           }
         }));
       },
@@ -4845,7 +4885,7 @@ var Corex = (() => {
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       getDirection = (element) => getComputedStyle2(element).direction;
       uniq2 = (arr) => [...new Set(arr)];
       clamp3 = (min4, max4) => (value) => Math.max(min4, Math.min(max4, value));
@@ -4900,14 +4940,14 @@ var Corex = (() => {
         el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
       };
       machine4 = createMachine({
-        props({ props: props26 }) {
-          ensureProps(props26, ["slideCount"], "carousel");
+        props({ props: props27 }) {
+          ensureProps(props27, ["slideCount"], "carousel");
           return __spreadProps(__spreadValues({
             dir: "ltr",
             defaultPage: 0,
             orientation: "horizontal",
             snapType: "mandatory",
-            loop: !!props26.autoplay,
+            loop: !!props27.autoplay,
             slidesPerPage: 1,
             slidesPerMove: "auto",
             spacing: "0px",
@@ -4915,7 +4955,7 @@ var Corex = (() => {
             allowMouseDrag: false,
             inViewThreshold: 0.6,
             autoSize: false
-          }, props26), {
+          }, props27), {
             translations: __spreadValues({
               nextTrigger: "Next slide",
               prevTrigger: "Previous slide",
@@ -4924,7 +4964,7 @@ var Corex = (() => {
               autoplayStart: "Start slide rotation",
               autoplayStop: "Stop slide rotation",
               progressText: ({ page, totalPages }) => `${page} / ${totalPages}`
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         refs() {
@@ -5386,8 +5426,8 @@ var Corex = (() => {
       splitItemProps2 = createSplitProps(itemProps2);
       Carousel = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine4, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine4, props27);
         }
         initApi() {
           return connect4(this.machine.service, normalizeProps);
@@ -5526,7 +5566,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-GXGJDSCU.mjs
+  // ../priv/static/chunk-2QLEEEGG.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -5630,8 +5670,8 @@ var Corex = (() => {
   function isFocusVisible() {
     return currentModality === "keyboard" || currentModality === "virtual";
   }
-  function trackFocusVisible(props26 = {}) {
-    const { isTextInput, autoFocus, onChange, root } = props26;
+  function trackFocusVisible(props27 = {}) {
+    const { isTextInput, autoFocus, onChange, root } = props27;
     setupGlobalFocusEvents(root);
     onChange == null ? void 0 : onChange({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
     const handler = (modality, e2) => {
@@ -5644,10 +5684,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_GXGJDSCU = __esm({
-    "../priv/static/chunk-GXGJDSCU.mjs"() {
+  var init_chunk_2QLEEEGG = __esm({
+    "../priv/static/chunk-2QLEEEGG.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -5813,8 +5853,8 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -5837,12 +5877,12 @@ var Corex = (() => {
       getHiddenInputEl2 = (ctx) => ctx.getById(getHiddenInputId2(ctx));
       ({ not: not2 } = createGuards());
       machine5 = createMachine({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           var _a;
           return __spreadProps(__spreadValues({
             value: "on"
-          }, props26), {
-            defaultChecked: (_a = props26.defaultChecked) != null ? _a : false
+          }, props27), {
+            defaultChecked: (_a = props27.defaultChecked) != null ? _a : false
           });
         },
         initialState() {
@@ -5990,8 +6030,8 @@ var Corex = (() => {
       splitProps6 = createSplitProps(props5);
       Checkbox = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine5, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine5, props27);
         }
         initApi() {
           return connect5(this.machine.service, normalizeProps);
@@ -6247,9 +6287,9 @@ var Corex = (() => {
           }
         }));
       },
-      getIndicatorProps(props26) {
+      getIndicatorProps(props27) {
         return normalize.element(__spreadProps(__spreadValues({}, parts6.indicator.attrs), {
-          hidden: props26.copied !== copied
+          hidden: props27.copied !== copied
         }));
       }
     };
@@ -6258,7 +6298,7 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6276,11 +6316,11 @@ var Corex = (() => {
       getInputEl = (ctx) => ctx.getById(getInputId(ctx));
       writeToClipboard = (ctx, value) => copyText(ctx.getDoc(), value);
       machine6 = createMachine({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadValues({
             timeout: 3e3,
             defaultValue: ""
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "idle";
@@ -6378,8 +6418,8 @@ var Corex = (() => {
       splitIndicatorProps2 = createSplitProps(indicatorProps2);
       Clipboard = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine6, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine6, props27);
         }
         initApi() {
           return connect6(this.machine.service, normalizeProps);
@@ -6618,7 +6658,7 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6900,8 +6940,8 @@ var Corex = (() => {
       splitProps7 = createSplitProps(props7);
       Collapsible = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine7, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine7, props27);
         }
         initApi() {
           return connect7(this.machine.service, normalizeProps);
@@ -7009,7 +7049,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-4RWUEBEQ.mjs
+  // ../priv/static/chunk-KCOQB3RU.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -7354,10 +7394,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_4RWUEBEQ = __esm({
-    "../priv/static/chunk-4RWUEBEQ.mjs"() {
+  var init_chunk_KCOQB3RU = __esm({
+    "../priv/static/chunk-KCOQB3RU.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -8354,7 +8394,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-LOW5KGCT.mjs
+  // ../priv/static/chunk-GN3NEUUU.mjs
   function clamp4(start, value, end) {
     return max3(start, min3(value, end));
   }
@@ -9635,10 +9675,10 @@ var Corex = (() => {
     };
   }
   var sides, min3, max3, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_LOW5KGCT = __esm({
-    "../priv/static/chunk-LOW5KGCT.mjs"() {
+  var init_chunk_GN3NEUUU = __esm({
+    "../priv/static/chunk-GN3NEUUU.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       sides = ["top", "right", "bottom", "left"];
       min3 = Math.min;
       max3 = Math.max;
@@ -10341,7 +10381,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-OSSFSUET.mjs
+  // ../priv/static/chunk-EBQGC3XC.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10558,17 +10598,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_OSSFSUET = __esm({
-    "../priv/static/chunk-OSSFSUET.mjs"() {
+  var init_chunk_EBQGC3XC = __esm({
+    "../priv/static/chunk-EBQGC3XC.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-NF3CDGDL.mjs
+  // ../priv/static/chunk-OA4F3YDQ.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10727,11 +10767,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_NF3CDGDL = __esm({
-    "../priv/static/chunk-NF3CDGDL.mjs"() {
+  var init_chunk_OA4F3YDQ = __esm({
+    "../priv/static/chunk-OA4F3YDQ.mjs"() {
       "use strict";
-      init_chunk_OSSFSUET();
-      init_chunk_TZXIWZZ7();
+      init_chunk_EBQGC3XC();
+      init_chunk_RUWIVFVB();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10876,10 +10916,10 @@ var Corex = (() => {
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: context.get("currentPlacement")
     }));
-    function getItemState(props26) {
-      const itemDisabled = collection22.getItemDisabled(props26.item);
-      const value = collection22.getItemValue(props26.item);
-      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
+    function getItemState(props27) {
+      const itemDisabled = collection22.getItemDisabled(props27.item);
+      const value = collection22.getItemValue(props27.item);
+      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props27.item)}`);
       return {
         value,
         disabled: Boolean(disabled || itemDisabled),
@@ -11080,24 +11120,24 @@ var Corex = (() => {
           }
         }));
       },
-      getTriggerProps(props26 = {}) {
+      getTriggerProps(props27 = {}) {
         return normalize.button(__spreadProps(__spreadValues({}, parts8.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId2(scope),
           "aria-haspopup": composite ? "listbox" : "dialog",
           type: "button",
-          tabIndex: props26.focusable ? void 0 : -1,
+          tabIndex: props27.focusable ? void 0 : -1,
           "aria-label": translations.triggerLabel,
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
           "aria-controls": open ? getContentId2(scope) : void 0,
           disabled,
           "data-invalid": dataAttr(invalid),
-          "data-focusable": dataAttr(props26.focusable),
+          "data-focusable": dataAttr(props27.focusable),
           "data-readonly": dataAttr(readOnly),
           "data-disabled": dataAttr(disabled),
           onFocus() {
-            if (!props26.focusable) return;
+            if (!props27.focusable) return;
             send({ type: "INPUT.FOCUS", src: "trigger" });
           },
           onClick(event2) {
@@ -11184,8 +11224,8 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props26) {
-        const itemState = getItemState(props26);
+      getItemProps(props27) {
+        const itemState = getItemState(props27);
         const value = itemState.value;
         return normalize.element(__spreadProps(__spreadValues({}, parts8.item.attrs), {
           dir: prop("dir"),
@@ -11204,7 +11244,7 @@ var Corex = (() => {
             send({ type: "ITEM.POINTER_MOVE", value });
           },
           onPointerLeave() {
-            if (props26.persistFocus) return;
+            if (props27.persistFocus) return;
             if (itemState.disabled) return;
             const prev2 = event.previous();
             const mouseMoved = prev2 == null ? void 0 : prev2.type.includes("POINTER");
@@ -11220,8 +11260,8 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props26) {
-        const itemState = getItemState(props26);
+      getItemTextProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
           dir: prop("dir"),
           "data-state": itemState.selected ? "checked" : "unchecked",
@@ -11229,8 +11269,8 @@ var Corex = (() => {
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props26) {
-        const itemState = getItemState(props26);
+      getItemIndicatorProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
         }, parts8.itemIndicator.attrs), {
@@ -11239,8 +11279,8 @@ var Corex = (() => {
           hidden: !itemState.selected
         }));
       },
-      getItemGroupProps(props26) {
-        const { id } = props26;
+      getItemGroupProps(props27) {
+        const { id } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
           dir: prop("dir"),
           id: getItemGroupId2(scope, id),
@@ -11249,8 +11289,8 @@ var Corex = (() => {
           role: "group"
         }));
       },
-      getItemGroupLabelProps(props26) {
-        const { htmlFor } = props26;
+      getItemGroupLabelProps(props27) {
+        const { htmlFor } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
           dir: prop("dir"),
           id: getItemGroupLabelId(scope, htmlFor),
@@ -11277,12 +11317,12 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_4RWUEBEQ();
-      init_chunk_LOW5KGCT();
-      init_chunk_NF3CDGDL();
-      init_chunk_OSSFSUET();
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
+      init_chunk_KCOQB3RU();
+      init_chunk_GN3NEUUU();
+      init_chunk_OA4F3YDQ();
+      init_chunk_EBQGC3XC();
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -11376,17 +11416,17 @@ var Corex = (() => {
       ({ guards, createMachine: createMachine2, choose } = setup());
       ({ and: and2, not: not3 } = guards);
       machine8 = createMachine2({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             loopFocus: true,
             openOnClick: false,
             defaultValue: [],
             defaultInputValue: "",
-            closeOnSelect: !props26.multiple,
+            closeOnSelect: !props27.multiple,
             allowCustomValue: false,
             alwaysSubmitOnEnter: false,
             inputBehavior: "none",
-            selectionBehavior: props26.multiple ? "clear" : "replace",
+            selectionBehavior: props27.multiple ? "clear" : "replace",
             openOnKeyPress: true,
             openOnChange: true,
             composite: true,
@@ -11394,15 +11434,15 @@ var Corex = (() => {
               clickIfLink(node);
             },
             collection: collection.empty()
-          }, props26), {
+          }, props27), {
             positioning: __spreadValues({
               placement: "bottom",
               sameWidth: true
-            }, props26.positioning),
+            }, props27.positioning),
             translations: __spreadValues({
               triggerLabel: "Toggle suggestions",
               clearTriggerLabel: "Clear value"
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         initialState({ prop }) {
@@ -12517,9 +12557,9 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
+        initMachine(props27) {
           const getCollection = () => this.getCollection();
-          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props26), {
+          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props27), {
             get collection() {
               return getCollection();
             },
@@ -12527,13 +12567,13 @@ var Corex = (() => {
               if (details.open) {
                 this.options = this.allOptions;
               }
-              if (props26.onOpenChange) {
-                props26.onOpenChange(details);
+              if (props27.onOpenChange) {
+                props27.onOpenChange(details);
               }
             },
             onInputValueChange: (details) => {
-              if (props26.onInputValueChange) {
-                props26.onInputValueChange(details);
+              if (props27.onInputValueChange) {
+                props27.onInputValueChange(details);
               }
               if (this.el.hasAttribute("data-filter")) {
                 const filtered = this.allOptions.filter(
@@ -12686,7 +12726,7 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const props26 = __spreadProps(__spreadValues({
+          const props27 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             disabled: getBoolean(el, "disabled"),
@@ -12795,7 +12835,7 @@ var Corex = (() => {
               }
             }
           });
-          const combobox = new Combobox(el, props26);
+          const combobox = new Combobox(el, props27);
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
@@ -13074,9 +13114,9 @@ var Corex = (() => {
       });
       $11d87f3f76e88657$var$formattersByTimeZone.set(timeZone, formatter);
     }
-    let parts27 = formatter.formatToParts(new Date(ms));
+    let parts28 = formatter.formatToParts(new Date(ms));
     let namedParts = {};
-    for (let part of parts27) if (part.type !== "literal") namedParts[part.type] = part.value;
+    for (let part of parts28) if (part.type !== "literal") namedParts[part.type] = part.value;
     return {
       // Firefox returns B instead of BC... https://bugzilla.mozilla.org/show_bug.cgi?id=1752253
       year: namedParts.era === "BC" || namedParts.era === "B" ? -namedParts.year + 1 : +namedParts.year,
@@ -13097,8 +13137,8 @@ var Corex = (() => {
     return found.filter((absolute) => $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute));
   }
   function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
-    let parts27 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
-    return date.year === parts27.year && date.month === parts27.month && date.day === parts27.day && date.hour === parts27.hour && date.minute === parts27.minute && date.second === parts27.second;
+    let parts28 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
+    return date.year === parts28.year && date.month === parts28.month && date.day === parts28.day && date.hour === parts28.hour && date.minute === parts28.minute && date.second === parts28.second;
   }
   function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
     let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
@@ -13723,10 +13763,10 @@ var Corex = (() => {
     });
   }
   function formatRange(startDate, endDate, formatter, toString, timeZone) {
-    let parts27 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
+    let parts28 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
     let separatorIndex = -1;
-    for (let i2 = 0; i2 < parts27.length; i2++) {
-      let part = parts27[i2];
+    for (let i2 = 0; i2 < parts28.length; i2++) {
+      let part = parts28[i2];
       if (part.source === "shared" && part.type === "literal") {
         separatorIndex = i2;
       } else if (part.source === "endRange") {
@@ -13735,11 +13775,11 @@ var Corex = (() => {
     }
     let start = "";
     let end = "";
-    for (let i2 = 0; i2 < parts27.length; i2++) {
+    for (let i2 = 0; i2 < parts28.length; i2++) {
       if (i2 < separatorIndex) {
-        start += parts27[i2].value;
+        start += parts28[i2].value;
       } else if (i2 > separatorIndex) {
-        end += parts27[i2].value;
+        end += parts28[i2].value;
       }
     }
     return toString(start, end);
@@ -13982,8 +14022,8 @@ var Corex = (() => {
   }
   function createRegex(locale, timeZone) {
     const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone });
-    const parts27 = formatter.formatToParts(new Date(2e3, 11, 25));
-    return parts27.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
+    const parts28 = formatter.formatToParts(new Date(2e3, 11, 25));
+    return parts28.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
   }
   function extract(pattern, str) {
     var _a;
@@ -14115,8 +14155,8 @@ var Corex = (() => {
   }
   function getLocaleSeparator(locale) {
     const dateFormatter = new Intl.DateTimeFormat(locale);
-    const parts27 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
-    const literalPart = parts27.find((part) => part.type === "literal");
+    const parts28 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
+    const literalPart = parts28.find((part) => part.type === "literal");
     return literalPart ? literalPart.value : "/";
   }
   function viewToNumber(view, fallback2) {
@@ -14183,8 +14223,8 @@ var Corex = (() => {
       const numOfWeeks = prop("fixedWeeks") ? 6 : void 0;
       return getMonthDays(from, locale, numOfWeeks, startOfWeek);
     }
-    function getMonths(props26 = {}) {
-      const { format } = props26;
+    function getMonths(props27 = {}) {
+      const { format } = props27;
       return getMonthNames(locale, format).map((label, index) => {
         const value = index + 1;
         const dateValue = focusedValue.set({ month: value });
@@ -14212,14 +14252,14 @@ var Corex = (() => {
       const date = startValue != null ? startValue : getTodayDate(timeZone);
       send({ type: "FOCUS.SET", value: date.set({ year }) });
     }
-    function getYearTableCellState(props26) {
-      const { value, disabled: disabled2 } = props26;
+    function getYearTableCellState(props27) {
+      const { value, disabled: disabled2 } = props27;
       const dateValue = focusedValue.set({ year: value });
       const decadeYears = getDecadeRange(startValue.year, { strict: true });
       const isOutsideVisibleRange = !decadeYears.includes(value);
       const isOutsideRange = isValueWithinRange(value, min4 == null ? void 0 : min4.year, max4 == null ? void 0 : max4.year);
       const cellState = {
-        focused: focusedValue.year === props26.value,
+        focused: focusedValue.year === props27.value,
         selectable: isOutsideVisibleRange || isOutsideRange,
         outsideRange: isOutsideVisibleRange,
         selected: !!selectedValue.find((date) => date && date.year === value),
@@ -14232,12 +14272,12 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getMonthTableCellState(props26) {
-      const { value, disabled: disabled2 } = props26;
+    function getMonthTableCellState(props27) {
+      const { value, disabled: disabled2 } = props27;
       const dateValue = focusedValue.set({ month: value });
       const formatter = getMonthFormatter(locale, timeZone);
       const cellState = {
-        focused: focusedValue.month === props26.value,
+        focused: focusedValue.month === props27.value,
         selectable: !isDateOutsideRange(dateValue, min4, max4),
         selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
         valueText: formatter.format(dateValue.toDate(timeZone)),
@@ -14249,8 +14289,8 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getDayTableCellState(props26) {
-      const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props26;
+    function getDayTableCellState(props27) {
+      const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props27;
       const formatter = getDayFormatter(locale, timeZone);
       const unitDuration = getUnitDuration(computed("visibleDuration"));
       const outsideDaySelectable = prop("outsideDaySelectable");
@@ -14294,8 +14334,8 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getTableId2(props26) {
-      const { view = "day", id } = props26;
+    function getTableId2(props27) {
+      const { view = "day", id } = props27;
       return [view, id].filter(Boolean).join(" ");
     }
     return {
@@ -14388,8 +14428,8 @@ var Corex = (() => {
       focusYear,
       getYears,
       getMonths,
-      getYearsGrid(props26 = {}) {
-        const { columns = 1 } = props26;
+      getYearsGrid(props27 = {}) {
+        const { columns = 1 } = props27;
         const years = getDecadeRange(startValue.year, { strict: true }).map((year) => ({
           label: year.toString(),
           value: year,
@@ -14401,8 +14441,8 @@ var Corex = (() => {
         const years = getDecadeRange(startValue.year, { strict: true });
         return { start: years.at(0), end: years.at(-1) };
       },
-      getMonthsGrid(props26 = {}) {
-        const { columns = 1, format } = props26;
+      getMonthsGrid(props27 = {}) {
+        const { columns = 1, format } = props27;
         return chunk(getMonths({ format }), columns);
       },
       format(value, opts = { month: "long", year: "numeric" }) {
@@ -14427,8 +14467,8 @@ var Corex = (() => {
           "data-empty": dataAttr(empty)
         }));
       },
-      getLabelProps(props26 = {}) {
-        const { index = 0 } = props26;
+      getLabelProps(props27 = {}) {
+        const { index = 0 } = props27;
         return normalize.label(__spreadProps(__spreadValues({}, parts9.label.attrs), {
           id: getLabelId5(scope, index),
           dir: prop("dir"),
@@ -14466,9 +14506,9 @@ var Corex = (() => {
           "aria-label": translations.content
         }));
       },
-      getTableProps(props26 = {}) {
-        const { view = "day", columns = view === "day" ? 7 : 4 } = props26;
-        const uid = getTableId2(props26);
+      getTableProps(props27 = {}) {
+        const { view = "day", columns = view === "day" ? 7 : 4 } = props27;
+        const uid = getTableId2(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.table.attrs), {
           role: "grid",
           "data-columns": columns,
@@ -14540,8 +14580,8 @@ var Corex = (() => {
           }
         }));
       },
-      getTableHeadProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getTableHeadProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableHead.attrs), {
           "aria-hidden": true,
           dir: prop("dir"),
@@ -14549,31 +14589,31 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableHeaderProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getTableHeaderProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableHeader.attrs), {
           dir: prop("dir"),
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableBodyProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getTableBodyProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableBody.attrs), {
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableRowProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getTableRowProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableRow.attrs), {
           "aria-disabled": ariaAttr(disabled),
           "data-disabled": dataAttr(disabled),
           "data-view": view
         }));
       },
-      getWeekNumberHeaderCellProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getWeekNumberHeaderCellProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           scope: "col",
           "aria-label": translations.weekColumnHeader,
@@ -14581,9 +14621,9 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getWeekNumberCellProps(props26) {
+      getWeekNumberCellProps(props27) {
         var _a;
-        const { weekIndex, week } = props26;
+        const { weekIndex, week } = props27;
         const weekNumber = week[0] ? getWeekOfYear(week[0], locale) : 0;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           role: "rowheader",
@@ -14594,9 +14634,9 @@ var Corex = (() => {
         }));
       },
       getDayTableCellState,
-      getDayTableCellProps(props26) {
-        const { value } = props26;
-        const cellState = getDayTableCellState(props26);
+      getDayTableCellProps(props27) {
+        const { value } = props27;
+        const cellState = getDayTableCellState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           role: "gridcell",
           "aria-disabled": ariaAttr(!cellState.selectable),
@@ -14606,9 +14646,9 @@ var Corex = (() => {
           "data-value": value.toString()
         }));
       },
-      getDayTableCellTriggerProps(props26) {
-        const { value } = props26;
-        const cellState = getDayTableCellState(props26);
+      getDayTableCellTriggerProps(props27) {
+        const { value } = props27;
+        const cellState = getDayTableCellState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCellTrigger.attrs), {
           id: getCellTriggerId(scope, value.toString()),
           role: "button",
@@ -14647,9 +14687,9 @@ var Corex = (() => {
         }));
       },
       getMonthTableCellState,
-      getMonthTableCellProps(props26) {
-        const { value, columns } = props26;
-        const cellState = getMonthTableCellState(props26);
+      getMonthTableCellProps(props27) {
+        const { value, columns } = props27;
+        const cellState = getMonthTableCellState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
@@ -14660,9 +14700,9 @@ var Corex = (() => {
           "data-value": value
         }));
       },
-      getMonthTableCellTriggerProps(props26) {
-        const { value } = props26;
-        const cellState = getMonthTableCellState(props26);
+      getMonthTableCellTriggerProps(props27) {
+        const { value } = props27;
+        const cellState = getMonthTableCellState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCellTrigger.attrs), {
           dir: prop("dir"),
           role: "button",
@@ -14692,9 +14732,9 @@ var Corex = (() => {
         }));
       },
       getYearTableCellState,
-      getYearTableCellProps(props26) {
-        const { value, columns } = props26;
-        const cellState = getYearTableCellState(props26);
+      getYearTableCellProps(props27) {
+        const { value, columns } = props27;
+        const cellState = getYearTableCellState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
@@ -14705,9 +14745,9 @@ var Corex = (() => {
           "data-value": value
         }));
       },
-      getYearTableCellTriggerProps(props26) {
-        const { value } = props26;
-        const cellState = getYearTableCellState(props26);
+      getYearTableCellTriggerProps(props27) {
+        const { value } = props27;
+        const cellState = getYearTableCellState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.tableCellTrigger.attrs), {
           dir: prop("dir"),
           role: "button",
@@ -14736,8 +14776,8 @@ var Corex = (() => {
           } : void 0
         }));
       },
-      getNextTriggerProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getNextTriggerProps(props27 = {}) {
+        const { view = "day" } = props27;
         const isDisabled = disabled || !computed("isNextVisibleRangeValid");
         return normalize.button(__spreadProps(__spreadValues({}, parts9.nextTrigger.attrs), {
           dir: prop("dir"),
@@ -14752,8 +14792,8 @@ var Corex = (() => {
           }
         }));
       },
-      getPrevTriggerProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getPrevTriggerProps(props27 = {}) {
+        const { view = "day" } = props27;
         const isDisabled = disabled || !computed("isPrevVisibleRangeValid");
         return normalize.button(__spreadProps(__spreadValues({}, parts9.prevTrigger.attrs), {
           dir: prop("dir"),
@@ -14800,15 +14840,15 @@ var Corex = (() => {
           }
         }));
       },
-      getViewProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getViewProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.view.attrs), {
           "data-view": view,
           hidden: context.get("view") !== view
         }));
       },
-      getViewTriggerProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getViewTriggerProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.button(__spreadProps(__spreadValues({}, parts9.viewTrigger.attrs), {
           "data-view": view,
           dir: prop("dir"),
@@ -14823,15 +14863,15 @@ var Corex = (() => {
           }
         }));
       },
-      getViewControlProps(props26 = {}) {
-        const { view = "day" } = props26;
+      getViewControlProps(props27 = {}) {
+        const { view = "day" } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.viewControl.attrs), {
           "data-view": view,
           dir: prop("dir")
         }));
       },
-      getInputProps(props26 = {}) {
-        const { index = 0, fixOnBlur = true } = props26;
+      getInputProps(props27 = {}) {
+        const { index = 0, fixOnBlur = true } = props27;
         return normalize.input(__spreadProps(__spreadValues({}, parts9.input.attrs), {
           id: getInputId3(scope, index),
           autoComplete: "off",
@@ -14923,8 +14963,8 @@ var Corex = (() => {
           style: popperStyles.floating
         }));
       },
-      getPresetTriggerProps(props26) {
-        const value = Array.isArray(props26.value) ? props26.value : getDateRangePreset(props26.value, locale, timeZone);
+      getPresetTriggerProps(props27) {
+        const value = Array.isArray(props27.value) ? props27.value : getDateRangePreset(props27.value, locale, timeZone);
         const valueAsString = value.filter((item) => item != null).map((item) => item.toDate(timeZone).toDateString());
         return normalize.button(__spreadProps(__spreadValues({}, parts9.presetTrigger.attrs), {
           "aria-label": translations.presetTrigger(valueAsString),
@@ -14988,10 +15028,10 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_LOW5KGCT();
-      init_chunk_NF3CDGDL();
-      init_chunk_OSSFSUET();
-      init_chunk_TZXIWZZ7();
+      init_chunk_GN3NEUUU();
+      init_chunk_OA4F3YDQ();
+      init_chunk_EBQGC3XC();
+      init_chunk_RUWIVFVB();
       $3b62074eb05584b2$var$EPOCH = 1721426;
       $3b62074eb05584b2$var$daysInMonth = {
         standard: [
@@ -15718,18 +15758,18 @@ var Corex = (() => {
       );
       ({ and: and3 } = createGuards());
       machine9 = createMachine({
-        props({ props: props26 }) {
-          const locale = props26.locale || "en-US";
-          const timeZone = props26.timeZone || "UTC";
-          const selectionMode = props26.selectionMode || "single";
-          const numOfMonths = props26.numOfMonths || 1;
-          const defaultValue = props26.defaultValue ? sortDates(props26.defaultValue).map((date) => constrainValue(date, props26.min, props26.max)) : void 0;
-          const value = props26.value ? sortDates(props26.value).map((date) => constrainValue(date, props26.min, props26.max)) : void 0;
-          let focusedValue = props26.focusedValue || props26.defaultFocusedValue || (value == null ? void 0 : value[0]) || (defaultValue == null ? void 0 : defaultValue[0]) || getTodayDate(timeZone);
-          focusedValue = constrainValue(focusedValue, props26.min, props26.max);
+        props({ props: props27 }) {
+          const locale = props27.locale || "en-US";
+          const timeZone = props27.timeZone || "UTC";
+          const selectionMode = props27.selectionMode || "single";
+          const numOfMonths = props27.numOfMonths || 1;
+          const defaultValue = props27.defaultValue ? sortDates(props27.defaultValue).map((date) => constrainValue(date, props27.min, props27.max)) : void 0;
+          const value = props27.value ? sortDates(props27.value).map((date) => constrainValue(date, props27.min, props27.max)) : void 0;
+          let focusedValue = props27.focusedValue || props27.defaultFocusedValue || (value == null ? void 0 : value[0]) || (defaultValue == null ? void 0 : defaultValue[0]) || getTodayDate(timeZone);
+          focusedValue = constrainValue(focusedValue, props27.min, props27.max);
           const minView = "day";
           const maxView = "year";
-          const defaultView = clampView(props26.view || minView, minView, maxView);
+          const defaultView = clampView(props27.view || minView, minView, maxView);
           return __spreadProps(__spreadValues({
             locale,
             numOfMonths,
@@ -15747,14 +15787,14 @@ var Corex = (() => {
             parse(value2, { locale: locale2, timeZone: timeZone2 }) {
               return parseDateString(value2, locale2, timeZone2);
             }
-          }, props26), {
-            focusedValue: typeof props26.focusedValue === "undefined" ? void 0 : focusedValue,
+          }, props27), {
+            focusedValue: typeof props27.focusedValue === "undefined" ? void 0 : focusedValue,
             defaultFocusedValue: focusedValue,
             value,
             defaultValue: defaultValue != null ? defaultValue : [],
             positioning: __spreadValues({
               placement: "bottom"
-            }, props26.positioning)
+            }, props27.positioning)
           });
         },
         initialState({ prop }) {
@@ -16968,8 +17008,8 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine9, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine9, props27);
         }
         initApi() {
           return connect9(this.machine.service, normalizeProps);
@@ -17454,9 +17494,9 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_NF3CDGDL();
-      init_chunk_OSSFSUET();
-      init_chunk_TZXIWZZ7();
+      init_chunk_OA4F3YDQ();
+      init_chunk_EBQGC3XC();
+      init_chunk_RUWIVFVB();
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -17478,8 +17518,8 @@ var Corex = (() => {
         if (node.hasAttribute("aria-live")) return true;
         return node.matches("[data-live-announcer]");
       };
-      walkTreeOutside = (originalTarget, props26) => {
-        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props26;
+      walkTreeOutside = (originalTarget, props27) => {
+        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props27;
         const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
         markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
         const markerCounter = markerMap[markerName];
@@ -18195,10 +18235,10 @@ var Corex = (() => {
       getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
       getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
       machine10 = createMachine({
-        props({ props: props26, scope }) {
-          const alertDialog = props26.role === "alertdialog";
+        props({ props: props27, scope }) {
+          const alertDialog = props27.role === "alertdialog";
           const initialFocusEl = alertDialog ? () => getCloseTriggerEl(scope) : void 0;
-          const modal = typeof props26.modal === "boolean" ? props26.modal : true;
+          const modal = typeof props27.modal === "boolean" ? props27.modal : true;
           return __spreadValues({
             role: "dialog",
             modal,
@@ -18208,7 +18248,7 @@ var Corex = (() => {
             closeOnEscape: true,
             restoreFocus: true,
             initialFocusEl
-          }, props26);
+          }, props27);
         },
         initialState({ prop }) {
           const open = prop("open") || prop("defaultOpen");
@@ -18411,8 +18451,8 @@ var Corex = (() => {
       splitProps10 = createSplitProps(props10);
       Dialog = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine10, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine10, props27);
         }
         initApi() {
           return connect10(this.machine.service, normalizeProps);
@@ -18771,8 +18811,8 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_OSSFSUET();
-      init_chunk_TZXIWZZ7();
+      init_chunk_EBQGC3XC();
+      init_chunk_RUWIVFVB();
       anatomy11 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -18827,19 +18867,19 @@ var Corex = (() => {
       getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
       getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
       machine11 = createMachine({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             activationMode: "focus",
             submitMode: "both",
             defaultValue: "",
             selectOnFocus: true
-          }, props26), {
+          }, props27), {
             translations: __spreadValues({
               input: "editable input",
               edit: "edit",
               submit: "submit",
               cancel: "cancel"
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         initialState({ prop }) {
@@ -19088,8 +19128,8 @@ var Corex = (() => {
       splitProps11 = createSplitProps(props11);
       Editable = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine11, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine11, props27);
         }
         initApi() {
           return connect11(this.machine.service, normalizeProps);
@@ -19403,12 +19443,12 @@ var Corex = (() => {
           }
         }));
       },
-      getStageTriggerProps(props26) {
-        if (!validStages.has(props26.stage)) {
-          throw new Error(`[zag-js] Invalid stage: ${props26.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
+      getStageTriggerProps(props27) {
+        if (!validStages.has(props27.stage)) {
+          throw new Error(`[zag-js] Invalid stage: ${props27.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
         }
         const translations = prop("translations");
-        const actionProps = match2(props26.stage, {
+        const actionProps = match2(props27.stage, {
           minimized: () => ({
             "aria-label": translations.minimize,
             hidden: isStaged
@@ -19425,13 +19465,13 @@ var Corex = (() => {
         return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts12.stageTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
-          "data-stage": props26.stage
+          "data-stage": props27.stage
         }), actionProps), {
           type: "button",
           onClick(event) {
             if (event.defaultPrevented) return;
             if (!prop("resizable")) return;
-            const type = match2(props26.stage, {
+            const type = match2(props27.stage, {
               minimized: () => "MINIMIZE",
               maximized: () => "MAXIMIZE",
               default: () => "RESTORE"
@@ -19440,11 +19480,11 @@ var Corex = (() => {
           }
         }));
       },
-      getResizeTriggerProps(props26) {
+      getResizeTriggerProps(props27) {
         return normalize.element(__spreadProps(__spreadValues({}, parts12.resizeTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canResize),
-          "data-axis": props26.axis,
+          "data-axis": props27.axis,
           onPointerDown(event) {
             if (!canResize) return;
             if (!isLeftClick(event)) return;
@@ -19452,7 +19492,7 @@ var Corex = (() => {
             event.stopPropagation();
             send({
               type: "RESIZE_START",
-              axis: props26.axis,
+              axis: props27.axis,
               position: { x: event.clientX, y: event.clientY }
             });
           },
@@ -19466,7 +19506,7 @@ var Corex = (() => {
           style: __spreadValues({
             position: "absolute",
             touchAction: "none"
-          }, getResizeAxisStyle(props26.axis))
+          }, getResizeAxisStyle(props27.axis))
         }));
       },
       getDragTriggerProps() {
@@ -19574,8 +19614,8 @@ var Corex = (() => {
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_FEZIYMNT();
-      init_chunk_TZXIWZZ7();
+      init_chunk_QHOSSHQC();
+      init_chunk_RUWIVFVB();
       anatomy12 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -19667,8 +19707,8 @@ var Corex = (() => {
         restore: "Restore window"
       };
       machine12 = createMachine({
-        props({ props: props26 }) {
-          ensureProps(props26, ["id"], "floating-panel");
+        props({ props: props27 }) {
+          ensureProps(props27, ["id"], "floating-panel");
           return __spreadProps(__spreadValues({
             strategy: "fixed",
             gridSize: 1,
@@ -19677,9 +19717,9 @@ var Corex = (() => {
             allowOverflow: true,
             resizable: true,
             draggable: true
-          }, props26), {
-            hasSpecifiedPosition: !!props26.defaultPosition || !!props26.position,
-            translations: __spreadValues(__spreadValues({}, defaultTranslations2), props26.translations)
+          }, props27), {
+            hasSpecifiedPosition: !!props27.defaultPosition || !!props27.position,
+            translations: __spreadValues(__spreadValues({}, defaultTranslations2), props27.translations)
           });
         },
         initialState({ prop }) {
@@ -20200,8 +20240,8 @@ var Corex = (() => {
       splitResizeTriggerProps = createSplitProps(resizeTriggerProps);
       FloatingPanel = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine12, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine12, props27);
         }
         initApi() {
           return connect12(this.machine.service, normalizeProps);
@@ -20380,10 +20420,10 @@ var Corex = (() => {
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
     const ariaActiveDescendant = highlightedValue ? getItemId4(scope, highlightedValue) : void 0;
-    function getItemState(props26) {
-      const itemDisabled = collection22.getItemDisabled(props26.item);
-      const value2 = collection22.getItemValue(props26.item);
-      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
+    function getItemState(props27) {
+      const itemDisabled = collection22.getItemDisabled(props27.item);
+      const value2 = collection22.getItemValue(props27.item);
+      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props27.item)}`);
       const highlighted = highlightedValue === value2;
       return {
         value: value2,
@@ -20439,7 +20479,7 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getInputProps(props26 = {}) {
+      getInputProps(props27 = {}) {
         return normalize.input(__spreadProps(__spreadValues({}, parts13.input.attrs), {
           dir: prop("dir"),
           disabled,
@@ -20454,14 +20494,14 @@ var Corex = (() => {
           enterKeyHint: "go",
           onFocus() {
             queueMicrotask(() => {
-              send({ type: "INPUT.FOCUS", autoHighlight: !!(props26 == null ? void 0 : props26.autoHighlight) });
+              send({ type: "INPUT.FOCUS", autoHighlight: !!(props27 == null ? void 0 : props27.autoHighlight) });
             });
           },
           onBlur() {
             send({ type: "CONTENT.BLUR", src: "input" });
           },
           onInput(event) {
-            if (!(props26 == null ? void 0 : props26.autoHighlight)) return;
+            if (!(props27 == null ? void 0 : props27.autoHighlight)) return;
             if (event.currentTarget.value.trim()) return;
             queueMicrotask(() => {
               send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
@@ -20519,8 +20559,8 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getItemProps(props26) {
-        const itemState = getItemState(props26);
+      getItemProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({
           id: getItemId4(scope, itemState.value),
           role: "option"
@@ -20536,7 +20576,7 @@ var Corex = (() => {
           "data-disabled": dataAttr(itemState.disabled),
           "aria-disabled": ariaAttr(itemState.disabled),
           onPointerMove(event) {
-            if (!props26.highlightOnHover) return;
+            if (!props27.highlightOnHover) return;
             if (itemState.disabled || event.pointerType !== "mouse") return;
             if (itemState.highlighted) return;
             send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
@@ -20559,32 +20599,32 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props26) {
-        const itemState = getItemState(props26);
+      getItemTextProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts13.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props26) {
-        const itemState = getItemState(props26);
+      getItemIndicatorProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({}, parts13.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
-      getItemGroupLabelProps(props26) {
-        const { htmlFor } = props26;
+      getItemGroupLabelProps(props27) {
+        const { htmlFor } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts13.itemGroupLabel.attrs), {
           id: getItemGroupLabelId2(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
         }));
       },
-      getItemGroupProps(props26) {
-        const { id } = props26;
+      getItemGroupProps(props27) {
+        const { id } = props27;
         return normalize.element(__spreadProps(__spreadValues({}, parts13.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-orientation": prop("orientation"),
@@ -20760,9 +20800,9 @@ var Corex = (() => {
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_4RWUEBEQ();
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
+      init_chunk_KCOQB3RU();
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
       anatomy13 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -20817,7 +20857,7 @@ var Corex = (() => {
       ({ guards: guards2, createMachine: createMachine3 } = setup());
       ({ or } = guards2);
       machine13 = createMachine3({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadValues({
             loopFocus: false,
             composite: true,
@@ -20827,7 +20867,7 @@ var Corex = (() => {
             collection: collection2.empty(),
             orientation: "vertical",
             selectionMode: "single"
-          }, props26);
+          }, props27);
         },
         context({ prop, bindable: bindable2 }) {
           return {
@@ -21167,9 +21207,9 @@ var Corex = (() => {
       itemGroupLabelProps2 = createProps()(["htmlFor"]);
       splitItemGroupLabelProps2 = createSplitProps(itemGroupLabelProps2);
       Listbox = class extends Component {
-        constructor(el, props26) {
+        constructor(el, props27) {
           var _a;
-          super(el, props26);
+          super(el, props27);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "init", () => {
@@ -21180,7 +21220,7 @@ var Corex = (() => {
               this.render();
             });
           });
-          const collectionFromProps = props26.collection;
+          const collectionFromProps = props27.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
         }
         get options() {
@@ -21217,10 +21257,10 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
+        initMachine(props27) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props26.collection;
-          return new VanillaMachine(machine13, __spreadProps(__spreadValues({}, props26), {
+          const collectionFromProps = props27.collection;
+          return new VanillaMachine(machine13, __spreadProps(__spreadValues({}, props27), {
             get collection() {
               return collectionFromProps != null ? collectionFromProps : getCollection();
             }
@@ -21376,6 +21416,585 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/marquee.mjs
+  var marquee_exports = {};
+  __export(marquee_exports, {
+    Marquee: () => MarqueeHook
+  });
+  function connect14(service, normalize) {
+    const { scope, send, context, computed, prop } = service;
+    const side = prop("side");
+    const paused = context.get("paused");
+    const duration = context.get("duration");
+    const orientation = computed("orientation");
+    const multiplier = computed("multiplier");
+    const isVertical = computed("isVertical");
+    return {
+      paused,
+      orientation,
+      side,
+      multiplier,
+      contentCount: multiplier + 1,
+      pause() {
+        send({ type: "PAUSE" });
+      },
+      resume() {
+        send({ type: "RESUME" });
+      },
+      togglePause() {
+        send({ type: "TOGGLE_PAUSE" });
+      },
+      restart() {
+        send({ type: "RESTART" });
+      },
+      getRootProps() {
+        const dir = prop("dir");
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.root.attrs), {
+          id: dom.getRootId(scope),
+          dir,
+          role: "region",
+          "aria-roledescription": "marquee",
+          "aria-live": "off",
+          "aria-label": prop("translations").root,
+          "data-state": paused ? "paused" : "idle",
+          "data-orientation": orientation,
+          "data-paused": dataAttr(paused),
+          onMouseEnter: prop("pauseOnInteraction") ? () => send({ type: "PAUSE" }) : void 0,
+          onMouseLeave: prop("pauseOnInteraction") ? () => send({ type: "RESUME" }) : void 0,
+          onFocusCapture: prop("pauseOnInteraction") ? (event) => {
+            if (event.target !== event.currentTarget) {
+              send({ type: "PAUSE" });
+            }
+          } : void 0,
+          onBlurCapture: prop("pauseOnInteraction") ? (event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              send({ type: "RESUME" });
+            }
+          } : void 0,
+          style: {
+            display: "flex",
+            flexDirection: orientation === "vertical" ? "column" : "row",
+            position: "relative",
+            // Essential for clipping scrolling content
+            overflow: "hidden",
+            // CSS containment for performance - prevents layout recalculation of parent elements
+            contain: "layout style paint",
+            "--marquee-duration": `${duration}s`,
+            "--marquee-spacing": prop("spacing"),
+            "--marquee-delay": `${prop("delay")}s`,
+            "--marquee-loop-count": prop("loopCount") === 0 ? "infinite" : prop("loopCount").toString(),
+            "--marquee-translate": getMarqueeTranslate({ side, dir })
+          }
+        }));
+      },
+      getViewportProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.viewport.attrs), {
+          id: dom.getViewportId(scope),
+          "data-part": "viewport",
+          "data-orientation": orientation,
+          "data-side": side,
+          onAnimationIteration(event) {
+            var _a;
+            if (event.target === dom.getContentEl(scope, 0)) {
+              (_a = prop("onLoopComplete")) == null ? void 0 : _a();
+            }
+          },
+          onAnimationEnd(event) {
+            var _a;
+            if (event.target === dom.getContentEl(scope, 0)) {
+              (_a = prop("onComplete")) == null ? void 0 : _a();
+            }
+          },
+          style: {
+            display: "flex",
+            [isVertical ? "height" : "width"]: "100%",
+            // For bottom/end sides, reverse flex direction so clones appear on the correct side
+            flexDirection: orientation === "vertical" ? side === "bottom" ? "column-reverse" : "column" : side === "end" ? "row-reverse" : "row"
+          }
+        }));
+      },
+      getContentProps(props27) {
+        const { index } = props27;
+        const clone = index > 0;
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.content.attrs), {
+          id: dom.getContentId(scope, index),
+          dir: prop("dir"),
+          "data-part": "content",
+          "data-index": index,
+          "data-orientation": orientation,
+          "data-side": side,
+          "data-reverse": prop("reverse") ? "" : void 0,
+          "data-clone": dataAttr(clone),
+          role: clone ? "presentation" : void 0,
+          "aria-hidden": clone ? true : void 0,
+          style: {
+            // Essential layout for marquee content
+            display: "flex",
+            flexDirection: orientation === "vertical" ? "column" : "row",
+            flexShrink: 0,
+            // Force compositor layer to prevent flicker during animation reset
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden",
+            willChange: paused ? "auto" : "transform",
+            transform: "translateZ(0)",
+            [isVertical ? "minWidth" : "minHeight"]: "auto",
+            // Prevent subpixel rendering issues that cause flicker in Firefox
+            contain: "paint"
+          }
+        }));
+      },
+      getEdgeProps(props27) {
+        const { side: side2 } = props27;
+        const dir = prop("dir");
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.edge.attrs), {
+          dir,
+          "data-part": "edge",
+          "data-side": side2,
+          "data-orientation": orientation,
+          style: __spreadValues({
+            pointerEvents: "none",
+            position: "absolute"
+          }, getEdgePositionStyles({ side: side2 }))
+        }));
+      },
+      getItemProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts14.item.attrs), {
+          dir: prop("dir"),
+          style: {
+            [isVertical ? "marginBlock" : "marginInline"]: "calc(var(--marquee-spacing) / 2)"
+          }
+        }));
+      }
+    };
+  }
+  function calculateDuration(options) {
+    const { rootSize, contentSize, speed, multiplier, autoFill } = options;
+    if (autoFill) {
+      return contentSize * multiplier / speed;
+    }
+    return contentSize < rootSize ? rootSize / speed : contentSize / speed;
+  }
+  var anatomy14, parts14, dom, getEdgePositionStyles, getMarqueeTranslate, machine14, props14, splitProps14, Marquee, MarqueeHook;
+  var init_marquee = __esm({
+    "../priv/static/marquee.mjs"() {
+      "use strict";
+      init_chunk_RUWIVFVB();
+      anatomy14 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
+      parts14 = anatomy14.build();
+      dom = {
+        getRootId: (ctx) => {
+          var _a, _b;
+          return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `marquee:${ctx.id}`;
+        },
+        getViewportId: (ctx) => {
+          var _a, _b;
+          return (_b = (_a = ctx.ids) == null ? void 0 : _a.viewport) != null ? _b : `marquee:${ctx.id}:viewport`;
+        },
+        getContentId: (ctx, index) => {
+          var _a, _b, _c;
+          return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.content) == null ? void 0 : _b.call(_a, index)) != null ? _c : `marquee:${ctx.id}:content:${index}`;
+        },
+        getRootEl: (ctx) => ctx.getById(dom.getRootId(ctx)),
+        getViewportEl: (ctx) => ctx.getById(dom.getViewportId(ctx)),
+        getContentEl: (ctx, index) => ctx.getById(dom.getContentId(ctx, index))
+      };
+      getEdgePositionStyles = (options) => {
+        const { side } = options;
+        switch (side) {
+          case "start":
+            return {
+              top: 0,
+              insetInlineStart: 0,
+              height: "100%"
+            };
+          case "end":
+            return {
+              top: 0,
+              insetInlineEnd: 0,
+              height: "100%"
+            };
+          case "top":
+            return {
+              top: 0,
+              insetInline: 0,
+              width: "100%"
+            };
+          case "bottom":
+            return {
+              bottom: 0,
+              insetInline: 0,
+              width: "100%"
+            };
+        }
+      };
+      getMarqueeTranslate = (options) => {
+        const { side, dir } = options;
+        if (side === "top") {
+          return "-100%";
+        }
+        if (side === "bottom") {
+          return "100%";
+        }
+        const shouldBeNegative = side === "start" && dir === "ltr" || side === "end" && dir === "rtl";
+        return shouldBeNegative ? "-100%" : "100%";
+      };
+      machine14 = createMachine({
+        props({ props: props27 }) {
+          return __spreadValues({
+            dir: "ltr",
+            side: "start",
+            speed: 50,
+            delay: 0,
+            loopCount: 0,
+            spacing: "1rem",
+            autoFill: false,
+            pauseOnInteraction: false,
+            reverse: false,
+            defaultPaused: false,
+            translations: {
+              root: "Marquee content"
+            }
+          }, props27);
+        },
+        refs() {
+          return {
+            dimensions: void 0,
+            initialDurationSet: false
+          };
+        },
+        context({ prop, bindable: bindable2 }) {
+          return {
+            paused: bindable2(() => ({
+              value: prop("paused"),
+              defaultValue: prop("defaultPaused"),
+              onChange(value) {
+                var _a;
+                (_a = prop("onPauseChange")) == null ? void 0 : _a({ paused: value });
+              }
+            })),
+            duration: bindable2(() => ({
+              defaultValue: 2e3 / Math.max(1e-3, prop("speed"))
+            }))
+          };
+        },
+        initialState() {
+          return "idle";
+        },
+        computed: {
+          orientation: ({ prop }) => {
+            const side = prop("side");
+            return side === "top" || side === "bottom" ? "vertical" : "horizontal";
+          },
+          isVertical: ({ prop }) => {
+            const side = prop("side");
+            return side === "top" || side === "bottom";
+          },
+          multiplier: ({ refs, prop }) => {
+            if (!prop("autoFill")) return 1;
+            const dimensions = refs.get("dimensions");
+            if (!dimensions) return 1;
+            const { rootSize, contentSize } = dimensions;
+            if (contentSize === 0) return 1;
+            return contentSize < rootSize ? Math.ceil(rootSize / contentSize) : 1;
+          }
+        },
+        watch({ track, action, prop }) {
+          track([() => prop("speed")], () => {
+            action(["recalculateDuration", "restartAnimation"]);
+          });
+          track([() => prop("spacing"), () => prop("side")], () => {
+            action(["recalculateDuration"]);
+          });
+        },
+        on: {
+          PAUSE: {
+            actions: ["setPaused"]
+          },
+          RESUME: {
+            actions: ["setResumed"]
+          },
+          TOGGLE_PAUSE: {
+            actions: ["togglePaused"]
+          },
+          RESTART: {
+            actions: ["restartAnimation"]
+          }
+        },
+        effects: ["trackDimensions"],
+        states: {
+          idle: {}
+        },
+        implementations: {
+          actions: {
+            setPaused({ context }) {
+              context.set("paused", true);
+            },
+            setResumed({ context }) {
+              context.set("paused", false);
+            },
+            togglePaused({ context }) {
+              context.set("paused", (prev2) => !prev2);
+            },
+            restartAnimation({ scope }) {
+              const viewportEl = dom.getViewportEl(scope);
+              if (!viewportEl) return;
+              const contentElements = viewportEl.querySelectorAll('[data-part="content"]');
+              contentElements.forEach((el) => {
+                el.style.animation = "none";
+                el.style.animation = "";
+              });
+            },
+            recalculateDuration({ refs, computed, context, prop }) {
+              const dimensions = refs.get("dimensions");
+              if (!dimensions) return;
+              const { rootSize, contentSize } = dimensions;
+              const duration = calculateDuration({
+                rootSize,
+                contentSize,
+                speed: Math.max(1e-3, prop("speed")),
+                multiplier: computed("multiplier"),
+                autoFill: prop("autoFill")
+              });
+              context.set("duration", duration);
+            }
+          },
+          effects: {
+            trackDimensions({ scope, refs, computed, context, prop }) {
+              const rootEl = dom.getRootEl(scope);
+              const contentEl = dom.getContentEl(scope, 0);
+              if (!rootEl || !contentEl) return;
+              const win = scope.getWin();
+              const measureDimensions = () => {
+                const rootSize = computed("isVertical") ? rootEl.clientHeight : rootEl.clientWidth;
+                const contentSize = computed("isVertical") ? contentEl.clientHeight : contentEl.clientWidth;
+                return { rootSize, contentSize };
+              };
+              const exec = () => {
+                const { rootSize, contentSize } = measureDimensions();
+                if (rootSize > 0 && contentSize > 0) {
+                  refs.set("dimensions", { rootSize, contentSize });
+                  if (!refs.get("initialDurationSet")) {
+                    const duration = calculateDuration({
+                      rootSize,
+                      contentSize,
+                      speed: Math.max(1e-3, prop("speed")),
+                      multiplier: computed("multiplier"),
+                      autoFill: prop("autoFill")
+                    });
+                    context.set("duration", duration);
+                    refs.set("initialDurationSet", true);
+                  }
+                }
+              };
+              let rafId = null;
+              const observer = new win.ResizeObserver(() => {
+                if (rafId !== null) return;
+                rafId = win.requestAnimationFrame(() => {
+                  const { rootSize, contentSize } = measureDimensions();
+                  refs.set("dimensions", { rootSize, contentSize });
+                  rafId = null;
+                });
+              });
+              observer.observe(rootEl);
+              observer.observe(contentEl);
+              exec();
+              return () => {
+                observer.disconnect();
+                if (rafId !== null) win.cancelAnimationFrame(rafId);
+              };
+            }
+          }
+        }
+      });
+      props14 = createProps()([
+        "autoFill",
+        "defaultPaused",
+        "delay",
+        "dir",
+        "getRootNode",
+        "id",
+        "ids",
+        "loopCount",
+        "onComplete",
+        "onLoopComplete",
+        "onPauseChange",
+        "paused",
+        "pauseOnInteraction",
+        "reverse",
+        "side",
+        "spacing",
+        "speed",
+        "translations"
+      ]);
+      splitProps14 = createSplitProps(props14);
+      Marquee = class extends Component {
+        initMachine(props27) {
+          return new VanillaMachine(machine14, props27);
+        }
+        initApi() {
+          return connect14(this.machine.service, normalizeProps);
+        }
+        render() {
+          var _a;
+          const rootEl = (_a = this.el.querySelector('[data-scope="marquee"][data-part="root"]')) != null ? _a : this.el;
+          this.spreadProps(rootEl, this.api.getRootProps());
+          const edgeStart = this.el.querySelector(
+            '[data-scope="marquee"][data-part="edge"][data-side="start"]'
+          );
+          if (edgeStart) this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
+          const viewport = this.el.querySelector(
+            '[data-scope="marquee"][data-part="viewport"]'
+          );
+          if (viewport) this.spreadProps(viewport, this.api.getViewportProps());
+          const contentEls = this.el.querySelectorAll(
+            '[data-scope="marquee"][data-part="content"]'
+          );
+          contentEls.forEach((contentEl, i2) => {
+            this.spreadProps(contentEl, this.api.getContentProps({ index: i2 }));
+            const itemEls = contentEl.querySelectorAll('[data-scope="marquee"][data-part="item"]');
+            itemEls.forEach((itemEl) => {
+              this.spreadProps(itemEl, this.api.getItemProps());
+            });
+          });
+          const edgeEnd = this.el.querySelector(
+            '[data-scope="marquee"][data-part="edge"][data-side="end"]'
+          );
+          if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
+        }
+      };
+      MarqueeHook = {
+        mounted() {
+          var _a, _b, _c, _d, _e, _f, _g;
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const ariaLabel = (_a = getString(el, "ariaLabel")) != null ? _a : `Marquee: ${el.id}`;
+          const zag = new Marquee(el, {
+            id: el.id,
+            translations: { root: ariaLabel },
+            duration: (_b = getNumber(el, "duration")) != null ? _b : 20,
+            side: (_c = getString(
+              el,
+              "side",
+              ["start", "end", "top", "bottom"]
+            )) != null ? _c : "end",
+            speed: (_d = getNumber(el, "speed")) != null ? _d : 50,
+            spacing: (_e = getString(el, "spacing")) != null ? _e : "1rem",
+            autoFill: getBoolean(el, "autoFill"),
+            pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
+            defaultPaused: getBoolean(el, "defaultPaused"),
+            delay: (_f = getNumber(el, "delay")) != null ? _f : 0,
+            loopCount: (_g = getNumber(el, "loopCount")) != null ? _g : 0,
+            reverse: getBoolean(el, "reverse"),
+            dir: getDir(el),
+            onPauseChange: (details) => {
+              const eventName = getString(el, "onPauseChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, { id: el.id, paused: details.paused });
+              }
+              const clientEventName = getString(el, "onPauseChangeClient");
+              if (clientEventName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientEventName, {
+                    bubbles: true,
+                    detail: { id: el.id, paused: details.paused }
+                  })
+                );
+              }
+            },
+            onLoopComplete: () => {
+              const eventName = getString(el, "onLoopComplete");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, { id: el.id });
+              }
+              const clientEventName = getString(el, "onLoopCompleteClient");
+              if (clientEventName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientEventName, { bubbles: true, detail: { id: el.id } })
+                );
+              }
+            },
+            onComplete: () => {
+              const eventName = getString(el, "onComplete");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, { id: el.id });
+              }
+              const clientEventName = getString(el, "onCompleteClient");
+              if (clientEventName) {
+                el.dispatchEvent(
+                  new CustomEvent(clientEventName, { bubbles: true, detail: { id: el.id } })
+                );
+              }
+            }
+          });
+          zag.init();
+          this.marquee = zag;
+          this.onPause = () => zag.api.pause();
+          this.onResume = () => zag.api.resume();
+          this.onTogglePause = () => zag.api.togglePause();
+          el.addEventListener("phx:marquee:pause", this.onPause);
+          el.addEventListener("phx:marquee:resume", this.onResume);
+          el.addEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+          this.handlers = [];
+          this.handlers.push(
+            this.handleEvent("marquee_pause", (payload) => {
+              const targetId = payload.marquee_id;
+              if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+              zag.api.pause();
+            })
+          );
+          this.handlers.push(
+            this.handleEvent("marquee_resume", (payload) => {
+              const targetId = payload.marquee_id;
+              if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+              zag.api.resume();
+            })
+          );
+          this.handlers.push(
+            this.handleEvent("marquee_toggle_pause", (payload) => {
+              const targetId = payload.marquee_id;
+              if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+              zag.api.togglePause();
+            })
+          );
+        },
+        updated() {
+          var _a, _b, _c, _d, _e, _f, _g, _h;
+          const ariaLabel = (_a = getString(this.el, "ariaLabel")) != null ? _a : `Marquee: ${this.el.id}`;
+          (_h = this.marquee) == null ? void 0 : _h.updateProps({
+            id: this.el.id,
+            translations: { root: ariaLabel },
+            duration: (_b = getNumber(this.el, "duration")) != null ? _b : 20,
+            side: (_c = getString(
+              this.el,
+              "side",
+              ["start", "end", "top", "bottom"]
+            )) != null ? _c : "end",
+            speed: (_d = getNumber(this.el, "speed")) != null ? _d : 50,
+            spacing: (_e = getString(this.el, "spacing")) != null ? _e : "1rem",
+            autoFill: getBoolean(this.el, "autoFill"),
+            pauseOnInteraction: getBoolean(this.el, "pauseOnInteraction"),
+            defaultPaused: getBoolean(this.el, "defaultPaused"),
+            delay: (_f = getNumber(this.el, "delay")) != null ? _f : 0,
+            loopCount: (_g = getNumber(this.el, "loopCount")) != null ? _g : 0,
+            reverse: getBoolean(this.el, "reverse"),
+            dir: getDir(this.el)
+          });
+        },
+        destroyed() {
+          var _a;
+          if (this.onPause) this.el.removeEventListener("phx:marquee:pause", this.onPause);
+          if (this.onResume) this.el.removeEventListener("phx:marquee:resume", this.onResume);
+          if (this.onTogglePause)
+            this.el.removeEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+          if (this.handlers) {
+            for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          (_a = this.marquee) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/menu.mjs
   var menu_exports = {};
   __export(menu_exports, {
@@ -21387,7 +22006,7 @@ var Corex = (() => {
     const event = new win.CustomEvent(itemSelectEvent, { detail: { value } });
     el.dispatchEvent(event);
   }
-  function connect14(service, normalize) {
+  function connect15(service, normalize) {
     const { context, send, state: state2, computed, prop, scope } = service;
     const open = state2.hasTag("open");
     const isSubmenu = context.get("isSubmenu");
@@ -21399,29 +22018,29 @@ var Corex = (() => {
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: anchorPoint ? "bottom" : currentPlacement
     }));
-    function getItemState(props26) {
+    function getItemState(props27) {
       return {
-        id: getItemId5(scope, props26.value),
-        disabled: !!props26.disabled,
-        highlighted: highlightedValue === props26.value
+        id: getItemId5(scope, props27.value),
+        disabled: !!props27.disabled,
+        highlighted: highlightedValue === props27.value
       };
     }
-    function getOptionItemProps(props26) {
+    function getOptionItemProps(props27) {
       var _a;
-      const valueText = (_a = props26.valueText) != null ? _a : props26.value;
-      return __spreadProps(__spreadValues({}, props26), { id: props26.value, valueText });
+      const valueText = (_a = props27.valueText) != null ? _a : props27.value;
+      return __spreadProps(__spreadValues({}, props27), { id: props27.value, valueText });
     }
-    function getOptionItemState(props26) {
-      const itemState = getItemState(getOptionItemProps(props26));
+    function getOptionItemState(props27) {
+      const itemState = getItemState(getOptionItemProps(props27));
       return __spreadProps(__spreadValues({}, itemState), {
-        checked: !!props26.checked
+        checked: !!props27.checked
       });
     }
-    function getItemProps(props26) {
-      const { closeOnSelect, valueText, value } = props26;
-      const itemState = getItemState(props26);
+    function getItemProps(props27) {
+      const { closeOnSelect, valueText, value } = props27;
+      const itemState = getItemState(props27);
       const id = getItemId5(scope, value);
-      return normalize.element(__spreadProps(__spreadValues({}, parts14.item.attrs), {
+      return normalize.element(__spreadProps(__spreadValues({}, parts15.item.attrs), {
         id,
         role: "menuitem",
         "aria-disabled": ariaAttr(itemState.disabled),
@@ -21485,18 +22104,18 @@ var Corex = (() => {
       reposition(options = {}) {
         send({ type: "POSITIONING.SET", options });
       },
-      addItemListener(props26) {
-        const node = scope.getById(props26.id);
+      addItemListener(props27) {
+        const node = scope.getById(props27.id);
         if (!node) return;
         const listener = () => {
           var _a;
-          return (_a = props26.onSelect) == null ? void 0 : _a.call(props26);
+          return (_a = props27.onSelect) == null ? void 0 : _a.call(props27);
         };
         node.addEventListener(itemSelectEvent, listener);
         return () => node.removeEventListener(itemSelectEvent, listener);
       },
       getContextTriggerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.contextTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.contextTrigger.attrs), {
           dir: prop("dir"),
           id: getContextTriggerId(scope),
           "data-state": open ? "open" : "closed",
@@ -21534,7 +22153,7 @@ var Corex = (() => {
         return mergeProps(getItemProps({ value: triggerProps2.id }), triggerProps2);
       },
       getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, isSubmenu ? parts14.triggerItem.attrs : parts14.trigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, isSubmenu ? parts15.triggerItem.attrs : parts15.trigger.attrs), {
           "data-placement": context.get("currentPlacement"),
           type: "button",
           dir: prop("dir"),
@@ -21608,13 +22227,13 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.indicator.attrs), {
           dir: prop("dir"),
           "data-state": open ? "open" : "closed"
         }));
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId5(scope),
           style: popperStyles.floating
@@ -21623,19 +22242,19 @@ var Corex = (() => {
       getArrowProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getArrowId(scope)
-        }, parts14.arrow.attrs), {
+        }, parts15.arrow.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrow
         }));
       },
       getArrowTipProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.arrowTip.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.arrowTip.attrs), {
           dir: prop("dir"),
           style: popperStyles.arrowTip
         }));
       },
       getContentProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.content.attrs), {
           id: getContentId7(scope),
           "aria-label": prop("aria-label"),
           hidden: !open,
@@ -21712,7 +22331,7 @@ var Corex = (() => {
         }));
       },
       getSeparatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.separator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.separator.attrs), {
           role: "separator",
           dir: prop("dir"),
           "aria-orientation": "horizontal"
@@ -21721,13 +22340,13 @@ var Corex = (() => {
       getItemState,
       getItemProps,
       getOptionItemState,
-      getOptionItemProps(props26) {
-        const { type, disabled, closeOnSelect } = props26;
-        const option = getOptionItemProps(props26);
-        const itemState = getOptionItemState(props26);
+      getOptionItemProps(props27) {
+        const { type, disabled, closeOnSelect } = props27;
+        const option = getOptionItemProps(props27);
+        const itemState = getOptionItemState(props27);
         return __spreadValues(__spreadValues({}, getItemProps(option)), normalize.element(__spreadProps(__spreadValues({
           "data-type": type
-        }, parts14.item.attrs), {
+        }, parts15.item.attrs), {
           dir: prop("dir"),
           "data-value": option.value,
           role: `menuitem${type}`,
@@ -21742,39 +22361,39 @@ var Corex = (() => {
           }
         })));
       },
-      getItemIndicatorProps(props26) {
-        const itemState = getOptionItemState(cast(props26));
+      getItemIndicatorProps(props27) {
+        const itemState = getOptionItemState(cast(props27));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
-          "data-state": hasProp(props26, "checked") ? dataState : void 0,
-          hidden: hasProp(props26, "checked") ? !itemState.checked : void 0
+          "data-state": hasProp(props27, "checked") ? dataState : void 0,
+          hidden: hasProp(props27, "checked") ? !itemState.checked : void 0
         }));
       },
-      getItemTextProps(props26) {
-        const itemState = getOptionItemState(cast(props26));
+      getItemTextProps(props27) {
+        const itemState = getOptionItemState(cast(props27));
         const dataState = itemState.checked ? "checked" : "unchecked";
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
-          "data-state": hasProp(props26, "checked") ? dataState : void 0
+          "data-state": hasProp(props27, "checked") ? dataState : void 0
         }));
       },
-      getItemGroupLabelProps(props26) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroupLabel.attrs), {
-          id: getGroupLabelId(scope, props26.htmlFor),
+      getItemGroupLabelProps(props27) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts15.itemGroupLabel.attrs), {
+          id: getGroupLabelId(scope, props27.htmlFor),
           dir: prop("dir")
         }));
       },
-      getItemGroupProps(props26) {
+      getItemGroupProps(props27) {
         return normalize.element(__spreadProps(__spreadValues({
-          id: getGroupId(scope, props26.id)
-        }, parts14.itemGroup.attrs), {
+          id: getGroupId(scope, props27.id)
+        }, parts15.itemGroup.attrs), {
           dir: prop("dir"),
-          "aria-labelledby": getGroupLabelId(scope, props26.id),
+          "aria-labelledby": getGroupLabelId(scope, props27.id),
           role: "group"
         }));
       }
@@ -21806,17 +22425,17 @@ var Corex = (() => {
     }
     return getItemId5(scope, value);
   }
-  var anatomy14, parts14, getTriggerId6, getContextTriggerId, getContentId7, getArrowId, getPositionerId5, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl7, getPositionerEl5, getTriggerEl5, getItemEl3, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and5, or2, machine14, props14, splitProps14, itemProps5, splitItemProps5, itemGroupLabelProps3, splitItemGroupLabelProps3, itemGroupProps3, splitItemGroupProps3, optionItemProps, splitOptionItemProps, Menu, MenuHook;
+  var anatomy15, parts15, getTriggerId6, getContextTriggerId, getContentId7, getArrowId, getPositionerId5, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl7, getPositionerEl5, getTriggerEl5, getItemEl3, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and5, or2, machine15, props15, splitProps15, itemProps5, splitItemProps5, itemGroupLabelProps3, splitItemGroupLabelProps3, itemGroupProps3, splitItemGroupProps3, optionItemProps, splitOptionItemProps, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_FEZIYMNT();
-      init_chunk_LOW5KGCT();
-      init_chunk_NF3CDGDL();
-      init_chunk_OSSFSUET();
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
-      anatomy14 = createAnatomy("menu").parts(
+      init_chunk_QHOSSHQC();
+      init_chunk_GN3NEUUU();
+      init_chunk_OA4F3YDQ();
+      init_chunk_EBQGC3XC();
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
+      anatomy15 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
         "content",
@@ -21832,7 +22451,7 @@ var Corex = (() => {
         "trigger",
         "triggerItem"
       );
-      parts14 = anatomy14.build();
+      parts15 = anatomy15.build();
       getTriggerId6 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `menu:${ctx.id}:trigger`;
@@ -21909,8 +22528,8 @@ var Corex = (() => {
       };
       itemSelectEvent = "menu:select";
       ({ not: not5, and: and5, or: or2 } = createGuards());
-      machine14 = createMachine({
-        props({ props: props26 }) {
+      machine15 = createMachine({
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             closeOnSelect: true,
             typeahead: true,
@@ -21919,11 +22538,11 @@ var Corex = (() => {
             navigate(details) {
               clickIfLink(details.node);
             }
-          }, props26), {
+          }, props27), {
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
-            }, props26.positioning)
+            }, props27.positioning)
           });
         },
         initialState({ prop }) {
@@ -22743,7 +23362,7 @@ var Corex = (() => {
           }
         }
       });
-      props14 = createProps()([
+      props15 = createProps()([
         "anchorPoint",
         "aria-label",
         "closeOnSelect",
@@ -22769,7 +23388,7 @@ var Corex = (() => {
         "positioning",
         "typeahead"
       ]);
-      splitProps14 = createSplitProps(props14);
+      splitProps15 = createSplitProps(props15);
       itemProps5 = createProps()(["closeOnSelect", "disabled", "value", "valueText"]);
       splitItemProps5 = createSplitProps(itemProps5);
       itemGroupLabelProps3 = createProps()(["htmlFor"]);
@@ -22792,11 +23411,11 @@ var Corex = (() => {
           __publicField(this, "children", []);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine14, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine15, props27);
         }
         initApi() {
-          return connect14(this.machine.service, normalizeProps);
+          return connect15(this.machine.service, normalizeProps);
         }
         setChild(child) {
           this.api.setChild(child.machine.service);
@@ -23313,7 +23932,7 @@ var Corex = (() => {
     }
     return newValue.length;
   }
-  function connect15(service, normalize) {
+  function connect16(service, normalize) {
     const { state: state2, send, prop, scope, computed } = service;
     const focused = state2.hasTag("focus");
     const disabled = computed("isDisabled");
@@ -23356,7 +23975,7 @@ var Corex = (() => {
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({
           id: getRootId12(scope)
-        }, parts15.root.attrs), {
+        }, parts16.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused),
@@ -23365,7 +23984,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts15.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts16.label.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-focus": dataAttr(focused),
@@ -23382,7 +24001,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.control.attrs), {
           dir: prop("dir"),
           role: "group",
           "aria-disabled": disabled,
@@ -23394,7 +24013,7 @@ var Corex = (() => {
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -23403,7 +24022,7 @@ var Corex = (() => {
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadProps(__spreadValues({}, parts15.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts16.input.attrs), {
           dir: prop("dir"),
           name: prop("name"),
           form: prop("form"),
@@ -23485,7 +24104,7 @@ var Corex = (() => {
         }));
       },
       getDecrementTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts15.decrementTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts16.decrementTrigger.attrs), {
           dir: prop("dir"),
           id: getDecrementTriggerId(scope),
           disabled: isDecrementDisabled,
@@ -23517,7 +24136,7 @@ var Corex = (() => {
         }));
       },
       getIncrementTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts15.incrementTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts16.incrementTrigger.attrs), {
           dir: prop("dir"),
           id: getIncrementTriggerId(scope),
           disabled: isIncrementDisabled,
@@ -23547,7 +24166,7 @@ var Corex = (() => {
         }));
       },
       getScrubberProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts15.scrubber.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts16.scrubber.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           id: getScrubberId(scope),
@@ -23574,11 +24193,11 @@ var Corex = (() => {
       }
     };
   }
-  var $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, anatomy15, parts15, getRootId12, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId8, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and6, machine15, props15, splitProps15, NumberInput, NumberInputHook;
+  var $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, anatomy16, parts16, getRootId12, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId8, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and6, machine16, props16, splitProps16, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
       $488c6ddbf4ef74c2$var$supportsSignDisplay = false;
       try {
@@ -23807,7 +24426,7 @@ var Corex = (() => {
         0.1,
         1.1
       ];
-      anatomy15 = createAnatomy("numberInput").parts(
+      anatomy16 = createAnatomy("numberInput").parts(
         "root",
         "label",
         "input",
@@ -23817,7 +24436,7 @@ var Corex = (() => {
         "decrementTrigger",
         "scrubber"
       );
-      parts15 = anatomy15.build();
+      parts16 = anatomy16.build();
       getRootId12 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `number-input:${ctx.id}`;
@@ -23950,14 +24569,14 @@ var Corex = (() => {
       };
       ({ choose: choose2, guards: guards3, createMachine: createMachine4 } = setup());
       ({ not: not6, and: and6 } = guards3);
-      machine15 = createMachine4({
-        props({ props: props26 }) {
-          const step = getDefaultStep(props26.step, props26.formatOptions);
+      machine16 = createMachine4({
+        props({ props: props27 }) {
+          const step = getDefaultStep(props27.step, props27.formatOptions);
           return __spreadProps(__spreadValues({
             dir: "ltr",
             locale: "en-US",
             focusInputOnChange: true,
-            clampValueOnBlur: !props26.allowOverflow,
+            clampValueOnBlur: !props27.allowOverflow,
             allowOverflow: false,
             inputMode: "decimal",
             pattern: "-?[0-9]*(.[0-9]+)?",
@@ -23966,11 +24585,11 @@ var Corex = (() => {
             min: Number.MIN_SAFE_INTEGER,
             max: Number.MAX_SAFE_INTEGER,
             spinOnPress: true
-          }, props26), {
+          }, props27), {
             translations: __spreadValues({
               incrementLabel: "increment value",
               decrementLabel: "decrease value"
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         initialState() {
@@ -24380,7 +24999,7 @@ var Corex = (() => {
           }
         }
       });
-      props15 = createProps()([
+      props16 = createProps()([
         "allowMouseWheel",
         "allowOverflow",
         "clampValueOnBlur",
@@ -24411,14 +25030,14 @@ var Corex = (() => {
         "value",
         "defaultValue"
       ]);
-      splitProps15 = createSplitProps(props15);
+      splitProps16 = createSplitProps(props16);
       NumberInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine15, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine16, props27);
         }
         initApi() {
-          return connect15(this.machine.service, normalizeProps);
+          return connect16(this.machine.service, normalizeProps);
         }
         render() {
           var _a;
@@ -24543,7 +25162,7 @@ var Corex = (() => {
   __export(password_input_exports, {
     PasswordInput: () => PasswordInputHook
   });
-  function connect16(service, normalize) {
+  function connect17(service, normalize) {
     const { scope, prop, context } = service;
     const visible = context.get("visible");
     const disabled = !!prop("disabled");
@@ -24567,7 +25186,7 @@ var Corex = (() => {
         service.send({ type: "VISIBILITY.SET", value: !visible });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.root.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -24575,7 +25194,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts16.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts17.label.attrs), {
           htmlFor: getInputId6(scope),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -24584,7 +25203,7 @@ var Corex = (() => {
         }));
       },
       getInputProps() {
-        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts16.input.attrs), {
+        return normalize.input(__spreadValues(__spreadProps(__spreadValues({}, parts17.input.attrs), {
           id: getInputId6(scope),
           autoCapitalize: "off",
           name: prop("name"),
@@ -24603,7 +25222,7 @@ var Corex = (() => {
       },
       getVisibilityTriggerProps() {
         var _a;
-        return normalize.button(__spreadProps(__spreadValues({}, parts16.visibilityTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts17.visibilityTrigger.attrs), {
           type: "button",
           tabIndex: -1,
           "aria-controls": getInputId6(scope),
@@ -24622,7 +25241,7 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.indicator.attrs), {
           "aria-hidden": true,
           "data-state": visible ? "visible" : "hidden",
           "data-disabled": dataAttr(disabled),
@@ -24631,7 +25250,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts16.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts17.control.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly)
@@ -24639,12 +25258,12 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy16, parts16, getInputId6, getInputEl5, passwordManagerProps, machine16, props16, splitProps16, PasswordInput, PasswordInputHook;
+  var anatomy17, parts17, getInputId6, getInputEl5, passwordManagerProps, machine17, props17, splitProps17, PasswordInput, PasswordInputHook;
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
-      anatomy16 = createAnatomy("password-input").parts(
+      init_chunk_RUWIVFVB();
+      anatomy17 = createAnatomy("password-input").parts(
         "root",
         "input",
         "label",
@@ -24652,7 +25271,7 @@ var Corex = (() => {
         "indicator",
         "visibilityTrigger"
       );
-      parts16 = anatomy16.build();
+      parts17 = anatomy17.build();
       getInputId6 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `p-input-${ctx.id}-input`;
@@ -24670,19 +25289,19 @@ var Corex = (() => {
         // Proton Pass
         "data-protonpass-ignore": "true"
       };
-      machine16 = createMachine({
-        props({ props: props26 }) {
+      machine17 = createMachine({
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             id: uuid(),
             defaultVisible: false,
             autoComplete: "current-password",
             ignorePasswordManagers: false
-          }, props26), {
+          }, props27), {
             translations: __spreadValues({
               visibilityTrigger(visible) {
                 return visible ? "Hide password" : "Show password";
               }
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         context({ prop, bindable: bindable2 }) {
@@ -24753,7 +25372,7 @@ var Corex = (() => {
           }
         }
       });
-      props16 = createProps()([
+      props17 = createProps()([
         "defaultVisible",
         "dir",
         "id",
@@ -24770,14 +25389,14 @@ var Corex = (() => {
         "autoComplete",
         "name"
       ]);
-      splitProps16 = createSplitProps(props16);
+      splitProps17 = createSplitProps(props17);
       PasswordInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine16, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine17, props27);
         }
         initApi() {
-          return connect16(this.machine.service, normalizeProps);
+          return connect17(this.machine.service, normalizeProps);
         }
         render() {
           var _a;
@@ -24882,7 +25501,7 @@ var Corex = (() => {
     const regex = new RegExp(pattern, "g");
     return regex.test(value);
   }
-  function connect17(service, normalize) {
+  function connect18(service, normalize) {
     const { send, context, computed, prop, scope } = service;
     const complete = computed("isValueComplete");
     const disabled = !!prop("disabled");
@@ -24917,7 +25536,7 @@ var Corex = (() => {
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({
           dir: prop("dir")
-        }, parts17.root.attrs), {
+        }, parts18.root.attrs), {
           id: getRootId13(scope),
           "data-invalid": dataAttr(invalid),
           "data-disabled": dataAttr(disabled),
@@ -24926,7 +25545,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts17.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts18.label.attrs), {
           dir: prop("dir"),
           htmlFor: getHiddenInputId3(scope),
           id: getLabelId9(scope),
@@ -24958,16 +25577,16 @@ var Corex = (() => {
         });
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts17.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts18.control.attrs), {
           dir: prop("dir"),
           id: getControlId6(scope)
         }));
       },
-      getInputProps(props26) {
+      getInputProps(props27) {
         var _a;
-        const { index } = props26;
+        const { index } = props27;
         const inputType = prop("type") === "numeric" ? "tel" : "text";
-        return normalize.input(__spreadProps(__spreadValues({}, parts17.input.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts18.input.attrs), {
           dir: prop("dir"),
           disabled,
           "data-disabled": dataAttr(disabled),
@@ -25087,13 +25706,13 @@ var Corex = (() => {
   function fill(value, count) {
     return Array.from({ length: count }).fill("").map((v2, i2) => value[i2] || v2);
   }
-  var anatomy17, parts17, getRootId13, getInputId7, getHiddenInputId3, getLabelId9, getControlId6, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl3, setInputValue, REGEX, choose3, createMachine5, machine17, props17, splitProps17, PinInput, PinInputHook;
+  var anatomy18, parts18, getRootId13, getInputId7, getHiddenInputId3, getLabelId9, getControlId6, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl3, setInputValue, REGEX, choose3, createMachine5, machine18, props18, splitProps18, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
-      anatomy17 = createAnatomy("pinInput").parts("root", "label", "input", "control");
-      parts17 = anatomy17.build();
+      init_chunk_RUWIVFVB();
+      anatomy18 = createAnatomy("pinInput").parts("root", "label", "input", "control");
+      parts18 = anatomy18.build();
       getRootId13 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `pin-input:${ctx.id}`;
@@ -25133,17 +25752,17 @@ var Corex = (() => {
         alphanumeric: /^[a-zA-Z0-9]+$/i
       };
       ({ choose: choose3, createMachine: createMachine5 } = setup());
-      machine17 = createMachine5({
-        props({ props: props26 }) {
+      machine18 = createMachine5({
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             placeholder: "\u25CB",
             otp: false,
             type: "numeric",
-            defaultValue: props26.count ? fill([], props26.count) : []
-          }, props26), {
+            defaultValue: props27.count ? fill([], props27.count) : []
+          }, props27), {
             translations: __spreadValues({
               inputLabel: (index, length) => `pin code ${index + 1} of ${length}`
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         initialState() {
@@ -25401,7 +26020,7 @@ var Corex = (() => {
           }
         }
       });
-      props17 = createProps()([
+      props18 = createProps()([
         "autoFocus",
         "blurOnComplete",
         "count",
@@ -25428,14 +26047,14 @@ var Corex = (() => {
         "type",
         "value"
       ]);
-      splitProps17 = createSplitProps(props17);
+      splitProps18 = createSplitProps(props18);
       PinInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine17, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine18, props27);
         }
         initApi() {
-          return connect17(this.machine.service, normalizeProps);
+          return connect18(this.machine.service, normalizeProps);
         }
         render() {
           var _a;
@@ -25563,25 +26182,25 @@ var Corex = (() => {
   __export(radio_group_exports, {
     RadioGroup: () => RadioGroupHook
   });
-  function connect18(service, normalize) {
+  function connect19(service, normalize) {
     const { context, send, computed, prop, scope } = service;
     const groupDisabled = computed("isDisabled");
     const groupInvalid = prop("invalid");
     const readOnly = prop("readOnly");
-    function getItemState(props26) {
+    function getItemState(props27) {
       return {
-        value: props26.value,
-        invalid: !!props26.invalid || !!groupInvalid,
-        disabled: !!props26.disabled || groupDisabled,
-        checked: context.get("value") === props26.value,
-        focused: context.get("focusedValue") === props26.value,
-        focusVisible: context.get("focusVisibleValue") === props26.value,
-        hovered: context.get("hoveredValue") === props26.value,
-        active: context.get("activeValue") === props26.value
+        value: props27.value,
+        invalid: !!props27.invalid || !!groupInvalid,
+        disabled: !!props27.disabled || groupDisabled,
+        checked: context.get("value") === props27.value,
+        focused: context.get("focusedValue") === props27.value,
+        focusVisible: context.get("focusVisibleValue") === props27.value,
+        hovered: context.get("hoveredValue") === props27.value,
+        active: context.get("activeValue") === props27.value
       };
     }
-    function getItemDataAttrs(props26) {
-      const itemState = getItemState(props26);
+    function getItemDataAttrs(props27) {
+      const itemState = getItemState(props27);
       return {
         "data-focus": dataAttr(itemState.focused),
         "data-focus-visible": dataAttr(itemState.focusVisible),
@@ -25609,7 +26228,7 @@ var Corex = (() => {
         send({ type: "SET_VALUE", value: null, isTrusted: false });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts18.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.root.attrs), {
           role: "radiogroup",
           id: getRootId14(scope),
           "aria-labelledby": getLabelId10(scope),
@@ -25628,7 +26247,7 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts18.label.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts19.label.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           "data-disabled": dataAttr(groupDisabled),
@@ -25639,17 +26258,17 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props26) {
-        const itemState = getItemState(props26);
-        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts18.item.attrs), {
+      getItemProps(props27) {
+        const itemState = getItemState(props27);
+        return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts19.item.attrs), {
           dir: prop("dir"),
-          id: getItemId6(scope, props26.value),
-          htmlFor: getItemHiddenInputId(scope, props26.value)
-        }), getItemDataAttrs(props26)), {
+          id: getItemId6(scope, props27.value),
+          htmlFor: getItemHiddenInputId(scope, props27.value)
+        }), getItemDataAttrs(props27)), {
           onPointerMove() {
             if (itemState.disabled) return;
             if (itemState.hovered) return;
-            send({ type: "SET_HOVERED", value: props26.value, hovered: true });
+            send({ type: "SET_HOVERED", value: props27.value, hovered: true });
           },
           onPointerLeave() {
             if (itemState.disabled) return;
@@ -25661,7 +26280,7 @@ var Corex = (() => {
             if (itemState.focused && event.pointerType === "mouse") {
               event.preventDefault();
             }
-            send({ type: "SET_ACTIVE", value: props26.value, active: true });
+            send({ type: "SET_ACTIVE", value: props27.value, active: true });
           },
           onPointerUp() {
             if (itemState.disabled) return;
@@ -25670,35 +26289,35 @@ var Corex = (() => {
           onClick() {
             var _a;
             if (!itemState.disabled && isSafari()) {
-              (_a = getItemHiddenInputEl(scope, props26.value)) == null ? void 0 : _a.focus();
+              (_a = getItemHiddenInputEl(scope, props27.value)) == null ? void 0 : _a.focus();
             }
           }
         }));
       },
-      getItemTextProps(props26) {
-        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts18.itemText.attrs), {
+      getItemTextProps(props27) {
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts19.itemText.attrs), {
           dir: prop("dir"),
-          id: getItemLabelId(scope, props26.value)
-        }), getItemDataAttrs(props26)));
+          id: getItemLabelId(scope, props27.value)
+        }), getItemDataAttrs(props27)));
       },
-      getItemControlProps(props26) {
-        const itemState = getItemState(props26);
-        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts18.itemControl.attrs), {
+      getItemControlProps(props27) {
+        const itemState = getItemState(props27);
+        return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts19.itemControl.attrs), {
           dir: prop("dir"),
-          id: getItemControlId(scope, props26.value),
+          id: getItemControlId(scope, props27.value),
           "data-active": dataAttr(itemState.active),
           "aria-hidden": true
-        }), getItemDataAttrs(props26)));
+        }), getItemDataAttrs(props27)));
       },
-      getItemHiddenInputProps(props26) {
-        const itemState = getItemState(props26);
+      getItemHiddenInputProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.input({
           "data-ownedby": getRootId14(scope),
-          id: getItemHiddenInputId(scope, props26.value),
+          id: getItemHiddenInputId(scope, props27.value),
           type: "radio",
           name: prop("name") || prop("id"),
           form: prop("form"),
-          value: props26.value,
+          value: props27.value,
           required: prop("required"),
           "aria-invalid": itemState.invalid || void 0,
           onClick(event) {
@@ -25707,7 +26326,7 @@ var Corex = (() => {
               return;
             }
             if (event.currentTarget.checked) {
-              send({ type: "SET_VALUE", value: props26.value, isTrusted: true });
+              send({ type: "SET_VALUE", value: props27.value, isTrusted: true });
             }
           },
           onBlur() {
@@ -25715,12 +26334,12 @@ var Corex = (() => {
           },
           onFocus() {
             const focusVisible = isFocusVisible();
-            send({ type: "SET_FOCUSED", value: props26.value, focused: true, focusVisible });
+            send({ type: "SET_FOCUSED", value: props27.value, focused: true, focusVisible });
           },
           onKeyDown(event) {
             if (event.defaultPrevented) return;
             if (event.key === " ") {
-              send({ type: "SET_ACTIVE", value: props26.value, active: true });
+              send({ type: "SET_ACTIVE", value: props27.value, active: true });
             }
           },
           onKeyUp(event) {
@@ -25739,7 +26358,7 @@ var Corex = (() => {
         const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId2(scope)
-        }, parts18.indicator.attrs), {
+        }, parts19.indicator.attrs), {
           dir: prop("dir"),
           hidden: context.get("value") == null || rectIsEmpty,
           "data-disabled": dataAttr(groupDisabled),
@@ -25761,13 +26380,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy18, parts18, getRootId14, getLabelId10, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, not7, machine18, props18, splitProps18, itemProps6, splitItemProps6, RadioGroup, RadioGroupHook;
+  var anatomy19, parts19, getRootId14, getLabelId10, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, not7, machine19, props19, splitProps19, itemProps6, splitItemProps6, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
-      anatomy18 = createAnatomy("radio-group").parts(
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
+      anatomy19 = createAnatomy("radio-group").parts(
         "root",
         "label",
         "item",
@@ -25775,7 +26394,7 @@ var Corex = (() => {
         "itemControl",
         "indicator"
       );
-      parts18 = anatomy18.build();
+      parts19 = anatomy19.build();
       getRootId14 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `radio-group:${ctx.id}`;
@@ -25834,11 +26453,11 @@ var Corex = (() => {
         };
       };
       ({ not: not7 } = createGuards());
-      machine18 = createMachine({
-        props({ props: props26 }) {
+      machine19 = createMachine({
+        props({ props: props27 }) {
           return __spreadValues({
             orientation: "vertical"
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "idle";
@@ -25992,7 +26611,7 @@ var Corex = (() => {
           }
         }
       });
-      props18 = createProps()([
+      props19 = createProps()([
         "dir",
         "disabled",
         "form",
@@ -26008,16 +26627,16 @@ var Corex = (() => {
         "value",
         "defaultValue"
       ]);
-      splitProps18 = createSplitProps(props18);
+      splitProps19 = createSplitProps(props19);
       itemProps6 = createProps()(["value", "disabled", "invalid"]);
       splitItemProps6 = createSplitProps(itemProps6);
       RadioGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine18, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine19, props27);
         }
         initApi() {
-          return connect18(this.machine.service, normalizeProps);
+          return connect19(this.machine.service, normalizeProps);
         }
         render() {
           var _a;
@@ -26150,7 +26769,7 @@ var Corex = (() => {
   __export(select_exports, {
     Select: () => SelectHook
   });
-  function connect19(service, normalize) {
+  function connect20(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
     const invalid = !!prop("invalid");
@@ -26167,10 +26786,10 @@ var Corex = (() => {
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
     const ariaActiveDescendant = highlightedValue ? getItemId7(scope, highlightedValue) : void 0;
-    function getItemState(props26) {
-      const _disabled = collection22.getItemDisabled(props26.item);
-      const value = collection22.getItemValue(props26.item);
-      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props26.item)}`);
+    function getItemState(props27) {
+      const _disabled = collection22.getItemDisabled(props27.item);
+      const value = collection22.getItemValue(props27.item);
+      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props27.item)}`);
       return {
         value,
         disabled: Boolean(disabled || _disabled),
@@ -26230,7 +26849,7 @@ var Corex = (() => {
       },
       getItemState,
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.root.attrs), {
           dir: prop("dir"),
           id: getRootId15(scope),
           "data-invalid": dataAttr(invalid),
@@ -26241,7 +26860,7 @@ var Corex = (() => {
         return normalize.label(__spreadProps(__spreadValues({
           dir: prop("dir"),
           id: getLabelId11(scope)
-        }, parts19.label.attrs), {
+        }, parts20.label.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -26256,7 +26875,7 @@ var Corex = (() => {
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
           dir: prop("dir"),
           id: getControlId7(scope),
           "data-state": open ? "open" : "closed",
@@ -26266,7 +26885,7 @@ var Corex = (() => {
         }));
       },
       getValueTextProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.valueText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.valueText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
@@ -26287,7 +26906,7 @@ var Corex = (() => {
           "aria-invalid": invalid,
           "aria-required": required,
           "aria-labelledby": getLabelId11(scope)
-        }, parts19.trigger.attrs), {
+        }, parts20.trigger.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-invalid": dataAttr(invalid),
           "data-readonly": dataAttr(readOnly),
@@ -26354,7 +26973,7 @@ var Corex = (() => {
         }));
       },
       getIndicatorProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.indicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.indicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
           "data-state": open ? "open" : "closed",
@@ -26363,12 +26982,12 @@ var Corex = (() => {
           "data-readonly": dataAttr(readOnly)
         }));
       },
-      getItemProps(props26) {
-        const itemState = getItemState(props26);
+      getItemProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({
           id: getItemId7(scope, itemState.value),
           role: "option"
-        }, parts19.item.attrs), {
+        }, parts20.item.attrs), {
           dir: prop("dir"),
           "data-value": itemState.value,
           "aria-selected": itemState.selected,
@@ -26389,7 +27008,7 @@ var Corex = (() => {
           onPointerLeave(event) {
             var _a;
             if (itemState.disabled) return;
-            if (props26.persistFocus) return;
+            if (props27.persistFocus) return;
             if (event.pointerType !== "mouse") return;
             const pointerMoved = (_a = service.event.previous()) == null ? void 0 : _a.type.includes("POINTER");
             if (!pointerMoved) return;
@@ -26397,34 +27016,34 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props26) {
-        const itemState = getItemState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.itemText.attrs), {
+      getItemTextProps(props27) {
+        const itemState = getItemState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props26) {
-        const itemState = getItemState(props26);
+      getItemIndicatorProps(props27) {
+        const itemState = getItemState(props27);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
-        }, parts19.itemIndicator.attrs), {
+        }, parts20.itemIndicator.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
-      getItemGroupLabelProps(props26) {
-        const { htmlFor } = props26;
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.itemGroupLabel.attrs), {
+      getItemGroupLabelProps(props27) {
+        const { htmlFor } = props27;
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.itemGroupLabel.attrs), {
           id: getItemGroupLabelId3(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
         }));
       },
-      getItemGroupProps(props26) {
-        const { id } = props26;
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.itemGroup.attrs), {
+      getItemGroupProps(props27) {
+        const { id } = props27;
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           id: getItemGroupId4(scope, id),
           "aria-labelledby": getItemGroupLabelId3(scope, id),
@@ -26433,7 +27052,7 @@ var Corex = (() => {
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts19.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts20.clearTrigger.attrs), {
           id: getClearTriggerId3(scope),
           type: "button",
           "aria-label": "Clear value",
@@ -26479,7 +27098,7 @@ var Corex = (() => {
         });
       },
       getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.positioner.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId6(scope),
           style: popperStyles.floating
@@ -26491,7 +27110,7 @@ var Corex = (() => {
           dir: prop("dir"),
           id: getContentId8(scope),
           role: composite ? "listbox" : "dialog"
-        }, parts19.content.attrs), {
+        }, parts20.content.attrs), {
           "data-state": open ? "open" : "closed",
           "data-placement": currentPlacement,
           "data-activedescendant": ariaActiveDescendant,
@@ -26552,7 +27171,7 @@ var Corex = (() => {
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts19.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts20.list.attrs), {
           tabIndex: 0,
           role: !composite ? "listbox" : void 0,
           "aria-labelledby": getTriggerId7(scope),
@@ -26604,17 +27223,17 @@ var Corex = (() => {
     }
     return result;
   }
-  var anatomy19, parts19, collection3, getRootId15, getContentId8, getTriggerId7, getClearTriggerId3, getLabelId11, getControlId7, getItemId7, getHiddenSelectId, getPositionerId6, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl8, getTriggerEl6, getClearTriggerEl3, getPositionerEl6, getItemEl4, getSelectedValues, and7, not8, or3, machine19, props19, splitProps19, itemProps7, splitItemProps7, itemGroupProps4, splitItemGroupProps4, itemGroupLabelProps4, splitItemGroupLabelProps4, Select, SelectHook;
+  var anatomy20, parts20, collection3, getRootId15, getContentId8, getTriggerId7, getClearTriggerId3, getLabelId11, getControlId7, getItemId7, getHiddenSelectId, getPositionerId6, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl8, getTriggerEl6, getClearTriggerEl3, getPositionerEl6, getItemEl4, getSelectedValues, and7, not8, or3, machine20, props20, splitProps20, itemProps7, splitItemProps7, itemGroupProps4, splitItemGroupProps4, itemGroupLabelProps4, splitItemGroupLabelProps4, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_4RWUEBEQ();
-      init_chunk_LOW5KGCT();
-      init_chunk_NF3CDGDL();
-      init_chunk_OSSFSUET();
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
-      anatomy19 = createAnatomy("select").parts(
+      init_chunk_KCOQB3RU();
+      init_chunk_GN3NEUUU();
+      init_chunk_OA4F3YDQ();
+      init_chunk_EBQGC3XC();
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
+      anatomy20 = createAnatomy("select").parts(
         "label",
         "positioner",
         "trigger",
@@ -26631,7 +27250,7 @@ var Corex = (() => {
         "control",
         "valueText"
       );
-      parts19 = anatomy19.build();
+      parts20 = anatomy20.build();
       collection3 = (options) => {
         return new ListCollection(options);
       };
@@ -26695,20 +27314,20 @@ var Corex = (() => {
         return el.multiple ? Array.from(el.selectedOptions, (o2) => o2.value) : el.value ? [el.value] : [];
       };
       ({ and: and7, not: not8, or: or3 } = createGuards());
-      machine19 = createMachine({
-        props({ props: props26 }) {
+      machine20 = createMachine({
+        props({ props: props27 }) {
           var _a;
           return __spreadProps(__spreadValues({
             loopFocus: false,
-            closeOnSelect: !props26.multiple,
+            closeOnSelect: !props27.multiple,
             composite: true,
             defaultValue: []
-          }, props26), {
-            collection: (_a = props26.collection) != null ? _a : collection3.empty(),
+          }, props27), {
+            collection: (_a = props27.collection) != null ? _a : collection3.empty(),
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
-            }, props26.positioning)
+            }, props27.positioning)
           });
         },
         context({ prop, bindable: bindable2 }) {
@@ -27383,7 +28002,7 @@ var Corex = (() => {
           }
         }
       });
-      props19 = createProps()([
+      props20 = createProps()([
         "autoComplete",
         "closeOnSelect",
         "collection",
@@ -27417,7 +28036,7 @@ var Corex = (() => {
         "scrollToIndexFn",
         "value"
       ]);
-      splitProps19 = createSplitProps(props19);
+      splitProps20 = createSplitProps(props20);
       itemProps7 = createProps()(["item", "persistFocus"]);
       splitItemProps7 = createSplitProps(itemProps7);
       itemGroupProps4 = createProps()(["id"]);
@@ -27425,9 +28044,9 @@ var Corex = (() => {
       itemGroupLabelProps4 = createProps()(["htmlFor"]);
       splitItemGroupLabelProps4 = createSplitProps(itemGroupLabelProps4);
       Select = class extends Component {
-        constructor(el, props26) {
+        constructor(el, props27) {
           var _a;
-          super(el, props26);
+          super(el, props27);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "placeholder", "");
@@ -27439,7 +28058,7 @@ var Corex = (() => {
               this.render();
             });
           });
-          const collectionFromProps = props26.collection;
+          const collectionFromProps = props27.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
           this.placeholder = getString(this.el, "placeholder") || "";
         }
@@ -27477,17 +28096,17 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
+        initMachine(props27) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props26.collection;
-          return new VanillaMachine(machine19, __spreadProps(__spreadValues({}, props26), {
+          const collectionFromProps = props27.collection;
+          return new VanillaMachine(machine20, __spreadProps(__spreadValues({}, props27), {
             get collection() {
               return collectionFromProps != null ? collectionFromProps : getCollection();
             }
           }));
         }
         initApi() {
-          return connect19(this.machine.service, normalizeProps);
+          return connect20(this.machine.service, normalizeProps);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -27871,7 +28490,7 @@ var Corex = (() => {
   function R(e2, t2 = {}) {
     return P(L(e2, t2), t2);
   }
-  function connect20(service, normalize) {
+  function connect21(service, normalize) {
     const { state: state2, send, prop, computed, context, scope } = service;
     const drawing = state2.matches("drawing");
     const empty = computed("isEmpty");
@@ -27892,7 +28511,7 @@ var Corex = (() => {
         return getDataUrl2(scope, { type, quality });
       },
       getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts20.label.attrs), {
+        return normalize.label(__spreadProps(__spreadValues({}, parts21.label.attrs), {
           id: getLabelId12(scope),
           "data-disabled": dataAttr(disabled),
           "data-required": dataAttr(required),
@@ -27906,13 +28525,13 @@ var Corex = (() => {
         }));
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts20.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts21.root.attrs), {
           "data-disabled": dataAttr(disabled),
           id: getRootId16(scope)
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts20.control.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts21.control.attrs), {
           tabIndex: disabled ? void 0 : 0,
           id: getControlId8(scope),
           role: "application",
@@ -27948,7 +28567,7 @@ var Corex = (() => {
         }));
       },
       getSegmentProps() {
-        return normalize.svg(__spreadProps(__spreadValues({}, parts20.segment.attrs), {
+        return normalize.svg(__spreadProps(__spreadValues({}, parts21.segment.attrs), {
           style: {
             position: "absolute",
             top: 0,
@@ -27960,18 +28579,18 @@ var Corex = (() => {
           }
         }));
       },
-      getSegmentPathProps(props26) {
-        return normalize.path(__spreadProps(__spreadValues({}, parts20.segmentPath.attrs), {
-          d: props26.path
+      getSegmentPathProps(props27) {
+        return normalize.path(__spreadProps(__spreadValues({}, parts21.segmentPath.attrs), {
+          d: props27.path
         }));
       },
       getGuideProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts20.guide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts21.guide.attrs), {
           "data-disabled": dataAttr(disabled)
         }));
       },
       getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts20.clearTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts21.clearTrigger.attrs), {
           type: "button",
           "aria-label": translations.clearTrigger,
           hidden: !context.get("paths").length || drawing,
@@ -27981,7 +28600,7 @@ var Corex = (() => {
           }
         }));
       },
-      getHiddenInputProps(props26) {
+      getHiddenInputProps(props27) {
         return normalize.input({
           id: getHiddenInputId4(scope),
           type: "text",
@@ -27990,7 +28609,7 @@ var Corex = (() => {
           required: prop("required"),
           readOnly: true,
           name: prop("name"),
-          value: props26.value
+          value: props27.value
         });
       }
     };
@@ -28037,11 +28656,11 @@ var Corex = (() => {
       streamline: (_d = getNumber(el, "drawingStreamline")) != null ? _d : 0.65
     };
   }
-  var e, t, n, r, a, E, D, O, F, z, anatomy20, parts20, getRootId16, getControlId8, getLabelId12, getHiddenInputId4, getControlEl4, getSegmentEl, getDataUrl2, average, machine20, props20, splitProps20, SignaturePad, SignaturePadHook;
+  var e, t, n, r, a, E, D, O, F, z, anatomy21, parts21, getRootId16, getControlId8, getLabelId12, getHiddenInputId4, getControlEl4, getSegmentEl, getDataUrl2, average, machine21, props21, splitProps21, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
+      init_chunk_RUWIVFVB();
       ({ PI: e } = Math);
       t = e + 1e-4;
       n = 0.5;
@@ -28052,7 +28671,7 @@ var Corex = (() => {
       O = [0, 0];
       F = [0, 0];
       z = R;
-      anatomy20 = createAnatomy("signature-pad").parts(
+      anatomy21 = createAnatomy("signature-pad").parts(
         "root",
         "control",
         "segment",
@@ -28061,7 +28680,7 @@ var Corex = (() => {
         "clearTrigger",
         "label"
       );
-      parts20 = anatomy20.build();
+      parts21 = anatomy21.build();
       getRootId16 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `signature-${ctx.id}`;
@@ -28084,22 +28703,22 @@ var Corex = (() => {
         return getDataUrl(getSegmentEl(ctx), options);
       };
       average = (a2, b2) => (a2 + b2) / 2;
-      machine20 = createMachine({
-        props({ props: props26 }) {
+      machine21 = createMachine({
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             defaultPaths: []
-          }, props26), {
+          }, props27), {
             drawing: __spreadValues({
               size: 2,
               simulatePressure: false,
               thinning: 0.7,
               smoothing: 0.4,
               streamline: 0.6
-            }, props26.drawing),
+            }, props27.drawing),
             translations: __spreadValues({
               control: "signature pad",
               clearTrigger: "clear signature"
-            }, props26.translations)
+            }, props27.translations)
           });
         },
         initialState() {
@@ -28215,7 +28834,7 @@ var Corex = (() => {
           }
         }
       });
-      props20 = createProps()([
+      props21 = createProps()([
         "defaultPaths",
         "dir",
         "disabled",
@@ -28231,7 +28850,7 @@ var Corex = (() => {
         "required",
         "translations"
       ]);
-      splitProps20 = createSplitProps(props20);
+      splitProps21 = createSplitProps(props21);
       SignaturePad = class extends Component {
         constructor() {
           super(...arguments);
@@ -28272,9 +28891,9 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          this.name = props26.name;
-          return new VanillaMachine(machine20, props26);
+        initMachine(props27) {
+          this.name = props27.name;
+          return new VanillaMachine(machine21, props27);
         }
         setName(name) {
           this.name = name;
@@ -28283,7 +28902,7 @@ var Corex = (() => {
           this.paths = paths;
         }
         initApi() {
-          return connect20(this.machine.service, normalizeProps);
+          return connect21(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -28429,7 +29048,7 @@ var Corex = (() => {
   __export(switch_exports, {
     Switch: () => SwitchHook
   });
-  function connect21(service, normalize) {
+  function connect22(service, normalize) {
     const { context, send, prop, scope } = service;
     const disabled = !!prop("disabled");
     const readOnly = !!prop("readOnly");
@@ -28460,7 +29079,7 @@ var Corex = (() => {
         send({ type: "CHECKED.TOGGLE", checked, isTrusted: false });
       },
       getRootProps() {
-        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts21.root.attrs), dataAttrs), {
+        return normalize.label(__spreadProps(__spreadValues(__spreadValues({}, parts22.root.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getRootId17(scope),
           htmlFor: getHiddenInputId5(scope),
@@ -28486,20 +29105,20 @@ var Corex = (() => {
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts21.label.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts22.label.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getLabelId13(scope)
         }));
       },
       getThumbProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts21.thumb.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts22.thumb.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getThumbId2(scope),
           "aria-hidden": true
         }));
       },
       getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts21.control.attrs), dataAttrs), {
+        return normalize.element(__spreadProps(__spreadValues(__spreadValues({}, parts22.control.attrs), dataAttrs), {
           dir: prop("dir"),
           id: getControlId9(scope),
           "aria-hidden": true
@@ -28537,14 +29156,14 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy21, parts21, getRootId17, getLabelId13, getThumbId2, getControlId9, getHiddenInputId5, getRootEl6, getHiddenInputEl4, not9, machine21, props21, splitProps21, Switch, SwitchHook;
+  var anatomy22, parts22, getRootId17, getLabelId13, getThumbId2, getControlId9, getHiddenInputId5, getRootEl6, getHiddenInputEl4, not9, machine22, props22, splitProps22, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_GXGJDSCU();
-      init_chunk_TZXIWZZ7();
-      anatomy21 = createAnatomy("switch").parts("root", "label", "control", "thumb");
-      parts21 = anatomy21.build();
+      init_chunk_2QLEEEGG();
+      init_chunk_RUWIVFVB();
+      anatomy22 = createAnatomy("switch").parts("root", "label", "control", "thumb");
+      parts22 = anatomy22.build();
       getRootId17 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `switch:${ctx.id}`;
@@ -28568,13 +29187,13 @@ var Corex = (() => {
       getRootEl6 = (ctx) => ctx.getById(getRootId17(ctx));
       getHiddenInputEl4 = (ctx) => ctx.getById(getHiddenInputId5(ctx));
       ({ not: not9 } = createGuards());
-      machine21 = createMachine({
-        props({ props: props26 }) {
+      machine22 = createMachine({
+        props({ props: props27 }) {
           return __spreadValues({
             defaultChecked: false,
             label: "switch",
             value: "on"
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "ready";
@@ -28707,7 +29326,7 @@ var Corex = (() => {
           }
         }
       });
-      props21 = createProps()([
+      props22 = createProps()([
         "checked",
         "defaultChecked",
         "dir",
@@ -28724,14 +29343,14 @@ var Corex = (() => {
         "required",
         "value"
       ]);
-      splitProps21 = createSplitProps(props21);
+      splitProps22 = createSplitProps(props22);
       Switch = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine21, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine22, props27);
         }
         initApi() {
-          return connect21(this.machine.service, normalizeProps);
+          return connect22(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -28889,18 +29508,18 @@ var Corex = (() => {
   __export(tabs_exports, {
     Tabs: () => TabsHook
   });
-  function connect22(service, normalize) {
+  function connect23(service, normalize) {
     const { state: state2, send, context, prop, scope } = service;
     const translations = prop("translations");
     const focused = state2.matches("focused");
     const isVertical = prop("orientation") === "vertical";
     const isHorizontal = prop("orientation") === "horizontal";
     const composite = prop("composite");
-    function getTriggerState(props26) {
+    function getTriggerState(props27) {
       return {
-        selected: context.get("value") === props26.value,
-        focused: context.get("focusedValue") === props26.value,
-        disabled: !!props26.disabled
+        selected: context.get("value") === props27.value,
+        focused: context.get("focusedValue") === props27.value,
+        disabled: !!props27.disabled
       };
     }
     return {
@@ -28934,7 +29553,7 @@ var Corex = (() => {
         (_a = getTriggerEl7(scope, value)) == null ? void 0 : _a.focus();
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.root.attrs), {
           id: getRootId18(scope),
           "data-orientation": prop("orientation"),
           "data-focus": dataAttr(focused),
@@ -28942,7 +29561,7 @@ var Corex = (() => {
         }));
       },
       getListProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.list.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.list.attrs), {
           id: getListId(scope),
           role: "tablist",
           dir: prop("dir"),
@@ -28992,10 +29611,10 @@ var Corex = (() => {
         }));
       },
       getTriggerState,
-      getTriggerProps(props26) {
-        const { value, disabled } = props26;
-        const triggerState = getTriggerState(props26);
-        return normalize.button(__spreadProps(__spreadValues({}, parts22.trigger.attrs), {
+      getTriggerProps(props27) {
+        const { value, disabled } = props27;
+        const triggerState = getTriggerState(props27);
+        return normalize.button(__spreadProps(__spreadValues({}, parts23.trigger.attrs), {
           role: "tab",
           type: "button",
           disabled,
@@ -29032,10 +29651,10 @@ var Corex = (() => {
           }
         }));
       },
-      getContentProps(props26) {
-        const { value } = props26;
+      getContentProps(props27) {
+        const { value } = props27;
         const selected = context.get("value") === value;
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.content.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts23.content.attrs), {
           dir: prop("dir"),
           id: getContentId9(scope, value),
           tabIndex: composite ? 0 : -1,
@@ -29052,7 +29671,7 @@ var Corex = (() => {
         const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId3(scope)
-        }, parts22.indicator.attrs), {
+        }, parts23.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
           hidden: rectIsEmpty,
@@ -29073,13 +29692,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy22, parts22, getRootId18, getListId, getContentId9, getTriggerId8, getIndicatorId3, getListEl, getContentEl9, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, createMachine6, machine22, props22, splitProps22, triggerProps, splitTriggerProps, contentProps, splitContentProps, Tabs, TabsHook;
+  var anatomy23, parts23, getRootId18, getListId, getContentId9, getTriggerId8, getIndicatorId3, getListEl, getContentEl9, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, createMachine6, machine23, props23, splitProps23, triggerProps, splitTriggerProps, contentProps, splitContentProps, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
-      anatomy22 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
-      parts22 = anatomy22.build();
+      init_chunk_RUWIVFVB();
+      anatomy23 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
+      parts23 = anatomy23.build();
       getRootId18 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `tabs:${ctx.id}`;
@@ -29127,8 +29746,8 @@ var Corex = (() => {
         return getOffsetRect2(tab);
       };
       ({ createMachine: createMachine6 } = setup());
-      machine22 = createMachine6({
-        props({ props: props26 }) {
+      machine23 = createMachine6({
+        props({ props: props27 }) {
           return __spreadValues({
             dir: "ltr",
             orientation: "horizontal",
@@ -29139,7 +29758,7 @@ var Corex = (() => {
               clickIfLink(details.node);
             },
             defaultValue: null
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "idle";
@@ -29389,7 +30008,7 @@ var Corex = (() => {
           }
         }
       });
-      props22 = createProps()([
+      props23 = createProps()([
         "activationMode",
         "composite",
         "deselectable",
@@ -29406,18 +30025,18 @@ var Corex = (() => {
         "value",
         "defaultValue"
       ]);
-      splitProps22 = createSplitProps(props22);
+      splitProps23 = createSplitProps(props23);
       triggerProps = createProps()(["disabled", "value"]);
       splitTriggerProps = createSplitProps(triggerProps);
       contentProps = createProps()(["value"]);
       splitContentProps = createSplitProps(contentProps);
       Tabs = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine22, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine23, props27);
         }
         initApi() {
-          return connect22(this.machine.service, normalizeProps);
+          return connect23(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
@@ -29563,7 +30182,7 @@ var Corex = (() => {
   __export(timer_exports, {
     Timer: () => TimerHook
   });
-  function connect23(service, normalize) {
+  function connect24(service, normalize) {
     const { state: state2, send, computed, scope } = service;
     const running = state2.matches("running");
     const paused = state2.matches("paused");
@@ -29594,7 +30213,7 @@ var Corex = (() => {
       getRootProps() {
         return normalize.element(__spreadValues({
           id: getRootId19(scope)
-        }, parts23.root.attrs));
+        }, parts24.root.attrs));
       },
       getAreaProps() {
         return normalize.element(__spreadValues({
@@ -29602,43 +30221,43 @@ var Corex = (() => {
           id: getAreaId2(scope),
           "aria-label": `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
           "aria-atomic": true
-        }, parts23.area.attrs));
+        }, parts24.area.attrs));
       },
       getControlProps() {
-        return normalize.element(__spreadValues({}, parts23.control.attrs));
+        return normalize.element(__spreadValues({}, parts24.control.attrs));
       },
-      getItemProps(props26) {
-        const value = time[props26.type];
-        return normalize.element(__spreadProps(__spreadValues({}, parts23.item.attrs), {
-          "data-type": props26.type,
+      getItemProps(props27) {
+        const value = time[props27.type];
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.item.attrs), {
+          "data-type": props27.type,
           style: {
             "--value": value
           }
         }));
       },
-      getItemLabelProps(props26) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemLabel.attrs), {
-          "data-type": props26.type
+      getItemLabelProps(props27) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.itemLabel.attrs), {
+          "data-type": props27.type
         }));
       },
-      getItemValueProps(props26) {
-        return normalize.element(__spreadProps(__spreadValues({}, parts23.itemValue.attrs), {
-          "data-type": props26.type
+      getItemValueProps(props27) {
+        return normalize.element(__spreadProps(__spreadValues({}, parts24.itemValue.attrs), {
+          "data-type": props27.type
         }));
       },
       getSeparatorProps() {
         return normalize.element(__spreadValues({
           "aria-hidden": true
-        }, parts23.separator.attrs));
+        }, parts24.separator.attrs));
       },
-      getActionTriggerProps(props26) {
-        if (!validActions.has(props26.action)) {
+      getActionTriggerProps(props27) {
+        if (!validActions.has(props27.action)) {
           throw new Error(
-            `[zag-js] Invalid action: ${props26.action}. Must be one of: ${Array.from(validActions).join(", ")}`
+            `[zag-js] Invalid action: ${props27.action}. Must be one of: ${Array.from(validActions).join(", ")}`
           );
         }
-        return normalize.button(__spreadProps(__spreadValues({}, parts23.actionTrigger.attrs), {
-          hidden: match2(props26.action, {
+        return normalize.button(__spreadProps(__spreadValues({}, parts24.actionTrigger.attrs), {
+          hidden: match2(props27.action, {
             start: () => running || paused,
             pause: () => !running,
             reset: () => !running && !paused,
@@ -29648,7 +30267,7 @@ var Corex = (() => {
           type: "button",
           onClick(event) {
             if (event.defaultPrevented) return;
-            send({ type: props26.action.toUpperCase() });
+            send({ type: props27.action.toUpperCase() });
           }
         }));
       }
@@ -29690,8 +30309,8 @@ var Corex = (() => {
       milliseconds: padStart(time.milliseconds, 3)
     };
   }
-  function validateProps(props26) {
-    const { startMs, targetMs, countdown, interval } = props26;
+  function validateProps(props27) {
+    const { startMs, targetMs, countdown, interval } = props27;
     if (interval != null && (typeof interval !== "number" || interval <= 0)) {
       throw new Error(`[timer] Invalid interval: ${interval}. Must be a positive number.`);
     }
@@ -29721,12 +30340,12 @@ var Corex = (() => {
       );
     }
   }
-  var anatomy23, parts23, getRootId19, getAreaId2, validActions, machine23, props23, splitProps23, Timer2, TimerHook;
+  var anatomy24, parts24, getRootId19, getAreaId2, validActions, machine24, props24, splitProps24, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
-      anatomy23 = createAnatomy("timer").parts(
+      init_chunk_RUWIVFVB();
+      anatomy24 = createAnatomy("timer").parts(
         "root",
         "area",
         "control",
@@ -29736,7 +30355,7 @@ var Corex = (() => {
         "actionTrigger",
         "separator"
       );
-      parts23 = anatomy23.build();
+      parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `timer:${ctx.id}:root`;
@@ -29746,13 +30365,13 @@ var Corex = (() => {
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.area) != null ? _b : `timer:${ctx.id}:area`;
       };
       validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
-      machine23 = createMachine({
-        props({ props: props26 }) {
-          validateProps(props26);
+      machine24 = createMachine({
+        props({ props: props27 }) {
+          validateProps(props27);
           return __spreadValues({
             interval: 1e3,
             startMs: 0
-          }, props26);
+          }, props27);
         },
         initialState({ prop }) {
           return prop("autoStart") ? "running" : "idle";
@@ -29897,7 +30516,7 @@ var Corex = (() => {
           }
         }
       });
-      props23 = createProps()([
+      props24 = createProps()([
         "autoStart",
         "countdown",
         "getRootNode",
@@ -29909,7 +30528,7 @@ var Corex = (() => {
         "startMs",
         "targetMs"
       ]);
-      splitProps23 = createSplitProps(props23);
+      splitProps24 = createSplitProps(props24);
       Timer2 = class extends Component {
         constructor() {
           super(...arguments);
@@ -29924,11 +30543,11 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine23, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine24, props27);
         }
         initApi() {
-          return connect23(this.machine.service, normalizeProps);
+          return connect24(this.machine.service, normalizeProps);
         }
         render() {
           var _a;
@@ -30203,7 +30822,7 @@ var Corex = (() => {
         const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
         const placement = computed("placement");
         const [side, align = "center"] = placement.split("-");
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.group.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
           "aria-label": `${placement} ${label} ${hotkeyLabel}`,
@@ -30242,7 +30861,7 @@ var Corex = (() => {
       }
     };
   }
-  function connect24(service, normalize) {
+  function connect25(service, normalize) {
     const { state: state2, send, prop, scope, context, computed } = service;
     const visible = state2.hasTag("visible");
     const paused = state2.hasTag("paused");
@@ -30273,7 +30892,7 @@ var Corex = (() => {
         send({ type: "DISMISS", src: "programmatic" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
           dir: prop("dir"),
           id: getRootId20(scope),
           "data-state": visible ? "open" : "closed",
@@ -30317,17 +30936,17 @@ var Corex = (() => {
         });
       },
       getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.title.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.title.attrs), {
           id: getTitleId3(scope)
         }));
       },
       getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts24.description.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts25.description.attrs), {
           id: getDescriptionId2(scope)
         }));
       },
       getActionTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts24.actionTrigger.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts25.actionTrigger.attrs), {
           type: "button",
           onClick(event) {
             var _a;
@@ -30340,7 +30959,7 @@ var Corex = (() => {
       getCloseTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({
           id: getCloseTriggerId2(scope)
-        }, parts24.closeTrigger.attrs), {
+        }, parts25.closeTrigger.attrs), {
           type: "button",
           "aria-label": "Dismiss notification",
           onClick(event) {
@@ -30362,8 +30981,8 @@ var Corex = (() => {
       }
     });
   }
-  function createToastStore(props26 = {}) {
-    const attrs = withDefaults(props26, {
+  function createToastStore(props27 = {}) {
+    const attrs = withDefaults(props27, {
       placement: "bottom",
       overlap: false,
       max: 24,
@@ -30601,14 +31220,14 @@ var Corex = (() => {
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
-  var anatomy24, parts24, getRegionId, getRegionEl, getRootId20, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and8, groupMachine, not10, machine24, withDefaults, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
+  var anatomy25, parts25, getRegionId, getRegionEl, getRootId20, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and8, groupMachine, not10, machine25, withDefaults, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_NF3CDGDL();
-      init_chunk_OSSFSUET();
-      init_chunk_TZXIWZZ7();
-      anatomy24 = createAnatomy("toast").parts(
+      init_chunk_OA4F3YDQ();
+      init_chunk_EBQGC3XC();
+      init_chunk_RUWIVFVB();
+      anatomy25 = createAnatomy("toast").parts(
         "group",
         "root",
         "title",
@@ -30616,7 +31235,7 @@ var Corex = (() => {
         "actionTrigger",
         "closeTrigger"
       );
-      parts24 = anatomy24.build();
+      parts25 = anatomy25.build();
       getRegionId = (placement) => `toast-group:${placement}`;
       getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
       getRootId20 = (ctx) => `toast:${ctx.id}`;
@@ -30635,12 +31254,12 @@ var Corex = (() => {
       ({ guards: guards4, createMachine: createMachine22 } = setup());
       ({ and: and8 } = guards4);
       groupMachine = createMachine22({
-        props({ props: props26 }) {
+        props({ props: props27 }) {
           return __spreadProps(__spreadValues({
             dir: "ltr",
             id: uuid()
-          }, props26), {
-            store: props26.store
+          }, props27), {
+            store: props27.store
           });
         },
         initialState({ prop }) {
@@ -30887,13 +31506,13 @@ var Corex = (() => {
         }
       });
       ({ not: not10 } = createGuards());
-      machine24 = createMachine({
-        props({ props: props26 }) {
-          ensureProps(props26, ["id", "type", "parent", "removeDelay"], "toast");
+      machine25 = createMachine({
+        props({ props: props27 }) {
+          ensureProps(props27, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
             closable: true
-          }, props26), {
-            duration: getToastDuration(props26.duration, props26.type)
+          }, props27), {
+            duration: getToastDuration(props27.duration, props27.type)
           });
         },
         initialState({ prop }) {
@@ -31139,15 +31758,15 @@ var Corex = (() => {
       toastGroups = /* @__PURE__ */ new Map();
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
-        constructor(el, props26) {
-          super(el, props26);
+        constructor(el, props27) {
+          super(el, props27);
           __publicField(this, "parts");
           __publicField(this, "duration");
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
-          this.duration = props26.duration;
+          this.duration = props27.duration;
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.innerHTML = `
@@ -31179,11 +31798,11 @@ var Corex = (() => {
           };
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine24, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine25, props27);
         }
         initApi() {
-          return connect24(this.machine.service, normalizeProps);
+          return connect25(this.machine.service, normalizeProps);
         }
         render() {
           var _a, _b;
@@ -31221,9 +31840,9 @@ var Corex = (() => {
         }
       };
       ToastGroup = class extends Component {
-        constructor(el, props26) {
+        constructor(el, props27) {
           var _a;
-          super(el, props26);
+          super(el, props27);
           __publicField(this, "toastComponents", /* @__PURE__ */ new Map());
           __publicField(this, "groupEl");
           __publicField(this, "store");
@@ -31234,7 +31853,7 @@ var Corex = (() => {
             this.toastComponents.clear();
             this.machine.stop();
           });
-          this.store = props26.store;
+          this.store = props27.store;
           this.groupEl = (_a = el.querySelector('[data-part="group"]')) != null ? _a : (() => {
             const g2 = document.createElement("div");
             g2.setAttribute("data-scope", "toast");
@@ -31244,8 +31863,8 @@ var Corex = (() => {
           })();
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(group.machine, props26);
+        initMachine(props27) {
+          return new VanillaMachine(group.machine, props27);
         }
         initApi() {
           return group.connect(this.machine.service, normalizeProps);
@@ -31435,19 +32054,19 @@ var Corex = (() => {
   __export(toggle_group_exports, {
     ToggleGroup: () => ToggleGroupHook
   });
-  function connect25(service, normalize) {
+  function connect26(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
     const isSingle = !prop("multiple");
     const rovingFocus = prop("rovingFocus");
     const isHorizontal = prop("orientation") === "horizontal";
-    function getItemState(props26) {
-      const id = getItemId8(scope, props26.value);
+    function getItemState(props27) {
+      const id = getItemId8(scope, props27.value);
       return {
         id,
-        disabled: Boolean(props26.disabled || disabled),
-        pressed: !!value.includes(props26.value),
+        disabled: Boolean(props27.disabled || disabled),
+        pressed: !!value.includes(props27.value),
         focused: context.get("focusedId") === id
       };
     }
@@ -31457,7 +32076,7 @@ var Corex = (() => {
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts25.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts26.root.attrs), {
           id: getRootId21(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
@@ -31486,10 +32105,10 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props26) {
-        const itemState = getItemState(props26);
+      getItemProps(props27) {
+        const itemState = getItemState(props27);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize.button(__spreadProps(__spreadValues({}, parts25.item.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts26.item.attrs), {
           id: itemState.id,
           type: "button",
           "data-ownedby": getRootId21(scope),
@@ -31511,7 +32130,7 @@ var Corex = (() => {
           },
           onClick(event) {
             if (itemState.disabled) return;
-            send({ type: "TOGGLE.CLICK", id: itemState.id, value: props26.value });
+            send({ type: "TOGGLE.CLICK", id: itemState.id, value: props27.value });
             if (isSafari()) {
               event.currentTarget.focus({ preventScroll: true });
             }
@@ -31560,13 +32179,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy25, parts25, getRootId21, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not11, and9, machine25, props24, splitProps24, itemProps8, splitItemProps8, ToggleGroup, ToggleGroupHook;
+  var anatomy26, parts26, getRootId21, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not11, and9, machine26, props25, splitProps25, itemProps8, splitItemProps8, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_TZXIWZZ7();
-      anatomy25 = createAnatomy("toggle-group").parts("root", "item");
-      parts25 = anatomy25.build();
+      init_chunk_RUWIVFVB();
+      anatomy26 = createAnatomy("toggle-group").parts("root", "item");
+      parts26 = anatomy26.build();
       getRootId21 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `toggle-group:${ctx.id}`;
@@ -31586,15 +32205,15 @@ var Corex = (() => {
       getNextEl2 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
       getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
       ({ not: not11, and: and9 } = createGuards());
-      machine25 = createMachine({
-        props({ props: props26 }) {
+      machine26 = createMachine({
+        props({ props: props27 }) {
           return __spreadValues({
             defaultValue: [],
             orientation: "horizontal",
             rovingFocus: true,
             loopFocus: true,
             deselectable: true
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "idle";
@@ -31763,7 +32382,7 @@ var Corex = (() => {
           }
         }
       });
-      props24 = createProps()([
+      props25 = createProps()([
         "dir",
         "disabled",
         "getRootNode",
@@ -31778,16 +32397,16 @@ var Corex = (() => {
         "defaultValue",
         "deselectable"
       ]);
-      splitProps24 = createSplitProps(props24);
+      splitProps25 = createSplitProps(props25);
       itemProps8 = createProps()(["value", "disabled"]);
       splitItemProps8 = createSplitProps(itemProps8);
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine25, props26);
+        initMachine(props27) {
+          return new VanillaMachine(machine26, props27);
         }
         initApi() {
-          return connect25(this.machine.service, normalizeProps);
+          return connect26(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -31811,7 +32430,7 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const props26 = __spreadProps(__spreadValues({
+          const props27 = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             defaultValue: getStringList(el, "defaultValue"),
@@ -31844,7 +32463,7 @@ var Corex = (() => {
               }
             }
           });
-          const toggleGroup = new ToggleGroup(el, props26);
+          const toggleGroup = new ToggleGroup(el, props27);
           toggleGroup.init();
           this.toggleGroup = toggleGroup;
           this.onSetValue = (event) => {
@@ -31931,7 +32550,7 @@ var Corex = (() => {
     });
     return map2;
   }
-  function connect26(service, normalize) {
+  function connect27(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
     const expandedValue = Array.from(context.get("expandedValue"));
@@ -31947,8 +32566,8 @@ var Corex = (() => {
     };
     const firstNode = collection22.getFirstNode(void 0, { skip });
     const firstNodeValue = firstNode ? collection22.getNodeValue(firstNode) : null;
-    function getNodeState(props26) {
-      const { node, indexPath } = props26;
+    function getNodeState(props27) {
+      const { node, indexPath } = props27;
       const value = collection22.getNodeValue(node);
       return {
         id: getNodeId(scope, value),
@@ -32033,19 +32652,19 @@ var Corex = (() => {
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
           id: getRootId22(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.label.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.label.attrs), {
           id: getLabelId14(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.tree.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
@@ -32152,13 +32771,13 @@ var Corex = (() => {
         }));
       },
       getNodeState,
-      getItemProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.item.attrs), {
+      getItemProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
-          "data-path": props26.indexPath.join("/"),
+          "data-path": props27.indexPath.join("/"),
           "data-value": nodeState.value,
           tabIndex: nodeState.focused ? 0 : -1,
           "data-focus": dataAttr(nodeState.focused),
@@ -32191,17 +32810,17 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props26) {
-        const itemState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemText.attrs), {
+      getItemTextProps(props27) {
+        const itemState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
         }));
       },
-      getItemIndicatorProps(props26) {
-        const itemState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.itemIndicator.attrs), {
+      getItemIndicatorProps(props27) {
+        const itemState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -32209,9 +32828,9 @@ var Corex = (() => {
           hidden: !itemState.selected
         }));
       },
-      getBranchProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branch.attrs), {
+      getBranchProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -32220,7 +32839,7 @@ var Corex = (() => {
           "data-value": nodeState.value,
           "aria-level": nodeState.depth,
           "aria-selected": nodeState.disabled ? void 0 : nodeState.selected,
-          "data-path": props26.indexPath.join("/"),
+          "data-path": props27.indexPath.join("/"),
           "data-selected": dataAttr(nodeState.selected),
           "aria-expanded": nodeState.expanded,
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -32233,9 +32852,9 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchIndicatorProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchIndicator.attrs), {
+      getBranchIndicatorProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -32244,9 +32863,9 @@ var Corex = (() => {
           "data-loading": dataAttr(nodeState.loading)
         }));
       },
-      getBranchTriggerProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchTrigger.attrs), {
+      getBranchTriggerProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -32261,14 +32880,14 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchControlProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchControl.attrs), {
+      getBranchControlProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
           tabIndex: nodeState.focused ? 0 : -1,
-          "data-path": props26.indexPath.join("/"),
+          "data-path": props27.indexPath.join("/"),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
           "data-selected": dataAttr(nodeState.selected),
@@ -32293,37 +32912,37 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchTextProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchText.attrs), {
+      getBranchTextProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-loading": dataAttr(nodeState.loading)
         }));
       },
-      getBranchContentProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchContent.attrs), {
+      getBranchContentProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-depth": nodeState.depth,
-          "data-path": props26.indexPath.join("/"),
+          "data-path": props27.indexPath.join("/"),
           "data-value": nodeState.value,
           hidden: !nodeState.expanded
         }));
       },
-      getBranchIndentGuideProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.branchIndentGuide.attrs), {
+      getBranchIndentGuideProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
-      getNodeCheckboxProps(props26) {
-        const nodeState = getNodeState(props26);
+      getNodeCheckboxProps(props27) {
+        const nodeState = getNodeState(props27);
         const checkedState = nodeState.checked;
-        return normalize.element(__spreadProps(__spreadValues({}, parts26.nodeCheckbox.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -32340,9 +32959,9 @@ var Corex = (() => {
           }
         }));
       },
-      getNodeRenameInputProps(props26) {
-        const nodeState = getNodeState(props26);
-        return normalize.input(__spreadProps(__spreadValues({}, parts26.nodeRenameInput.attrs), {
+      getNodeRenameInputProps(props27) {
+        const nodeState = getNodeState(props27);
+        return normalize.input(__spreadProps(__spreadValues({}, parts27.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": "Rename tree item",
@@ -32502,13 +33121,13 @@ var Corex = (() => {
     }
     return root;
   }
-  var anatomy26, parts26, collection4, getRootId22, getLabelId14, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and10, machine26, props25, splitProps25, itemProps9, splitItemProps9, TreeView, TreeViewHook;
+  var anatomy27, parts27, collection4, getRootId22, getLabelId14, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and10, machine27, props26, splitProps26, itemProps9, splitItemProps9, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_4RWUEBEQ();
-      init_chunk_TZXIWZZ7();
-      anatomy26 = createAnatomy("tree-view").parts(
+      init_chunk_KCOQB3RU();
+      init_chunk_RUWIVFVB();
+      anatomy27 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -32525,7 +33144,7 @@ var Corex = (() => {
         "root",
         "tree"
       );
-      parts26 = anatomy26.build();
+      parts27 = anatomy27.build();
       collection4 = (options) => {
         return new TreeCollection(options);
       };
@@ -32558,8 +33177,8 @@ var Corex = (() => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
       ({ and: and10 } = createGuards());
-      machine26 = createMachine({
-        props({ props: props26 }) {
+      machine27 = createMachine({
+        props({ props: props27 }) {
           return __spreadValues({
             selectionMode: "single",
             collection: collection4.empty(),
@@ -32567,7 +33186,7 @@ var Corex = (() => {
             expandOnClick: true,
             defaultExpandedValue: [],
             defaultSelectedValue: []
-          }, props26);
+          }, props27);
         },
         initialState() {
           return "idle";
@@ -33172,7 +33791,7 @@ var Corex = (() => {
           }
         }
       });
-      props25 = createProps()([
+      props26 = createProps()([
         "ids",
         "collection",
         "dir",
@@ -33202,19 +33821,19 @@ var Corex = (() => {
         "onRenameComplete",
         "scrollToIndexFn"
       ]);
-      splitProps25 = createSplitProps(props25);
+      splitProps26 = createSplitProps(props26);
       itemProps9 = createProps()(["node", "indexPath"]);
       splitItemProps9 = createSplitProps(itemProps9);
       TreeView = class extends Component {
-        constructor(el, props26) {
+        constructor(el, props27) {
           var _a;
-          const treeData = (_a = props26.treeData) != null ? _a : buildTreeFromDOM(el);
+          const treeData = (_a = props27.treeData) != null ? _a : buildTreeFromDOM(el);
           const treeCollection = collection4({
             nodeToValue: (node) => node.id,
             nodeToString: (node) => node.name,
             rootNode: treeData
           });
-          super(el, __spreadProps(__spreadValues({}, props26), { collection: treeCollection }));
+          super(el, __spreadProps(__spreadValues({}, props27), { collection: treeCollection }));
           __publicField(this, "treeCollection");
           __publicField(this, "syncTree", () => {
             const treeEl = this.el.querySelector('[data-scope="tree-view"][data-part="tree"]');
@@ -33225,11 +33844,11 @@ var Corex = (() => {
           this.treeCollection = treeCollection;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props26) {
-          return new VanillaMachine(machine26, __spreadValues({}, props26));
+        initMachine(props27) {
+          return new VanillaMachine(machine27, __spreadValues({}, props27));
         }
         initApi() {
-          return connect26(this.machine.service, normalizeProps);
+          return connect27(this.machine.service, normalizeProps);
         }
         getNodeAt(indexPath) {
           var _a;
@@ -33480,6 +34099,7 @@ var Corex = (() => {
     Editable: createLazyHook(() => Promise.resolve().then(() => (init_editable(), editable_exports)), "Editable"),
     FloatingPanel: createLazyHook(() => Promise.resolve().then(() => (init_floating_panel(), floating_panel_exports)), "FloatingPanel"),
     Listbox: createLazyHook(() => Promise.resolve().then(() => (init_listbox(), listbox_exports)), "Listbox"),
+    Marquee: createLazyHook(() => Promise.resolve().then(() => (init_marquee(), marquee_exports)), "Marquee"),
     Menu: createLazyHook(() => Promise.resolve().then(() => (init_menu(), menu_exports)), "Menu"),
     NumberInput: createLazyHook(() => Promise.resolve().then(() => (init_number_input(), number_input_exports)), "NumberInput"),
     PasswordInput: createLazyHook(() => Promise.resolve().then(() => (init_password_input(), password_input_exports)), "PasswordInput"),

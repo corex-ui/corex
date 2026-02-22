@@ -38,6 +38,7 @@ var Hooks = {
   Editable: createLazyHook(() => import("corex/editable"), "Editable"),
   FloatingPanel: createLazyHook(() => import("corex/floating-panel"), "FloatingPanel"),
   Listbox: createLazyHook(() => import("corex/listbox"), "Listbox"),
+  Marquee: createLazyHook(() => import("corex/marquee"), "Marquee"),
   Menu: createLazyHook(() => import("corex/menu"), "Menu"),
   NumberInput: createLazyHook(() => import("corex/number-input"), "NumberInput"),
   PasswordInput: createLazyHook(() => import("corex/password-input"), "PasswordInput"),

@@ -65,6 +65,7 @@ defmodule E2eWeb.Router do
       live "/live/editable", EditableLive
       live "/live/floating-panel", FloatingPanelLive
       live "/live/listbox", ListboxLive
+      live "/live/marquee", MarqueeLive
       live "/live/number-input", NumberInputLive
       live "/live/password-input", PasswordInputLive
       live "/live/pin-input", PinInputLive
@@ -111,6 +112,7 @@ defmodule E2eWeb.Router do
     get "/editable", PageController, :editable_page
     get "/floating-panel", PageController, :floating_panel_page
     get "/listbox", PageController, :listbox_page
+    get "/marquee", PageController, :marquee_page
     get "/number-input", PageController, :number_input_page
     get "/password-input", PageController, :password_input_page
     get "/pin-input", PageController, :pin_input_page

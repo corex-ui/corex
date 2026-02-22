@@ -43,6 +43,9 @@ declare module "corex/floating-panel" {
 declare module "corex/listbox" {
   export const Listbox: CorexHook;
 }
+declare module "corex/marquee" {
+  export const Marquee: CorexHook;
+}
 declare module "corex/menu" {
   export const Menu: CorexHook;
 }

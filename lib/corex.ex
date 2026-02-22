@@ -19,6 +19,7 @@ defmodule Corex do
     floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
     form: {Corex.Form, [get_form_id: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
+    marquee: {Corex.Marquee, [marquee: 1]},
     menu: {Corex.Menu, [menu: 1]},
     navigate: {Corex.Navigate, [navigate: 1]},
     number_input: {Corex.NumberInput, [number_input: 1]},

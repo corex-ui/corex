@@ -131,6 +131,7 @@ defmodule Corex.MixProject do
         Corex.Editable,
         Corex.FloatingPanel,
         Corex.Listbox,
+        Corex.Marquee,
         Corex.Menu,
         Corex.Navigate,
         Corex.NumberInput,

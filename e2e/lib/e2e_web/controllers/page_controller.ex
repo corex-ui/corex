@@ -142,6 +142,10 @@ defmodule E2eWeb.PageController do
     render(conn, :listbox_page)
   end
 
+  def marquee_page(conn, _params) do
+    render(conn, :marquee_page)
+  end
+
   def number_input_page(conn, _params) do
     render(conn, :number_input_page)
   end
