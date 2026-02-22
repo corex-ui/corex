@@ -80,7 +80,12 @@ defmodule Corex.Marquee do
   alias Corex.Marquee.Connect
 
   attr(:id, :string, required: false)
-  attr(:aria_label, :string, default: nil, doc: "Accessible name for the marquee region. Defaults to \"Marquee: {id}\" when omitted.")
+
+  attr(:aria_label, :string,
+    default: nil,
+    doc: "Accessible name for the marquee region. Defaults to \"Marquee: {id}\" when omitted."
+  )
+
   attr(:items, :list, required: true, doc: "List of maps for each marquee item")
   attr(:duration, :integer, required: true, doc: "Animation duration in seconds")
   attr(:side, :string, default: "end", values: ["start", "end", "top", "bottom"])
@@ -92,14 +97,37 @@ defmodule Corex.Marquee do
   attr(:delay, :integer, default: 0)
   attr(:loop_count, :integer, default: 0)
   attr(:reverse, :boolean, default: false)
-  attr(:respect_reduced_motion, :boolean, default: true, doc: "When false, animation runs even when user has prefers-reduced-motion")
+
+  attr(:respect_reduced_motion, :boolean,
+    default: true,
+    doc: "When false, animation runs even when user has prefers-reduced-motion"
+  )
+
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:on_pause_change, :string, default: nil, doc: "Server event when pause status changes")
-  attr(:on_pause_change_client, :string, default: nil, doc: "Client event when pause status changes")
+
+  attr(:on_pause_change_client, :string,
+    default: nil,
+    doc: "Client event when pause status changes"
+  )
+
   attr(:on_loop_complete, :string, default: nil, doc: "Server event when one loop completes")
-  attr(:on_loop_complete_client, :string, default: nil, doc: "Client event when one loop completes")
-  attr(:on_complete, :string, default: nil, doc: "Server event when all loops complete (finite loops only)")
-  attr(:on_complete_client, :string, default: nil, doc: "Client event when all loops complete (finite loops only)")
+
+  attr(:on_loop_complete_client, :string,
+    default: nil,
+    doc: "Client event when one loop completes"
+  )
+
+  attr(:on_complete, :string,
+    default: nil,
+    doc: "Server event when all loops complete (finite loops only)"
+  )
+
+  attr(:on_complete_client, :string,
+    default: nil,
+    doc: "Client event when all loops complete (finite loops only)"
+  )
+
   attr(:rest, :global)
 
   slot(:item, required: true)
@@ -195,7 +223,8 @@ defmodule Corex.Marquee do
   @doc """
   Pauses the marquee from server-side. Pushes a LiveView event.
   """
-  def pause(socket, marquee_id) when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
+  def pause(socket, marquee_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
     Phoenix.LiveView.push_event(socket, "marquee_pause", %{marquee_id: marquee_id})
   end
 
@@ -209,7 +238,8 @@ defmodule Corex.Marquee do
   @doc """
   Resumes the marquee from server-side. Pushes a LiveView event.
   """
-  def resume(socket, marquee_id) when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
+  def resume(socket, marquee_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
     Phoenix.LiveView.push_event(socket, "marquee_resume", %{marquee_id: marquee_id})
   end
 
@@ -223,8 +253,8 @@ defmodule Corex.Marquee do
   @doc """
   Toggles the pause state from server-side. Pushes a LiveView event.
   """
-  def toggle_pause(socket, marquee_id) when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
+  def toggle_pause(socket, marquee_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
     Phoenix.LiveView.push_event(socket, "marquee_toggle_pause", %{marquee_id: marquee_id})
   end
-
 end

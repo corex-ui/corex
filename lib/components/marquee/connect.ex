@@ -99,6 +99,7 @@ defmodule Corex.Marquee.Connect do
   def viewport(assigns) do
     orient = assigns.orientation || "horizontal"
     dim = if(orient == "vertical", do: "height", else: "width")
+
     flex_dir =
       case {orient, assigns.side} do
         {"vertical", "bottom"} -> "column-reverse"
@@ -152,7 +153,12 @@ defmodule Corex.Marquee.Connect do
 
   @spec item(Item.t()) :: map()
   def item(assigns) do
-    margin_prop = if((assigns.orientation || "horizontal") == "vertical", do: "margin-block", else: "margin-inline")
+    margin_prop =
+      if((assigns.orientation || "horizontal") == "vertical",
+        do: "margin-block",
+        else: "margin-inline"
+      )
+
     style = "#{margin_prop}:calc(var(--marquee-spacing) / 2)"
 
     %{

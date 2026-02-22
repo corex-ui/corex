@@ -52,7 +52,18 @@ defmodule Corex.Marquee.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :aria_label, :dir, :orientation, :duration, :spacing, :delay, :loop_count, :translate, :respect_reduced_motion]
+    defstruct [
+      :id,
+      :aria_label,
+      :dir,
+      :orientation,
+      :duration,
+      :spacing,
+      :delay,
+      :loop_count,
+      :translate,
+      :respect_reduced_motion
+    ]
 
     @type t :: %__MODULE__{
             id: String.t(),
