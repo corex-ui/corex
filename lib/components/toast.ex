@@ -2,13 +2,18 @@ defmodule Corex.Toast do
   @moduledoc """
   Phoenix implementation of [Zag.js Toast](https://zagjs.com/components/react/toast).
 
+  Compatible with Phoenix Flash messages
+
   ## Examples
 
-  You can add the toast group to each pages and or your App layout
+  Toast components is meant to be a replacement for the Core Components and Layout flash group and flash components.
+
+  In your Layout App, you can replace the flash group `<.flash_group flash={@flash} />` components by the toast group
 
   ```heex
    <.toast_group/>
   ```
+
   ## API Control
 
   ***Client-side***
@@ -127,7 +132,6 @@ defmodule Corex.Toast do
   )
 
   slot(:loading,
-    required: true,
     doc: "the loading spinner icon to display when duration is infinity"
   )
 
@@ -145,6 +149,7 @@ defmodule Corex.Toast do
 
     assigns =
       assigns
+      |> assign_new(:loading, fn -> [] end)
       |> assign(:info_flash, info_flash)
       |> assign(:error_flash, error_flash)
       |> assign(:flash_info, flash_info)
