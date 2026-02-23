@@ -11,7 +11,7 @@ import {
   getNumber,
   getString,
   normalizeProps
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.34.1/node_modules/@zag-js/marquee/dist/index.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");

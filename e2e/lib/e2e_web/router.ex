@@ -66,6 +66,7 @@ defmodule E2eWeb.Router do
       live "/live/floating-panel", FloatingPanelLive
       live "/live/listbox", ListboxLive
       live "/live/marquee", MarqueeLive
+      live "/live/color-picker", ColorPickerLive
       live "/live/number-input", NumberInputLive
       live "/live/password-input", PasswordInputLive
       live "/live/pin-input", PinInputLive
@@ -87,6 +88,7 @@ defmodule E2eWeb.Router do
     get "/collapsible", PageController, :collapsible_page
 
     get "/combobox", PageController, :combobox_page
+    get "/color-picker", PageController, :color_picker_page
 
     get "/date-picker", PageController, :date_picker_page
 

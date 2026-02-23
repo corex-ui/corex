@@ -441,6 +441,14 @@ defmodule E2eWeb.Layouts do
         ]
       ],
       [
+        label: "Color Picker",
+        id: "color-picker",
+        children: [
+          [label: "Controller", id: "/#{locale}/color-picker"],
+          [label: "Live", id: "/#{locale}/live/color-picker"]
+        ]
+      ],
+      [
         label: "Combobox",
         id: "combobox",
         children: [

@@ -9,7 +9,7 @@ import {
   normalizeProps,
   observeAttributes,
   observeChildren
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.34.1/node_modules/@zag-js/avatar/dist/index.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");

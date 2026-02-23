@@ -28,6 +28,9 @@ declare module "corex/collapsible" {
 declare module "corex/combobox" {
   export const Combobox: CorexHook;
 }
+declare module "corex/color-picker" {
+  export const ColorPicker: CorexHook;
+}
 declare module "corex/date-picker" {
   export const DatePicker: CorexHook;
 }

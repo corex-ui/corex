@@ -34,7 +34,7 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+scroll-snap@1.34.1/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;

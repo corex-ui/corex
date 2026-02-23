@@ -69,6 +69,7 @@ var Hooks = {
   Clipboard: createLazyHook(() => import("corex/clipboard"), "Clipboard"),
   Collapsible: createLazyHook(() => import("corex/collapsible"), "Collapsible"),
   Combobox: createLazyHook(() => import("corex/combobox"), "Combobox"),
+  ColorPicker: createLazyHook(() => import("corex/color-picker"), "ColorPicker"),
   DatePicker: createLazyHook(() => import("corex/date-picker"), "DatePicker"),
   Dialog: createLazyHook(() => import("corex/dialog"), "Dialog"),
   Editable: createLazyHook(() => import("corex/editable"), "Editable"),

@@ -27,13 +27,34 @@ This is still in an early stage and will evolve with future stable releases.
 Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*. 
 
 
+## Requirements
+
+This guide assumes the use of [asdf](https://asdf-vm.com/) to manage the Erlang and Elixir versions.
+
+Add `.tool-versions to the root of your project
+
+```
+erlang 28.3.1
+elixir 1.19.5-otp-28
+```
+
+You can then install the latest versions
+
+```bash
+asdf install
+```
+
+
 ## Phoenix App
 
 This guide will walk you through installing and configuring Corex in your Phoenix application.
 
 If you don't already have a [Phoenix app up and running](https://hexdocs.pm/phoenix/up_and_running.html) you can run
 
+We will first update the generator to the latest version and then generate `:my_app`
+
 ```bash
+mix local.phx
 mix phx.new my_app
 ```
 

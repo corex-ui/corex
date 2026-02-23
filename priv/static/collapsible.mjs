@@ -18,7 +18,7 @@ import {
   setAttribute,
   setStyle,
   toPx
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+collapsible@1.34.1/node_modules/@zag-js/collapsible/dist/index.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");

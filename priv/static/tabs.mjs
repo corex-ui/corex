@@ -29,7 +29,7 @@ import {
   resizeObserverBorderBox,
   setup,
   toPx
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+tabs@1.34.1/node_modules/@zag-js/tabs/dist/index.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");

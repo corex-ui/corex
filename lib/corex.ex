@@ -12,6 +12,7 @@ defmodule Corex do
     code: {Corex.Code, [code: 1]},
     collapsible: {Corex.Collapsible, [collapsible: 1]},
     combobox: {Corex.Combobox, [combobox: 1]},
+    color_picker: {Corex.ColorPicker, [color_picker: 1]},
     date_picker: {Corex.DatePicker, [date_picker: 1]},
     dialog:
       {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
