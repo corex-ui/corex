@@ -190,6 +190,64 @@ defmodule Corex.Menu do
 
   <!-- tabs-close -->
 
+  ## Use as Navigation
+
+  Set `redirect` so selecting an item navigates to the item's id (e.g. path). Per item: `redirect: false` disables redirect; `new_tab: true` opens in a new tab.
+
+  ### Controller
+
+  When not connected to LiveView, the hook automatically performs a full page redirect via `window.location`.
+
+  ```heex
+  <.menu
+    class="menu"
+    redirect
+    items={[
+      %Corex.Tree.Item{id: "/", label: "Home"},
+      %Corex.Tree.Item{id: "/docs", label: "Docs"},
+      %Corex.Tree.Item{id: "https://example.com", label: "External", new_tab: true}
+    ]}
+  >
+    <:trigger>Navigate</:trigger>
+    <:indicator>
+      <.icon name="hero-chevron-down" />
+    </:indicator>
+  </.menu>
+  ```
+
+  ### LiveView
+
+  When connected to LiveView, use `on_select` and redirect in the callback. The payload includes `value` (the item id).
+
+  ```elixir
+  defmodule MyAppWeb.NavMenuLive do
+    use MyAppWeb, :live_view
+
+    def handle_event("handle_select", %{"value" => value}, socket) do
+      {:noreply, push_navigate(socket, to: value)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.menu
+        class="menu"
+        redirect
+        on_select="handle_select"
+        items={[
+          %Corex.Tree.Item{id: "/", label: "Home"},
+          %Corex.Tree.Item{id: "/docs", label: "Docs"}
+        ]}
+      >
+        <:trigger>Navigate</:trigger>
+        <:indicator>
+          <.icon name="hero-chevron-down" />
+        </:indicator>
+      </.menu>
+      """
+    end
+  end
+  ```
+
   ## API Control
 
   In order to use the API, you must use an id on the component
@@ -307,6 +365,11 @@ defmodule Corex.Menu do
     doc: "Whether the menu is composed with other composite widgets"
   )
 
+  attr(:value, :string,
+    default: nil,
+    doc: "The value of the item to highlight when the menu opens"
+  )
+
   attr(:disabled, :boolean,
     default: false,
     doc: "Whether the menu trigger is disabled"
@@ -382,6 +445,7 @@ defmodule Corex.Menu do
       loop_focus: @loop_focus,
       typeahead: @typeahead,
       composite: @composite,
+      value: @value,
       dir: @dir,
       aria_label: @aria_label,
       on_select: @on_select,
@@ -479,6 +543,7 @@ defmodule Corex.Menu do
       loop_focus: false,
       typeahead: true,
       composite: false,
+      value: nil,
       dir: @dir,
       aria_label: nil,
       on_select: nil,

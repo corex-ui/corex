@@ -53,9 +53,11 @@ defmodule E2eWeb.ComboboxForm do
         {:noreply,
          socket
          |> Toast.push_toast(
+           "layout-toast",
            "Saved",
            "Name: #{combobox.name}, Airport: #{combobox.airport}",
-           :success
+           :success,
+           5000
          )
          |> assign(:combobox, combobox)
          |> assign(:form, saved_form)

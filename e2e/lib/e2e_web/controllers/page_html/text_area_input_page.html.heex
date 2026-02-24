@@ -1,0 +1,15 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <div class="layout__row">
+    <h1>Text Area Input</h1>
+    <h2>Controller View</h2>
+  </div>
+  <.text_area_input id="my-text-area-input" name="user[bio]" class="text-area-input">
+    <:label>Bio</:label>
+  </.text_area_input>
+</Layouts.app>

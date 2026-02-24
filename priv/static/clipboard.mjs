@@ -13,7 +13,7 @@ import {
   normalizeProps,
   setElementValue,
   setRafTimeout
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+clipboard@1.34.1/node_modules/@zag-js/clipboard/dist/index.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");

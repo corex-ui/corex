@@ -52,10 +52,12 @@ defmodule E2eWeb.Plugs.Locale do
   defp skip_locale_redirect?(_), do: false
 
   defp determine_locale(conn) do
-    conn.cookies[@cookie_key] ||
-      get_locale_from_referer(conn) ||
-      get_locale_from_accept_language(conn) ||
-      @default_locale
+    (conn.cookies[@cookie_key] ||
+       get_locale_from_referer(conn) ||
+       get_locale_from_accept_language(conn) ||
+       @default_locale)
+    |> validate_locale()
+    |> Kernel.||(@default_locale)
   end
 
   defp get_locale_from_referer(conn) do

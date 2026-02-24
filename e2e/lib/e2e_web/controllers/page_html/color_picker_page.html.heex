@@ -1,0 +1,48 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Color Picker</h1>
+  <h2>Controller View</h2>
+  <h3>Client Api</h3>
+  <section class="layout__section">
+    <div class="layout__row">
+      <.action
+        phx-click={Corex.ColorPicker.set_open("my-color-picker", true)}
+        class="button button--sm"
+      >
+        Open
+      </.action>
+      <.action
+        phx-click={Corex.ColorPicker.set_open("my-color-picker", false)}
+        class="button button--sm"
+      >
+        Close
+      </.action>
+      <.action
+        phx-click={Corex.ColorPicker.set_value("my-color-picker", "#FF0000")}
+        class="button button--sm"
+      >
+        Set Red
+      </.action>
+      <.action
+        phx-click={Corex.ColorPicker.set_value("my-color-picker", "#1909C0")}
+        class="button button--sm"
+      >
+        Set Blue
+      </.action>
+    </div>
+  </section>
+  <section class="layout__section">
+    <.color_picker
+      id="my-color-picker"
+      default_value="rgb(25, 9, 192, 0.9)"
+      label="Select Color (RGBA)"
+      presets={["#FF0000", "#00FF00", "#0000FF", "rgb(25, 9, 192, 0.9)"]}
+      class="color-picker"
+    />
+  </section>
+</Layouts.app>

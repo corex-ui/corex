@@ -12,9 +12,9 @@ For **RTL (Right-to-Left)** support (e.g. Arabic), see the [RTL guide](rtl.md) a
 
 You want to:
 
-- Serve the app in multiple locales (e.g. English and Arabic) with the locale in the URL (`/en/...`, `/ar/...`).
+- Serve the app in multiple locales (e.g. English and Arabic) with the locale in the URL (`/en/...`, `/fr/...`).
 - Persist the user’s choice (e.g. cookie) and respect browser language.
-- When switching locale, keep the same logical path (e.g. `/en/accordion` → `/ar/accordion`).
+- When switching locale, keep the same logical path (e.g. `/en/accordion` → `/fr/accordion`).
 
 ### The Solution
 
@@ -41,7 +41,7 @@ defmodule MyAppWeb.Gettext do
   use Gettext.Backend,
     otp_app: :my_app,
     default_locale: "en",
-    locales: ~w(en ar)
+    locales: ~w(en fr)
 end
 ```
 
@@ -49,16 +49,16 @@ Extract translatable strings and create/update PO files for each locale:
 
 ```bash
 mix gettext.extract
-mix gettext.merge priv/gettext
+mix gettext.merge priv/gettext --locale fr
 ```
 
-`mix gettext.extract` updates the default POT file from your source. `mix gettext.merge priv/gettext` creates or updates `.po` files for each locale in the `locales` list. Add more locale codes to `locales` as needed (e.g. `~w(en ar fr)`).
+`mix gettext.extract` updates the default POT file from your source. `mix gettext.merge priv/gettext` creates or updates `.po` files for each locale in the `locales` list. Add more locale codes to `locales` as needed (e.g. `~w(en fr)`).
 
 ### 2. Create the Locale Plug
 
 Create a plug that:
 
-- Accepts requests where the first path segment is a valid locale (e.g. `/en/...`, `/ar/...`).
+- Accepts requests where the first path segment is a valid locale (e.g. `/en/...`, `/fr/...`).
 - Redirects all other requests to a localized URL using a determined locale (cookie, referer, `Accept-Language`, or default).
 - Sets locale and path-without-locale in assigns and sets the Gettext locale.
 
@@ -69,6 +69,9 @@ defmodule MyAppWeb.Plugs.Locale do
   @moduledoc """
   Sets the locale for the current request from the path, cookie, referer, or Accept-Language.
   Assigns :locale and :current_path (path without locale segment).
+  
+  This integration is based on [SetLocale](https://github.com/smeevil/set_locale/tree/master), all credits go to original author [smeevil](https://github.com/smeevil).
+
   """
   import Plug.Conn
 
@@ -85,7 +88,7 @@ defmodule MyAppWeb.Plugs.Locale do
   ## Examples
 
       path_without_locale("/en/accordion", "en")  # => "/accordion"
-      path_without_locale("/ar", "ar")            # => "/"
+      path_without_locale("/fr", "fr")            # => "/"
   """
   def path_without_locale(path, locale) when is_binary(path) and is_binary(locale) do
     case String.replace_prefix(path, "/#{locale}", "") do
@@ -217,62 +220,7 @@ defmodule MyAppWeb.Plugs.Locale do
 end
 ```
 
-### 3. Router: Locale in the Path
-
-Use two scopes:
-
-- **`scope "/"`** – e.g. a single `get "/", PageController, :home`. The Locale plug runs and redirects to `/{locale}` (or `/{locale}/...` if you later change the root to redirect to a default path).
-- **`scope "/:locale"`** – all other routes (LiveView and controller). The first path segment is `params["locale"]`, so the plug sets assigns and does not redirect.
-
-Add the plug to the browser pipeline:
-
-```elixir
-pipeline :browser do
-  plug :accepts, ["html"]
-  plug :fetch_session
-  plug :fetch_live_flash
-  plug MyAppWeb.Plugs.Mode
-  plug MyAppWeb.Plugs.Locale
-  plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
-  plug :protect_from_forgery
-  plug :put_secure_browser_headers
-end
-
-scope "/", MyAppWeb do
-  pipe_through :browser
-  get "/", PageController, :home
-end
-
-scope "/:locale", MyAppWeb do
-  pipe_through :browser
-
-  live_session :default, on_mount: [MyAppWeb.ModeLive, MyAppWeb.SharedEvents] do
-    live "/live/accordion", AccordionLive
-    # ... other live routes
-  end
-
-  get "/", PageController, :home
-  get "/accordion", PageController, :accordion_page
-  # ... other controller routes
-end
-```
-
-Visiting `/` triggers a redirect to `/{locale}` (e.g. `/en` or `/ar`). Visiting `/en/accordion` keeps the request in the `/:locale` scope and the plug sets `locale` and `current_path`.
-
-### 4. Root Layout: `lang`
-
-Set `lang` on the root `<html>` from assigns so the initial render and LiveView have the correct language:
-
-```heex
-<!DOCTYPE html>
-<html lang={assigns[:locale] || "en"} data-theme="neo" data-mode={assigns[:mode]}>
-  ...
-</html>
-```
-
-For `dir` (RTL support), see the [RTL guide](rtl.md).
-
-### 5. Shared LiveView Hooks (locale + current_path + locale_change)
+### 3. Shared LiveView Hooks (locale + current_path + locale_change)
 
 LiveViews under `/:locale` need `locale` and `current_path` on the socket, and must handle the **locale_change** event so the locale switcher can change language without losing the current path.
 
@@ -280,7 +228,7 @@ Create a shared hook module that:
 
 - On mount: assigns `locale` from `params["locale"]`, and `current_path` from the request URI (using `path_without_locale`).
 - On `handle_params`: updates `current_path` when the LiveView URL changes (e.g. patch).
-- On `handle_event("locale_change", ...)`: redirects to the new locale URL (e.g. value `["/ar/accordion"]` or build `/ar` + `current_path`).
+- On `handle_event("locale_change", ...)`: redirects to the new locale URL (e.g. value `["/fr/accordion"]` or build `/fr` + `current_path`).
 
 Example:
 
@@ -290,9 +238,12 @@ defmodule MyAppWeb.SharedEvents do
   use Phoenix.LiveView
 
   def on_mount(:default, params, _session, socket) do
+    locale = params["locale"] || "en"
+    Gettext.put_locale(FlytisWeb.Gettext, locale)
+
     socket =
       socket
-      |> assign(:locale, params["locale"] || "en")
+      |> assign(:locale, locale)
       |> assign_current_path(params)
       |> attach_hook(:locale_change, :handle_event, &handle_locale_change/3)
       |> attach_hook(:current_path, :handle_params, &assign_current_path_from_uri/3)
@@ -338,7 +289,81 @@ defmodule MyAppWeb.SharedEvents do
 end
 ```
 
-Attach this in your `live_session` via `on_mount: [MyAppWeb.ModeLive, MyAppWeb.SharedEvents]` so every LiveView under that session gets locale, current_path, and the locale_change handler.
+Attach this in your `live_session` via `on_mount: [MyAppWeb.SharedEvents]` so every LiveView under that session gets locale, current_path, and the locale_change handler.
+
+
+### 4. Create a Live View
+
+Create a home Live View
+
+```elixir
+defmodule MyAppWeb.HomeLive do
+  use MyAppWeb, :live_view
+
+  @impl true
+  def mount(_params, _session, socket) do
+    {:ok, socket}
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+      <Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+    <h1>{gettext("Home")}</h1>
+</Layouts.app>
+    """
+  end
+end
+```
+
+### 5. Router: Locale in the Path
+
+Use two scopes:
+
+- **`scope "/"`** – e.g. a single `get "/", PageController, :home`. The Locale plug runs and redirects to `/{locale}` (or `/{locale}/...` if you later change the root to redirect to a default path).
+- **`scope "/:locale"`** – all other routes (LiveView and controller). The first path segment is `params["locale"]`, so the plug sets assigns and does not redirect.
+
+Add the plug to the browser pipeline:
+
+```elixir
+pipeline :browser do
+  plug :accepts, ["html"]
+  plug :fetch_session
+  plug :fetch_live_flash
+  plug MyAppWeb.Plugs.Locale
+  plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
+  plug :protect_from_forgery
+  plug :put_secure_browser_headers
+end
+
+scope "/", MyAppWeb do
+  pipe_through :browser
+  get "/", PageController, :home
+end
+
+scope "/:locale", MyAppWeb do
+  pipe_through :browser
+
+  live_session :default, on_mount: [MyAppWeb.SharedEvents] do
+    live "/home", HomeLive
+  end
+
+  get "/", PageController, :home
+end
+```
+
+Visiting `/` triggers a redirect to `/{locale}` (e.g. `/en` or `/fr`). Visiting `/en/home` keeps the request in the `/:locale` scope and the plug sets `locale` and `current_path`.
+
+### 5. Root Layout: `lang`
+
+Set `lang` on the root `<html>` from assigns so the initial render and LiveView have the correct language:
+
+```heex
+<!DOCTYPE html>
+<html lang={assigns[:locale] || "en"}>
+  ...
+</html>
+```
 
 ### 6. Layout: App and Locale Switcher
 
@@ -353,30 +378,32 @@ attr :current_path, :string, default: "/", doc: "Path without locale segment, e.
 
 In the layout template, pass them to the switcher and use them for links:
 
+In you home.heex.html replace the content with 
 ```heex
-<Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
-  ...
+<Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
+  <div>
+    <h1>{gettext("Home")}</h1>
+  </div>
 </Layouts.app>
 ```
 
 **Locale switcher** – use Corex `<.select>` with:
 
-- `collection`: options like `[%{id: "/en" <> current_path, label: "English"}, %{id: "/ar" <> current_path, label: "العربية"}]`.
+- `collection`: options like `[%{id: "/en" <> current_path, label: "English"}, %{id: "/fr" <> current_path, label: "Français"}]`.
 - `value`: `["/#{@locale}#{@current_path}"]`.
 - `redirect`: true so normal changes do a full navigation.
 - `on_value_change="locale_change"` so the shared hook can run and redirect (e.g. to preserve path or handle server-driven redirect).
 
-Example:
+
+Example inside you layout app:
 
 ```elixir
-def locale_switcher(assigns) do
-  ~H"""
   <.select
     id="locale-select"
     class="select select--sm select--micro"
     collection={[
       %{id: "/en#{@current_path}", label: "English"},
-      %{id: "/ar#{@current_path}", label: "العربية"}
+      %{id: "/fr#{@current_path}", label: "Français"}
     ]}
     value={["/#{@locale}#{@current_path}"]}
     redirect
@@ -391,11 +418,10 @@ def locale_switcher(assigns) do
       <.icon name="hero-check" />
     </:item_indicator>
   </.select>
-  """
 end
 ```
 
-When the user picks another locale, the select sends the new URL (e.g. `/ar/accordion`) as value; the shared **locale_change** handler redirects to it, the Locale plug runs, and the next page renders with the same logical path in the new locale.
+When the user picks another locale, the select sends the new URL (e.g. `/fr/accordion`) as value; the shared **locale_change** handler redirects to it, the Locale plug runs, and the next page renders with the same logical path in the new locale.
 
 ### 7. Controllers and LiveViews: Passing locale and current_path
 
@@ -410,7 +436,7 @@ When the user picks another locale, the select sends the new URL (e.g. `/ar/acco
 - **LiveViews**: With `SharedEvents` in `on_mount`, each LiveView already has `@locale` and `@current_path`. Use them in the layout call:
 
   ```heex
-  <Layouts.app flash={@flash} mode={@mode} locale={@locale} current_path={@current_path}>
+  <Layouts.app flash={@flash} locale={@locale} current_path={@current_path}>
   ```
 
 Internal links should include the locale so they stay in the same language:
@@ -421,8 +447,26 @@ Internal links should include the locale so they stay in the same language:
 
 Use `path_without_locale/2` only when building switcher URLs (e.g. `/en` + current_path); for normal links, use `@locale` in the path.
 
-For **RTL (Right-to-Left)** support (e.g. Arabic), see the [RTL guide](rtl.md).
 
+### 8. Gettext translate
+
+Now lets translate our new Home word.
+First let's run
+
+```bash
+ mix gettex extract
+ mix gettex merge priv/gettext
+```
+
+You can then locate `my_app/priv/gettext/fr/LC_MESSAGES/default.po` and modify the last translation
+
+```
+#: lib/my_app_web/controllers/page_html/home.html.heex:3
+#: lib/my_app_web/live/home_live.ex:13
+#, elixir-autogen, elixir-format
+msgid "Home"
+msgstr "Accueil"
+```
 ---
 
 ## Summary

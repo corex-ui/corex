@@ -65,9 +65,16 @@ defmodule E2eWeb.Router do
       live "/live/editable", EditableLive
       live "/live/floating-panel", FloatingPanelLive
       live "/live/listbox", ListboxLive
+      live "/live/marquee", MarqueeLive
+      live "/live/color-picker", ColorPickerLive
       live "/live/number-input", NumberInputLive
       live "/live/password-input", PasswordInputLive
       live "/live/pin-input", PinInputLive
+      live "/live/email-input", EmailInputLive
+      live "/live/text-input", TextInputLive
+      live "/live/text-area-input", TextAreaInputLive
+      live "/live/url-input", UrlInputLive
+      live "/live/hidden-input", HiddenInputLive
       live "/live/radio-group", RadioGroupLive
       live "/live/timer", TimerLive
     end
@@ -86,6 +93,7 @@ defmodule E2eWeb.Router do
     get "/collapsible", PageController, :collapsible_page
 
     get "/combobox", PageController, :combobox_page
+    get "/color-picker", PageController, :color_picker_page
 
     get "/date-picker", PageController, :date_picker_page
 
@@ -111,9 +119,15 @@ defmodule E2eWeb.Router do
     get "/editable", PageController, :editable_page
     get "/floating-panel", PageController, :floating_panel_page
     get "/listbox", PageController, :listbox_page
+    get "/marquee", PageController, :marquee_page
     get "/number-input", PageController, :number_input_page
     get "/password-input", PageController, :password_input_page
     get "/pin-input", PageController, :pin_input_page
+    get "/email-input", PageController, :email_input_page
+    get "/text-input", PageController, :text_input_page
+    get "/text-area-input", PageController, :text_area_input_page
+    get "/url-input", PageController, :url_input_page
+    get "/hidden-input", PageController, :hidden_input_page
     get "/radio-group", PageController, :radio_group_page
     get "/timer", PageController, :timer_page
 
@@ -133,7 +147,7 @@ defmodule E2eWeb.Router do
   # end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
-  if Application.compile_env(:e2e, :dev_routes) do
+  if Application.compile_env(:corex_web, :dev_routes) do
     # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,

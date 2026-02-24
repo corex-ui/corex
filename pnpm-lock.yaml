@@ -44,6 +44,9 @@ importers:
       '@zag-js/collection':
         specifier: ^1.34.1
         version: 1.34.1
+      '@zag-js/color-picker':
+        specifier: ^1.34.1
+        version: 1.34.1
       '@zag-js/combobox':
         specifier: ^1.34.1
         version: 1.34.1
@@ -60,6 +63,9 @@ importers:
         specifier: ^1.34.1
         version: 1.34.1
       '@zag-js/listbox':
+        specifier: ^1.34.1
+        version: 1.34.1
+      '@zag-js/marquee':
         specifier: ^1.34.1
         version: 1.34.1
       '@zag-js/menu':
@@ -309,6 +315,12 @@ packages:
   '@zag-js/collection@1.34.1':
     resolution: {integrity: sha512-C61BL3cFyEfPCsPKeWshc8l7D3igqySPksVtmfzHhxcnlOxgVkBBpik7JF/cYk9yU6pHB6bCRzRgPDziiyOHLQ==}
 
+  '@zag-js/color-picker@1.34.1':
+    resolution: {integrity: sha512-ajvJoGtKvGJ3KZaoLV/wu1djg9/ahKDgyyR1fcfnFRrlpczPAejTqgan+Yazuc4ZuZ/fbAMeCfVxY2BzVoxYOQ==}
+
+  '@zag-js/color-utils@1.34.1':
+    resolution: {integrity: sha512-8QcwmqyydxQPJBMOIsMqDHS0F2wDHmvPG2XhlgoGZD6wX/++atz/usLBPV29q53HCIowrIiCh05whWyHodKREQ==}
+
   '@zag-js/combobox@1.34.1':
     resolution: {integrity: sha512-YzqOYbfh8vDmc/ewj3DetGHt0hwYuvDV/2BdCQJ5rLtLK8iLJuTB79x8l6QJBCi93BG64E7aY7Wa7jyK+1oILQ==}
 
@@ -354,6 +366,9 @@ packages:
 
   '@zag-js/live-region@1.34.1':
     resolution: {integrity: sha512-0Heu0z0cBQQDA1289nm0wQM3+ybEuOSqpPffHQdRgaTtUWnG0xkw0jt8qq0A/tq2VIlwLnbNledE4dh1Y6KwhA==}
+
+  '@zag-js/marquee@1.34.1':
+    resolution: {integrity: sha512-SR5H7oBjjtwvO893Zu8oCzwVSHOkOSSlOuzuOkoebTGIVxHXtWukM6hS9wxgS40Tp03X1qzeI1XqiCGK1wqaaQ==}
 
   '@zag-js/menu@1.34.1':
     resolution: {integrity: sha512-nhVM6dNf48QqeY0qzn6n5hTk8qbBM7FwnGAUJmGRx9nrrG1SpIpQ5sCxDcOwgI/Q2vMu+2ggmIiObvZKAqZkiA==}
@@ -1052,6 +1067,21 @@ snapshots:
     dependencies:
       '@zag-js/utils': 1.34.1
 
+  '@zag-js/color-picker@1.34.1':
+    dependencies:
+      '@zag-js/anatomy': 1.34.1
+      '@zag-js/color-utils': 1.34.1
+      '@zag-js/core': 1.34.1
+      '@zag-js/dismissable': 1.34.1
+      '@zag-js/dom-query': 1.34.1
+      '@zag-js/popper': 1.34.1
+      '@zag-js/types': 1.34.1
+      '@zag-js/utils': 1.34.1
+
+  '@zag-js/color-utils@1.34.1':
+    dependencies:
+      '@zag-js/utils': 1.34.1
+
   '@zag-js/combobox@1.34.1':
     dependencies:
       '@zag-js/anatomy': 1.34.1
@@ -1153,6 +1183,14 @@ snapshots:
       '@zag-js/utils': 1.34.1
 
   '@zag-js/live-region@1.34.1': {}
+
+  '@zag-js/marquee@1.34.1':
+    dependencies:
+      '@zag-js/anatomy': 1.34.1
+      '@zag-js/core': 1.34.1
+      '@zag-js/dom-query': 1.34.1
+      '@zag-js/types': 1.34.1
+      '@zag-js/utils': 1.34.1
 
   '@zag-js/menu@1.34.1':
     dependencies:

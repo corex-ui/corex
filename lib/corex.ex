@@ -12,13 +12,17 @@ defmodule Corex do
     code: {Corex.Code, [code: 1]},
     collapsible: {Corex.Collapsible, [collapsible: 1]},
     combobox: {Corex.Combobox, [combobox: 1]},
+    color_picker: {Corex.ColorPicker, [color_picker: 1]},
     date_picker: {Corex.DatePicker, [date_picker: 1]},
     dialog:
       {Corex.Dialog, [dialog: 1, dialog_title: 1, dialog_description: 1, dialog_close_trigger: 1]},
     editable: {Corex.Editable, [editable: 1]},
+    email_input: {Corex.EmailInput, [email_input: 1]},
     floating_panel: {Corex.FloatingPanel, [floating_panel: 1]},
     form: {Corex.Form, [get_form_id: 1]},
+    hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
+    marquee: {Corex.Marquee, [marquee: 1]},
     menu: {Corex.Menu, [menu: 1]},
     navigate: {Corex.Navigate, [navigate: 1]},
     number_input: {Corex.NumberInput, [number_input: 1]},
@@ -29,7 +33,10 @@ defmodule Corex do
     signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
     switch: {Corex.Switch, [switch: 1]},
     tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]},
+    text_area_input: {Corex.TextAreaInput, [text_area_input: 1]},
+    text_input: {Corex.TextInput, [text_input: 1]},
     timer: {Corex.Timer, [timer: 1]},
+    url_input: {Corex.UrlInput, [url_input: 1]},
     toast:
       {Corex.Toast,
        [

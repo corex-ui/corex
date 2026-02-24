@@ -16,9 +16,15 @@ defmodule Corex.Carousel.Connect do
   defp data_attr(false), do: nil
   defp data_attr(nil), do: nil
 
+  defp slides_per_move_value(nil), do: nil
+  defp slides_per_move_value("auto"), do: "auto"
+  defp slides_per_move_value(:auto), do: "auto"
+  defp slides_per_move_value(n) when is_integer(n), do: to_string(n)
+  defp slides_per_move_value(n) when is_binary(n), do: n
+
   @spec props(Props.t()) :: map()
   def props(assigns) do
-    %{
+    base = %{
       "id" => assigns.id,
       "data-slide-count" => to_string(assigns.slide_count),
       "data-page" => if(assigns.controlled, do: to_string(assigns.page), else: nil),
@@ -28,12 +34,25 @@ defmodule Corex.Carousel.Connect do
       "data-orientation" => assigns.orientation,
       "data-slides-per-page" => to_string(assigns.slides_per_page),
       "data-loop" => data_attr(assigns.loop),
+      "data-autoplay" => data_attr(assigns.autoplay),
+      "data-autoplay-delay" =>
+        if(assigns.autoplay, do: to_string(assigns.autoplay_delay), else: nil),
       "data-allow-mouse-drag" => data_attr(assigns.allow_mouse_drag),
       "data-spacing" => assigns.spacing,
+      "data-in-view-threshold" => to_string(assigns.in_view_threshold),
+      "data-snap-type" => assigns.snap_type,
+      "data-auto-size" => data_attr(assigns.auto_size),
       "data-on-page-change" => assigns.on_page_change,
       "data-on-page-change-client" => assigns.on_page_change_client
     }
+
+    base
+    |> maybe_put("data-slides-per-move", slides_per_move_value(assigns.slides_per_move))
+    |> maybe_put("data-padding", assigns.padding)
   end
+
+  defp maybe_put(map, _key, nil), do: map
+  defp maybe_put(map, key, value), do: Map.put(map, key, to_string(value))
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
@@ -44,7 +63,7 @@ defmodule Corex.Carousel.Connect do
       "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
 
     style =
-      "--slides-per-page:#{slides_per_page};--slide-spacing:#{spacing};--slide-item-size:#{slide_item_size};aspect-ratio:4/3"
+      "width:100%;overflow:hidden;--slides-per-page:#{slides_per_page};--slide-spacing:#{spacing};--slide-item-size:#{slide_item_size};aspect-ratio:4/3"
 
     %{
       "data-scope" => "carousel",
@@ -72,9 +91,9 @@ defmodule Corex.Carousel.Connect do
 
     style =
       if horizontal do
-        "display:grid;gap:var(--slide-spacing);scroll-snap-type:x mandatory;grid-auto-flow:column;scrollbar-width:none;overscroll-behavior-x:contain;grid-auto-columns:var(--slide-item-size);overflow-x:auto"
+        "min-width:0;display:grid;gap:var(--slide-spacing);scroll-snap-type:x mandatory;grid-auto-flow:column;scrollbar-width:none;overscroll-behavior-x:contain;grid-auto-columns:var(--slide-item-size);overflow-x:auto"
       else
-        "display:grid;gap:var(--slide-spacing);scroll-snap-type:y mandatory;grid-auto-flow:row;scrollbar-width:none;overscroll-behavior-y:contain;grid-auto-rows:var(--slide-item-size);overflow-y:auto"
+        "min-height:0;display:grid;gap:var(--slide-spacing);scroll-snap-type:y mandatory;grid-auto-flow:row;scrollbar-width:none;overscroll-behavior-y:contain;grid-auto-rows:var(--slide-item-size);overflow-y:auto"
       end
 
     %{

@@ -34,7 +34,7 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+scroll-snap@1.34.1/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
@@ -1113,8 +1113,18 @@ var CarouselHook = {
         "vertical"
       ]),
       slidesPerPage: getNumber(this.el, "slidesPerPage") ?? 1,
+      slidesPerMove: getString(this.el, "slidesPerMove") === "auto" ? "auto" : getNumber(this.el, "slidesPerMove"),
       loop: getBoolean(this.el, "loop"),
-      allowMouseDrag: getBoolean(this.el, "allowMouseDrag")
+      autoplay: getBoolean(this.el, "autoplay") ? { delay: getNumber(this.el, "autoplayDelay") ?? 4e3 } : false,
+      allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
+      spacing: getString(this.el, "spacing") ?? "0px",
+      padding: getString(this.el, "padding"),
+      inViewThreshold: getNumber(this.el, "inViewThreshold") ?? 0.6,
+      snapType: getString(this.el, "snapType", [
+        "proximity",
+        "mandatory"
+      ]),
+      autoSize: getBoolean(this.el, "autoSize")
     });
   },
   destroyed() {

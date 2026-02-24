@@ -1,0 +1,74 @@
+@import "../main.css";
+
+@keyframes marquee-x {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(var(--marquee-translate));
+  }
+}
+
+@keyframes marquee-y {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(var(--marquee-translate));
+  }
+}
+
+@layer components {
+  
+  .marquee [data-scope="marquee"][data-part="root"] {
+    @apply ui-root;
+    
+    width: 100%;
+  }
+  .marquee [data-scope="marquee"][data-part="content"] {
+    @apply ui-content;
+
+    animation-timing-function: linear;
+    animation-duration: var(--marquee-duration);
+    animation-delay: var(--marquee-delay);
+    animation-iteration-count: var(--marquee-loop-count);
+  }
+
+  .marquee [data-scope="marquee"][data-part="content"][data-side="start"],
+  .marquee [data-scope="marquee"][data-part="content"][data-side="end"] {
+    animation-name: marquee-x;
+  }
+
+  .marquee [data-scope="marquee"][data-part="content"][data-side="top"],
+  .marquee [data-scope="marquee"][data-part="content"][data-side="bottom"] {
+      animation-name: marquee-y;
+  }
+
+  .marquee [data-scope="marquee"][data-part="content"][data-reverse] {
+    animation-direction: reverse;
+  }
+
+  .marquee [data-scope="marquee"][data-part="root"][data-paused] [data-scope="marquee"][data-part="content"] {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee [data-scope="marquee"][data-part="root"]:not([data-respect-reduced-motion="false"])
+      [data-scope="marquee"][data-part="content"] {
+      animation: none !important;
+    }
+  }
+}
+
+@utility marquee--* {
+  [data-scope="marquee"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+    gap: --value(--spacing-ui-gap-*, [length]);
+  }
+
+  [data-scope="marquee"][data-part="item"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+  }
+}

@@ -1,0 +1,25 @@
+@import "../main.css";
+
+@layer components {
+  .text-area-input [data-scope="text-area-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-mini-gap);
+    max-width: var(--container-ui);
+  }
+
+  .text-area-input [data-scope="text-area-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .text-area-input [data-scope="text-area-input"][data-part="input"] {
+    @apply ui-input;
+
+    max-width: var(--container-mini);
+    min-height: 6rem;
+  }
+
+  .text-area-input [data-scope="text-area-input"][data-part="error"] {
+    @apply ui-error;
+  }
+}

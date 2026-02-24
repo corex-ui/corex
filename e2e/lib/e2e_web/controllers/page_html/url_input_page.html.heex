@@ -1,0 +1,15 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <div class="layout__row">
+    <h1>URL Input</h1>
+    <h2>Controller View</h2>
+  </div>
+  <.url_input id="my-url-input" name="user[website]" class="url-input">
+    <:label>Website</:label>
+  </.url_input>
+</Layouts.app>

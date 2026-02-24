@@ -41,7 +41,7 @@
     </.select>
 
     <footer class="flex w-full justify-end gap-ui-gap">
-      <.action class="button button--accent">Create Flash Message</.action>
+      <.action type="submit" class="button button--accent">Create Flash Message</.action>
     </footer>
   </.form>
 
@@ -50,9 +50,11 @@
     <.action
       phx-click={
         Corex.Toast.create_toast(
+          "layout-toast",
           "This is an info toast",
           "This is an info toast description",
-          :info
+          :info,
+          []
         )
       }
       class="button"
@@ -63,9 +65,11 @@
     <.action
       phx-click={
         Corex.Toast.create_toast(
+          "layout-toast",
           "This is a success toast",
           "This is a success toast description",
-          :success
+          :success,
+          []
         )
       }
       class="button"
@@ -75,9 +79,11 @@
     <.action
       phx-click={
         Corex.Toast.create_toast(
+          "layout-toast",
           "This is a error toast",
           "This is a error toast description",
-          :error
+          :error,
+          []
         )
       }
       class="button"
@@ -88,6 +94,7 @@
     <.action
       phx-click={
         Corex.Toast.create_toast(
+          "layout-toast",
           "This is a loading toast",
           "This is a loading toast description",
           :loading,

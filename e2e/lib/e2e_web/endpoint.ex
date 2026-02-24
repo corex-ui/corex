@@ -1,5 +1,5 @@
 defmodule E2eWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :e2e
+  use Phoenix.Endpoint, otp_app: :corex_web
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -17,7 +17,7 @@ defmodule E2eWeb.Endpoint do
 
   plug Plug.Static,
     at: "/",
-    from: :e2e,
+    from: :corex_web,
     gzip: not code_reloading?,
     only: E2eWeb.static_paths(),
     raise_on_missing_only: code_reloading?
@@ -34,7 +34,7 @@ defmodule E2eWeb.Endpoint do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
-    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :e2e
+    plug Phoenix.Ecto.CheckRepoStatus, otp_app: :corex_web
   end
 
   plug Phoenix.LiveDashboard.RequestLogger,

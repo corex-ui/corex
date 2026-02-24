@@ -1,0 +1,60 @@
+@import "../main.css";
+
+@layer components {
+  .url-input [data-scope="url-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-mini-gap);
+    max-width: var(--container-ui);
+  }
+
+  .url-input [data-scope="url-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .url-input [data-scope="url-input"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    position: relative;
+    margin-inline: auto;
+    max-width: var(--container-mini);
+  }
+
+  .url-input [data-scope="url-input"][data-part="input"] {
+    @apply ui-input;
+
+    max-width: var(--container-mini);
+    flex: 1;
+  }
+
+  .url-input [data-scope="url-input"][data-part="icon"] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    width: var(--spacing-ui);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--spacing-ui-padding);
+    pointer-events: none;
+  }
+
+  .url-input [data-scope="url-input"][data-part="icon"] .icon,
+  .url-input [data-scope="url-input"][data-part="icon"] svg {
+    @apply ui-icon;
+  }
+
+  .url-input[data-no-icon] [data-scope="url-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui-padding);
+  }
+
+  .url-input:not([data-no-icon]) [data-scope="url-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui);
+  }
+
+  .url-input [data-scope="url-input"][data-part="error"] {
+    @apply ui-error;
+  }
+}

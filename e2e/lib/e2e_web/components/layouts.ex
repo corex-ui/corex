@@ -51,8 +51,9 @@ defmodule E2eWeb.Layouts do
 
     assigns =
       assigns
-      |> assign(:menu, menu_items(locale))
       |> assign(:form_menu, form_menu_items(locale))
+      |> assign(:corex_menu, corex_menu_items(locale))
+      |> assign(:form_components_menu, form_components_menu_items(locale))
       |> assign(:prev_path, prev_next_paths(locale, assigns.current_path || "/", :prev))
       |> assign(:next_path, prev_next_paths(locale, assigns.current_path || "/", :next))
 
@@ -102,14 +103,27 @@ defmodule E2eWeb.Layouts do
                   </:indicator>
                 </.tree_view>
                 <.tree_view
-                  id="components-menu"
+                  id="corex-menu"
                   on_selection_change="handle_menu"
-                  class="tree-view navigation px-ui-padding "
+                  class="tree-view navigation px-ui-padding"
                   redirect
                   value={[@current_path |> String.split("/") |> List.last()]}
-                  items={@menu}
+                  items={@corex_menu}
                 >
                   <:label>Corex Components</:label>
+                  <:indicator>
+                    <.icon name="hero-chevron-right" />
+                  </:indicator>
+                </.tree_view>
+                <.tree_view
+                  id="form-components-menu"
+                  on_selection_change="handle_menu"
+                  class="tree-view navigation px-ui-padding"
+                  redirect
+                  value={[@current_path |> String.split("/") |> List.last()]}
+                  items={@form_components_menu}
+                >
+                  <:label>Form Components</:label>
                   <:indicator>
                     <.icon name="hero-chevron-right" />
                   </:indicator>
@@ -154,14 +168,27 @@ defmodule E2eWeb.Layouts do
           </:indicator>
         </.tree_view>
         <.tree_view
-          id="components-menu-side"
+          id="corex-menu-side"
           on_selection_change="handle_menu"
           class="tree-view navigation px-ui-padding"
           redirect
           value={[@current_path |> String.split("/") |> List.last()]}
-          items={@menu}
+          items={@corex_menu}
         >
           <:label>Corex Components</:label>
+          <:indicator>
+            <.icon name="hero-chevron-right" />
+          </:indicator>
+        </.tree_view>
+        <.tree_view
+          id="form-components-menu-side"
+          on_selection_change="handle_menu"
+          class="tree-view navigation px-ui-padding"
+          redirect
+          value={[@current_path |> String.split("/") |> List.last()]}
+          items={@form_components_menu}
+        >
+          <:label>Form Components</:label>
           <:indicator>
             <.icon name="hero-chevron-right" />
           </:indicator>
@@ -193,18 +220,20 @@ defmodule E2eWeb.Layouts do
     </div>
     <.footer />
 
-    <Corex.Toast.toast_group id="layout-toast" flash={@flash}>
+    <.toast_group id="layout-toast" class="toast" flash={@flash}>
       <:loading>
         <.icon name="hero-arrow-path" />
       </:loading>
-    </Corex.Toast.toast_group>
+    </.toast_group>
     <.toast_client_error
+      toast_group_id="layout-toast"
       title={gettext("We can't find the internet")}
       description={gettext("Attempting to reconnect")}
       type={:error}
       duration={:infinity}
     />
     <.toast_server_error
+      toast_group_id="layout-toast"
       title={gettext("Something went wrong!")}
       description={gettext("Attempting to reconnect")}
       type={:error}
@@ -319,15 +348,11 @@ defmodule E2eWeb.Layouts do
   end
 
   defp flat_navigation_paths(locale) do
-    form_paths =
-      form_menu_items(locale)
-      |> flatten_tree_ids()
+    form_paths = form_menu_items(locale) |> flatten_tree_ids()
+    corex_paths = corex_menu_items(locale) |> flatten_tree_ids()
+    form_components_paths = form_components_menu_items(locale) |> flatten_tree_ids()
 
-    menu_paths =
-      menu_items(locale)
-      |> flatten_tree_ids()
-
-    form_paths ++ menu_paths
+    form_paths ++ corex_paths ++ form_components_paths
   end
 
   defp flatten_tree_ids(items) when is_list(items) do
@@ -361,247 +386,77 @@ defmodule E2eWeb.Layouts do
     end
   end
 
-  defp menu_items(locale) do
-    Corex.Tree.new([
+  defp component_item(label, id, locale, opts \\ []) do
+    extra = Keyword.get(opts, :extra, [])
+
+    children =
       [
-        label: "Accordion",
-        id: "accordion",
-        children: [
-          [label: "Controller", id: "/#{locale}/accordion"],
-          [label: "Live", id: "/#{locale}/live/accordion"],
+        [label: "Controller", id: "/#{locale}/#{id}"],
+        [label: "Live", id: "/#{locale}/live/#{id}"]
+      ] ++ extra
+
+    [label: label, id: id, children: children]
+  end
+
+  defp corex_menu_items(locale) do
+    Corex.Tree.new([
+      component_item("Accordion", "accordion", locale,
+        extra: [
           [label: "Playground", id: "/#{locale}/playground/accordion"],
           [label: "Controlled", id: "/#{locale}/controlled/accordion"],
           [label: "Async", id: "/#{locale}/async/accordion"]
         ]
-      ],
-      [
-        label: "Action",
-        id: "action",
-        children: [
-          [label: "Controller", id: "/#{locale}/action"],
-          [label: "Live", id: "/#{locale}/live/action"]
-        ]
-      ],
-      [
-        label: "Angle Slider",
-        id: "angle-slider",
-        children: [
-          [label: "Controller", id: "/#{locale}/angle-slider"],
-          [label: "Live", id: "/#{locale}/live/angle-slider"],
+      ),
+      component_item("Action", "action", locale),
+      component_item("Avatar", "avatar", locale),
+      component_item("Carousel", "carousel", locale),
+      component_item("Clipboard", "clipboard", locale),
+      component_item("Code", "code", locale),
+      component_item("Collapsible", "collapsible", locale),
+      component_item("Dialog", "dialog", locale),
+      component_item("Floating Panel", "floating-panel", locale),
+      component_item("Listbox", "listbox", locale),
+      component_item("Marquee", "marquee", locale),
+      component_item("Menu", "menu", locale),
+      component_item("Navigate", "navigate", locale),
+      component_item("Tabs", "tabs", locale),
+      component_item("Timer", "timer", locale),
+      component_item("Toast", "toast", locale),
+      component_item("Toggle Group", "toggle-group", locale),
+      component_item("Tree view", "tree-view", locale)
+    ])
+  end
+
+  defp form_components_menu_items(locale) do
+    Corex.Tree.new([
+      component_item("Angle Slider", "angle-slider", locale,
+        extra: [
           [label: "Playground", id: "/#{locale}/playground/angle-slider"],
           [label: "Controlled", id: "/#{locale}/controlled/angle-slider"]
         ]
-      ],
-      [
-        label: "Avatar",
-        id: "avatar",
-        children: [
-          [label: "Controller", id: "/#{locale}/avatar"],
-          [label: "Live", id: "/#{locale}/live/avatar"]
-        ]
-      ],
-      [
-        label: "Carousel",
-        id: "carousel",
-        children: [
-          [label: "Controller", id: "/#{locale}/carousel"],
-          [label: "Live", id: "/#{locale}/live/carousel"]
-        ]
-      ],
-      [
-        label: "Checkbox",
-        id: "checkbox",
-        children: [
-          [label: "Controller", id: "/#{locale}/checkbox"],
-          [label: "Live", id: "/#{locale}/live/checkbox"]
-        ]
-      ],
-      [
-        label: "Clipboard",
-        id: "clipboard",
-        children: [
-          [label: "Controller", id: "/#{locale}/clipboard"],
-          [label: "Live", id: "/#{locale}/live/clipboard"]
-        ]
-      ],
-      [
-        label: "Code",
-        id: "code",
-        children: [
-          [label: "Controller", id: "/#{locale}/code"],
-          [label: "Live", id: "/#{locale}/live/code"]
-        ]
-      ],
-      [
-        label: "Collapsible",
-        id: "collapsible",
-        children: [
-          [label: "Controller", id: "/#{locale}/collapsible"],
-          [label: "Live", id: "/#{locale}/live/collapsible"]
-        ]
-      ],
-      [
-        label: "Combobox",
-        id: "combobox",
-        children: [
-          [label: "Controller", id: "/#{locale}/combobox"],
-          [label: "Live", id: "/#{locale}/live/combobox"],
+      ),
+      component_item("Checkbox", "checkbox", locale),
+      component_item("Color Picker", "color-picker", locale),
+      component_item("Combobox", "combobox", locale,
+        extra: [
           [label: "Fetch", id: "/#{locale}/live/combobox-fetch"],
           [label: "Form", id: "/#{locale}/live/combobox-form"]
         ]
-      ],
-      [
-        label: "Date Picker",
-        id: "date-picker",
-        children: [
-          [label: "Controller", id: "/#{locale}/date-picker"],
-          [label: "Live", id: "/#{locale}/live/date-picker"]
-        ]
-      ],
-      [
-        label: "Dialog",
-        id: "dialog",
-        children: [
-          [label: "Controller", id: "/#{locale}/dialog"],
-          [label: "Live", id: "/#{locale}/live/dialog"]
-        ]
-      ],
-      [
-        label: "Editable",
-        id: "editable",
-        children: [
-          [label: "Controller", id: "/#{locale}/editable"],
-          [label: "Live", id: "/#{locale}/live/editable"]
-        ]
-      ],
-      [
-        label: "Floating Panel",
-        id: "floating-panel",
-        children: [
-          [label: "Controller", id: "/#{locale}/floating-panel"],
-          [label: "Live", id: "/#{locale}/live/floating-panel"]
-        ]
-      ],
-      [
-        label: "Listbox",
-        id: "listbox",
-        children: [
-          [label: "Controller", id: "/#{locale}/listbox"],
-          [label: "Live", id: "/#{locale}/live/listbox"]
-        ]
-      ],
-      [
-        label: "Menu",
-        id: "menu",
-        children: [
-          [label: "Controller", id: "/#{locale}/menu"],
-          [label: "Live", id: "/#{locale}/live/menu"]
-        ]
-      ],
-      [
-        label: "Navigate",
-        id: "navigate",
-        children: [
-          [label: "Controller", id: "/#{locale}/navigate"],
-          [label: "Live", id: "/#{locale}/live/navigate"]
-        ]
-      ],
-      [
-        label: "Number Input",
-        id: "number-input",
-        children: [
-          [label: "Controller", id: "/#{locale}/number-input"],
-          [label: "Live", id: "/#{locale}/live/number-input"]
-        ]
-      ],
-      [
-        label: "Password Input",
-        id: "password-input",
-        children: [
-          [label: "Controller", id: "/#{locale}/password-input"],
-          [label: "Live", id: "/#{locale}/live/password-input"]
-        ]
-      ],
-      [
-        label: "Pin Input",
-        id: "pin-input",
-        children: [
-          [label: "Controller", id: "/#{locale}/pin-input"],
-          [label: "Live", id: "/#{locale}/live/pin-input"]
-        ]
-      ],
-      [
-        label: "Radio Group",
-        id: "radio-group",
-        children: [
-          [label: "Controller", id: "/#{locale}/radio-group"],
-          [label: "Live", id: "/#{locale}/live/radio-group"]
-        ]
-      ],
-      [
-        label: "Select",
-        id: "select",
-        children: [
-          [label: "Controller", id: "/#{locale}/select"],
-          [label: "Live", id: "/#{locale}/live/select"]
-        ]
-      ],
-      [
-        label: "Signature",
-        id: "signature",
-        children: [
-          [label: "Controller", id: "/#{locale}/signature"],
-          [label: "Live", id: "/#{locale}/live/signature"]
-        ]
-      ],
-      [
-        label: "Switch",
-        id: "switch",
-        children: [
-          [label: "Controller", id: "/#{locale}/switch"],
-          [label: "Live", id: "/#{locale}/live/switch"]
-        ]
-      ],
-      [
-        label: "Tabs",
-        id: "tabs",
-        children: [
-          [label: "Controller", id: "/#{locale}/tabs"],
-          [label: "Live", id: "/#{locale}/live/tabs"]
-        ]
-      ],
-      [
-        label: "Timer",
-        id: "timer",
-        children: [
-          [label: "Controller", id: "/#{locale}/timer"],
-          [label: "Live", id: "/#{locale}/live/timer"]
-        ]
-      ],
-      [
-        label: "Toast",
-        id: "toast",
-        children: [
-          [label: "Controller", id: "/#{locale}/toast"],
-          [label: "Live", id: "/#{locale}/live/toast"]
-        ]
-      ],
-      [
-        label: "Toggle Group",
-        id: "toggle-group",
-        children: [
-          [label: "Controller", id: "/#{locale}/toggle-group"],
-          [label: "Live", id: "/#{locale}/live/toggle-group"]
-        ]
-      ],
-      [
-        label: "Tree view",
-        id: "tree-view",
-        children: [
-          [label: "Controller", id: "/#{locale}/tree-view"],
-          [label: "Live", id: "/#{locale}/live/tree-view"]
-        ]
-      ]
+      ),
+      component_item("Date Picker", "date-picker", locale),
+      component_item("Editable", "editable", locale),
+      component_item("Email Input", "email-input", locale),
+      component_item("Hidden Input", "hidden-input", locale),
+      component_item("Number Input", "number-input", locale),
+      component_item("Password Input", "password-input", locale),
+      component_item("Pin Input", "pin-input", locale),
+      component_item("Radio Group", "radio-group", locale),
+      component_item("Select", "select", locale),
+      component_item("Signature", "signature", locale),
+      component_item("Switch", "switch", locale),
+      component_item("Text Area Input", "text-area-input", locale),
+      component_item("Text Input", "text-input", locale),
+      component_item("URL Input", "url-input", locale)
     ])
   end
 

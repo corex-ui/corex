@@ -13,10 +13,16 @@ defmodule Corex.Carousel.Anatomy do
       dir: "ltr",
       orientation: "horizontal",
       slides_per_page: 1,
+      slides_per_move: nil,
       loop: false,
       autoplay: false,
+      autoplay_delay: 4000,
       allow_mouse_drag: false,
       spacing: "0px",
+      padding: nil,
+      in_view_threshold: 0.6,
+      snap_type: "mandatory",
+      auto_size: false,
       on_page_change: nil,
       on_page_change_client: nil
     ]
@@ -29,10 +35,16 @@ defmodule Corex.Carousel.Anatomy do
             dir: String.t(),
             orientation: String.t(),
             slides_per_page: non_neg_integer(),
+            slides_per_move: non_neg_integer() | :auto | nil,
             loop: boolean(),
             autoplay: boolean(),
+            autoplay_delay: non_neg_integer(),
             allow_mouse_drag: boolean(),
             spacing: String.t(),
+            padding: String.t() | nil,
+            in_view_threshold: float(),
+            snap_type: String.t(),
+            auto_size: boolean(),
             on_page_change: String.t() | nil,
             on_page_change_client: String.t() | nil
           }

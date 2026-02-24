@@ -36,11 +36,34 @@ Hex Doc is available at [http://hexdocs.pm/corex](http://hexdocs.pm/corex)
 This guide will walk you through installing and configuring Corex in your Phoenix application.
 
 
+## Requirements
+
+This guide assumes the use of [asdf](https://asdf-vm.com/) to manage the Erlang and Elixir versions.
+
+Add `.tool-versions` file to the root of your project
+
+```
+erlang 28.3.1
+elixir 1.19.5-otp-28
+```
+
+You can then install the latest versions
+
+```bash
+asdf install
+```
+
+
 ## Phoenix App
+
+This guide will walk you through installing and configuring Corex in your Phoenix application.
 
 If you don't already have a [Phoenix app up and running](https://hexdocs.pm/phoenix/up_and_running.html) you can run
 
+We will first update the generator to the latest version and then generate `:my_app`
+
 ```bash
+mix local.phx
 mix phx.new my_app
 ```
 
@@ -51,7 +74,7 @@ Add `corex` to your `mix.exs` dependencies:
 ```elixir
 def deps do
   [
-    {:corex, "~> 0.1.0-alpha.27"}
+    {:corex, "~> 0.1.0-alpha.28"}
   ]
 end
 ```
@@ -115,7 +138,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 ```elixir
 config :esbuild,
   version: "0.25.4",
-  e2e: [
+  my_app: [
     args:
       ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../assets", __DIR__),
@@ -440,8 +463,8 @@ You may not need to minify both; in my case, only Tailwind needs to be minified 
 ```elixir
      "assets.build": [
         "compile",
-        "tailwind e2e --minify",
-        "esbuild e2e --minify"
+        "tailwind my_app --minify",
+        "esbuild my_app --minify"
       ]
 ```
 
@@ -449,8 +472,8 @@ You may not need to minify both; in my case, only Tailwind needs to be minified 
 
 ```elixir
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:e2e, ~w(--sourcemap=inline --watch --minify)]},
-    tailwind: {Tailwind, :install_and_run, [:e2e, ~w(--watch --minify)]}
+    esbuild: {Esbuild, :install_and_run, [:my_app, ~w(--sourcemap=inline --watch --minify)]},
+    tailwind: {Tailwind, :install_and_run, [:my_app, ~w(--watch --minify)]}
   ]
 ```
 

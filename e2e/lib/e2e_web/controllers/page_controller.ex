@@ -29,6 +29,10 @@ defmodule E2eWeb.PageController do
     render(conn, :combobox_page)
   end
 
+  def color_picker_page(conn, _params) do
+    render(conn, :color_picker_page)
+  end
+
   def checkbox_page(conn, _params) do
     render(conn, :checkbox_page)
   end
@@ -134,12 +138,25 @@ defmodule E2eWeb.PageController do
     render(conn, :editable_page, value_text: "My custom value")
   end
 
+  def email_input_page(conn, _params) do
+    render(conn, :email_input_page)
+  end
+
   def floating_panel_page(conn, _params) do
     render(conn, :floating_panel_page)
   end
 
+  def hidden_input_page(conn, _params) do
+    form = Phoenix.Component.to_form(%{"id" => "123", "name" => ""}, as: :user)
+    render(conn, :hidden_input_page, form: form)
+  end
+
   def listbox_page(conn, _params) do
     render(conn, :listbox_page)
+  end
+
+  def marquee_page(conn, _params) do
+    render(conn, :marquee_page)
   end
 
   def number_input_page(conn, _params) do
@@ -158,7 +175,19 @@ defmodule E2eWeb.PageController do
     render(conn, :radio_group_page)
   end
 
+  def text_area_input_page(conn, _params) do
+    render(conn, :text_area_input_page)
+  end
+
+  def text_input_page(conn, _params) do
+    render(conn, :text_input_page)
+  end
+
   def timer_page(conn, _params) do
     render(conn, :timer_page)
+  end
+
+  def url_input_page(conn, _params) do
+    render(conn, :url_input_page)
   end
 end

@@ -6,16 +6,16 @@ import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunk-GN3NEUUU.mjs";
+} from "./chunk-QYWY7F3J.mjs";
 import {
   trackDismissableElement
-} from "./chunk-OA4F3YDQ.mjs";
-import "./chunk-EBQGC3XC.mjs";
+} from "./chunk-CHUGBG5L.mjs";
+import "./chunk-DTH4G7GO.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-2QLEEEGG.mjs";
+} from "./chunk-EDSYBTWY.mjs";
 import {
   Component,
   VanillaMachine,
@@ -59,7 +59,7 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunk-RUWIVFVB.mjs";
+} from "./chunk-PLUM2DEK.mjs";
 
 // ../node_modules/.pnpm/@zag-js+menu@1.34.1/node_modules/@zag-js/menu/dist/index.mjs
 var anatomy = createAnatomy("menu").parts(
@@ -1538,11 +1538,12 @@ var MenuHook = {
     const getMain = () => this.liveSocket?.main;
     const menu = new Menu(el, {
       id: el.id.replace("menu:", ""),
-      ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
+      defaultOpen: getBoolean(el, "defaultOpen"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       loopFocus: getBoolean(el, "loopFocus"),
       typeahead: getBoolean(el, "typeahead"),
       composite: getBoolean(el, "composite"),
+      defaultHighlightedValue: getString(el, "defaultHighlightedValue"),
       dir: getString(el, "dir", ["ltr", "rtl"]),
       onSelect: (details) => {
         const redirect = getBoolean(el, "redirect");
@@ -1705,6 +1706,7 @@ var MenuHook = {
       loopFocus: getBoolean(this.el, "loopFocus"),
       typeahead: getBoolean(this.el, "typeahead"),
       composite: getBoolean(this.el, "composite"),
+      defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
       dir: getString(this.el, "dir", ["ltr", "rtl"])
     });
   },

@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.27"
+  @version "0.1.0-alpha.28"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -118,28 +118,17 @@ defmodule Corex.MixProject do
       Components: [
         Corex.Accordion,
         Corex.Action,
-        Corex.AngleSlider,
         Corex.Avatar,
         Corex.Carousel,
-        Corex.Checkbox,
         Corex.Clipboard,
         Corex.Code,
-        Corex.Combobox,
         Corex.Collapsible,
-        Corex.DatePicker,
         Corex.Dialog,
-        Corex.Editable,
         Corex.FloatingPanel,
         Corex.Listbox,
+        Corex.Marquee,
         Corex.Menu,
         Corex.Navigate,
-        Corex.NumberInput,
-        Corex.PasswordInput,
-        Corex.PinInput,
-        Corex.RadioGroup,
-        Corex.Select,
-        Corex.SignaturePad,
-        Corex.Switch,
         Corex.Tabs,
         Corex.Timer,
         Corex.Toast,
@@ -147,7 +136,25 @@ defmodule Corex.MixProject do
         Corex.TreeView
       ],
       Form: [
-        Corex.Form
+        Corex.AngleSlider,
+        Corex.Checkbox,
+        Corex.ColorPicker,
+        Corex.Combobox,
+        Corex.DatePicker,
+        Corex.Editable,
+        Corex.EmailInput,
+        Corex.Form,
+        Corex.HiddenInput,
+        Corex.NumberInput,
+        Corex.PasswordInput,
+        Corex.PinInput,
+        Corex.RadioGroup,
+        Corex.Select,
+        Corex.SignaturePad,
+        Corex.Switch,
+        Corex.TextAreaInput,
+        Corex.TextInput,
+        Corex.UrlInput
       ],
       Content: [
         Corex.Content,
