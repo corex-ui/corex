@@ -188,6 +188,7 @@ defmodule Corex.ColorPicker do
             name="channel-input-hex"
             value={@initial.hex_value}
             style={Connect.channel_input_style()}
+            aria-label="Hex color value"
           />
           <input
             data-scope="color-picker"
@@ -196,6 +197,7 @@ defmodule Corex.ColorPicker do
             name="channel-input-alpha"
             value={@initial.alpha_value}
             style={Connect.channel_input_style()}
+            aria-label="Alpha (opacity) value"
           />
         </div>
         <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
