@@ -20,9 +20,11 @@ defmodule E2eWeb.ToastLive do
     {:noreply,
      Corex.Toast.push_toast(
        socket,
+       "layout-toast",
        "This is an info toast",
        "This is an info toast description",
-       String.to_atom(value)
+       String.to_atom(value),
+       5000
      )}
   end
 
@@ -50,6 +52,7 @@ defmodule E2eWeb.ToastLive do
     {:noreply,
      socket
      |> Corex.Toast.push_toast(
+       "layout-toast",
        params["toast"]["title"],
        params["toast"]["message"],
        String.to_atom(params["toast"]["type"]),
@@ -129,9 +132,11 @@ defmodule E2eWeb.ToastLive do
         <button
           phx-click={
             Corex.Toast.create_toast(
+              "layout-toast",
               "This is an info toast",
               "This is an info toast description",
-              :info
+              :info,
+              []
             )
           }
           class="button"
@@ -142,9 +147,11 @@ defmodule E2eWeb.ToastLive do
         <button
           phx-click={
             Corex.Toast.create_toast(
+              "layout-toast",
               "This is a success toast",
               "This is a success toast description",
-              :success
+              :success,
+              []
             )
           }
           class="button"
@@ -154,9 +161,11 @@ defmodule E2eWeb.ToastLive do
         <button
           phx-click={
             Corex.Toast.create_toast(
+              "layout-toast",
               "This is a error toast",
               "This is a error toast description",
-              :error
+              :error,
+              []
             )
           }
           class="button"
@@ -167,6 +176,7 @@ defmodule E2eWeb.ToastLive do
         <button
           phx-click={
             Corex.Toast.create_toast(
+              "layout-toast",
               "This is a loading toast",
               "This is a loading toast description",
               :loading,

@@ -49,6 +49,10 @@
 @import "../corex/components/number-input.css";
 @import "../corex/components/password-input.css";
 @import "../corex/components/pin-input.css";
+@import "../corex/components/email-input.css";
+@import "../corex/components/text-input.css";
+@import "../corex/components/text-area-input.css";
+@import "../corex/components/url-input.css";
 @import "../corex/components/radio-group.css";
 @import "../corex/components/timer.css";
 @import "../corex/components/code.css";

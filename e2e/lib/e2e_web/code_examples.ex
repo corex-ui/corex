@@ -1,5 +1,5 @@
 defmodule E2eWeb.CodeExamples do
-  @code_examples_path Path.join(:code.priv_dir(:e2e), "code_examples")
+  @code_examples_path Path.join(:code.priv_dir(:corex_web), "code_examples")
 
   def load(name) do
     path = Path.join(@code_examples_path, name)

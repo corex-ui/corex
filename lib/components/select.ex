@@ -149,6 +149,66 @@ defmodule Corex.Select do
 
   <!-- tabs-close -->
 
+  ## Use as Navigation
+
+  Set `redirect` so the first selected value is used as the destination URL. Per item: `redirect: false` disables redirect; `new_tab: true` opens in a new tab.
+
+  ### Controller
+
+  When not connected to LiveView, the hook automatically performs a full page redirect via `window.location`.
+
+  ```heex
+  <.select
+    id="nav-select"
+    class="select"
+    redirect
+    placeholder_text="Go to"
+    collection={[
+      %{label: "Account", id: ~p"/account"},
+      %{label: "Settings", id: ~p"/settings"}
+    ]}
+  >
+    <:trigger>
+      <.icon name="hero-chevron-down" />
+    </:trigger>
+  </.select>
+  ```
+
+  ### LiveView
+
+  When connected to LiveView, use `on_value_change` and redirect in the callback. The payload includes `value` (list); use `Enum.at(value, 0)` for the destination.
+
+  ```elixir
+  defmodule MyAppWeb.NavLive do
+    use MyAppWeb, :live_view
+
+    def handle_event("nav_change", %{"value" => value}, socket) do
+      path = Enum.at(value, 0) || ~p"/"
+      {:noreply, push_navigate(socket, to: path)}
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.select
+        id="nav-select"
+        class="select"
+        redirect
+        on_value_change="nav_change"
+        placeholder_text="Go to"
+        collection={[
+          %{label: "Account", id: ~p"/account"},
+          %{label: "Settings", id: ~p"/settings"}
+        ]}
+      >
+        <:trigger>
+          <.icon name="hero-chevron-down" />
+        </:trigger>
+      </.select>
+      """
+    end
+  end
+  ```
+
   ## Phoenix Form Integration
 
   When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.

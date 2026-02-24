@@ -1,4 +1,4 @@
-defmodule E2eWeb.Captures.AngleSlider do
+defmodule CorexWeb.AngleSlider do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 

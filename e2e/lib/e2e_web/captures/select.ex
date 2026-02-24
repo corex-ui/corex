@@ -1,4 +1,4 @@
-defmodule E2eWeb.Captures.Select do
+defmodule CorexWeb.Select do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 

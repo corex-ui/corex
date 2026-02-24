@@ -5,7 +5,7 @@ import Config
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
 # Run `mix help test` for more information.
-config :e2e, E2e.Repo,
+config :corex_web, E2e.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
@@ -15,14 +15,14 @@ config :e2e, E2e.Repo,
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :e2e, E2eWeb.Endpoint,
+config :corex_web, E2eWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "+b68KqBcqGHqVRw8vfymJ0DZMbVUbGkYgE9E8X45TmMWvqBW4zsqPuo8LI/KWOVL",
   server: true,
   code_reloader: false
 
 # In test we don't send emails
-config :e2e, E2e.Mailer, adapter: Swoosh.Adapters.Test
+config :corex_web, E2e.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
@@ -43,7 +43,7 @@ config :phoenix,
   sort_verified_routes_query_params: true
 
 config :wallaby,
-  otp_app: :e2e,
+  otp_app: :corex_web,
   driver: Wallaby.Chrome,
   hackney_options: [timeout: :infinity, recv_timeout: :infinity],
   max_wait_time: 5_000

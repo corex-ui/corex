@@ -7,7 +7,7 @@
 # General application configuration
 import Config
 
-config :e2e,
+config :corex_web,
   ecto_repos: [E2e.Repo],
   generators: [timestamp_type: :utc_datetime]
 
@@ -17,7 +17,7 @@ config :corex,
   rtl_locales: ["ar"]
 
 # Configure the endpoint
-config :e2e, E2eWeb.Endpoint,
+config :corex_web, E2eWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
@@ -34,7 +34,7 @@ config :e2e, E2eWeb.Endpoint,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :e2e, E2e.Mailer, adapter: Swoosh.Adapters.Local
+config :corex_web, E2e.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

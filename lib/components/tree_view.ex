@@ -26,9 +26,13 @@ defmodule Corex.TreeView do
   />
   ```
 
-  ### With redirect
+  ## Use as Navigation
 
   Set `redirect` so selection navigates to the item value (URL). Use item `redirect: false` to disable, `new_tab: true` to open in new tab.
+
+  ### Controller
+
+  When not connected to LiveView, the hook automatically performs a full page redirect via `window.location`.
 
   ```heex
   <.tree_view id="my-tree" class="tree-view" redirect items={Corex.Tree.new([
@@ -37,6 +41,43 @@ defmodule Corex.TreeView do
   ])}>
     <:label>My Documents</:label>
   </.tree_view>
+  ```
+
+  ### LiveView
+
+  When connected to LiveView, use `on_selection_change` and redirect in the callback. The payload contains `value["selectedValue"]` (list); use the first element for the destination URL.
+
+  ```elixir
+  defmodule MyAppWeb.NavLive do
+    use MyAppWeb, :live_view
+
+    def handle_event("handle_menu", %{"value" => value}, socket) do
+      if value["isItem"] do
+        path = Enum.at(value["selectedValue"], 0)
+        {:noreply, push_navigate(socket, to: path)}
+      else
+        {:noreply, socket}
+      end
+    end
+
+    def render(assigns) do
+      ~H"""
+      <.tree_view
+        id="nav-tree"
+        class="tree-view"
+        redirect
+        on_selection_change="handle_menu"
+        value={[@current_path]}
+        items={Corex.Tree.new([
+          [label: "Home", id: "/"],
+          [label: "Docs", id: "/docs"]
+        ])}
+      >
+        <:label>Navigation</:label>
+      </.tree_view>
+      """
+    end
+  end
   ```
 
   ## Styling

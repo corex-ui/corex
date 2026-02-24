@@ -1,4 +1,4 @@
-defmodule E2eWeb.Captures.Listbox do
+defmodule CorexWeb.Listbox do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 

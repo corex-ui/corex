@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :e2e, E2e.Repo,
+config :corex_web, E2e.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
@@ -16,7 +16,7 @@ config :e2e, E2e.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :e2e, E2eWeb.Endpoint,
+config :corex_web, E2eWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}],
@@ -53,7 +53,7 @@ config :e2e, E2eWeb.Endpoint,
 # different ports.
 
 # Reload browser tabs when matching files change.
-config :e2e, E2eWeb.Endpoint,
+config :corex_web, E2eWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
@@ -65,7 +65,7 @@ config :e2e, E2eWeb.Endpoint,
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :e2e, dev_routes: true
+config :corex_web, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"

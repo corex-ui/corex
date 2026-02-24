@@ -10,7 +10,7 @@ defmodule E2e.Application do
     children = [
       E2eWeb.Telemetry,
       E2e.Repo,
-      {DNSCluster, query: Application.get_env(:e2e, :dns_cluster_query) || :ignore},
+      {DNSCluster, query: Application.get_env(:corex_web, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: E2e.PubSub},
       # Start a worker by calling: E2e.Worker.start_link(arg)
       # {E2e.Worker, arg},

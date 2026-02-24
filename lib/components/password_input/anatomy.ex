@@ -63,9 +63,15 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled]
+    defstruct [:id, :disabled, :name, :form, :auto_complete]
 
-    @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            disabled: boolean(),
+            name: String.t() | nil,
+            form: String.t() | nil,
+            auto_complete: String.t()
+          }
   end
 
   defmodule VisibilityTrigger do

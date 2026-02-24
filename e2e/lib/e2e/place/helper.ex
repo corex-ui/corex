@@ -57,7 +57,7 @@ defmodule E2e.Place.Helper do
   end
 
   defp read_compressed(filename) do
-    priv_dir = :code.priv_dir(:e2e)
+    priv_dir = :code.priv_dir(:corex_web)
     file_path = Path.join([priv_dir, "repo", "seeds", filename])
     {:ok, file} = File.open(file_path, [:read, :utf8, :compressed])
     data = IO.read(file, :eof)

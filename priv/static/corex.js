@@ -5555,12 +5555,12 @@ var Corex = (() => {
           this.handlers = [];
         },
         updated() {
-          var _a, _b;
+          var _a, _b, _c, _d, _e;
           const slideCount = getNumber(this.el, "slideCount");
           if (slideCount == null || slideCount < 1) return;
           const page = getNumber(this.el, "page");
           const controlled = getBoolean(this.el, "controlled");
-          (_b = this.carousel) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
+          (_e = this.carousel) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({
             id: this.el.id,
             slideCount
           }, controlled && page !== void 0 ? { page } : {}), {
@@ -5570,8 +5570,18 @@ var Corex = (() => {
               "vertical"
             ]),
             slidesPerPage: (_a = getNumber(this.el, "slidesPerPage")) != null ? _a : 1,
+            slidesPerMove: getString(this.el, "slidesPerMove") === "auto" ? "auto" : getNumber(this.el, "slidesPerMove"),
             loop: getBoolean(this.el, "loop"),
-            allowMouseDrag: getBoolean(this.el, "allowMouseDrag")
+            autoplay: getBoolean(this.el, "autoplay") ? { delay: (_b = getNumber(this.el, "autoplayDelay")) != null ? _b : 4e3 } : false,
+            allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
+            spacing: (_c = getString(this.el, "spacing")) != null ? _c : "0px",
+            padding: getString(this.el, "padding"),
+            inViewThreshold: (_d = getNumber(this.el, "inViewThreshold")) != null ? _d : 0.6,
+            snapType: getString(this.el, "snapType", [
+              "proximity",
+              "mandatory"
+            ]),
+            autoSize: getBoolean(this.el, "autoSize")
           }));
         },
         destroyed() {
@@ -15297,6 +15307,15 @@ var Corex = (() => {
                   id: el.id
                 });
               }
+              const eventNameClient = getString(el, "onValueChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
             },
             onValueChangeEnd: (details) => {
               const eventName = getString(el, "onValueChangeEnd");
@@ -15306,16 +15325,113 @@ var Corex = (() => {
                   id: el.id
                 });
               }
+              const eventNameClient = getString(el, "onValueChangeEndClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: { value: details, id: el.id }
+                  })
+                );
+              }
             },
             onOpenChange: (details) => {
               const eventName = getString(el, "onOpenChange");
               if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
                 this.pushEvent(eventName, { open: details.open, id: el.id });
               }
+              const eventNameClient = getString(el, "onOpenChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: { open: details.open, id: el.id }
+                  })
+                );
+              }
+            },
+            onFormatChange: (details) => {
+              const eventName = getString(el, "onFormatChange");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { format: details.format, id: el.id });
+              }
+            },
+            onPointerDownOutside: () => {
+              const eventName = getString(el, "onPointerDownOutside");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { id: el.id });
+              }
+            },
+            onFocusOutside: () => {
+              const eventName = getString(el, "onFocusOutside");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { id: el.id });
+              }
+            },
+            onInteractOutside: () => {
+              const eventName = getString(el, "onInteractOutside");
+              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+                this.pushEvent(eventName, { id: el.id });
+              }
             }
           }));
           zag.init();
           this.colorPicker = zag;
+          this.handlers = [];
+          this.onSetOpen = (event) => {
+            const { open } = event.detail;
+            zag.api.setOpen(open);
+          };
+          el.addEventListener("phx:color-picker:set-open", this.onSetOpen);
+          this.onSetValue = (event) => {
+            const { value } = event.detail;
+            zag.api.setValue(value);
+          };
+          el.addEventListener("phx:color-picker:set-value", this.onSetValue);
+          this.onSetFormat = (event) => {
+            const { format } = event.detail;
+            zag.api.setFormat(format);
+          };
+          el.addEventListener("phx:color-picker:set-format", this.onSetFormat);
+          this.handlers.push(
+            this.handleEvent(
+              "color_picker_set_open",
+              (payload) => {
+                const targetId = payload.color_picker_id;
+                if (targetId) {
+                  const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
+                  if (!matches) return;
+                }
+                zag.api.setOpen(payload.open);
+              }
+            )
+          );
+          this.handlers.push(
+            this.handleEvent(
+              "color_picker_set_value",
+              (payload) => {
+                const targetId = payload.color_picker_id;
+                if (targetId) {
+                  const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
+                  if (!matches) return;
+                }
+                zag.api.setValue(payload.value);
+              }
+            )
+          );
+          this.handlers.push(
+            this.handleEvent(
+              "color_picker_set_format",
+              (payload) => {
+                const targetId = payload.color_picker_id;
+                if (targetId) {
+                  const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
+                  if (!matches) return;
+                }
+                zag.api.setFormat(payload.format);
+              }
+            )
+          );
         },
         updated() {
           var _a, _b, _c;
@@ -15350,6 +15466,20 @@ var Corex = (() => {
         },
         destroyed() {
           var _a;
+          if (this.onSetOpen) {
+            this.el.removeEventListener("phx:color-picker:set-open", this.onSetOpen);
+          }
+          if (this.onSetValue) {
+            this.el.removeEventListener("phx:color-picker:set-value", this.onSetValue);
+          }
+          if (this.onSetFormat) {
+            this.el.removeEventListener("phx:color-picker:set-format", this.onSetFormat);
+          }
+          if (this.handlers) {
+            for (const h2 of this.handlers) {
+              this.removeHandleEvent(h2);
+            }
+          }
           (_a = this.colorPicker) == null ? void 0 : _a.destroy();
         }
       };
@@ -26013,13 +26143,14 @@ var Corex = (() => {
             var _a;
             return (_a = this.liveSocket) == null ? void 0 : _a.main;
           };
-          const menu = new Menu(el, __spreadProps(__spreadValues({
-            id: el.id.replace("menu:", "")
-          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+          const menu = new Menu(el, {
+            id: el.id.replace("menu:", ""),
+            defaultOpen: getBoolean(el, "defaultOpen"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             loopFocus: getBoolean(el, "loopFocus"),
             typeahead: getBoolean(el, "typeahead"),
             composite: getBoolean(el, "composite"),
+            defaultHighlightedValue: getString(el, "defaultHighlightedValue"),
             dir: getString(el, "dir", ["ltr", "rtl"]),
             onSelect: (details) => {
               var _a, _b, _c;
@@ -26081,7 +26212,7 @@ var Corex = (() => {
                 );
               }
             }
-          }));
+          });
           menu.init();
           this.menu = menu;
           this.nestedMenus = /* @__PURE__ */ new Map();
@@ -26187,6 +26318,7 @@ var Corex = (() => {
             loopFocus: getBoolean(this.el, "loopFocus"),
             typeahead: getBoolean(this.el, "typeahead"),
             composite: getBoolean(this.el, "composite"),
+            defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
             dir: getString(this.el, "dir", ["ltr", "rtl"])
           }));
         },

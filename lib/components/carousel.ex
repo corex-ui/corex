@@ -82,9 +82,21 @@ defmodule Corex.Carousel do
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
   attr(:orientation, :string, default: "horizontal", values: ["horizontal", "vertical"])
   attr(:slides_per_page, :integer, default: 1)
+
+  attr(:slides_per_move, :any,
+    default: nil,
+    doc: "Number of slides to move per step, or \"auto\""
+  )
+
   attr(:loop, :boolean, default: false)
+  attr(:autoplay, :boolean, default: false)
+  attr(:autoplay_delay, :integer, default: 4000)
   attr(:allow_mouse_drag, :boolean, default: false)
   attr(:spacing, :string, default: "0px")
+  attr(:padding, :string, default: nil)
+  attr(:in_view_threshold, :float, default: 0.6)
+  attr(:snap_type, :string, default: "mandatory", values: ["proximity", "mandatory"])
+  attr(:auto_size, :boolean, default: false)
   attr(:on_page_change, :string, default: nil)
   attr(:on_page_change_client, :string, default: nil)
   attr(:rest, :global)
@@ -96,12 +108,13 @@ defmodule Corex.Carousel do
     items = List.wrap(assigns.items)
     slide_count = length(items)
     slides_per_page = assigns.slides_per_page || 1
-    per_move = slides_per_page
 
     total_pages =
-      0..max(0, slide_count - 1)
-      |> Enum.take_every(max(1, per_move))
-      |> Enum.count(fn i -> i + slides_per_page <= slide_count end)
+      if slide_count == 0 do
+        0
+      else
+        div(slide_count + slides_per_page - 1, slides_per_page)
+      end
 
     page = assigns.page || 0
     loop = assigns.loop || false
@@ -114,6 +127,7 @@ defmodule Corex.Carousel do
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, items)
       |> assign(:slide_count, slide_count)
+      |> assign(:total_pages, total_pages)
       |> assign(:prev_disabled, prev_disabled)
       |> assign(:next_disabled, next_disabled)
 
@@ -131,10 +145,16 @@ defmodule Corex.Carousel do
         dir: @dir,
         orientation: @orientation,
         slides_per_page: @slides_per_page,
+        slides_per_move: @slides_per_move,
         loop: @loop,
-        autoplay: false,
+        autoplay: @autoplay,
+        autoplay_delay: @autoplay_delay,
         allow_mouse_drag: @allow_mouse_drag,
         spacing: @spacing,
+        padding: @padding,
+        in_view_threshold: @in_view_threshold,
+        snap_type: @snap_type,
+        auto_size: @auto_size,
         on_page_change: @on_page_change,
         on_page_change_client: @on_page_change_client
       })}
@@ -151,7 +171,7 @@ defmodule Corex.Carousel do
             <%= render_slot(@prev_trigger) %>
           </button>
           <div {Connect.indicator_group(%IndicatorGroup{id: @id, orientation: @orientation, dir: @dir})}>
-            <button :for={i <- 0..(@slide_count - 1)} type="button" {Connect.indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})} data-index={i} aria-label={"Go to slide #{i + 1}"}></button>
+            <button :for={i <- 0..(max(0, @total_pages - 1))} type="button" {Connect.indicator(%Indicator{id: @id, index: i, orientation: @orientation, dir: @dir, page: @page})} data-index={i} aria-label={"Go to page #{i + 1}"}></button>
           </div>
           <button type="button" {Connect.next_trigger(%NextTrigger{id: @id, disabled: @next_disabled})}>
             <%= render_slot(@next_trigger) %>

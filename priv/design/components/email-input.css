@@ -1,0 +1,60 @@
+@import "../main.css";
+
+@layer components {
+  .email-input [data-scope="email-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-mini-gap);
+    max-width: var(--container-ui);
+  }
+
+  .email-input [data-scope="email-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .email-input [data-scope="email-input"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    position: relative;
+    margin-inline: auto;
+    max-width: var(--container-mini);
+  }
+
+  .email-input [data-scope="email-input"][data-part="input"] {
+    @apply ui-input;
+
+    max-width: var(--container-mini);
+    flex: 1;
+  }
+
+  .email-input [data-scope="email-input"][data-part="icon"] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    width: var(--spacing-ui);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--spacing-ui-padding);
+    pointer-events: none;
+  }
+
+  .email-input [data-scope="email-input"][data-part="icon"] .icon,
+  .email-input [data-scope="email-input"][data-part="icon"] svg {
+    @apply ui-icon;
+  }
+
+  .email-input[data-no-icon] [data-scope="email-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui-padding);
+  }
+
+  .email-input:not([data-no-icon]) [data-scope="email-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui);
+  }
+
+  .email-input [data-scope="email-input"][data-part="error"] {
+    @apply ui-error;
+  }
+}

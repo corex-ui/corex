@@ -27,6 +27,7 @@ defmodule Corex.Menu.Connect do
       "data-loop-focus" => data_attr(assigns.loop_focus),
       "data-typeahead" => data_attr(assigns.typeahead),
       "data-composite" => data_attr(assigns.composite),
+      "data-default-highlighted-value" => assigns.value,
       "data-dir" => assigns.dir,
       "data-aria-label" => assigns.aria_label,
       "data-on-select" => assigns.on_select,

@@ -1,4 +1,4 @@
-defmodule E2eWeb.Captures.Accordion do
+defmodule CorexWeb.Accordion do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
@@ -7,107 +7,6 @@ defmodule E2eWeb.Captures.Accordion do
   alias E2eWeb.CoreComponents
 
   capture variants: [
-            basic: %{
-              class: "accordion",
-              items:
-                Content.new([
-                  [
-                    trigger: "Lorem ipsum dolor sit amet",
-                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-                  ],
-                  [
-                    trigger: "Duis dictum gravida odio ac pharetra?",
-                    content: "Nullam eget vestibulum ligula, at interdum tellus."
-                  ],
-                  [
-                    trigger: "Donec condimentum ex mi",
-                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-                  ]
-                ])
-            },
-            with_indicator: %{
-              class: "accordion",
-              items:
-                Content.new([
-                  [
-                    trigger: "Lorem ipsum dolor sit amet",
-                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-                  ],
-                  [
-                    trigger: "Duis dictum gravida ?",
-                    content: "Nullam eget vestibulum ligula, at interdum tellus."
-                  ],
-                  [
-                    trigger: "Donec condimentum ex mi",
-                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-                  ]
-                ]),
-              indicator: [%{inner_block: &__MODULE__.indicator/2}]
-            },
-            with_switching_indicator: %{
-              class: "accordion",
-              items:
-                Content.new([
-                  [
-                    trigger: "Lorem ipsum dolor sit amet",
-                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-                  ],
-                  [
-                    trigger: "Duis dictum gravida ?",
-                    content: "Nullam eget vestibulum ligula, at interdum tellus."
-                  ],
-                  [
-                    trigger: "Donec condimentum ex mi",
-                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-                  ]
-                ]),
-              indicator: [%{inner_block: &__MODULE__.switching_indicator/2}]
-            },
-            with_value: %{
-              class: "accordion",
-              value: ["lorem", "donec"],
-              items:
-                Content.new([
-                  [
-                    id: "lorem",
-                    trigger: "Lorem ipsum dolor sit amet",
-                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-                  ],
-                  [
-                    id: "duis",
-                    trigger: "Duis dictum gravida odio ac pharetra?",
-                    content: "Nullam eget vestibulum ligula, at interdum tellus."
-                  ],
-                  [
-                    id: "donec",
-                    trigger: "Donec condimentum ex mi",
-                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-                  ]
-                ])
-            },
-            with_disabled: %{
-              class: "accordion",
-              value: ["lorem"],
-              items:
-                Content.new([
-                  [
-                    id: "lorem",
-                    trigger: "Lorem ipsum dolor sit amet",
-                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
-                    disabled: true
-                  ],
-                  [
-                    id: "duis",
-                    trigger: "Duis dictum gravida odio ac pharetra?",
-                    content: "Nullam eget vestibulum ligula, at interdum tellus."
-                  ],
-                  [
-                    id: "donec",
-                    trigger: "Donec condimentum ex mi",
-                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-                  ]
-                ])
-            },
             with_custom_slots: %{
               class: "accordion",
               value: ["lorem"],
@@ -131,57 +30,141 @@ defmodule E2eWeb.Captures.Accordion do
                     id: "donec",
                     trigger: "Donec condimentum ex mi",
                     content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
-                    disabled: true,
                     meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
                   ]
                 ]),
-              trigger: [%{inner_block: &__MODULE__.custom_trigger/2}],
-              content: [%{inner_block: &__MODULE__.custom_content/2}],
-              indicator: [%{inner_block: &__MODULE__.custom_indicator/2}]
+              trigger: [
+                %{
+                  let: :item,
+                  inner_block: ~s(<.icon name={item.data.meta.icon} />{item.data.trigger})
+                }
+              ],
+              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              indicator: [
+                %{let: :item, inner_block: ~s(<.icon name={item.data.meta.indicator} />)}
+              ]
+            },
+            basic: %{
+              class: "accordion",
+              items:
+                Content.new([
+                  [
+                    trigger: "Lorem ipsum dolor sit amet",
+                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+                  ],
+                  [
+                    trigger: "Duis dictum gravida odio ac pharetra?",
+                    content: "Nullam eget vestibulum ligula, at interdum tellus."
+                  ],
+                  [
+                    trigger: "Donec condimentum ex mi",
+                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+                  ]
+                ]),
+              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
+              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              indicator: []
+            },
+            with_indicator: %{
+              class: "accordion",
+              items:
+                Content.new([
+                  [
+                    trigger: "Lorem ipsum dolor sit amet",
+                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+                  ],
+                  [
+                    trigger: "Duis dictum gravida ?",
+                    content: "Nullam eget vestibulum ligula, at interdum tellus."
+                  ],
+                  [
+                    trigger: "Donec condimentum ex mi",
+                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+                  ]
+                ]),
+              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
+              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              indicator: [%{inner_block: ~s(<.icon name="hero-chevron-right" />)}]
+            },
+            with_switching_indicator: %{
+              class: "accordion",
+              items:
+                Content.new([
+                  [
+                    trigger: "Lorem ipsum dolor sit amet",
+                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+                  ],
+                  [
+                    trigger: "Duis dictum gravida ?",
+                    content: "Nullam eget vestibulum ligula, at interdum tellus."
+                  ],
+                  [
+                    trigger: "Donec condimentum ex mi",
+                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+                  ]
+                ]),
+              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
+              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              indicator: [
+                %{
+                  inner_block:
+                    ~s(<.icon name="hero-plus" class="state-closed" /><.icon name="hero-minus" class="state-open" />)
+                }
+              ]
+            },
+            with_value: %{
+              class: "accordion",
+              value: ["lorem", "donec"],
+              items:
+                Content.new([
+                  [
+                    id: "lorem",
+                    trigger: "Lorem ipsum dolor sit amet",
+                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+                  ],
+                  [
+                    id: "duis",
+                    trigger: "Duis dictum gravida odio ac pharetra?",
+                    content: "Nullam eget vestibulum ligula, at interdum tellus."
+                  ],
+                  [
+                    id: "donec",
+                    trigger: "Donec condimentum ex mi",
+                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+                  ]
+                ]),
+              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
+              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              indicator: []
+            },
+            with_disabled: %{
+              class: "accordion",
+              value: ["lorem"],
+              items:
+                Content.new([
+                  [
+                    id: "lorem",
+                    trigger: "Lorem ipsum dolor sit amet",
+                    content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+                    disabled: true
+                  ],
+                  [
+                    id: "duis",
+                    trigger: "Duis dictum gravida odio ac pharetra?",
+                    content: "Nullam eget vestibulum ligula, at interdum tellus."
+                  ],
+                  [
+                    id: "donec",
+                    trigger: "Donec condimentum ex mi",
+                    content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+                  ]
+                ]),
+              trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
+              content: [%{let: :item, inner_block: "{item.data.content}"}],
+              indicator: []
             }
           ]
 
   defdelegate accordion(assigns), to: Accordion
   defdelegate icon(assigns), to: CoreComponents
-
-  def custom_trigger(_changed, item) do
-    assigns = %{item: item}
-
-    ~H"""
-    <.icon name={@item.data.meta.icon} />{@item.data.trigger}
-    """
-  end
-
-  def custom_content(_changed, item) do
-    assigns = %{item: item}
-
-    ~H"""
-    {@item.data.content}
-    """
-  end
-
-  def custom_indicator(_changed, item) do
-    assigns = %{item: item}
-
-    ~H"""
-    <.icon name={@item.data.meta.indicator} />
-    """
-  end
-
-  def indicator(_changed, item) do
-    assigns = %{item: item}
-
-    ~H"""
-    <.icon name="hero-chevron-right" />
-    """
-  end
-
-  def switching_indicator(_changed, item) do
-    assigns = %{item: item}
-
-    ~H"""
-    <.icon name="hero-plus" class="state-closed" />
-    <.icon name="hero-minus" class="state-open" />
-    """
-  end
 end

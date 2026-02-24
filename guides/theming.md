@@ -46,14 +46,13 @@ end
 
 ### 2. Add the Plug to Your Router
 
-Add the Theme plug to your browser pipeline, after the Mode plug:
+Add the Theme plug to your browser pipeline:
 
 ```elixir
 pipeline :browser do
   plug :accepts, ["html"]
   plug :fetch_session
   plug :fetch_live_flash
-  plug MyAppWeb.Plugs.Mode
   plug MyAppWeb.Plugs.Theme
   plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
   plug :protect_from_forgery
@@ -81,17 +80,17 @@ end
 Add it to your live sessions:
 
 ```elixir
-live_session :default, on_mount: [MyAppWeb.ModeLive, MyAppWeb.ThemeLive, MyAppWeb.SharedEvents] do
+live_session :default, on_mount: [MyAppWeb.ThemeLive, MyAppWeb.SharedEvents] do
   live "/", PageLive, :index
 end
 ```
 
 ### 4. Configure Your Root Layout
 
-Update your `root.html.heex` to use a dynamic `data-theme` attribute and add the theme script (alongside the mode script):
+Update your `root.html.heex` to use a dynamic `data-theme` attribute and add the theme script:
 
 ```heex
-<html lang="en" data-theme={assigns[:theme] || "neo"} data-mode={assigns[:mode] || "light"}>
+<html lang="en" data-theme={assigns[:theme] || "neo"}>
   <head>
     <script>
       (() => {
@@ -181,7 +180,7 @@ Import all theme CSS files so switching works. Each theme has light and dark var
 
 ## Available Themes
 
-- **neo** – default
+- **neo**
 - **uno**
 - **duo**
 - **leo**

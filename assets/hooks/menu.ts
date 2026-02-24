@@ -27,13 +27,12 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
 
     const menu = new Menu(el, {
       id: el.id.replace("menu:", ""),
-      ...(getBoolean(el, "controlled")
-        ? { open: getBoolean(el, "open") }
-        : { defaultOpen: getBoolean(el, "defaultOpen") }),
+      defaultOpen: getBoolean(el, "defaultOpen"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       loopFocus: getBoolean(el, "loopFocus"),
       typeahead: getBoolean(el, "typeahead"),
       composite: getBoolean(el, "composite"),
+      defaultHighlightedValue: getString(el, "defaultHighlightedValue"),
       dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
       onSelect: (details: SelectionDetails) => {
         const redirect = getBoolean(el, "redirect");
@@ -214,6 +213,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       loopFocus: getBoolean(this.el, "loopFocus"),
       typeahead: getBoolean(this.el, "typeahead"),
       composite: getBoolean(this.el, "composite"),
+      defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
       dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
     } as Props);
   },

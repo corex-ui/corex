@@ -68,12 +68,17 @@ defmodule Corex.PasswordInput.Connect do
 
   @spec input(Input.t()) :: map()
   def input(assigns) do
-    %{
+    base = %{
       "data-scope" => "password-input",
       "data-part" => "input",
       "disabled" => data_attr(assigns.disabled),
-      "id" => "p-input-#{assigns.id}-input"
+      "id" => "p-input-#{assigns.id}-input",
+      "name" => Map.get(assigns, :name),
+      "form" => Map.get(assigns, :form),
+      "autocomplete" => Map.get(assigns, :auto_complete)
     }
+
+    Map.reject(base, fn {_k, v} -> is_nil(v) end)
   end
 
   @spec visibility_trigger(VisibilityTrigger.t()) :: map()
