@@ -1,0 +1,188 @@
+@import "../main.css";
+
+@layer components {
+  .native-input [data-scope="native-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-mini-gap);
+    max-width: var(--container-ui);
+  }
+
+  .native-input [data-scope="native-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .native-input [data-scope="native-input"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    position: relative;
+    margin-inline: auto;
+    max-width: var(--container-mini);
+  }
+
+  .native-input [data-scope="native-input"][data-part="input"] {
+    @apply ui-input;
+
+    max-width: var(--container-mini);
+    flex: 1;
+  }
+
+  .native-input [data-scope="native-input"][data-part="icon"] {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+    width: var(--spacing-ui);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: var(--spacing-ui-padding);
+    pointer-events: none;
+  }
+
+  .native-input [data-scope="native-input"][data-part="icon"] .icon,
+  .native-input [data-scope="native-input"][data-part="icon"] svg {
+    @apply ui-icon;
+  }
+
+  .native-input[data-no-icon] [data-scope="native-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui-padding);
+  }
+
+  .native-input:not([data-no-icon]) [data-scope="native-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui);
+  }
+
+  .native-input [data-scope="native-input"][data-part="error"] {
+    @apply ui-error;
+  }
+
+  .native-input [data-scope="native-input"][data-part="control"] label[data-part="label"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-mini-gap);
+    cursor: pointer;
+  }
+
+  .native-input [data-scope="native-input"][data-part="control"][data-has-items] {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-mini-gap);
+  }
+
+  .native-input [data-scope="native-input"][data-part="item"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-mini-gap);
+  }
+
+  .native-input [data-scope="native-input"][data-part="item"] label {
+    cursor: pointer;
+  }
+
+  .native-input [data-scope="native-input"][data-part="control"]:has(select)::after {
+    content: "▼";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: var(--spacing-ui-padding);
+    display: flex;
+    align-items: center;
+    font-size: 0.75em;
+    pointer-events: none;
+    color: var(--color-ui--text);
+  }
+
+  .native-input select[data-scope="native-input"][data-part="input"] {
+    width: 100%;
+    padding-inline-end: var(--spacing-ui);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .native-input:not([data-no-icon]) select[data-scope="native-input"][data-part="input"] {
+    padding-inline-start: var(--spacing-ui-padding);
+  }
+
+  .native-input input[type="color"][data-scope="native-input"][data-part="input"] {
+    display: block;
+    width: 100%;
+    min-width: var(--spacing-ui);
+    height: var(--spacing-ui);
+    min-height: var(--spacing-ui);
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"] {
+    appearance: none;
+    width: var(--spacing-mini);
+    height: var(--spacing-mini);
+    min-width: var(--spacing-mini);
+    min-height: var(--spacing-mini);
+    margin: 0;
+    padding: var(--spacing-micro-padding-sm);
+    background: var(--color-ui);
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+    cursor: pointer;
+    flex: none;
+  }
+
+  .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"]:checked {
+    background: var(--color-ui--text);
+    border-color: var(--color-ui--text);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3E%3Cpath d='M12.207 4.793a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L6.5 9.086l4.293-4.293a1 1 0 0 1 1.414 0z'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
+
+  .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"]:hover {
+    background-color: var(--color-ui-hover);
+  }
+
+  .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"]:checked:hover {
+    background-color: var(--color-ui--text);
+    opacity: 0.9;
+  }
+
+  .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"]:focus-visible {
+    outline: 2px solid var(--color-ui--text);
+    outline-offset: -3px;
+  }
+
+  .native-input input[type="radio"][data-scope="native-input"][data-part="input"] {
+    appearance: none;
+    width: var(--spacing-mini);
+    height: var(--spacing-mini);
+    min-width: var(--spacing-mini);
+    min-height: var(--spacing-mini);
+    margin: 0;
+    padding: var(--spacing-micro-padding-sm);
+    background: var(--color-ui);
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    flex: none;
+  }
+
+  .native-input input[type="radio"][data-scope="native-input"][data-part="input"]:checked {
+    background: var(--color-ui--text);
+    border-color: var(--color-ui--text);
+    background-image: radial-gradient(circle, var(--color-ui) 35%, transparent 40%);
+  }
+
+  .native-input input[type="radio"][data-scope="native-input"][data-part="input"]:hover {
+    background-color: var(--color-ui-hover);
+  }
+
+  .native-input input[type="radio"][data-scope="native-input"][data-part="input"]:checked:hover {
+    background-color: var(--color-ui--text);
+    opacity: 0.9;
+  }
+
+  .native-input input[type="radio"][data-scope="native-input"][data-part="input"]:focus-visible {
+    outline: 2px solid var(--color-ui--text);
+    outline-offset: -3px;
+  }
+}

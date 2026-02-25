@@ -138,8 +138,8 @@ defmodule E2eWeb.PageController do
     render(conn, :editable_page, value_text: "My custom value")
   end
 
-  def email_input_page(conn, _params) do
-    render(conn, :email_input_page)
+  def native_input_page(conn, _params) do
+    render(conn, :native_input_page)
   end
 
   def floating_panel_page(conn, _params) do
@@ -170,19 +170,7 @@ defmodule E2eWeb.PageController do
     render(conn, :radio_group_page)
   end
 
-  def text_area_input_page(conn, _params) do
-    render(conn, :text_area_input_page)
-  end
-
-  def text_input_page(conn, _params) do
-    render(conn, :text_input_page)
-  end
-
   def timer_page(conn, _params) do
     render(conn, :timer_page)
-  end
-
-  def url_input_page(conn, _params) do
-    render(conn, :url_input_page)
   end
 end

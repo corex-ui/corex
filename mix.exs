@@ -142,8 +142,8 @@ defmodule Corex.MixProject do
         Corex.Combobox,
         Corex.DatePicker,
         Corex.Editable,
-        Corex.EmailInput,
         Corex.Form,
+        Corex.NativeInput,
         Corex.HiddenInput,
         Corex.NumberInput,
         Corex.PasswordInput,
@@ -151,10 +151,7 @@ defmodule Corex.MixProject do
         Corex.RadioGroup,
         Corex.Select,
         Corex.SignaturePad,
-        Corex.Switch,
-        Corex.TextAreaInput,
-        Corex.TextInput,
-        Corex.UrlInput
+        Corex.Switch
       ],
       Content: [
         Corex.Content,

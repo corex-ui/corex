@@ -81,7 +81,9 @@ defmodule CorexWeb.Toast do
             @toast_group_id,
             "This is a loading toast",
             "This is a loading toast description",
-            :loading, duration: :infinity)
+            :loading,
+            duration: :infinity
+          )
         }
         class="button"
       >

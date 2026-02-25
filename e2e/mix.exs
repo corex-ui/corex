@@ -67,7 +67,7 @@ defmodule E2e.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:corex, "~> 0.1.0-alpha.28"},
+      {:corex, path: "../../corex"},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
       {:makeup_html, "~> 0.2"},

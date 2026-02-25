@@ -445,17 +445,14 @@ defmodule E2eWeb.Layouts do
       ),
       component_item("Date Picker", "date-picker", locale),
       component_item("Editable", "editable", locale),
-      component_item("Email Input", "email-input", locale),
+      component_item("Native Input", "native-input", locale),
       component_item("Number Input", "number-input", locale),
       component_item("Password Input", "password-input", locale),
       component_item("Pin Input", "pin-input", locale),
       component_item("Radio Group", "radio-group", locale),
       component_item("Select", "select", locale),
       component_item("Signature", "signature", locale),
-      component_item("Switch", "switch", locale),
-      component_item("Text Area Input", "text-area-input", locale),
-      component_item("Text Input", "text-input", locale),
-      component_item("URL Input", "url-input", locale)
+      component_item("Switch", "switch", locale)
     ])
   end
 
