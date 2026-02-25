@@ -23,7 +23,8 @@ defmodule CorexWeb.Action do
               aria_label: "Button text",
               inner_block: [
                 %{
-                  inner_block: ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                  inner_block:
+                    ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },

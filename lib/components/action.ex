@@ -1,6 +1,6 @@
 defmodule Corex.Action do
   @moduledoc """
-  Renders a button element for actions based of Phoenix Core Components.
+  Renders a button element for actions based on Phoenix Core Components.
   Use the `type` attribute to set the button type.
   Icon-only buttons must pass `aria_label` to screen readers.
 

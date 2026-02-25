@@ -20,7 +20,8 @@ if System.get_env("PHX_SERVER") do
   config :corex_web, E2eWeb.Endpoint, server: true
 end
 
-config :corex_web, E2eWeb.Endpoint, http: [port: String.to_integer(System.get_env("PORT", "4000"))]
+config :corex_web, E2eWeb.Endpoint,
+  http: [port: String.to_integer(System.get_env("PORT", "4000"))]
 
 if config_env() == :prod do
   database_url =

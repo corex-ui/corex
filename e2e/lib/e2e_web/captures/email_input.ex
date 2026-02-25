@@ -6,12 +6,12 @@ defmodule CorexWeb.EmailInput do
   alias E2eWeb.CoreComponents
 
   capture variants: [
-    with_icon: %{
-      class: "email-input",
-      name: "email",
-      label: [%{inner_block: "Email"}],
-      icon: [%{inner_block: ~s(<.icon name="hero-envelope" class="icon" />)}]
-    },
+            with_icon: %{
+              class: "email-input",
+              name: "email",
+              label: [%{inner_block: "Email"}],
+              icon: [%{inner_block: ~s(<.icon name="hero-envelope" class="icon" />)}]
+            },
             basic: %{
               class: "email-input",
               name: "email",

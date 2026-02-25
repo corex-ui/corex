@@ -1,6 +1,6 @@
 defmodule Corex.EmailInput do
   @moduledoc ~S'''
-  Email input component with Corex design and form field support.
+  Email input component based on [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents).
 
   ## Examples
 

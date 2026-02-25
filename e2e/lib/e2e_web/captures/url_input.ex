@@ -6,12 +6,12 @@ defmodule CorexWeb.UrlInput do
   alias E2eWeb.CoreComponents
 
   capture variants: [
-    with_icon: %{
-      class: "url-input",
-      name: "website",
-      label: [%{inner_block: "Website"}],
-      icon: [%{inner_block: ~s(<.icon name="hero-link" class="icon" />)}]
-    },
+            with_icon: %{
+              class: "url-input",
+              name: "website",
+              label: [%{inner_block: "Website"}],
+              icon: [%{inner_block: ~s(<.icon name="hero-link" class="icon" />)}]
+            },
             basic: %{
               class: "url-input",
               name: "website",

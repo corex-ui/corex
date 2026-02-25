@@ -65,7 +65,7 @@ defmodule Corex.Carousel.Connect do
     style =
       "width:100%;overflow:hidden;--slides-per-page:#{slides_per_page};--slide-spacing:#{spacing};--slide-item-size:#{slide_item_size};aspect-ratio:4/3"
 
-    %{
+    base = %{
       "data-scope" => "carousel",
       "data-part" => "root",
       "data-orientation" => assigns.orientation || "horizontal",
@@ -73,6 +73,11 @@ defmodule Corex.Carousel.Connect do
       "id" => "carousel:#{assigns.id}",
       "style" => style
     }
+
+    case Map.get(assigns, :aria_label) do
+      nil -> Map.put(base, "aria-label", "Carousel #{assigns.id}")
+      label -> Map.put(base, "aria-label", label)
+    end
   end
 
   @spec control(Control.t()) :: map()

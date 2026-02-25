@@ -26,7 +26,8 @@ defmodule CorexWeb.Navigate do
               aria_label: "Internal link icon only",
               inner_block: [
                 %{
-                  inner_block: ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                  inner_block:
+                    ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },

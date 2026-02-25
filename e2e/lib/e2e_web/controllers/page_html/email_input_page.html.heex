@@ -9,7 +9,21 @@
     <h1>Email Input</h1>
     <h2>Controller View</h2>
   </div>
-  <.email_input id="my-email-input" name="user[email]" class="email-input">
-    <:label>Email</:label>
-  </.email_input>
+  <div class="layout__row flex flex-col gap-ui">
+    <.email_input id="email-with-icon" name="user[email]" class="email-input">
+      <:label>Email</:label>
+      <:icon><.icon name="hero-envelope" class="icon" /></:icon>
+    </.email_input>
+    <.email_input id="email-basic" name="user[email]" class="email-input">
+      <:label>Email</:label>
+    </.email_input>
+    <.email_input
+      id="email-placeholder"
+      name="user[email]"
+      class="email-input"
+      placeholder="you@example.com"
+    >
+      <:label>Email</:label>
+    </.email_input>
+  </div>
 </Layouts.app>

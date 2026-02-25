@@ -74,7 +74,6 @@ defmodule E2eWeb.Router do
       live "/live/text-input", TextInputLive
       live "/live/text-area-input", TextAreaInputLive
       live "/live/url-input", UrlInputLive
-      live "/live/hidden-input", HiddenInputLive
       live "/live/radio-group", RadioGroupLive
       live "/live/timer", TimerLive
     end
@@ -127,7 +126,6 @@ defmodule E2eWeb.Router do
     get "/text-input", PageController, :text_input_page
     get "/text-area-input", PageController, :text_area_input_page
     get "/url-input", PageController, :url_input_page
-    get "/hidden-input", PageController, :hidden_input_page
     get "/radio-group", PageController, :radio_group_page
     get "/timer", PageController, :timer_page
 

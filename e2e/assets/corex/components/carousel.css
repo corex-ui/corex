@@ -77,6 +77,7 @@
     font-size: 24px;
     border: 1px solid var(--color-ui--border);
     border-radius: var(--radius-ui);
+    background-color: var(--color-ui);
   }
 
   .carousel [data-scope="carousel"][data-part="item"] img {

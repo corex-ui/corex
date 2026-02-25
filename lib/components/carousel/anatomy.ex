@@ -52,14 +52,15 @@ defmodule Corex.Carousel.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :orientation, :slides_per_page, :spacing]
+    defstruct [:id, :dir, :orientation, :slides_per_page, :spacing, :aria_label]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             orientation: String.t(),
             slides_per_page: non_neg_integer(),
-            spacing: String.t()
+            spacing: String.t(),
+            aria_label: String.t() | nil
           }
   end
 

@@ -1,6 +1,6 @@
 defmodule Corex.UrlInput do
   @moduledoc ~S'''
-  URL input component with Corex design and form field support.
+  URL input component based on [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents).
 
   ## Examples
 
@@ -48,7 +48,14 @@ defmodule Corex.UrlInput do
 
   Use `data-no-icon` on the root when the icon slot is not provided for proper border radius styling.
 
-  Use the class `url-input` on the component for default Corex styling.
+  If you wish to use the default Corex styling, you can use the class `url-input` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/url-input.css";
+  ```
   '''
 
   @doc type: :component

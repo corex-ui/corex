@@ -146,11 +146,6 @@ defmodule E2eWeb.PageController do
     render(conn, :floating_panel_page)
   end
 
-  def hidden_input_page(conn, _params) do
-    form = Phoenix.Component.to_form(%{"id" => "123", "name" => ""}, as: :user)
-    render(conn, :hidden_input_page, form: form)
-  end
-
   def listbox_page(conn, _params) do
     render(conn, :listbox_page)
   end

@@ -1,6 +1,6 @@
 defmodule Corex.TextInput do
   @moduledoc ~S'''
-  Text input component with Corex design and form field support.
+  Text input component based on [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents).
 
   ## Examples
 
@@ -35,7 +35,14 @@ defmodule Corex.TextInput do
   [data-scope="text-input"][data-part="error"] {}
   ```
 
-  Use the class `text-input` on the component for default Corex styling.
+  If you wish to use the default Corex styling, you can use the class `text-input` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/text-input.css";
+  ```
   '''
 
   @doc type: :component

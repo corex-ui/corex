@@ -18,9 +18,15 @@ defmodule E2eWeb.UrlInputLive do
         <h1>URL Input</h1>
         <h2>Live View</h2>
       </div>
-      <.url_input id="my-url-input" name="user[website]" class="url-input">
-        <:label>Website</:label>
-      </.url_input>
+      <div class="layout__row flex flex-col gap-ui">
+        <.url_input id="url-with-icon" name="user[website]" class="url-input">
+          <:label>Website</:label>
+          <:icon><.icon name="hero-link" class="icon" /></:icon>
+        </.url_input>
+        <.url_input id="url-basic" name="user[website]" class="url-input">
+          <:label>Website</:label>
+        </.url_input>
+      </div>
     </Layouts.app>
     """
   end

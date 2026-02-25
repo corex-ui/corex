@@ -1,6 +1,6 @@
 defmodule Corex.HiddenInput do
   @moduledoc ~S'''
-  Hidden input component with form field support.
+  Hidden input component based on [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents).
 
   ## Examples
 
@@ -16,7 +16,6 @@ defmodule Corex.HiddenInput do
   <.hidden_input field={@form[:id]} />
   ```
 
-  No label or error slot; hidden inputs are not user-facing.
   '''
 
   @doc type: :component

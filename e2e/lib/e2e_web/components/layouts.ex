@@ -446,7 +446,6 @@ defmodule E2eWeb.Layouts do
       component_item("Date Picker", "date-picker", locale),
       component_item("Editable", "editable", locale),
       component_item("Email Input", "email-input", locale),
-      component_item("Hidden Input", "hidden-input", locale),
       component_item("Number Input", "number-input", locale),
       component_item("Password Input", "password-input", locale),
       component_item("Pin Input", "pin-input", locale),
