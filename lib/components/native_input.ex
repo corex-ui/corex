@@ -1,9 +1,13 @@
 defmodule Corex.NativeInput do
   @moduledoc ~S'''
-  Unified native input component for text, textarea, date, datetime-local, time, month, week, email, url, tel, search, color, number, password, checkbox, radio, and select.
-  Optional icon slot and shared styling via data-scope="native-input". Uses same data-part structure as Corex components (root, label, control, input, error) for consistency.
+  Unified native input component based on  [Phoenix Core Components](https://hexdocs.pm/phoenix/components.html#corecomponents)
+  Used for text, textarea, date, datetime-local, time, month, week, email, url, tel, search, color, number, password, checkbox, radio, and select.
+  Optional icon slot and shared styling via data-scope="native-input".
+  Uses same data-part structure as Corex components (root, label, control, input, error) for consistency.
 
-  The icon slot is ignored for textarea, date/time types, color, number, checkbox, radio, and select. For text, email, url, tel, search, and password the icon slot is shown when provided.
+  The icon slot is ignored for textarea, date/time types, color, number, checkbox, radio, and select.
+
+  For text, email, url, tel, search, and password the icon slot is shown when provided.
 
   ## Examples
 
@@ -69,6 +73,15 @@ defmodule Corex.NativeInput do
   ```
 
   The root has `data-no-icon` when no icon is shown (icon slot empty or type is textarea/date/time), so the input uses full-width padding. Use the class `native-input` for default Corex styling.
+
+  If you wish to use the default Corex styling, you can use the class `native-input` on the component.
+  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+
+  ```css
+  @import "../corex/main.css";
+  @import "../corex/tokens/themes/neo/light.css";
+  @import "../corex/components/native-input.css";
+  ```
   '''
 
   @doc type: :component
@@ -84,7 +97,12 @@ defmodule Corex.NativeInput do
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:class, :any, default: nil)
   attr(:prompt, :string, default: nil, doc: "Prompt for select inputs")
-  attr(:options, :list, default: nil, doc: "Options for select and radio. Same format as options_for_select.")
+
+  attr(:options, :list,
+    default: nil,
+    doc: "Options for select and radio. Same format as options_for_select."
+  )
+
   attr(:multiple, :boolean, default: false, doc: "Multiple flag for select inputs")
   attr(:checked, :boolean, default: nil, doc: "Checked flag for checkbox. Defaults from value.")
 
@@ -98,8 +116,11 @@ defmodule Corex.NativeInput do
   )
 
   slot(:label, required: false)
-  slot(:icon, required: false,
-    doc: "Optional. Ignored for textarea, date, datetime-local, time, month, week, color, number, checkbox, radio, select."
+
+  slot(:icon,
+    required: false,
+    doc:
+      "Optional. Ignored for textarea, date, datetime-local, time, month, week, color, number, checkbox, radio, select."
   )
 
   slot(:error, required: false) do
