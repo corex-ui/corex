@@ -13,16 +13,13 @@ defmodule CorexWeb.TreeView do
                [label: "Combobox", id: "combobox"],
                [label: "Color Picker", id: "color_picker"],
                [label: "Date Picker", id: "date_picker"],
-               [label: "Email Input", id: "email_input"],
+               [label: "Native Input", id: "native_input"],
                [label: "Hidden Input", id: "hidden_input"],
                [label: "Number Input", id: "number_input"],
                [label: "Password Input", id: "password_input"],
                [label: "Pin Input", id: "pin_input"],
                [label: "Radio Group", id: "radio_group"],
-               [label: "Select", id: "select"],
-               [label: "Text Area Input", id: "text_area_input"],
-               [label: "Text Input", id: "text_input"],
-               [label: "Url Input", id: "url_input"]
+               [label: "Select", id: "select"]
              ]
            ],
            [

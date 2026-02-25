@@ -4,5 +4,4 @@ defmodule E2eWeb.LiveCapture do
   breakpoints s: "320px", m: "480px", l: "768px", xl: "1024px"
 
   root_layout {E2eWeb.Layouts, :captures}
-  plugs [E2eWeb.Plugs.Mode, E2eWeb.Plugs.Locale]
 end

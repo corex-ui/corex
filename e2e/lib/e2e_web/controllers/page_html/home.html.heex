@@ -22,69 +22,31 @@
       beautiful, scalable, and performant websites.
     </p>
     <div class="gap-ui-gap p-ui-padding flex flex-wrap justify-start">
-      <a
-        href="https://hexdocs.pm/corex"
-        target="_blank"
-        class="button button--brand md:button--lg w-full md:w-auto"
+      <.navigate
+        to="https://hexdocs.pm/corex"
+        external
+        class="button button--brand button--sm md:button--md w-full md:w-auto"
       >
-        Hex Documentation
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-          >
-          </path>
-        </svg>
-      </a>
+        Hex Documentation <.icon name="hero-arrow-top-right-on-square" />
+      </.navigate>
       <.action
         phx-click={Corex.Dialog.set_open("menu-dialog", true)}
-        class="button md:button--lg w-full md:w-auto lg:hidden"
+        class="button button--sm md:button--md w-full md:w-auto lg:hidden"
       >
-        Examples
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-          >
-          </path>
-        </svg>
+        Examples <.icon name="hero-arrow-right" />
       </.action>
       <.navigate
-        to={~p"/#{@locale}/accordion"}
-        class="button md:button--lg w-full md:w-auto hidden lg:flex"
+        to={~p"/captures/components/Elixir.CorexWeb.Accordion/accordion"}
+        external
+        class="button button--sm md:button--md w-full md:w-auto hidden lg:flex"
       >
-        Examples
-        <svg
-          aria-hidden="true"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
-          >
-          </path>
-        </svg>
+        Captures <.icon name="hero-arrow-top-right-on-square" />
+      </.navigate>
+      <.navigate
+        to={~p"/#{@locale}/accordion"}
+        class="button button--sm md:button--md w-full md:w-auto hidden lg:flex"
+      >
+        Examples <.icon name="hero-arrow-right" />
       </.navigate>
     </div>
   </section>

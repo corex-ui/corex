@@ -1,0 +1,141 @@
+defmodule E2eWeb.NativeInputLive do
+  use E2eWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    {:ok, socket}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <Layouts.app
+      flash={@flash}
+      mode={@mode}
+      theme={@theme}
+      locale={@locale}
+      current_path={@current_path}
+    >
+      <div class="layout__row">
+        <h1>Native Input</h1>
+        <h2>Live View</h2>
+      </div>
+      <div class="layout__row flex flex-col gap-ui">
+        <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
+          <:label>Text</:label>
+          <:icon><.icon name="hero-pencil-square" class="icon" /></:icon>
+        </.native_input>
+        <.native_input type="text" id="text-basic" name="user[name]" class="native-input">
+          <:label>Text</:label>
+        </.native_input>
+        <.native_input type="textarea" id="textarea" name="user[bio]" class="native-input">
+          <:label>Bio</:label>
+        </.native_input>
+        <.native_input type="date" id="date" name="user[date]" class="native-input">
+          <:label>Date</:label>
+        </.native_input>
+        <.native_input type="datetime-local" id="datetime" name="user[datetime]" class="native-input">
+          <:label>Date and time</:label>
+        </.native_input>
+        <.native_input type="time" id="time" name="user[time]" class="native-input">
+          <:label>Time</:label>
+        </.native_input>
+        <.native_input type="month" id="month" name="user[month]" class="native-input">
+          <:label>Month</:label>
+        </.native_input>
+        <.native_input type="week" id="week" name="user[week]" class="native-input">
+          <:label>Week</:label>
+        </.native_input>
+        <.native_input type="email" id="email-with-icon" name="user[email]" class="native-input">
+          <:label>Email</:label>
+          <:icon><.icon name="hero-envelope" class="icon" /></:icon>
+        </.native_input>
+        <.native_input type="email" id="email-basic" name="user[email]" class="native-input">
+          <:label>Email</:label>
+        </.native_input>
+        <.native_input type="url" id="url-with-icon" name="user[website]" class="native-input">
+          <:label>Website</:label>
+          <:icon><.icon name="hero-link" class="icon" /></:icon>
+        </.native_input>
+        <.native_input type="url" id="url-basic" name="user[website]" class="native-input">
+          <:label>Website</:label>
+        </.native_input>
+        <.native_input type="tel" id="tel-with-icon" name="user[phone]" class="native-input">
+          <:label>Phone</:label>
+          <:icon><.icon name="hero-phone" class="icon" /></:icon>
+        </.native_input>
+        <.native_input type="tel" id="tel-basic" name="user[phone]" class="native-input">
+          <:label>Phone</:label>
+        </.native_input>
+        <.native_input
+          type="search"
+          id="search-with-icon"
+          name="q"
+          class="native-input"
+          placeholder="Search"
+        >
+          <:label>Search</:label>
+          <:icon><.icon name="hero-magnifying-glass" class="icon" /></:icon>
+        </.native_input>
+        <.native_input
+          type="search"
+          id="search-basic"
+          name="q"
+          class="native-input"
+          placeholder="Search"
+        >
+          <:label>Search</:label>
+        </.native_input>
+        <.native_input type="color" id="color" name="user[color]" value="#3b82f6" class="native-input">
+          <:label>Color</:label>
+        </.native_input>
+        <.native_input
+          type="number"
+          id="number"
+          name="user[count]"
+          value="42"
+          min="0"
+          max="100"
+          step="1"
+          class="native-input"
+        >
+          <:label>Number</:label>
+        </.native_input>
+        <.native_input
+          type="password"
+          id="password-with-icon"
+          name="user[password]"
+          class="native-input"
+        >
+          <:label>Password</:label>
+          <:icon><.icon name="hero-lock-closed" class="icon" /></:icon>
+        </.native_input>
+        <.native_input type="password" id="password-basic" name="user[password]" class="native-input">
+          <:label>Password</:label>
+        </.native_input>
+        <.native_input type="checkbox" id="checkbox" name="user[agree]" class="native-input">
+          <:label>I agree</:label>
+        </.native_input>
+        <.native_input
+          type="radio"
+          id="radio"
+          name="user[size]"
+          options={[{"Small", "s"}, {"Medium", "m"}, {"Large", "l"}]}
+          value="m"
+          class="native-input"
+        >
+          <:label>Size</:label>
+        </.native_input>
+        <.native_input
+          type="select"
+          id="select"
+          name="user[role]"
+          options={[{"Admin", "admin"}, {"User", "user"}]}
+          prompt="Choose a role..."
+          class="native-input"
+        >
+          <:label>Role</:label>
+        </.native_input>
+      </div>
+    </Layouts.app>
+    """
+  end
+end

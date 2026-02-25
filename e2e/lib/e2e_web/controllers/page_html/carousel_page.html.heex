@@ -9,22 +9,115 @@
     <h1>Carousel</h1>
     <h2>Controller View</h2>
   </div>
-  <.carousel
-    id="my-carousel"
-    items={[
-      "/images/beach.jpg",
-      "/images/fall.jpg",
-      "/images/sand.jpg",
-      "/images/star.jpg",
-      "/images/winter.jpg"
-    ]}
-    class="carousel"
-  >
-    <:prev_trigger>
-      <.icon name="hero-arrow-left" />
-    </:prev_trigger>
-    <:next_trigger>
-      <.icon name="hero-arrow-right" />
-    </:next_trigger>
-  </.carousel>
+  <div class="layout__row flex flex-col gap-ui">
+    <section>
+      <h3 class="font-ui-lg mb-micro">Basic</h3>
+      <.carousel
+        id="carousel-basic"
+        items={[
+          ~p"/images/beach.jpg",
+          ~p"/images/fall.jpg",
+          ~p"/images/sand.jpg",
+          ~p"/images/star.jpg",
+          ~p"/images/winter.jpg"
+        ]}
+        class="carousel"
+      >
+        <:prev_trigger>
+          <.icon name="hero-arrow-left" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.icon name="hero-arrow-right" />
+        </:next_trigger>
+      </.carousel>
+    </section>
+    <section>
+      <h3 class="font-ui-lg mb-micro">Loop</h3>
+      <.carousel
+        id="carousel-loop"
+        items={[
+          ~p"/images/beach.jpg",
+          ~p"/images/fall.jpg",
+          ~p"/images/sand.jpg",
+          ~p"/images/star.jpg",
+          ~p"/images/winter.jpg"
+        ]}
+        loop
+        class="carousel"
+      >
+        <:prev_trigger>
+          <.icon name="hero-arrow-left" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.icon name="hero-arrow-right" />
+        </:next_trigger>
+      </.carousel>
+    </section>
+    <section>
+      <h3 class="font-ui-lg mb-micro">Vertical</h3>
+      <.carousel
+        id="carousel-vertical"
+        items={[
+          ~p"/images/beach.jpg",
+          ~p"/images/fall.jpg",
+          ~p"/images/sand.jpg",
+          ~p"/images/star.jpg",
+          ~p"/images/winter.jpg"
+        ]}
+        orientation="vertical"
+        class="carousel"
+      >
+        <:prev_trigger>
+          <.icon name="hero-arrow-up" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.icon name="hero-arrow-down" />
+        </:next_trigger>
+      </.carousel>
+    </section>
+    <section>
+      <h3 class="font-ui-lg mb-micro">Slides per page (2)</h3>
+      <.carousel
+        id="carousel-multiple"
+        items={[
+          ~p"/images/beach.jpg",
+          ~p"/images/fall.jpg",
+          ~p"/images/sand.jpg",
+          ~p"/images/star.jpg",
+          ~p"/images/winter.jpg"
+        ]}
+        slides_per_page={2}
+        class="carousel"
+      >
+        <:prev_trigger>
+          <.icon name="hero-arrow-left" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.icon name="hero-arrow-right" />
+        </:next_trigger>
+      </.carousel>
+    </section>
+    <section>
+      <h3 class="font-ui-lg mb-micro">Autoplay</h3>
+      <.carousel
+        id="carousel-autoplay"
+        items={[
+          ~p"/images/beach.jpg",
+          ~p"/images/fall.jpg",
+          ~p"/images/sand.jpg",
+          ~p"/images/star.jpg",
+          ~p"/images/winter.jpg"
+        ]}
+        autoplay
+        class="carousel"
+      >
+        <:prev_trigger>
+          <.icon name="hero-arrow-left" />
+        </:prev_trigger>
+        <:next_trigger>
+          <.icon name="hero-arrow-right" />
+        </:next_trigger>
+      </.carousel>
+    </section>
+  </div>
 </Layouts.app>

@@ -52,7 +52,7 @@ defmodule CorexWeb.Carousel do
               autoplay: true,
               prev_trigger: [%{inner_block: ~s(<.icon name="hero-arrow-left" />)}],
               next_trigger: [%{inner_block: ~s(<.icon name="hero-arrow-right" />)}]
-            },
+            }
           ]
 
   defdelegate carousel(assigns), to: Carousel

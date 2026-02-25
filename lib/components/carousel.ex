@@ -71,6 +71,7 @@ defmodule Corex.Carousel do
   alias Corex.Carousel.Connect
 
   attr(:id, :string, required: false)
+  attr(:aria_label, :string, default: nil)
 
   attr(:items, :list,
     required: true,
@@ -159,7 +160,7 @@ defmodule Corex.Carousel do
         on_page_change_client: @on_page_change_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, slides_per_page: @slides_per_page, spacing: @spacing})}>
+      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, slides_per_page: @slides_per_page, spacing: @spacing, aria_label: @aria_label})}>
         <div {Connect.item_group(%ItemGroup{id: @id, orientation: @orientation, dir: @dir})}>
           <div :for={{item, i} <- Enum.with_index(@items)} {Connect.item(%Item{id: @id, index: i, orientation: @orientation, slide_count: @slide_count})} data-index={i}>
             <img :if={is_binary(item)} src={item} alt="" />

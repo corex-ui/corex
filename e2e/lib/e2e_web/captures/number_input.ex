@@ -10,15 +10,21 @@ defmodule CorexWeb.NumberInput do
               id: "my-number-input",
               class: "number-input",
               label: [%{inner_block: "Quantity"}],
-              decrement_trigger: [%{inner_block: ~s(<.icon name="hero-chevron-down" class="icon" />)}],
-              increment_trigger: [%{inner_block: ~s(<.icon name="hero-chevron-up" class="icon" />)}]
+              decrement_trigger: [
+                %{inner_block: ~s(<.icon name="hero-chevron-down" class="icon" />)}
+              ],
+              increment_trigger: [
+                %{inner_block: ~s(<.icon name="hero-chevron-up" class="icon" />)}
+              ]
             },
             scrubber: %{
               id: "scrubber-number-input",
               scrubber: true,
               class: "number-input",
               label: [%{inner_block: "Enter Number"}],
-              scrubber_trigger: [%{inner_block: ~s(<.icon name="hero-arrows-up-down" class="icon rotate-90" />)}]
+              scrubber_trigger: [
+                %{inner_block: ~s(<.icon name="hero-arrows-up-down" class="icon rotate-90" />)}
+              ]
             }
           ]
 
