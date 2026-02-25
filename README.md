@@ -21,9 +21,13 @@ Corex bridges the gap between Phoenix and modern JavaScript UI patterns by lever
 
 To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
 
+You can also explore all components via [Live Captures](https://corex.gigalixirapp.com/captures/components/Elixir.CorexWeb.Accordion/accordion), a zero-boilerplate storybook for LiveView components.
+
 This is still in an early stage and will evolve with future stable releases.
 
-Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*. 
+Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*.
+
+A big thanks to [@achempion](https://github.com/achempion) and [live_capture](https://github.com/achempion/live_capture) for assisting with integrating it. 
 
 
 ## Documentation
