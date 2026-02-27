@@ -30,6 +30,7 @@ defmodule Corex.MixProject do
 
   defp deps do
     [
+      {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0"},
@@ -40,7 +41,10 @@ defmodule Corex.MixProject do
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: :dev},
       {:makeup_eex, "~> 2.0", only: :dev},
       {:makeup_syntect, "~> 0.1.0", only: :dev},
-      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:igniter, "~> 0.6", optional: true},
+      {:tidewave, "~> 0.5.5", only: :dev},
+      {:bandit, "~> 1.0", only: :dev}
     ]
   end
 
@@ -56,7 +60,9 @@ defmodule Corex.MixProject do
         "esbuild main",
         "esbuild hooks"
       ],
-      "assets.watch": "esbuild module --watch"
+      "assets.watch": "esbuild module --watch",
+      tidewave:
+        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4000) end)'"
     ]
   end
 
