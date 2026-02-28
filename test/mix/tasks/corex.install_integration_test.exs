@@ -5,7 +5,7 @@ defmodule Mix.Tasks.Corex.InstallIntegrationTest do
   @tag :tmp_dir
   @tag timeout: 180_000
 
-  test "runs full install in real Phoenix project (covers non-test-mode igniter paths)", %{
+  test "runs full install in real Phoenix project", %{
     tmp_dir: tmp_dir
   } do
     project_dir = Path.join(tmp_dir, "demo")
