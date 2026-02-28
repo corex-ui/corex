@@ -42,7 +42,7 @@ jobs:
       run: mix archive.install hex phx_new --force
 
     - name: Install Igniter archive
-      run: mix archive.install hex igniter --force
+      run: mix archive.install hex igniter_new --force
 
     - name: Run tests and post coverage to Coveralls
       run: mix coveralls.github
