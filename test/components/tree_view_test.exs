@@ -285,6 +285,36 @@ defmodule Corex.TreeViewTest do
       assert result["data-part"] == "branch-control"
       assert result["data-state"] == "open"
     end
+
+    test "adds data-selected when selected true" do
+      assigns = %{
+        id: "test-tree",
+        value: "node-1",
+        index_path: [],
+        expanded: false,
+        disabled: false,
+        dir: "ltr",
+        selected: true
+      }
+
+      result = Connect.branch_trigger(assigns)
+      assert Map.has_key?(result, "data-selected")
+    end
+
+    test "adds data-focus when focused true" do
+      assigns = %{
+        id: "test-tree",
+        value: "node-1",
+        index_path: [],
+        expanded: false,
+        disabled: false,
+        dir: "ltr",
+        focused: true
+      }
+
+      result = Connect.branch_trigger(assigns)
+      assert Map.has_key?(result, "data-focus")
+    end
   end
 
   describe "Connect.branch_content/1" do
@@ -387,6 +417,38 @@ defmodule Corex.TreeViewTest do
       assert result["data-default-selected-value"] == nil
       assert result["data-expanded-value"] == "node-1"
       assert result["data-selected-value"] == "node-2"
+    end
+
+    test "returns props with redirect false" do
+      assigns = %{
+        id: "test-tree",
+        controlled: false,
+        expanded_value: [],
+        value: [],
+        selection_mode: "single",
+        dir: "ltr",
+        on_selection_change: nil,
+        on_expanded_change: nil,
+        redirect: false
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-redirect"] == nil
+    end
+  end
+
+  describe "tree_view/1 with options" do
+    test "renders with branch" do
+      html = render_component(&CorexTest.ComponentHelpers.render_tree_view_with_branch/1, [])
+      assert html =~ ~r/data-scope="tree-view"/
+      assert html =~ ~r/Parent/
+      assert html =~ ~r/Child/
+    end
+
+    test "renders with controlled" do
+      html = render_component(&CorexTest.ComponentHelpers.render_tree_view_controlled/1, [])
+      assert html =~ ~r/data-scope="tree-view"/
+      assert html =~ ~r/data-controlled/
     end
   end
 end

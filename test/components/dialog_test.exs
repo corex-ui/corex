@@ -124,4 +124,21 @@ defmodule Corex.DialogTest do
       assert result["aria-label"] == "Close"
     end
   end
+
+  describe "dialog/1 with options" do
+    test "renders with nested dialog_title, dialog_description, dialog_close_trigger" do
+      html = render_component(&CorexTest.ComponentHelpers.render_dialog_nested_slots/1, [])
+      assert html =~ ~r/Nested Title/
+      assert html =~ ~r/Nested desc/
+      assert html =~ ~r/Body/
+    end
+
+    test "renders with controlled and title/description slots" do
+      html = render_component(&CorexTest.ComponentHelpers.render_dialog_controlled/1, [])
+      assert html =~ ~r/data-scope="dialog"/
+      assert html =~ ~r/Title/
+      assert html =~ ~r/Description/
+      assert html =~ ~r/Content/
+    end
+  end
 end

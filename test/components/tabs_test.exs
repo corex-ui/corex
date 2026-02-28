@@ -64,12 +64,23 @@ defmodule Corex.TabsTest do
       js = Tabs.set_value("my-tabs", "tab-1")
       assert %Phoenix.LiveView.JS{} = js
     end
+
+    test "returns JS command for nil to close all tabs" do
+      js = Tabs.set_value("my-tabs", nil)
+      assert %Phoenix.LiveView.JS{} = js
+    end
   end
 
   describe "set_value/3" do
     test "pushes event to socket" do
       socket = %Phoenix.LiveView.Socket{}
       result = Tabs.set_value(socket, "my-tabs", "tab-1")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "pushes event to socket with nil to close all tabs" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Tabs.set_value(socket, "my-tabs", nil)
       assert %Phoenix.LiveView.Socket{} = result
     end
   end

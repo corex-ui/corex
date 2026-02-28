@@ -10,6 +10,42 @@ defmodule Corex.RadioGroupTest do
       assert html =~ ~r/data-scope="radio-group"/
       assert html =~ ~r/data-part="root"/
     end
+
+    test "renders with items as maps" do
+      html =
+        render_component(&RadioGroup.radio_group/1,
+          items: [%{value: "a", label: "A"}, %{value: "b", label: "B", disabled: true}]
+        )
+
+      assert html =~ ~r/data-scope="radio-group"/
+      assert html =~ ~r/Option A|A/
+    end
+
+    test "renders with item_control slot" do
+      html = render_component(&CorexTest.ComponentHelpers.render_radio_group_with_indicator/1, [])
+      assert html =~ ~r/data-scope="radio-group"/
+      assert html =~ ~r/Option A/
+      assert html =~ ~r/Option B/
+    end
+
+    test "renders with controlled" do
+      html = render_component(&CorexTest.ComponentHelpers.render_radio_group_controlled/1, [])
+      assert html =~ ~r/data-scope="radio-group"/
+      assert html =~ ~r/data-controlled/
+    end
+
+    test "renders with custom item slot" do
+      html = render_component(&CorexTest.ComponentHelpers.render_radio_group_with_item_slot/1, [])
+      assert html =~ ~r/data-scope="radio-group"/
+      assert html =~ ~r/data-value="x"/
+      assert html =~ ~r/X/
+    end
+
+    test "renders with form" do
+      html = render_component(&CorexTest.ComponentHelpers.render_radio_group_with_form/1, [])
+      assert html =~ ~r/data-scope="radio-group"/
+      assert html =~ ~r/data-form/
+    end
   end
 
   describe "Connect.root/1" do
@@ -102,6 +138,22 @@ defmodule Corex.RadioGroupTest do
     end
   end
 
+  describe "Connect.item_text/1" do
+    test "returns item text attributes" do
+      assigns = %{
+        id: "test-radio",
+        value: "opt-1",
+        disabled: false,
+        invalid: false
+      }
+
+      result = Connect.item_text(assigns)
+      assert result["id"] == "radio-group:test-radio:item-text:opt-1"
+      assert result["data-part"] == "item-text"
+      assert result["data-value"] == "opt-1"
+    end
+  end
+
   describe "Connect.item_hidden_input/1" do
     test "returns item hidden input attributes" do
       assigns = %{
@@ -119,6 +171,50 @@ defmodule Corex.RadioGroupTest do
       assert result["type"] == "radio"
       assert result["value"] == "opt-1"
       assert result["name"] == "choice"
+    end
+  end
+
+  describe "Connect.props/1" do
+    test "returns props when controlled" do
+      assigns = %{
+        id: "test-radio",
+        value: "opt-1",
+        controlled: true,
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: false,
+        invalid: false,
+        read_only: false,
+        name: nil,
+        form: nil,
+        required: false,
+        on_value_change: nil,
+        on_value_change_client: nil
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-value"] == "opt-1"
+    end
+
+    test "returns props when uncontrolled" do
+      assigns = %{
+        id: "test-radio",
+        value: "opt-1",
+        controlled: false,
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: false,
+        invalid: false,
+        read_only: false,
+        name: nil,
+        form: nil,
+        required: false,
+        on_value_change: nil,
+        on_value_change_client: nil
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-default-value"] == "opt-1"
     end
   end
 end

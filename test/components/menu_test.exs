@@ -10,6 +10,25 @@ defmodule Corex.MenuTest do
       assert html =~ ~r/data-scope="menu"/
       assert html =~ ~r/menu:/
     end
+
+    test "renders with grouped items" do
+      html = render_component(&CorexTest.ComponentHelpers.render_menu_grouped/1, [])
+      assert html =~ ~r/data-part="item-group"/
+      assert html =~ ~r/data-part="item-group-label"/
+    end
+
+    test "renders with nested items and custom nested_indicator" do
+      html = render_component(&CorexTest.ComponentHelpers.render_menu_nested/1, [])
+      assert html =~ ~r/data-scope="menu"/
+      assert html =~ ~r/Share/
+      assert html =~ ~r/Messages/
+    end
+
+    test "renders with controlled" do
+      html = render_component(&CorexTest.ComponentHelpers.render_menu_controlled/1, [])
+      assert html =~ ~r/data-scope="menu"/
+      assert html =~ ~r/data-controlled/
+    end
   end
 
   describe "set_open/2" do

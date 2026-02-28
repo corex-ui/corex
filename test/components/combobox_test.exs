@@ -9,6 +9,71 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/data-scope="combobox"/
       assert html =~ ~r/data-part="root"/
     end
+
+    test "renders with collection and empty slot" do
+      html = render_component(&CorexTest.ComponentHelpers.render_combobox_with_items/1, [])
+      assert html =~ ~r/data-part="empty"/
+      assert html =~ ~r/data-part="item".*data-value="a"/
+      assert html =~ ~r/A/
+    end
+
+    test "renders with custom item slot" do
+      html = render_component(&CorexTest.ComponentHelpers.render_combobox_with_item_slot/1, [])
+      assert html =~ ~r/data-part="item-text"/
+      assert html =~ ~r/X!/
+    end
+
+    test "renders with clear_trigger and item_indicator slots" do
+      html =
+        render_component(
+          &CorexTest.ComponentHelpers.render_combobox_with_clear_and_indicator/1,
+          []
+        )
+
+      assert html =~ ~r/data-part="clear-trigger"/
+      assert html =~ ~r/data-part="item-indicator"/
+    end
+
+    test "renders with grouped collection" do
+      html = render_component(&CorexTest.ComponentHelpers.render_combobox_grouped/1, [])
+      assert html =~ ~r/data-part="item-group"/
+      assert html =~ ~r/item-group-label/
+    end
+
+    test "renders with filter false" do
+      html = render_component(&CorexTest.ComponentHelpers.render_combobox_filter_false/1, [])
+      assert html =~ ~r/data-scope="combobox"/
+      assert html =~ ~r/data-value="c"/
+    end
+
+    test "renders with multiple and controlled" do
+      result =
+        render_component(&CorexTest.ComponentHelpers.render_combobox_controlled_multiple/1, [])
+
+      assert result =~ ~r/data-value/
+      assert result =~ ~r/data-multiple/
+    end
+
+    test "renders with errors" do
+      html = render_component(&CorexTest.ComponentHelpers.render_combobox_with_errors/1, [])
+      assert html =~ ~r/data-part="error"/
+      assert html =~ ~r/Required/
+    end
+
+    test "Connect.props with filter false sets data-filter to nil" do
+      assigns =
+        Map.merge(default_combobox_props(), %{
+          id: "test",
+          collection: [%{id: "a", label: "A"}],
+          controlled: false,
+          value: [],
+          dir: "ltr",
+          filter: false
+        })
+
+      result = Connect.props(assigns)
+      assert result["data-filter"] == nil
+    end
   end
 
   describe "Connect.root/1" do

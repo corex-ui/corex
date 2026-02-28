@@ -24,7 +24,10 @@ if Code.ensure_loaded?(Igniter) do
 
     def install(igniter, opts) do
       ensure_phoenix_project!()
-      {project_path, web_path, otp_app, web_namespace, web_app_str} = project_paths!()
+
+      {project_path, web_path, otp_app, web_namespace, web_app_str} =
+        project_paths!(igniter)
+
       design? = Keyword.get(opts, :design, true)
       designex? = Keyword.get(opts, :designex, false)
 
@@ -35,7 +38,7 @@ if Code.ensure_loaded?(Igniter) do
           do: run_corex_design(igniter, project_path, web_path, designex?),
           else: igniter
       end)
-      |> copy_generator_templates(otp_app)
+      |> copy_generator_templates(project_path, web_path, otp_app)
       |> copy_plugs_and_hooks(web_path, web_namespace, web_app_str, opts)
 
       app_js_path = Path.relative_to(Path.join(web_path, "assets/js/app.js"), project_path)
@@ -144,10 +147,12 @@ if Code.ensure_loaded?(Igniter) do
     defp maybe_update_app_js(source, content, new_content, app_js_path) do
       if new_content == content do
         {:warning,
-         Igniter.Util.Warning.formatted_warning(
-           "Could not patch #{app_js_path} (structure may differ). Add manually:",
-           ~s|import corex from "corex"\nhooks: {...colocatedHooks, ...corex}|
-         )}
+         """
+         Could not patch #{app_js_path} (structure may differ). Add manually:
+
+           import corex from "corex"
+           hooks: {...colocatedHooks, ...corex}
+         """}
       else
         Rewrite.Source.update(source, :content, new_content)
       end
@@ -216,14 +221,23 @@ if Code.ensure_loaded?(Igniter) do
 
     defp maybe_update_root_layout(source, content, new_content, root_layout_path) do
       if new_content == content do
-        {:warning,
-         Igniter.Util.Warning.formatted_warning(
-           "Could not patch #{root_layout_path}. Apply manually: set type=\"module\" on script, add data-theme=\"neo\" data-mode=\"light\" to <html>",
-           ~s|# <html lang="en" data-theme="neo" data-mode="light">|
-         )}
+        if already_patched_root_layout?(content) do
+          Rewrite.Source.update(source, :content, content)
+        else
+          {:warning,
+           Igniter.Util.Warning.formatted_warning(
+             "Could not patch #{root_layout_path}. Apply manually: set type=\"module\" on script, add data-theme=\"neo\" data-mode=\"light\" to <html>",
+             ~s|# <html lang="en" data-theme="neo" data-mode="light">|
+           )}
+        end
       else
         Rewrite.Source.update(source, :content, new_content)
       end
+    end
+
+    defp already_patched_root_layout?(content) do
+      (content =~ ~r/type="module"/ or not (content =~ ~r/type="text\/javascript"/)) and
+        (content =~ ~r/data-theme=/ or content =~ ~r/data-mode=/)
     end
 
     defp replace_type_script(content) do
@@ -282,8 +296,8 @@ if Code.ensure_loaded?(Igniter) do
     defp patch_html_helpers_zipper(zipper, web_ex_path) do
       use_corex? =
         Igniter.Code.Common.move_to(zipper, fn z ->
-          Igniter.Code.Function.function_call?(z, :use, 2) and
-            Igniter.Code.Function.argument_equals?(z, 1, Corex)
+          Igniter.Code.Function.function_call?(z, :use, [1, 2]) and
+            Igniter.Code.Function.argument_equals?(z, 0, Corex)
         end) != :error
 
       if use_corex? do
@@ -343,7 +357,7 @@ if Code.ensure_loaded?(Igniter) do
         content ->
           updated =
             content
-            |> patch_data_mode(edit_theme_script?)
+            |> patch_data_mode(edit_theme_script? or remove_daisy?)
             |> remove_daisy_css(remove_daisy?)
 
           Rewrite.Source.update(source, :content, updated)
@@ -365,10 +379,11 @@ if Code.ensure_loaded?(Igniter) do
 
         if new_content == content do
           {:warning,
-           Igniter.Util.Warning.formatted_warning(
-             "Could not patch app.css. Add manually after @source:",
-             String.trim(imports)
-           )}
+           """
+           Could not patch app.css. Add manually after @source:
+
+           #{String.trim(imports)}
+           """}
         else
           new_content
         end
@@ -394,12 +409,12 @@ if Code.ensure_loaded?(Igniter) do
       daisyui_theme_block =
         ~r/\n\s*\/\* daisyUI theme plugin[\s\S]*?@plugin "\.\.\/vendor\/daisyui-theme" \{[^}]*\}\s*/
 
-      daisyui_theme_light = ~r/\n\s*@plugin "\.\.\/vendor\/daisyui-theme" \{[^}]*\}\s*/
+      daisyui_theme_any = ~r/@plugin "\.\.\/vendor\/daisyui-theme" \{[^}]*\}\s*/
 
       content
       |> String.replace(daisyui_plugin, "")
       |> String.replace(daisyui_theme_block, "")
-      |> String.replace(daisyui_theme_light, "")
+      |> String.replace(daisyui_theme_any, "", global: true)
     end
 
     defp remove_daisy_css(content, _), do: content
@@ -423,12 +438,12 @@ if Code.ensure_loaded?(Igniter) do
 
     def run_setup_phase(igniter, opts) do
       ensure_phoenix_project!()
-      {project_path, web_path, otp_app, web_namespace, web_app_str} = project_paths!()
+      {project_path, web_path, otp_app, web_namespace, web_app_str} = project_paths!(igniter)
       add_gettext_if_missing(igniter, project_path, web_path, otp_app, web_app_str, web_namespace)
       design? = Keyword.get(opts, :design, true)
       designex? = Keyword.get(opts, :designex, false)
       if design?, do: run_corex_design(igniter, project_path, web_path, designex?)
-      copy_generator_templates(igniter, otp_app)
+      copy_generator_templates(igniter, project_path, web_path, otp_app)
       copy_plugs_and_hooks(igniter, web_path, web_namespace, web_app_str, opts)
 
       assigns =
@@ -502,7 +517,36 @@ if Code.ensure_loaded?(Igniter) do
       end
     end
 
-    defp project_paths! do
+    defp project_paths!(igniter) do
+      if igniter && Map.get(igniter.assigns || %{}, :test_mode?) do
+        project_paths_from_igniter(igniter)
+      else
+        project_paths_from_mix!()
+      end
+    end
+
+    defp project_paths_from_igniter(igniter) do
+      web_ex_path =
+        igniter.rewrite.sources
+        |> Map.keys()
+        |> Enum.find(fn path ->
+          path =~ ~r/lib\/[^\/]+_web\.ex\z/ and not String.contains?(path, "/components/")
+        end)
+
+      if web_ex_path do
+        web_app_str = Path.basename(web_ex_path, ".ex")
+        app_str = String.replace_suffix(web_app_str, "_web", "")
+        otp_app = String.to_atom(app_str)
+        web_namespace_str = Macro.camelize(app_str) <> "Web"
+        web_namespace = Module.concat([web_namespace_str])
+        project_root = "."
+        {project_root, project_root, otp_app, web_namespace, web_app_str}
+      else
+        project_paths_from_mix!()
+      end
+    end
+
+    defp project_paths_from_mix! do
       project_root = File.cwd!()
 
       if Mix.Project.umbrella?() do
@@ -618,18 +662,37 @@ if Code.ensure_loaded?(Igniter) do
     defp add_gettext_config(igniter, _project_path, _web_namespace), do: igniter
 
     defp run_corex_design(igniter, project_path, web_path, designex?) do
-      target = Path.relative_to(Path.join([web_path, "assets", "corex"]), project_path)
-      args = [target, "--force"]
-      args = if designex?, do: ["--designex" | args], else: args
-      suffix = if designex?, do: " --designex", else: ""
-      Mix.Task.run("corex.design", args)
-      Igniter.add_notice(igniter, "* running mix corex.design#{suffix}")
+      if Map.get(igniter.assigns || %{}, :test_mode?) do
+        igniter
+      else
+        target = Path.relative_to(Path.join([web_path, "assets", "corex"]), project_path)
+        args = [target, "--force"]
+        args = if designex?, do: ["--designex" | args], else: args
+        suffix = if designex?, do: " --designex", else: ""
+        Mix.Task.run("corex.design", args)
+        Igniter.add_notice(igniter, "* running mix corex.design#{suffix}")
+      end
     end
 
-    defp copy_generator_templates(igniter, otp_app) do
+    defp copy_generator_templates(igniter, _project_path, web_path, otp_app) do
+      if Map.get(igniter.assigns || %{}, :test_mode?) do
+        igniter
+      else
+        copy_generator_templates_impl(igniter, web_path, otp_app)
+      end
+    end
+
+    defp priv_templates_path(web_path, otp_app) do
+      case :code.priv_dir(otp_app) do
+        path when is_binary(path) or is_list(path) -> Path.join(path, "templates")
+        {:error, _} -> Path.join(web_path, "priv/templates")
+      end
+    end
+
+    defp copy_generator_templates_impl(igniter, web_path, otp_app) do
       corex_priv = Path.join(:code.priv_dir(:corex), "templates")
       phoenix_priv = Path.join(:code.priv_dir(:phoenix), "templates")
-      templates_root = Path.join(:code.priv_dir(otp_app), "templates")
+      templates_root = priv_templates_path(web_path, otp_app)
 
       Enum.reduce(
         [
@@ -656,6 +719,14 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp copy_plugs_and_hooks(igniter, web_path, web_namespace, web_app_str, opts) do
+      if Map.get(igniter.assigns || %{}, :test_mode?) do
+        igniter
+      else
+        copy_plugs_and_hooks_impl(igniter, web_path, web_namespace, web_app_str, opts)
+      end
+    end
+
+    defp copy_plugs_and_hooks_impl(igniter, web_path, web_namespace, web_app_str, opts) do
       corex_root = :code.lib_dir(:corex) |> Path.dirname()
       installer_templates = Path.join([corex_root, "installer", "templates"])
 

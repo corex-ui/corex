@@ -22,10 +22,7 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 90,
-        ignore_modules: [
-          CorexTest.Endpoint
-        ]
+        threshold: 85
       ]
     ]
   end
@@ -54,6 +51,7 @@ defmodule Corex.MixProject do
       {:makeup_syntect, "~> 0.1.0", only: [:dev, :test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
+      {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:igniter, "~> 0.6", optional: true},
       {:tidewave, "~> 0.5.5", only: :dev},

@@ -36,6 +36,26 @@ defmodule Corex.TreeTest do
       assert Enum.at(Enum.at(items, 0).children, 1).label == "Open"
     end
 
+    test "creates items from maps" do
+      items = Tree.new([%{label: "Map item", id: "map1"}])
+      assert length(items) == 1
+      assert Enum.at(items, 0).label == "Map item"
+      assert Enum.at(items, 0).id == "map1"
+    end
+
+    test "creates items with group and meta" do
+      items =
+        Tree.new([
+          [label: "A1", id: "a1", group: "Group A"],
+          [label: "B1", id: "b1", group: "Group B", meta: %{key: "val"}]
+        ])
+
+      assert length(items) == 2
+      assert Enum.at(items, 0).group == "Group A"
+      assert Enum.at(items, 1).group == "Group B"
+      assert Enum.at(items, 1).meta == %{key: "val"}
+    end
+
     test "raises for invalid list format" do
       assert_raise ArgumentError, ~r/invalid item format/, fn ->
         Tree.new(["a", "b"])
@@ -50,6 +70,12 @@ defmodule Corex.TreeTest do
   end
 
   describe "Tree.Item.new/1" do
+    test "creates item from map" do
+      item = Item.new(%{label: "From map"})
+      assert item.label == "From map"
+      assert is_binary(item.id)
+    end
+
     test "creates item with required label" do
       item = Item.new(label: "Foo")
       assert item.label == "Foo"
@@ -63,6 +89,12 @@ defmodule Corex.TreeTest do
       assert item.label == "Parent"
       assert length(item.children) == 1
       assert Enum.at(item.children, 0).label == "Child"
+    end
+
+    test "raises for invalid child type" do
+      assert_raise ArgumentError, ~r/Invalid child item/, fn ->
+        Item.new(label: "Parent", children: [[label: "Valid"], 123])
+      end
     end
 
     test "raises when label missing" do

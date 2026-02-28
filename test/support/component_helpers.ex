@@ -18,6 +18,8 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.Marquee
   import Corex.Menu
   import Corex.Navigate
+  import Corex.PasswordInput
+  import Corex.RadioGroup
   import Corex.Select
   import Corex.SignaturePad
   import Corex.Tabs
@@ -104,6 +106,73 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_combobox_with_items(assigns) do
+    ~H"""
+    <.combobox collection={[%{id: "a", label: "A"}]}>
+      <:empty>No results</:empty>
+      <:trigger>Select</:trigger>
+    </.combobox>
+    """
+  end
+
+  def render_combobox_with_item_slot(assigns) do
+    ~H"""
+    <.combobox collection={[%{id: "x", label: "X"}]}>
+      <:empty>None</:empty>
+      <:item :let={item}>{item.label}!</:item>
+      <:trigger>Open</:trigger>
+    </.combobox>
+    """
+  end
+
+  def render_combobox_with_clear_and_indicator(assigns) do
+    ~H"""
+    <.combobox collection={[%{id: "b", label: "B"}]}>
+      <:empty>None</:empty>
+      <:trigger>Open</:trigger>
+      <:clear_trigger>Clear</:clear_trigger>
+      <:item_indicator>Check</:item_indicator>
+    </.combobox>
+    """
+  end
+
+  def render_combobox_grouped(assigns) do
+    ~H"""
+    <.combobox collection={[%{id: "e1", label: "E1", group: "Europe"}, %{id: "a1", label: "A1", group: "Asia"}]}>
+      <:empty>None</:empty>
+      <:trigger>Open</:trigger>
+    </.combobox>
+    """
+  end
+
+  def render_combobox_filter_false(assigns) do
+    ~H"""
+    <.combobox collection={[%{id: "c", label: "C"}]} filter={false}>
+      <:empty>None</:empty>
+      <:trigger>Open</:trigger>
+    </.combobox>
+    """
+  end
+
+  def render_combobox_controlled_multiple(assigns) do
+    ~H"""
+    <.combobox collection={[%{id: "m1", label: "M1"}, %{id: "m2", label: "M2"}]} controlled value={["m1"]} multiple>
+      <:empty>None</:empty>
+      <:trigger>Open</:trigger>
+    </.combobox>
+    """
+  end
+
+  def render_combobox_with_errors(assigns) do
+    ~H"""
+    <.combobox collection={[]} id="cb" errors={["Required"]}>
+      <:empty>None</:empty>
+      <:trigger>Open</:trigger>
+      <:error :let={msg}>{msg}</:error>
+    </.combobox>
+    """
+  end
+
   def render_date_picker(assigns) do
     ~H"""
     <.date_picker>
@@ -118,6 +187,32 @@ defmodule CorexTest.ComponentHelpers do
     <.dialog id="test-dialog">
       <:trigger>Open</:trigger>
       <:content>Dialog content</:content>
+    </.dialog>
+    """
+  end
+
+  def render_dialog_nested_slots(assigns) do
+    ~H"""
+    <.dialog id="dialog-nested">
+      <:trigger>Open</:trigger>
+      <:content>
+        <.dialog_title id="dialog-nested">Nested Title</.dialog_title>
+        <.dialog_description id="dialog-nested">Nested desc</.dialog_description>
+        <p>Body</p>
+        <.dialog_close_trigger id="dialog-nested">×</.dialog_close_trigger>
+      </:content>
+    </.dialog>
+    """
+  end
+
+  def render_dialog_controlled(assigns) do
+    ~H"""
+    <.dialog id="test-dialog-ctrl" controlled open={false}>
+      <:trigger>Open</:trigger>
+      <:title>Title</:title>
+      <:description>Description</:description>
+      <:content><p>Content</p></:content>
+      <:close_trigger>Close</:close_trigger>
     </.dialog>
     """
   end
@@ -153,6 +248,24 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_listbox_grouped(assigns) do
+    ~H"""
+    <.listbox collection={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]} />
+    """
+  end
+
+  def render_listbox_list_items(assigns) do
+    ~H"""
+    <.listbox collection={[%Corex.List.Item{id: "li-1", label: "Item 1"}, %Corex.List.Item{id: "li-2", label: "Item 2"}]} />
+    """
+  end
+
+  def render_listbox_controlled(assigns) do
+    ~H"""
+    <.listbox collection={[%{label: "A", id: "a"}]} controlled value={["a"]} />
+    """
+  end
+
   def render_marquee(assigns) do
     ~H"""
     <.marquee items={[%{id: "1"}]} duration={10}>
@@ -169,9 +282,50 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_menu_grouped(assigns) do
+    ~H"""
+    <.menu items={Corex.Tree.new([ [label: "A1", id: "a1", group: "Group A"], [label: "A2", id: "a2", group: "Group A"], [label: "B1", id: "b1", group: "Group B"] ])}>
+      <:trigger>Menu</:trigger>
+    </.menu>
+    """
+  end
+
+  def render_menu_nested(assigns) do
+    ~H"""
+    <.menu items={Corex.Tree.new([ [label: "Share", id: "share", children: [ [label: "Messages", id: "messages"] ] ] ])}>
+      <:trigger>Menu</:trigger>
+      <:nested_indicator>→</:nested_indicator>
+    </.menu>
+    """
+  end
+
+  def render_menu_controlled(assigns) do
+    ~H"""
+    <.menu items={Corex.Tree.new([ [label: "Item", id: "1"] ])} controlled open={false}>
+      <:trigger>Menu</:trigger>
+    </.menu>
+    """
+  end
+
   def render_select(assigns) do
     ~H"""
     <.select collection={[%{label: "A", id: "a"}]}>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_controlled_multiple(assigns) do
+    ~H"""
+    <.select collection={[%{label: "A", id: "a"}, %{label: "B", id: "b"}]} controlled value={["a"]} multiple>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_grouped(assigns) do
+    ~H"""
+    <.select collection={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -265,6 +419,67 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_signature_pad_controlled(assigns) do
+    ~H"""
+    <.signature_pad id="sig-pad" controlled paths={[]}>
+      <:label>Sign</:label>
+      <:clear_trigger>Clear</:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def render_signature_pad_drawing_opts(assigns) do
+    ~H"""
+    <.signature_pad id="sig-pad" drawing_fill="blue" drawing_size={3} drawing_simulate_pressure>
+      <:label>Sign</:label>
+      <:clear_trigger>Clear</:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def render_signature_pad_on_draw_end(assigns) do
+    ~H"""
+    <.signature_pad id="sig-pad" on_draw_end="signature_drawn">
+      <:label>Sign</:label>
+      <:clear_trigger>Clear</:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def render_signature_pad_with_field(assigns) do
+    params = Map.get(assigns, :params, %{"signature" => nil})
+    form = Phoenix.Component.to_form(params, as: :user)
+    field = form[:signature]
+
+    assigns = assign(assigns, :field, field)
+
+    ~H"""
+    <.signature_pad field={@field}>
+      <:label>Sign</:label>
+      <:clear_trigger>Clear</:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def render_signature_pad_with_paths(assigns) do
+    ~H"""
+    <.signature_pad id="sig-paths" paths={@paths}>
+      <:label>Sign</:label>
+      <:clear_trigger>Clear</:clear_trigger>
+    </.signature_pad>
+    """
+  end
+
+  def render_signature_pad_with_errors(assigns) do
+    ~H"""
+    <.signature_pad id="sig-err" errors={["Required"]}>
+      <:label>Sign</:label>
+      <:clear_trigger>Clear</:clear_trigger>
+      <:error :let={msg}>{msg}</:error>
+    </.signature_pad>
+    """
+  end
+
   def render_toggle_group(assigns) do
     ~H"""
     <.toggle_group>
@@ -277,6 +492,18 @@ defmodule CorexTest.ComponentHelpers do
   def render_tree_view(assigns) do
     ~H"""
     <.tree_view id="tree-test" items={Corex.Tree.new([ [label: "Item", id: "1"] ])} />
+    """
+  end
+
+  def render_tree_view_with_branch(assigns) do
+    ~H"""
+    <.tree_view id="tree-branch" items={Corex.Tree.new([ [label: "Parent", id: "p", children: [ [label: "Child", id: "c"] ] ] ])} />
+    """
+  end
+
+  def render_tree_view_controlled(assigns) do
+    ~H"""
+    <.tree_view id="tree-ctrl" items={Corex.Tree.new([ [label: "Item", id: "1"] ])} controlled expanded_value={[]} value={[]} />
     """
   end
 
@@ -297,6 +524,86 @@ defmodule CorexTest.ComponentHelpers do
     <.navigate to={@to} type={@type} external={@external} download={@download} aria_label={@aria_label}>
       Link text
     </.navigate>
+    """
+  end
+
+  def render_navigate_replace(assigns) do
+    ~H"""
+    <.navigate to={@to} type="href" replace>Link</.navigate>
+    """
+  end
+
+  def render_navigate_method(assigns) do
+    ~H"""
+    <.navigate to={@to} type="navigate" method="post">Link</.navigate>
+    """
+  end
+
+  def render_password_input_full(assigns) do
+    ~H"""
+    <.password_input name="pass">
+      <:label>Password</:label>
+      <:visible_indicator>Show</:visible_indicator>
+      <:hidden_indicator>Hide</:hidden_indicator>
+      <:error :let={msg}>{msg}</:error>
+    </.password_input>
+    """
+  end
+
+  def render_password_input_with_field(assigns) do
+    form = Phoenix.Component.to_form(%{"password" => nil}, as: :user)
+    field = form[:password]
+    assigns = assign(assigns, :field, field)
+
+    ~H"""
+    <.password_input field={@field}>
+      <:label>Password</:label>
+      <:visible_indicator>Show</:visible_indicator>
+      <:hidden_indicator>Hide</:hidden_indicator>
+      <:error :let={msg}>{msg}</:error>
+    </.password_input>
+    """
+  end
+
+  def render_radio_group_with_indicator(assigns) do
+    ~H"""
+    <.radio_group id="rg-ind" name="choice" items={[["a", "Option A"], ["b", "Option B"]]}>
+      <:label>Choose</:label>
+      <:item_control><span data-check>✓</span></:item_control>
+    </.radio_group>
+    """
+  end
+
+  def render_radio_group_controlled(assigns) do
+    ~H"""
+    <.radio_group id="rg-ctrl" name="choice" items={[["a", "A"]]} controlled value="a">
+      <:label>Choose</:label>
+    </.radio_group>
+    """
+  end
+
+  def render_radio_group_with_item_slot(assigns) do
+    ~H"""
+    <.radio_group id="rg-item" name="choice" items={[["x", "X"], ["y", "Y"]]}>
+      <:label>Choose</:label>
+      <:item :let={item}>
+        <span data-value={item.value}>{item.label}</span>
+      </:item>
+    </.radio_group>
+    """
+  end
+
+  def render_radio_group_with_form(assigns) do
+    ~H"""
+    <.radio_group id="rg-form" name="choice" form="my-form" items={[["a", "A"]]}>
+      <:label>Choose</:label>
+    </.radio_group>
+    """
+  end
+
+  def render_navigate_external_patch(assigns) do
+    ~H"""
+    <.navigate to={@to} type="patch" external>Link</.navigate>
     """
   end
 end
