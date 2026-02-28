@@ -5,9 +5,10 @@ defmodule Corex.NavigateTest do
     parent = self()
     ref = make_ref()
 
-    _ = ExUnit.CaptureIO.capture_io(:stderr, fn ->
-      send(parent, {ref, fun.()})
-    end)
+    _ =
+      ExUnit.CaptureIO.capture_io(:stderr, fn ->
+        send(parent, {ref, fun.()})
+      end)
 
     receive do
       {^ref, result} -> result

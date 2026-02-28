@@ -54,9 +54,9 @@ defmodule Mix.Tasks.Corex.InstallTest do
   test "does not warn when root layout already patched on second run" do
     igniter =
       phx_test_project(app_name: :phx_idempotent)
-      |> Igniter.compose_task("corex.install", ["--no-design", "--yes"])
+      |> Igniter.compose_task("corex.install", ["--yes"])
       |> Igniter.Test.apply_igniter!()
-      |> Igniter.compose_task("corex.install", ["--no-design", "--yes"])
+      |> Igniter.compose_task("corex.install", ["--yes"])
 
     source =
       Rewrite.source!(igniter.rewrite, "lib/phx_idempotent_web/components/layouts/root.html.heex")
@@ -75,22 +75,31 @@ defmodule Mix.Tasks.Corex.InstallTest do
     refute root_layout_warning?, "Should not warn about root layout when already patched"
   end
 
-  test "install with --mode adds mode script" do
+  test "install with --mode adds mode script and mode_toggle to layouts" do
     igniter =
       phx_test_project(app_name: :phx_mode)
-      |> Igniter.compose_task("corex.install", ["--no-design", "--yes", "--mode"])
+      |> Igniter.compose_task("corex.install", ["--yes", "--mode"])
 
-    source = Rewrite.source!(igniter.rewrite, "lib/phx_mode_web/components/layouts/root.html.heex")
+    source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_mode_web/components/layouts/root.html.heex")
+
     content = Rewrite.Source.get(source, :content)
     assert content =~ ~r/data-mode=/
+
+    layouts_source = Rewrite.source!(igniter.rewrite, "lib/phx_mode_web/components/layouts.ex")
+    layouts_content = Rewrite.Source.get(layouts_source, :content)
+    assert layouts_content =~ ~r/<\.mode_toggle \/>/
+    assert layouts_content =~ ~r/def mode_toggle\(assigns\)/
   end
 
   test "install with --theme adds theme config" do
     igniter =
       phx_test_project(app_name: :phx_theme)
-      |> Igniter.compose_task("corex.install", ["--no-design", "--yes", "--theme", "neo:uno"])
+      |> Igniter.compose_task("corex.install", ["--yes", "--theme", "neo:uno"])
 
-    source = Rewrite.source!(igniter.rewrite, "lib/phx_theme_web/components/layouts/root.html.heex")
+    source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_theme_web/components/layouts/root.html.heex")
+
     content = Rewrite.Source.get(source, :content)
     assert content =~ ~r/data-theme=|data-mode=/
   end
@@ -105,10 +114,10 @@ defmodule Mix.Tasks.Corex.InstallTest do
     assert content =~ ~r/@import "\.\.\/corex\/main\.css"/
   end
 
-  test "no-daisy removes daisyui CSS and uses data-mode for dark variant" do
+  test "design removes daisyui CSS and uses data-mode for dark variant" do
     igniter =
-      phx_test_project(app_name: :phx_no_daisy)
-      |> Igniter.compose_task("corex.install", ["--no-design", "--no-daisy", "--yes"])
+      phx_test_project(app_name: :phx_design_daisy)
+      |> Igniter.compose_task("corex.install", ["--yes"])
 
     source = Rewrite.source!(igniter.rewrite, "assets/css/app.css")
     content = Rewrite.Source.get(source, :content)
@@ -122,5 +131,28 @@ defmodule Mix.Tasks.Corex.InstallTest do
            "Should replace data-theme=dark with data-mode=dark"
 
     assert content =~ ~r/\[data-mode=dark\]/, "Should use data-mode=dark for dark variant"
+  end
+
+  test "no-design does not touch daisyui or add data-theme/data-mode" do
+    igniter =
+      phx_test_project(app_name: :phx_no_design)
+      |> Igniter.compose_task("corex.install", ["--no-design", "--yes"])
+
+    source = Rewrite.source!(igniter.rewrite, "assets/css/app.css")
+    content = Rewrite.Source.get(source, :content)
+
+    refute content =~ ~r/@import "\.\.\/corex\/main\.css"/,
+           "Should not add corex CSS imports when no-design"
+
+    root_source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_no_design_web/components/layouts/root.html.heex")
+
+    root_content = Rewrite.Source.get(root_source, :content)
+
+    refute root_content =~ ~r/data-theme="neo"/,
+           "Should not add data-theme when no-design"
+
+    refute root_content =~ ~r/data-mode="light"/,
+           "Should not add data-mode when no-design"
   end
 end

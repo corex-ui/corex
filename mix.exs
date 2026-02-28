@@ -55,7 +55,8 @@ defmodule Corex.MixProject do
       {:excoveralls, "~> 0.18", only: :test},
       {:igniter, "~> 0.6", optional: true},
       {:tidewave, "~> 0.5.5", only: :dev},
-      {:bandit, "~> 1.0", only: :dev}
+      {:bandit, "~> 1.0", only: :dev},
+      {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -73,7 +74,7 @@ defmodule Corex.MixProject do
       ],
       "assets.watch": "esbuild module --watch",
       tidewave:
-        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4000) end)'"
+        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
   end
 

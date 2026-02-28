@@ -16,13 +16,12 @@ if Code.ensure_loaded?(Igniter) do
 
     ## Options
 
-      * `--no-design` - skip copying Corex design files to assets/corex
+      * `--no-design` - skip copying Corex design files (does not touch daisyUI or add data-theme/data-mode)
       * `--designex` - include design tokens and build scripts in design/
       * `--mode` - enable light/dark mode (plug, script, toggle)
       * `--theme THEMES` - colon-separated themes (e.g. neo:uno). At least 2 values.
       * `--languages LANGUAGES` - colon-separated locales (e.g. en:fr:ar). At least 2 values.
       * `--rtl RTL` - RTL locale codes (e.g. ar)
-      * `--no-daisy` - remove daisyUI CSS, vendor files, and theme switch script
     """
     use Igniter.Mix.Task
 
@@ -37,13 +36,12 @@ if Code.ensure_loaded?(Igniter) do
         schema: [
           design: :boolean,
           designex: :boolean,
-          daisy: :boolean,
           mode: :boolean,
           theme: :string,
           languages: :string,
           rtl: :string
         ],
-        defaults: [design: true, daisy: true]
+        defaults: [design: true]
       }
     end
 

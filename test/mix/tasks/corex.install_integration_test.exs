@@ -12,25 +12,34 @@ defmodule Mix.Tasks.Corex.InstallIntegrationTest do
     corex_path = Path.expand("../../..", __DIR__)
 
     {_, 0} =
-      System.cmd("mix", [
-        "phx.new",
-        project_dir,
-        "--no-ecto",
-        "--no-mailer",
-        "--no-install"
-      ], cd: File.cwd!())
+      System.cmd(
+        "mix",
+        [
+          "phx.new",
+          project_dir,
+          "--no-ecto",
+          "--no-mailer",
+          "--no-install"
+        ], cd: File.cwd!())
 
-    {_, 0} = System.cmd("mix", ["deps.get"], cd: project_dir)
+    env = System.get_env() |> Map.put("MIX_ENV", "dev") |> Map.to_list()
+    {_, 0} = System.cmd("mix", ["deps.get"], cd: project_dir, env: env)
+    {_, 0} = System.cmd("mix", ["compile"], cd: project_dir, env: env)
 
-    {_output, exit_code} =
+    {output, 0} =
       System.cmd("mix", ["igniter.install", "corex@path:#{corex_path}", "--yes", "--no-design"],
-        cd: project_dir
+        cd: project_dir,
+        env: env
       )
 
     templates_root = Path.join(project_dir, "priv/templates")
+
     assert File.dir?(Path.join(templates_root, "phx.gen.html")),
-           "copy_generator_templates should succeed (exit: #{exit_code})"
+           "templates not copied. install output: #{output}"
 
     assert File.dir?(Path.join(templates_root, "phx.gen.live"))
+
+    app_js = File.read!(Path.join(project_dir, "assets/js/app.js"))
+    assert app_js =~ ~r/from "corex"/
   end
 end

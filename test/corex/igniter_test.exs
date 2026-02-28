@@ -102,12 +102,12 @@ defmodule Corex.IgniterTest do
 
   describe "run_css_phase/2" do
     @tag :requires_igniter
-    test "patches app.css and removes daisy with --no-daisy" do
+    test "patches app.css and removes daisy when design" do
       igniter =
-        phx_test_project(app_name: :phx_css_no_daisy)
-        |> Corex.Igniter.run_setup_phase(design: false)
+        phx_test_project(app_name: :phx_css_design)
+        |> Corex.Igniter.run_setup_phase(design: true)
 
-      result = Corex.Igniter.run_css_phase(igniter, daisy: false)
+      result = Corex.Igniter.run_css_phase(igniter, design: true)
 
       source = Rewrite.source!(result.rewrite, "assets/css/app.css")
       content = Rewrite.Source.get(source, :content)
@@ -117,16 +117,16 @@ defmodule Corex.IgniterTest do
     end
 
     @tag :requires_igniter
-    test "patches app.css with design when daisy not false" do
+    test "does not touch app.css daisy when no-design" do
       igniter =
-        phx_test_project(app_name: :phx_css_design)
-        |> Corex.Igniter.run_setup_phase(design: true)
+        phx_test_project(app_name: :phx_css_no_design)
+        |> Corex.Igniter.run_setup_phase(design: false)
 
-      result = Corex.Igniter.run_css_phase(igniter, daisy: true)
+      result = Corex.Igniter.run_css_phase(igniter, design: false)
 
       source = Rewrite.source!(result.rewrite, "assets/css/app.css")
       content = Rewrite.Source.get(source, :content)
-      assert content =~ ~r/@import "\.\.\/corex/
+      refute content =~ ~r/@import "\.\.\/corex/
     end
   end
 
