@@ -822,7 +822,13 @@ if Code.ensure_loaded?(Igniter) do
       )
     end
 
-    defp copy_generator_template({gen_name, phoenix_dir}, igniter, corex_priv, phoenix_priv, templates_root) do
+    defp copy_generator_template(
+           {gen_name, phoenix_dir},
+           igniter,
+           corex_priv,
+           phoenix_priv,
+           templates_root
+         ) do
       corex_src = Path.join(corex_priv, String.replace(gen_name, "phx.", "corex."))
       phoenix_src = Path.join(phoenix_priv, phoenix_dir)
       dst = Path.join(templates_root, phoenix_dir)
@@ -831,7 +837,9 @@ if Code.ensure_loaded?(Igniter) do
 
       if File.exists?(src) do
         path_under_root?(src, src_root) || Mix.raise("Path traversal blocked: #{inspect(src)}")
-        path_under_root?(dst, templates_root) || Mix.raise("Path traversal blocked: #{inspect(dst)}")
+
+        path_under_root?(dst, templates_root) ||
+          Mix.raise("Path traversal blocked: #{inspect(dst)}")
 
         File.mkdir_p!(dst)
         File.cp_r!(src, dst)
