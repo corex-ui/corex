@@ -1,8 +1,16 @@
 defmodule Corex.MenuTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Menu
   alias Corex.Menu.Connect
+
+  describe "menu/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_menu/1, [])
+      assert html =~ ~r/data-scope="menu"/
+      assert html =~ ~r/menu:/
+    end
+  end
 
   describe "set_open/2" do
     test "returns JS command when open is true" do
@@ -116,6 +124,79 @@ defmodule Corex.MenuTest do
       assigns = %{dir: "ltr"}
       result = Connect.separator(assigns)
       assert result["role"] == "separator"
+    end
+  end
+
+  describe "Connect.props/1" do
+    test "returns props when uncontrolled" do
+      assigns = %{
+        id: "test-menu",
+        controlled: false,
+        open: false,
+        dir: "ltr",
+        close_on_select: true,
+        loop_focus: false,
+        typeahead: true,
+        composite: false,
+        value: nil,
+        aria_label: nil,
+        on_select: nil,
+        on_select_client: nil,
+        redirect: false,
+        on_open_change: nil,
+        on_open_change_client: nil
+      }
+
+      result = Connect.props(assigns)
+      assert result["id"] == "test-menu"
+    end
+
+    test "returns props when controlled" do
+      assigns = %{
+        id: "test-menu",
+        controlled: true,
+        open: true,
+        dir: "ltr",
+        close_on_select: true,
+        loop_focus: false,
+        typeahead: true,
+        composite: false,
+        value: nil,
+        aria_label: nil,
+        on_select: nil,
+        on_select_client: nil,
+        redirect: false,
+        on_open_change: nil,
+        on_open_change_client: nil
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-open"] == ""
+    end
+  end
+
+  describe "Connect.item_group_label/1" do
+    test "returns item group label attributes" do
+      assigns = %{id: "test-menu", group_id: "group-1", dir: "ltr"}
+      result = Connect.item_group_label(assigns)
+      assert result["data-part"] == "item-group-label"
+    end
+  end
+
+  describe "Connect.item_group/1" do
+    test "returns item group attributes" do
+      assigns = %{id: "test-menu", group_id: "group-1", dir: "ltr"}
+      result = Connect.item_group(assigns)
+      assert result["data-part"] == "item-group"
+    end
+  end
+
+  describe "Connect.nested_menu/1" do
+    test "returns nested menu attributes" do
+      assigns = %{id: "test-menu", dir: "ltr"}
+      result = Connect.nested_menu(assigns)
+      assert result["data-nested"] == "menu"
+      assert result["data-scope"] == "menu"
     end
   end
 end

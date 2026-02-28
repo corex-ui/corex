@@ -1,7 +1,16 @@
 defmodule Corex.RadioGroupTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
+  alias Corex.RadioGroup
   alias Corex.RadioGroup.Connect
+
+  describe "radio_group/1" do
+    test "renders" do
+      html = render_component(&RadioGroup.radio_group/1, items: [["a", "Option A"]])
+      assert html =~ ~r/data-scope="radio-group"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes without label" do

@@ -25,4 +25,12 @@ defmodule Mix.Tasks.Corex.InstallTest do
      +|      ~w(js/app.js --bundle --format=esm --splitting --target=
     """)
   end
+
+  test "adds rtl_locales to config with --rtl" do
+    phx_test_project(app_name: :corex)
+    |> Igniter.compose_task("corex.install", ["--no-design", "--yes", "--rtl", "ar"])
+    |> assert_has_patch("config/config.exs", """
+     +|    rtl_locales: ["ar"]
+    """)
+  end
 end

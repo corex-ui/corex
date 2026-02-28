@@ -1,7 +1,15 @@
 defmodule Corex.FloatingPanelTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.FloatingPanel.Connect
+
+  describe "floating_panel/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_floating_panel/1, [])
+      assert html =~ ~r/data-scope="floating-panel"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

@@ -24,13 +24,19 @@ if Code.ensure_loaded?(Igniter) do
 
     def install(igniter, opts) do
       ensure_phoenix_project!()
-      {project_path, web_path, _web_app, web_namespace, web_app_str} = project_paths!()
-      add_gettext_if_missing(igniter, project_path, web_path, web_app_str, web_namespace)
+      {project_path, web_path, otp_app, web_namespace, web_app_str} = project_paths!()
       design? = Keyword.get(opts, :design, true)
       designex? = Keyword.get(opts, :designex, false)
-      if design?, do: run_corex_design(igniter, project_path, web_path, designex?)
-      copy_generator_templates(igniter, web_path)
-      copy_plugs_and_hooks(igniter, web_path, web_namespace, web_app_str, opts)
+
+      igniter
+      |> add_gettext_if_missing(project_path, web_path, otp_app, web_app_str, web_namespace)
+      |> then(fn igniter ->
+        if design?,
+          do: run_corex_design(igniter, project_path, web_path, designex?),
+          else: igniter
+      end)
+      |> copy_generator_templates(otp_app)
+      |> copy_plugs_and_hooks(web_path, web_namespace, web_app_str, opts)
 
       app_js_path = Path.relative_to(Path.join(web_path, "assets/js/app.js"), project_path)
       config_path = Path.join("config", "config.exs")
@@ -417,12 +423,12 @@ if Code.ensure_loaded?(Igniter) do
 
     def run_setup_phase(igniter, opts) do
       ensure_phoenix_project!()
-      {project_path, web_path, _web_app, web_namespace, web_app_str} = project_paths!()
-      add_gettext_if_missing(igniter, project_path, web_path, web_app_str, web_namespace)
+      {project_path, web_path, otp_app, web_namespace, web_app_str} = project_paths!()
+      add_gettext_if_missing(igniter, project_path, web_path, otp_app, web_app_str, web_namespace)
       design? = Keyword.get(opts, :design, true)
       designex? = Keyword.get(opts, :designex, false)
       if design?, do: run_corex_design(igniter, project_path, web_path, designex?)
-      copy_generator_templates(igniter, web_path)
+      copy_generator_templates(igniter, otp_app)
       copy_plugs_and_hooks(igniter, web_path, web_namespace, web_app_str, opts)
 
       assigns =
@@ -523,105 +529,133 @@ if Code.ensure_loaded?(Igniter) do
       end
     end
 
-    defp add_gettext_if_missing(_igniter, project_path, web_path, web_app_str, web_namespace) do
-      gettext_path = Path.join([web_path, "lib", web_app_str, "gettext.ex"])
+    defp add_gettext_if_missing(
+           igniter,
+           project_path,
+           web_path,
+           otp_app,
+           web_app_str,
+           web_namespace
+         ) do
+      gettext_path =
+        Path.relative_to(Path.join([web_path, "lib", web_app_str, "gettext.ex"]), project_path)
 
-      if not File.exists?(gettext_path) do
-        Mix.shell().info([:green, "* adding gettext", :reset])
-        add_gettext_dep(web_path)
-        create_gettext_module(web_path, web_app_str, web_namespace)
-        create_gettext_files(web_path)
-        add_gettext_config(project_path, web_namespace)
+      if Igniter.exists?(igniter, gettext_path) do
+        igniter
+      else
+        igniter
+        |> add_gettext_dep(project_path, web_path)
+        |> create_gettext_module(project_path, web_path, web_app_str, web_namespace)
+        |> create_gettext_files(project_path, otp_app)
+        |> add_gettext_config(project_path, web_namespace)
+        |> then(&Igniter.add_notice(&1, "* adding gettext"))
       end
     end
 
-    defp add_gettext_dep(web_path) do
-      mix_path = Path.join(web_path, "mix.exs")
-      content = File.read!(mix_path)
+    defp add_gettext_dep(igniter, project_path, web_path) do
+      mix_path = Path.relative_to(Path.join(web_path, "mix.exs"), project_path)
 
-      unless content =~ ~r/:gettext,/ do
+      if Igniter.exists?(igniter, mix_path) do
+        igniter
+        |> Igniter.include_existing_file(mix_path, required?: true)
+        |> Igniter.update_file(mix_path, &patch_mix_gettext_dep/1)
+      else
+        igniter
+      end
+    end
+
+    defp patch_mix_gettext_dep(source) do
+      if source.content =~ ~r/:gettext,/ do
+        source
+      else
         insert = ~s/      {:gettext, "~> 1.0"},/
 
         new_content =
           String.replace(
-            content,
+            source.content,
             ~r/\{:telemetry_poller, "~> 1\.0"\}/,
             insert <> "\n      {:telemetry_poller, \"~> 1.0\"}"
           )
 
-        File.write!(mix_path, new_content)
+        Rewrite.Source.update(source, :content, new_content)
       end
     end
 
-    defp create_gettext_module(web_path, web_app_str, web_namespace) do
-      lib_path = Path.join([web_path, "lib", web_app_str, "gettext.ex"])
-      File.mkdir_p!(Path.dirname(lib_path))
+    defp create_gettext_module(igniter, project_path, web_path, web_app_str, web_namespace) do
+      lib_web = Path.relative_to(Path.join([web_path, "lib", web_app_str]), project_path)
+      gettext_path = Path.join(lib_web, "gettext.ex")
 
-      content = """
+      igniter
+      |> Igniter.mkdir(lib_web)
+      |> Igniter.create_new_file(gettext_path, """
       defmodule #{inspect(web_namespace)}.Gettext do
         @moduledoc false
         use Gettext.Backend, otp_app: #{inspect(String.to_atom(web_app_str))}
       end
-      """
-
-      File.write!(lib_path, content)
+      """)
     end
 
-    defp create_gettext_files(web_path) do
-      gettext_priv = Path.join([web_path, "priv", "gettext"])
+    defp create_gettext_files(igniter, project_path, otp_app) do
+      gettext_priv = Path.join(Path.relative_to(:code.priv_dir(otp_app), project_path), "gettext")
       errors_pot = Path.join(gettext_priv, "errors.pot")
-      en_po = Path.join([gettext_priv, "en", "LC_MESSAGES", "errors.po"])
-      File.mkdir_p!(Path.dirname(en_po))
+      en_po = Path.join(gettext_priv, "en/LC_MESSAGES/errors.po")
 
-      File.write!(errors_pot, """
+      igniter
+      |> Igniter.mkdir(Path.join(gettext_priv, "en/LC_MESSAGES"))
+      |> Igniter.create_new_file(errors_pot, """
       ## This is a PO Template file.
       ## Run `mix gettext.extract` to bring this file up to date.
       msgid ""
       msgstr ""
       """)
-
-      File.write!(en_po, """
+      |> Igniter.create_new_file(en_po, """
       msgid ""
       msgstr ""
       "Language: en\\n"
       """)
     end
 
-    defp add_gettext_config(_project_path, _web_namespace), do: :ok
+    defp add_gettext_config(igniter, _project_path, _web_namespace), do: igniter
 
-    defp run_corex_design(_igniter, project_path, web_path, designex?) do
+    defp run_corex_design(igniter, project_path, web_path, designex?) do
       target = Path.relative_to(Path.join([web_path, "assets", "corex"]), project_path)
       args = [target, "--force"]
       args = if designex?, do: ["--designex" | args], else: args
       suffix = if designex?, do: " --designex", else: ""
-      Mix.shell().info([:green, "* running mix corex.design#{suffix}", :reset])
       Mix.Task.run("corex.design", args)
+      Igniter.add_notice(igniter, "* running mix corex.design#{suffix}")
     end
 
-    defp copy_generator_templates(_igniter, web_path) do
-      corex_priv = Path.join([:code.lib_dir(:corex) |> Path.dirname(), "priv", "templates"])
-      phoenix_priv = Path.join([:code.lib_dir(:phoenix), "priv", "templates"])
-      templates_root = Path.join([web_path, "priv", "templates"])
+    defp copy_generator_templates(igniter, otp_app) do
+      corex_priv = Path.join(:code.priv_dir(:corex), "templates")
+      phoenix_priv = Path.join(:code.priv_dir(:phoenix), "templates")
+      templates_root = Path.join(:code.priv_dir(otp_app), "templates")
 
-      for {gen_name, phoenix_dir} <- [
-            {"phx.gen.html", "phx.gen.html"},
-            {"phx.gen.live", "phx.gen.live"},
-            {"phx.gen.auth", "phx.gen.auth"}
-          ] do
-        corex_src = Path.join(corex_priv, String.replace(gen_name, "phx.", "corex."))
-        phoenix_src = Path.join(phoenix_priv, phoenix_dir)
-        dst = Path.join(templates_root, phoenix_dir)
-        src = if File.exists?(corex_src), do: corex_src, else: phoenix_src
+      Enum.reduce(
+        [
+          {"phx.gen.html", "phx.gen.html"},
+          {"phx.gen.live", "phx.gen.live"},
+          {"phx.gen.auth", "phx.gen.auth"}
+        ],
+        igniter,
+        fn {gen_name, phoenix_dir}, igniter ->
+          corex_src = Path.join(corex_priv, String.replace(gen_name, "phx.", "corex."))
+          phoenix_src = Path.join(phoenix_priv, phoenix_dir)
+          dst = Path.join(templates_root, phoenix_dir)
+          src = if File.exists?(corex_src), do: corex_src, else: phoenix_src
 
-        if File.exists?(src) do
-          Mix.shell().info([:green, "* copying #{phoenix_dir} templates", :reset])
-          File.mkdir_p!(dst)
-          File.cp_r!(src, dst)
+          if File.exists?(src) do
+            File.mkdir_p!(dst)
+            File.cp_r!(src, dst)
+            Igniter.add_notice(igniter, "* copying #{phoenix_dir} templates")
+          else
+            igniter
+          end
         end
-      end
+      )
     end
 
-    defp copy_plugs_and_hooks(_igniter, web_path, web_namespace, web_app_str, opts) do
+    defp copy_plugs_and_hooks(igniter, web_path, web_namespace, web_app_str, opts) do
       corex_root = :code.lib_dir(:corex) |> Path.dirname()
       installer_templates = Path.join([corex_root, "installer", "templates"])
 
@@ -633,63 +667,79 @@ if Code.ensure_loaded?(Igniter) do
 
         lib_web = Path.join([web_path, "lib", web_app_str])
 
-        if Keyword.get(opts, :mode) do
-          Mix.shell().info([:green, "* adding mode plug and hook", :reset])
+        igniter =
+          if Keyword.get(opts, :mode) do
+            copy_eex(
+              Path.join([installer_templates, "phx_web", "plugs", "mode.ex.eex"]),
+              Path.join([lib_web, "plugs", "mode.ex"]),
+              binding
+            )
 
-          copy_eex(
-            Path.join([installer_templates, "phx_web", "plugs", "mode.ex.eex"]),
-            Path.join([lib_web, "plugs", "mode.ex"]),
-            binding
-          )
+            copy_eex(
+              Path.join([installer_templates, "phx_web", "live", "hooks", "mode_live.ex.eex"]),
+              Path.join([lib_web, "live", "hooks", "mode_live.ex"]),
+              binding
+            )
 
-          copy_eex(
-            Path.join([installer_templates, "phx_web", "live", "hooks", "mode_live.ex.eex"]),
-            Path.join([lib_web, "live", "hooks", "mode_live.ex"]),
-            binding
-          )
-        end
+            Igniter.add_notice(igniter, "* adding mode plug and hook")
+          else
+            igniter
+          end
 
-        if themes = Keyword.get(opts, :theme) do
-          themes_list = String.split(themes, ":", trim: true)
+        igniter =
+          if themes = Keyword.get(opts, :theme) do
+            themes_list = String.split(themes, ":", trim: true)
 
-          binding =
-            Keyword.merge(binding, themes: themes_list, default_locale: List.first(themes_list))
+            binding =
+              Keyword.merge(binding, themes: themes_list, default_locale: List.first(themes_list))
 
-          Mix.shell().info([:green, "* adding theme plug and hook", :reset])
+            copy_eex(
+              Path.join([installer_templates, "phx_web", "plugs", "theme.ex.eex"]),
+              Path.join([lib_web, "plugs", "theme.ex"]),
+              binding
+            )
 
-          copy_eex(
-            Path.join([installer_templates, "phx_web", "plugs", "theme.ex.eex"]),
-            Path.join([lib_web, "plugs", "theme.ex"]),
-            binding
-          )
+            copy_eex(
+              Path.join([installer_templates, "phx_web", "live", "hooks", "theme_live.ex.eex"]),
+              Path.join([lib_web, "live", "hooks", "theme_live.ex"]),
+              binding
+            )
 
-          copy_eex(
-            Path.join([installer_templates, "phx_web", "live", "hooks", "theme_live.ex.eex"]),
-            Path.join([lib_web, "live", "hooks", "theme_live.ex"]),
-            binding
-          )
-        end
+            Igniter.add_notice(igniter, "* adding theme plug and hook")
+          else
+            igniter
+          end
 
-        if languages = Keyword.get(opts, :languages) do
-          langs_list = String.split(languages, ":", trim: true)
+        igniter =
+          if languages = Keyword.get(opts, :languages) do
+            langs_list = String.split(languages, ":", trim: true)
 
-          binding =
-            Keyword.merge(binding, languages: langs_list, default_locale: List.first(langs_list))
+            binding =
+              Keyword.merge(binding,
+                languages: langs_list,
+                default_locale: List.first(langs_list)
+              )
 
-          Mix.shell().info([:green, "* adding locale plug and shared events", :reset])
+            copy_eex(
+              Path.join([installer_templates, "phx_web", "plugs", "locale.ex.eex"]),
+              Path.join([lib_web, "plugs", "locale.ex"]),
+              binding
+            )
 
-          copy_eex(
-            Path.join([installer_templates, "phx_web", "plugs", "locale.ex.eex"]),
-            Path.join([lib_web, "plugs", "locale.ex"]),
-            binding
-          )
+            copy_eex(
+              Path.join([installer_templates, "phx_web", "live", "shared_events.ex.eex"]),
+              Path.join([lib_web, "live", "shared_events.ex"]),
+              binding
+            )
 
-          copy_eex(
-            Path.join([installer_templates, "phx_web", "live", "shared_events.ex.eex"]),
-            Path.join([lib_web, "live", "shared_events.ex"]),
-            binding
-          )
-        end
+            Igniter.add_notice(igniter, "* adding locale plug and shared events")
+          else
+            igniter
+          end
+
+        igniter
+      else
+        igniter
       end
     end
 

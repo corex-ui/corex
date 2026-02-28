@@ -1,8 +1,17 @@
 defmodule Corex.ColorPickerTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
+  alias Corex.ColorPicker
   alias Corex.ColorPicker.Connect
   alias Corex.ColorPicker.Initial
+
+  describe "color_picker/1" do
+    test "renders" do
+      html = render_component(&ColorPicker.color_picker/1, [])
+      assert html =~ ~r/data-scope="color-picker"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Initial.parse/1" do
     test "returns empty map for nil" do

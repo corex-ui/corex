@@ -1,8 +1,18 @@
 defmodule Corex.DialogTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Dialog
   alias Corex.Dialog.Connect
+
+  describe "dialog/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_dialog/1, [])
+      assert html =~ ~r/data-scope="dialog"/
+      assert html =~ ~r/data-part="content"/
+      assert html =~ ~r/Open/
+      assert html =~ ~r/Dialog content/
+    end
+  end
 
   describe "set_open/2" do
     test "returns JS command when open is true" do

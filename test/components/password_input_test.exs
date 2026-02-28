@@ -1,7 +1,16 @@
 defmodule Corex.PasswordInputTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
+  alias Corex.PasswordInput
   alias Corex.PasswordInput.Connect
+
+  describe "password_input/1" do
+    test "renders" do
+      html = render_component(&PasswordInput.password_input/1, name: "pass")
+      assert html =~ ~r/data-scope="password-input"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

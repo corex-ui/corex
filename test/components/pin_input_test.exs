@@ -1,7 +1,16 @@
 defmodule Corex.PinInputTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
+  alias Corex.PinInput
   alias Corex.PinInput.Connect
+
+  describe "pin_input/1" do
+    test "renders" do
+      html = render_component(&PinInput.pin_input/1, name: "pin", length: 4)
+      assert html =~ ~r/data-scope="pin-input"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

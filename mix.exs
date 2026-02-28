@@ -9,6 +9,7 @@ defmodule Corex.MixProject do
       app: :corex,
       version: @version,
       elixir: @elixir_requirement,
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
@@ -18,7 +19,14 @@ defmodule Corex.MixProject do
       package: package(),
       source_url: "https://github.com/corex-ui/corex",
       homepage_url: "https://corex.gigalixirapp.com/en",
-      docs: &docs/0
+      docs: &docs/0,
+      test_coverage: [
+        tool: ExCoveralls,
+        threshold: 90,
+        ignore_modules: [
+          CorexTest.Endpoint
+        ]
+      ]
     ]
   end
 
@@ -27,6 +35,9 @@ defmodule Corex.MixProject do
       extra_applications: [:logger]
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
     [
@@ -37,11 +48,13 @@ defmodule Corex.MixProject do
       {:ecto, "~> 3.10"},
       {:esbuild, "~> 0.8", only: :dev},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false, warn_if_outdated: true},
-      {:makeup, "~> 1.2", only: :dev},
-      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: :dev},
-      {:makeup_eex, "~> 2.0", only: :dev},
-      {:makeup_syntect, "~> 0.1.0", only: :dev},
+      {:makeup, "~> 1.2", only: [:dev, :test]},
+      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test]},
+      {:makeup_eex, "~> 2.0", only: [:dev, :test]},
+      {:makeup_syntect, "~> 0.1.0", only: [:dev, :test]},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:floki, "~> 0.38.0", only: :test},
+      {:excoveralls, "~> 0.18", only: :test},
       {:igniter, "~> 0.6", optional: true},
       {:tidewave, "~> 0.5.5", only: :dev},
       {:bandit, "~> 1.0", only: :dev}

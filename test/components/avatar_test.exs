@@ -1,7 +1,16 @@
 defmodule Corex.AvatarTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Avatar.Connect
+
+  describe "avatar/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_avatar/1, [])
+      assert html =~ ~r/data-scope="avatar"/
+      assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/JD/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

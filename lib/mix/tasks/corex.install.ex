@@ -14,10 +14,6 @@ if Code.ensure_loaded?(Igniter) do
 
         mix igniter.install corex@path:../corex
 
-    Generate living documentation for the installer:
-
-        mix corex.install --scribe documentation/guides/installation.md
-
     ## Options
 
       * `--no-design` - skip copying Corex design files to assets/corex
@@ -29,37 +25,6 @@ if Code.ensure_loaded?(Igniter) do
       * `--no-daisy` - remove daisyUI CSS, vendor files, and theme switch script
     """
     use Igniter.Mix.Task
-
-    @manual_lead_in """
-    This guide walks you through installing Corex into a Phoenix project.
-    You can run these steps manually or use `mix igniter.install corex` to apply them interactively.
-    """
-
-    @setup_project """
-    Corex adds gettext if missing, runs `mix corex.design` to copy design assets,
-    copies Phoenix generator templates (phx.gen.html, phx.gen.live, phx.gen.auth),
-    and adds optional plugs and LiveView hooks for mode, theme, and locale.
-    """
-
-    @config_corex """
-    Configures the `:corex` application in config/config.exs with gettext_backend,
-    json_library, and optionally rtl_locales when using the --rtl option.
-    """
-
-    @app_js_esbuild """
-    Patches assets/js/app.js to import Corex and register its LiveView hooks,
-    and updates the esbuild config to use --format=esm --splitting.
-    """
-
-    @root_layout_helpers """
-    Patches the root layout (script type, html data-theme/data-mode) and the web
-    module to add `use Corex` for component helpers.
-    """
-
-    @app_css_daisy """
-    Adds Corex CSS imports when using design, switches theme script to data-mode
-    when applicable, and optionally removes daisyUI CSS and vendor files (--no-daisy).
-    """
 
     @impl Igniter.Mix.Task
     def supports_umbrella?, do: true
@@ -91,41 +56,7 @@ if Code.ensure_loaded?(Igniter) do
 
     @impl Igniter.Mix.Task
     def igniter(igniter) do
-      igniter
-      |> Igniter.Scribe.start_document("Manual Installation", @manual_lead_in, app_name: :my_app)
-      |> Igniter.Scribe.section(
-        "Setup project (gettext, design, templates, plugs)",
-        @setup_project,
-        fn igniter ->
-          Igniter.Scribe.patch(igniter, fn igniter ->
-            Corex.Igniter.run_setup_phase(igniter, igniter.args.options)
-          end)
-        end
-      )
-      |> Igniter.Scribe.section("Configure Corex", @config_corex, fn igniter ->
-        Igniter.Scribe.patch(igniter, fn igniter ->
-          Corex.Igniter.run_config_phase(igniter, igniter.args.options)
-        end)
-      end)
-      |> Igniter.Scribe.section("Patch app.js and esbuild", @app_js_esbuild, fn igniter ->
-        Igniter.Scribe.patch(igniter, fn igniter ->
-          Corex.Igniter.run_assets_phase(igniter, igniter.args.options)
-        end)
-      end)
-      |> Igniter.Scribe.section(
-        "Patch root layout and HTML helpers",
-        @root_layout_helpers,
-        fn igniter ->
-          Igniter.Scribe.patch(igniter, fn igniter ->
-            Corex.Igniter.run_layout_phase(igniter, igniter.args.options)
-          end)
-        end
-      )
-      |> Igniter.Scribe.section("Patch app CSS and remove daisy", @app_css_daisy, fn igniter ->
-        Igniter.Scribe.patch(igniter, fn igniter ->
-          Corex.Igniter.run_css_phase(igniter, igniter.args.options)
-        end)
-      end)
+      Corex.Igniter.install(igniter, igniter.args.options)
     end
   end
 else
