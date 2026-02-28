@@ -103,7 +103,9 @@ defmodule Mix.Tasks.Corex.Design do
 
     copy_design_files(target, designex)
 
-    Mix.shell().info("Corex design copied to: #{target}")
+    unless Mix.env() == :test do
+      Mix.shell().info("Corex design copied to: #{target}")
+    end
   end
 
   defp parse_args(args) do
@@ -135,7 +137,7 @@ defmodule Mix.Tasks.Corex.Design do
   end
 
   defp maybe_show_designex_info(designex) do
-    if designex and not designex_installed?() do
+    if designex and not designex_installed?() and Mix.env() != :test do
       Mix.shell().info("""
       To enable token builds, add to mix.exs:
 

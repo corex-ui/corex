@@ -1,0 +1,9 @@
+{
+  "skip_files": [
+    "anatomy\\.ex",
+    "lib/corex/flash\\.ex",
+    "lib/corex/positoning\\.ex",
+    "test/support/endpoint\\.ex",
+    "test/support/gettext\\.ex"
+  ]
+}

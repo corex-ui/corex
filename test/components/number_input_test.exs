@@ -1,7 +1,16 @@
 defmodule Corex.NumberInputTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
+  alias Corex.NumberInput
   alias Corex.NumberInput.Connect
+
+  describe "number_input/1" do
+    test "renders" do
+      html = render_component(&NumberInput.number_input/1, [])
+      assert html =~ ~r/data-scope="number-input"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

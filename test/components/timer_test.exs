@@ -1,7 +1,15 @@
 defmodule Corex.TimerTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Timer.Connect
+
+  describe "timer/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_timer/1, [])
+      assert html =~ ~r/data-scope="timer"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

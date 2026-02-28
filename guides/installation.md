@@ -63,6 +63,30 @@ mix phx.new my_app
 
 ## Dependencies
 
+You can add Corex via Igniter (recommended) or manually.
+
+### Via Igniter
+
+From your Phoenix app:
+
+```bash
+mix igniter.install corex
+```
+
+The installer shows a diff and prompts for confirmation. Add `--yes` to apply changes without prompting:
+
+```bash
+mix igniter.install corex --yes
+```
+
+To use a local Corex source (e.g. when developing Corex or testing before a Hex release):
+
+```bash
+mix igniter.install corex@path:../corex
+```
+
+### Manual
+
 Add `corex` to your `mix.exs` dependencies:
 
 ```elixir

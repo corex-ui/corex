@@ -1,0 +1,4 @@
+## This is a PO Template file.
+## Run `mix gettext.extract` to bring this file up to date.
+msgid ""
+msgstr ""

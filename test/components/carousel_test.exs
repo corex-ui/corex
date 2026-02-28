@@ -1,7 +1,15 @@
 defmodule Corex.CarouselTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Carousel.Connect
+
+  describe "carousel/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_carousel/1, [])
+      assert html =~ ~r/data-scope="carousel"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

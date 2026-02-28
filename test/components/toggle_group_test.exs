@@ -1,8 +1,16 @@
 defmodule Corex.ToggleGroupTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.ToggleGroup
   alias Corex.ToggleGroup.Connect
+
+  describe "toggle_group/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_toggle_group/1, [])
+      assert html =~ ~r/data-scope="toggle-group"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_value/2" do
     test "returns JS command with single value" do

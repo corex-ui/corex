@@ -47,8 +47,6 @@ defmodule Mix.Tasks.Corex.Code do
     validate_makeup!()
     validate_path!(full_path, force)
     generate!(full_path)
-
-    Mix.shell().info("Makeup stylesheet written to: #{path}")
   end
 
   defp validate_makeup! do

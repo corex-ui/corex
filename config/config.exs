@@ -10,6 +10,13 @@ config :phoenix,
   trim_on_html_eex_engine: false,
   sort_verified_routes_query_params: true
 
+if Mix.env() == :test do
+  config :corex, CorexTest.Endpoint,
+    http: [port: 4002],
+    secret_key_base: "test_secret_key_base_for_component_tests_only",
+    server: false
+end
+
 if Mix.env() == :dev do
   corex_externals =
     ~w(accordion angle-slider avatar carousel checkbox clipboard collapsible combobox color-picker date-picker dialog editable floating-panel listbox marquee menu number-input password-input pin-input radio-group select signature-pad switch tabs timer toast toggle-group tree-view)
