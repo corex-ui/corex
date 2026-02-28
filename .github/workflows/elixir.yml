@@ -41,6 +41,9 @@ jobs:
     - name: Install Phoenix archive
       run: mix archive.install hex phx_new --force
 
+    - name: Install Igniter archive
+      run: mix archive.install hex igniter --force
+
     - name: Run tests and post coverage to Coveralls
       run: mix coveralls.github
 

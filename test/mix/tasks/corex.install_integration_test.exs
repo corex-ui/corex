@@ -20,7 +20,9 @@ defmodule Mix.Tasks.Corex.InstallIntegrationTest do
           "--no-ecto",
           "--no-mailer",
           "--no-install"
-        ], cd: File.cwd!())
+        ],
+        cd: File.cwd!()
+      )
 
     env = System.get_env() |> Map.put("MIX_ENV", "dev") |> Map.to_list()
     {_, 0} = System.cmd("mix", ["deps.get"], cd: project_dir, env: env)
