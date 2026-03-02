@@ -11,7 +11,7 @@ defmodule Corex.IgniterTest do
       igniter = phx_test_project(app_name: :phx_setup)
       result = Corex.Igniter.run_setup_phase(igniter, design: false)
 
-      assert {_project_path, _web_path, _web_namespace, _web_app_str} =
+      assert {_project_path, _web_path, _otp_app, _web_namespace, _web_app_str} =
                result.assigns[:corex_project_paths]
     end
   end
@@ -110,7 +110,7 @@ defmodule Corex.IgniterTest do
       corex_root =
         Rewrite.source!(
           result.rewrite,
-          "lib/phx_layout_preserve_web/components/layouts/corex_root.html.heex"
+          "lib/phx_layout_preserve_web/components/core_layouts/corex_root.html.heex"
         )
 
       corex_root_content = Rewrite.Source.get(corex_root, :content)

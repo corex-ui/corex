@@ -112,10 +112,12 @@ if Code.ensure_loaded?(Igniter) do
       |> add_corex_config(web_namespace)
       |> add_rtl_config(opts)
       |> patch_app_js(app_js_path, opts)
-      |> patch_esbuild_config(config_path)
+      |> patch_esbuild_config(config_path, otp_app, preserve?)
       |> patch_root_layout(root_layout_path, web_app_str, design?, preserve?, opts)
-      |> create_corex_root(web_path, web_app_str, project_path, design?, preserve?, opts)
+      |> create_corex_root(web_path, web_app_str, project_path, otp_app, design?, preserve?, opts)
       |> add_corex_app_to_layouts(layouts_path, preserve?, design?)
+      |> add_esbuild_corex_profile(config_path, otp_app, preserve?, design?)
+      |> add_corex_mix_alias(otp_app, preserve?, design?)
       |> patch_html_helpers(web_ex_path, opts)
       |> patch_app_css(app_css_path, design?, preserve?, opts)
       |> create_corex_page(web_path, web_app_str, project_path, web_namespace, preserve?, design?)
@@ -178,12 +180,16 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     def patch_app_js(igniter, app_js_path, opts) do
-      if Igniter.exists?(igniter, app_js_path) do
+      if Keyword.get(opts, :preserve, false) do
         igniter
-        |> Igniter.include_existing_file(app_js_path, required?: false)
-        |> Igniter.update_file(app_js_path, &patch_app_js_content(&1, app_js_path, opts))
       else
-        igniter
+        if Igniter.exists?(igniter, app_js_path) do
+          igniter
+          |> Igniter.include_existing_file(app_js_path, required?: false)
+          |> Igniter.update_file(app_js_path, &patch_app_js_content(&1, app_js_path, opts))
+        else
+          igniter
+        end
       end
     end
 
@@ -235,10 +241,14 @@ if Code.ensure_loaded?(Igniter) do
       end
     end
 
-    def patch_esbuild_config(igniter, config_path) do
-      igniter
-      |> Igniter.include_existing_file(config_path, required?: true)
-      |> Igniter.update_file(config_path, &patch_esbuild_content(&1, config_path))
+    def patch_esbuild_config(igniter, config_path, _otp_app, preserve?) do
+      if preserve? do
+        igniter
+      else
+        igniter
+        |> Igniter.include_existing_file(config_path, required?: true)
+        |> Igniter.update_file(config_path, &patch_esbuild_content(&1, config_path))
+      end
     end
 
     defp patch_esbuild_content(source, config_path) do
@@ -279,35 +289,38 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     def add_corex_app_to_layouts(igniter, layouts_path, preserve?, design?) do
-      if Igniter.exists?(igniter, layouts_path) do
-        igniter
-        |> Igniter.include_existing_file(layouts_path, required?: false)
-        |> Igniter.update_file(
-          layouts_path,
-          &update_layouts_content(&1, layouts_path, preserve?, design?),
-          required?: false
-        )
-      else
-        igniter
-      end
-    end
-
-    defp update_layouts_content(source, layouts_path, preserve?, design?) do
       if preserve? do
-        add_corex_app_function(source, layouts_path, design?)
+        igniter
       else
-        replace_app_and_remove_theme_toggle(source, layouts_path, design?)
+        if Igniter.exists?(igniter, layouts_path) do
+          igniter
+          |> Igniter.include_existing_file(layouts_path, required?: false)
+          |> Igniter.update_elixir_file(
+            layouts_path,
+            &update_layouts_zipper(&1, layouts_path, preserve?, design?),
+            required?: false
+          )
+        else
+          igniter
+        end
       end
     end
 
-    defp add_corex_app_function(source, layouts_path, design?) do
-      if source.content =~ ~r/def corex_app\(/ do
-        Rewrite.Source.update(source, :content, source.content)
+    defp update_layouts_zipper(zipper, layouts_path, preserve?, design?) do
+      if preserve? do
+        add_corex_app_zipper(zipper, layouts_path, design?)
+      else
+        replace_app_and_remove_theme_toggle_zipper(zipper, layouts_path, design?)
+      end
+    end
+
+    defp add_corex_app_zipper(zipper, layouts_path, design?) do
+      if has_corex_app?(zipper) do
+        {:ok, zipper}
       else
         toast_block = toast_group_block(design?)
 
-        corex_app_fn = """
-
+        corex_app_code = """
           attr :flash, :map, required: true, doc: "the map of flash messages"
 
           def corex_app(assigns) do
@@ -324,18 +337,25 @@ if Code.ensure_loaded?(Igniter) do
           end
         """
 
-        new_content = String.replace(source.content, ~r/\nend\s*\z/, corex_app_fn <> "\nend\n")
-
-        if new_content == source.content do
-          {:warning,
-           Igniter.Util.Warning.formatted_warning(
-             "Could not add corex_app to #{layouts_path}. Add manually before the final `end`:",
-             corex_app_fn
-           )}
+        with {:ok, zipper} <- Igniter.Code.Module.move_to_defmodule(zipper),
+             {:ok, zipper} <- Igniter.Code.Common.move_to_do_block(zipper),
+             zipper <- Igniter.Code.Common.rightmost(zipper),
+             zipper <- Igniter.Code.Common.add_code(zipper, corex_app_code, placement: :after) do
+          {:ok, zipper}
         else
-          Rewrite.Source.update(source, :content, new_content)
+          _ ->
+            {:warning,
+             Igniter.Util.Warning.formatted_warning(
+               "Could not add corex_app to #{layouts_path}. Add manually before the final `end`:",
+               corex_app_code
+             )}
         end
       end
+    end
+
+    defp has_corex_app?(zipper) do
+      str = Sourceror.Zipper.root(zipper) |> Sourceror.to_string()
+      str =~ ~r/def corex_app\(/
     end
 
     defp toast_group_block(design?) do
@@ -364,17 +384,17 @@ if Code.ensure_loaded?(Igniter) do
       """
     end
 
-    defp replace_app_and_remove_theme_toggle(source, layouts_path, design?) do
-      content = source.content
+    defp replace_app_and_remove_theme_toggle_zipper(zipper, layouts_path, design?) do
+      content = Sourceror.Zipper.root(zipper) |> Sourceror.to_string()
 
       if content =~ ~r/def app\(assigns\) do[\s\S]*?id="layout-toast"/ do
-        Rewrite.Source.update(source, :content, content)
+        {:ok, zipper}
       else
-        do_replace_app_and_remove_theme_toggle(source, layouts_path, design?, content)
+        do_replace_app_and_remove_theme_toggle_zipper(zipper, layouts_path, design?)
       end
     end
 
-    defp do_replace_app_and_remove_theme_toggle(source, layouts_path, design?, content) do
+    defp do_replace_app_and_remove_theme_toggle_zipper(zipper, layouts_path, design?) do
       toast_block = toast_group_block(design?)
 
       corex_app_body =
@@ -387,36 +407,51 @@ if Code.ensure_loaded?(Igniter) do
           "    </main>\n" <>
           "    </div>"
 
-      li_regex = ~r/\s*<li>\s*<\.theme_toggle \/>\s*<\/li>/
+      content = Sourceror.Zipper.root(zipper) |> Sourceror.to_string()
+      content_without_flash = remove_flash_group(content)
 
-      theme_toggle_fn =
-        ~r/\n  @doc """\s*\n  Provides dark vs light theme toggle[\s\S]*?def theme_toggle\(assigns\) do\s*\n    ~H"""\s*\n[\s\S]*?data-phx-theme[\s\S]*?"""\s*\n  end/
+      zipper =
+        content_without_flash
+        |> Sourceror.parse_string!()
+        |> Sourceror.Zipper.zip()
+        |> Igniter.Code.Common.remove(theme_toggle_predicate())
 
-      theme_toggle_fn_alt =
-        ~r/\n  @doc """\s*\n  Provides dark vs light theme toggle[\s\S]*?def theme_toggle\(assigns\) do\s*\n    ~H"""\s*\n[\s\S]*?phx-click=[^>]*>[\s\S]*?"""\s*\n  end/
+      result = apply_layout_replacements(zipper, corex_app_body)
 
-      app_def_regex = ~r/(def app\(assigns\) do\s*\n\s*~H""")[\s\S]*?("""\s*\n\s*end)/
-      slot_regex = ~r/slot :inner_block, required: true/
-
-      content_without_flash_group = remove_flash_group(content)
-
-      updated =
-        content_without_flash_group
-        |> String.replace(slot_regex, "slot :inner_block")
-        |> String.replace(li_regex, "")
-        |> String.replace(theme_toggle_fn, "")
-        |> String.replace(theme_toggle_fn_alt, "")
-        |> String.replace(app_def_regex, "\\1\n#{corex_app_body}\n\\2")
-
-      if updated == content_without_flash_group do
+      if result == content_without_flash do
         {:warning,
          Igniter.Util.Warning.formatted_warning(
            "Could not replace app and remove theme_toggle in #{layouts_path}.",
            ~s|# Replace def app/1 body with Corex layout|
          )}
       else
-        Rewrite.Source.update(source, :content, updated)
+        {:ok, result |> Sourceror.parse_string!() |> Sourceror.Zipper.zip()}
       end
+    end
+
+    defp theme_toggle_predicate do
+      fn z ->
+        node = Sourceror.Zipper.node(z)
+
+        cond do
+          match?({:def, _, [{:theme_toggle, _, _} | _]}, node) -> true
+          match?({:@, _, [{:doc, _, _} | _]}, node) -> next_def_name(z) == :theme_toggle
+          true -> false
+        end
+      end
+    end
+
+    defp apply_layout_replacements(zipper, corex_app_body) do
+      slot_regex = ~r/slot :inner_block, required: true/
+      li_regex = ~r/\s*<li>\s*<\.theme_toggle \/>\s*<\/li>/
+      app_def_regex = ~r/(def app\(assigns\) do\s*\n\s*~H""")[\s\S]*?("""\s*\n\s*end)/
+
+      zipper
+      |> Sourceror.Zipper.root()
+      |> Sourceror.to_string()
+      |> String.replace(slot_regex, "slot :inner_block")
+      |> String.replace(li_regex, "")
+      |> String.replace(app_def_regex, "\\1\n#{corex_app_body}\n\\2")
     end
 
     defp remove_flash_group(content) do
@@ -576,26 +611,38 @@ if Code.ensure_loaded?(Igniter) do
       if Igniter.exists?(igniter, rel_test) do
         igniter
         |> Igniter.include_existing_file(rel_test, required?: false)
-        |> Igniter.update_file(rel_test, &patch_page_controller_test_content/1, required?: false)
+        |> Igniter.update_elixir_file(
+          rel_test,
+          &patch_page_controller_test_zipper/1,
+          required?: false
+        )
       else
         igniter
       end
     end
 
-    defp patch_page_controller_test_content(source) do
-      content = source.content
+    defp patch_page_controller_test_zipper(zipper) do
+      phoenix_assertion_str =
+        ~s|assert html_response(conn, 200) =~ "Peace of mind from prototype to production"|
 
-      phoenix_assertion =
-        ~r/assert html_response\(conn, 200\) =~ "Peace of mind from prototype to production"/
+      corex_assertions_code = """
+      assert html_response(conn, 200) =~ "Build"
+      assert html_response(conn, 200) =~ "Corex"
+      """
 
-      corex_assertions =
-        "assert html_response(conn, 200) =~ \"Build\"\n    assert html_response(conn, 200) =~ \"Corex\""
+      pred = fn z ->
+        str = Sourceror.to_string(z)
+        str == phoenix_assertion_str or String.trim(str) == phoenix_assertion_str
+      end
 
-      if content =~ phoenix_assertion do
-        new_content = String.replace(content, phoenix_assertion, corex_assertions)
-        Rewrite.Source.update(source, :content, new_content)
-      else
-        Rewrite.Source.update(source, :content, content)
+      fun = fn _z ->
+        new_ast = Sourceror.parse_string!(corex_assertions_code)
+        {:code, new_ast}
+      end
+
+      case Igniter.Code.Common.update_all_matches(zipper, pred, fun) do
+        {:ok, updated} -> {:ok, updated}
+        other -> other
       end
     end
 
@@ -606,19 +653,23 @@ if Code.ensure_loaded?(Igniter) do
            design?,
            preserve?
          ) do
-      if Igniter.exists?(igniter, page_controller_path) and design? do
-        layout_module = Module.concat([web_namespace, Layouts])
-        layout_name = if preserve?, do: :corex_app, else: :app
-
+      if preserve? do
         igniter
-        |> Igniter.include_existing_file(page_controller_path, required?: false)
-        |> Igniter.update_elixir_file(
-          page_controller_path,
-          &patch_home_action_zipper(&1, layout_module, layout_name),
-          required?: false
-        )
       else
-        igniter
+        if Igniter.exists?(igniter, page_controller_path) and design? do
+          layout_module = Module.concat([web_namespace, Layouts])
+          layout_name = if preserve?, do: :corex_app, else: :app
+
+          igniter
+          |> Igniter.include_existing_file(page_controller_path, required?: false)
+          |> Igniter.update_elixir_file(
+            page_controller_path,
+            &patch_home_action_zipper(&1, layout_module, layout_name),
+            required?: false
+          )
+        else
+          igniter
+        end
       end
     end
 
@@ -710,7 +761,10 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp corex_page_action_insert(layout_module, true) do
-      "  def corex_page(conn, _params) do\n    conn\n    |> put_root_layout(html: {#{inspect(layout_module)}, :corex_root})\n    |> put_layout(html: {#{inspect(layout_module)}, :corex_app})\n    |> render(:corex_page)\n  end\n\n  "
+      [web_ns | _] = Module.split(layout_module)
+      corex_layouts = Module.concat([web_ns, "CorexLayouts"])
+
+      "  def corex_page(conn, _params) do\n    conn\n    |> put_root_layout(html: {#{inspect(corex_layouts)}, :corex_root})\n    |> put_layout(html: {#{inspect(corex_layouts)}, :root})\n    |> render(:corex_page)\n  end\n\n  "
     end
 
     defp corex_page_action_insert(layout_module, false) do
@@ -718,7 +772,10 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     defp corex_page_action_manual(layout_module, true) do
-      "def corex_page(conn, _params) do\n  conn\n  |> put_root_layout(html: {#{inspect(layout_module)}, :corex_root})\n  |> put_layout(html: {#{inspect(layout_module)}, :corex_app})\n  |> render(:corex_page)\nend"
+      [web_ns | _] = Module.split(layout_module)
+      corex_layouts = Module.concat([web_ns, "CorexLayouts"])
+
+      "def corex_page(conn, _params) do\n  conn\n  |> put_root_layout(html: {#{inspect(corex_layouts)}, :corex_root})\n  |> put_layout(html: {#{inspect(corex_layouts)}, :root})\n  |> render(:corex_page)\nend"
     end
 
     defp corex_page_action_manual(layout_module, false) do
@@ -731,22 +788,18 @@ if Code.ensure_loaded?(Igniter) do
            web_app_str,
            project_path,
            web_namespace,
-           preserve?
+           _preserve?
          ) do
-      unless preserve? do
-        igniter
-      else
-        router_path = Path.join([web_path, "lib", web_app_str, "router.ex"])
-        rel_router = Path.relative_to(router_path, project_path)
-        router = Module.concat([web_namespace, Router])
+      router_path = Path.join([web_path, "lib", web_app_str, "router.ex"])
+      rel_router = Path.relative_to(router_path, project_path)
+      router = Module.concat([web_namespace, Router])
 
-        if Igniter.exists?(igniter, rel_router) do
-          igniter
-          |> Igniter.include_existing_file(rel_router, required?: false)
-          |> replace_root_route_with_append(rel_router, router, web_namespace)
-        else
-          igniter
-        end
+      if Igniter.exists?(igniter, rel_router) do
+        igniter
+        |> Igniter.include_existing_file(rel_router, required?: false)
+        |> replace_root_route_with_append(rel_router, router, web_namespace)
+      else
+        igniter
       end
     end
 
@@ -804,25 +857,289 @@ if Code.ensure_loaded?(Igniter) do
       end
     end
 
-    def create_corex_root(igniter, web_path, web_app_str, project_path, design?, preserve?, opts) do
+    def create_corex_root(
+          igniter,
+          web_path,
+          web_app_str,
+          project_path,
+          otp_app,
+          design?,
+          preserve?,
+          opts
+        ) do
       if design? and preserve? do
-        corex_root_path =
-          Path.relative_to(
-            Path.join(web_path, "lib/#{web_app_str}/components/layouts/corex_root.html.heex"),
-            project_path
-          )
-
-        template = corex_root_template(opts)
+        web_namespace = Module.concat([Macro.camelize(to_string(otp_app)) <> "Web"])
 
         igniter
-        |> Igniter.create_or_update_file(
-          corex_root_path,
-          template,
-          fn source -> Rewrite.Source.update(source, :content, template) end
-        )
-        |> Igniter.add_notice("* creating corex_root.html.heex")
+        |> create_corex_layouts_module(web_path, web_app_str, project_path, web_namespace)
+        |> create_corex_layouts_templates(web_path, web_app_str, project_path, opts)
+        |> create_corex_app_css(web_path, web_app_str, project_path)
+        |> create_corex_app_js(web_path, project_path, otp_app)
+        |> Igniter.add_notice("* creating CorexLayouts, corex_app.css, corex_app.js")
       else
         igniter
+      end
+    end
+
+    defp create_corex_layouts_module(igniter, web_path, web_app_str, project_path, web_namespace) do
+      components_dir = Path.join(web_path, "lib/#{web_app_str}/components")
+
+      core_layouts_path =
+        Path.relative_to(Path.join(components_dir, "core_layouts.ex"), project_path)
+
+      content = """
+      defmodule #{inspect(Module.concat([web_namespace, CorexLayouts]))} do
+        @moduledoc false
+        use #{inspect(web_namespace)}, :html
+
+        embed_templates "core_layouts/*"
+      end
+      """
+
+      Igniter.create_or_update_file(
+        igniter,
+        core_layouts_path,
+        content,
+        fn source -> Rewrite.Source.update(source, :content, content) end
+      )
+    end
+
+    defp create_corex_layouts_templates(igniter, web_path, web_app_str, project_path, opts) do
+      core_layouts_dir = Path.join(web_path, "lib/#{web_app_str}/components/core_layouts")
+
+      corex_root_path =
+        Path.relative_to(Path.join(core_layouts_dir, "corex_root.html.heex"), project_path)
+
+      root_path = Path.relative_to(Path.join(core_layouts_dir, "root.html.heex"), project_path)
+
+      corex_root_content = corex_root_template_for_preserve(opts)
+      root_content = corex_layout_root_content()
+
+      igniter
+      |> Igniter.mkdir(core_layouts_dir)
+      |> Igniter.create_or_update_file(corex_root_path, corex_root_content, fn s ->
+        Rewrite.Source.update(s, :content, corex_root_content)
+      end)
+      |> Igniter.create_or_update_file(root_path, root_content, fn s ->
+        Rewrite.Source.update(s, :content, root_content)
+      end)
+    end
+
+    defp corex_root_template_for_preserve(opts) do
+      mode_script_block = if Keyword.get(opts, :mode), do: mode_script(), else: ""
+      theme_script_block = if theme = Keyword.get(opts, :theme), do: theme_script(theme), else: ""
+      scripts = mode_script_block <> theme_script_block
+
+      """
+      <!DOCTYPE html>
+      <html lang="en" data-theme="neo" data-mode="light">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <meta name="csrf-token" content={get_csrf_token()} />
+          <.live_title default="" suffix="">
+            {assigns[:page_title]}
+          </.live_title>
+          <link phx-track-static rel="stylesheet" href={~p"/assets/css/corex_app.css"} />
+          <script defer phx-track-static type="module" src={~p"/assets/js/corex_app.js"}>
+          </script>
+          #{String.trim(scripts)}
+        </head>
+        <body class="typo layout">
+          {@inner_content}
+        </body>
+      </html>
+      """
+    end
+
+    defp corex_layout_root_content do
+      """
+      <div class="typo layout">
+        <.toast_group id="layout-toast" class="toast" flash={@flash}>
+          <:loading>
+            <.icon name="hero-arrow-path" />
+          </:loading>
+        </.toast_group>
+        <.toast_client_error
+          toast_group_id="layout-toast"
+          title={gettext("We can't find the internet")}
+          description={gettext("Attempting to reconnect")}
+          type={:error}
+          duration={:infinity}
+        />
+        <.toast_server_error
+          toast_group_id="layout-toast"
+          title={gettext("Something went wrong!")}
+          description={gettext("Attempting to reconnect")}
+          type={:error}
+          duration={:infinity}
+        />
+        <main class="layout__main">
+          <div class="layout__content">
+            {assigns[:inner_content] || render_slot(@inner_block)}
+          </div>
+        </main>
+      </div>
+      """
+    end
+
+    defp create_corex_app_css(igniter, web_path, web_app_str, project_path) do
+      corex_app_css_path =
+        Path.relative_to(Path.join(web_path, "assets/css/corex_app.css"), project_path)
+
+      content = """
+      @import "tailwindcss" source(none);
+      @source "../css";
+      @source "../js";
+      @source "../../lib/#{web_app_str}";
+
+      @import "../corex/main.css";
+      @import "../corex/tokens/themes/neo/light.css";
+      @import "../corex/components/typo.css";
+      @import "../corex/components/button.css";
+      @import "../corex/components/toast.css";
+
+      @plugin "../vendor/heroicons";
+      @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
+      @custom-variant phx-submit-loading (.phx-submit-loading&, .phx-submit-loading &);
+      @custom-variant phx-change-loading (.phx-change-loading&, .phx-change-loading &);
+      @custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
+      [data-phx-session], [data-phx-teleported-src] { display: contents }
+      """
+
+      Igniter.create_or_update_file(
+        igniter,
+        corex_app_css_path,
+        content,
+        fn source -> Rewrite.Source.update(source, :content, content) end
+      )
+    end
+
+    defp create_corex_app_js(igniter, web_path, project_path, otp_app) do
+      corex_app_js_path =
+        Path.relative_to(Path.join(web_path, "assets/js/corex_app.js"), project_path)
+
+      app_str = to_string(otp_app)
+
+      content = """
+      import "phoenix_html"
+      import {Socket} from "phoenix"
+      import {LiveSocket} from "phoenix_live_view"
+      import {hooks as colocatedHooks} from "phoenix-colocated/#{app_str}"
+      import corex from "corex"
+      import topbar from "../vendor/topbar"
+
+      const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+      const liveSocket = new LiveSocket("/live", Socket, {
+        longPollFallbackMs: 2500,
+        params: {_csrf_token: csrfToken},
+        hooks: {...colocatedHooks, ...corex},
+      })
+
+      topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
+      window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
+      window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
+      liveSocket.connect()
+      window.liveSocket = liveSocket
+
+      if (process.env.NODE_ENV === "development") {
+        window.addEventListener("phx:live_reload:attached", ({detail: reloader}) => {
+          reloader.enableServerLogs()
+        })
+      }
+      """
+
+      Igniter.create_or_update_file(
+        igniter,
+        corex_app_js_path,
+        content,
+        fn source -> Rewrite.Source.update(source, :content, content) end
+      )
+    end
+
+    def add_esbuild_corex_profile(igniter, config_path, otp_app, preserve?, design?) do
+      if design? and preserve? do
+        profile_name = String.to_atom("#{otp_app}_corex")
+
+        igniter
+        |> Igniter.include_existing_file(config_path, required?: true)
+        |> Igniter.update_elixir_file(config_path, &add_esbuild_profile_zipper(&1, profile_name))
+      else
+        igniter
+      end
+    end
+
+    defp add_esbuild_profile_zipper(zipper, profile_name) do
+      if Igniter.Project.Config.configures_key?(zipper, :esbuild, profile_name) do
+        {:ok, zipper}
+      else
+        profile_value =
+          Sourceror.parse_string!("""
+          [
+            args:
+              ~w(js/corex_app.js --bundle --format=esm --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+            cd: Path.expand("../assets", __DIR__),
+            env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+          ]
+          """)
+
+        with {:ok, zipper} <-
+               Igniter.Code.Function.move_to_function_call_in_current_scope(
+                 zipper,
+                 :config,
+                 [2, 3],
+                 &Igniter.Code.Function.argument_equals?(&1, 0, :esbuild)
+               ),
+             {:ok, zipper} <- Igniter.Code.Function.move_to_nth_argument(zipper, 1),
+             true <- Igniter.Code.List.list?(zipper),
+             {:ok, zipper} <-
+               Igniter.Code.Keyword.put_in_keyword(
+                 zipper,
+                 [profile_name],
+                 profile_value,
+                 nil
+               ) do
+          {:ok, zipper}
+        else
+          _ -> {:ok, zipper}
+        end
+      end
+    end
+
+    def add_corex_mix_alias(igniter, otp_app, preserve?, design?) do
+      if design? and preserve? do
+        mix_exs_path = "mix.exs"
+        profile_name = "#{otp_app}_corex"
+
+        igniter
+        |> Igniter.include_existing_file(mix_exs_path, required?: true)
+        |> Igniter.update_elixir_file(mix_exs_path, &add_corex_alias_zipper(&1, profile_name))
+      else
+        igniter
+      end
+    end
+
+    defp add_corex_alias_zipper(zipper, profile_name) do
+      esbuild_build = Sourceror.parse_string!("\"esbuild #{profile_name}\"")
+      esbuild_deploy = Sourceror.parse_string!("\"esbuild #{profile_name} --minify\"")
+
+      with {:ok, zipper} <- Igniter.Code.Module.move_to_module_using(zipper, Mix.Project),
+           {:ok, zipper} <- Igniter.Code.Function.move_to_defp(zipper, :aliases, 0),
+           zipper <- Igniter.Code.Common.maybe_move_to_single_child_block(zipper),
+           true <- Igniter.Code.List.list?(zipper),
+           {:ok, _} <- Igniter.Code.Keyword.get_key(zipper, :"assets.build"),
+           {:ok, zipper} <-
+             Igniter.Code.Keyword.put_in_keyword(zipper, [:"assets.build"], nil, fn zipper ->
+               Igniter.Code.List.append_new_to_list(zipper, esbuild_build)
+             end),
+           {:ok, _} <- Igniter.Code.Keyword.get_key(zipper, :"assets.deploy"),
+           {:ok, zipper} <-
+             Igniter.Code.Keyword.put_in_keyword(zipper, [:"assets.deploy"], nil, fn zipper ->
+               Igniter.Code.List.append_new_to_list(zipper, esbuild_deploy)
+             end) do
+        {:ok, zipper}
+      else
+        _ -> {:ok, zipper}
       end
     end
 
@@ -1128,16 +1445,20 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     def patch_app_css(igniter, app_css_path, design?, preserve?, _opts) do
-      if Igniter.exists?(igniter, app_css_path) and design? do
+      if preserve? do
         igniter
-        |> Igniter.include_existing_file(app_css_path, required?: false)
-        |> Igniter.update_file(
-          app_css_path,
-          &patch_app_css_content(&1, design?, preserve?),
-          required?: false
-        )
       else
-        igniter
+        if Igniter.exists?(igniter, app_css_path) and design? do
+          igniter
+          |> Igniter.include_existing_file(app_css_path, required?: false)
+          |> Igniter.update_file(
+            app_css_path,
+            &patch_app_css_content(&1, design?, preserve?),
+            required?: false
+          )
+        else
+          igniter
+        end
       end
     end
 
@@ -1258,14 +1579,14 @@ if Code.ensure_loaded?(Igniter) do
         Map.put(
           assigns_map(igniter),
           :corex_project_paths,
-          {project_path, web_path, web_namespace, web_app_str}
+          {project_path, web_path, otp_app, web_namespace, web_app_str}
         )
 
       %{igniter | assigns: assigns}
     end
 
     def run_config_phase(igniter, opts) do
-      {_project_path, _web_path, web_namespace, _web_app_str} =
+      {_project_path, _web_path, _otp_app, web_namespace, _web_app_str} =
         assigns_map(igniter)[:corex_project_paths]
 
       igniter
@@ -1274,23 +1595,25 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     def run_assets_phase(igniter, opts) do
-      {project_path, web_path, _web_namespace, _web_app_str} =
+      {project_path, web_path, otp_app, _web_namespace, _web_app_str} =
         assigns_map(igniter)[:corex_project_paths]
 
       app_js_path = Path.relative_to(Path.join(web_path, "assets/js/app.js"), project_path)
       config_path = Path.join("config", "config.exs")
+      preserve? = Keyword.get(opts, :preserve, false)
 
       igniter
       |> patch_app_js(app_js_path, opts)
-      |> patch_esbuild_config(config_path)
+      |> patch_esbuild_config(config_path, otp_app, preserve?)
     end
 
     def run_layout_phase(igniter, opts) do
-      {project_path, web_path, web_namespace, web_app_str} =
+      {project_path, web_path, otp_app, web_namespace, web_app_str} =
         assigns_map(igniter)[:corex_project_paths]
 
       design? = Keyword.get(opts, :design, true)
       preserve? = Keyword.get(opts, :preserve, false)
+      config_path = Path.join("config", "config.exs")
 
       root_layout_path =
         Path.relative_to(
@@ -1308,8 +1631,10 @@ if Code.ensure_loaded?(Igniter) do
 
       igniter
       |> patch_root_layout(root_layout_path, web_app_str, design?, preserve?, opts)
-      |> create_corex_root(web_path, web_app_str, project_path, design?, preserve?, opts)
+      |> create_corex_root(web_path, web_app_str, project_path, otp_app, design?, preserve?, opts)
       |> add_corex_app_to_layouts(layouts_path, preserve?, design?)
+      |> add_esbuild_corex_profile(config_path, otp_app, preserve?, design?)
+      |> add_corex_mix_alias(otp_app, preserve?, design?)
       |> patch_html_helpers(web_ex_path, opts)
       |> create_corex_page(web_path, web_app_str, project_path, web_namespace, preserve?, design?)
       |> replace_root_route(web_path, web_app_str, project_path, web_namespace, preserve?)
@@ -1317,7 +1642,7 @@ if Code.ensure_loaded?(Igniter) do
     end
 
     def run_css_phase(igniter, opts) do
-      {project_path, web_path, _web_namespace, _web_app_str} =
+      {project_path, web_path, _otp_app, _web_namespace, _web_app_str} =
         assigns_map(igniter)[:corex_project_paths]
 
       app_css_path = Path.relative_to(Path.join(web_path, "assets/css/app.css"), project_path)
@@ -1424,26 +1749,20 @@ if Code.ensure_loaded?(Igniter) do
       if Igniter.exists?(igniter, mix_path) do
         igniter
         |> Igniter.include_existing_file(mix_path, required?: true)
-        |> Igniter.update_file(mix_path, &patch_mix_gettext_dep/1)
+        |> maybe_add_gettext_dep()
       else
         igniter
       end
     end
 
-    defp patch_mix_gettext_dep(source) do
-      if source.content =~ ~r/:gettext,/ do
-        source
+    defp maybe_add_gettext_dep(igniter) do
+      if Igniter.Project.Deps.has_dep?(igniter, :gettext) do
+        igniter
       else
-        insert = ~s/      {:gettext, "~> 1.0"},/
-
-        new_content =
-          String.replace(
-            source.content,
-            ~r/\{:telemetry_poller, "~> 1\.0"\}/,
-            insert <> "\n      {:telemetry_poller, \"~> 1.0\"}"
-          )
-
-        Rewrite.Source.update(source, :content, new_content)
+        Igniter.Project.Deps.add_dep(igniter, {:gettext, "~> 1.0"},
+          append?: true,
+          on_exists: :skip
+        )
       end
     end
 

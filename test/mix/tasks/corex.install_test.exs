@@ -202,7 +202,7 @@ defmodule Mix.Tasks.Corex.InstallTest do
            "home.html.heex has Corex landing content"
   end
 
-  test "preserve creates corex_root and adds get /corex without modifying root or home" do
+  test "preserve creates CorexLayouts, corex_app.css/js and adds get /corex without modifying root or home" do
     igniter =
       phx_test_project(app_name: :phx_preserve)
       |> Igniter.compose_task("corex.install", ["--yes", "--preserve"])
@@ -210,15 +210,14 @@ defmodule Mix.Tasks.Corex.InstallTest do
     corex_root =
       Rewrite.source!(
         igniter.rewrite,
-        "lib/phx_preserve_web/components/layouts/corex_root.html.heex"
+        "lib/phx_preserve_web/components/core_layouts/corex_root.html.heex"
       )
 
     corex_root_content = Rewrite.Source.get(corex_root, :content)
     assert corex_root_content =~ ~r/data-theme=/
     assert corex_root_content =~ ~r/data-mode=/
-
-    refute corex_root_content =~ ~r/phx:set-theme/,
-           "corex_root should not have theme script when no --theme"
+    assert corex_root_content =~ ~r/corex_app\.css/
+    assert corex_root_content =~ ~r/corex_app\.js/
 
     root_source =
       Rewrite.source!(igniter.rewrite, "lib/phx_preserve_web/components/layouts/root.html.heex")
@@ -238,22 +237,26 @@ defmodule Mix.Tasks.Corex.InstallTest do
     assert router_content =~ ~r/get\s*\(?\s*"\/"\s*,\s*PageController\s*,\s*:home\s*\)?/,
            "home route should be kept when preserve"
 
-    layouts_source =
+    layouts_content =
       Rewrite.source!(igniter.rewrite, "lib/phx_preserve_web/components/layouts.ex")
+      |> Rewrite.Source.get(:content)
 
-    layouts_content = Rewrite.Source.get(layouts_source, :content)
+    refute layouts_content =~ ~r/corex_app/,
+           "layouts.ex should not have corex_app when preserve"
 
-    assert layouts_content =~ ~r/toast_group/,
-           "corex_app uses toast_group"
+    corex_app_css =
+      Rewrite.source!(igniter.rewrite, "assets/css/corex_app.css")
+      |> Rewrite.Source.get(:content)
 
-    css_source = Rewrite.source!(igniter.rewrite, "assets/css/app.css")
-    css_content = Rewrite.Source.get(css_source, :content)
+    assert corex_app_css =~ ~r/@import "\.\.\/corex\/main\.css"/,
+           "corex_app.css should have Corex imports"
 
-    assert css_content =~ ~r/@import "\.\.\/corex\/main\.css"/,
-           "Corex imports should be added"
+    core_layouts =
+      Rewrite.source!(igniter.rewrite, "lib/phx_preserve_web/components/core_layouts.ex")
+      |> Rewrite.Source.get(:content)
 
-    assert css_content =~ ~r/@import "\.\.\/corex\/components\/toast\.css"/,
-           "toast.css should be added when design"
+    assert core_layouts =~ ~r/CorexLayouts/
+    assert core_layouts =~ ~r/embed_templates "core_layouts\/\*"/
   end
 
   test "install with --only uses hooks import and use Corex only" do

@@ -14,10 +14,14 @@ if Code.ensure_loaded?(Igniter) do
 
         mix igniter.install corex@path:../corex
 
+    By default, Corex overrides root layout, layouts, and DaisyUI (convenient for new projects).
+    Use `--preserve` to keep your layouts, app.css, app.js, and DaisyUI; Corex adds its own
+    CorexLayouts, corex_app.css, corex_app.js, and /corex route.
+
     ## Options
 
       * `--no-design` - skip copying Corex design files (does not touch daisyUI or add data-theme/data-mode)
-      * `--preserve` - create corex_root and get "/corex" without modifying root layout, home route, or DaisyUI
+      * `--preserve` - keep your layouts, app.css, app.js, DaisyUI; create CorexLayouts, corex_app.css/js, get "/corex"
       * `--designex` - include design tokens and build scripts in design/
       * `--mode` - enable light/dark mode (plug, script, toggle)
       * `--theme THEMES` - colon-separated themes (e.g. neo:uno). At least 2 values.
