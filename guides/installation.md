@@ -1,5 +1,11 @@
 # Installation
 
+![Hex.pm License](https://img.shields.io/hexpm/l/corex) 
+![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
+[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=corex-install)](https://coveralls.io/github/corex-ui/corex?branch=corex-install)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
+
 ## Introduction
 Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
 
