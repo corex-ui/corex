@@ -36,4 +36,5 @@ corex-*.tar
 /installer/
 
 /integration_test/
+
 /my_app/

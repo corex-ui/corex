@@ -77,8 +77,6 @@ mix local.phx
 mix phx.new my_app
 ```
 
-## Dependencies
-
 Add `corex` to your `mix.exs` dependencies:
 
 ```elixir
