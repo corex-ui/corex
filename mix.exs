@@ -53,7 +53,6 @@ defmodule Corex.MixProject do
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
-      {:igniter, ">= 0.6.0 and < 1.0.0-0", only: [:dev, :test]},
       {:tidewave, "~> 0.5.5", only: :dev},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
