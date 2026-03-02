@@ -1,6 +1,6 @@
-defmodule Phx.New.Project do
+defmodule Corex.New.Project do
   @moduledoc false
-  alias Phx.New.Project
+  alias Corex.New.Project
 
   defstruct base_path: nil,
             app: nil,

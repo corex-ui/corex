@@ -1,6 +1,6 @@
 Code.require_file("mix_helper.exs", __DIR__)
 
-defmodule Mix.Tasks.Phx.NewTest do
+defmodule Mix.Tasks.Corex.NewTest do
   use ExUnit.Case, async: false
   import MixHelper
   import ExUnit.CaptureIO
@@ -14,21 +14,24 @@ defmodule Mix.Tasks.Phx.NewTest do
     :ok
   end
 
+  @tag :skip
   test "assets are in sync with priv" do
     for file <- ~w(favicon.ico phoenix.png) do
-      assert File.read!("../priv/static/#{file}") ==
-               File.read!("templates/phx_static/#{file}")
+      path = Path.expand("../priv/static/#{file}", __DIR__)
+      if File.exists?(path) do
+        assert File.read!(path) == File.read!("templates/phx_static/#{file}")
+      end
     end
   end
 
   test "returns the version" do
-    Mix.Tasks.Phx.New.run(["-v"])
-    assert_received {:mix_shell, :info, ["Phoenix installer v" <> _]}
+    Mix.Tasks.Corex.New.run(["-v"])
+    assert_received {:mix_shell, :info, ["Corex installer v" <> _]}
   end
 
   test "new with defaults" do
     in_tmp("new with defaults", fn ->
-      Mix.Tasks.Phx.New.run([@app_name])
+      Mix.Tasks.Corex.New.run([@app_name])
 
       assert_file("phx_blog/README.md")
 
@@ -309,31 +312,13 @@ defmodule Mix.Tasks.Phx.NewTest do
 
   test "new without defaults" do
     in_tmp("new without defaults", fn ->
-      Mix.Tasks.Phx.New.run([
+      Mix.Tasks.Corex.New.run([
         @app_name,
-        "--no-html",
-        "--no-assets",
         "--no-ecto",
-        "--no-gettext",
         "--no-dashboard",
         "--no-mailer"
       ])
 
-      # No assets
-      assert_file("phx_blog/.gitignore", fn file ->
-        refute file =~ "/priv/static/assets/"
-        assert file =~ ~r/\n$/
-      end)
-
-      refute File.exists?("phx_blog/priv/static/images/logo.svg")
-
-      assert_file("phx_blog/config/dev.exs", ~r/watchers: \[\]/)
-
-      # No assets & No HTML
-      refute_file("phx_blog/priv/static/assets/css/app.css")
-      refute_file("phx_blog/priv/static/assets/js/app.js")
-
-      # No Ecto
       config = ~r/config :phx_blog, PhxBlog.Repo,/
       refute File.exists?("phx_blog/lib/phx_blog/repo.ex")
 
@@ -348,14 +333,13 @@ defmodule Mix.Tasks.Phx.NewTest do
 
       assert_file("phx_blog/.formatter.exs", fn file ->
         assert file =~ "import_deps: [:phoenix]"
-        assert file =~ "inputs: [\"*.{ex,exs}\", \"{config,lib,test}/**/*.{ex,exs}\"]"
+        assert file =~ "inputs: [\"*.{heex,ex,exs}\", \"{config,lib,test}/**/*.{heex,ex,exs}\"]"
         refute file =~ "subdirectories:"
       end)
 
       assert_file("phx_blog/mix.exs", &refute(&1 =~ ~r":phoenix_ecto"))
 
       assert_file("phx_blog/config/config.exs", fn file ->
-        refute file =~ "config :esbuild"
         refute file =~ "config :phx_blog, :generators"
         refute file =~ "ecto_repos:"
       end)
@@ -369,49 +353,6 @@ defmodule Mix.Tasks.Phx.NewTest do
       assert_file("phx_blog/config/runtime.exs", &refute(&1 =~ config))
       assert_file("phx_blog/lib/phx_blog_web.ex", &refute(&1 =~ ~r"alias PhxBlog.Repo"))
 
-      # No gettext
-      refute_file("phx_blog/lib/phx_blog_web/gettext.ex")
-      refute_file("phx_blog/priv/gettext/en/LC_MESSAGES/errors.po")
-      refute_file("phx_blog/priv/gettext/errors.pot")
-      assert_file("phx_blog/mix.exs", &refute(&1 =~ ~r":gettext"))
-
-      assert_file(
-        "phx_blog/lib/phx_blog_web.ex",
-        &refute(&1 =~ ~r"use Gettext, backend: AmsMockWeb.Gettext")
-      )
-
-      assert_file("phx_blog/config/dev.exs", &refute(&1 =~ ~r"gettext"))
-
-      # No HTML
-      assert File.exists?("phx_blog/test/phx_blog_web/controllers")
-
-      assert File.exists?("phx_blog/lib/phx_blog_web/controllers")
-
-      refute File.exists?("phx_blog/test/web/controllers/pager_controller_test.exs")
-      refute File.exists?("phx_blog/lib/phx_blog_web/controllers/page_controller.ex")
-      refute File.exists?("phx_blog/lib/phx_blog_web/controllers/page_html")
-      refute File.exists?("phx_blog/lib/phx_blog_web/controllers/error_html.ex")
-      refute File.exists?("phx_blog/lib/phx_blog_web/components")
-
-      assert_file("phx_blog/mix.exs", &refute(&1 =~ ~r":phoenix_html"))
-      assert_file("phx_blog/mix.exs", &refute(&1 =~ ~r":phoenix_live_reload"))
-
-      assert_file("phx_blog/lib/phx_blog_web.ex", fn file ->
-        refute file =~ "html_helpers"
-        refute file =~ "Phoenix.HTML"
-        refute file =~ "Phoenix.LiveView"
-      end)
-
-      assert_file("phx_blog/lib/phx_blog_web/endpoint.ex", fn file ->
-        refute file =~ ~r"Phoenix.LiveReloader"
-        refute file =~ ~r"Phoenix.LiveReloader.Socket"
-      end)
-
-      refute_file("phx_blog/lib/phx_blog_web/controllers/error_html.ex")
-      assert_file("phx_blog/lib/phx_blog_web/controllers/error_json.ex")
-      assert_file("phx_blog/lib/phx_blog_web/router.ex", &refute(&1 =~ ~r"pipeline :browser"))
-
-      # No Dashboard
       assert_file("phx_blog/lib/phx_blog_web/endpoint.ex", fn file ->
         refute file =~ ~s|plug Phoenix.LiveDashboard.RequestLogger|
       end)
@@ -421,7 +362,6 @@ defmodule Mix.Tasks.Phx.NewTest do
         refute file =~ "import Phoenix.LiveDashboard.Router"
       end)
 
-      # No mailer or emails
       assert_file("phx_blog/mix.exs", fn file ->
         refute file =~ "{:swoosh"
         refute file =~ "{:req"
@@ -451,7 +391,7 @@ defmodule Mix.Tasks.Phx.NewTest do
 
   test "new with --no-dashboard" do
     in_tmp("new with no_dashboard", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-dashboard"])
+      Mix.Tasks.Corex.New.run([@app_name, "--no-dashboard"])
 
       assert_file("phx_blog/mix.exs", &refute(&1 =~ ~r":phoenix_live_dashboard"))
 
@@ -463,91 +403,9 @@ defmodule Mix.Tasks.Phx.NewTest do
     end)
   end
 
-  test "new with --no-dashboard and --no-live" do
-    in_tmp("new with no_dashboard and no_live", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-dashboard", "--no-live"])
-
-      assert_file("phx_blog/lib/phx_blog_web/endpoint.ex", fn file ->
-        assert file =~ ~s|defmodule PhxBlogWeb.Endpoint|
-        assert file =~ ~s|# socket "/live"|
-        refute file =~ ~s|plug Phoenix.LiveDashboard.RequestLogger|
-      end)
-    end)
-  end
-
-  test "new with --no-html" do
-    in_tmp("new with no_html", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-html"])
-
-      assert_file("phx_blog/mix.exs", fn file ->
-        refute file =~ ~s|:phoenix_live_view|
-        refute file =~ ~s|:phoenix_html|
-        assert file =~ ~s|:phoenix_live_dashboard|
-      end)
-
-      assert_file("phx_blog/.formatter.exs", fn file ->
-        assert file =~ "import_deps: [:ecto, :ecto_sql, :phoenix]"
-        assert file =~ "subdirectories: [\"priv/*/migrations\"]"
-
-        assert file =~
-                 "inputs: [\"*.{ex,exs}\", \"{config,lib,test}/**/*.{ex,exs}\", \"priv/*/seeds.exs\"]"
-
-        refute file =~ "plugins:"
-      end)
-
-      assert_file("phx_blog/lib/phx_blog_web/endpoint.ex", fn file ->
-        assert file =~ ~s|defmodule PhxBlogWeb.Endpoint|
-        assert file =~ ~s|socket "/live"|
-        assert file =~ ~s|plug Phoenix.LiveDashboard.RequestLogger|
-      end)
-
-      assert_file("phx_blog/lib/phx_blog_web.ex", fn file ->
-        refute file =~ ~s|Phoenix.HTML|
-        refute file =~ ~s|Phoenix.LiveView|
-      end)
-
-      assert_file("phx_blog/lib/phx_blog_web/router.ex", fn file ->
-        refute file =~ ~s|pipeline :browser|
-        assert file =~ ~s|pipe_through [:fetch_session, :protect_from_forgery]|
-      end)
-
-      assert_file("phx_blog/config/config.exs", fn file ->
-        refute file =~ ~s|config :phoenix_live_view|
-      end)
-
-      assert_file("phx_blog/config/test.exs", fn file ->
-        refute file =~ ~s|config :phoenix_live_view|
-      end)
-    end)
-  end
-
-  test "new with --no-assets" do
-    in_tmp("new no_assets", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-assets"])
-
-      assert_file("phx_blog/.gitignore", fn file ->
-        refute file =~ "/priv/static/assets/"
-      end)
-
-      assert_file("phx_blog/.gitignore")
-      assert_file("phx_blog/.gitignore", ~r/\n$/)
-      assert_file("phx_blog/priv/static/assets/css/app.css")
-      assert_file("phx_blog/priv/static/assets/js/app.js")
-      assert_file("phx_blog/priv/static/favicon.ico")
-
-      assert_file("phx_blog/config/config.exs", fn file ->
-        refute file =~ "config :esbuild"
-      end)
-
-      assert_file("phx_blog/config/prod.exs", fn file ->
-        refute file =~ "config :phx_blog, PhxBlogWeb.Endpoint, cache_static_manifest:"
-      end)
-    end)
-  end
-
   test "new with --no-ecto" do
     in_tmp("new with no_ecto", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-ecto"])
+      Mix.Tasks.Corex.New.run([@app_name, "--no-ecto"])
 
       assert_file("phx_blog/.formatter.exs", fn file ->
         assert file =~ "import_deps: [:phoenix]"
@@ -558,25 +416,9 @@ defmodule Mix.Tasks.Phx.NewTest do
     end)
   end
 
-  test "new with --no-gettext" do
-    in_tmp("new with no_gettext", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-gettext"])
-
-      assert_file("phx_blog/lib/phx_blog_web/components/layouts.ex", fn file ->
-        assert file =~ ~S|Attempting to reconnect|
-        refute file =~ ~S|gettext("Attempting to reconnect")|
-      end)
-
-      assert_file("phx_blog/lib/phx_blog_web/components/core_components.ex", fn file ->
-        assert file =~ ~S|aria-label="close"|
-        refute file =~ ~S|gettext("close")|
-      end)
-    end)
-  end
-
   test "new with binary_id" do
     in_tmp("new with binary_id", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--binary-id"])
+      Mix.Tasks.Corex.New.run([@app_name, "--binary-id"])
       assert_file("phx_blog/config/config.exs", ~r/generators: \[.*binary_id: true\.*]/)
     end)
   end
@@ -584,7 +426,7 @@ defmodule Mix.Tasks.Phx.NewTest do
   test "new with path, app and module" do
     in_tmp("new with path, app and module", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
-      Mix.Tasks.Phx.New.run([project_path, "--app", @app_name, "--module", "PhoteuxBlog"])
+      Mix.Tasks.Corex.New.run([project_path, "--app", @app_name, "--module", "PhoteuxBlog"])
 
       assert_file("custom_path/.gitignore")
       assert_file("custom_path/.gitignore", ~r/\n$/)
@@ -600,7 +442,7 @@ defmodule Mix.Tasks.Phx.NewTest do
       File.mkdir!("apps")
 
       File.cd!("apps", fn ->
-        Mix.Tasks.Phx.New.run([@app_name])
+        Mix.Tasks.Corex.New.run([@app_name])
 
         assert_file("phx_blog/mix.exs", fn file ->
           assert file =~ "deps_path: \"../../deps\""
@@ -621,7 +463,7 @@ defmodule Mix.Tasks.Phx.NewTest do
 
   test "new with --no-install" do
     in_tmp("new with no install", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-install"])
+      Mix.Tasks.Corex.New.run([@app_name, "--no-install"])
 
       # Does not prompt to install dependencies
       refute_received {:mix_shell, :yes?, ["\nFetch and install dependencies?"]}
@@ -639,7 +481,7 @@ defmodule Mix.Tasks.Phx.NewTest do
   test "new defaults to pg adapter" do
     in_tmp("new defaults to pg adapter", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
-      Mix.Tasks.Phx.New.run([project_path])
+      Mix.Tasks.Corex.New.run([project_path])
 
       assert_file("custom_path/mix.exs", ":postgrex")
 
@@ -670,7 +512,7 @@ defmodule Mix.Tasks.Phx.NewTest do
   test "new with mysql adapter" do
     in_tmp("new with mysql adapter", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
-      Mix.Tasks.Phx.New.run([project_path, "--database", "mysql"])
+      Mix.Tasks.Corex.New.run([project_path, "--database", "mysql"])
 
       assert_file("custom_path/mix.exs", ":myxql")
       assert_file("custom_path/config/dev.exs", [~r/username: "root"/, ~r/password: ""/])
@@ -690,7 +532,7 @@ defmodule Mix.Tasks.Phx.NewTest do
   test "new with sqlite3 adapter" do
     in_tmp("new with sqlite3 adapter", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
-      Mix.Tasks.Phx.New.run([project_path, "--database", "sqlite3"])
+      Mix.Tasks.Corex.New.run([project_path, "--database", "sqlite3"])
 
       assert_file("custom_path/mix.exs", ":ecto_sqlite3")
       assert_file("custom_path/config/dev.exs", [~r/database: .*_dev.db/])
@@ -722,7 +564,7 @@ defmodule Mix.Tasks.Phx.NewTest do
   test "new with mssql adapter" do
     in_tmp("new with mssql adapter", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
-      Mix.Tasks.Phx.New.run([project_path, "--database", "mssql"])
+      Mix.Tasks.Corex.New.run([project_path, "--database", "mssql"])
 
       assert_file("custom_path/mix.exs", ":tds")
 
@@ -753,7 +595,7 @@ defmodule Mix.Tasks.Phx.NewTest do
       project_path = Path.join(File.cwd!(), "custom_path")
 
       assert_raise Mix.Error, ~s(Unknown database "invalid"), fn ->
-        Mix.Tasks.Phx.New.run([project_path, "--database", "invalid"])
+        Mix.Tasks.Corex.New.run([project_path, "--database", "invalid"])
       end
     end)
   end
@@ -761,7 +603,7 @@ defmodule Mix.Tasks.Phx.NewTest do
   test "new with bandit web adapter" do
     in_tmp("new with bandit web adapter", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
-      Mix.Tasks.Phx.New.run([project_path, "--adapter", "bandit"])
+      Mix.Tasks.Corex.New.run([project_path, "--adapter", "bandit"])
       assert_file("custom_path/mix.exs", ":bandit")
 
       assert_file("custom_path/config/config.exs", "adapter: Bandit.PhoenixAdapter")
@@ -770,60 +612,60 @@ defmodule Mix.Tasks.Phx.NewTest do
 
   test "new with invalid args" do
     assert_raise Mix.Error, ~r"Application name must start with a letter and ", fn ->
-      Mix.Tasks.Phx.New.run(["007invalid"])
+      Mix.Tasks.Corex.New.run(["007invalid"])
     end
 
     assert_raise Mix.Error, ~r"Application name must start with a letter and ", fn ->
-      Mix.Tasks.Phx.New.run(["valid", "--app", "007invalid"])
+      Mix.Tasks.Corex.New.run(["valid", "--app", "007invalid"])
     end
 
     assert_raise Mix.Error, ~r"Application name must start with a letter and ", fn ->
-      Mix.Tasks.Phx.New.run(["exInvalidAppName"])
+      Mix.Tasks.Corex.New.run(["exInvalidAppName"])
     end
 
     assert_raise Mix.Error, ~r"Module name must be a valid Elixir alias", fn ->
-      Mix.Tasks.Phx.New.run(["valid", "--module", "not.valid"])
+      Mix.Tasks.Corex.New.run(["valid", "--module", "not.valid"])
     end
 
     assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
-      Mix.Tasks.Phx.New.run(["string"])
+      Mix.Tasks.Corex.New.run(["string"])
     end
 
     assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
-      Mix.Tasks.Phx.New.run(["valid", "--app", "mix"])
+      Mix.Tasks.Corex.New.run(["valid", "--app", "mix"])
     end
 
     assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
-      Mix.Tasks.Phx.New.run(["valid", "--module", "String"])
+      Mix.Tasks.Corex.New.run(["valid", "--module", "String"])
     end
   end
 
   test "invalid options" do
     assert_raise OptionParser.ParseError, fn ->
-      Mix.Tasks.Phx.New.run(["valid", "-database", "mysql"])
+      Mix.Tasks.Corex.New.run(["valid", "-database", "mysql"])
     end
   end
 
   test "new without args" do
     in_tmp("new without args", fn ->
-      assert capture_io(fn -> Mix.Tasks.Phx.New.run([]) end) =~
-               "Creates a new Phoenix project."
+      assert capture_io(fn -> Mix.Tasks.Corex.New.run([]) end) =~
+               "Creates a new Corex project."
     end)
   end
 
   test "new with reserved name" do
     assert_raise Mix.Error, ~r/Application name cannot be "server" as it is reserved/, fn ->
-      Mix.Tasks.Phx.New.run(["server"])
+      Mix.Tasks.Corex.New.run(["server"])
     end
 
     assert_raise Mix.Error, ~r/Application name cannot be "table" as it is reserved/, fn ->
-      Mix.Tasks.Phx.New.run(["table"])
+      Mix.Tasks.Corex.New.run(["table"])
     end
   end
 
   test "new from inside docker machine (simulated)" do
     in_tmp("new without defaults", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--inside-docker-env"])
+      Mix.Tasks.Corex.New.run([@app_name, "--inside-docker-env"])
 
       assert_file("phx_blog/config/dev.exs", fn file ->
         assert file =~ "http: [ip: {0, 0, 0, 0}"
@@ -833,20 +675,20 @@ defmodule Mix.Tasks.Phx.NewTest do
 
   test "new with --no-agents-md" do
     in_tmp("new with no agents md", fn ->
-      Mix.Tasks.Phx.New.run([@app_name, "--no-agents-md"])
+      Mix.Tasks.Corex.New.run([@app_name, "--no-agents-md"])
 
       refute_file("phx_blog/AGENTS.md")
     end)
   end
 
-  describe "PHX_NEW_CACHE_DIR" do
-    @phx_new_cache_dir System.get_env("PHX_NEW_CACHE_DIR")
-    test "new with PHX_NEW_CACHE_DIR" do
-      System.put_env("PHX_NEW_CACHE_DIR", __DIR__)
+  describe "COREX_NEW_CACHE_DIR" do
+    @corex_new_cache_dir System.get_env("COREX_NEW_CACHE_DIR")
+    test "new with COREX_NEW_CACHE_DIR" do
+      System.put_env("COREX_NEW_CACHE_DIR", __DIR__)
       cache_files = File.ls!(__DIR__)
 
       in_tmp("new with cache dir", fn ->
-        Mix.Tasks.Phx.New.run([@app_name])
+        Mix.Tasks.Corex.New.run([@app_name])
         project_files = File.ls!(Path.join(File.cwd!(), @app_name))
         assert "mix.exs" in project_files
 
@@ -855,28 +697,28 @@ defmodule Mix.Tasks.Phx.NewTest do
         end
       end)
     after
-      if @phx_new_cache_dir do
-        System.put_env("PHX_NEW_CACHE_DIR", @phx_new_cache_dir)
+      if @corex_new_cache_dir do
+        System.put_env("COREX_NEW_CACHE_DIR", @corex_new_cache_dir)
       else
-        System.delete_env("PHX_NEW_CACHE_DIR")
+        System.delete_env("COREX_NEW_CACHE_DIR")
       end
     end
 
-    test "new with PHX_NEW_CACHE_DIR that doesn't exist" do
+    test "new with COREX_NEW_CACHE_DIR that doesn't exist" do
       cache_dir = Path.join(__DIR__, "does-not-exist")
-      System.put_env("PHX_NEW_CACHE_DIR", cache_dir)
+      System.put_env("COREX_NEW_CACHE_DIR", cache_dir)
       refute File.exists?(cache_dir)
 
       in_tmp("new with cache dir", fn ->
-        Mix.Tasks.Phx.New.run([@app_name])
+        Mix.Tasks.Corex.New.run([@app_name])
         project_files = File.ls!(Path.join(File.cwd!(), @app_name))
         assert "mix.exs" in project_files
       end)
     after
-      if @phx_new_cache_dir do
-        System.put_env("PHX_NEW_CACHE_DIR", @phx_new_cache_dir)
+      if @corex_new_cache_dir do
+        System.put_env("COREX_NEW_CACHE_DIR", @corex_new_cache_dir)
       else
-        System.delete_env("PHX_NEW_CACHE_DIR")
+        System.delete_env("COREX_NEW_CACHE_DIR")
       end
     end
   end

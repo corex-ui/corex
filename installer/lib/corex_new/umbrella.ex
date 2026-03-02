@@ -1,20 +1,20 @@
-defmodule Phx.New.Umbrella do
+defmodule Corex.New.Umbrella do
   @moduledoc false
-  use Phx.New.Generator
-  alias Phx.New.{Ecto, Web, Project, Mailer}
+  use Corex.New.Generator
+  alias Corex.New.{Ecto, Web, Project, Mailer}
 
   template(:new, [
     {:eex, :project,
-     "phx_umbrella/gitignore": ".gitignore",
-     "phx_umbrella/config/config.exs": "config/config.exs",
-     "phx_umbrella/config/dev.exs": "config/dev.exs",
-     "phx_umbrella/config/test.exs": "config/test.exs",
-     "phx_umbrella/config/prod.exs": "config/prod.exs",
-     "phx_umbrella/config/runtime.exs": "config/runtime.exs",
-     "phx_umbrella/mix.exs": "mix.exs",
-     "phx_umbrella/README.md": "README.md",
-     "phx_umbrella/formatter.exs": ".formatter.exs"},
-    {:config, :project, "phx_umbrella/config/extra_config.exs": "config/config.exs"}
+     "corex_umbrella/gitignore": ".gitignore",
+     "corex_umbrella/config/config.exs": "config/config.exs",
+     "corex_umbrella/config/dev.exs": "config/dev.exs",
+     "corex_umbrella/config/test.exs": "config/test.exs",
+     "corex_umbrella/config/prod.exs": "config/prod.exs",
+     "corex_umbrella/config/runtime.exs": "config/runtime.exs",
+     "corex_umbrella/mix.exs": "mix.exs",
+     "corex_umbrella/README.md": "README.md",
+     "corex_umbrella/formatter.exs": ".formatter.exs"},
+    {:config, :project, "corex_umbrella/config/extra_config.exs": "config/config.exs"}
   ])
 
   def prepare_project(%Project{app: app} = project) when not is_nil(app) do

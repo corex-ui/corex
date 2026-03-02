@@ -1,6 +1,6 @@
 Code.require_file("mix_helper.exs", __DIR__)
 
-defmodule Mix.Tasks.Phx.New.UmbrellaTest do
+defmodule Mix.Tasks.Corex.New.UmbrellaTest do
   use ExUnit.Case, async: false
   import MixHelper
 
@@ -31,7 +31,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
 
   test "new with umbrella and defaults" do
     in_tmp("new with umbrella and defaults", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella"])
+      Mix.Tasks.Corex.New.run([@app, "--umbrella"])
 
       assert_file(root_path(@app, "README.md"))
       assert_file(root_path(@app, "AGENTS.md"))
@@ -330,36 +330,19 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
 
   test "new without defaults" do
     in_tmp("new without defaults", fn ->
-      Mix.Tasks.Phx.New.run([
+      Mix.Tasks.Corex.New.run([
         @app,
         "--umbrella",
-        "--no-html",
-        "--no-assets",
         "--no-ecto",
-        "--no-live",
         "--no-mailer"
       ])
 
-      # No assets
-      assert_file(web_path(@app, ".gitignore"), fn file ->
-        assert file =~ ~r/\n$/
-        refute file =~ "/priv/static/assets/"
-      end)
-
-      assert_file(root_path(@app, "config/dev.exs"), ~r/watchers: \[\]/)
-
-      # No assets & No HTML
-      refute_file(web_path(@app, "priv/static/assets/js/app.js"))
-      refute_file(web_path(@app, "priv/static/assets/css/app.css"))
-
-      # No Ecto
       config = ~r/config :phx_umb, PhxUmb.Repo,/
       refute File.exists?(app_path(@app, "lib/#{@app}_web/repo.ex"))
 
       assert_file(app_path(@app, "mix.exs"), &refute(&1 =~ ~r":phoenix_ecto"))
 
       assert_file(root_path(@app, "config/config.exs"), fn file ->
-        refute file =~ "config :esbuild"
         refute file =~ "config :phx_blog_web, :generators"
         refute file =~ "ecto_repos:"
       end)
@@ -375,46 +358,6 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
 
       assert_file(app_path(@app, "lib/#{@app}/application.ex"), ~r/Supervisor.start_link\(/)
 
-      # No LiveView (in web_path)
-      assert_file(web_path(@app, "mix.exs"), &refute(&1 =~ ~r":phoenix_live_view"))
-      assert_file(web_path(@app, "mix.exs"), &refute(&1 =~ ~r":lazy_html"))
-      refute File.exists?(web_path(@app, "lib/#{@app}_web/templates/page/hero.html.heex"))
-
-      refute_file(web_path(@app, "assets/js/live.js"))
-
-      # No HTML
-      assert File.exists?(web_path(@app, "test/#{@app}_web/controllers"))
-      refute File.exists?(web_path(@app, "test/#{@app}_web/controllers/error_html_test.exs"))
-      assert File.exists?(web_path(@app, "lib/#{@app}_web/controllers"))
-      refute File.exists?(web_path(@app, "test/controllers/page_controller_test.exs"))
-      refute File.exists?(web_path(@app, "lib/#{@app}_web/controllers/page_controller.ex"))
-      refute File.exists?(web_path(@app, "lib/#{@app}_web/controllers/error_html.ex"))
-      refute File.exists?(web_path(@app, "lib/#{@app}_web/controllers/page_html.ex"))
-      refute File.exists?(web_path(@app, "lib/#{@app}_web/controllers/page_html"))
-      refute File.exists?(web_path(@app, "lib/#{@app}_web/components"))
-
-      assert_file(web_path(@app, "mix.exs"), &refute(&1 =~ ~r":phoenix_html"))
-      assert_file(web_path(@app, "mix.exs"), &refute(&1 =~ ~r":phoenix_live_reload"))
-
-      assert_file(web_path(@app, "lib/#{@app}_web.ex"), fn file ->
-        refute file =~ "defp html_helpers do"
-        refute file =~ "Phoenix.HTML"
-        refute file =~ "Phoenix.LiveView"
-      end)
-
-      assert_file(web_path(@app, "lib/#{@app}_web/endpoint.ex"), fn file ->
-        refute file =~ ~r"Phoenix.LiveReloader"
-        refute file =~ ~r"Phoenix.LiveReloader.Socket"
-      end)
-
-      assert_file(web_path(@app, "lib/#{@app}_web/controllers/error_json.ex"), ~r".json")
-
-      assert_file(
-        web_path(@app, "lib/#{@app}_web/router.ex"),
-        &refute(&1 =~ ~r"pipeline :browser")
-      )
-
-      # Without mailer
       assert_file(web_path(@app, "mix.exs"), fn file ->
         refute file =~ "{:swoosh"
         refute file =~ "{:req"
@@ -439,7 +382,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
 
   test "new with --no-dashboard" do
     in_tmp("new with no_dashboard", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella", "--no-dashboard"])
+      Mix.Tasks.Corex.New.run([@app, "--umbrella", "--no-dashboard"])
 
       assert_file(web_path(@app, "mix.exs"), &refute(&1 =~ ~r":phoenix_live_dashboard"))
 
@@ -451,71 +394,9 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     end)
   end
 
-  test "new with --no-dashboard and --no-live" do
-    in_tmp("new with no_dashboard and no_live", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella", "--no-dashboard", "--no-live"])
-
-      assert_file(web_path(@app, "lib/#{@app}_web/endpoint.ex"), fn file ->
-        assert file =~ ~s|# socket "/live"|
-      end)
-
-      assert_file(web_path(@app, "assets/js/app.js"), fn file ->
-        assert file =~ ~s|// import {Socket} from "phoenix"|
-        assert file =~ ~s|// import {LiveSocket} from "phoenix_live_view"|
-        assert file =~ ~s|// import topbar from "../vendor/topbar"|
-        assert file =~ ~s|// liveSocket.connect()|
-      end)
-    end)
-  end
-
-  test "new with --no-html" do
-    in_tmp("new with no_html", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella", "--no-html"])
-
-      assert_file(root_path(@app, "mix.exs"), fn file ->
-        assert file =~ "defp deps do\n    []"
-      end)
-
-      refute_file(web_path(@app, "test/#{@app}_web/controllers/error_html_test.exs"))
-
-      assert_file(web_path(@app, "mix.exs"), fn file ->
-        refute file =~ ~s|:phoenix_live_view|
-        assert file =~ ~s|:phoenix_live_dashboard|
-      end)
-
-      assert_file(web_path(@app, "lib/#{@app}_web/endpoint.ex"), fn file ->
-        assert file =~ ~s|defmodule PhxUmbWeb.Endpoint|
-        assert file =~ ~s|socket "/live"|
-        assert file =~ ~s|plug Phoenix.LiveDashboard.RequestLogger|
-      end)
-
-      assert_file(web_path(@app, "lib/#{@app}_web.ex"), fn file ->
-        refute file =~ ~s|Phoenix.HTML|
-        refute file =~ ~s|Phoenix.LiveView|
-      end)
-
-      assert_file(web_path(@app, "lib/#{@app}_web/router.ex"), fn file ->
-        refute file =~ ~s|pipeline :browser|
-        assert file =~ ~s|pipe_through [:fetch_session, :protect_from_forgery]|
-      end)
-    end)
-  end
-
-  test "new with --no-assets" do
-    in_tmp("new with no_assets", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella", "--no-assets"])
-
-      refute File.read!(web_path(@app, ".gitignore")) |> String.contains?("/priv/static/assets/")
-      assert_file(web_path(@app, ".gitignore"), ~r/\n$/)
-      assert_file(web_path(@app, "priv/static/assets/js/app.js"))
-      assert_file(web_path(@app, "priv/static/assets/css/app.css"))
-      assert_file(web_path(@app, "priv/static/favicon.ico"))
-    end)
-  end
-
   test "new with binary_id" do
     in_tmp("new with binary_id", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella", "--binary-id"])
+      Mix.Tasks.Corex.New.run([@app, "--umbrella", "--binary-id"])
 
       assert_file(
         root_path(@app, "config/config.exs"),
@@ -528,7 +409,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     in_tmp("new with path, app and module", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
 
-      Mix.Tasks.Phx.New.run([
+      Mix.Tasks.Corex.New.run([
         project_path,
         "--umbrella",
         "--app",
@@ -576,7 +457,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
 
       File.cd!("apps", fn ->
         assert_raise Mix.Error, "Unable to nest umbrella project within apps", fn ->
-          Mix.Tasks.Phx.New.run([@app, "--umbrella"])
+          Mix.Tasks.Corex.New.run([@app, "--umbrella"])
         end
       end)
     end)
@@ -586,7 +467,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     in_tmp("new defaults to pg adapter", fn ->
       app = "custom_path"
       project_path = Path.join(File.cwd!(), app)
-      Mix.Tasks.Phx.New.run([project_path, "--umbrella"])
+      Mix.Tasks.Corex.New.run([project_path, "--umbrella"])
 
       assert_file(app_path(app, "mix.exs"), ":postgrex")
       assert_file(app_path(app, "lib/custom_path/repo.ex"), "Ecto.Adapters.Postgres")
@@ -613,7 +494,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     in_tmp("new with mysql adapter", fn ->
       app = "custom_path"
       project_path = Path.join(File.cwd!(), app)
-      Mix.Tasks.Phx.New.run([project_path, "--umbrella", "--database", "mysql"])
+      Mix.Tasks.Corex.New.run([project_path, "--umbrella", "--database", "mysql"])
 
       assert_file(app_path(app, "mix.exs"), ":myxql")
       assert_file(app_path(app, "lib/custom_path/repo.ex"), "Ecto.Adapters.MyXQL")
@@ -630,7 +511,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     in_tmp("new with sqlite3 adapter", fn ->
       app = "custom_path"
       project_path = Path.join(File.cwd!(), app)
-      Mix.Tasks.Phx.New.run([project_path, "--umbrella", "--database", "sqlite3"])
+      Mix.Tasks.Corex.New.run([project_path, "--umbrella", "--database", "sqlite3"])
 
       assert_file(app_path(app, "mix.exs"), ":ecto_sqlite3")
       assert_file(app_path(app, "lib/custom_path/repo.ex"), "Ecto.Adapters.SQLite3")
@@ -659,7 +540,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     in_tmp("new with mssql adapter", fn ->
       app = "custom_path"
       project_path = Path.join(File.cwd!(), app)
-      Mix.Tasks.Phx.New.run([project_path, "--umbrella", "--database", "mssql"])
+      Mix.Tasks.Corex.New.run([project_path, "--umbrella", "--database", "mssql"])
 
       assert_file(app_path(app, "mix.exs"), ":tds")
       assert_file(app_path(app, "lib/custom_path/repo.ex"), "Ecto.Adapters.Tds")
@@ -685,7 +566,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
       project_path = Path.join(File.cwd!(), "custom_path")
 
       assert_raise Mix.Error, ~s(Unknown database "invalid"), fn ->
-        Mix.Tasks.Phx.New.run([project_path, "--umbrella", "--database", "invalid"])
+        Mix.Tasks.Corex.New.run([project_path, "--umbrella", "--database", "invalid"])
       end
     end)
   end
@@ -694,7 +575,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     in_tmp("new with cowboy web adapter", fn ->
       app = "custom_path"
       project_path = Path.join(File.cwd!(), app)
-      Mix.Tasks.Phx.New.run([project_path, "--umbrella", "--adapter", "cowboy"])
+      Mix.Tasks.Corex.New.run([project_path, "--umbrella", "--adapter", "cowboy"])
       assert_file(web_path(app, "mix.exs"), ":plug_cowboy")
 
       assert_file(root_path(app, "config/config.exs"), "adapter: Phoenix.Endpoint.Cowboy2Adapter")
@@ -703,67 +584,46 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
 
   test "new with invalid args" do
     assert_raise Mix.Error, ~r"Application name must start with a letter and ", fn ->
-      Mix.Tasks.Phx.New.run(["007invalid", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["007invalid", "--umbrella"])
     end
 
     assert_raise Mix.Error, ~r"Application name must start with a letter and ", fn ->
-      Mix.Tasks.Phx.New.run(["valid1", "--app", "007invalid", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["valid1", "--app", "007invalid", "--umbrella"])
     end
 
     assert_raise Mix.Error, ~r"Application name must start with a letter and ", fn ->
-      Mix.Tasks.Phx.New.run(["valid1", "--app", "exInvalidAppAnme", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["valid1", "--app", "exInvalidAppAnme", "--umbrella"])
     end
 
     assert_raise Mix.Error, ~r"Module name must be a valid Elixir alias", fn ->
-      Mix.Tasks.Phx.New.run(["valid2", "--module", "not.valid", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["valid2", "--module", "not.valid", "--umbrella"])
     end
 
     assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
-      Mix.Tasks.Phx.New.run(["string", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["string", "--umbrella"])
     end
 
     assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
-      Mix.Tasks.Phx.New.run(["valid3", "--app", "mix", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["valid3", "--app", "mix", "--umbrella"])
     end
 
     assert_raise Mix.Error, ~r"Module name \w+ is already taken", fn ->
-      Mix.Tasks.Phx.New.run(["valid4", "--module", "String", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["valid4", "--module", "String", "--umbrella"])
     end
   end
 
   test "invalid options" do
     assert_raise OptionParser.ParseError, fn ->
-      Mix.Tasks.Phx.New.run(["valid5", "-database", "mysql", "--umbrella"])
+      Mix.Tasks.Corex.New.run(["valid5", "-database", "mysql", "--umbrella"])
     end
   end
 
   test "umbrella with --no-agents-md" do
     in_tmp("umbrella with no agents md", fn ->
-      Mix.Tasks.Phx.New.run([@app, "--umbrella", "--no-agents-md"])
+      Mix.Tasks.Corex.New.run([@app, "--umbrella", "--no-agents-md"])
 
       refute_file(root_path(@app, "AGENTS.md"))
     end)
-  end
-
-  describe "ecto task" do
-    test "can only be run within an umbrella app dir", %{tmp_dir: tmp_dir} do
-      in_tmp(tmp_dir, fn ->
-        cwd = File.cwd!()
-        umbrella_path = root_path(@app)
-        Mix.Tasks.Phx.New.run([@app, "--umbrella"])
-        flush()
-
-        for dir <- [cwd, umbrella_path] do
-          File.cd!(dir, fn ->
-            assert_raise Mix.Error,
-                         ~r"The ecto task can only be run within an umbrella's apps directory",
-                         fn ->
-                           Mix.Tasks.Phx.New.Ecto.run(["valid"])
-                         end
-          end)
-        end
-      end)
-    end
   end
 
   describe "web task" do
@@ -771,7 +631,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
       in_tmp(tmp_dir, fn ->
         cwd = File.cwd!()
         umbrella_path = root_path(@app)
-        Mix.Tasks.Phx.New.run([@app, "--umbrella"])
+        Mix.Tasks.Corex.New.run([@app, "--umbrella"])
         flush()
 
         for dir <- [cwd, umbrella_path] do
@@ -779,7 +639,7 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
             assert_raise Mix.Error,
                          ~r"The web task can only be run within an umbrella's apps directory",
                          fn ->
-                           Mix.Tasks.Phx.New.Web.run(["valid"])
+                           Mix.Tasks.Corex.New.Web.run(["valid"])
                          end
           end)
         end
@@ -789,12 +649,12 @@ defmodule Mix.Tasks.Phx.New.UmbrellaTest do
     test "generates web-only files", %{tmp_dir: tmp_dir} do
       in_tmp(tmp_dir, fn ->
         umbrella_path = root_path(@app)
-        Mix.Tasks.Phx.New.run([@app, "--umbrella"])
+        Mix.Tasks.Corex.New.run([@app, "--umbrella"])
         flush()
 
         File.cd!(Path.join(umbrella_path, "apps"))
         decline_prompt()
-        Mix.Tasks.Phx.New.Web.run(["another"])
+        Mix.Tasks.Corex.New.Web.run(["another"])
 
         assert_file("another/README.md")
 

@@ -1,6 +1,6 @@
 Code.require_file "mix_helper.exs", __DIR__
 
-defmodule Mix.Tasks.Phx.New.WebTest do
+defmodule Mix.Tasks.Corex.New.WebTest do
   use ExUnit.Case
   import MixHelper
   import ExUnit.CaptureIO
@@ -15,7 +15,7 @@ defmodule Mix.Tasks.Phx.New.WebTest do
   end
 
   test "new without args" do
-    assert capture_io(fn -> Mix.Tasks.Phx.New.Web.run([]) end) =~
+    assert capture_io(fn -> Mix.Tasks.Corex.New.Web.run([]) end) =~
            "Creates a new Phoenix web project within an umbrella project."
   end
 
@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Phx.New.WebTest do
       Enum.each(files, &File.rm/1)
 
       assert_file "../config/config.exs", &refute(&1 =~ ~S[import_config "#{config_env()}.exs"])
-      Mix.Tasks.Phx.New.Web.run([@app_name])
+      Mix.Tasks.Corex.New.Web.run([@app_name])
       assert_file "../config/config.exs", &assert(&1 =~ ~S[import_config "#{config_env()}.exs"])
     end
   end
@@ -33,14 +33,14 @@ defmodule Mix.Tasks.Phx.New.WebTest do
   test "new outside umbrella", config do
     in_tmp config.test, fn ->
       assert_raise Mix.Error, ~r"The web task can only be run within an umbrella's apps directory", fn ->
-        Mix.Tasks.Phx.New.Web.run ["007invalid"]
+        Mix.Tasks.Corex.New.Web.run ["007invalid"]
       end
     end
   end
 
   test "new with defaults" do
     in_tmp_umbrella_project "new with defaults", fn ->
-      Mix.Tasks.Phx.New.Web.run([@app_name])
+      Mix.Tasks.Corex.New.Web.run([@app_name])
 
       assert_file "../config/config.exs", fn file ->
         assert file =~ "generators: [context_app: false]"
@@ -66,7 +66,7 @@ defmodule Mix.Tasks.Phx.New.WebTest do
 
   test "app_name is included in tailwind config" do
     in_tmp_umbrella_project "new with defaults", fn ->
-      Mix.Tasks.Phx.New.Web.run(["testweb"])
+      Mix.Tasks.Corex.New.Web.run(["testweb"])
 
       assert_file "testweb/assets/vendor/heroicons.js", fn file ->
         assert file =~ "/deps/heroicons/optimized"

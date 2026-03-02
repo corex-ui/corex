@@ -1,9 +1,9 @@
-defmodule Phx.New.Ecto do
+defmodule Corex.New.Ecto do
   @moduledoc false
-  use Phx.New.Generator
-  alias Phx.New.{Project}
+  use Corex.New.Generator
+  alias Corex.New.{Project}
 
-  @pre "phx_umbrella/apps/app_name"
+  @pre "corex_umbrella/apps/app_name"
 
   template(:new, [
     {:config, :project, "#{@pre}/config/config.exs": "config/config.exs"},
@@ -27,7 +27,7 @@ defmodule Phx.New.Ecto do
   def generate(%Project{} = project) do
     inject_umbrella_config_defaults(project)
     copy_from(project, __MODULE__, :new)
-    if Project.ecto?(project), do: Phx.New.Single.gen_ecto(project)
+    if Project.ecto?(project), do: Corex.New.Single.gen_ecto(project)
     project
   end
 end

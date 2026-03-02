@@ -64,7 +64,7 @@ We will first update the generator to the latest version and then generate `:my_
 
 ```bash
 mix local.phx
-mix phx.new my_app
+mix corex.new my_app
 ```
 
 Add `corex` to your `mix.exs` dependencies:

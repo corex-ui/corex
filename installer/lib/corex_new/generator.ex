@@ -1,7 +1,7 @@
-defmodule Phx.New.Generator do
+defmodule Corex.New.Generator do
   @moduledoc false
   import Mix.Generator
-  alias Phx.New.{Project}
+  alias Corex.New.{Project}
 
   @phoenix Path.expand("../..", __DIR__)
   @phoenix_version Version.parse!(Mix.Project.config()[:version])
@@ -97,10 +97,16 @@ defmodule Phx.New.Generator do
   end
 
   parent_rules = Path.join(@phoenix, "../usage-rules")
-  # those are copied before publishing to Hex
   copied_rules = Path.expand("../../templates/phoenix-usage-rules", __DIR__)
+  local_rules = Path.expand("../../templates/usage-rules", __DIR__)
 
-  @usage_rules_path if(File.exists?(parent_rules), do: parent_rules, else: copied_rules)
+  @usage_rules_path (
+    cond do
+      File.exists?(parent_rules) -> parent_rules
+      File.exists?(copied_rules) -> copied_rules
+      true -> local_rules
+    end
+  )
 
   @rules_files Map.new(File.ls!(@usage_rules_path), fn file ->
                  content = File.read!(Path.join(@usage_rules_path, file))
@@ -120,43 +126,36 @@ defmodule Phx.New.Generator do
     if project.binding[:agents_md] do
       content =
         [
-          # rules specific to new apps
           @new_project_rules_files["project.md"],
           @new_project_rules_files["phoenix.md"],
-          # --no-assets is equivalent to --no-tailwind && --no-esbuild;
-          # we check for both here
           project.binding[:javascript] && project.binding[:css] &&
             @new_project_rules_files["assets.md"],
-          # generic usage rules
           "\n<!-- usage-rules-start -->",
-          [
+          if(@rules_files["elixir.md"], do: [
             "<!-- phoenix:elixir-start -->\n",
             @rules_files["elixir.md"],
             "\n<!-- phoenix:elixir-end -->"
-          ],
-          [
+          ]),
+          if(@rules_files["phoenix.md"], do: [
             "<!-- phoenix:phoenix-start -->\n",
             @rules_files["phoenix.md"],
             "\n<!-- phoenix:phoenix-end -->"
+          ]),
+          project.binding[:ecto] && @rules_files["ecto.md"] && [
+            "<!-- phoenix:ecto-start -->\n",
+            @rules_files["ecto.md"],
+            "\n<!-- phoenix:ecto-end -->"
           ],
-          project.binding[:ecto] &&
-            [
-              "<!-- phoenix:ecto-start -->\n",
-              @rules_files["ecto.md"],
-              "\n<!-- phoenix:ecto-end -->"
-            ],
-          project.binding[:html] &&
-            [
-              "<!-- phoenix:html-start -->\n",
-              @rules_files["html.md"],
-              "\n<!-- phoenix:html-end -->"
-            ],
-          project.binding[:live] &&
-            [
-              "<!-- phoenix:liveview-start -->\n",
-              @rules_files["liveview.md"],
-              "\n<!-- phoenix:liveview-end -->"
-            ],
+          project.binding[:html] && @rules_files["html.md"] && [
+            "<!-- phoenix:html-start -->\n",
+            @rules_files["html.md"],
+            "\n<!-- phoenix:html-end -->"
+          ],
+          project.binding[:live] && @rules_files["liveview.md"] && [
+            "<!-- phoenix:liveview-start -->\n",
+            @rules_files["liveview.md"],
+            "\n<!-- phoenix:liveview-end -->"
+          ],
           "<!-- usage-rules-end -->"
         ]
         |> Enum.reject(fn part -> part == nil or part == false end)
@@ -221,7 +220,7 @@ defmodule Phx.New.Generator do
       path = Project.join_path(project, :project, "config/config.exs")
 
       extra =
-        Phx.New.Umbrella.render(:new, "phx_umbrella/config/extra_config.exs", project.binding)
+        Corex.New.Umbrella.render(:new, "corex_umbrella/config/extra_config.exs", project.binding)
 
       File.write(path, [File.read!(path), extra])
     end
@@ -248,7 +247,6 @@ defmodule Phx.New.Generator do
     tailwind = Keyword.get(opts, :tailwind, assets)
     mailer = Keyword.get(opts, :mailer, true)
     dev = Keyword.get(opts, :dev, false)
-    from_elixir_install = Keyword.get(opts, :from_elixir_install, false)
     phoenix_path = phoenix_path(project, dev, false)
     phoenix_path_umbrella_root = phoenix_path(project, dev, true)
     agents_md = Keyword.get(opts, :agents_md, true)
@@ -321,33 +319,12 @@ defmodule Phx.New.Generator do
       generators: nil_if_empty(project.generators ++ adapter_generators(adapter_config)),
       namespaced?: namespaced?(project),
       dev: dev,
-      from_elixir_install: from_elixir_install,
-      elixir_install_otp_bin_path: from_elixir_install && elixir_install_otp_bin_path(),
-      elixir_install_bin_path: from_elixir_install && elixir_install_bin_path(),
       inside_docker_env?: inside_docker_env?,
       agents_md: agents_md,
       config_regex_E: Version.match?(System.version(), "~> 1.19.3 or ~> 1.20") && "E" || ""
     ]
 
     %{project | binding: binding}
-  end
-
-  def elixir_install_otp_bin_path do
-    "erl"
-    |> System.find_executable()
-    |> Path.split()
-    |> Enum.drop(-1)
-    |> Path.join()
-    |> Path.relative_to(System.user_home())
-  end
-
-  def elixir_install_bin_path do
-    "elixir"
-    |> System.find_executable()
-    |> Path.split()
-    |> Enum.drop(-1)
-    |> Path.join()
-    |> Path.relative_to(System.user_home())
   end
 
   defp namespaced?(project) do

@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Phx.New.Web do
+defmodule Mix.Tasks.Corex.New.Web do
   @moduledoc """
   Creates a new Phoenix web project within an umbrella project.
 
@@ -7,7 +7,7 @@ defmodule Mix.Tasks.Phx.New.Web do
   apps directory:
 
       $ cd my_umbrella/apps
-      $ mix phx.new.web APP [--module MODULE] [--app APP]
+      $ mix corex.new.web APP [--module MODULE] [--app APP]
 
   This task is intended to create a bare Phoenix project without
   database integration, which interfaces with your greater
@@ -15,14 +15,14 @@ defmodule Mix.Tasks.Phx.New.Web do
 
   ## Examples
 
-      $ mix phx.new.web hello_web
+      $ mix corex.new.web hello_web
 
   Is equivalent to:
 
-      $ mix phx.new.web hello_web --module HelloWeb
+      $ mix corex.new.web hello_web --module HelloWeb
 
-  Supports the same options as the `phx.new` task.
-  See `Mix.Tasks.Phx.New` for details.
+  Supports the same options as the `corex.new` task.
+  See `Mix.Tasks.Corex.New` for details.
   """
 
   @shortdoc "Creates a new Phoenix web project within an umbrella project"
@@ -31,14 +31,14 @@ defmodule Mix.Tasks.Phx.New.Web do
 
   @impl true
   def run([]) do
-    Mix.Tasks.Help.run(["phx.new.web"])
+    Mix.Tasks.Help.run(["corex.new.web"])
   end
 
   def run([path | _] = args) do
-    unless Phx.New.Generator.in_umbrella?(path) do
+    unless Corex.New.Generator.in_umbrella?(path) do
       Mix.raise "The web task can only be run within an umbrella's apps directory"
     end
 
-    Mix.Tasks.Phx.New.run(args, Phx.New.Web, :web_path)
+    Mix.Tasks.Corex.New.run(args, Corex.New.Web, :web_path)
   end
 end
