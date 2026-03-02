@@ -133,9 +133,8 @@ defmodule Corex.Code do
 
   defp lexer_for(language) do
     name = to_string(language)
-    registry = Module.concat(["Elixir", "Makeup", "Registry"])
 
-    case apply(registry, :fetch_lexer_by_name, [name]) do
+    case Makeup.Registry.fetch_lexer_by_name(name) do
       {:ok, {lexer, _opts}} -> lexer
       :error -> nil
     end
@@ -149,8 +148,7 @@ defmodule Corex.Code do
         |> Phoenix.HTML.safe_to_string()
 
       lexer ->
-        makeup = Module.concat(["Elixir", "Makeup"])
-        apply(makeup, :highlight_inner_html, [assigns.code, [lexer: lexer]])
+        Makeup.highlight_inner_html(assigns.code, lexer: lexer)
     end
   end
 end

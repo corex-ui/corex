@@ -1,18 +1,18 @@
 defmodule Corex.ColorPicker.Connect do
   @moduledoc false
   alias Corex.ColorPicker.Anatomy.{
+    Content,
+    Control,
+    HiddenInput,
+    Label,
+    Positioner,
+    PresetSwatch,
     Props,
     Root,
-    Label,
-    HiddenInput,
-    Control,
-    Trigger,
-    Positioner,
-    Content,
-    TransparencyGrid,
     Swatch,
     SwatchTrigger,
-    PresetSwatch
+    TransparencyGrid,
+    Trigger
   }
 
   import Corex.Helpers, only: [get_boolean: 1]

@@ -1,6 +1,6 @@
 defmodule Corex.Menu.Connect do
   @moduledoc false
-  alias Corex.Menu.Anatomy.{Props, Root, Trigger, Item, Group}
+  alias Corex.Menu.Anatomy.{Group, Item, Props, Root, Trigger}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

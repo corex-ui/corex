@@ -1,6 +1,6 @@
 defmodule Corex.Switch.Connect do
   @moduledoc false
-  alias Corex.Switch.Anatomy.{Props, Root, HiddenInput, Control, Thumb, Label}
+  alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

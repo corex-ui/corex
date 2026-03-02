@@ -24,7 +24,7 @@ defmodule CorexTest do
       assert is_binary(to_string(result))
 
       assert_raise UndefinedFunctionError, fn ->
-        apply(OnlyCode, :action, [%{}])
+        OnlyCode.action(%{})
       end
     end
 
@@ -39,7 +39,7 @@ defmodule CorexTest do
       assert is_binary(to_string(result))
 
       assert_raise UndefinedFunctionError, fn ->
-        apply(ExceptCode, :code, [%{code: "x"}])
+        ExceptCode.code(%{code: "x"})
       end
     end
 
@@ -54,7 +54,7 @@ defmodule CorexTest do
       assert is_binary(to_string(result))
 
       assert_raise UndefinedFunctionError, fn ->
-        apply(PrefixedComponents, :code, [%{code: "x"}])
+        PrefixedComponents.code(%{code: "x"})
       end
     end
   end

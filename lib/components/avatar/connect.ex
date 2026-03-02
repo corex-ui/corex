@@ -1,6 +1,6 @@
 defmodule Corex.Avatar.Connect do
   @moduledoc false
-  alias Corex.Avatar.Anatomy.{Props, Root, Image, Fallback, Skeleton}
+  alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
 
   @spec props(Props.t()) :: map()
   def props(assigns) do

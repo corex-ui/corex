@@ -1,7 +1,6 @@
 defmodule Corex.Combobox.Connect do
   @moduledoc false
-  alias Corex.Combobox.Anatomy.Control
-  alias Corex.Combobox.Anatomy.{Props, Root, Label, Input, Positioner, Content}
+  alias Corex.Combobox.Anatomy.{Content, Control, Input, Label, Positioner, Props, Root}
 
   import Corex.Helpers,
     only: [get_boolean: 1, get_default_boolean: 2, get_boolean: 2, validate_value!: 1]

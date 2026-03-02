@@ -1,6 +1,6 @@
 defmodule Corex.Collapsible.Connect do
   @moduledoc false
-  alias Corex.Collapsible.Anatomy.{Props, Root, Trigger, Content}
+  alias Corex.Collapsible.Anatomy.{Content, Props, Root, Trigger}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

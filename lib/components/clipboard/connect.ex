@@ -1,6 +1,6 @@
 defmodule Corex.Clipboard.Connect do
   @moduledoc false
-  alias Corex.Clipboard.Anatomy.{Props, Root, Label, Control, Input, Trigger}
+  alias Corex.Clipboard.Anatomy.{Control, Input, Label, Props, Root, Trigger}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

@@ -1,6 +1,6 @@
 defmodule Corex.Accordion.Connect do
   @moduledoc false
-  alias Corex.Accordion.Anatomy.{Props, Root, Item}
+  alias Corex.Accordion.Anatomy.{Item, Props, Root}
   import Corex.Helpers, only: [validate_value!: 1]
 
   defp data_attr(true), do: ""

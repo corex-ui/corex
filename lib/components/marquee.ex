@@ -76,8 +76,10 @@ defmodule Corex.Marquee do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Marquee.Anatomy.{Props, Root, Edge, Viewport, Content, Item}
+  alias Corex.Marquee.Anatomy.{Content, Edge, Item, Props, Root, Viewport}
   alias Corex.Marquee.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
 
@@ -217,7 +219,7 @@ defmodule Corex.Marquee do
   Pauses the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
   def pause(marquee_id) when is_binary(marquee_id) do
-    Phoenix.LiveView.JS.dispatch("phx:marquee:pause", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("phx:marquee:pause", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc """
@@ -225,14 +227,14 @@ defmodule Corex.Marquee do
   """
   def pause(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
-    Phoenix.LiveView.push_event(socket, "marquee_pause", %{marquee_id: marquee_id})
+    LiveView.push_event(socket, "marquee_pause", %{marquee_id: marquee_id})
   end
 
   @doc """
   Resumes the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
   def resume(marquee_id) when is_binary(marquee_id) do
-    Phoenix.LiveView.JS.dispatch("phx:marquee:resume", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("phx:marquee:resume", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc """
@@ -240,14 +242,14 @@ defmodule Corex.Marquee do
   """
   def resume(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
-    Phoenix.LiveView.push_event(socket, "marquee_resume", %{marquee_id: marquee_id})
+    LiveView.push_event(socket, "marquee_resume", %{marquee_id: marquee_id})
   end
 
   @doc """
   Toggles the pause state from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
   def toggle_pause(marquee_id) when is_binary(marquee_id) do
-    Phoenix.LiveView.JS.dispatch("phx:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("phx:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc """
@@ -255,6 +257,6 @@ defmodule Corex.Marquee do
   """
   def toggle_pause(socket, marquee_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(marquee_id) do
-    Phoenix.LiveView.push_event(socket, "marquee_toggle_pause", %{marquee_id: marquee_id})
+    LiveView.push_event(socket, "marquee_toggle_pause", %{marquee_id: marquee_id})
   end
 end

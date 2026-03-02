@@ -242,17 +242,19 @@ defmodule Corex.SignaturePad do
   use Phoenix.Component
 
   alias Corex.SignaturePad.Anatomy.{
+    ClearTrigger,
+    Control,
+    Guide,
+    HiddenInput,
+    Label,
     Props,
     Root,
-    Label,
-    Control,
-    Segment,
-    Guide,
-    ClearTrigger,
-    HiddenInput
+    Segment
   }
 
   alias Corex.SignaturePad.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a signature pad component.
@@ -457,7 +459,7 @@ defmodule Corex.SignaturePad do
       </button>
   """
   def clear(signature_pad_id) when is_binary(signature_pad_id) do
-    Phoenix.LiveView.JS.dispatch("phx:signature-pad:clear",
+    JS.dispatch("phx:signature-pad:clear",
       to: "##{signature_pad_id}",
       detail: %{id: signature_pad_id},
       bubbles: false
@@ -476,7 +478,7 @@ defmodule Corex.SignaturePad do
   """
   def clear(socket, signature_pad_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(signature_pad_id) do
-    Phoenix.LiveView.push_event(socket, "signature_pad_clear", %{
+    LiveView.push_event(socket, "signature_pad_clear", %{
       signature_pad_id: signature_pad_id
     })
   end

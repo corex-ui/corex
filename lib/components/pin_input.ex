@@ -46,7 +46,7 @@ defmodule Corex.PinInput do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.PinInput.Anatomy.{Props, Root, Label, HiddenInput, Control, Input}
+  alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.PinInput.Connect
   import Corex.Helpers, only: [validate_value!: 1]
 

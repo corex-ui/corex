@@ -1,14 +1,14 @@
 defmodule Corex.RadioGroup.Connect do
   @moduledoc false
   alias Corex.RadioGroup.Anatomy.{
-    Props,
-    Root,
-    Label,
     Indicator,
     Item,
-    ItemText,
     ItemControl,
-    ItemHiddenInput
+    ItemHiddenInput,
+    ItemText,
+    Label,
+    Props,
+    Root
   }
 
   defp data_attr(true), do: ""

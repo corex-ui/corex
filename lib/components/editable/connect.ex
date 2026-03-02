@@ -1,17 +1,17 @@
 defmodule Corex.Editable.Connect do
   @moduledoc false
   alias Corex.Editable.Anatomy.{
+    Area,
+    CancelTrigger,
+    Control,
+    EditTrigger,
+    Input,
+    Label,
+    Preview,
     Props,
     Root,
-    Area,
-    Label,
-    Input,
-    Preview,
-    EditTrigger,
-    Control,
-    Triggers,
     SubmitTrigger,
-    CancelTrigger
+    Triggers
   }
 
   defp data_attr(true), do: ""

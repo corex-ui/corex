@@ -73,15 +73,15 @@ defmodule Corex.NumberInput do
   use Phoenix.Component
 
   alias Corex.NumberInput.Anatomy.{
-    Props,
-    Root,
-    Label,
     Control,
-    Input,
-    TriggerGroup,
     DecrementTrigger,
     IncrementTrigger,
-    Scrubber
+    Input,
+    Label,
+    Props,
+    Root,
+    Scrubber,
+    TriggerGroup
   }
 
   alias Corex.NumberInput.Connect

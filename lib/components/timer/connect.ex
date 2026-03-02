@@ -1,6 +1,6 @@
 defmodule Corex.Timer.Connect do
   @moduledoc false
-  alias Corex.Timer.Anatomy.{Props, Root, Area, Control, Item, Separator, ActionTrigger}
+  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, Props, Root, Separator}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

@@ -251,6 +251,8 @@ defmodule Corex.DatePicker do
 
   use Phoenix.Component
   alias Corex.DatePicker.{Anatomy, Connect}
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a date picker component.
@@ -605,7 +607,7 @@ defmodule Corex.DatePicker do
       </button>
   """
   def set_value(date_picker_id, value) when is_binary(date_picker_id) and is_binary(value) do
-    Phoenix.LiveView.JS.dispatch("phx:date-picker:set-value",
+    JS.dispatch("phx:date-picker:set-value",
       to: "##{date_picker_id}",
       detail: %{value: value},
       bubbles: false
@@ -626,7 +628,7 @@ defmodule Corex.DatePicker do
   def set_value(socket, date_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(date_picker_id) and
              is_binary(value) do
-    Phoenix.LiveView.push_event(socket, "date_picker_set_value", %{
+    LiveView.push_event(socket, "date_picker_set_value", %{
       date_picker_id: date_picker_id,
       value: value
     })

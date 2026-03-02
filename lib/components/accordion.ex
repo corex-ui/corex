@@ -290,8 +290,10 @@ defmodule Corex.Accordion do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Accordion.Anatomy.{Props, Root, Item}
+  alias Corex.Accordion.Anatomy.{Item, Props, Root}
   alias Corex.Accordion.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [validate_value!: 1]
 
   @doc """
@@ -647,7 +649,7 @@ defmodule Corex.Accordion do
       </button>
   """
   def set_value(accordion_id, value) when is_binary(accordion_id) do
-    Phoenix.LiveView.JS.dispatch("phx:accordion:set-value",
+    JS.dispatch("phx:accordion:set-value",
       to: "##{accordion_id}",
       detail: %{value: validate_value!(value)},
       bubbles: false
@@ -667,7 +669,7 @@ defmodule Corex.Accordion do
   """
   def set_value(socket, accordion_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
-    Phoenix.LiveView.push_event(socket, "accordion_set_value", %{
+    LiveView.push_event(socket, "accordion_set_value", %{
       accordion_id: accordion_id,
       value: validate_value!(value)
     })

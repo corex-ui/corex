@@ -63,7 +63,7 @@ defmodule Corex.Timer do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Timer.Anatomy.{Props, Root, Area, Control, Item, Separator, ActionTrigger}
+  alias Corex.Timer.Anatomy.{ActionTrigger, Area, Control, Item, Props, Root, Separator}
   alias Corex.Timer.Connect
 
   attr(:id, :string, required: false)

@@ -204,8 +204,11 @@ defmodule Corex.Switch do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Switch.Anatomy.{Props, Root, HiddenInput, Control, Thumb, Label}
+  alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
   alias Corex.Switch.Connect
+  alias Phoenix.HTML.Form
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a switch component.
@@ -306,7 +309,7 @@ defmodule Corex.Switch do
       |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
       |> assign_new(:id, fn -> field.id end)
       |> assign_new(:name, fn -> field.name end)
-      |> assign(:checked, Phoenix.HTML.Form.normalize_value("checkbox", field.value))
+      |> assign(:checked, Form.normalize_value("checkbox", field.value))
       |> assign_new(:form, fn -> field.form.id end)
 
     switch(assigns)
@@ -376,7 +379,7 @@ defmodule Corex.Switch do
       </button>
   """
   def set_checked(switch_id, checked) when is_binary(switch_id) and is_boolean(checked) do
-    Phoenix.LiveView.JS.dispatch("phx:switch:set-checked",
+    JS.dispatch("phx:switch:set-checked",
       to: "##{switch_id}",
       detail: %{checked: checked},
       bubbles: false
@@ -397,7 +400,7 @@ defmodule Corex.Switch do
   def set_checked(socket, switch_id, checked)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) and
              is_boolean(checked) do
-    Phoenix.LiveView.push_event(socket, "switch_set_checked", %{
+    LiveView.push_event(socket, "switch_set_checked", %{
       switch_id: switch_id,
       checked: checked
     })
@@ -414,7 +417,7 @@ defmodule Corex.Switch do
       </button>
   """
   def toggle_checked(switch_id) when is_binary(switch_id) do
-    Phoenix.LiveView.JS.dispatch("phx:switch:toggle-checked",
+    JS.dispatch("phx:switch:toggle-checked",
       to: "##{switch_id}",
       bubbles: false
     )
@@ -433,7 +436,7 @@ defmodule Corex.Switch do
   """
   def toggle_checked(socket, switch_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) do
-    Phoenix.LiveView.push_event(socket, "switch_toggle_checked", %{
+    LiveView.push_event(socket, "switch_toggle_checked", %{
       switch_id: switch_id
     })
   end

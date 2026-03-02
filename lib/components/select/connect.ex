@@ -1,6 +1,6 @@
 defmodule Corex.Select.Connect do
   @moduledoc false
-  alias Corex.Select.Anatomy.{Props, Root, Label, Control, Positioner, Content}
+  alias Corex.Select.Anatomy.{Content, Control, Label, Positioner, Props, Root}
 
   import Corex.Helpers,
     only: [get_boolean: 1, validate_value!: 1]

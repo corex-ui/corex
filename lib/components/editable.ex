@@ -60,16 +60,16 @@ defmodule Corex.Editable do
   use Phoenix.Component
 
   alias Corex.Editable.Anatomy.{
+    Area,
+    CancelTrigger,
+    EditTrigger,
+    Input,
+    Label,
+    Preview,
     Props,
     Root,
-    Area,
-    Label,
-    Input,
-    Preview,
-    EditTrigger,
-    Triggers,
     SubmitTrigger,
-    CancelTrigger
+    Triggers
   }
 
   alias Corex.Editable.Connect

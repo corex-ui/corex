@@ -75,19 +75,19 @@ defmodule Corex.FloatingPanel do
   use Phoenix.Component
 
   alias Corex.FloatingPanel.Anatomy.{
-    Props,
-    Root,
-    Trigger,
-    Positioner,
-    Content,
-    Title,
-    Header,
     Body,
-    DragTrigger,
-    ResizeTrigger,
     CloseTrigger,
+    Content,
     Control,
-    StageTrigger
+    DragTrigger,
+    Header,
+    Positioner,
+    Props,
+    ResizeTrigger,
+    Root,
+    StageTrigger,
+    Title,
+    Trigger
   }
 
   alias Corex.FloatingPanel.Connect

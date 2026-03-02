@@ -97,8 +97,10 @@ defmodule Corex.Clipboard do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Clipboard.Anatomy.{Props, Root, Label, Control, Input, Trigger}
+  alias Corex.Clipboard.Anatomy.{Control, Input, Label, Props, Root, Trigger}
   alias Corex.Clipboard.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a clipboard component.
@@ -231,7 +233,7 @@ defmodule Corex.Clipboard do
       </button>
   """
   def copy(clipboard_id) when is_binary(clipboard_id) do
-    Phoenix.LiveView.JS.dispatch("phx:clipboard:copy",
+    JS.dispatch("phx:clipboard:copy",
       to: "##{clipboard_id}",
       bubbles: false
     )
@@ -250,7 +252,7 @@ defmodule Corex.Clipboard do
   """
   def copy(socket, clipboard_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) do
-    Phoenix.LiveView.push_event(socket, "clipboard_copy", %{
+    LiveView.push_event(socket, "clipboard_copy", %{
       clipboard_id: clipboard_id
     })
   end
@@ -266,7 +268,7 @@ defmodule Corex.Clipboard do
       </button>
   """
   def set_value(clipboard_id, value) when is_binary(clipboard_id) and is_binary(value) do
-    Phoenix.LiveView.JS.dispatch("phx:clipboard:set-value",
+    JS.dispatch("phx:clipboard:set-value",
       to: "##{clipboard_id}",
       detail: %{value: value},
       bubbles: false
@@ -287,7 +289,7 @@ defmodule Corex.Clipboard do
   def set_value(socket, clipboard_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(clipboard_id) and
              is_binary(value) do
-    Phoenix.LiveView.push_event(socket, "clipboard_set_value", %{
+    LiveView.push_event(socket, "clipboard_set_value", %{
       clipboard_id: clipboard_id,
       value: value
     })

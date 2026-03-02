@@ -149,17 +149,17 @@ defmodule Corex.Listbox do
   use Phoenix.Component
 
   alias Corex.Listbox.Anatomy.{
-    Props,
-    Root,
-    Label,
-    ValueText,
-    Input,
     Content,
+    Input,
+    Item,
     ItemGroup,
     ItemGroupLabel,
-    Item,
+    ItemIndicator,
     ItemText,
-    ItemIndicator
+    Label,
+    Props,
+    Root,
+    ValueText
   }
 
   alias Corex.Listbox.Connect

@@ -57,15 +57,15 @@ defmodule Corex.Carousel do
   use Phoenix.Component
 
   alias Corex.Carousel.Anatomy.{
-    Props,
-    Root,
     Control,
-    ItemGroup,
-    Item,
-    PrevTrigger,
-    NextTrigger,
+    Indicator,
     IndicatorGroup,
-    Indicator
+    Item,
+    ItemGroup,
+    NextTrigger,
+    PrevTrigger,
+    Props,
+    Root
   }
 
   alias Corex.Carousel.Connect

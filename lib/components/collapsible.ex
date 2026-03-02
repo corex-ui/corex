@@ -91,8 +91,10 @@ defmodule Corex.Collapsible do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Collapsible.Anatomy.{Props, Root, Trigger, Content}
+  alias Corex.Collapsible.Anatomy.{Content, Props, Root, Trigger}
   alias Corex.Collapsible.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a collapsible component.
@@ -189,7 +191,7 @@ defmodule Corex.Collapsible do
       </button>
   """
   def set_open(collapsible_id, open) when is_binary(collapsible_id) and is_boolean(open) do
-    Phoenix.LiveView.JS.dispatch("phx:collapsible:set-open",
+    JS.dispatch("phx:collapsible:set-open",
       to: "##{collapsible_id}",
       detail: %{open: open},
       bubbles: false
@@ -210,7 +212,7 @@ defmodule Corex.Collapsible do
   def set_open(socket, collapsible_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(collapsible_id) and
              is_boolean(open) do
-    Phoenix.LiveView.push_event(socket, "collapsible_set_open", %{
+    LiveView.push_event(socket, "collapsible_set_open", %{
       collapsible_id: collapsible_id,
       open: open
     })

@@ -1,6 +1,6 @@
 defmodule Corex.TreeView.Connect do
   @moduledoc false
-  alias Corex.TreeView.Anatomy.{Props, Root, Label, Item, Branch}
+  alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   import Corex.Helpers, only: [validate_value!: 1]
 
   defp data_attr(true), do: ""

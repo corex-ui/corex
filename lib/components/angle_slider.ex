@@ -112,20 +112,22 @@ defmodule Corex.AngleSlider do
   use Phoenix.Component
 
   alias Corex.AngleSlider.Anatomy.{
+    Control,
+    HiddenInput,
+    Label,
+    Marker,
+    MarkerGroup,
     Props,
     Root,
-    Label,
-    HiddenInput,
-    Control,
-    Thumb,
-    ValueText,
-    Value,
     Text,
-    MarkerGroup,
-    Marker
+    Thumb,
+    Value,
+    ValueText
   }
 
   alias Corex.AngleSlider.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false, doc: "The id of the angle slider")
   attr(:value, :float, default: 0.0, doc: "The value or controlled value in degrees")
@@ -224,7 +226,7 @@ defmodule Corex.AngleSlider do
       </button>
   """
   def set_value(angle_slider_id, value) when is_binary(angle_slider_id) and is_number(value) do
-    Phoenix.LiveView.JS.dispatch("phx:angle-slider:set-value",
+    JS.dispatch("phx:angle-slider:set-value",
       to: "##{angle_slider_id}",
       detail: %{value: value},
       bubbles: false
@@ -254,7 +256,7 @@ defmodule Corex.AngleSlider do
         value
       end
 
-    Phoenix.LiveView.push_event(socket, "angle_slider_set_value", %{
+    LiveView.push_event(socket, "angle_slider_set_value", %{
       angle_slider_id: angle_slider_id,
       value: angle
     })

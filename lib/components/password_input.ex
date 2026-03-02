@@ -189,13 +189,13 @@ defmodule Corex.PasswordInput do
   use Phoenix.Component
 
   alias Corex.PasswordInput.Anatomy.{
+    Control,
+    Indicator,
+    Input,
+    Label,
     Props,
     Root,
-    Label,
-    Control,
-    Input,
-    VisibilityTrigger,
-    Indicator
+    VisibilityTrigger
   }
 
   alias Corex.PasswordInput.Connect

@@ -1,17 +1,17 @@
 defmodule Corex.Listbox.Connect do
   @moduledoc false
   alias Corex.Listbox.Anatomy.{
-    Props,
-    Root,
-    Label,
-    ValueText,
-    Input,
     Content,
+    Input,
+    Item,
     ItemGroup,
     ItemGroupLabel,
-    Item,
+    ItemIndicator,
     ItemText,
-    ItemIndicator
+    Label,
+    Props,
+    Root,
+    ValueText
   }
 
   import Corex.Helpers, only: [validate_value!: 1]

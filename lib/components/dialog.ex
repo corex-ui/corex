@@ -127,17 +127,19 @@ defmodule Corex.Dialog do
   use Phoenix.Component
 
   alias Corex.Dialog.Anatomy.{
-    Props,
-    Trigger,
     Backdrop,
-    Positioner,
+    CloseTrigger,
     Content,
-    Title,
     Description,
-    CloseTrigger
+    Positioner,
+    Props,
+    Title,
+    Trigger
   }
 
   alias Corex.Dialog.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a dialog component.
@@ -329,7 +331,7 @@ defmodule Corex.Dialog do
       </button>
   """
   def set_open(dialog_id, open) when is_binary(dialog_id) and is_boolean(open) do
-    Phoenix.LiveView.JS.dispatch("phx:dialog:set-open",
+    JS.dispatch("phx:dialog:set-open",
       to: "##{dialog_id}",
       detail: %{open: open},
       bubbles: false
@@ -350,7 +352,7 @@ defmodule Corex.Dialog do
   def set_open(socket, dialog_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(dialog_id) and
              is_boolean(open) do
-    Phoenix.LiveView.push_event(socket, "dialog_set_open", %{
+    LiveView.push_event(socket, "dialog_set_open", %{
       dialog_id: dialog_id,
       open: open
     })
