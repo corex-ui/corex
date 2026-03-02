@@ -1,0 +1,71 @@
+!IF [where /q Makefile.auto.win]
+# The file doesn't exist, so don't include it.
+!ELSE
+!INCLUDE Makefile.auto.win
+!IF [del /f /q Makefile.auto.win] == 0
+!ENDIF
+!ENDIF
+
+NMAKE = nmake -$(MAKEFLAGS)
+
+SRC = c_src\sqlite3.c \
+  c_src\sqlite3_nif.c
+
+CFLAGS = -O2 $(CFLAGS)
+CFLAGS = -EHsc $(CFLAGS)
+
+# -Wall will emit a lot of warnings on Windows
+# CFLAGS = -Wall $(CFLAGS)
+CFLAGS = -Ic_src $(CFLAGS)
+
+# For more information about these features being enabled, check out
+# --> https://sqlite.org/compile.html
+CFLAGS = -DSQLITE_THREADSAFE=1 $(CFLAGS)
+CFLAGS = -DSQLITE_USE_URI=1 $(CFLAGS)
+CFLAGS = -DSQLITE_LIKE_DOESNT_MATCH_BLOBS=1 $(CFLAGS)
+CFLAGS = -DSQLITE_DQS=0 $(CFLAGS)
+CFLAGS = -DHAVE_USLEEP=1 $(CFLAGS)
+
+# TODO: The following features should be completely configurable by the person
+#       installing the nif. Just need to have certain environment variables
+#       enabled to support them.
+CFLAGS = -DALLOW_COVERING_INDEX_SCAN=1 $(CFLAGS)
+CFLAGS = -DENABLE_FTS3_PARENTHESIS=1 $(CFLAGS)
+CFLAGS = -DENABLE_LOAD_EXTENSION=1 $(CFLAGS)
+CFLAGS = -DENABLE_SOUNDEX=1 $(CFLAGS)
+CFLAGS = -DENABLE_STAT4=1 $(CFLAGS)
+CFLAGS = -DENABLE_UPDATE_DELETE_LIMIT=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_FTS3=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_FTS4=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_FTS5=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_GEOPOLY=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_MATH_FUNCTIONS=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_RBU=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_RTREE=1 $(CFLAGS)
+CFLAGS = -DSQLITE_OMIT_DEPRECATED=1 $(CFLAGS)
+CFLAGS = -DSQLITE_ENABLE_DBSTAT_VTAB=1 $(CFLAGS)
+
+# TODO: We should allow the person building to be able to specify this
+CFLAGS = -DNDEBUG=1 $(CFLAGS)
+
+# Set Erlang-specific compile flags
+!IFNDEF ERL_CFLAGS
+ERL_CFLAGS = -I"$(ERL_EI_INCLUDE_DIR)"
+!ENDIF
+
+all: clean priv\sqlite3_nif.dll
+
+clean:
+    del /f /q priv
+
+Makefile.auto.win:
+    erl -noshell -eval "io:format(\"ERTS_INCLUDE_PATH=~ts/erts-~ts/include/\", [code:root_dir(), erlang:system_info(version)])." -s erlang halt > $@
+
+!IFDEF ERTS_INCLUDE_PATH
+priv\sqlite3_nif.dll:
+    if NOT EXIST "priv" mkdir "priv"
+    $(CC) $(ERL_CFLAGS) $(CFLAGS) -I"$(ERTS_INCLUDE_PATH)" -LD -MD -Fe$@ $(SRC)
+!ELSE
+priv\sqlite3_nif.dll: Makefile.auto.win
+    $(NMAKE) -F Makefile.win priv\sqlite3_nif.dll
+!ENDIF

@@ -33,8 +33,4 @@ corex-*.tar
 
 /.expert/
 
-/installer/
-
-/integration_test/
-
 /my_app/
