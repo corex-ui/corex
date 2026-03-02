@@ -1,14 +1,14 @@
 defmodule Corex.Dialog.Connect do
   @moduledoc false
   alias Corex.Dialog.Anatomy.{
-    Props,
-    Trigger,
     Backdrop,
-    Positioner,
+    CloseTrigger,
     Content,
-    Title,
     Description,
-    CloseTrigger
+    Positioner,
+    Props,
+    Title,
+    Trigger
   }
 
   defp data_attr(true), do: ""

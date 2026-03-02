@@ -1,8 +1,16 @@
 defmodule Corex.AngleSliderTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.AngleSlider
   alias Corex.AngleSlider.Connect
+
+  describe "angle_slider/1" do
+    test "renders" do
+      html = render_component(&AngleSlider.angle_slider/1, value: 0, name: "angle")
+      assert html =~ ~r/data-scope="angle-slider"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_value/2" do
     test "returns JS command" do

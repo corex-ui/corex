@@ -225,8 +225,8 @@ defmodule Corex.Combobox do
 
   @doc type: :component
   use Phoenix.Component
+  alias Corex.Combobox.Anatomy.{Content, Control, Input, Label, Positioner, Props, Root}
   alias Corex.Combobox.Connect
-  alias Corex.Combobox.Anatomy.{Props, Root, Label, Control, Input, Positioner, Content}
 
   @doc """
   Renders a combobox component.

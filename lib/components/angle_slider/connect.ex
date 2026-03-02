@@ -1,17 +1,17 @@
 defmodule Corex.AngleSlider.Connect do
   @moduledoc false
   alias Corex.AngleSlider.Anatomy.{
+    Control,
+    HiddenInput,
+    Label,
+    Marker,
+    MarkerGroup,
     Props,
     Root,
-    Label,
-    HiddenInput,
-    Control,
-    Thumb,
-    ValueText,
-    Value,
     Text,
-    MarkerGroup,
-    Marker
+    Thumb,
+    Value,
+    ValueText
   }
 
   defp data_attr(true), do: ""

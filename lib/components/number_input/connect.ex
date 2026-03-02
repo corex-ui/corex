@@ -1,15 +1,15 @@
 defmodule Corex.NumberInput.Connect do
   @moduledoc false
   alias Corex.NumberInput.Anatomy.{
-    Props,
-    Root,
-    Label,
     Control,
-    Input,
-    TriggerGroup,
     DecrementTrigger,
     IncrementTrigger,
-    Scrubber
+    Input,
+    Label,
+    Props,
+    Root,
+    Scrubber,
+    TriggerGroup
   }
 
   defp data_attr(true), do: ""

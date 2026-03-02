@@ -86,6 +86,7 @@ defmodule Corex.NativeInput do
 
   @doc type: :component
   use Phoenix.Component
+  alias Phoenix.HTML.Form
 
   @types ~w(text textarea date datetime-local time month week email url tel search color number password checkbox radio select)
 
@@ -149,7 +150,7 @@ defmodule Corex.NativeInput do
       assigns
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:checked, fn ->
-        Phoenix.HTML.Form.normalize_value("checkbox", assigns[:value])
+        Form.normalize_value("checkbox", assigns[:value])
       end)
 
     ~H"""

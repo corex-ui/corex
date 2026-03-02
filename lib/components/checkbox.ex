@@ -225,8 +225,11 @@ defmodule Corex.Checkbox do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Checkbox.Anatomy.{Props, Root, HiddenInput, Control, Label, Indicator}
+  alias Corex.Checkbox.Anatomy.{Control, HiddenInput, Indicator, Label, Props, Root}
   alias Corex.Checkbox.Connect
+  alias Phoenix.HTML.Form
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a checkbox component.
@@ -331,7 +334,7 @@ defmodule Corex.Checkbox do
       |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
       |> assign_new(:id, fn -> field.id end)
       |> assign_new(:name, fn -> field.name end)
-      |> assign(:checked, Phoenix.HTML.Form.normalize_value("checkbox", field.value))
+      |> assign(:checked, Form.normalize_value("checkbox", field.value))
       |> assign_new(:form, fn -> field.form.id end)
 
     checkbox(assigns)
@@ -402,7 +405,7 @@ defmodule Corex.Checkbox do
       </button>
   """
   def set_checked(checkbox_id, checked) when is_binary(checkbox_id) and is_boolean(checked) do
-    Phoenix.LiveView.JS.dispatch("phx:checkbox:set-checked",
+    JS.dispatch("phx:checkbox:set-checked",
       to: "##{checkbox_id}",
       detail: %{checked: checked},
       bubbles: false
@@ -423,7 +426,7 @@ defmodule Corex.Checkbox do
   def set_checked(socket, checkbox_id, checked)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
              is_boolean(checked) do
-    Phoenix.LiveView.push_event(socket, "checkbox_set_checked", %{
+    LiveView.push_event(socket, "checkbox_set_checked", %{
       checkbox_id: checkbox_id,
       checked: checked
     })
@@ -440,7 +443,7 @@ defmodule Corex.Checkbox do
       </button>
   """
   def toggle_checked(checkbox_id) when is_binary(checkbox_id) do
-    Phoenix.LiveView.JS.dispatch("phx:checkbox:toggle-checked",
+    JS.dispatch("phx:checkbox:toggle-checked",
       to: "##{checkbox_id}",
       bubbles: false
     )
@@ -459,7 +462,7 @@ defmodule Corex.Checkbox do
   """
   def toggle_checked(socket, checkbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do
-    Phoenix.LiveView.push_event(socket, "checkbox_toggle_checked", %{
+    LiveView.push_event(socket, "checkbox_toggle_checked", %{
       checkbox_id: checkbox_id
     })
   end

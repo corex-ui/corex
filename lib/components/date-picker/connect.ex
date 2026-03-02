@@ -1,14 +1,14 @@
 defmodule Corex.DatePicker.Connect do
   @moduledoc false
   alias Corex.DatePicker.Anatomy.{
-    Props,
-    Root,
-    Label,
+    Content,
     Control,
     Input,
-    Trigger,
+    Label,
     Positioner,
-    Content
+    Props,
+    Root,
+    Trigger
   }
 
   defp data_attr(true), do: ""

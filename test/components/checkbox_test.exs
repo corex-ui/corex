@@ -1,8 +1,16 @@
 defmodule Corex.CheckboxTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Checkbox
   alias Corex.Checkbox.Connect
+
+  describe "checkbox/1" do
+    test "renders" do
+      html = render_component(&Checkbox.checkbox/1, checked: false, name: "cb")
+      assert html =~ ~r/data-scope="checkbox"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_checked/2" do
     test "returns JS command when checked is true" do

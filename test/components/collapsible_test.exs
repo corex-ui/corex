@@ -1,8 +1,16 @@
 defmodule Corex.CollapsibleTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Collapsible
   alias Corex.Collapsible.Connect
+
+  describe "collapsible/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_collapsible/1, [])
+      assert html =~ ~r/data-scope="collapsible"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_open/2" do
     test "returns JS command when open is true" do

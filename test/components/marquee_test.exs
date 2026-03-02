@@ -1,8 +1,16 @@
 defmodule Corex.MarqueeTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Marquee
   alias Corex.Marquee.Connect
+
+  describe "marquee/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_marquee/1, [])
+      assert html =~ ~r/data-scope="marquee"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "pause/1" do
     test "returns JS command" do

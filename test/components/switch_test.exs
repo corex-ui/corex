@@ -1,8 +1,16 @@
 defmodule Corex.SwitchTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Switch
   alias Corex.Switch.Connect
+
+  describe "switch/1" do
+    test "renders" do
+      html = render_component(&Switch.switch/1, checked: false, name: "sw")
+      assert html =~ ~r/data-scope="switch"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_checked/2" do
     test "returns JS command when checked is true" do

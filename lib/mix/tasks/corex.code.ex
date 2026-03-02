@@ -47,8 +47,6 @@ defmodule Mix.Tasks.Corex.Code do
     validate_makeup!()
     validate_path!(full_path, force)
     generate!(full_path)
-
-    Mix.shell().info("Makeup stylesheet written to: #{path}")
   end
 
   defp validate_makeup! do
@@ -79,8 +77,7 @@ defmodule Mix.Tasks.Corex.Code do
   end
 
   defp generate!(full_path) do
-    makeup = Module.concat(["Elixir", "Makeup"])
-    stylesheet = apply(makeup, :stylesheet, [:default_style])
+    stylesheet = Makeup.stylesheet(:default_style)
 
     full_path
     |> Path.dirname()

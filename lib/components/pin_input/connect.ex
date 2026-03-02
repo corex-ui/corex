@@ -1,6 +1,6 @@
 defmodule Corex.PinInput.Connect do
   @moduledoc false
-  alias Corex.PinInput.Anatomy.{Props, Root, Label, HiddenInput, Control, Input}
+  alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   import Corex.Helpers, only: [validate_value!: 1]
 
   defp data_attr(true), do: ""

@@ -1,6 +1,6 @@
 defmodule Corex.Checkbox.Connect do
   @moduledoc false
-  alias Corex.Checkbox.Anatomy.{Props, Root, HiddenInput, Indicator, Control, Label}
+  alias Corex.Checkbox.Anatomy.{Control, HiddenInput, Indicator, Label, Props, Root}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

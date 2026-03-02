@@ -149,9 +149,9 @@ defmodule Corex.Form do
 
   '''
 
+  alias Ecto.Changeset
   alias Phoenix.Component
   alias Phoenix.HTML.Form
-  alias Ecto.Changeset
 
   @doc """
   Returns the form id.

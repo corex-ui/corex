@@ -31,3 +31,10 @@ corex-*.tar
 
 .cursor
 
+/.expert/
+
+/installer/
+
+/integration_test/
+
+/my_app/

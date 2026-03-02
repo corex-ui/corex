@@ -131,8 +131,10 @@ defmodule Corex.ToggleGroup do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.ToggleGroup.Anatomy.{Props, Root, Item}
+  alias Corex.ToggleGroup.Anatomy.{Item, Props, Root}
   alias Corex.ToggleGroup.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a toggle group component.
@@ -248,7 +250,7 @@ defmodule Corex.ToggleGroup do
       </button>
   """
   def set_value(toggle_group_id, value) when is_binary(toggle_group_id) do
-    Phoenix.LiveView.JS.dispatch("phx:toggle-group:set-value",
+    JS.dispatch("phx:toggle-group:set-value",
       to: "##{toggle_group_id}",
       detail: %{value: Connect.validate_value!(value)}
     )
@@ -267,7 +269,7 @@ defmodule Corex.ToggleGroup do
   """
   def set_value(socket, toggle_group_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(toggle_group_id) do
-    Phoenix.LiveView.push_event(socket, "toggle-group_set_value", %{
+    LiveView.push_event(socket, "toggle-group_set_value", %{
       id: toggle_group_id,
       value: Connect.validate_value!(value)
     })

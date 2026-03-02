@@ -472,7 +472,7 @@ defmodule Corex.Toast do
         _ -> "info"
       end
 
-    Phoenix.LiveView.JS.dispatch("toast:create",
+    JS.dispatch("toast:create",
       to: "##{toast_group_id}",
       detail: %{
         title: title,

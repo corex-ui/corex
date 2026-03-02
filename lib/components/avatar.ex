@@ -46,7 +46,7 @@ defmodule Corex.Avatar do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Avatar.Anatomy.{Props, Root, Image, Fallback, Skeleton}
+  alias Corex.Avatar.Anatomy.{Fallback, Image, Props, Root, Skeleton}
   alias Corex.Avatar.Connect
 
   attr(:id, :string, required: false, doc: "The id of the avatar")

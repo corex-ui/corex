@@ -96,7 +96,7 @@ defmodule E2e.MixProject do
       test: [
         &clean_static_assets/1,
         &copy_static_images/1,
-        "assets.deploy",
+        "assets.build",
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",

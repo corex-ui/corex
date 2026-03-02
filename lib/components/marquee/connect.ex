@@ -1,6 +1,6 @@
 defmodule Corex.Marquee.Connect do
   @moduledoc false
-  alias Corex.Marquee.Anatomy.{Props, Root, Edge, Viewport, Content, Item}
+  alias Corex.Marquee.Anatomy.{Content, Edge, Item, Props, Root, Viewport}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

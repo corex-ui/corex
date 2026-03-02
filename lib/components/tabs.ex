@@ -236,8 +236,10 @@ defmodule Corex.Tabs do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Tabs.Anatomy.{Props, Root, List, Trigger, Content}
+  alias Corex.Tabs.Anatomy.{Content, List, Props, Root, Trigger}
   alias Corex.Tabs.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a tabs component.
@@ -595,7 +597,7 @@ defmodule Corex.Tabs do
       </button>
   """
   def set_value(tabs_id, value) when is_binary(tabs_id) do
-    Phoenix.LiveView.JS.dispatch("phx:tabs:set-value",
+    JS.dispatch("phx:tabs:set-value",
       to: "##{tabs_id}",
       detail: %{value: validate_tabs_value!(value)},
       bubbles: false
@@ -620,7 +622,7 @@ defmodule Corex.Tabs do
   """
   def set_value(socket, tabs_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tabs_id) do
-    Phoenix.LiveView.push_event(socket, "tabs_set_value", %{
+    LiveView.push_event(socket, "tabs_set_value", %{
       tabs_id: tabs_id,
       value: validate_tabs_value!(value)
     })

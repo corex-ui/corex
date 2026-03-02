@@ -1,8 +1,67 @@
 defmodule Corex.AccordionTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Accordion
   alias Corex.Accordion.Connect
+
+  describe "accordion/1" do
+    test "renders with items" do
+      items = Corex.Content.new([[trigger: "T1", content: "C1"]])
+      html = render_component(&Accordion.accordion/1, items: items)
+      assert html =~ ~r/data-scope="accordion"/
+      assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/T1/
+      assert html =~ ~r/C1/
+    end
+
+    test "renders with horizontal orientation" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_accordion/1,
+          orientation: "horizontal"
+        )
+
+      assert html =~ ~r/data-scope="accordion"/
+      assert html =~ ~r/data-orientation="horizontal"/
+    end
+
+    test "renders with collapsible false" do
+      html = render_component(&CorexTest.ComponentHelpers.render_accordion/1, collapsible: false)
+      assert html =~ ~r/data-scope="accordion"/
+    end
+
+    test "renders with multiple false" do
+      html = render_component(&CorexTest.ComponentHelpers.render_accordion/1, multiple: false)
+      assert html =~ ~r/data-scope="accordion"/
+    end
+
+    test "renders with dir rtl" do
+      html = render_component(&CorexTest.ComponentHelpers.render_accordion/1, dir: "rtl")
+      assert html =~ ~r/data-scope="accordion"/
+      assert html =~ ~r/dir="rtl"/
+    end
+
+    test "renders with indicator slot" do
+      html = render_component(&CorexTest.ComponentHelpers.render_accordion_with_indicator/1, [])
+      assert html =~ ~r/data-scope="accordion"/
+      assert html =~ ~r/data-part="item-indicator"/
+    end
+
+    test "renders with custom trigger and content slots" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_accordion_with_custom_slots/1, [])
+
+      assert html =~ ~r/data-scope="accordion"/
+      assert html =~ ~r/data-trigger/
+      assert html =~ ~r/data-content/
+      assert html =~ ~r/Custom/
+    end
+
+    test "renders accordion_skeleton" do
+      html = render_component(&Accordion.accordion_skeleton/1, [])
+      assert html =~ ~r/data-scope="accordion"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_value/2" do
     test "returns JS command with list of values" do

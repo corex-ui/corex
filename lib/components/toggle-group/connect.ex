@@ -1,6 +1,6 @@
 defmodule Corex.ToggleGroup.Connect do
   @moduledoc false
-  alias Corex.ToggleGroup.Anatomy.{Props, Root, Item}
+  alias Corex.ToggleGroup.Anatomy.{Item, Props, Root}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

@@ -305,8 +305,10 @@ defmodule Corex.Menu do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Menu.Anatomy.{Props, Root, Trigger, Item, Group}
+  alias Corex.Menu.Anatomy.{Group, Item, Props, Root, Trigger}
   alias Corex.Menu.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a menu component.
@@ -655,7 +657,7 @@ defmodule Corex.Menu do
       </button>
   """
   def set_open(menu_id, open) when is_binary(menu_id) do
-    Phoenix.LiveView.JS.dispatch("phx:menu:set-open",
+    JS.dispatch("phx:menu:set-open",
       to: "[id=\"menu:#{menu_id}\"]",
       detail: %{open: open},
       bubbles: false
@@ -675,7 +677,7 @@ defmodule Corex.Menu do
   """
   def set_open(socket, menu_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(menu_id) do
-    Phoenix.LiveView.push_event(socket, "menu_set_open", %{
+    LiveView.push_event(socket, "menu_set_open", %{
       menu_id: menu_id,
       open: open
     })

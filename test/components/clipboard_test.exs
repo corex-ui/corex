@@ -1,8 +1,16 @@
 defmodule Corex.ClipboardTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Clipboard
   alias Corex.Clipboard.Connect
+
+  describe "clipboard/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_clipboard/1, [])
+      assert html =~ ~r/data-scope="clipboard"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "set_value/2" do
     test "returns JS command" do

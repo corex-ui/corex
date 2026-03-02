@@ -1,7 +1,15 @@
 defmodule Corex.EditableTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
   alias Corex.Editable.Connect
+
+  describe "editable/1" do
+    test "renders" do
+      html = render_component(&CorexTest.ComponentHelpers.render_editable/1, [])
+      assert html =~ ~r/data-scope="editable"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
 
   describe "Connect.root/1" do
     test "returns root attributes" do

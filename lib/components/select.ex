@@ -426,8 +426,8 @@ defmodule Corex.Select do
   '''
 
   use Phoenix.Component
+  alias Corex.Select.Anatomy.{Content, Control, Label, Positioner, Props, Root}
   alias Corex.Select.Connect
-  alias Corex.Select.Anatomy.{Props, Root, Label, Control, Positioner, Content}
 
   attr(:id, :string, required: false)
   attr(:collection, :list, default: [])

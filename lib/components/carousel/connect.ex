@@ -1,15 +1,15 @@
 defmodule Corex.Carousel.Connect do
   @moduledoc false
   alias Corex.Carousel.Anatomy.{
-    Props,
-    Root,
     Control,
-    ItemGroup,
-    Item,
-    PrevTrigger,
-    NextTrigger,
+    Indicator,
     IndicatorGroup,
-    Indicator
+    Item,
+    ItemGroup,
+    NextTrigger,
+    PrevTrigger,
+    Props,
+    Root
   }
 
   defp data_attr(true), do: ""

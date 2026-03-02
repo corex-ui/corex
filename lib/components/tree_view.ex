@@ -117,8 +117,10 @@ defmodule Corex.TreeView do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.TreeView.Anatomy.{Props, Root, Label, Branch, Item}
+  alias Corex.TreeView.Anatomy.{Branch, Item, Label, Props, Root}
   alias Corex.TreeView.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [validate_value!: 1]
 
   @doc """
@@ -356,7 +358,7 @@ defmodule Corex.TreeView do
   @doc type: :api
   @doc "Sets the tree expanded value from client-side."
   def set_expanded_value(tree_view_id, value) when is_binary(tree_view_id) do
-    Phoenix.LiveView.JS.dispatch("phx:tree-view:set-expanded-value",
+    JS.dispatch("phx:tree-view:set-expanded-value",
       to: "##{tree_view_id}",
       detail: %{value: validate_value!(value)},
       bubbles: false
@@ -366,7 +368,7 @@ defmodule Corex.TreeView do
   @doc type: :api
   @doc "Sets the tree selected value from client-side."
   def set_selected_value(tree_view_id, value) when is_binary(tree_view_id) do
-    Phoenix.LiveView.JS.dispatch("phx:tree-view:set-selected-value",
+    JS.dispatch("phx:tree-view:set-selected-value",
       to: "##{tree_view_id}",
       detail: %{value: validate_value!(value)},
       bubbles: false
@@ -377,7 +379,7 @@ defmodule Corex.TreeView do
   @doc "Sets the tree expanded value from server-side."
   def set_expanded_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
-    Phoenix.LiveView.push_event(socket, "tree_view_set_expanded_value", %{
+    LiveView.push_event(socket, "tree_view_set_expanded_value", %{
       tree_view_id: tree_view_id,
       value: validate_value!(value)
     })
@@ -387,7 +389,7 @@ defmodule Corex.TreeView do
   @doc "Sets the tree selected value from server-side."
   def set_selected_value(socket, tree_view_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(tree_view_id) do
-    Phoenix.LiveView.push_event(socket, "tree_view_set_selected_value", %{
+    LiveView.push_event(socket, "tree_view_set_selected_value", %{
       tree_view_id: tree_view_id,
       value: validate_value!(value)
     })

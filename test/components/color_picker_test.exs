@@ -1,8 +1,82 @@
 defmodule Corex.ColorPickerTest do
-  use ExUnit.Case, async: true
+  use CorexTest.ComponentCase, async: true
 
+  alias Corex.ColorPicker
   alias Corex.ColorPicker.Connect
   alias Corex.ColorPicker.Initial
+
+  describe "color_picker/1" do
+    test "renders" do
+      html = render_component(&ColorPicker.color_picker/1, [])
+      assert html =~ ~r/data-scope="color-picker"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
+
+  describe "set_open/2" do
+    test "returns JS command when open is true" do
+      js = ColorPicker.set_open("my-color-picker", true)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command when open is false" do
+      js = ColorPicker.set_open("my-color-picker", false)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_open/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = ColorPicker.set_open(socket, "my-color-picker", true)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "set_value/2" do
+    test "returns JS command for hex string" do
+      js = ColorPicker.set_value("my-color-picker", "#ff0000")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command for rgba string" do
+      js = ColorPicker.set_value("my-color-picker", "rgba(255, 0, 0, 1)")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_value/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = ColorPicker.set_value(socket, "my-color-picker", "#00ff00")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "set_format/2" do
+    test "returns JS command for rgba format" do
+      js = ColorPicker.set_format("my-color-picker", "rgba")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command for hex format" do
+      js = ColorPicker.set_format("my-color-picker", "hex")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command for hsla and hsba formats" do
+      assert %Phoenix.LiveView.JS{} = ColorPicker.set_format("my-color-picker", "hsla")
+      assert %Phoenix.LiveView.JS{} = ColorPicker.set_format("my-color-picker", "hsba")
+    end
+  end
+
+  describe "set_format/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = ColorPicker.set_format(socket, "my-color-picker", "hex")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
 
   describe "Initial.parse/1" do
     test "returns empty map for nil" do

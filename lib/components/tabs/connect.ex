@@ -1,6 +1,6 @@
 defmodule Corex.Tabs.Connect do
   @moduledoc false
-  alias Corex.Tabs.Anatomy.{Props, Root, List, Trigger, Content}
+  alias Corex.Tabs.Anatomy.{Content, List, Props, Root, Trigger}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil

@@ -60,14 +60,14 @@ defmodule Corex.RadioGroup do
   use Phoenix.Component
 
   alias Corex.RadioGroup.Anatomy.{
-    Props,
-    Root,
-    Label,
     Indicator,
     Item,
-    ItemText,
     ItemControl,
-    ItemHiddenInput
+    ItemHiddenInput,
+    ItemText,
+    Label,
+    Props,
+    Root
   }
 
   alias Corex.RadioGroup.Connect

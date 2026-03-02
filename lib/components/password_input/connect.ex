@@ -1,13 +1,13 @@
 defmodule Corex.PasswordInput.Connect do
   @moduledoc false
   alias Corex.PasswordInput.Anatomy.{
+    Control,
+    Indicator,
+    Input,
+    Label,
     Props,
     Root,
-    Label,
-    Control,
-    Input,
-    VisibilityTrigger,
-    Indicator
+    VisibilityTrigger
   }
 
   defp data_attr(true), do: ""

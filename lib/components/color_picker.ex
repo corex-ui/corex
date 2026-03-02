@@ -57,22 +57,24 @@ defmodule Corex.ColorPicker do
   use Phoenix.Component
 
   alias Corex.ColorPicker.Anatomy.{
+    Content,
+    Control,
+    HiddenInput,
+    Label,
+    Positioner,
+    PresetSwatch,
     Props,
     Root,
-    Label,
-    HiddenInput,
-    Control,
-    Trigger,
-    Positioner,
-    Content,
-    TransparencyGrid,
     Swatch,
     SwatchTrigger,
-    PresetSwatch
+    TransparencyGrid,
+    Trigger
   }
 
   alias Corex.ColorPicker.Connect
   alias Corex.ColorPicker.Initial
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   attr(:id, :string, required: false)
 
@@ -329,7 +331,7 @@ defmodule Corex.ColorPicker do
   """
   def set_open(color_picker_id, open)
       when is_binary(color_picker_id) and is_boolean(open) do
-    Phoenix.LiveView.JS.dispatch("phx:color-picker:set-open",
+    JS.dispatch("phx:color-picker:set-open",
       to: "##{color_picker_id}",
       detail: %{open: open},
       bubbles: false
@@ -342,7 +344,7 @@ defmodule Corex.ColorPicker do
   """
   def set_open(socket, color_picker_id, open)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
-    Phoenix.LiveView.push_event(socket, "color_picker_set_open", %{
+    LiveView.push_event(socket, "color_picker_set_open", %{
       color_picker_id: color_picker_id,
       open: open
     })
@@ -354,7 +356,7 @@ defmodule Corex.ColorPicker do
   Value can be any color string (e.g. `"#ff0000"`, `"rgba(255, 0, 0, 1)"`).
   """
   def set_value(color_picker_id, value) when is_binary(color_picker_id) and is_binary(value) do
-    Phoenix.LiveView.JS.dispatch("phx:color-picker:set-value",
+    JS.dispatch("phx:color-picker:set-value",
       to: "##{color_picker_id}",
       detail: %{value: value},
       bubbles: false
@@ -367,7 +369,7 @@ defmodule Corex.ColorPicker do
   """
   def set_value(socket, color_picker_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
-    Phoenix.LiveView.push_event(socket, "color_picker_set_value", %{
+    LiveView.push_event(socket, "color_picker_set_value", %{
       color_picker_id: color_picker_id,
       value: to_string(value)
     })
@@ -380,7 +382,7 @@ defmodule Corex.ColorPicker do
   """
   def set_format(color_picker_id, format)
       when is_binary(color_picker_id) and format in ["rgba", "hsla", "hsba", "hex"] do
-    Phoenix.LiveView.JS.dispatch("phx:color-picker:set-format",
+    JS.dispatch("phx:color-picker:set-format",
       to: "##{color_picker_id}",
       detail: %{format: format},
       bubbles: false
@@ -393,7 +395,7 @@ defmodule Corex.ColorPicker do
   """
   def set_format(socket, color_picker_id, format)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(color_picker_id) do
-    Phoenix.LiveView.push_event(socket, "color_picker_set_format", %{
+    LiveView.push_event(socket, "color_picker_set_format", %{
       color_picker_id: color_picker_id,
       format: to_string(format)
     })

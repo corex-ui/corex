@@ -1,4 +1,10 @@
 
+![Hex.pm License](https://img.shields.io/hexpm/l/corex) 
+![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
+[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=corex-install)](https://coveralls.io/github/corex-ui/corex?branch=corex-install)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
+
 # Corex
 
 Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
@@ -70,8 +76,6 @@ We will first update the generator to the latest version and then generate `:my_
 mix local.phx
 mix phx.new my_app
 ```
-
-## Dependencies
 
 Add `corex` to your `mix.exs` dependencies:
 
