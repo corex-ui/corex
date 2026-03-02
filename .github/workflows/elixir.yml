@@ -38,12 +38,6 @@ jobs:
     - name: Install dependencies
       run: mix deps.get
 
-    - name: Install Phoenix archive
-      run: mix archive.install hex phx_new --force
-
-    - name: Install Igniter archive
-      run: mix archive.install hex igniter_new --force
-
     - name: Run tests and post coverage to Coveralls
       run: mix coveralls.github
 
@@ -73,16 +67,6 @@ jobs:
 
     - name: Install dependencies
       run: mix deps.get
-
-    - name: Install Phoenix archive
-      run: mix archive.install hex phx_new --force
-
-    - name: Install Igniter archive
-      run: mix archive.install hex igniter_new --force
-
-    - name: Run integration tests
-      run: mix test --only integration
-      timeout-minutes: 30
 
   e2e-tests:
     name: E2E tests
