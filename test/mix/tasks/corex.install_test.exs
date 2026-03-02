@@ -75,33 +75,44 @@ defmodule Mix.Tasks.Corex.InstallTest do
     refute root_layout_warning?, "Should not warn about root layout when already patched"
   end
 
-  test "install with --mode adds mode script and mode_toggle to layouts" do
+  test "install with --mode adds mode script to root and replaces app layout with Corex" do
     igniter =
       phx_test_project(app_name: :phx_mode)
       |> Igniter.compose_task("corex.install", ["--yes", "--mode"])
 
-    source =
+    root_source =
       Rewrite.source!(igniter.rewrite, "lib/phx_mode_web/components/layouts/root.html.heex")
 
-    content = Rewrite.Source.get(source, :content)
-    assert content =~ ~r/data-mode=/
+    root_content = Rewrite.Source.get(root_source, :content)
+    assert root_content =~ ~r/data-mode=/
+    assert root_content =~ ~r/phx:set-mode/
+    refute root_content =~ ~r/phx:set-theme/
 
     layouts_source = Rewrite.source!(igniter.rewrite, "lib/phx_mode_web/components/layouts.ex")
     layouts_content = Rewrite.Source.get(layouts_source, :content)
-    assert layouts_content =~ ~r/<\.mode_toggle \/>/
-    assert layouts_content =~ ~r/def mode_toggle\(assigns\)/
+
+    assert layouts_content =~ ~r/class="typo layout"/,
+           "def app is replaced with Corex layout"
+
+    assert layouts_content =~ ~r/toast_group/,
+           "layouts use toast_group instead of flash_group"
+
+    refute layouts_content =~ ~r/def flash_group/,
+           "flash_group should be removed when no-preserve"
   end
 
-  test "install with --theme adds theme config" do
+  test "install with --theme adds theme script to root" do
     igniter =
       phx_test_project(app_name: :phx_theme)
       |> Igniter.compose_task("corex.install", ["--yes", "--theme", "neo:uno"])
 
-    source =
+    root_source =
       Rewrite.source!(igniter.rewrite, "lib/phx_theme_web/components/layouts/root.html.heex")
 
-    content = Rewrite.Source.get(source, :content)
-    assert content =~ ~r/data-theme=|data-mode=/
+    root_content = Rewrite.Source.get(root_source, :content)
+    assert root_content =~ ~r/data-theme=/
+    assert root_content =~ ~r/phx:set-theme/
+    refute root_content =~ ~r/phx:set-mode/
   end
 
   test "install with design adds corex CSS imports" do
@@ -112,9 +123,20 @@ defmodule Mix.Tasks.Corex.InstallTest do
     source = Rewrite.source!(igniter.rewrite, "assets/css/app.css")
     content = Rewrite.Source.get(source, :content)
     assert content =~ ~r/@import "\.\.\/corex\/main\.css"/
+
+    root_source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_design_web/components/layouts/root.html.heex")
+
+    root_content = Rewrite.Source.get(root_source, :content)
+
+    assert root_content =~ ~r/lang="en"\s+data-theme="neo"\s+data-mode="light"/,
+           "default install uses simple root with static en/neo/light"
+
+    refute root_content =~ ~r/phx:set-mode|phx:set-theme/,
+           "root should have no mode/theme script when neither --mode nor --theme"
   end
 
-  test "design removes daisyui CSS and uses data-mode for dark variant" do
+  test "design adds Corex imports and uses data-mode for dark variant" do
     igniter =
       phx_test_project(app_name: :phx_design_daisy)
       |> Igniter.compose_task("corex.install", ["--yes"])
@@ -122,10 +144,11 @@ defmodule Mix.Tasks.Corex.InstallTest do
     source = Rewrite.source!(igniter.rewrite, "assets/css/app.css")
     content = Rewrite.Source.get(source, :content)
 
-    refute content =~ ~r/@plugin "\.\.\/vendor\/daisyui/, "Should remove daisyui plugin"
+    assert content =~ ~r/@import "\.\.\/corex\/main\.css"/,
+           "Should add Corex imports when design"
 
-    refute content =~ ~r/@plugin "\.\.\/vendor\/daisyui-theme/,
-           "Should remove daisyui-theme plugin"
+    assert content =~ ~r/@import "\.\.\/corex\/components\/toast\.css"/,
+           "Should add toast.css when design"
 
     refute content =~ ~r/\[data-theme=dark\]/,
            "Should replace data-theme=dark with data-mode=dark"
@@ -154,5 +177,142 @@ defmodule Mix.Tasks.Corex.InstallTest do
 
     refute root_content =~ ~r/data-mode="light"/,
            "Should not add data-mode when no-design"
+  end
+
+  test "default keeps root route as home and overwrites home.html.heex" do
+    igniter =
+      phx_test_project(app_name: :phx_default_route)
+      |> Igniter.compose_task("corex.install", ["--yes"])
+
+    router_source = Rewrite.source!(igniter.rewrite, "lib/phx_default_route_web/router.ex")
+    router_content = Rewrite.Source.get(router_source, :content)
+
+    assert router_content =~ ~r/get\s*\(\s*"\/"\s*,\s*PageController\s*,\s*:home\s*\)/,
+           "default no-preserve keeps get \"/\" PageController :home"
+
+    home_source =
+      Rewrite.source!(
+        igniter.rewrite,
+        "lib/phx_default_route_web/controllers/page_html/home.html.heex"
+      )
+
+    home_content = Rewrite.Source.get(home_source, :content)
+
+    assert home_content =~ ~r/Build/,
+           "home.html.heex has Corex landing content"
+  end
+
+  test "preserve creates corex_root and adds get /corex without modifying root or home" do
+    igniter =
+      phx_test_project(app_name: :phx_preserve)
+      |> Igniter.compose_task("corex.install", ["--yes", "--preserve"])
+
+    corex_root =
+      Rewrite.source!(
+        igniter.rewrite,
+        "lib/phx_preserve_web/components/layouts/corex_root.html.heex"
+      )
+
+    corex_root_content = Rewrite.Source.get(corex_root, :content)
+    assert corex_root_content =~ ~r/data-theme=/
+    assert corex_root_content =~ ~r/data-mode=/
+
+    refute corex_root_content =~ ~r/phx:set-theme/,
+           "corex_root should not have theme script when no --theme"
+
+    root_source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_preserve_web/components/layouts/root.html.heex")
+
+    root_content = Rewrite.Source.get(root_source, :content)
+
+    refute root_content =~ ~r/data-theme="neo"/,
+           "root.html.heex should not be patched with data-theme when preserve"
+
+    router_source = Rewrite.source!(igniter.rewrite, "lib/phx_preserve_web/router.ex")
+    router_content = Rewrite.Source.get(router_source, :content)
+
+    assert router_content =~
+             ~r/get\s*\(?\s*"\/corex"\s*,\s*PageController\s*,\s*:corex_page\s*\)?/,
+           "router should have get /corex route"
+
+    assert router_content =~ ~r/get\s*\(?\s*"\/"\s*,\s*PageController\s*,\s*:home\s*\)?/,
+           "home route should be kept when preserve"
+
+    layouts_source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_preserve_web/components/layouts.ex")
+
+    layouts_content = Rewrite.Source.get(layouts_source, :content)
+
+    assert layouts_content =~ ~r/toast_group/,
+           "corex_app uses toast_group"
+
+    css_source = Rewrite.source!(igniter.rewrite, "assets/css/app.css")
+    css_content = Rewrite.Source.get(css_source, :content)
+
+    assert css_content =~ ~r/@import "\.\.\/corex\/main\.css"/,
+           "Corex imports should be added"
+
+    assert css_content =~ ~r/@import "\.\.\/corex\/components\/toast\.css"/,
+           "toast.css should be added when design"
+  end
+
+  test "install with --only uses hooks import and use Corex only" do
+    igniter =
+      phx_test_project(app_name: :phx_only)
+      |> Igniter.compose_task("corex.install", [
+        "--no-design",
+        "--yes",
+        "--only",
+        "accordion:checkbox"
+      ])
+
+    app_js = Rewrite.source!(igniter.rewrite, "assets/js/app.js")
+    app_js_content = Rewrite.Source.get(app_js, :content)
+
+    assert app_js_content =~ ~r/import \{ hooks \} from "corex"/,
+           "expected hooks import when --only"
+
+    assert app_js_content =~ ~r/hooks\(\["Accordion", "Checkbox"\]\)/,
+           "expected hooks with PascalCase names"
+
+    web_ex = Rewrite.source!(igniter.rewrite, "lib/phx_only_web.ex")
+    web_ex_content = Rewrite.Source.get(web_ex, :content)
+
+    assert web_ex_content =~ ~r/use Corex, only: \[:accordion, :checkbox\]/,
+           "expected use Corex only"
+  end
+
+  test "install with --prefix uses use Corex prefix" do
+    igniter =
+      phx_test_project(app_name: :phx_prefix)
+      |> Igniter.compose_task("corex.install", ["--no-design", "--yes", "--prefix", "ui"])
+
+    web_ex = Rewrite.source!(igniter.rewrite, "lib/phx_prefix_web.ex")
+    web_ex_content = Rewrite.Source.get(web_ex, :content)
+
+    assert web_ex_content =~ ~r/use Corex, prefix: "ui"/,
+           "expected use Corex prefix"
+  end
+
+  test "preserve does not add corex route twice when running install twice" do
+    igniter =
+      phx_test_project(app_name: :phx_preserve_idempotent)
+      |> Igniter.compose_task("corex.install", ["--yes", "--preserve"])
+      |> Igniter.Test.apply_igniter!()
+      |> Igniter.compose_task("corex.install", ["--yes", "--preserve"])
+
+    router_source =
+      Rewrite.source!(igniter.rewrite, "lib/phx_preserve_idempotent_web/router.ex")
+
+    router_content = Rewrite.Source.get(router_source, :content)
+
+    corex_route_matches =
+      Regex.scan(
+        ~r/get\s*\(?\s*"\/corex"\s*,\s*PageController\s*,\s*:corex_page\s*\)?/,
+        router_content
+      )
+
+    assert length(corex_route_matches) == 1,
+           "Expected exactly one get /corex route when running install twice with preserve, got #{length(corex_route_matches)}"
   end
 end

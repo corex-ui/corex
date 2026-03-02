@@ -111,6 +111,8 @@ defmodule Corex do
     end
   end
 
+  def component_keys, do: Map.keys(@components)
+
   defp include?(_name, :all, []), do: true
   defp include?(name, :all, except), do: name not in except
   defp include?(name, only, _except) when is_list(only), do: name in only

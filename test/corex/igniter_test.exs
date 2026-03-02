@@ -98,11 +98,44 @@ defmodule Corex.IgniterTest do
       web_content = Rewrite.Source.get(web_source, :content)
       assert web_content =~ ~r/use Corex/
     end
+
+    @tag :requires_igniter
+    test "preserve creates corex_root without patching root layout" do
+      igniter =
+        phx_test_project(app_name: :phx_layout_preserve)
+        |> Corex.Igniter.run_setup_phase(design: true)
+
+      result = Corex.Igniter.run_layout_phase(igniter, preserve: true)
+
+      corex_root =
+        Rewrite.source!(
+          result.rewrite,
+          "lib/phx_layout_preserve_web/components/layouts/corex_root.html.heex"
+        )
+
+      corex_root_content = Rewrite.Source.get(corex_root, :content)
+      assert corex_root_content =~ ~r/data-theme=/
+      assert corex_root_content =~ ~r/data-mode=/
+
+      refute corex_root_content =~ ~r/phx:set-theme/,
+             "corex_root should not have theme script when no --theme"
+
+      root_source =
+        Rewrite.source!(
+          result.rewrite,
+          "lib/phx_layout_preserve_web/components/layouts/root.html.heex"
+        )
+
+      root_content = Rewrite.Source.get(root_source, :content)
+
+      refute root_content =~ ~r/data-theme="neo"/,
+             "root.html.heex should not be patched with data-theme when preserve"
+    end
   end
 
   describe "run_css_phase/2" do
     @tag :requires_igniter
-    test "patches app.css and removes daisy when design" do
+    test "patches app.css and adds Corex imports when design" do
       igniter =
         phx_test_project(app_name: :phx_css_design)
         |> Corex.Igniter.run_setup_phase(design: true)
@@ -111,8 +144,7 @@ defmodule Corex.IgniterTest do
 
       source = Rewrite.source!(result.rewrite, "assets/css/app.css")
       content = Rewrite.Source.get(source, :content)
-      refute content =~ ~r/@plugin "\.\.\/vendor\/daisyui/
-      refute content =~ ~r/@plugin "\.\.\/vendor\/daisyui-theme/
+      assert content =~ ~r/@import "\.\.\/corex\/main\.css"/
       assert content =~ ~r/\[data-mode=dark\]/
     end
 
