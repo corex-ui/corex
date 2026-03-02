@@ -41,33 +41,6 @@ jobs:
     - name: Run tests and post coverage to Coveralls
       run: mix coveralls.github
 
-  integration-tests:
-    name: Integration tests
-    runs-on: ubuntu-22.04
-    env:
-      MIX_ENV: test
-      RUN_INTEGRATION: 1
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: '1.15.2'
-        otp-version: '26.0'
-
-    - name: Restore dependencies cache
-      uses: actions/cache@v3
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-mix-
-
-    - name: Install dependencies
-      run: mix deps.get
-
   e2e-tests:
     name: E2E tests
     runs-on: ubuntu-22.04
