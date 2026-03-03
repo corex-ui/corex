@@ -9,38 +9,10 @@
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} /><%= if not @css do %>
     <link phx-track-static rel="stylesheet" href={~p"/assets/default.css"} /><% end %>
-    <script defer phx-track-static type="text/javascript" src={~p"/assets/js/app.js"}>
-    </script><%= if @css do %>
-    <script>
-      (() => {
-        const setTheme = (theme) => {
-          if (theme === "system") {
-            localStorage.removeItem("phx:theme");
-            document.documentElement.removeAttribute("data-theme");
-          } else {
-            localStorage.setItem("phx:theme", theme);
-            document.documentElement.setAttribute("data-theme", theme);
-          }
-        };
-        if (!document.documentElement.hasAttribute("data-theme")) {
-          setTheme(localStorage.getItem("phx:theme") || "system");
-        }
-        window.addEventListener("storage", (e) => e.key === "phx:theme" && setTheme(e.newValue || "system"));
-        <%= if not @live do %>
-        document.addEventListener("DOMContentLoaded", () => {
-          document
-            .querySelectorAll("button[data-phx-theme]")
-            .forEach((el) => {
-              el.addEventListener("click", () => {
-                setTheme(el.dataset.phxTheme)
-              })
-            })
-        })<% else %>
-        window.addEventListener("phx:set-theme", (e) => setTheme(e.target.dataset.phxTheme));<% end %>
-      })();
-    </script><% end %>
+    <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
+    </script>
   </head>
-  <body>
+  <body class="layout typo">
     {@inner_content}
   </body>
 </html>

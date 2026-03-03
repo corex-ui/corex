@@ -68,9 +68,7 @@ defmodule Corex.New.Single do
   template(:css, [
     {:eex, :web,
      "corex_assets/app.css": "assets/css/app.css",
-     "corex_assets/heroicons.js": "assets/vendor/heroicons.js",
-     "corex_assets/daisyui.js": "assets/vendor/daisyui.js",
-     "corex_assets/daisyui-theme.js": "assets/vendor/daisyui-theme.js"}
+     "corex_assets/heroicons.js": "assets/vendor/heroicons.js"}
   ])
 
   template(:js, [

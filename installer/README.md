@@ -1,15 +1,15 @@
-## mix phx.new
+## mix corex.new
 
-Provides `phx.new` installer as an archive.
+Provides `corex.new` installer as an archive.
 
 To install from Hex, run:
 
-    $ mix archive.install hex phx_new
+    $ mix archive.install hex corex_new
 
 To build and install it locally,
 ensure any previous archive versions are removed:
 
-    $ mix archive.uninstall phx_new
+    $ mix archive.uninstall corex_new
 
 Then run:
 
