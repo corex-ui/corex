@@ -47,9 +47,12 @@ defmodule Corex.New.Single do
      "corex_web/controllers/page_html.ex": "lib/:lib_web_name/controllers/page_html.ex",
      "corex_web/controllers/page_html/home.html.heex":
        "lib/:lib_web_name/controllers/page_html/home.html.heex",
-     "corex_test/controllers/page_controller_test.exs":
+     "corex_web/live/example_live.ex": "lib/:lib_web_name/live/example_live.ex",
+    "corex_test/controllers/page_controller_test.exs":
        "test/:lib_web_name/controllers/page_controller_test.exs",
-     "corex_web/components/layouts/root.html.heex":
+    "corex_test/live/example_live_test.exs":
+       "test/:lib_web_name/live/example_live_test.exs",
+    "corex_web/components/layouts/root.html.heex":
        "lib/:lib_web_name/components/layouts/root.html.heex",
      "corex_web/components/layouts.ex": "lib/:lib_web_name/components/layouts.ex"},
     {:eex, :web, "corex_assets/logo.svg": "priv/static/images/logo.svg"}
@@ -89,6 +92,24 @@ defmodule Corex.New.Single do
 
   template(:mailer, [
     {:eex, :app, "corex_mailer/lib/app_name/mailer.ex": "lib/:app/mailer.ex"}
+  ])
+
+  template(:mode, [
+    {:eex, :web,
+     "corex_web/plugs/mode.ex": "lib/:lib_web_name/plugs/mode.ex",
+     "corex_web/live/hooks/mode_live.ex": "lib/:lib_web_name/live/hooks/mode_live.ex"}
+  ])
+
+  template(:theme, [
+    {:eex, :web,
+     "corex_web/plugs/theme.ex": "lib/:lib_web_name/plugs/theme.ex",
+     "corex_web/live/hooks/theme_live.ex": "lib/:lib_web_name/live/hooks/theme_live.ex"}
+  ])
+
+  template(:language, [
+    {:eex, :web,
+     "corex_web/plugs/locale.ex": "lib/:lib_web_name/plugs/locale.ex",
+     "corex_web/shared_events.ex": "lib/:lib_web_name/shared_events.ex"}
   ])
 
   def prepare_project(%Project{app: app, base_path: base_path} = project) when not is_nil(app) do
@@ -131,6 +152,9 @@ defmodule Corex.New.Single do
 
     if Project.ecto?(project), do: gen_ecto(project)
     if Project.html?(project), do: gen_html(project)
+    if project.binding[:mode], do: copy_from(project, __MODULE__, :mode)
+    if project.binding[:theme], do: copy_from(project, __MODULE__, :theme)
+    if project.binding[:language_switcher], do: copy_from(project, __MODULE__, :language)
     if Project.mailer?(project), do: gen_mailer(project)
     if Project.gettext?(project), do: gen_gettext(project)
 

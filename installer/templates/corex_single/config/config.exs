@@ -66,6 +66,14 @@ config :phoenix, :json_library, Jason
 config :corex,
   gettext_backend: <%= @web_namespace %>.Gettext,
   json_library: Jason
+<%= if @theme do %>
+
+config :<%= @app_name %>, :themes, <%= inspect(@themes) %>
+<% end %><%= if @language_switcher do %>
+
+config :<%= @app_name %>, :locales, <%= inspect(@locales) %>
+config :<%= @app_name %>, :rtl_locales, <%= inspect(@rtl_locales) %>
+<% end %>
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

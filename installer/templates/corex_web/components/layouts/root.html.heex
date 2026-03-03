@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-theme="neo" data-mode="light">
+<html<%= if @language_switcher do %> lang={assigns[:locale] || "en"} dir={assigns[:dir] || "ltr"}<% else %> lang="en" dir="ltr"<% end %><%= if @theme do %> data-theme={assigns[:theme]}<% else %> data-theme="neo"<% end %><%= if @mode do %> data-mode={assigns[:mode]}<% else %> data-mode="light"<% end %>>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,7 +9,53 @@
     </.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
+    </script><%= if @mode do %>
+    <script>
+      (() => {
+        const getSystemMode = () =>
+          window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+
+        const setMode = (mode) => {
+          const resolved = mode === "dark" || mode === "light" ? mode : getSystemMode();
+          localStorage.setItem("phx:mode", resolved);
+          document.cookie = "phx_mode=" + resolved + "; path=/; max-age=31536000";
+          document.documentElement.setAttribute("data-mode", resolved);
+        };
+
+        setMode(localStorage.getItem("phx:mode") || document.documentElement.getAttribute("data-mode") || getSystemMode());
+
+        window.addEventListener("storage", (e) => e.key === "phx:mode" && e.newValue && setMode(e.newValue));
+
+        window.addEventListener("phx:set-mode", (e) => {
+          const value = e.detail?.value;
+          const mode = Array.isArray(value) && value[0] ? value[0] : "light";
+          setMode(mode);
+        });
+      })();
     </script>
+<% end %><%= if @theme do %>
+    <script>
+      (() => {
+        const validThemes = ["neo", "uno", "duo", "leo"];
+        const setTheme = (theme) => {
+          const resolved = validThemes.includes(theme) ? theme : "neo";
+          localStorage.setItem("phx:theme", resolved);
+          document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
+          document.documentElement.setAttribute("data-theme", resolved);
+        };
+
+        setTheme(localStorage.getItem("phx:theme") || document.documentElement.getAttribute("data-theme") || "neo");
+
+        window.addEventListener("storage", (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue));
+
+        window.addEventListener("phx:set-theme", (e) => {
+          const value = e.detail?.value;
+          const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
+          setTheme(theme);
+        });
+      })();
+    </script>
+<% end %>
   </head>
   <body class="layout typo">
     {@inner_content}

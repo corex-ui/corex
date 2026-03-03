@@ -23,11 +23,13 @@
 
 @import "../corex/main.css";
 @import "../corex/tokens/themes/<%= @default_theme %>/light.css";
-<%= if @default_mode == "dark" do %>@import "../corex/tokens/themes/<%= @default_theme %>/dark.css";
+<%= if @mode do %>@import "../corex/tokens/themes/<%= @default_theme %>/dark.css";
 <% end %>@import "../corex/components/typo.css";
 @import "../corex/components/layout.css";
 @import "../corex/components/button.css";
 @import "../corex/components/link.css";
 @import "../corex/components/toast.css";
-
+<%= if @mode do %>@import "../corex/components/toggle-group.css";
+<% end %><%= if @theme or @language_switcher do %>@import "../corex/components/select.css";
+<% end %>
 /* This file is for your main application CSS */

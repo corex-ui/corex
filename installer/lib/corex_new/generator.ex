@@ -249,6 +249,12 @@ defmodule Corex.New.Generator do
     css = tailwind
     locales = parse_locales(Keyword.get(opts, :language, "en"))
     default_locale = List.first(locales) || "en"
+    language_switcher = length(locales) > 1
+    rtl_locales = parse_colon_list(Keyword.get(opts, :rtl, ""))
+    themes = parse_themes(Keyword.get(opts, :theme, ""))
+    theme = length(themes) >= 1
+    theme_switcher = length(themes) > 1
+    default_theme = List.first(themes) || "neo"
     mailer = Keyword.get(opts, :mailer, true)
     dev = Keyword.get(opts, :dev, false)
     phoenix_path = phoenix_path(project, dev, false)
@@ -285,6 +291,10 @@ defmodule Corex.New.Generator do
         :error -> adapter_config
       end
 
+    web_ns = inspect(project.web_namespace)
+    mode = Keyword.get(opts, :mode, false)
+    on_mount_hooks = build_on_mount_hooks(web_ns, mode, theme, language_switcher)
+
     binding = [
       app_name: project.app,
       app_module: inspect(project.app_mod),
@@ -309,10 +319,17 @@ defmodule Corex.New.Generator do
       css: css,
       tailwind: tailwind,
       designex: designex,
+      mode: mode,
+      theme: theme,
+      theme_switcher: theme_switcher,
+      themes: themes,
+      on_mount_hooks: on_mount_hooks,
+      on_mount_optional: length(on_mount_hooks) > 0,
       default_locale: default_locale,
-      default_mode: opts[:mode] || "light",
-      default_theme: opts[:theme] || "neo",
+      default_theme: default_theme,
       locales: locales,
+      language_switcher: language_switcher,
+      rtl_locales: rtl_locales,
       corex_dep: corex_dep(),
       mailer: mailer,
       ecto: ecto,
@@ -570,17 +587,26 @@ defmodule Corex.New.Generator do
     end
   end
 
+  defp build_on_mount_hooks(web_ns, mode, theme, language_switcher) do
+    []
+    |> then(fn acc -> if mode, do: acc ++ ["#{web_ns}.ModeLive"], else: acc end)
+    |> then(fn acc -> if theme, do: acc ++ ["#{web_ns}.ThemeLive"], else: acc end)
+    |> then(fn acc -> if language_switcher, do: acc ++ ["#{web_ns}.SharedEvents"], else: acc end)
+  end
+
+  defp parse_themes(s), do: parse_colon_list(s)
+
+  defp parse_colon_list(nil), do: []
+  defp parse_colon_list(""), do: []
+  defp parse_colon_list(s) do
+    s |> String.split(":", trim: true) |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
+  end
+
   defp parse_locales(nil), do: ["en"]
   defp parse_locales(""), do: ["en"]
   defp parse_locales(s) do
-    list = parse_list(s)
+    list = parse_colon_list(s)
     if list == [], do: ["en"], else: list
-  end
-
-  defp parse_list(nil), do: []
-  defp parse_list(""), do: []
-  defp parse_list(s) do
-    s |> String.split(",", trim: true) |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
   end
 
   defp phoenix_js_path("deps/phoenix"), do: "phoenix"

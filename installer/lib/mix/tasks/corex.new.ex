@@ -44,13 +44,13 @@ defmodule Mix.Tasks.Corex.New do
 
     * `--designex` - keep design tokens and designex-related files under `assets/corex/design` so you can run designex for token builds; when not set, only built CSS/tokens are copied (same as `mix corex.design` vs `mix corex.design --designex`)
 
-    * `--mode` - default mode: `light` or `dark`
+    * `--mode` - enable light/dark mode switching (adds Mode plug, root script, and mode_toggle in layout); when omitted, app stays static light only; no default config, user can change behavior themselves
 
-    * `--theme` - default theme: `neo`, `uno`, `duo`, or `leo`
+    * `--theme` - colon-separated theme names (e.g. `uno:leo`); when multiple themes are given, enables theme switching; each must be one of neo, uno, duo, leo
 
-    * `--language` - comma-separated locales, e.g. `en,fr,ar`; first is default
+    * `--language` - colon-separated locales (e.g. `en:ar:fr`); first is default; when multiple locales are given, enables locale switching (adds Locale plug, SharedEvents, and locale_switcher in layout)
 
-    * `--rtl` - comma-separated RTL locales, e.g. `ar`; requires `--language`; all must be in language
+    * `--rtl` - colon-separated RTL locales (e.g. `ar`); requires `--language`; all must be in language
 
     * `--binary-id` - use `binary_id` as primary key type in Ecto schemas
 
@@ -136,7 +136,7 @@ defmodule Mix.Tasks.Corex.New do
   @switches [
     dev: :boolean,
     designex: :boolean,
-    mode: :string,
+    mode: :boolean,
     theme: :string,
     language: :string,
     rtl: :string,
@@ -228,13 +228,22 @@ defmodule Mix.Tasks.Corex.New do
   end
 
   defp validate_opts!(opts) do
+    if opts[:theme] && opts[:theme] != "" do
+      themes = parse_colon_list(opts[:theme])
+      valid = ["neo", "uno", "duo", "leo"]
+      invalid = themes -- valid
+      if invalid != [] do
+        Mix.raise("--theme must be colon-separated names from neo, uno, duo, leo. Got: #{inspect(invalid)}")
+      end
+    end
+
     if opts[:rtl] && opts[:rtl] != "" do
       unless opts[:language] && opts[:language] != "" do
         Mix.raise("--rtl requires --language. List all locales in --language; use --rtl to mark which are RTL.")
       end
 
-      rtl_locales = parse_list(opts[:rtl])
-      lang_locales = parse_list(opts[:language])
+      rtl_locales = parse_colon_list(opts[:rtl])
+      lang_locales = parse_colon_list(opts[:language])
 
       extra = rtl_locales -- lang_locales
       if extra != [] do
@@ -243,21 +252,13 @@ defmodule Mix.Tasks.Corex.New do
         )
       end
     end
-
-    mode = opts[:mode]
-    if mode && mode != "light" && mode != "dark" do
-      Mix.raise("--mode must be light or dark, got: #{inspect(mode)}")
-    end
-
-    theme = opts[:theme]
-    if theme && theme not in ["neo", "uno", "duo", "leo"] do
-      Mix.raise("--theme must be neo, uno, duo, or leo, got: #{inspect(theme)}")
-    end
   end
 
-  defp parse_list(nil), do: []
-  defp parse_list(""), do: []
-  defp parse_list(s), do: s |> String.split(",", trim: true) |> Enum.map(&String.trim/1)
+  defp parse_colon_list(nil), do: []
+  defp parse_colon_list(""), do: []
+  defp parse_colon_list(s) do
+    s |> String.split(":", trim: true) |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
+  end
 
   defp validate_project(%Project{opts: opts} = project, path) do
     check_app_name!(project.app, !!opts[:app])
