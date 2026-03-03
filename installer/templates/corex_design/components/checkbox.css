@@ -1,0 +1,166 @@
+@import "../main.css";
+
+@layer components {
+  .checkbox [data-scope="checkbox"][data-part="root"] {
+    @apply ui-root;
+
+    flex-direction: row;
+    max-width: var(--container-ui);
+    align-items: center;
+    width: auto;
+    gap: var(--spacing-ui-gap);
+    position: relative;
+  }
+
+  .checkbox [data-scope="checkbox"][data-part="label"] {
+    @apply ui-label;
+    cursor: pointer;
+
+    &[data-invalid] {
+      color: var(--color-ui-alert);
+    }
+  }
+
+  .checkbox [data-scope="checkbox"][data-part="control"] {
+    height: var(--spacing-mini);
+    width: var(--spacing-mini);
+    background: var(--color-ui);
+    color: var(--color-ui--text);
+    font-weight: var(--font-weight-ui);
+    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-ui--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: var(--spacing-micro-padding-sm);
+
+    &[data-state="checked"],
+    &[data-state="indeterminate"] {
+      background: var(--color-ui--text);
+      color: var(--color-ui);
+      border-color: var(--color-ui--text);
+    }
+
+    &[data-state="unchecked"] {
+      background: var(--color-ui);
+      color: var(--color-ui--text);
+      border-color: var(--color-ui--border);
+    }
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &[data-state="checked"]:hover,
+    &[data-state="indeterminate"]:hover {
+      background-color: var(--color-ui--text);
+      opacity: 0.9;
+    }
+
+    &:focus-visible,
+    &[data-focus] {
+      outline: 2px solid var(--color-ui--text);
+      outline-offset: -3px;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[data-disabled="true"],
+    &[disabled="true"] {
+      color: var(--color-ui--muted);
+      background-color: --alpha(var(--color-ui) / 60%);
+      cursor: not-allowed;
+    }
+
+    &[data-invalid] {
+      color: var(--color-ui-alert);
+      border-color: var(--color-ui-alert);
+    }
+
+    &[data-required] {
+      color: var(--color-ui-alert);
+      border-color: var(--color-ui-alert);
+    }
+  }
+
+  .checkbox [data-scope="checkbox"][data-part="control"] .data-indeterminate {
+    display: none !important;
+  }
+
+  .checkbox [data-scope="checkbox"][data-part="control"] .data-checked {
+    display: none !important;
+  }
+
+  .checkbox
+    [data-scope="checkbox"][data-part="control"][data-state="checked"]
+    .data-checked {
+    display: block !important;
+    @apply ui-icon;
+    color: var(--color-ui-accent--text);
+    width: 100%;
+    height: 100%;
+  }
+
+  .checkbox
+    [data-scope="checkbox"][data-part="control"][data-state="indeterminate"]
+    .data-indeterminate {
+    display: block !important;
+    @apply ui-icon;
+    color: var(--color-ui-accent--text);
+    width: 100%;
+    height: 100%;
+  }
+  .checkbox [data-scope="checkbox"][data-part="error"] {
+    @apply ui-error;
+  }
+}
+
+@utility checkbox--* {
+  [data-scope="checkbox"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+  }
+
+  [data-scope="checkbox"][data-part="label"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+
+  [data-scope="checkbox"][data-part="control"] {
+    max-width: --value(--container-mini-*, [length]);
+    padding: --value(--spacing-mini-padding-*, [length]);
+    gap: --value(--spacing-mini-gap-*, [length]);
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-mini-*, [length]);
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+    border-color: --value(--color-ui-* --border, [color]);
+  }
+
+  [data-scope="checkbox"][data-part="control"]:hover {
+    background-color: --value(--color-ui-* -hover, [color]);
+  }
+
+  [data-scope="checkbox"][data-part="control"]:active {
+    background-color: --value(--color-ui-* -active, [color]);
+  }
+
+  [data-scope="checkbox"][data-part="control"]:focus-visible,
+  [data-scope="checkbox"][data-part="control"][data-focus] {
+    outline-color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="checkbox"][data-part="control"]:disabled,
+  [data-scope="checkbox"][data-part="control"][data-disabled],
+  [data-scope="checkbox"][data-part="control"][data-disabled="true"],
+  [data-scope="checkbox"][data-part="control"][disabled="true"] {
+    color: var(--color-ui--muted);
+    background-color: --alpha(var(--color-ui) / 60%);
+    cursor: not-allowed;
+  }
+}

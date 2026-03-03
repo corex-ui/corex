@@ -6,7 +6,8 @@ end
 defmodule Corex.New.MixProject do
   use Mix.Project
 
-  @version "1.8.4"
+  @version "0.1.0-alpha.29"
+  @phoenix_version "1.8.4"
   @scm_url "https://github.com/corex-ui/corex"
 
   @elixir_requirement "~> 1.15"
@@ -16,6 +17,7 @@ defmodule Corex.New.MixProject do
       app: :corex_new,
       start_permanent: Mix.env() == :prod,
       version: @version,
+      phoenix_version: @phoenix_version,
       elixir: @elixir_requirement,
       deps: deps(),
       aliases: aliases(),

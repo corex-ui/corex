@@ -320,7 +320,7 @@ defmodule Mix.Tasks.Corex.New.UmbrellaTest do
       # Gettext
       assert_file(web_path(@app, "lib/#{@app}_web/gettext.ex"), [
         ~r"defmodule PhxUmbWeb.Gettext",
-        ~r"use Gettext\.Backend, otp_app: :phx_umb_web"
+        ~r"use Gettext\.Backend"
       ])
 
       assert File.exists?(web_path(@app, "priv/gettext/errors.pot"))

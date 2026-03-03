@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr" data-theme="neo" data-mode="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,8 +7,7 @@
     <.live_title default="<%= @app_module %>" suffix=" · Phoenix Framework">
       {assigns[:page_title]}
     </.live_title>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} /><%= if not @css do %>
-    <link phx-track-static rel="stylesheet" href={~p"/assets/default.css"} /><% end %>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
     <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}>
     </script>
   </head>

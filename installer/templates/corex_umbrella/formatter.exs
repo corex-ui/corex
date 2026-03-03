@@ -1,5 +1,5 @@
-[<%= if @html do %>
-  plugins: [Phoenix.LiveView.HTMLFormatter],<% end %>
+[
+  plugins: [Phoenix.LiveView.HTMLFormatter],
   inputs: ["mix.exs", "config/*.exs"],
   subdirectories: ["apps/*"]
 ]

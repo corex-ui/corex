@@ -42,10 +42,15 @@ defmodule Mix.Tasks.Corex.New do
 
     * `--no-ecto` - do not generate Ecto files
 
-    * `--no-tailwind` - do not include tailwind dependencies and assets.
-      The generated markup will still include Tailwind CSS classes, those
-      are left-in as reference for the subsequent styling of your layout
-      and components
+    * `--designex` - keep design tokens and designex-related files under `assets/corex/design` so you can run designex for token builds; when not set, only built CSS/tokens are copied (same as `mix corex.design` vs `mix corex.design --designex`)
+
+    * `--mode` - default mode: `light` or `dark`
+
+    * `--theme` - default theme: `neo`, `uno`, `duo`, or `leo`
+
+    * `--language` - comma-separated locales, e.g. `en,fr,ar`; first is default
+
+    * `--rtl` - comma-separated RTL locales, e.g. `ar`; requires `--language`; all must be in language
 
     * `--binary-id` - use `binary_id` as primary key type in Ecto schemas
 
@@ -130,7 +135,11 @@ defmodule Mix.Tasks.Corex.New do
 
   @switches [
     dev: :boolean,
-    tailwind: :boolean,
+    designex: :boolean,
+    mode: :string,
+    theme: :string,
+    language: :string,
+    rtl: :string,
     ecto: :boolean,
     app: :string,
     module: :string,
@@ -160,6 +169,7 @@ defmodule Mix.Tasks.Corex.New do
     elixir_version_check!()
 
     {opts, argv} = OptionParser.parse!(argv, strict: @switches)
+    validate_opts!(opts)
 
     version_task =
       if Keyword.get(opts, :version_check, true) do
@@ -199,7 +209,9 @@ defmodule Mix.Tasks.Corex.New do
 
     case OptionParser.parse!(argv, strict: @switches) do
       {_opts, []} -> Mix.Tasks.Help.run(["corex.new"])
-      {opts, [base_path | _]} -> generate(base_path, generator, path, opts)
+      {opts, [base_path | _]} ->
+        validate_opts!(opts)
+        generate(base_path, generator, path, opts)
     end
   end
 
@@ -214,6 +226,38 @@ defmodule Mix.Tasks.Corex.New do
     |> maybe_init_git(path)
     |> maybe_prompt_to_install_deps(generator, path)
   end
+
+  defp validate_opts!(opts) do
+    if opts[:rtl] && opts[:rtl] != "" do
+      unless opts[:language] && opts[:language] != "" do
+        Mix.raise("--rtl requires --language. List all locales in --language; use --rtl to mark which are RTL.")
+      end
+
+      rtl_locales = parse_list(opts[:rtl])
+      lang_locales = parse_list(opts[:language])
+
+      extra = rtl_locales -- lang_locales
+      if extra != [] do
+        Mix.raise(
+          "All --rtl locales must be in --language. Got rtl: #{inspect(rtl_locales)}, language: #{inspect(lang_locales)}."
+        )
+      end
+    end
+
+    mode = opts[:mode]
+    if mode && mode != "light" && mode != "dark" do
+      Mix.raise("--mode must be light or dark, got: #{inspect(mode)}")
+    end
+
+    theme = opts[:theme]
+    if theme && theme not in ["neo", "uno", "duo", "leo"] do
+      Mix.raise("--theme must be neo, uno, duo, or leo, got: #{inspect(theme)}")
+    end
+  end
+
+  defp parse_list(nil), do: []
+  defp parse_list(""), do: []
+  defp parse_list(s), do: s |> String.split(",", trim: true) |> Enum.map(&String.trim/1)
 
   defp validate_project(%Project{opts: opts} = project, path) do
     check_app_name!(project.app, !!opts[:app])

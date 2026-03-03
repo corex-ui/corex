@@ -16,20 +16,21 @@
 //
 // If you have dependencies that try to import CSS, esbuild will generate a separate `app.css` file.
 // To load it, simply add a second `<link>` to your `root.html.heex` file.
-<%= if @html do %>
+
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
 <%= @live_comment %>import {Socket} from "<%= @phoenix_js_path %>"
 <%= @live_comment %>import {LiveSocket} from "phoenix_live_view"
 <%= @live_comment %>import {hooks as colocatedHooks} from "phoenix-colocated/<%= @web_app_name %>"
+<%= @live_comment %>import corex from "corex"
 <%= @live_comment %>import topbar from "../vendor/topbar"
 
 <%= @live_comment %>const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 <%= @live_comment %>const liveSocket = new LiveSocket("/live", Socket, {
 <%= @live_comment %>  longPollFallbackMs: 2500,
 <%= @live_comment %>  params: {_csrf_token: csrfToken},
-<%= @live_comment %>  hooks: {...colocatedHooks},
+<%= @live_comment %>  hooks: {...colocatedHooks, ...corex},
 <%= @live_comment %>})
 
 // Show progress bar on live navigation and form submits
@@ -87,4 +88,4 @@ document.querySelectorAll("[role=alert][data-flash]").forEach((el) => {
   el.addEventListener("click", () => {
     el.setAttribute("hidden", "")
   })
-})<% end %><% end %>
+})<% end %>

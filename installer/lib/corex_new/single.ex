@@ -34,7 +34,6 @@ defmodule Corex.New.Single do
   template(:gettext, [
     {:eex, :web,
      "corex_gettext/gettext.ex": "lib/:lib_web_name/gettext.ex",
-     "corex_gettext/en/LC_MESSAGES/errors.po": "priv/gettext/en/LC_MESSAGES/errors.po",
      "corex_gettext/errors.pot": "priv/gettext/errors.pot"}
   ])
 
@@ -80,17 +79,6 @@ defmodule Corex.New.Single do
 
   template(:no_js, [
     {:text, :web, "corex_static/app.js": "priv/static/assets/js/app.js"}
-  ])
-
-  template(:no_css, [
-    {
-      :text,
-      :web,
-      # the default.css file can be re-created by using the recreate_default_css.exs file
-      # in the installer folder: `elixir installer/recreate_default_css.exs`
-      "corex_static/app.css": "priv/static/assets/css/app.css",
-      "corex_static/default.css": "priv/static/assets/default.css"
-    }
   ])
 
   template(:static, [
@@ -147,7 +135,23 @@ defmodule Corex.New.Single do
     if Project.gettext?(project), do: gen_gettext(project)
 
     gen_assets(project)
+    if Project.html?(project), do: gen_design(project)
     project
+  end
+
+  def gen_design(%Project{} = project) do
+    design_src = Path.expand("../../templates/corex_design", __DIR__)
+    dest = Project.join_path(project, :web, "assets/corex")
+    designex = project.binding[:designex]
+
+    if File.dir?(design_src) do
+      File.mkdir_p!(Path.dirname(dest))
+      File.cp_r!(design_src, dest)
+      unless designex do
+        design_subfolder = Path.join(dest, "design")
+        if File.exists?(design_subfolder), do: File.rm_rf!(design_subfolder)
+      end
+    end
   end
 
   def gen_html(project) do
@@ -156,6 +160,23 @@ defmodule Corex.New.Single do
 
   def gen_gettext(project) do
     copy_from(project, __MODULE__, :gettext)
+    gen_locale_errors(project)
+  end
+
+  defp gen_locale_errors(project) do
+    locales = project.binding[:locales] || ["en"]
+    ecto = project.binding[:ecto]
+    template_path = Path.expand("../../templates/corex_gettext/locale_errors.po.eex", __DIR__)
+
+    for locale <- locales do
+      path =
+        project
+        |> Project.join_path(:web, "priv/gettext/#{locale}/LC_MESSAGES/errors.po")
+
+      content = EEx.eval_file(template_path, locale: locale, ecto: ecto)
+      File.mkdir_p!(Path.dirname(path))
+      Mix.Generator.create_file(path, content)
+    end
   end
 
   def gen_ecto(project) do
@@ -176,8 +197,7 @@ defmodule Corex.New.Single do
     end
 
     if html? or css? do
-      command = if css?, do: :css, else: :no_css
-      copy_from(project, __MODULE__, command)
+      copy_from(project, __MODULE__, :css)
     end
   end
 

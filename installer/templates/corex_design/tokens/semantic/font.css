@@ -1,0 +1,13 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+@theme inline {
+  --font-ui: system-ui, sans-serif;
+  --font-code: ui-monospace, monospace;
+  --font-weight-ui-sm: 200;
+  --font-weight-ui-md: 400;
+  --font-weight-ui-lg: 600;
+  --font-weight-ui-xl: 800;
+  --font-weight-ui: var(--font-weight-ui-md);
+}

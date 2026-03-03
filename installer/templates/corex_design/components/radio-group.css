@@ -1,0 +1,107 @@
+@import "../main.css";
+
+@layer components {
+  .radio-group [data-scope="radio-group"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-ui-gap);
+    max-width: var(--container-ui);
+  }
+
+  .radio-group [data-scope="radio-group"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  [data-scope="radio-group"][data-part="item"] {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    max-width: var(--container-ui);
+    width: auto;
+    gap: var(--spacing-ui-gap);
+    margin-inline: auto;
+    cursor: pointer;
+  }
+
+  [data-scope="radio-group"][data-part="item"][data-disabled] {
+    cursor: not-allowed;
+  }
+
+  [data-scope="radio-group"][data-part="item-control"] {
+    height: var(--spacing-mini);
+    width: var(--spacing-mini);
+    background: var(--color-ui);
+    color: var(--color-ui--text);
+    font-weight: var(--font-weight-ui);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-ui--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: var(--spacing-micro-padding-sm);
+
+    &[data-state="checked"] {
+      background: var(--color-ui--text);
+      color: var(--color-ui);
+      border-color: var(--color-ui--text);
+    }
+
+    &[data-state="unchecked"] {
+      background: var(--color-ui);
+      color: var(--color-ui--text);
+      border-color: var(--color-ui--border);
+    }
+
+    &:hover {
+      background-color: var(--color-ui-hover);
+    }
+
+    &:active {
+      background-color: var(--color-ui-active);
+    }
+
+    &[data-state="checked"]:hover {
+      background-color: var(--color-ui--text);
+      opacity: 0.9;
+    }
+
+    &:focus-visible,
+    &[data-focus] {
+      outline: 2px solid var(--color-ui--text);
+      outline-offset: -3px;
+    }
+
+    &:disabled,
+    &[data-disabled],
+    &[data-disabled="true"],
+    &[disabled="true"] {
+      color: var(--color-ui--muted);
+      background-color: --alpha(var(--color-ui) / 60%);
+      cursor: not-allowed;
+    }
+
+    &[data-invalid] {
+      color: var(--color-ui-alert);
+      border-color: var(--color-ui-alert);
+    }
+
+    &[data-required] {
+      color: var(--color-ui-alert);
+      border-color: var(--color-ui-alert);
+    }
+  }
+
+  [data-scope="radio-group"][data-part="item-control"] .data-checked {
+    display: none !important;
+  }
+
+  [data-scope="radio-group"][data-part="item-control"][data-state="checked"]
+    .data-checked {
+    display: block !important;
+    @apply ui-icon;
+    color: var(--color-ui-accent--text);
+    width: 100%;
+    height: 100%;
+  }
+}

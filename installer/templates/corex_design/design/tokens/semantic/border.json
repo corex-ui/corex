@@ -1,0 +1,12 @@
+{
+  "radius": {
+    "ui": {
+      "value": "0.375rem",
+      "type": "borderRadius"
+    },
+    "full": {
+      "value": "9999px",
+      "type": "borderRadius"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+@import "../main.css";
+
+@layer components {
+  .number-input [data-scope="number-input"][data-part="root"] {
+    @apply ui-root;
+
+    gap: var(--spacing-ui-gap);
+    max-width: var(--container-ui);
+  }
+
+  .number-input [data-scope="number-input"][data-part="label"] {
+    @apply ui-label;
+  }
+
+  .number-input [data-scope="number-input"][data-part="control"] {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    position: relative;
+    margin-inline: auto;
+    max-width: var(--container-micro);
+  }
+
+  .number-input [data-scope="number-input"][data-part="scrubber"] svg {
+    transform: rotate(90deg);
+  }
+
+  .number-input [data-scope="number-input"][data-part="input"] {
+    @apply ui-input;
+
+    max-width: var(--container-micro);
+    flex: 1;
+    border-inline-end: 0;
+    border-end-end-radius: 0;
+    border-start-end-radius: 0;
+  }
+
+  .number-input [data-part="trigger-group"] {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .number-input [data-scope="number-input"][data-part="increment-trigger"],
+  .number-input [data-scope="number-input"][data-part="decrement-trigger"],
+  .number-input [data-scope="number-input"][data-part="scrubber"] {
+    @apply ui-trigger ui-trigger--square ui-trigger--sm;
+
+    flex: 1;
+    min-height: 0;
+    padding: 0.25rem;
+    font-size: 0.625rem;
+    line-height: 1;
+    border-start-start-radius: 0;
+    border-end-start-radius: 0;
+    margin: 0;
+  }
+
+  .number-input [data-scope="number-input"][data-part="increment-trigger"] {
+    border-end-end-radius: 0;
+    border-block-end: 0;
+  }
+
+  .number-input [data-scope="number-input"][data-part="decrement-trigger"] {
+    border-start-end-radius: 0;
+    border-block-start: 0;
+  }
+}

@@ -1,0 +1,78 @@
+@import "../main.css";
+
+@layer components {
+  .link {
+    display: inline-flex;
+    justify-content: start;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    color: var(--color-layer--info);
+    height: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    gap: var(--spacing-ui-gap);
+    padding-inline: var(--spacing-ui-padding);
+    border-radius: var(--radius-ui);
+    text-decoration: none;
+    max-width: fit-content;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+  }
+
+  .link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 1px;
+    width: 80%;
+    background-color: currentcolor;
+    transform: translateX(-50%);
+    transition: width 0.3s ease;
+  }
+
+  .link:hover::after {
+    width: 90%;
+  }
+
+  .link:focus-visible {
+    outline: 2px solid var(--color-ui--focus);
+    outline-offset: 1px;
+    box-shadow: none;
+  }
+
+  .link:focus-visible::after {
+    display: none;
+  }
+
+  .link:disabled,
+  .link[data-disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  .link .icon,
+  .link svg,
+  .link img {
+    @apply ui-icon;
+  }
+
+  .link[aria-current="page"],
+  .link[aria-current="location"] {
+    font-weight: var(--font-weight-ui-lg);
+    pointer-events: none;
+  }
+}
+
+@utility link--* {
+  color: --value(--color-layer--*, [color]);
+  font-size: --value(--text-ui-*, [length]);
+  line-height: --value(--text-ui-* --line-height, [length]);
+  min-height: --value(--spacing-ui-*, [length]);
+  padding-inline: --value(--spacing-ui-padding-*, [length]);
+  gap: --value(--spacing-ui-gap-*, [length]);
+}

@@ -1,0 +1,120 @@
+@import "../main.css";
+
+@layer components {
+
+  .collapsible [data-scope="collapsible"][data-part="root"] {
+    @apply ui-root;
+
+    /* max-width: var(--container-ui);
+    gap: var(--spacing-ui-gap); */
+  }
+
+  .collapsible [data-scope="collapsible"][data-part="trigger"] {
+    @apply ui-trigger;
+
+    justify-content: space-between;
+    max-width: var(--container-mini);
+    place-self: flex-start;
+    width: auto;
+    box-shadow: var(--shadow-ui);
+  }
+
+  .collapsible [data-scope="collapsible"][data-part="trigger"] svg {
+    @apply ui-icon;
+  }
+
+  .collapsible
+    [data-scope="collapsible"][data-part="trigger"][data-state="closed"]
+    [data-closed] {
+    display: none;
+  }
+
+  .collapsible
+    [data-scope="collapsible"][data-part="trigger"][data-state="open"]
+    [data-open] {
+    display: none;
+  }
+
+  .collapsible
+    [data-scope="collapsible"][data-part="content"][data-state="open"] {
+    animation: slide-down 200ms ease;
+  }
+
+  .collapsible
+    [data-scope="collapsible"][data-part="content"][data-state="closed"] {
+    animation: slide-up 200ms ease;
+  }
+
+  .collapsible
+    [data-scope="collapsible"][data-part="indicator"][data-state="open"] {
+    transform: rotate(90deg);
+  }
+
+  .collapsible [data-scope="collapsible"][data-part="content"] {
+    @apply ui-content;
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0.01;
+      height: 0;
+    }
+
+    to {
+      opacity: 1;
+      height: var(--height);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 1;
+      height: var(--height);
+    }
+
+    to {
+      opacity: 0.01;
+      height: 0;
+    }
+  }
+}
+
+@utility collapsible--* {
+  [data-scope="collapsible"][data-part="root"] {
+    max-width: --value(--container-ui-*, [length]);
+    gap: --value(--spacing-gap-ui-*, [length]);
+  }
+
+  [data-scope="collapsible"][data-part="trigger"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    min-height: --value(--spacing-ui-*, [length]);
+    background-color: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="collapsible"][data-part="trigger"]:hover {
+    background-color: --value(--color-ui-* -hover, [color]);
+  }
+
+  [data-scope="collapsible"][data-part="trigger"]:active {
+    background-color: --value(--color-ui-* -active, [color]);
+  }
+
+  [data-scope="collapsible"][data-part="trigger"]:focus-visible {
+    outline-color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="collapsible"][data-part="trigger"]
+    [data-scope="collapsible"][data-part="item-indicator"] {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    color: --value(--color-ui-* --text, [color]);
+  }
+
+  [data-scope="collapsible"][data-part="content"],
+  [data-scope="collapsible"][data-part="content"] > p {
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+  }
+}

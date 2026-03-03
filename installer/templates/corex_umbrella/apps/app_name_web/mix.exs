@@ -13,8 +13,8 @@ defmodule <%= @web_namespace %>.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),<%= if @html do %>
-      compilers: [:phoenix_live_view] ++ Mix.compilers(),<% end %>
+      deps: deps(),
+      compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
   end
@@ -39,13 +39,13 @@ defmodule <%= @web_namespace %>.MixProject do
   defp deps do
     [
       <%= @phoenix_dep %>,<%= if @ecto do %>
-      {:phoenix_ecto, "~> 4.5"},<% end %><%= if @html do %>
+      {:phoenix_ecto, "~> 4.5"},<% end %>
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.1.0"},
-      {:lazy_html, ">= 0.1.0", only: :test},<% end %><%= if @dashboard do %>
-      {:phoenix_live_dashboard, "~> 0.8.3"},<% end %><%= if @javascript do %>
-      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},<% end %><%= if @css do %>
+      {:lazy_html, ">= 0.1.0", only: :test},<%= if @dashboard do %>
+      {:phoenix_live_dashboard, "~> 0.8.3"},<% end %>
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
@@ -53,7 +53,7 @@ defmodule <%= @web_namespace %>.MixProject do
        sparse: "optimized",
        app: false,
        compile: false,
-       depth: 1},<% end %>
+       depth: 1},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},<%= if @gettext do %>
       {:gettext, "~> 1.0"},<% end %><%= if @app_name != @web_app_name do %>

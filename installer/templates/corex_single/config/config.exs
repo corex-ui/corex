@@ -7,18 +7,19 @@
 # General application configuration
 import Config
 
-<%= if @namespaced? || @ecto || @generators do %>
-config :<%= @app_name %><%= if @namespaced? do %>,
-  namespace: <%= @app_module %><% end %><%= if @ecto do %>,
-  ecto_repos: [<%= @app_module %>.Repo]<% end %><%= if @generators do %>,
-  generators: <%= inspect @generators %><% end %><% end %>
+<%= if @namespaced? || @ecto || @generators do %>config :<%= @app_name %>,
+<%= if @namespaced? do %>  namespace: <%= @app_module %>,
+<% end %><%= if @ecto do %>  ecto_repos: [<%= @app_module %>.Repo],
+<% end %><%= if @generators do %>  generators: <%= inspect @generators %><% end %>
+
+<% end %>
 
 # Configure the endpoint
 config :<%= @app_name %>, <%= @endpoint_module %>,
   url: [host: "localhost"],
   adapter: <%= inspect @web_adapter_module %>,
   render_errors: [
-    formats: [<%= if @html do%>html: <%= @web_namespace %>.ErrorHTML, <% end %>json: <%= @web_namespace %>.ErrorJSON],
+    formats: [html: <%= @web_namespace %>.ErrorHTML, json: <%= @web_namespace %>.ErrorJSON],
     layout: false
   ],
   pubsub_server: <%= @app_module %>.PubSub,
@@ -31,17 +32,17 @@ config :<%= @app_name %>, <%= @endpoint_module %>,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :<%= @app_name %>, <%= @app_module %>.Mailer, adapter: Swoosh.Adapters.Local<% end %><%= if @javascript do %>
+config :<%= @app_name %>, <%= @app_module %>.Mailer, adapter: Swoosh.Adapters.Local<% end %>
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
   <%= @app_name %>: [
     args:
-      ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("..<%= if @in_umbrella, do: "/apps/#{@app_name}" %>/assets", __DIR__),
     env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
-  ]<% end %><%= if @css do %>
+  ]
 
 # Configure tailwind (the version is required)
 config :tailwind,
@@ -52,7 +53,7 @@ config :tailwind,
       --output=priv/static/assets/css/app.css
     ),
     cd: Path.expand("..<%= if @in_umbrella, do: "/apps/#{@app_name}" %>", __DIR__),
-  ]<% end %>
+  ]
 
 # Configure Elixir's Logger
 config :logger, :default_formatter,
@@ -61,6 +62,10 @@ config :logger, :default_formatter,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :corex,
+  gettext_backend: <%= @web_namespace %>.Gettext,
+  json_library: Jason
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

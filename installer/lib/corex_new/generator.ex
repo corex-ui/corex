@@ -4,7 +4,8 @@ defmodule Corex.New.Generator do
   alias Corex.New.{Project}
 
   @phoenix Path.expand("../..", __DIR__)
-  @phoenix_version Version.parse!(Mix.Project.config()[:version])
+  @phoenix_version Version.parse!(Mix.Project.config()[:phoenix_version] || "1.8.4")
+  @corex_version Mix.Project.config()[:version]
 
   @callback prepare_project(Project.t()) :: Project.t()
   @callback generate(Project.t()) :: Project.t()
@@ -244,12 +245,16 @@ defmodule Corex.New.Generator do
     gettext = Keyword.get(opts, :gettext, true)
     assets = Keyword.get(opts, :assets, true)
     esbuild = Keyword.get(opts, :esbuild, assets)
-    tailwind = Keyword.get(opts, :tailwind, assets)
+    tailwind = assets
+    css = tailwind
+    locales = parse_locales(Keyword.get(opts, :language, "en"))
+    default_locale = List.first(locales) || "en"
     mailer = Keyword.get(opts, :mailer, true)
     dev = Keyword.get(opts, :dev, false)
     phoenix_path = phoenix_path(project, dev, false)
     phoenix_path_umbrella_root = phoenix_path(project, dev, true)
     agents_md = Keyword.get(opts, :agents_md, true)
+    designex = Keyword.get(opts, :designex, false)
 
     # detect if we're inside a docker env, but if we're in github actions,
     # we want to treat it like regular env for end-user testing purposes
@@ -301,7 +306,14 @@ defmodule Corex.New.Generator do
       in_umbrella: project.in_umbrella?,
       asset_builders: Enum.filter([tailwind && :tailwind, esbuild && :esbuild], & &1),
       javascript: esbuild,
-      css: tailwind,
+      css: css,
+      tailwind: tailwind,
+      designex: designex,
+      default_locale: default_locale,
+      default_mode: opts[:mode] || "light",
+      default_theme: opts[:theme] || "neo",
+      locales: locales,
+      corex_dep: corex_dep(),
       mailer: mailer,
       ecto: ecto,
       html: html,
@@ -537,6 +549,39 @@ defmodule Corex.New.Generator do
 
   defp phoenix_dep(path),
     do: ~s[{:phoenix, path: #{inspect(path)}, override: true}]
+
+  defp corex_dep do
+    vsn = to_string(@corex_version)
+    ~s[{:corex, "~> #{major_minor(vsn)}"}]
+  end
+
+  defp major_minor(version) do
+    case Version.parse(version) do
+      {:ok, %Version{major: major, minor: minor, pre: pre}} ->
+        base = "#{major}.#{minor}"
+        if pre != [] do
+          base <> "-" <> Enum.join(pre, ".")
+        else
+          base
+        end
+
+      _ ->
+        "0.1.0-alpha"
+    end
+  end
+
+  defp parse_locales(nil), do: ["en"]
+  defp parse_locales(""), do: ["en"]
+  defp parse_locales(s) do
+    list = parse_list(s)
+    if list == [], do: ["en"], else: list
+  end
+
+  defp parse_list(nil), do: []
+  defp parse_list(""), do: []
+  defp parse_list(s) do
+    s |> String.split(",", trim: true) |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == ""))
+  end
 
   defp phoenix_js_path("deps/phoenix"), do: "phoenix"
   defp phoenix_js_path(path), do: "../../#{path}/"

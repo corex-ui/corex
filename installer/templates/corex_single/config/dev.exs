@@ -18,10 +18,10 @@ config :<%= @app_name %>, <%= @endpoint_module %>,<%= if @inside_docker_env? do 
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "<%= @secret_key_base_dev %>",
-  watchers: <%= if @javascript or @css do %>[<%= if @javascript do %>
-    esbuild: {Esbuild, :install_and_run, [:<%= @app_name %>, ~w(--sourcemap=inline --watch)]}<%= if @css, do: "," %><% end %><%= if @css do %>
-    tailwind: {Tailwind, :install_and_run, [:<%= @app_name %>, ~w(--watch)]}<% end %>
-  ]<% else %>[]<% end %>
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:<%= @app_name %>, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:<%= @app_name %>, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
@@ -44,7 +44,7 @@ config :<%= @app_name %>, <%= @endpoint_module %>,<%= if @inside_docker_env? do 
 #
 # If desired, both `http:` and `https:` keys can be
 # configured to run both http and https servers on
-# different ports.<%= if @html do %>
+# different ports.
 
 # Reload browser tabs when matching files change.
 config :<%= @app_name %>, <%= @endpoint_module %>,
@@ -59,7 +59,7 @@ config :<%= @app_name %>, <%= @endpoint_module %>,
       ~r"lib/<%= @lib_web_name %>/router\.ex$"<%= @config_regex_E %>,
       ~r"lib/<%= @lib_web_name %>/(controllers|live|components)/.*\.(ex|heex)$"<%= @config_regex_E %>
     ]
-  ]<% end %>
+  ]
 
 # Enable dev routes for dashboard and mailbox
 config :<%= @app_name %>, dev_routes: true
@@ -72,7 +72,7 @@ config :logger, :default_formatter, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
-config :phoenix, :plug_init_mode, :runtime<%= if @html do %>
+config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view,
   # Include debug annotations and locations in rendered markup.
@@ -80,7 +80,7 @@ config :phoenix_live_view,
   debug_heex_annotations: true,
   debug_attributes: true,
   # Enable helpful, but potentially expensive runtime checks
-  enable_expensive_runtime_checks: true<% end %><%= if @mailer do %>
+  enable_expensive_runtime_checks: true<%= if @mailer do %>
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false<% end %>

@@ -61,10 +61,11 @@ defmodule Corex.MixProject do
 
   defp aliases do
     [
-      compile: [&copy_design/1, "compile"],
+      compile: [&copy_design/1, &copy_design_to_installer/1, "compile"],
       "assets.build": [
         &clean_static_assets/1,
         &copy_design/1,
+        &copy_design_to_installer/1,
         "esbuild module",
         "esbuild cdn",
         "esbuild cdn_min",
@@ -92,6 +93,16 @@ defmodule Corex.MixProject do
   defp copy_design(_) do
     source = Path.join([__DIR__, "design"])
     destination = Path.join([__DIR__, "priv", "design"])
+
+    if File.exists?(source) and File.dir?(source) do
+      File.mkdir_p!(Path.dirname(destination))
+      File.cp_r!(source, destination, force: true)
+    end
+  end
+
+  defp copy_design_to_installer(_) do
+    source = Path.join([__DIR__, "priv", "design"])
+    destination = Path.join([__DIR__, "installer", "templates", "corex_design"])
 
     if File.exists?(source) and File.dir?(source) do
       File.mkdir_p!(Path.dirname(destination))

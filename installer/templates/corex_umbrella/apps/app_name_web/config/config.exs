@@ -11,11 +11,14 @@ config :<%= @web_app_name %>, <%= @endpoint_module %>,
   url: [host: "localhost"],
   adapter: <%= inspect @web_adapter_module %>,
   render_errors: [
-    formats: [<%= if @html do%>html: <%= @web_namespace %>.ErrorHTML, <% end %>json: <%= @web_namespace %>.ErrorJSON],
+    formats: [html: <%= @web_namespace %>.ErrorHTML, json: <%= @web_namespace %>.ErrorJSON],
     layout: false
   ],
   pubsub_server: <%= @app_module %>.PubSub,
-  live_view: [signing_salt: "<%= @lv_signing_salt %>"]<%= if @javascript do %>
+  live_view: [signing_salt: "<%= @lv_signing_salt %>"]<%= if @mailer do %>
+
+# Configure the mailer
+config :<%= @web_app_name %>, <%= @app_module %>.Mailer, adapter: Swoosh.Adapters.Local<% end %>
 
 # Configure esbuild (the version is required)
 config :esbuild,
@@ -25,7 +28,7 @@ config :esbuild,
       ~w(js/app.js --bundle --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
     cd: Path.expand("../apps/<%= @web_app_name %>/assets", __DIR__),
     env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
-  ]<% end %><%= if @css do %>
+  ]
 
 # Configure tailwind (the version is required)
 config :tailwind,
@@ -36,4 +39,4 @@ config :tailwind,
       --output=priv/static/assets/css/app.css
     ),
     cd: Path.expand("../apps/<%= @web_app_name %>", __DIR__)
-  ]<% end %>
+  ]

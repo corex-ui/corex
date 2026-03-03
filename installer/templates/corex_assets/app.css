@@ -21,4 +21,13 @@
 /* Make LiveView wrapper divs transparent for layout */
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
+@import "../corex/main.css";
+@import "../corex/tokens/themes/<%= @default_theme %>/light.css";
+<%= if @default_mode == "dark" do %>@import "../corex/tokens/themes/<%= @default_theme %>/dark.css";
+<% end %>@import "../corex/components/typo.css";
+@import "../corex/components/layout.css";
+@import "../corex/components/button.css";
+@import "../corex/components/link.css";
+@import "../corex/components/toast.css";
+
 /* This file is for your main application CSS */

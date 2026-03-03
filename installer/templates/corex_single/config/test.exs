@@ -18,11 +18,11 @@ config :swoosh, :api_client, false<% end %>
 config :logger, level: :warning
 
 # Initialize plugs at runtime for faster test compilation
-config :phoenix, :plug_init_mode, :runtime<%= if @html do %>
+config :phoenix, :plug_init_mode, :runtime
 
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
-  enable_expensive_runtime_checks: true<% end %>
+  enable_expensive_runtime_checks: true
 
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,

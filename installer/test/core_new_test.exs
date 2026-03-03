@@ -299,10 +299,9 @@ defmodule Mix.Tasks.Corex.NewTest do
       assert_received {:mix_shell, :info, ["Then configure your database in config/dev.exs" <> _]}
       assert_received {:mix_shell, :info, ["Start your Phoenix app" <> _]}
 
-      # Gettext
       assert_file("phx_blog/lib/phx_blog_web/gettext.ex", [
         ~r"defmodule PhxBlogWeb.Gettext",
-        ~r"use Gettext\.Backend, otp_app: :phx_blog"
+        ~r"use Gettext\.Backend"
       ])
 
       assert File.exists?("phx_blog/priv/gettext/errors.pot")

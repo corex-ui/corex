@@ -13,8 +13,8 @@ defmodule <%= @app_module %>.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps(),<%= if @html do %>
-      compilers: [:phoenix_live_view] ++ Mix.compilers(),<% end %>
+      deps: deps(),
+      compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
   end
@@ -44,16 +44,17 @@ defmodule <%= @app_module %>.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      <%= @phoenix_dep %>,<%= if @ecto do %>
+      <%= @phoenix_dep %>,
+      <%= @corex_dep %>,<%= if @ecto do %>
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
-      {<%= inspect @adapter_app %>, ">= 0.0.0"},<% end %><%= if @html do %>
+      {<%= inspect @adapter_app %>, ">= 0.0.0"},<% end %>
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.1.0"},
-      {:lazy_html, ">= 0.1.0", only: :test},<% end %><%= if @dashboard do %>
-      {:phoenix_live_dashboard, "~> 0.8.3"},<% end %><%= if @javascript do %>
-      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},<% end %><%= if @css do %>
+      {:lazy_html, ">= 0.1.0", only: :test},<%= if @dashboard do %>
+      {:phoenix_live_dashboard, "~> 0.8.3"},<% end %>
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
       {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
       {:heroicons,
        github: "tailwindlabs/heroicons",
@@ -61,7 +62,7 @@ defmodule <%= @app_module %>.MixProject do
        sparse: "optimized",
        app: false,
        compile: false,
-       depth: 1},<% end %><%= if @mailer do %>
+       depth: 1},<%= if @mailer do %>
       {:swoosh, "~> 1.16"},
       {:req, "~> 0.5"},<% end %>
       {:telemetry_metrics, "~> 1.0"},
