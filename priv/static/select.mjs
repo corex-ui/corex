@@ -1,19 +1,22 @@
 import {
-  ListCollection
-} from "./chunk-MWK4GDRX.mjs";
+  ListCollection,
+  createSelectedItemMap,
+  deriveSelectionState,
+  resolveSelectedItems
+} from "./chunk-4S73FXZZ.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-QYWY7F3J.mjs";
+} from "./chunk-3PXF3EVQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-CHUGBG5L.mjs";
-import "./chunk-DTH4G7GO.mjs";
+} from "./chunk-5YVV632C.mjs";
+import "./chunk-53IVNBLA.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-3L7DS5JZ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -23,8 +26,6 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensure,
   getBoolean,
@@ -46,9 +47,9 @@ import {
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.34.1/node_modules/@zag-js/select/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -67,12 +68,16 @@ var anatomy = createAnatomy("select").parts(
   "valueText"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
 collection.empty = () => {
   return new ListCollection({ items: [] });
 };
+
+// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
@@ -93,6 +98,8 @@ var getItemEl = (ctx, id) => {
   if (id == null) return null;
   return ctx.getById(getItemId(ctx, id));
 };
+
+// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, state, computed, send } = service;
   const disabled = prop("disabled") || context.get("fieldsetDisabled");
@@ -105,15 +112,15 @@ function connect(service, normalize) {
   const focused = state.matches("focused");
   const highlightedValue = context.get("highlightedValue");
   const highlightedItem = context.get("highlightedItem");
-  const selectedItems = context.get("selectedItems");
+  const selectedItems = computed("selectedItems");
   const currentPlacement = context.get("currentPlacement");
   const isTypingAhead = computed("isTypingAhead");
   const interactive = computed("isInteractive");
   const ariaActiveDescendant = highlightedValue ? getItemId(scope, highlightedValue) : void 0;
-  function getItemState(props2) {
-    const _disabled = collection2.getItemDisabled(props2.item);
-    const value = collection2.getItemValue(props2.item);
-    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props2.item)}`);
+  function getItemState(props) {
+    const _disabled = collection2.getItemDisabled(props.item);
+    const value = collection2.getItemValue(props.item);
+    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
     return {
       value,
       disabled: Boolean(disabled || _disabled),
@@ -309,8 +316,8 @@ function connect(service, normalize) {
         "data-readonly": dataAttr(readOnly)
       });
     },
-    getItemProps(props2) {
-      const itemState = getItemState(props2);
+    getItemProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         id: getItemId(scope, itemState.value),
         role: "option",
@@ -334,7 +341,7 @@ function connect(service, normalize) {
         },
         onPointerLeave(event) {
           if (itemState.disabled) return;
-          if (props2.persistFocus) return;
+          if (props.persistFocus) return;
           if (event.pointerType !== "mouse") return;
           const pointerMoved = service.event.previous()?.type.includes("POINTER");
           if (!pointerMoved) return;
@@ -342,8 +349,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getItemTextProps(props2) {
-      const itemState = getItemState(props2);
+    getItemTextProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemText.attrs,
         "data-state": itemState.selected ? "checked" : "unchecked",
@@ -351,8 +358,8 @@ function connect(service, normalize) {
         "data-highlighted": dataAttr(itemState.highlighted)
       });
     },
-    getItemIndicatorProps(props2) {
-      const itemState = getItemState(props2);
+    getItemIndicatorProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         "aria-hidden": true,
         ...parts.itemIndicator.attrs,
@@ -360,8 +367,8 @@ function connect(service, normalize) {
         hidden: !itemState.selected
       });
     },
-    getItemGroupLabelProps(props2) {
-      const { htmlFor } = props2;
+    getItemGroupLabelProps(props) {
+      const { htmlFor } = props;
       return normalize.element({
         ...parts.itemGroupLabel.attrs,
         id: getItemGroupLabelId(scope, htmlFor),
@@ -369,8 +376,8 @@ function connect(service, normalize) {
         role: "presentation"
       });
     },
-    getItemGroupProps(props2) {
-      const { id } = props2;
+    getItemGroupProps(props) {
+      const { id } = props;
       return normalize.element({
         ...parts.itemGroup.attrs,
         "data-disabled": dataAttr(disabled),
@@ -514,32 +521,50 @@ function connect(service, normalize) {
 var getSelectedValues = (el) => {
   return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
 };
+
+// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       loopFocus: false,
-      closeOnSelect: !props2.multiple,
+      closeOnSelect: !props.multiple,
       composite: true,
       defaultValue: [],
-      ...props2,
-      collection: props2.collection ?? collection.empty(),
+      ...props,
+      collection: props.collection ?? collection.empty(),
       positioning: {
         placement: "bottom-start",
         gutter: 8,
-        ...props2.positioning
+        ...props.positioning
       }
     };
   },
-  context({ prop, bindable }) {
+  context({ prop, bindable, getContext }) {
+    const initialValue = prop("value") ?? prop("defaultValue") ?? [];
+    const initialSelectedItems = prop("collection").findMany(initialValue);
     return {
       value: bindable(() => ({
         defaultValue: prop("defaultValue"),
         value: prop("value"),
         isEqual,
         onChange(value) {
-          const items = prop("collection").findMany(value);
-          return prop("onValueChange")?.({ value, items });
+          const context = getContext();
+          const collection2 = prop("collection");
+          const selectedItemMap = context.get("selectedItemMap");
+          const proposed = deriveSelectionState({
+            values: value,
+            collection: collection2,
+            selectedItemMap
+          });
+          const effectiveValue = prop("value") ?? value;
+          const effective = effectiveValue === value ? proposed : deriveSelectionState({
+            values: effectiveValue,
+            collection: collection2,
+            selectedItemMap: proposed.nextSelectedItemMap
+          });
+          context.set("selectedItemMap", effective.nextSelectedItemMap);
+          return prop("onValueChange")?.({ value, items: proposed.selectedItems });
         }
       })),
       highlightedValue: bindable(() => ({
@@ -562,10 +587,13 @@ var machine = createMachine({
       highlightedItem: bindable(() => ({
         defaultValue: null
       })),
-      selectedItems: bindable(() => {
-        const value = prop("value") ?? prop("defaultValue") ?? [];
-        const items = prop("collection").findMany(value);
-        return { defaultValue: items };
+      selectedItemMap: bindable(() => {
+        return {
+          defaultValue: createSelectedItemMap({
+            selectedItems: initialSelectedItems,
+            collection: prop("collection")
+          })
+        };
       })
     };
   },
@@ -579,7 +607,12 @@ var machine = createMachine({
     isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
     isDisabled: ({ prop, context }) => !!prop("disabled") || !!context.get("fieldsetDisabled"),
     isInteractive: ({ prop }) => !(prop("disabled") || prop("readOnly")),
-    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+    selectedItems: ({ context, prop }) => resolveSelectedItems({
+      values: context.get("value"),
+      collection: prop("collection"),
+      selectedItemMap: context.get("selectedItemMap")
+    }),
+    valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
   },
   initialState({ prop }) {
     const open = prop("open") || prop("defaultOpen");
@@ -1149,18 +1182,20 @@ var machine = createMachine({
         const collection2 = prop("collection");
         const highlightedItem = collection2.find(context.get("highlightedValue"));
         if (highlightedItem) context.set("highlightedItem", highlightedItem);
-        const selectedItems = collection2.findMany(context.get("value"));
-        context.set("selectedItems", selectedItems);
+        const next = deriveSelectionState({
+          values: context.get("value"),
+          collection: collection2,
+          selectedItemMap: context.get("selectedItemMap")
+        });
+        context.set("selectedItemMap", next.nextSelectedItemMap);
       },
       syncSelectedItems({ context, prop }) {
-        const collection2 = prop("collection");
-        const prevSelectedItems = context.get("selectedItems");
-        const value = context.get("value");
-        const selectedItems = value.map((value2) => {
-          const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === value2);
-          return item || collection2.find(value2);
+        const next = deriveSelectionState({
+          values: context.get("value"),
+          collection: prop("collection"),
+          selectedItemMap: context.get("selectedItemMap")
         });
-        context.set("selectedItems", selectedItems);
+        context.set("selectedItemMap", next.nextSelectedItemMap);
       },
       syncHighlightedItem({ context, prop }) {
         const collection2 = prop("collection");
@@ -1184,56 +1219,15 @@ function restoreFocusFn(event) {
   const v = event.restoreFocus ?? event.previousEvent?.restoreFocus;
   return v == null || !!v;
 }
-var props = createProps()([
-  "autoComplete",
-  "closeOnSelect",
-  "collection",
-  "composite",
-  "defaultHighlightedValue",
-  "defaultOpen",
-  "defaultValue",
-  "deselectable",
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "highlightedValue",
-  "id",
-  "ids",
-  "invalid",
-  "loopFocus",
-  "multiple",
-  "name",
-  "onFocusOutside",
-  "onHighlightChange",
-  "onInteractOutside",
-  "onOpenChange",
-  "onPointerDownOutside",
-  "onSelect",
-  "onValueChange",
-  "open",
-  "positioning",
-  "readOnly",
-  "required",
-  "scrollToIndexFn",
-  "value"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["item", "persistFocus"]);
-var splitItemProps = createSplitProps(itemProps);
-var itemGroupProps = createProps()(["id"]);
-var splitItemGroupProps = createSplitProps(itemGroupProps);
-var itemGroupLabelProps = createProps()(["htmlFor"]);
-var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
 
 // components/select.ts
 var Select = class extends Component {
   _options = [];
   hasGroups = false;
   placeholder = "";
-  constructor(el, props2) {
-    super(el, props2);
-    const collectionFromProps = props2.collection;
+  constructor(el, props) {
+    super(el, props);
+    const collectionFromProps = props.collection;
     this._options = collectionFromProps?.items ?? [];
     this.placeholder = getString(this.el, "placeholder") || "";
   }
@@ -1262,11 +1256,11 @@ var Select = class extends Component {
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
+  initMachine(props) {
     const getCollection = this.getCollection.bind(this);
-    const collectionFromProps = props2.collection;
+    const collectionFromProps = props.collection;
     return new VanillaMachine(machine, {
-      ...props2,
+      ...props,
       get collection() {
         return collectionFromProps ?? getCollection();
       }

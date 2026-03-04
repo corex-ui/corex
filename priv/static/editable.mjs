@@ -1,6 +1,6 @@
 import {
   trackInteractOutside
-} from "./chunk-DTH4G7GO.mjs";
+} from "./chunk-53IVNBLA.mjs";
 import {
   Component,
   VanillaMachine,
@@ -8,8 +8,6 @@ import {
   contains,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   getBoolean,
   getDir,
@@ -19,9 +17,9 @@ import {
   normalizeProps,
   raf,
   setElementValue
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+editable@1.34.1/node_modules/@zag-js/editable/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
   "root",
   "area",
@@ -34,6 +32,8 @@ var anatomy = createAnatomy("editable").parts(
   "control"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `editable:${ctx.id}`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `editable:${ctx.id}:area`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `editable:${ctx.id}:label`;
@@ -48,6 +48,8 @@ var getPreviewEl = (ctx) => ctx.getById(getPreviewId(ctx));
 var getSubmitTriggerEl = (ctx) => ctx.getById(getSubmitTriggerId(ctx));
 var getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
 var getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.connect.mjs
 function connect(service, normalize) {
   const { state, context, send, prop, scope, computed } = service;
   const disabled = !!prop("disabled");
@@ -282,20 +284,22 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       activationMode: "focus",
       submitMode: "both",
       defaultValue: "",
       selectOnFocus: true,
-      ...props2,
+      ...props,
       translations: {
         input: "editable input",
         edit: "edit",
         submit: "submit",
         cancel: "cancel",
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -500,44 +504,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "activationMode",
-  "autoResize",
-  "dir",
-  "disabled",
-  "finalFocusEl",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "maxLength",
-  "name",
-  "onEditChange",
-  "onFocusOutside",
-  "onInteractOutside",
-  "onPointerDownOutside",
-  "onValueChange",
-  "onValueCommit",
-  "onValueRevert",
-  "placeholder",
-  "readOnly",
-  "required",
-  "selectOnFocus",
-  "edit",
-  "defaultEdit",
-  "submitMode",
-  "translations",
-  "defaultValue",
-  "value"
-]);
-var splitProps = createSplitProps(props);
 
 // components/editable.ts
 var Editable = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

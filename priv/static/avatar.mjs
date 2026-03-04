@@ -3,22 +3,24 @@ import {
   VanillaMachine,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   getString,
   normalizeProps,
   observeAttributes,
   observeChildren
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+avatar@1.34.1/node_modules/@zag-js/avatar/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+avatar@1.35.3/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+avatar@1.35.3/node_modules/@zag-js/avatar/dist/avatar.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `avatar:${ctx.id}`;
 var getImageId = (ctx) => ctx.ids?.image ?? `avatar:${ctx.id}:image`;
 var getFallbackId = (ctx) => ctx.ids?.fallback ?? `avatar:${ctx.id}:fallback`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getImageEl = (ctx) => ctx.getById(getImageId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+avatar@1.35.3/node_modules/@zag-js/avatar/dist/avatar.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope } = service;
   const loaded = state.matches("loaded");
@@ -67,6 +69,8 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+avatar@1.35.3/node_modules/@zag-js/avatar/dist/avatar.machine.mjs
 var machine = createMachine({
   initialState() {
     return "loading";
@@ -156,14 +160,12 @@ var machine = createMachine({
 function hasLoaded(image) {
   return image.complete && image.naturalWidth !== 0 && image.naturalHeight !== 0;
 }
-var props = createProps()(["dir", "id", "ids", "onStatusChange", "getRootNode"]);
-var splitProps = createSplitProps(props);
 
 // components/avatar.ts
 var Avatar = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

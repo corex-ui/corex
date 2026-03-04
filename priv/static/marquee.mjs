@@ -3,19 +3,19 @@ import {
   VanillaMachine,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   getBoolean,
   getDir,
   getNumber,
   getString,
   normalizeProps
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.34.1/node_modules/@zag-js/marquee/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.dom.mjs
 var dom = {
   getRootId: (ctx) => ctx.ids?.root ?? `marquee:${ctx.id}`,
   getViewportId: (ctx) => ctx.ids?.viewport ?? `marquee:${ctx.id}:viewport`,
@@ -24,6 +24,8 @@ var dom = {
   getViewportEl: (ctx) => ctx.getById(dom.getViewportId(ctx)),
   getContentEl: (ctx, index) => ctx.getById(dom.getContentId(ctx, index))
 };
+
+// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.utils.mjs
 var getEdgePositionStyles = (options) => {
   const { side } = options;
   switch (side) {
@@ -64,6 +66,8 @@ var getMarqueeTranslate = (options) => {
   const shouldBeNegative = side === "start" && dir === "ltr" || side === "end" && dir === "rtl";
   return shouldBeNegative ? "-100%" : "100%";
 };
+
+// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.connect.mjs
 function connect(service, normalize) {
   const { scope, send, context, computed, prop } = service;
   const side = prop("side");
@@ -156,8 +160,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getContentProps(props2) {
-      const { index } = props2;
+    getContentProps(props) {
+      const { index } = props;
       const clone = index > 0;
       return normalize.element({
         ...parts.content.attrs,
@@ -187,8 +191,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getEdgeProps(props2) {
-      const { side: side2 } = props2;
+    getEdgeProps(props) {
+      const { side: side2 } = props;
       const dir = prop("dir");
       return normalize.element({
         ...parts.edge.attrs,
@@ -199,7 +203,7 @@ function connect(service, normalize) {
         style: {
           pointerEvents: "none",
           position: "absolute",
-          ...getEdgePositionStyles({ side: side2 })
+          ...getEdgePositionStyles({ side: side2, dir })
         }
       });
     },
@@ -214,8 +218,10 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       dir: "ltr",
       side: "start",
@@ -230,7 +236,7 @@ var machine = createMachine({
       translations: {
         root: "Marquee content"
       },
-      ...props2
+      ...props
     };
   },
   refs() {
@@ -317,6 +323,7 @@ var machine = createMachine({
         const contentElements = viewportEl.querySelectorAll('[data-part="content"]');
         contentElements.forEach((el) => {
           el.style.animation = "none";
+          el.offsetHeight;
           el.style.animation = "";
         });
       },
@@ -389,32 +396,11 @@ function calculateDuration(options) {
   }
   return contentSize < rootSize ? rootSize / speed : contentSize / speed;
 }
-var props = createProps()([
-  "autoFill",
-  "defaultPaused",
-  "delay",
-  "dir",
-  "getRootNode",
-  "id",
-  "ids",
-  "loopCount",
-  "onComplete",
-  "onLoopComplete",
-  "onPauseChange",
-  "paused",
-  "pauseOnInteraction",
-  "reverse",
-  "side",
-  "spacing",
-  "speed",
-  "translations"
-]);
-var splitProps = createSplitProps(props);
 
 // components/marquee.ts
 var Marquee = class extends Component {
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

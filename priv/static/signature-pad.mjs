@@ -3,8 +3,6 @@ import {
   VanillaMachine,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   getBoolean,
   getDataUrl,
@@ -17,7 +15,163 @@ import {
   normalizeProps,
   query,
   trackPointerMove
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
+
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
+var anatomy = createAnatomy("signature-pad").parts(
+  "root",
+  "control",
+  "segment",
+  "segmentPath",
+  "guide",
+  "clearTrigger",
+  "label"
+);
+var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
+var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
+var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
+var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `signature-input-${ctx.id}`;
+var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
+var getSegmentEl = (ctx) => query(getControlEl(ctx), "[data-part=segment]");
+var getDataUrl2 = (ctx, options) => {
+  return getDataUrl(getSegmentEl(ctx), options);
+};
+
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
+function connect(service, normalize) {
+  const { state, send, prop, computed, context, scope } = service;
+  const drawing = state.matches("drawing");
+  const empty = computed("isEmpty");
+  const interactive = computed("isInteractive");
+  const disabled = !!prop("disabled");
+  const required = !!prop("required");
+  const translations = prop("translations");
+  return {
+    empty,
+    drawing,
+    currentPath: context.get("currentPath"),
+    paths: context.get("paths"),
+    clear() {
+      send({ type: "CLEAR" });
+    },
+    getDataUrl(type, quality) {
+      if (computed("isEmpty")) return Promise.resolve("");
+      return getDataUrl2(scope, { type, quality });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts.label.attrs,
+        id: getLabelId(scope),
+        "data-disabled": dataAttr(disabled),
+        "data-required": dataAttr(required),
+        htmlFor: getHiddenInputId(scope),
+        onClick(event) {
+          if (!interactive) return;
+          if (event.defaultPrevented) return;
+          const controlEl = getControlEl(scope);
+          controlEl?.focus({ preventScroll: true });
+        }
+      });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        "data-disabled": dataAttr(disabled),
+        id: getRootId(scope)
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        tabIndex: disabled ? void 0 : 0,
+        id: getControlId(scope),
+        role: "application",
+        "aria-roledescription": "signature pad",
+        "aria-label": translations.control,
+        "aria-disabled": disabled,
+        "data-disabled": dataAttr(disabled),
+        onPointerDown(event) {
+          if (!isLeftClick(event)) return;
+          if (isModifierKey(event)) return;
+          if (!interactive) return;
+          const target = getEventTarget(event);
+          if (target?.closest("[data-part=clear-trigger]")) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          const point = { x: event.clientX, y: event.clientY };
+          const controlEl = getControlEl(scope);
+          if (!controlEl) return;
+          const { offset } = getRelativePoint(point, controlEl);
+          send({ type: "POINTER_DOWN", point: offset, pressure: event.pressure });
+        },
+        onPointerUp(event) {
+          if (!interactive) return;
+          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+            event.currentTarget.releasePointerCapture(event.pointerId);
+          }
+        },
+        style: {
+          position: "relative",
+          touchAction: "none",
+          userSelect: "none",
+          WebkitUserSelect: "none"
+        }
+      });
+    },
+    getSegmentProps() {
+      return normalize.svg({
+        ...parts.segment.attrs,
+        style: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          fill: prop("drawing").fill
+        }
+      });
+    },
+    getSegmentPathProps(props) {
+      return normalize.path({
+        ...parts.segmentPath.attrs,
+        d: props.path
+      });
+    },
+    getGuideProps() {
+      return normalize.element({
+        ...parts.guide.attrs,
+        "data-disabled": dataAttr(disabled)
+      });
+    },
+    getClearTriggerProps() {
+      return normalize.button({
+        ...parts.clearTrigger.attrs,
+        type: "button",
+        "aria-label": translations.clearTrigger,
+        hidden: !context.get("paths").length || drawing,
+        disabled,
+        onClick() {
+          send({ type: "CLEAR" });
+        }
+      });
+    },
+    getHiddenInputProps(props) {
+      return normalize.input({
+        id: getHiddenInputId(scope),
+        type: "text",
+        hidden: true,
+        disabled,
+        required: prop("required"),
+        readOnly: true,
+        name: prop("name"),
+        value: props.value
+      });
+    }
+  };
+}
 
 // ../node_modules/.pnpm/perfect-freehand@1.2.3/node_modules/perfect-freehand/dist/esm/index.mjs
 var { PI: e } = Math;
@@ -199,157 +353,7 @@ function R(e2, t2 = {}) {
 }
 var z = R;
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.34.1/node_modules/@zag-js/signature-pad/dist/index.mjs
-var anatomy = createAnatomy("signature-pad").parts(
-  "root",
-  "control",
-  "segment",
-  "segmentPath",
-  "guide",
-  "clearTrigger",
-  "label"
-);
-var parts = anatomy.build();
-var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
-var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
-var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
-var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `signature-input-${ctx.id}`;
-var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
-var getSegmentEl = (ctx) => query(getControlEl(ctx), "[data-part=segment]");
-var getDataUrl2 = (ctx, options) => {
-  return getDataUrl(getSegmentEl(ctx), options);
-};
-function connect(service, normalize) {
-  const { state, send, prop, computed, context, scope } = service;
-  const drawing = state.matches("drawing");
-  const empty = computed("isEmpty");
-  const interactive = computed("isInteractive");
-  const disabled = !!prop("disabled");
-  const required = !!prop("required");
-  const translations = prop("translations");
-  return {
-    empty,
-    drawing,
-    currentPath: context.get("currentPath"),
-    paths: context.get("paths"),
-    clear() {
-      send({ type: "CLEAR" });
-    },
-    getDataUrl(type, quality) {
-      if (computed("isEmpty")) return Promise.resolve("");
-      return getDataUrl2(scope, { type, quality });
-    },
-    getLabelProps() {
-      return normalize.label({
-        ...parts.label.attrs,
-        id: getLabelId(scope),
-        "data-disabled": dataAttr(disabled),
-        "data-required": dataAttr(required),
-        htmlFor: getHiddenInputId(scope),
-        onClick(event) {
-          if (!interactive) return;
-          if (event.defaultPrevented) return;
-          const controlEl = getControlEl(scope);
-          controlEl?.focus({ preventScroll: true });
-        }
-      });
-    },
-    getRootProps() {
-      return normalize.element({
-        ...parts.root.attrs,
-        "data-disabled": dataAttr(disabled),
-        id: getRootId(scope)
-      });
-    },
-    getControlProps() {
-      return normalize.element({
-        ...parts.control.attrs,
-        tabIndex: disabled ? void 0 : 0,
-        id: getControlId(scope),
-        role: "application",
-        "aria-roledescription": "signature pad",
-        "aria-label": translations.control,
-        "aria-disabled": disabled,
-        "data-disabled": dataAttr(disabled),
-        onPointerDown(event) {
-          if (!isLeftClick(event)) return;
-          if (isModifierKey(event)) return;
-          if (!interactive) return;
-          const target = getEventTarget(event);
-          if (target?.closest("[data-part=clear-trigger]")) return;
-          event.currentTarget.setPointerCapture(event.pointerId);
-          const point = { x: event.clientX, y: event.clientY };
-          const controlEl = getControlEl(scope);
-          if (!controlEl) return;
-          const { offset } = getRelativePoint(point, controlEl);
-          send({ type: "POINTER_DOWN", point: offset, pressure: event.pressure });
-        },
-        onPointerUp(event) {
-          if (!interactive) return;
-          if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-            event.currentTarget.releasePointerCapture(event.pointerId);
-          }
-        },
-        style: {
-          position: "relative",
-          touchAction: "none",
-          userSelect: "none",
-          WebkitUserSelect: "none"
-        }
-      });
-    },
-    getSegmentProps() {
-      return normalize.svg({
-        ...parts.segment.attrs,
-        style: {
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          pointerEvents: "none",
-          fill: prop("drawing").fill
-        }
-      });
-    },
-    getSegmentPathProps(props2) {
-      return normalize.path({
-        ...parts.segmentPath.attrs,
-        d: props2.path
-      });
-    },
-    getGuideProps() {
-      return normalize.element({
-        ...parts.guide.attrs,
-        "data-disabled": dataAttr(disabled)
-      });
-    },
-    getClearTriggerProps() {
-      return normalize.button({
-        ...parts.clearTrigger.attrs,
-        type: "button",
-        "aria-label": translations.clearTrigger,
-        hidden: !context.get("paths").length || drawing,
-        disabled,
-        onClick() {
-          send({ type: "CLEAR" });
-        }
-      });
-    },
-    getHiddenInputProps(props2) {
-      return normalize.input({
-        id: getHiddenInputId(scope),
-        type: "text",
-        hidden: true,
-        disabled,
-        required: prop("required"),
-        readOnly: true,
-        name: prop("name"),
-        value: props2.value
-      });
-    }
-  };
-}
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
 var average = (a2, b2) => (a2 + b2) / 2;
 function getSvgPathFromStroke(points, closed = true) {
   const len = points.length;
@@ -373,23 +377,25 @@ function getSvgPathFromStroke(points, closed = true) {
   }
   return result;
 }
+
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       defaultPaths: [],
-      ...props2,
+      ...props,
       drawing: {
         size: 2,
         simulatePressure: false,
         thinning: 0.7,
         smoothing: 0.4,
         streamline: 0.6,
-        ...props2.drawing
+        ...props.drawing
       },
       translations: {
         control: "signature pad",
         clearTrigger: "clear signature",
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -502,23 +508,6 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "defaultPaths",
-  "dir",
-  "disabled",
-  "drawing",
-  "getRootNode",
-  "id",
-  "ids",
-  "name",
-  "onDraw",
-  "onDrawEnd",
-  "paths",
-  "readOnly",
-  "required",
-  "translations"
-]);
-var splitProps = createSplitProps(props);
 
 // components/signature-pad.ts
 var SignaturePad = class extends Component {
@@ -526,9 +515,9 @@ var SignaturePad = class extends Component {
   paths = [];
   name;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    this.name = props2.name;
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    this.name = props.name;
+    return new VanillaMachine(machine, props);
   }
   setName(name) {
     this.name = name;

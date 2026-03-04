@@ -1,12 +1,13 @@
 import {
+  toPx
+} from "./chunk-G66USZ47.mjs";
+import {
   Component,
   VanillaMachine,
   callAll,
   clickIfLink,
   contains,
   createAnatomy,
-  createProps,
-  createSplitProps,
   dataAttr,
   first,
   getBoolean,
@@ -27,13 +28,14 @@ import {
   queryAll,
   raf,
   resizeObserverBorderBox,
-  setup,
-  toPx
-} from "./chunk-PLUM2DEK.mjs";
+  setup
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.34.1/node_modules/@zag-js/tabs/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.35.3/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+tabs@1.35.3/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
 var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
 var getContentId = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
@@ -62,6 +64,8 @@ var getRectByValue = (ctx, value) => {
   const tab = itemById(getElements(ctx), getTriggerId(ctx, value));
   return getOffsetRect(tab);
 };
+
+// ../node_modules/.pnpm/@zag-js+tabs@1.35.3/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const translations = prop("translations");
@@ -69,11 +73,11 @@ function connect(service, normalize) {
   const isVertical = prop("orientation") === "vertical";
   const isHorizontal = prop("orientation") === "horizontal";
   const composite = prop("composite");
-  function getTriggerState(props2) {
+  function getTriggerState(props) {
     return {
-      selected: context.get("value") === props2.value,
-      focused: context.get("focusedValue") === props2.value,
-      disabled: !!props2.disabled
+      selected: context.get("value") === props.value,
+      focused: context.get("focusedValue") === props.value,
+      disabled: !!props.disabled
     };
   }
   return {
@@ -166,9 +170,9 @@ function connect(service, normalize) {
       });
     },
     getTriggerState,
-    getTriggerProps(props2) {
-      const { value, disabled } = props2;
-      const triggerState = getTriggerState(props2);
+    getTriggerProps(props) {
+      const { value, disabled } = props;
+      const triggerState = getTriggerState(props);
       return normalize.button({
         ...parts.trigger.attrs,
         role: "tab",
@@ -207,8 +211,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getContentProps(props2) {
-      const { value } = props2;
+    getContentProps(props) {
+      const { value } = props;
       const selected = context.get("value") === value;
       return normalize.element({
         ...parts.content.attrs,
@@ -249,9 +253,11 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+tabs@1.35.3/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
 var { createMachine } = setup();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       dir: "ltr",
       orientation: "horizontal",
@@ -262,7 +268,7 @@ var machine = createMachine({
         clickIfLink(details.node);
       },
       defaultValue: null,
-      ...props2
+      ...props
     };
   },
   initialState() {
@@ -505,34 +511,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "activationMode",
-  "composite",
-  "deselectable",
-  "dir",
-  "getRootNode",
-  "id",
-  "ids",
-  "loopFocus",
-  "navigate",
-  "onFocusChange",
-  "onValueChange",
-  "orientation",
-  "translations",
-  "value",
-  "defaultValue"
-]);
-var splitProps = createSplitProps(props);
-var triggerProps = createProps()(["disabled", "value"]);
-var splitTriggerProps = createSplitProps(triggerProps);
-var contentProps = createProps()(["value"]);
-var splitContentProps = createSplitProps(contentProps);
 
 // components/tabs.ts
 var Tabs = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

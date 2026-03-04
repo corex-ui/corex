@@ -5,8 +5,6 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   first,
   getBoolean,
@@ -22,11 +20,13 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.34.1/node_modules/@zag-js/accordion/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `accordion:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `accordion:${ctx.id}:item:${value}`;
 var getItemContentId = (ctx, value) => ctx.ids?.itemContent?.(value) ?? `accordion:${ctx.id}:content:${value}`;
@@ -41,6 +41,8 @@ var getFirstTriggerEl = (ctx) => first(getTriggerEls(ctx));
 var getLastTriggerEl = (ctx) => last(getTriggerEls(ctx));
 var getNextTriggerEl = (ctx, id) => nextById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 var getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
+
+// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, scope, computed } = service;
   const focusedValue = context.get("focusedValue");
@@ -53,11 +55,11 @@ function connect(service, normalize) {
     }
     send({ type: "VALUE.SET", value: nextValue });
   }
-  function getItemState(props2) {
+  function getItemState(props) {
     return {
-      expanded: value.includes(props2.value),
-      focused: focusedValue === props2.value,
-      disabled: Boolean(props2.disabled ?? prop("disabled"))
+      expanded: value.includes(props.value),
+      focused: focusedValue === props.value,
+      disabled: Boolean(props.disabled ?? prop("disabled"))
     };
   }
   return {
@@ -73,26 +75,26 @@ function connect(service, normalize) {
         "data-orientation": prop("orientation")
       });
     },
-    getItemProps(props2) {
-      const itemState = getItemState(props2);
+    getItemProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.item.attrs,
         dir: prop("dir"),
-        id: getItemId(scope, props2.value),
+        id: getItemId(scope, props.value),
         "data-state": itemState.expanded ? "open" : "closed",
         "data-focus": dataAttr(itemState.focused),
         "data-disabled": dataAttr(itemState.disabled),
         "data-orientation": prop("orientation")
       });
     },
-    getItemContentProps(props2) {
-      const itemState = getItemState(props2);
+    getItemContentProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemContent.attrs,
         dir: prop("dir"),
         role: "region",
-        id: getItemContentId(scope, props2.value),
-        "aria-labelledby": getItemTriggerId(scope, props2.value),
+        id: getItemContentId(scope, props.value),
+        "aria-labelledby": getItemTriggerId(scope, props.value),
         hidden: !itemState.expanded,
         "data-state": itemState.expanded ? "open" : "closed",
         "data-disabled": dataAttr(itemState.disabled),
@@ -100,8 +102,8 @@ function connect(service, normalize) {
         "data-orientation": prop("orientation")
       });
     },
-    getItemIndicatorProps(props2) {
-      const itemState = getItemState(props2);
+    getItemIndicatorProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemIndicator.attrs,
         dir: prop("dir"),
@@ -112,9 +114,9 @@ function connect(service, normalize) {
         "data-orientation": prop("orientation")
       });
     },
-    getItemTriggerProps(props2) {
-      const { value: value2 } = props2;
-      const itemState = getItemState(props2);
+    getItemTriggerProps(props) {
+      const { value: value2 } = props;
+      const itemState = getItemState(props);
       return normalize.button({
         ...parts.itemTrigger.attrs,
         type: "button",
@@ -184,15 +186,17 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
 var { and, not } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       collapsible: false,
       multiple: false,
       orientation: "vertical",
       defaultValue: [],
-      ...props2
+      ...props
     };
   },
   initialState() {
@@ -314,29 +318,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "collapsible",
-  "dir",
-  "disabled",
-  "getRootNode",
-  "id",
-  "ids",
-  "multiple",
-  "onFocusChange",
-  "onValueChange",
-  "orientation",
-  "value",
-  "defaultValue"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["value", "disabled"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/accordion.ts
 var Accordion = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

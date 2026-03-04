@@ -1,16 +1,16 @@
 import {
+  clampValue
+} from "./chunk-G66USZ47.mjs";
+import {
   Component,
   VanillaMachine,
   add,
   addDomEvent,
   ariaAttr,
   callAll,
-  clampValue,
   contains,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensureProps,
   getBoolean,
@@ -34,9 +34,311 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.34.1/node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
+var anatomy = createAnatomy("carousel").parts(
+  "root",
+  "itemGroup",
+  "item",
+  "control",
+  "nextTrigger",
+  "prevTrigger",
+  "indicatorGroup",
+  "indicator",
+  "autoplayTrigger",
+  "progressText"
+);
+var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
+var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
+var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
+var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
+var getNextTriggerId = (ctx) => ctx.ids?.nextTrigger ?? `carousel:${ctx.id}:next-trigger`;
+var getPrevTriggerId = (ctx) => ctx.ids?.prevTrigger ?? `carousel:${ctx.id}:prev-trigger`;
+var getIndicatorGroupId = (ctx) => ctx.ids?.indicatorGroup ?? `carousel:${ctx.id}:indicator-group`;
+var getIndicatorId = (ctx, index) => ctx.ids?.indicator?.(index) ?? `carousel:${ctx.id}:indicator:${index}`;
+var getItemGroupEl = (ctx) => ctx.getById(getItemGroupId(ctx));
+var getItemEls = (ctx) => queryAll(getItemGroupEl(ctx), `[data-part=item]`);
+var getIndicatorEl = (ctx, page) => ctx.getById(getIndicatorId(ctx, page));
+var syncTabIndex = (ctx) => {
+  const el = getItemGroupEl(ctx);
+  if (!el) return;
+  const tabbables = getTabbables(el);
+  el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
+};
+
+// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
+function connect(service, normalize) {
+  const { state, context, computed, send, scope, prop } = service;
+  const isPlaying = state.matches("autoplay");
+  const isDragging = state.matches("dragging");
+  const canScrollNext = computed("canScrollNext");
+  const canScrollPrev = computed("canScrollPrev");
+  const horizontal = computed("isHorizontal");
+  const autoSize = prop("autoSize");
+  const pageSnapPoints = Array.from(context.get("pageSnapPoints"));
+  const page = context.get("page");
+  const activePage = pageSnapPoints.length ? clampValue(page, 0, pageSnapPoints.length - 1) : 0;
+  const slidesPerPage = prop("slidesPerPage");
+  const padding = prop("padding");
+  const translations = prop("translations");
+  return {
+    isPlaying,
+    isDragging,
+    page: activePage,
+    pageSnapPoints,
+    canScrollNext,
+    canScrollPrev,
+    getProgress() {
+      return activePage / pageSnapPoints.length;
+    },
+    getProgressText() {
+      const details = { page: activePage + 1, totalPages: pageSnapPoints.length };
+      return translations.progressText?.(details) ?? "";
+    },
+    scrollToIndex(index, instant) {
+      send({ type: "INDEX.SET", index, instant });
+    },
+    scrollTo(index, instant) {
+      send({ type: "PAGE.SET", index, instant });
+    },
+    scrollNext(instant) {
+      send({ type: "PAGE.NEXT", instant });
+    },
+    scrollPrev(instant) {
+      send({ type: "PAGE.PREV", instant });
+    },
+    play() {
+      send({ type: "AUTOPLAY.START" });
+    },
+    pause() {
+      send({ type: "AUTOPLAY.PAUSE" });
+    },
+    isInView(index) {
+      return Array.from(context.get("slidesInView")).includes(index);
+    },
+    refresh() {
+      send({ type: "SNAP.REFRESH" });
+    },
+    getRootProps() {
+      return normalize.element({
+        ...parts.root.attrs,
+        id: getRootId(scope),
+        role: "region",
+        "aria-roledescription": "carousel",
+        "data-orientation": prop("orientation"),
+        dir: prop("dir"),
+        style: {
+          "--slides-per-page": slidesPerPage,
+          "--slide-spacing": prop("spacing"),
+          "--slide-item-size": autoSize ? "auto" : "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
+        }
+      });
+    },
+    getItemGroupProps() {
+      return normalize.element({
+        ...parts.itemGroup.attrs,
+        id: getItemGroupId(scope),
+        "data-orientation": prop("orientation"),
+        "data-dragging": dataAttr(isDragging),
+        dir: prop("dir"),
+        "aria-live": isPlaying ? "off" : "polite",
+        onFocus(event) {
+          if (!contains(event.currentTarget, getEventTarget(event))) return;
+          send({ type: "VIEWPORT.FOCUS" });
+        },
+        onBlur(event) {
+          if (contains(event.currentTarget, event.relatedTarget)) return;
+          send({ type: "VIEWPORT.BLUR" });
+        },
+        onMouseDown(event) {
+          if (event.defaultPrevented) return;
+          if (!prop("allowMouseDrag")) return;
+          if (!isLeftClick(event)) return;
+          const target = getEventTarget(event);
+          if (isFocusable(target) && target !== event.currentTarget) return;
+          event.preventDefault();
+          send({ type: "DRAGGING.START" });
+        },
+        onWheel: throttle((event) => {
+          const axis = prop("orientation") === "horizontal" ? "deltaX" : "deltaY";
+          const isScrollingLeft = event[axis] < 0;
+          if (isScrollingLeft && !computed("canScrollPrev")) return;
+          const isScrollingRight = event[axis] > 0;
+          if (isScrollingRight && !computed("canScrollNext")) return;
+          send({ type: "USER.SCROLL" });
+        }, 150),
+        onTouchStart() {
+          send({ type: "USER.SCROLL" });
+        },
+        style: {
+          display: autoSize ? "flex" : "grid",
+          gap: "var(--slide-spacing)",
+          scrollSnapType: [horizontal ? "x" : "y", prop("snapType")].join(" "),
+          gridAutoFlow: horizontal ? "column" : "row",
+          scrollbarWidth: "none",
+          overscrollBehaviorX: "contain",
+          [horizontal ? "gridAutoColumns" : "gridAutoRows"]: autoSize ? void 0 : "var(--slide-item-size)",
+          [horizontal ? "scrollPaddingInline" : "scrollPaddingBlock"]: padding,
+          [horizontal ? "paddingInline" : "paddingBlock"]: padding,
+          [horizontal ? "overflowX" : "overflowY"]: "auto"
+        }
+      });
+    },
+    getItemProps(props) {
+      const isInView = context.get("slidesInView").includes(props.index);
+      return normalize.element({
+        ...parts.item.attrs,
+        id: getItemId(scope, props.index),
+        dir: prop("dir"),
+        role: "group",
+        "data-index": props.index,
+        "data-inview": dataAttr(isInView),
+        "aria-roledescription": "slide",
+        "data-orientation": prop("orientation"),
+        "aria-label": translations.item(props.index, prop("slideCount")),
+        "aria-hidden": ariaAttr(!isInView),
+        style: {
+          flex: "0 0 auto",
+          [horizontal ? "maxWidth" : "maxHeight"]: "100%",
+          scrollSnapAlign: (() => {
+            const snapAlign = props.snapAlign ?? "start";
+            const slidesPerMove = prop("slidesPerMove");
+            const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
+            const shouldSnap = (props.index + perMove) % perMove === 0;
+            return shouldSnap ? snapAlign : void 0;
+          })()
+        }
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        "data-orientation": prop("orientation")
+      });
+    },
+    getPrevTriggerProps() {
+      return normalize.button({
+        ...parts.prevTrigger.attrs,
+        id: getPrevTriggerId(scope),
+        type: "button",
+        disabled: !canScrollPrev,
+        dir: prop("dir"),
+        "aria-label": translations.prevTrigger,
+        "data-orientation": prop("orientation"),
+        "aria-controls": getItemGroupId(scope),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "PAGE.PREV", src: "trigger" });
+        }
+      });
+    },
+    getNextTriggerProps() {
+      return normalize.button({
+        ...parts.nextTrigger.attrs,
+        dir: prop("dir"),
+        id: getNextTriggerId(scope),
+        type: "button",
+        "aria-label": translations.nextTrigger,
+        "data-orientation": prop("orientation"),
+        "aria-controls": getItemGroupId(scope),
+        disabled: !canScrollNext,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "PAGE.NEXT", src: "trigger" });
+        }
+      });
+    },
+    getIndicatorGroupProps() {
+      return normalize.element({
+        ...parts.indicatorGroup.attrs,
+        dir: prop("dir"),
+        id: getIndicatorGroupId(scope),
+        "data-orientation": prop("orientation"),
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          const src = "indicator";
+          const keyMap = {
+            ArrowDown(event2) {
+              if (horizontal) return;
+              send({ type: "PAGE.NEXT", src });
+              event2.preventDefault();
+            },
+            ArrowUp(event2) {
+              if (horizontal) return;
+              send({ type: "PAGE.PREV", src });
+              event2.preventDefault();
+            },
+            ArrowRight(event2) {
+              if (!horizontal) return;
+              send({ type: "PAGE.NEXT", src });
+              event2.preventDefault();
+            },
+            ArrowLeft(event2) {
+              if (!horizontal) return;
+              send({ type: "PAGE.PREV", src });
+              event2.preventDefault();
+            },
+            Home(event2) {
+              send({ type: "PAGE.SET", index: 0, src });
+              event2.preventDefault();
+            },
+            End(event2) {
+              send({ type: "PAGE.SET", index: pageSnapPoints.length - 1, src });
+              event2.preventDefault();
+            }
+          };
+          const key = getEventKey(event, {
+            dir: prop("dir"),
+            orientation: prop("orientation")
+          });
+          const exec = keyMap[key];
+          exec?.(event);
+        }
+      });
+    },
+    getIndicatorProps(props) {
+      return normalize.button({
+        ...parts.indicator.attrs,
+        dir: prop("dir"),
+        id: getIndicatorId(scope, props.index),
+        type: "button",
+        "data-orientation": prop("orientation"),
+        "data-index": props.index,
+        "data-readonly": dataAttr(props.readOnly),
+        "data-current": dataAttr(props.index === activePage),
+        "aria-label": translations.indicator(props.index),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          if (props.readOnly) return;
+          send({ type: "PAGE.SET", index: props.index, src: "indicator" });
+        }
+      });
+    },
+    getAutoplayTriggerProps() {
+      return normalize.button({
+        ...parts.autoplayTrigger.attrs,
+        type: "button",
+        "data-orientation": prop("orientation"),
+        "data-pressed": dataAttr(isPlaying),
+        "aria-label": isPlaying ? translations.autoplayStop : translations.autoplayStart,
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: isPlaying ? "AUTOPLAY.PAUSE" : "AUTOPLAY.START" });
+        }
+      });
+    },
+    getProgressTextProps() {
+      return normalize.element({
+        ...parts.progressText.attrs
+      });
+    }
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.35.3/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
 function getScrollPadding(element) {
   const style = getComputedStyle2(element);
@@ -198,311 +500,16 @@ function findSnapPoint(parent, axis, predicate) {
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.34.1/node_modules/@zag-js/carousel/dist/index.mjs
-var anatomy = createAnatomy("carousel").parts(
-  "root",
-  "itemGroup",
-  "item",
-  "control",
-  "nextTrigger",
-  "prevTrigger",
-  "indicatorGroup",
-  "indicator",
-  "autoplayTrigger",
-  "progressText"
-);
-var parts = anatomy.build();
-var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
-var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
-var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
-var getNextTriggerId = (ctx) => ctx.ids?.nextTrigger ?? `carousel:${ctx.id}:next-trigger`;
-var getPrevTriggerId = (ctx) => ctx.ids?.prevTrigger ?? `carousel:${ctx.id}:prev-trigger`;
-var getIndicatorGroupId = (ctx) => ctx.ids?.indicatorGroup ?? `carousel:${ctx.id}:indicator-group`;
-var getIndicatorId = (ctx, index) => ctx.ids?.indicator?.(index) ?? `carousel:${ctx.id}:indicator:${index}`;
-var getItemGroupEl = (ctx) => ctx.getById(getItemGroupId(ctx));
-var getItemEls = (ctx) => queryAll(getItemGroupEl(ctx), `[data-part=item]`);
-var getIndicatorEl = (ctx, page) => ctx.getById(getIndicatorId(ctx, page));
-var syncTabIndex = (ctx) => {
-  const el = getItemGroupEl(ctx);
-  if (!el) return;
-  const tabbables = getTabbables(el);
-  el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
-};
-function connect(service, normalize) {
-  const { state, context, computed, send, scope, prop } = service;
-  const isPlaying = state.matches("autoplay");
-  const isDragging = state.matches("dragging");
-  const canScrollNext = computed("canScrollNext");
-  const canScrollPrev = computed("canScrollPrev");
-  const horizontal = computed("isHorizontal");
-  const autoSize = prop("autoSize");
-  const pageSnapPoints = Array.from(context.get("pageSnapPoints"));
-  const page = context.get("page");
-  const slidesPerPage = prop("slidesPerPage");
-  const padding = prop("padding");
-  const translations = prop("translations");
-  return {
-    isPlaying,
-    isDragging,
-    page,
-    pageSnapPoints,
-    canScrollNext,
-    canScrollPrev,
-    getProgress() {
-      return page / pageSnapPoints.length;
-    },
-    getProgressText() {
-      const details = { page: page + 1, totalPages: pageSnapPoints.length };
-      return translations.progressText?.(details) ?? "";
-    },
-    scrollToIndex(index, instant) {
-      send({ type: "INDEX.SET", index, instant });
-    },
-    scrollTo(index, instant) {
-      send({ type: "PAGE.SET", index, instant });
-    },
-    scrollNext(instant) {
-      send({ type: "PAGE.NEXT", instant });
-    },
-    scrollPrev(instant) {
-      send({ type: "PAGE.PREV", instant });
-    },
-    play() {
-      send({ type: "AUTOPLAY.START" });
-    },
-    pause() {
-      send({ type: "AUTOPLAY.PAUSE" });
-    },
-    isInView(index) {
-      return Array.from(context.get("slidesInView")).includes(index);
-    },
-    refresh() {
-      send({ type: "SNAP.REFRESH" });
-    },
-    getRootProps() {
-      return normalize.element({
-        ...parts.root.attrs,
-        id: getRootId(scope),
-        role: "region",
-        "aria-roledescription": "carousel",
-        "data-orientation": prop("orientation"),
-        dir: prop("dir"),
-        style: {
-          "--slides-per-page": slidesPerPage,
-          "--slide-spacing": prop("spacing"),
-          "--slide-item-size": autoSize ? "auto" : "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
-        }
-      });
-    },
-    getItemGroupProps() {
-      return normalize.element({
-        ...parts.itemGroup.attrs,
-        id: getItemGroupId(scope),
-        "data-orientation": prop("orientation"),
-        "data-dragging": dataAttr(isDragging),
-        dir: prop("dir"),
-        "aria-live": isPlaying ? "off" : "polite",
-        onFocus(event) {
-          if (!contains(event.currentTarget, getEventTarget(event))) return;
-          send({ type: "VIEWPORT.FOCUS" });
-        },
-        onBlur(event) {
-          if (contains(event.currentTarget, event.relatedTarget)) return;
-          send({ type: "VIEWPORT.BLUR" });
-        },
-        onMouseDown(event) {
-          if (event.defaultPrevented) return;
-          if (!prop("allowMouseDrag")) return;
-          if (!isLeftClick(event)) return;
-          const target = getEventTarget(event);
-          if (isFocusable(target) && target !== event.currentTarget) return;
-          event.preventDefault();
-          send({ type: "DRAGGING.START" });
-        },
-        onWheel: throttle((event) => {
-          const axis = prop("orientation") === "horizontal" ? "deltaX" : "deltaY";
-          const isScrollingLeft = event[axis] < 0;
-          if (isScrollingLeft && !computed("canScrollPrev")) return;
-          const isScrollingRight = event[axis] > 0;
-          if (isScrollingRight && !computed("canScrollNext")) return;
-          send({ type: "USER.SCROLL" });
-        }, 150),
-        onTouchStart() {
-          send({ type: "USER.SCROLL" });
-        },
-        style: {
-          display: autoSize ? "flex" : "grid",
-          gap: "var(--slide-spacing)",
-          scrollSnapType: [horizontal ? "x" : "y", prop("snapType")].join(" "),
-          gridAutoFlow: horizontal ? "column" : "row",
-          scrollbarWidth: "none",
-          overscrollBehaviorX: "contain",
-          [horizontal ? "gridAutoColumns" : "gridAutoRows"]: autoSize ? void 0 : "var(--slide-item-size)",
-          [horizontal ? "scrollPaddingInline" : "scrollPaddingBlock"]: padding,
-          [horizontal ? "paddingInline" : "paddingBlock"]: padding,
-          [horizontal ? "overflowX" : "overflowY"]: "auto"
-        }
-      });
-    },
-    getItemProps(props2) {
-      const isInView = context.get("slidesInView").includes(props2.index);
-      return normalize.element({
-        ...parts.item.attrs,
-        id: getItemId(scope, props2.index),
-        dir: prop("dir"),
-        role: "group",
-        "data-index": props2.index,
-        "data-inview": dataAttr(isInView),
-        "aria-roledescription": "slide",
-        "data-orientation": prop("orientation"),
-        "aria-label": translations.item(props2.index, prop("slideCount")),
-        "aria-hidden": ariaAttr(!isInView),
-        style: {
-          flex: "0 0 auto",
-          [horizontal ? "maxWidth" : "maxHeight"]: "100%",
-          scrollSnapAlign: (() => {
-            const snapAlign = props2.snapAlign ?? "start";
-            const slidesPerMove = prop("slidesPerMove");
-            const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
-            const shouldSnap = (props2.index + perMove) % perMove === 0;
-            return shouldSnap ? snapAlign : void 0;
-          })()
-        }
-      });
-    },
-    getControlProps() {
-      return normalize.element({
-        ...parts.control.attrs,
-        "data-orientation": prop("orientation")
-      });
-    },
-    getPrevTriggerProps() {
-      return normalize.button({
-        ...parts.prevTrigger.attrs,
-        id: getPrevTriggerId(scope),
-        type: "button",
-        disabled: !canScrollPrev,
-        dir: prop("dir"),
-        "aria-label": translations.prevTrigger,
-        "data-orientation": prop("orientation"),
-        "aria-controls": getItemGroupId(scope),
-        onClick(event) {
-          if (event.defaultPrevented) return;
-          send({ type: "PAGE.PREV", src: "trigger" });
-        }
-      });
-    },
-    getNextTriggerProps() {
-      return normalize.button({
-        ...parts.nextTrigger.attrs,
-        dir: prop("dir"),
-        id: getNextTriggerId(scope),
-        type: "button",
-        "aria-label": translations.nextTrigger,
-        "data-orientation": prop("orientation"),
-        "aria-controls": getItemGroupId(scope),
-        disabled: !canScrollNext,
-        onClick(event) {
-          if (event.defaultPrevented) return;
-          send({ type: "PAGE.NEXT", src: "trigger" });
-        }
-      });
-    },
-    getIndicatorGroupProps() {
-      return normalize.element({
-        ...parts.indicatorGroup.attrs,
-        dir: prop("dir"),
-        id: getIndicatorGroupId(scope),
-        "data-orientation": prop("orientation"),
-        onKeyDown(event) {
-          if (event.defaultPrevented) return;
-          const src = "indicator";
-          const keyMap = {
-            ArrowDown(event2) {
-              if (horizontal) return;
-              send({ type: "PAGE.NEXT", src });
-              event2.preventDefault();
-            },
-            ArrowUp(event2) {
-              if (horizontal) return;
-              send({ type: "PAGE.PREV", src });
-              event2.preventDefault();
-            },
-            ArrowRight(event2) {
-              if (!horizontal) return;
-              send({ type: "PAGE.NEXT", src });
-              event2.preventDefault();
-            },
-            ArrowLeft(event2) {
-              if (!horizontal) return;
-              send({ type: "PAGE.PREV", src });
-              event2.preventDefault();
-            },
-            Home(event2) {
-              send({ type: "PAGE.SET", index: 0, src });
-              event2.preventDefault();
-            },
-            End(event2) {
-              send({ type: "PAGE.SET", index: pageSnapPoints.length - 1, src });
-              event2.preventDefault();
-            }
-          };
-          const key = getEventKey(event, {
-            dir: prop("dir"),
-            orientation: prop("orientation")
-          });
-          const exec = keyMap[key];
-          exec?.(event);
-        }
-      });
-    },
-    getIndicatorProps(props2) {
-      return normalize.button({
-        ...parts.indicator.attrs,
-        dir: prop("dir"),
-        id: getIndicatorId(scope, props2.index),
-        type: "button",
-        "data-orientation": prop("orientation"),
-        "data-index": props2.index,
-        "data-readonly": dataAttr(props2.readOnly),
-        "data-current": dataAttr(props2.index === page),
-        "aria-label": translations.indicator(props2.index),
-        onClick(event) {
-          if (event.defaultPrevented) return;
-          if (props2.readOnly) return;
-          send({ type: "PAGE.SET", index: props2.index, src: "indicator" });
-        }
-      });
-    },
-    getAutoplayTriggerProps() {
-      return normalize.button({
-        ...parts.autoplayTrigger.attrs,
-        type: "button",
-        "data-orientation": prop("orientation"),
-        "data-pressed": dataAttr(isPlaying),
-        "aria-label": isPlaying ? translations.autoplayStop : translations.autoplayStart,
-        onClick(event) {
-          if (event.defaultPrevented) return;
-          send({ type: isPlaying ? "AUTOPLAY.PAUSE" : "AUTOPLAY.START" });
-        }
-      });
-    },
-    getProgressTextProps() {
-      return normalize.element({
-        ...parts.progressText.attrs
-      });
-    }
-  };
-}
+// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
-    ensureProps(props2, ["slideCount"], "carousel");
+  props({ props }) {
+    ensureProps(props, ["slideCount"], "carousel");
     return {
       dir: "ltr",
       defaultPage: 0,
       orientation: "horizontal",
       snapType: "mandatory",
-      loop: !!props2.autoplay,
+      loop: !!props.autoplay,
       slidesPerPage: 1,
       slidesPerMove: "auto",
       spacing: "0px",
@@ -510,7 +517,7 @@ var machine = createMachine({
       allowMouseDrag: false,
       inViewThreshold: 0.6,
       autoSize: false,
-      ...props2,
+      ...props,
       translations: {
         nextTrigger: "Next slide",
         prevTrigger: "Previous slide",
@@ -519,7 +526,7 @@ var machine = createMachine({
         autoplayStart: "Start slide rotation",
         autoplayStop: "Stop slide rotation",
         progressText: ({ page, totalPages }) => `${page} / ${totalPages}`,
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -597,7 +604,7 @@ var machine = createMachine({
       actions: ["clearScrollEndTimer", "setMatchingPage"]
     },
     "SNAP.REFRESH": {
-      actions: ["setSnapPoints", "clampPage"]
+      actions: ["setSnapPoints"]
     },
     "PAGE.SCROLL": {
       actions: ["scrollToPage"]
@@ -656,9 +663,29 @@ var machine = createMachine({
           actions: ["scrollSlides", "invokeDragging"]
         },
         "DRAGGING.END": {
-          target: "idle",
-          actions: ["endDragging", "invokeDraggingEnd"]
+          target: "settling",
+          actions: ["endDragging"]
         }
+      }
+    },
+    settling: {
+      effects: ["trackSettlingScroll"],
+      on: {
+        "DRAGGING.START": {
+          target: "dragging",
+          actions: ["clearScrollEndTimer", "invokeDragStart"]
+        },
+        "SCROLL.END": [
+          {
+            guard: "isFocused",
+            target: "focus",
+            actions: ["clearScrollEndTimer", "setClosestPage", "invokeDraggingEnd"]
+          },
+          {
+            target: "idle",
+            actions: ["clearScrollEndTimer", "setClosestPage", "invokeDraggingEnd"]
+          }
+        ]
       }
     },
     userScroll: {
@@ -738,7 +765,7 @@ var machine = createMachine({
         });
         const itemEls = getItemEls(scope);
         itemEls.forEach(exec);
-        const cleanups = itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec));
+        const cleanups = [resizeObserverBorderBox.observe(el, exec), ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))];
         return callAll(...cleanups);
       },
       trackSlideIntersections({ scope, prop, context }) {
@@ -776,6 +803,30 @@ var machine = createMachine({
           );
         };
         return addDomEvent(el, "scroll", onScroll, { passive: true });
+      },
+      trackSettlingScroll({ send, refs, scope }) {
+        const el = getItemGroupEl(scope);
+        if (!el) return;
+        const startTimer = () => {
+          clearTimeout(refs.get("timeoutRef"));
+          refs.set("timeoutRef", void 0);
+          refs.set(
+            "timeoutRef",
+            setTimeout(() => {
+              send({ type: "SCROLL.END" });
+            }, 200)
+          );
+        };
+        startTimer();
+        const onScroll = () => {
+          startTimer();
+        };
+        const cleanup = addDomEvent(el, "scroll", onScroll, { passive: true });
+        return () => {
+          cleanup();
+          clearTimeout(refs.get("timeoutRef"));
+          refs.set("timeoutRef", void 0);
+        };
       },
       trackDocumentVisibility({ scope, send }) {
         const doc = scope.getDoc();
@@ -840,8 +891,13 @@ var machine = createMachine({
         const el = getItemGroupEl(scope);
         if (!el) return;
         const scrollPosition = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
-        const page = context.get("pageSnapPoints").findIndex((point) => Math.abs(point - scrollPosition) < 1);
-        if (page === -1) return;
+        const snapPoints = context.get("pageSnapPoints");
+        if (!snapPoints.length) return;
+        const page = snapPoints.reduce((closestIndex, snapPoint, index) => {
+          const currentDistance = Math.abs(snapPoint - scrollPosition);
+          const closestDistance = Math.abs(snapPoints[closestIndex] - scrollPosition);
+          return currentDistance < closestDistance ? index : closestIndex;
+        }, 0);
         context.set("page", page);
       },
       setNextPage({ context, prop, state }) {
@@ -870,15 +926,15 @@ var machine = createMachine({
         const page = event.index ?? context.get("page");
         context.set("page", page);
       },
-      clampPage({ context }) {
-        const index = clampValue(context.get("page"), 0, context.get("pageSnapPoints").length - 1);
-        context.set("page", index);
-      },
       setSnapPoints({ context, computed, scope }) {
         const el = getItemGroupEl(scope);
         if (!el) return;
         const scrollSnapPoints = getScrollSnapPositions(el);
-        context.set("pageSnapPoints", computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y);
+        const pageSnapPoints = computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y;
+        context.set("pageSnapPoints", pageSnapPoints);
+        if (!pageSnapPoints.length) return;
+        const index = clampValue(context.get("page"), 0, pageSnapPoints.length - 1);
+        context.set("page", index);
       },
       disableScrollSnap({ scope }) {
         const el = getItemGroupEl(scope);
@@ -897,6 +953,7 @@ var machine = createMachine({
         const isHorizontal = computed("isHorizontal");
         const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
         const snapPoints = context.get("pageSnapPoints");
+        if (!snapPoints.length) return;
         const closest = snapPoints.reduce((closest2, curr) => {
           return Math.abs(curr - scrollPos) < Math.abs(closest2 - scrollPos) ? curr : closest2;
         }, snapPoints[0]);
@@ -906,7 +963,6 @@ var machine = createMachine({
             top: isHorizontal ? el.scrollTop : closest,
             behavior: "smooth"
           });
-          context.set("page", snapPoints.indexOf(closest));
           const scrollSnapType = el.dataset.scrollSnapType;
           if (scrollSnapType) {
             el.style.setProperty("scroll-snap-type", scrollSnapType);
@@ -956,41 +1012,12 @@ function getPageSnapPoints(totalSlides, slidesPerMove, slidesPerPage) {
   }
   return snapPoints;
 }
-var props = createProps()([
-  "dir",
-  "getRootNode",
-  "id",
-  "ids",
-  "loop",
-  "page",
-  "defaultPage",
-  "onPageChange",
-  "orientation",
-  "slideCount",
-  "slidesPerPage",
-  "slidesPerMove",
-  "spacing",
-  "padding",
-  "autoplay",
-  "allowMouseDrag",
-  "inViewThreshold",
-  "translations",
-  "snapType",
-  "autoSize",
-  "onDragStatusChange",
-  "onAutoplayStatusChange"
-]);
-var splitProps = createSplitProps(props);
-var indicatorProps = createProps()(["index", "readOnly"]);
-var splitIndicatorProps = createSplitProps(indicatorProps);
-var itemProps = createProps()(["index", "snapAlign"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/carousel.ts
 var Carousel = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

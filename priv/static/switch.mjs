@@ -1,15 +1,13 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-3L7DS5JZ.mjs";
 import {
   Component,
   VanillaMachine,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
@@ -21,11 +19,13 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+switch@1.34.1/node_modules/@zag-js/switch/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.35.3/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+switch@1.35.3/node_modules/@zag-js/switch/dist/switch.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
@@ -33,6 +33,8 @@ var getControlId = (ctx) => ctx.ids?.control ?? `switch:${ctx.id}:control`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+switch@1.35.3/node_modules/@zag-js/switch/dist/switch.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const disabled = !!prop("disabled");
@@ -148,14 +150,16 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+switch@1.35.3/node_modules/@zag-js/switch/dist/switch.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       defaultChecked: false,
       label: "switch",
       value: "on",
-      ...props2
+      ...props
     };
   },
   initialState() {
@@ -288,30 +292,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "checked",
-  "defaultChecked",
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "label",
-  "name",
-  "onCheckedChange",
-  "readOnly",
-  "required",
-  "value"
-]);
-var splitProps = createSplitProps(props);
 
 // components/switch.ts
 var Switch = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

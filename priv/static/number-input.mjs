@@ -1,42 +1,491 @@
 import {
+  memo
+} from "./chunk-5DET2KLQ.mjs";
+import {
+  clampValue,
+  decrementValue,
+  incrementValue,
+  isValueAtMax,
+  isValueAtMin,
+  isValueWithinRange,
+  roundToDpr,
+  wrap
+} from "./chunk-G66USZ47.mjs";
+import {
   Component,
   MAX_Z_INDEX,
   VanillaMachine,
   addDomEvent,
   ariaAttr,
   callAll,
-  clampValue,
   createAnatomy,
-  createProps,
-  createSplitProps,
   dataAttr,
-  decrementValue,
   getBoolean,
   getEventPoint,
   getEventStep,
   getNumber,
   getString,
   getWindow,
-  incrementValue,
   isComposingEvent,
   isLeftClick,
   isModifierKey,
   isSafari,
-  isValueAtMax,
-  isValueAtMin,
-  isValueWithinRange,
-  memo,
   normalizeProps,
   observeAttributes,
   raf,
   requestPointerLock,
-  roundToDpr,
   setCaretToEnd,
   setElementValue,
   setup,
-  trackFormControl,
-  wrap
-} from "./chunk-PLUM2DEK.mjs";
+  trackFormControl
+} from "./chunk-BVJBLYEU.mjs";
+
+// ../node_modules/.pnpm/@zag-js+number-input@1.35.3/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
+var anatomy = createAnatomy("numberInput").parts(
+  "root",
+  "label",
+  "input",
+  "control",
+  "valueText",
+  "incrementTrigger",
+  "decrementTrigger",
+  "scrubber"
+);
+var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+number-input@1.35.3/node_modules/@zag-js/number-input/dist/cursor.mjs
+function recordCursor(inputEl, scope) {
+  if (!inputEl || !scope.isActiveElement(inputEl)) return;
+  try {
+    const { selectionStart: start, selectionEnd: end, value } = inputEl;
+    if (start == null || end == null) return void 0;
+    return { start, end, value };
+  } catch {
+    return void 0;
+  }
+}
+function restoreCursor(inputEl, selection, scope) {
+  if (!inputEl || !scope.isActiveElement(inputEl)) return;
+  if (!selection) {
+    const len = inputEl.value.length;
+    inputEl.setSelectionRange(len, len);
+    return;
+  }
+  try {
+    const newValue = inputEl.value;
+    const { start, end, value: oldValue } = selection;
+    if (newValue === oldValue) {
+      inputEl.setSelectionRange(start, end);
+      return;
+    }
+    const newStart = getNextCursorPosition(oldValue, newValue, start);
+    const newEnd = start === end ? newStart : getNextCursorPosition(oldValue, newValue, end);
+    const clampedStart = Math.max(0, Math.min(newStart, newValue.length));
+    const clampedEnd = Math.max(clampedStart, Math.min(newEnd, newValue.length));
+    inputEl.setSelectionRange(clampedStart, clampedEnd);
+  } catch {
+    const len = inputEl.value.length;
+    inputEl.setSelectionRange(len, len);
+  }
+}
+function getNextCursorPosition(oldValue, newValue, oldPosition) {
+  const beforeCursor = oldValue.slice(0, oldPosition);
+  const afterCursor = oldValue.slice(oldPosition);
+  let prefixLength = 0;
+  const maxPrefixLength = Math.min(beforeCursor.length, newValue.length);
+  for (let i = 0; i < maxPrefixLength; i++) {
+    if (beforeCursor[i] === newValue[i]) {
+      prefixLength = i + 1;
+    } else {
+      break;
+    }
+  }
+  let suffixLength = 0;
+  const maxSuffixLength = Math.min(afterCursor.length, newValue.length - prefixLength);
+  for (let i = 0; i < maxSuffixLength; i++) {
+    const oldIndex = afterCursor.length - 1 - i;
+    const newIndex = newValue.length - 1 - i;
+    if (afterCursor[oldIndex] === newValue[newIndex]) {
+      suffixLength = i + 1;
+    } else {
+      break;
+    }
+  }
+  if (beforeCursor.length > 0 && prefixLength >= beforeCursor.length) {
+    return prefixLength;
+  }
+  if (suffixLength >= afterCursor.length) {
+    return newValue.length - suffixLength;
+  }
+  if (prefixLength > 0) {
+    return prefixLength;
+  }
+  if (suffixLength > 0) {
+    return newValue.length - suffixLength;
+  }
+  if (oldPosition === 0 && prefixLength === 0 && suffixLength === 0) {
+    return newValue.length;
+  }
+  if (oldValue.length > 0) {
+    const ratio = oldPosition / oldValue.length;
+    return Math.round(ratio * newValue.length);
+  }
+  return newValue.length;
+}
+
+// ../node_modules/.pnpm/@zag-js+number-input@1.35.3/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
+var getRootId = (ctx) => ctx.ids?.root ?? `number-input:${ctx.id}`;
+var getInputId = (ctx) => ctx.ids?.input ?? `number-input:${ctx.id}:input`;
+var getIncrementTriggerId = (ctx) => ctx.ids?.incrementTrigger ?? `number-input:${ctx.id}:inc`;
+var getDecrementTriggerId = (ctx) => ctx.ids?.decrementTrigger ?? `number-input:${ctx.id}:dec`;
+var getScrubberId = (ctx) => ctx.ids?.scrubber ?? `number-input:${ctx.id}:scrubber`;
+var getCursorId = (ctx) => `number-input:${ctx.id}:cursor`;
+var getLabelId = (ctx) => ctx.ids?.label ?? `number-input:${ctx.id}:label`;
+var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
+var getIncrementTriggerEl = (ctx) => ctx.getById(getIncrementTriggerId(ctx));
+var getDecrementTriggerEl = (ctx) => ctx.getById(getDecrementTriggerId(ctx));
+var getCursorEl = (ctx) => ctx.getDoc().getElementById(getCursorId(ctx));
+var getPressedTriggerEl = (ctx, hint) => {
+  let btnEl = null;
+  if (hint === "increment") {
+    btnEl = getIncrementTriggerEl(ctx);
+  }
+  if (hint === "decrement") {
+    btnEl = getDecrementTriggerEl(ctx);
+  }
+  return btnEl;
+};
+var setupVirtualCursor = (ctx, point) => {
+  if (isSafari()) return;
+  createVirtualCursor(ctx, point);
+  return () => {
+    getCursorEl(ctx)?.remove();
+  };
+};
+var preventTextSelection = (ctx) => {
+  const doc = ctx.getDoc();
+  const html = doc.documentElement;
+  const body = doc.body;
+  body.style.pointerEvents = "none";
+  html.style.userSelect = "none";
+  html.style.cursor = "ew-resize";
+  return () => {
+    body.style.pointerEvents = "";
+    html.style.userSelect = "";
+    html.style.cursor = "";
+    if (!html.style.length) {
+      html.removeAttribute("style");
+    }
+    if (!body.style.length) {
+      body.removeAttribute("style");
+    }
+  };
+};
+var getMousemoveValue = (ctx, opts) => {
+  const { point, isRtl, event } = opts;
+  const win = ctx.getWin();
+  const x = roundToDpr(event.movementX, win.devicePixelRatio);
+  const y = roundToDpr(event.movementY, win.devicePixelRatio);
+  let hint = x > 0 ? "increment" : x < 0 ? "decrement" : null;
+  if (isRtl && hint === "increment") hint = "decrement";
+  if (isRtl && hint === "decrement") hint = "increment";
+  const newPoint = { x: point.x + x, y: point.y + y };
+  const width = win.innerWidth;
+  const half = roundToDpr(7.5, win.devicePixelRatio);
+  newPoint.x = wrap(newPoint.x + half, width) - half;
+  return { hint, point: newPoint };
+};
+var createVirtualCursor = (ctx, point) => {
+  const doc = ctx.getDoc();
+  const el = doc.createElement("div");
+  el.className = "scrubber--cursor";
+  el.id = getCursorId(ctx);
+  Object.assign(el.style, {
+    width: "15px",
+    height: "15px",
+    position: "fixed",
+    pointerEvents: "none",
+    left: "0px",
+    top: "0px",
+    zIndex: MAX_Z_INDEX,
+    transform: point ? `translate3d(${point.x}px, ${point.y}px, 0px)` : void 0,
+    willChange: "transform"
+  });
+  el.innerHTML = `
+      <svg width="46" height="15" style="left: -15.5px; position: absolute; top: 0; filter: drop-shadow(rgba(0, 0, 0, 0.4) 0px 1px 1.1px);">
+        <g transform="translate(2 3)">
+          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z" style="stroke-width: 2px; stroke: white;"></path>
+          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z"></path>
+        </g>
+      </svg>`;
+  doc.body.appendChild(el);
+};
+
+// ../node_modules/.pnpm/@zag-js+number-input@1.35.3/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
+function connect(service, normalize) {
+  const { state, send, prop, scope, computed } = service;
+  const focused = state.hasTag("focus");
+  const disabled = computed("isDisabled");
+  const readOnly = !!prop("readOnly");
+  const required = !!prop("required");
+  const scrubbing = state.matches("scrubbing");
+  const empty = computed("isValueEmpty");
+  const invalid = prop("invalid") !== void 0 ? !!prop("invalid") : computed("isOutOfRange");
+  const isIncrementDisabled = disabled || !computed("canIncrement") || readOnly;
+  const isDecrementDisabled = disabled || !computed("canDecrement") || readOnly;
+  const translations = prop("translations");
+  return {
+    focused,
+    invalid,
+    empty,
+    value: computed("formattedValue"),
+    valueAsNumber: computed("valueAsNumber"),
+    setValue(value) {
+      send({ type: "VALUE.SET", value });
+    },
+    clearValue() {
+      send({ type: "VALUE.CLEAR" });
+    },
+    increment() {
+      send({ type: "VALUE.INCREMENT" });
+    },
+    decrement() {
+      send({ type: "VALUE.DECREMENT" });
+    },
+    setToMax() {
+      send({ type: "VALUE.SET", value: prop("max") });
+    },
+    setToMin() {
+      send({ type: "VALUE.SET", value: prop("min") });
+    },
+    focus() {
+      getInputEl(scope)?.focus();
+    },
+    getRootProps() {
+      return normalize.element({
+        id: getRootId(scope),
+        ...parts.root.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(disabled),
+        "data-focus": dataAttr(focused),
+        "data-invalid": dataAttr(invalid),
+        "data-scrubbing": dataAttr(scrubbing)
+      });
+    },
+    getLabelProps() {
+      return normalize.label({
+        ...parts.label.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(disabled),
+        "data-focus": dataAttr(focused),
+        "data-invalid": dataAttr(invalid),
+        "data-required": dataAttr(required),
+        "data-scrubbing": dataAttr(scrubbing),
+        id: getLabelId(scope),
+        htmlFor: getInputId(scope),
+        onClick() {
+          raf(() => {
+            setCaretToEnd(getInputEl(scope));
+          });
+        }
+      });
+    },
+    getControlProps() {
+      return normalize.element({
+        ...parts.control.attrs,
+        dir: prop("dir"),
+        role: "group",
+        "aria-disabled": disabled,
+        "data-focus": dataAttr(focused),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-scrubbing": dataAttr(scrubbing),
+        "aria-invalid": ariaAttr(invalid)
+      });
+    },
+    getValueTextProps() {
+      return normalize.element({
+        ...parts.valueText.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(disabled),
+        "data-invalid": dataAttr(invalid),
+        "data-focus": dataAttr(focused),
+        "data-scrubbing": dataAttr(scrubbing)
+      });
+    },
+    getInputProps() {
+      return normalize.input({
+        ...parts.input.attrs,
+        dir: prop("dir"),
+        name: prop("name"),
+        form: prop("form"),
+        id: getInputId(scope),
+        role: "spinbutton",
+        defaultValue: computed("formattedValue"),
+        pattern: prop("formatOptions") ? void 0 : prop("pattern"),
+        inputMode: prop("inputMode"),
+        "aria-invalid": ariaAttr(invalid),
+        "data-invalid": dataAttr(invalid),
+        disabled,
+        "data-disabled": dataAttr(disabled),
+        readOnly,
+        required: prop("required"),
+        autoComplete: "off",
+        autoCorrect: "off",
+        spellCheck: "false",
+        type: "text",
+        "aria-roledescription": "numberfield",
+        "aria-valuemin": prop("min"),
+        "aria-valuemax": prop("max"),
+        "aria-valuenow": Number.isNaN(computed("valueAsNumber")) ? void 0 : computed("valueAsNumber"),
+        "aria-valuetext": computed("valueText"),
+        "data-scrubbing": dataAttr(scrubbing),
+        onFocus() {
+          send({ type: "INPUT.FOCUS" });
+        },
+        onBlur() {
+          send({ type: "INPUT.BLUR" });
+        },
+        onInput(event) {
+          const selection = recordCursor(event.currentTarget, scope);
+          send({ type: "INPUT.CHANGE", target: event.currentTarget, hint: "set", selection });
+        },
+        onBeforeInput(event) {
+          try {
+            const { selectionStart, selectionEnd, value } = event.currentTarget;
+            const nextValue = value.slice(0, selectionStart) + (event.data ?? "") + value.slice(selectionEnd);
+            const isValid = computed("parser").isValidPartialNumber(nextValue);
+            if (!isValid) {
+              event.preventDefault();
+            }
+          } catch {
+          }
+        },
+        onKeyDown(event) {
+          if (event.defaultPrevented) return;
+          if (readOnly) return;
+          if (isComposingEvent(event)) return;
+          const step = getEventStep(event) * prop("step");
+          const keyMap = {
+            ArrowUp() {
+              send({ type: "INPUT.ARROW_UP", step });
+              event.preventDefault();
+            },
+            ArrowDown() {
+              send({ type: "INPUT.ARROW_DOWN", step });
+              event.preventDefault();
+            },
+            Home() {
+              if (isModifierKey(event)) return;
+              send({ type: "INPUT.HOME" });
+              event.preventDefault();
+            },
+            End() {
+              if (isModifierKey(event)) return;
+              send({ type: "INPUT.END" });
+              event.preventDefault();
+            },
+            Enter(event2) {
+              const selection = recordCursor(event2.currentTarget, scope);
+              send({ type: "INPUT.ENTER", selection });
+            }
+          };
+          const exec = keyMap[event.key];
+          exec?.(event);
+        }
+      });
+    },
+    getDecrementTriggerProps() {
+      return normalize.button({
+        ...parts.decrementTrigger.attrs,
+        dir: prop("dir"),
+        id: getDecrementTriggerId(scope),
+        disabled: isDecrementDisabled,
+        "data-disabled": dataAttr(isDecrementDisabled),
+        "aria-label": translations.decrementLabel,
+        type: "button",
+        tabIndex: -1,
+        "aria-controls": getInputId(scope),
+        "data-scrubbing": dataAttr(scrubbing),
+        onPointerDown(event) {
+          if (isDecrementDisabled) return;
+          if (!isLeftClick(event)) return;
+          send({ type: "TRIGGER.PRESS_DOWN", hint: "decrement", pointerType: event.pointerType });
+          if (event.pointerType === "mouse") {
+            event.preventDefault();
+          }
+          if (event.pointerType === "touch") {
+            event.currentTarget?.focus({ preventScroll: true });
+          }
+        },
+        onPointerUp(event) {
+          send({ type: "TRIGGER.PRESS_UP", hint: "decrement", pointerType: event.pointerType });
+        },
+        onPointerLeave() {
+          if (isDecrementDisabled) return;
+          send({ type: "TRIGGER.PRESS_UP", hint: "decrement" });
+        }
+      });
+    },
+    getIncrementTriggerProps() {
+      return normalize.button({
+        ...parts.incrementTrigger.attrs,
+        dir: prop("dir"),
+        id: getIncrementTriggerId(scope),
+        disabled: isIncrementDisabled,
+        "data-disabled": dataAttr(isIncrementDisabled),
+        "aria-label": translations.incrementLabel,
+        type: "button",
+        tabIndex: -1,
+        "aria-controls": getInputId(scope),
+        "data-scrubbing": dataAttr(scrubbing),
+        onPointerDown(event) {
+          if (isIncrementDisabled || !isLeftClick(event)) return;
+          send({ type: "TRIGGER.PRESS_DOWN", hint: "increment", pointerType: event.pointerType });
+          if (event.pointerType === "mouse") {
+            event.preventDefault();
+          }
+          if (event.pointerType === "touch") {
+            event.currentTarget?.focus({ preventScroll: true });
+          }
+        },
+        onPointerUp(event) {
+          send({ type: "TRIGGER.PRESS_UP", hint: "increment", pointerType: event.pointerType });
+        },
+        onPointerLeave(event) {
+          send({ type: "TRIGGER.PRESS_UP", hint: "increment", pointerType: event.pointerType });
+        }
+      });
+    },
+    getScrubberProps() {
+      return normalize.element({
+        ...parts.scrubber.attrs,
+        dir: prop("dir"),
+        "data-disabled": dataAttr(disabled),
+        id: getScrubberId(scope),
+        role: "presentation",
+        "data-scrubbing": dataAttr(scrubbing),
+        onMouseDown(event) {
+          if (disabled) return;
+          if (!isLeftClick(event)) return;
+          const point = getEventPoint(event);
+          const win = getWindow(event.currentTarget);
+          const dpr = win.devicePixelRatio;
+          point.x = point.x - roundToDpr(7.5, dpr);
+          point.y = point.y - roundToDpr(7.5, dpr);
+          send({ type: "SCRUBBER.PRESS_DOWN", point });
+          event.preventDefault();
+          raf(() => {
+            setCaretToEnd(getInputEl(scope));
+          });
+        },
+        style: {
+          cursor: disabled ? void 0 : "ew-resize"
+        }
+      });
+    }
+  };
+}
 
 // ../node_modules/.pnpm/@internationalized+number@3.6.5/node_modules/@internationalized/number/dist/NumberFormatter.mjs
 var $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
@@ -400,446 +849,7 @@ function $6c7bd7858deea686$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.34.1/node_modules/@zag-js/number-input/dist/index.mjs
-var anatomy = createAnatomy("numberInput").parts(
-  "root",
-  "label",
-  "input",
-  "control",
-  "valueText",
-  "incrementTrigger",
-  "decrementTrigger",
-  "scrubber"
-);
-var parts = anatomy.build();
-function recordCursor(inputEl, scope) {
-  if (!inputEl || !scope.isActiveElement(inputEl)) return;
-  try {
-    const { selectionStart: start, selectionEnd: end, value } = inputEl;
-    if (start == null || end == null) return void 0;
-    return { start, end, value };
-  } catch {
-    return void 0;
-  }
-}
-function restoreCursor(inputEl, selection, scope) {
-  if (!inputEl || !scope.isActiveElement(inputEl)) return;
-  if (!selection) {
-    const len = inputEl.value.length;
-    inputEl.setSelectionRange(len, len);
-    return;
-  }
-  try {
-    const newValue = inputEl.value;
-    const { start, end, value: oldValue } = selection;
-    if (newValue === oldValue) {
-      inputEl.setSelectionRange(start, end);
-      return;
-    }
-    const newStart = getNextCursorPosition(oldValue, newValue, start);
-    const newEnd = start === end ? newStart : getNextCursorPosition(oldValue, newValue, end);
-    const clampedStart = Math.max(0, Math.min(newStart, newValue.length));
-    const clampedEnd = Math.max(clampedStart, Math.min(newEnd, newValue.length));
-    inputEl.setSelectionRange(clampedStart, clampedEnd);
-  } catch {
-    const len = inputEl.value.length;
-    inputEl.setSelectionRange(len, len);
-  }
-}
-function getNextCursorPosition(oldValue, newValue, oldPosition) {
-  const beforeCursor = oldValue.slice(0, oldPosition);
-  const afterCursor = oldValue.slice(oldPosition);
-  let prefixLength = 0;
-  const maxPrefixLength = Math.min(beforeCursor.length, newValue.length);
-  for (let i = 0; i < maxPrefixLength; i++) {
-    if (beforeCursor[i] === newValue[i]) {
-      prefixLength = i + 1;
-    } else {
-      break;
-    }
-  }
-  let suffixLength = 0;
-  const maxSuffixLength = Math.min(afterCursor.length, newValue.length - prefixLength);
-  for (let i = 0; i < maxSuffixLength; i++) {
-    const oldIndex = afterCursor.length - 1 - i;
-    const newIndex = newValue.length - 1 - i;
-    if (afterCursor[oldIndex] === newValue[newIndex]) {
-      suffixLength = i + 1;
-    } else {
-      break;
-    }
-  }
-  if (beforeCursor.length > 0 && prefixLength >= beforeCursor.length) {
-    return prefixLength;
-  }
-  if (suffixLength >= afterCursor.length) {
-    return newValue.length - suffixLength;
-  }
-  if (prefixLength > 0) {
-    return prefixLength;
-  }
-  if (suffixLength > 0) {
-    return newValue.length - suffixLength;
-  }
-  if (oldPosition === 0 && prefixLength === 0 && suffixLength === 0) {
-    return newValue.length;
-  }
-  if (oldValue.length > 0) {
-    const ratio = oldPosition / oldValue.length;
-    return Math.round(ratio * newValue.length);
-  }
-  return newValue.length;
-}
-var getRootId = (ctx) => ctx.ids?.root ?? `number-input:${ctx.id}`;
-var getInputId = (ctx) => ctx.ids?.input ?? `number-input:${ctx.id}:input`;
-var getIncrementTriggerId = (ctx) => ctx.ids?.incrementTrigger ?? `number-input:${ctx.id}:inc`;
-var getDecrementTriggerId = (ctx) => ctx.ids?.decrementTrigger ?? `number-input:${ctx.id}:dec`;
-var getScrubberId = (ctx) => ctx.ids?.scrubber ?? `number-input:${ctx.id}:scrubber`;
-var getCursorId = (ctx) => `number-input:${ctx.id}:cursor`;
-var getLabelId = (ctx) => ctx.ids?.label ?? `number-input:${ctx.id}:label`;
-var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
-var getIncrementTriggerEl = (ctx) => ctx.getById(getIncrementTriggerId(ctx));
-var getDecrementTriggerEl = (ctx) => ctx.getById(getDecrementTriggerId(ctx));
-var getCursorEl = (ctx) => ctx.getDoc().getElementById(getCursorId(ctx));
-var getPressedTriggerEl = (ctx, hint) => {
-  let btnEl = null;
-  if (hint === "increment") {
-    btnEl = getIncrementTriggerEl(ctx);
-  }
-  if (hint === "decrement") {
-    btnEl = getDecrementTriggerEl(ctx);
-  }
-  return btnEl;
-};
-var setupVirtualCursor = (ctx, point) => {
-  if (isSafari()) return;
-  createVirtualCursor(ctx, point);
-  return () => {
-    getCursorEl(ctx)?.remove();
-  };
-};
-var preventTextSelection = (ctx) => {
-  const doc = ctx.getDoc();
-  const html = doc.documentElement;
-  const body = doc.body;
-  body.style.pointerEvents = "none";
-  html.style.userSelect = "none";
-  html.style.cursor = "ew-resize";
-  return () => {
-    body.style.pointerEvents = "";
-    html.style.userSelect = "";
-    html.style.cursor = "";
-    if (!html.style.length) {
-      html.removeAttribute("style");
-    }
-    if (!body.style.length) {
-      body.removeAttribute("style");
-    }
-  };
-};
-var getMousemoveValue = (ctx, opts) => {
-  const { point, isRtl, event } = opts;
-  const win = ctx.getWin();
-  const x = roundToDpr(event.movementX, win.devicePixelRatio);
-  const y = roundToDpr(event.movementY, win.devicePixelRatio);
-  let hint = x > 0 ? "increment" : x < 0 ? "decrement" : null;
-  if (isRtl && hint === "increment") hint = "decrement";
-  if (isRtl && hint === "decrement") hint = "increment";
-  const newPoint = { x: point.x + x, y: point.y + y };
-  const width = win.innerWidth;
-  const half = roundToDpr(7.5, win.devicePixelRatio);
-  newPoint.x = wrap(newPoint.x + half, width) - half;
-  return { hint, point: newPoint };
-};
-var createVirtualCursor = (ctx, point) => {
-  const doc = ctx.getDoc();
-  const el = doc.createElement("div");
-  el.className = "scrubber--cursor";
-  el.id = getCursorId(ctx);
-  Object.assign(el.style, {
-    width: "15px",
-    height: "15px",
-    position: "fixed",
-    pointerEvents: "none",
-    left: "0px",
-    top: "0px",
-    zIndex: MAX_Z_INDEX,
-    transform: point ? `translate3d(${point.x}px, ${point.y}px, 0px)` : void 0,
-    willChange: "transform"
-  });
-  el.innerHTML = `
-      <svg width="46" height="15" style="left: -15.5px; position: absolute; top: 0; filter: drop-shadow(rgba(0, 0, 0, 0.4) 0px 1px 1.1px);">
-        <g transform="translate(2 3)">
-          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z" style="stroke-width: 2px; stroke: white;"></path>
-          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z"></path>
-        </g>
-      </svg>`;
-  doc.body.appendChild(el);
-};
-function connect(service, normalize) {
-  const { state, send, prop, scope, computed } = service;
-  const focused = state.hasTag("focus");
-  const disabled = computed("isDisabled");
-  const readOnly = !!prop("readOnly");
-  const required = !!prop("required");
-  const scrubbing = state.matches("scrubbing");
-  const empty = computed("isValueEmpty");
-  const invalid = prop("invalid") !== void 0 ? !!prop("invalid") : computed("isOutOfRange");
-  const isIncrementDisabled = disabled || !computed("canIncrement") || readOnly;
-  const isDecrementDisabled = disabled || !computed("canDecrement") || readOnly;
-  const translations = prop("translations");
-  return {
-    focused,
-    invalid,
-    empty,
-    value: computed("formattedValue"),
-    valueAsNumber: computed("valueAsNumber"),
-    setValue(value) {
-      send({ type: "VALUE.SET", value });
-    },
-    clearValue() {
-      send({ type: "VALUE.CLEAR" });
-    },
-    increment() {
-      send({ type: "VALUE.INCREMENT" });
-    },
-    decrement() {
-      send({ type: "VALUE.DECREMENT" });
-    },
-    setToMax() {
-      send({ type: "VALUE.SET", value: prop("max") });
-    },
-    setToMin() {
-      send({ type: "VALUE.SET", value: prop("min") });
-    },
-    focus() {
-      getInputEl(scope)?.focus();
-    },
-    getRootProps() {
-      return normalize.element({
-        id: getRootId(scope),
-        ...parts.root.attrs,
-        dir: prop("dir"),
-        "data-disabled": dataAttr(disabled),
-        "data-focus": dataAttr(focused),
-        "data-invalid": dataAttr(invalid),
-        "data-scrubbing": dataAttr(scrubbing)
-      });
-    },
-    getLabelProps() {
-      return normalize.label({
-        ...parts.label.attrs,
-        dir: prop("dir"),
-        "data-disabled": dataAttr(disabled),
-        "data-focus": dataAttr(focused),
-        "data-invalid": dataAttr(invalid),
-        "data-required": dataAttr(required),
-        "data-scrubbing": dataAttr(scrubbing),
-        id: getLabelId(scope),
-        htmlFor: getInputId(scope),
-        onClick() {
-          raf(() => {
-            setCaretToEnd(getInputEl(scope));
-          });
-        }
-      });
-    },
-    getControlProps() {
-      return normalize.element({
-        ...parts.control.attrs,
-        dir: prop("dir"),
-        role: "group",
-        "aria-disabled": disabled,
-        "data-focus": dataAttr(focused),
-        "data-disabled": dataAttr(disabled),
-        "data-invalid": dataAttr(invalid),
-        "data-scrubbing": dataAttr(scrubbing),
-        "aria-invalid": ariaAttr(invalid)
-      });
-    },
-    getValueTextProps() {
-      return normalize.element({
-        ...parts.valueText.attrs,
-        dir: prop("dir"),
-        "data-disabled": dataAttr(disabled),
-        "data-invalid": dataAttr(invalid),
-        "data-focus": dataAttr(focused),
-        "data-scrubbing": dataAttr(scrubbing)
-      });
-    },
-    getInputProps() {
-      return normalize.input({
-        ...parts.input.attrs,
-        dir: prop("dir"),
-        name: prop("name"),
-        form: prop("form"),
-        id: getInputId(scope),
-        role: "spinbutton",
-        defaultValue: computed("formattedValue"),
-        pattern: prop("formatOptions") ? void 0 : prop("pattern"),
-        inputMode: prop("inputMode"),
-        "aria-invalid": ariaAttr(invalid),
-        "data-invalid": dataAttr(invalid),
-        disabled,
-        "data-disabled": dataAttr(disabled),
-        readOnly,
-        required: prop("required"),
-        autoComplete: "off",
-        autoCorrect: "off",
-        spellCheck: "false",
-        type: "text",
-        "aria-roledescription": "numberfield",
-        "aria-valuemin": prop("min"),
-        "aria-valuemax": prop("max"),
-        "aria-valuenow": Number.isNaN(computed("valueAsNumber")) ? void 0 : computed("valueAsNumber"),
-        "aria-valuetext": computed("valueText"),
-        "data-scrubbing": dataAttr(scrubbing),
-        onFocus() {
-          send({ type: "INPUT.FOCUS" });
-        },
-        onBlur() {
-          send({ type: "INPUT.BLUR" });
-        },
-        onInput(event) {
-          const selection = recordCursor(event.currentTarget, scope);
-          send({ type: "INPUT.CHANGE", target: event.currentTarget, hint: "set", selection });
-        },
-        onBeforeInput(event) {
-          try {
-            const { selectionStart, selectionEnd, value } = event.currentTarget;
-            const nextValue = value.slice(0, selectionStart) + (event.data ?? "") + value.slice(selectionEnd);
-            const isValid = computed("parser").isValidPartialNumber(nextValue);
-            if (!isValid) {
-              event.preventDefault();
-            }
-          } catch {
-          }
-        },
-        onKeyDown(event) {
-          if (event.defaultPrevented) return;
-          if (readOnly) return;
-          if (isComposingEvent(event)) return;
-          const step = getEventStep(event) * prop("step");
-          const keyMap = {
-            ArrowUp() {
-              send({ type: "INPUT.ARROW_UP", step });
-              event.preventDefault();
-            },
-            ArrowDown() {
-              send({ type: "INPUT.ARROW_DOWN", step });
-              event.preventDefault();
-            },
-            Home() {
-              if (isModifierKey(event)) return;
-              send({ type: "INPUT.HOME" });
-              event.preventDefault();
-            },
-            End() {
-              if (isModifierKey(event)) return;
-              send({ type: "INPUT.END" });
-              event.preventDefault();
-            },
-            Enter(event2) {
-              const selection = recordCursor(event2.currentTarget, scope);
-              send({ type: "INPUT.ENTER", selection });
-            }
-          };
-          const exec = keyMap[event.key];
-          exec?.(event);
-        }
-      });
-    },
-    getDecrementTriggerProps() {
-      return normalize.button({
-        ...parts.decrementTrigger.attrs,
-        dir: prop("dir"),
-        id: getDecrementTriggerId(scope),
-        disabled: isDecrementDisabled,
-        "data-disabled": dataAttr(isDecrementDisabled),
-        "aria-label": translations.decrementLabel,
-        type: "button",
-        tabIndex: -1,
-        "aria-controls": getInputId(scope),
-        "data-scrubbing": dataAttr(scrubbing),
-        onPointerDown(event) {
-          if (isDecrementDisabled) return;
-          if (!isLeftClick(event)) return;
-          send({ type: "TRIGGER.PRESS_DOWN", hint: "decrement", pointerType: event.pointerType });
-          if (event.pointerType === "mouse") {
-            event.preventDefault();
-          }
-          if (event.pointerType === "touch") {
-            event.currentTarget?.focus({ preventScroll: true });
-          }
-        },
-        onPointerUp(event) {
-          send({ type: "TRIGGER.PRESS_UP", hint: "decrement", pointerType: event.pointerType });
-        },
-        onPointerLeave() {
-          if (isDecrementDisabled) return;
-          send({ type: "TRIGGER.PRESS_UP", hint: "decrement" });
-        }
-      });
-    },
-    getIncrementTriggerProps() {
-      return normalize.button({
-        ...parts.incrementTrigger.attrs,
-        dir: prop("dir"),
-        id: getIncrementTriggerId(scope),
-        disabled: isIncrementDisabled,
-        "data-disabled": dataAttr(isIncrementDisabled),
-        "aria-label": translations.incrementLabel,
-        type: "button",
-        tabIndex: -1,
-        "aria-controls": getInputId(scope),
-        "data-scrubbing": dataAttr(scrubbing),
-        onPointerDown(event) {
-          if (isIncrementDisabled || !isLeftClick(event)) return;
-          send({ type: "TRIGGER.PRESS_DOWN", hint: "increment", pointerType: event.pointerType });
-          if (event.pointerType === "mouse") {
-            event.preventDefault();
-          }
-          if (event.pointerType === "touch") {
-            event.currentTarget?.focus({ preventScroll: true });
-          }
-        },
-        onPointerUp(event) {
-          send({ type: "TRIGGER.PRESS_UP", hint: "increment", pointerType: event.pointerType });
-        },
-        onPointerLeave(event) {
-          send({ type: "TRIGGER.PRESS_UP", hint: "increment", pointerType: event.pointerType });
-        }
-      });
-    },
-    getScrubberProps() {
-      return normalize.element({
-        ...parts.scrubber.attrs,
-        dir: prop("dir"),
-        "data-disabled": dataAttr(disabled),
-        id: getScrubberId(scope),
-        role: "presentation",
-        "data-scrubbing": dataAttr(scrubbing),
-        onMouseDown(event) {
-          if (disabled) return;
-          if (!isLeftClick(event)) return;
-          const point = getEventPoint(event);
-          const win = getWindow(event.currentTarget);
-          const dpr = win.devicePixelRatio;
-          point.x = point.x - roundToDpr(7.5, dpr);
-          point.y = point.y - roundToDpr(7.5, dpr);
-          send({ type: "SCRUBBER.PRESS_DOWN", point });
-          event.preventDefault();
-          raf(() => {
-            setCaretToEnd(getInputEl(scope));
-          });
-        },
-        style: {
-          cursor: disabled ? void 0 : "ew-resize"
-        }
-      });
-    }
-  };
-}
+// ../node_modules/.pnpm/@zag-js+number-input@1.35.3/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
 var createFormatter = (locale, options = {}) => {
   return new Intl.NumberFormat(locale, options);
 };
@@ -865,16 +875,18 @@ var getDefaultStep = (step, formatOptions) => {
   }
   return defaultStep;
 };
+
+// ../node_modules/.pnpm/@zag-js+number-input@1.35.3/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
 var { choose, guards, createMachine } = setup();
 var { not, and } = guards;
 var machine = createMachine({
-  props({ props: props2 }) {
-    const step = getDefaultStep(props2.step, props2.formatOptions);
+  props({ props }) {
+    const step = getDefaultStep(props.step, props.formatOptions);
     return {
       dir: "ltr",
       locale: "en-US",
       focusInputOnChange: true,
-      clampValueOnBlur: !props2.allowOverflow,
+      clampValueOnBlur: !props.allowOverflow,
       allowOverflow: false,
       inputMode: "decimal",
       pattern: "-?[0-9]*(.[0-9]+)?",
@@ -883,11 +895,11 @@ var machine = createMachine({
       min: Number.MIN_SAFE_INTEGER,
       max: Number.MAX_SAFE_INTEGER,
       spinOnPress: true,
-      ...props2,
+      ...props,
       translations: {
         incrementLabel: "increment value",
         decrementLabel: "decrease value",
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -1280,44 +1292,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "allowMouseWheel",
-  "allowOverflow",
-  "clampValueOnBlur",
-  "dir",
-  "disabled",
-  "focusInputOnChange",
-  "form",
-  "formatOptions",
-  "getRootNode",
-  "id",
-  "ids",
-  "inputMode",
-  "invalid",
-  "locale",
-  "max",
-  "min",
-  "name",
-  "onFocusChange",
-  "onValueChange",
-  "onValueCommit",
-  "onValueInvalid",
-  "pattern",
-  "required",
-  "readOnly",
-  "spinOnPress",
-  "step",
-  "translations",
-  "value",
-  "defaultValue"
-]);
-var splitProps = createSplitProps(props);
 
 // components/number-input.ts
 var NumberInput = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

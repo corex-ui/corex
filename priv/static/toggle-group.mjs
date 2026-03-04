@@ -6,8 +6,6 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensureProps,
   first,
@@ -25,11 +23,13 @@ import {
   prevById,
   queryAll,
   raf
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.34.1/node_modules/@zag-js/toggle-group/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.35.3/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
 var anatomy = createAnatomy("toggle-group").parts("root", "item");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.35.3/node_modules/@zag-js/toggle-group/dist/toggle-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `toggle-group:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `toggle-group:${ctx.id}:${value}`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
@@ -42,6 +42,8 @@ var getFirstEl = (ctx) => first(getElements(ctx));
 var getLastEl = (ctx) => last(getElements(ctx));
 var getNextEl = (ctx, id, loopFocus) => nextById(getElements(ctx), id, loopFocus);
 var getPrevEl = (ctx, id, loopFocus) => prevById(getElements(ctx), id, loopFocus);
+
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.35.3/node_modules/@zag-js/toggle-group/dist/toggle-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const value = context.get("value");
@@ -49,12 +51,12 @@ function connect(service, normalize) {
   const isSingle = !prop("multiple");
   const rovingFocus = prop("rovingFocus");
   const isHorizontal = prop("orientation") === "horizontal";
-  function getItemState(props2) {
-    const id = getItemId(scope, props2.value);
+  function getItemState(props) {
+    const id = getItemId(scope, props.value);
     return {
       id,
-      disabled: Boolean(props2.disabled || disabled),
-      pressed: !!value.includes(props2.value),
+      disabled: Boolean(props.disabled || disabled),
+      pressed: !!value.includes(props.value),
       focused: context.get("focusedId") === id
     };
   }
@@ -94,8 +96,8 @@ function connect(service, normalize) {
       });
     },
     getItemState,
-    getItemProps(props2) {
-      const itemState = getItemState(props2);
+    getItemProps(props) {
+      const itemState = getItemState(props);
       const rovingTabIndex = itemState.focused ? 0 : -1;
       return normalize.button({
         ...parts.item.attrs,
@@ -120,7 +122,7 @@ function connect(service, normalize) {
         },
         onClick(event) {
           if (itemState.disabled) return;
-          send({ type: "TOGGLE.CLICK", id: itemState.id, value: props2.value });
+          send({ type: "TOGGLE.CLICK", id: itemState.id, value: props.value });
           if (isSafari()) {
             event.currentTarget.focus({ preventScroll: true });
           }
@@ -169,16 +171,18 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.35.3/node_modules/@zag-js/toggle-group/dist/toggle-group.machine.mjs
 var { not, and } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       defaultValue: [],
       orientation: "horizontal",
       rovingFocus: true,
       loopFocus: true,
       deselectable: true,
-      ...props2
+      ...props
     };
   },
   initialState() {
@@ -339,30 +343,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "dir",
-  "disabled",
-  "getRootNode",
-  "id",
-  "ids",
-  "loopFocus",
-  "multiple",
-  "onValueChange",
-  "orientation",
-  "rovingFocus",
-  "value",
-  "defaultValue",
-  "deselectable"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["value", "disabled"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/toggle-group.ts
 var ToggleGroup = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -391,7 +377,7 @@ var ToggleGroupHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const props2 = {
+    const props = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       defaultValue: getStringList(el, "defaultValue"),
@@ -424,7 +410,7 @@ var ToggleGroupHook = {
         }
       }
     };
-    const toggleGroup = new ToggleGroup(el, props2);
+    const toggleGroup = new ToggleGroup(el, props);
     toggleGroup.init();
     this.toggleGroup = toggleGroup;
     this.onSetValue = (event) => {

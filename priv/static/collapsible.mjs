@@ -1,10 +1,11 @@
 import {
+  toPx
+} from "./chunk-G66USZ47.mjs";
+import {
   Component,
   VanillaMachine,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   getBoolean,
   getComputedStyle,
@@ -16,17 +17,20 @@ import {
   observeChildren,
   raf,
   setAttribute,
-  setStyle,
-  toPx
-} from "./chunk-PLUM2DEK.mjs";
+  setStyle
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+collapsible@1.34.1/node_modules/@zag-js/collapsible/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+collapsible@1.35.3/node_modules/@zag-js/collapsible/dist/collapsible.anatomy.mjs
 var anatomy = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+collapsible@1.35.3/node_modules/@zag-js/collapsible/dist/collapsible.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `collapsible:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `collapsible:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `collapsible:${ctx.id}:trigger`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+collapsible@1.35.3/node_modules/@zag-js/collapsible/dist/collapsible.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, scope, prop } = service;
   const visible = state.matches("open") || state.matches("closing");
@@ -115,6 +119,8 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+collapsible@1.35.3/node_modules/@zag-js/collapsible/dist/collapsible.machine.mjs
 var machine = createMachine({
   initialState({ prop }) {
     const open = prop("open") || prop("defaultOpen");
@@ -361,26 +367,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "dir",
-  "disabled",
-  "getRootNode",
-  "id",
-  "ids",
-  "collapsedHeight",
-  "collapsedWidth",
-  "onExitComplete",
-  "onOpenChange",
-  "defaultOpen",
-  "open"
-]);
-var splitProps = createSplitProps(props);
 
 // components/collapsible.ts
 var Collapsible = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

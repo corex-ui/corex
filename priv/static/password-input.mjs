@@ -4,8 +4,6 @@ import {
   ariaAttr,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   getBoolean,
   getDir,
@@ -13,9 +11,9 @@ import {
   isLeftClick,
   normalizeProps,
   uuid
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-BVJBLYEU.mjs";
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.34.1/node_modules/@zag-js/password-input/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
 var anatomy = createAnatomy("password-input").parts(
   "root",
   "input",
@@ -25,8 +23,12 @@ var anatomy = createAnatomy("password-input").parts(
   "visibilityTrigger"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
 var getInputId = (ctx) => ctx.ids?.input ?? `p-input-${ctx.id}-input`;
 var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
 function connect(service, normalize) {
   const { scope, prop, context } = service;
   const visible = context.get("visible");
@@ -140,19 +142,21 @@ var passwordManagerProps = {
   // Proton Pass
   "data-protonpass-ignore": "true"
 };
+
+// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       id: uuid(),
       defaultVisible: false,
       autoComplete: "current-password",
       ignorePasswordManagers: false,
-      ...props2,
+      ...props,
       translations: {
         visibilityTrigger(visible) {
           return visible ? "Hide password" : "Show password";
         },
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -223,30 +227,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "defaultVisible",
-  "dir",
-  "id",
-  "onVisibilityChange",
-  "visible",
-  "ids",
-  "getRootNode",
-  "disabled",
-  "invalid",
-  "required",
-  "readOnly",
-  "translations",
-  "ignorePasswordManagers",
-  "autoComplete",
-  "name"
-]);
-var splitProps = createSplitProps(props);
 
 // components/password-input.ts
 var PasswordInput = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
