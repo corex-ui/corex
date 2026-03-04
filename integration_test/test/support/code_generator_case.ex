@@ -1,4 +1,4 @@
-defmodule Phoenix.Integration.CodeGeneratorCase do
+defmodule Corex.Integration.CodeGeneratorCase do
   use ExUnit.CaseTemplate
 
   using do
@@ -7,23 +7,35 @@ defmodule Phoenix.Integration.CodeGeneratorCase do
     end
   end
 
-  def generate_phoenix_app(tmp_dir, app_name, opts \\ [])
+  def generate_corex_app(tmp_dir, app_name, opts \\ [])
       when is_binary(app_name) and is_list(opts) do
     app_path = Path.expand(app_name, tmp_dir)
     integration_test_root_path = Path.expand("../../", __DIR__)
     app_root_path = get_app_root_path(tmp_dir, app_name, opts)
 
     output =
-      mix_run!(["phx.new", app_path, "--dev", "--no-install"] ++ opts, integration_test_root_path)
+      mix_run!(
+        ["corex.new", app_path, "--no-install", "--no-version-check"] ++ opts,
+        integration_test_root_path
+      )
 
-    for path <- ~w(mix.lock deps _build) do
+    for path <- ~w(mix.lock deps) do
       File.cp_r!(
         Path.join(integration_test_root_path, path),
         Path.join(app_root_path, path)
       )
     end
 
+    inject_corex_path_dep(app_root_path, opts)
+    mix_run!(["deps.get"], app_root_path)
+    mix_run!(["compile"], app_root_path)
+
     {app_root_path, output}
+  end
+
+  def generate_phoenix_app(tmp_dir, app_name, opts \\ [])
+      when is_binary(app_name) and is_list(opts) do
+    generate_corex_app(tmp_dir, app_name, opts)
   end
 
   def mix_run!(args, app_path, opts \\ [])
@@ -90,7 +102,7 @@ defmodule Phoenix.Integration.CodeGeneratorCase do
   end
 
   def assert_no_compilation_warnings(app_path) do
-    mix_run!(["do", "clean,", "compile", "--warnings-as-errors"], app_path)
+    mix_run!(["do", "clean", "compile", "--warnings-as-errors"], app_path)
   end
 
   def drop_test_database(app_path) when is_binary(app_path) do
@@ -133,6 +145,50 @@ defmodule Phoenix.Integration.CodeGeneratorCase do
 
   defp write_file!(content, path) do
     File.write!(path, content)
+  end
+
+  defp inject_corex_path_dep(app_root_path, opts) do
+    corex_hex_re = ~r/\{:corex,\s*"~>[^"]+"\}/
+    rel_path_root = "../../../../../"
+
+    mix_files =
+      if "--umbrella" in opts do
+        umbrella_root = Path.join(app_root_path, "apps")
+        for app <- File.ls!(umbrella_root),
+            mix_exs = Path.join([umbrella_root, app, "mix.exs"]),
+            File.exists?(mix_exs),
+            do: mix_exs
+      else
+        [Path.join(app_root_path, "mix.exs")]
+      end
+
+    rel_path_child = "../../../../../../../"
+
+    for mix_exs <- mix_files do
+      content = File.read!(mix_exs)
+      if content =~ corex_hex_re do
+        rel_path = if "--umbrella" in opts, do: rel_path_child, else: rel_path_root
+        corex_path_dep = ~s[{:corex, path: #{inspect(rel_path)}, override: true}]
+        new_content = String.replace(content, corex_hex_re, corex_path_dep)
+        File.write!(mix_exs, new_content)
+      end
+    end
+
+    umbrella_mix =
+      if "--umbrella" in opts do
+        Path.join(app_root_path, "mix.exs")
+      else
+        nil
+      end
+
+    if umbrella_mix && File.exists?(umbrella_mix) do
+      content = File.read!(umbrella_mix)
+      if content =~ corex_hex_re do
+        corex_path_dep = ~s[{:corex, path: #{inspect(rel_path_root)}, override: true}]
+        new_content = String.replace(content, corex_hex_re, corex_path_dep)
+        File.write!(umbrella_mix, new_content)
+      end
+    end
   end
 
   defp get_app_root_path(tmp_dir, app_name, opts) do

@@ -48,9 +48,9 @@ defmodule Mix.Tasks.Corex.New do
 
     * `--theme` - colon-separated theme names (e.g. `uno:leo`); when multiple themes are given, enables theme switching; each must be one of neo, uno, duo, leo
 
-    * `--language` - colon-separated locales (e.g. `en:ar:fr`); first is default; when multiple locales are given, enables locale switching (adds Locale plug, SharedEvents, and locale_switcher in layout)
+    * `--lang` - colon-separated locales (e.g. `en:ar:fr`); first is default; when multiple locales are given, enables locale switching (adds Locale plug, SharedEvents, and locale_switcher in layout)
 
-    * `--rtl` - colon-separated RTL locales (e.g. `ar`); requires `--language`; all must be in language
+    * `--rtl` - colon-separated RTL locales (e.g. `ar`); requires `--lang`; all must be in language
 
     * `--binary-id` - use `binary_id` as primary key type in Ecto schemas
 
@@ -136,8 +136,10 @@ defmodule Mix.Tasks.Corex.New do
   @switches [
     dev: :boolean,
     designex: :boolean,
+    live: :boolean,
     mode: :boolean,
     theme: :string,
+    lang: :string,
     language: :string,
     rtl: :string,
     ecto: :boolean,
@@ -238,17 +240,18 @@ defmodule Mix.Tasks.Corex.New do
     end
 
     if opts[:rtl] && opts[:rtl] != "" do
-      unless opts[:language] && opts[:language] != "" do
-        Mix.raise("--rtl requires --language. List all locales in --language; use --rtl to mark which are RTL.")
+      lang_opt = opts[:lang] || opts[:language]
+      unless lang_opt && lang_opt != "" do
+        Mix.raise("--rtl requires --lang. List all locales in --lang; use --rtl to mark which are RTL.")
       end
 
       rtl_locales = parse_colon_list(opts[:rtl])
-      lang_locales = parse_colon_list(opts[:language])
+      lang_locales = parse_colon_list(lang_opt)
 
       extra = rtl_locales -- lang_locales
       if extra != [] do
         Mix.raise(
-          "All --rtl locales must be in --language. Got rtl: #{inspect(rtl_locales)}, language: #{inspect(lang_locales)}."
+          "All --rtl locales must be in --lang. Got rtl: #{inspect(rtl_locales)}, lang: #{inspect(lang_locales)}."
         )
       end
     end

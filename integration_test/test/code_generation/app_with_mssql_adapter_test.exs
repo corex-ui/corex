@@ -1,12 +1,12 @@
-defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
-  use Phoenix.Integration.CodeGeneratorCase, async: true
+defmodule Corex.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
+  use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "phx.gen.html" do
     @tag database: :mssql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "default_mssql_app", ["--database", "mssql"])
+          generate_corex_app(tmp_dir, "default_mssql_app", ["--database", "mssql"])
 
         mix_run!(~w(phx.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -32,7 +32,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "default_mssql_app", ["--database", "mssql"])
+          generate_corex_app(tmp_dir, "default_mssql_app", ["--database", "mssql"])
 
         mix_run!(~w(phx.gen.json Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -58,7 +58,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "default_mssql_app", ["--database", "mssql", "--live"])
+          generate_corex_app(tmp_dir, "default_mssql_app", ["--database", "mssql", "--live"])
 
         mix_run!(~w(phx.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -85,7 +85,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
   describe "phx.gen.auth + pbkdf2 + existing context" do
     test "has no compilation or formatter warnings (--live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
 
         mix_run!(~w(phx.gen.html Accounts Group groups name), app_root_path)
 
@@ -109,7 +109,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
 
     test "has no compilation or formatter warnings (--no-live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
 
         mix_run!(~w(phx.gen.html Accounts Group groups name), app_root_path)
 
@@ -134,7 +134,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
     @tag database: :mssql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults (--live)", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
 
         mix_run!(~w(phx.gen.html Accounts Group groups name), app_root_path)
 
@@ -159,7 +159,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
     @tag database: :mssql
     test "has a passing test suite (--no-live)" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
 
         mix_run!(~w(phx.gen.html Accounts Group groups name), app_root_path)
 

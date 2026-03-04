@@ -20,12 +20,12 @@ defmodule <%= @web_namespace %>.Router do
   pipeline :api do
     plug :accepts, ["json"]
   end
-
 <%= if @language_switcher do %>
   scope "/", <%= @web_namespace %> do
     pipe_through :browser
     get "/", PageController, :home
   end
+
   scope "/:locale", <%= @web_namespace %> do
     pipe_through :browser
     get "/", PageController, :home
@@ -35,7 +35,8 @@ defmodule <%= @web_namespace %>.Router do
     end
 <% else %>    live "/live", ExampleLive
 <% end %>  end
-<% else %>  scope "/", <%= @web_namespace %> do
+<% else %>
+  scope "/", <%= @web_namespace %> do
     pipe_through :browser
     get "/", PageController, :home
 <%= if @on_mount_optional do %>
@@ -51,15 +52,14 @@ defmodule <%= @web_namespace %>.Router do
   # end
 <%= if @dashboard || @mailer do %>
   # Enable <%= [@dashboard && "LiveDashboard", @mailer && "Swoosh mailbox preview"] |> Enum.filter(&(&1)) |> Enum.join(" and ") %> in development
-  if Application.compile_env(:<%= @web_app_name %>, :dev_routes) do<%= if @dashboard do %>
-    # If you want to use the LiveDashboard in production, you should put
+  if Application.compile_env(:<%= @web_app_name %>, :dev_routes) do
+<%= if @dashboard do %>    # If you want to use the LiveDashboard in production, you should put
     # it behind authentication and allow only admins to access it.
     # If your application does not have an admins-only section yet,
     # you can use Plug.BasicAuth to set up some basic authentication
     # as long as you are also using SSL (which you should anyway).
-    import Phoenix.LiveDashboard.Router<% end %>
-
-    scope "/dev" do
+    import Phoenix.LiveDashboard.Router
+<% end %><%= if @dashboard, do: "\n" %>    scope "/dev" do
       pipe_through :browser
 <%= if @dashboard do %>
       live_dashboard "/dashboard", metrics: <%= @web_namespace %>.Telemetry<% end %><%= if @mailer do %>

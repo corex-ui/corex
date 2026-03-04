@@ -6,6 +6,7 @@ defmodule <%= @web_namespace %>.Plugs.Theme do
   def call(conn, _opts) do
     themes = Application.get_env(:<%= @app_name %>, :themes, ["neo"])
     default_theme = List.first(themes) || "neo"
+
     theme =
       conn.cookies["phx_theme"]
       |> parse_theme(themes, default_theme)
@@ -17,6 +18,7 @@ defmodule <%= @web_namespace %>.Plugs.Theme do
   end
 
   defp parse_theme(nil, _themes, default), do: default
-  defp parse_theme(theme, themes, default) when theme in themes, do: theme
-  defp parse_theme(_, _themes, default), do: default
+  defp parse_theme(theme, themes, default) do
+    if theme in themes, do: theme, else: default
+  end
 end

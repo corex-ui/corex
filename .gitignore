@@ -39,6 +39,7 @@ corex-*.tar
 /installer/doc/
 /installer/phx_new-*.ez
 /installer/tmp/
+/installer/cover/
 
 /integration_test/_build/
 /integration_test/deps/

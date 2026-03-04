@@ -1,17 +1,13 @@
-defmodule Phoenix.Integration.CodeGeneration.AppWithNoOptionsTest do
-  use Phoenix.Integration.CodeGeneratorCase, async: true
+defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
+  use Corex.Integration.CodeGeneratorCase, async: true
 
   @epoch {{1970, 1, 1}, {0, 0, 0}}
 
   test "newly generated app has no warnings or errors" do
     with_installer_tmp("app_with_no_options", fn tmp_dir ->
       {app_root_path, _} =
-        generate_phoenix_app(tmp_dir, "phx_blog", [
-          "--no-html",
-          "--no-assets",
+        generate_corex_app(tmp_dir, "phx_blog", [
           "--no-ecto",
-          "--no-gettext",
-          "--no-mailer",
           "--no-dashboard"
         ])
 
@@ -24,11 +20,8 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithNoOptionsTest do
   test "development workflow works as expected" do
     with_installer_tmp("development_workflow", [autoremove?: false], fn tmp_dir ->
       {app_root_path, _} =
-        generate_phoenix_app(tmp_dir, "phx_blog", [
-          "--no-assets",
+        generate_corex_app(tmp_dir, "phx_blog", [
           "--no-ecto",
-          "--no-gettext",
-          "--no-mailer",
           "--no-dashboard"
         ])
 
@@ -44,7 +37,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithNoOptionsTest do
       :inets.start()
       {:ok, response} = request_with_retries("http://localhost:4000", 20)
       assert response.status_code == 200
-      assert response.body =~ "PhxBlog"
+      assert response.body =~ "Corex"
 
       assert File.stat!(Path.join(app_root_path, "lib/phx_blog_web/components/core_components.ex")) > @epoch
       assert File.stat!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex")) > @epoch

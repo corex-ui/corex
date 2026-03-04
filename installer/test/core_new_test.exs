@@ -14,19 +14,109 @@ defmodule Mix.Tasks.Corex.NewTest do
     :ok
   end
 
-  @tag :skip
   test "assets are in sync with priv" do
-    for file <- ~w(favicon.ico phoenix.png) do
-      path = Path.expand("../priv/static/#{file}", __DIR__)
-      if File.exists?(path) do
-        assert File.read!(path) == File.read!("templates/phx_static/#{file}")
-      end
+    static_dir = Path.expand("../templates/corex_static", __DIR__)
+    for file <- ~w(robots.txt favicon.ico) do
+      path = Path.join(static_dir, file)
+      assert File.regular?(path), "Expected #{path} to exist"
     end
   end
 
   test "returns the version" do
     Mix.Tasks.Corex.New.run(["-v"])
     assert_received {:mix_shell, :info, ["Corex installer v" <> _]}
+  end
+
+  test "returns version with --version" do
+    Mix.Tasks.Corex.New.run(["--version"])
+    assert_received {:mix_shell, :info, ["Corex installer v" <> _]}
+  end
+
+  test "skips version check with --no-version-check" do
+    in_tmp("new with no version check", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--no-version-check"])
+      assert_file("phx_blog/mix.exs")
+    end)
+  end
+
+  test "validates --theme option" do
+    in_tmp("new with invalid theme", fn ->
+      assert_raise Mix.Error, ~r/--theme must be colon-separated names from neo, uno, duo, leo/, fn ->
+        Mix.Tasks.Corex.New.run([@app_name, "--theme", "invalid"])
+      end
+    end)
+  end
+
+  test "validates --rtl requires --lang" do
+    in_tmp("new with rtl without lang", fn ->
+      assert_raise Mix.Error, ~r/--rtl requires --lang/, fn ->
+        Mix.Tasks.Corex.New.run([@app_name, "--rtl", "ar"])
+      end
+    end)
+  end
+
+  test "validates --rtl locales must be in --lang" do
+    in_tmp("new with rtl not in lang", fn ->
+      assert_raise Mix.Error, ~r/All --rtl locales must be in --lang/, fn ->
+        Mix.Tasks.Corex.New.run([@app_name, "--lang", "en", "--rtl", "ar"])
+      end
+    end)
+  end
+
+  test "validates invalid web adapter" do
+    in_tmp("new with invalid adapter", fn ->
+      assert_raise Mix.Error, ~r/Unknown web adapter "invalid"/, fn ->
+        Mix.Tasks.Corex.New.run([@app_name, "--adapter", "invalid"])
+      end
+    end)
+  end
+
+  test "new with --mode generates mode plug and hooks" do
+    in_tmp("new with mode", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--mode"])
+
+      assert_file("phx_blog/lib/phx_blog_web/plugs/mode.ex")
+      assert_file("phx_blog/lib/phx_blog_web/live/hooks/mode_live.ex")
+      assert_file("phx_blog/test/phx_blog_web/plugs/mode_test.exs")
+      assert_file("phx_blog/test/phx_blog_web/controllers/mode_controller_test.exs")
+      assert_file("phx_blog/test/phx_blog_web/live/mode_live_test.exs")
+    end)
+  end
+
+  test "new with --theme generates theme plug and hooks" do
+    in_tmp("new with theme", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--theme", "uno:leo"])
+
+      assert_file("phx_blog/lib/phx_blog_web/plugs/theme.ex")
+      assert_file("phx_blog/lib/phx_blog_web/live/hooks/theme_live.ex")
+    end)
+  end
+
+  test "new with --lang and --rtl generates locale plug and shared events" do
+    in_tmp("new with lang and rtl", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--lang", "en:ar:fr", "--rtl", "ar"])
+
+      assert_file("phx_blog/lib/phx_blog_web/plugs/locale.ex")
+      assert_file("phx_blog/lib/phx_blog_web/shared_events.ex")
+      assert File.exists?("phx_blog/priv/gettext/ar/LC_MESSAGES/errors.po")
+      assert File.exists?("phx_blog/priv/gettext/fr/LC_MESSAGES/errors.po")
+    end)
+  end
+
+  test "new with --designex keeps design folder" do
+    in_tmp("new with designex", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--designex"])
+
+      assert File.dir?("phx_blog/assets/corex/design")
+    end)
+  end
+
+  test "new without --designex removes design subfolder" do
+    in_tmp("new without designex", fn ->
+      Mix.Tasks.Corex.New.run([@app_name])
+
+      refute File.exists?("phx_blog/assets/corex/design")
+    end)
   end
 
   test "new with defaults" do
@@ -422,6 +512,17 @@ defmodule Mix.Tasks.Corex.NewTest do
     end)
   end
 
+  test "new with subdir path uses relative path in instructions" do
+    in_tmp("new with subdir path", fn ->
+      Mix.Tasks.Corex.New.run(["subdir/#{@app_name}"])
+
+      assert_file("subdir/phx_blog/mix.exs")
+      assert_received {:mix_shell, :yes?, ["\nFetch and install dependencies?"]}
+      assert_received {:mix_shell, :info, ["\nWe are almost there" <> _ = msg]}
+      assert msg =~ "$ cd subdir/phx_blog"
+    end)
+  end
+
   test "new with path, app and module" do
     in_tmp("new with path, app and module", fn ->
       project_path = Path.join(File.cwd!(), "custom_path")
@@ -672,6 +773,80 @@ defmodule Mix.Tasks.Corex.NewTest do
     end)
   end
 
+  @phx_ci_before System.get_env("PHX_CI")
+  test "inside_docker_env respects PHX_CI" do
+    System.put_env("PHX_CI", "1")
+
+    in_tmp("new with PHX_CI", fn ->
+      Mix.Tasks.Corex.New.run([@app_name])
+
+      assert_file("phx_blog/config/dev.exs", fn file ->
+        assert file =~ "http: [ip: {127, 0, 0, 1}]"
+      end)
+    end)
+  after
+    if @phx_ci_before do
+      System.put_env("PHX_CI", @phx_ci_before)
+    else
+      System.delete_env("PHX_CI")
+    end
+  end
+
+  test "new with --verbose" do
+    in_tmp("new with verbose", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--verbose"])
+      assert_file("phx_blog/mix.exs")
+    end)
+  end
+
+  @tag timeout: 300_000
+  test "new with --verbose and --install runs deps.get without quiet" do
+    in_tmp("new with verbose install", fn ->
+      send(self(), {:mix_shell_input, :yes?, true})
+      Mix.Tasks.Corex.New.run([@app_name, "--verbose", "--install", "--no-version-check"])
+      assert_file("phx_blog/mix.exs")
+    end)
+  end
+
+  test "run/3 internal API with Single generator" do
+    in_tmp("run3 single", fn ->
+      path = Path.join(File.cwd!(), "myapp")
+      Mix.Tasks.Corex.New.run([path], Corex.New.Single, :base_path)
+      assert_file("myapp/mix.exs")
+    end)
+  end
+
+  test "run/3 internal API with Umbrella generator" do
+    in_tmp("run3 umbrella", fn ->
+      path = Path.join(File.cwd!(), "myapp")
+      Mix.Tasks.Corex.New.run([path, "--umbrella"], Corex.New.Umbrella, :project_path)
+      assert_file("myapp_umbrella/mix.exs")
+      assert_file("myapp_umbrella/apps/myapp/mix.exs")
+      assert_file("myapp_umbrella/apps/myapp_web/mix.exs")
+    end)
+  end
+
+  test "run/3 with empty argv shows help" do
+    assert capture_io(fn ->
+             Mix.Tasks.Corex.New.run([], Corex.New.Single, :base_path)
+           end) =~ "Creates a new Corex project"
+
+    assert capture_io(fn ->
+             Mix.Tasks.Corex.New.run([], Corex.New.Umbrella, :project_path)
+           end) =~ "Creates a new Corex project"
+  end
+
+  test "check_directory_existence aborts when user says no" do
+    in_tmp("new directory exists", fn ->
+      File.mkdir_p!(@app_name)
+      send(self(), {:mix_shell_input, :yes?, false})
+
+      assert_raise Mix.Error, ~r/Please select another directory for installation/, fn ->
+        Mix.Tasks.Corex.New.run([@app_name])
+      end
+    end)
+  end
+
   test "new with --no-agents-md" do
     in_tmp("new with no agents md", fn ->
       Mix.Tasks.Corex.New.run([@app_name, "--no-agents-md"])
@@ -694,6 +869,8 @@ defmodule Mix.Tasks.Corex.NewTest do
         for file <- cache_files do
           assert file in project_files, "#{file} not copied to new project"
         end
+
+        refute_received {:mix_shell, :yes?, ["\nFetch and install dependencies?"]}
       end)
     after
       if @corex_new_cache_dir do

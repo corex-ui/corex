@@ -1,10 +1,10 @@
-defmodule Phoenix.Integration.CodeGeneration.AppWithScopesTest do
-  use Phoenix.Integration.CodeGeneratorCase, async: true
+defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
+  use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "phx.gen.auth" do
     test "generates scope for phx.gen.live" do
       with_installer_tmp("scopes", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "scopes")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
         mix_run!(~w(phx.gen.auth Accounts User users --live), app_root_path)
         # we need to wait, otherwise we'd generate two migrations with the same version...
@@ -37,7 +37,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithScopesTest do
 
     test "generates scope for phx.gen.html" do
       with_installer_tmp("scopes", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "scopes")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
         mix_run!(~w(phx.gen.auth Accounts User users --no-live), app_root_path)
         # we need to wait, otherwise we'd generate two migrations with the same version...
@@ -67,7 +67,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithScopesTest do
 
     test "generates scope for phx.gen.json" do
       with_installer_tmp("scopes", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "scopes")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
         mix_run!(~w(phx.gen.auth Accounts User users --no-live), app_root_path)
         # we need to wait, otherwise we'd generate two migrations with the same version...
@@ -101,7 +101,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithScopesTest do
   describe "custom scope" do
     test "route_prefix and route_access_path with all generators" do
       with_installer_tmp("scopes", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "scopes", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
         # First generate authentication system
         mix_run!(~w(phx.gen.auth Accounts User users --live), app_root_path)
@@ -565,7 +565,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithScopesTest do
 
     test "phx.gen.json" do
       with_installer_tmp("scopes", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "scopes")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
         modify_file(Path.join(app_root_path, "config/config.exs"), fn file ->
           String.replace(file, "import Config", """

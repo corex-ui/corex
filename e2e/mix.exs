@@ -77,6 +77,7 @@ defmodule E2e.MixProject do
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
       {:ex_cldr, "~> 2.47"},
+      {:ex_cldr_languages, "~> 0.3"},
       {:ex_cldr_territories, "~> 2.10.0"}
     ]
   end

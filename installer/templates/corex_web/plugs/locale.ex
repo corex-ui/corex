@@ -16,6 +16,7 @@ defmodule <%= @web_namespace %>.Plugs.Locale do
   def call(%{params: %{"locale" => locale}} = conn, _opts) do
     locales = Application.get_env(:<%= @app_name %>, :locales, ["en"])
     default_locale = List.first(locales) || "en"
+
     if locale in locales do
       conn
       |> set_locale(locale, locales)
@@ -28,7 +29,11 @@ defmodule <%= @web_namespace %>.Plugs.Locale do
   def call(conn, _opts) do
     locales = Application.get_env(:<%= @app_name %>, :locales, ["en"])
     default_locale = List.first(locales) || "en"
-    locale = conn.cookies[@cookie_key] || get_locale_from_path(conn.request_path, locales) || default_locale
+
+    locale =
+      conn.cookies[@cookie_key] || get_locale_from_path(conn.request_path, locales) ||
+        default_locale
+
     locale = if locale in locales, do: locale, else: default_locale
 
     if skip_locale_redirect?(conn.request_path) do

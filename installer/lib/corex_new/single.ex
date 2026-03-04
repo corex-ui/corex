@@ -80,10 +80,6 @@ defmodule Corex.New.Single do
      "corex_assets/tsconfig.json": "assets/tsconfig.json"}
   ])
 
-  template(:no_js, [
-    {:text, :web, "corex_static/app.js": "priv/static/assets/js/app.js"}
-  ])
-
   template(:static, [
     {:text, :web,
      "corex_static/robots.txt": "priv/static/robots.txt",
@@ -97,7 +93,11 @@ defmodule Corex.New.Single do
   template(:mode, [
     {:eex, :web,
      "corex_web/plugs/mode.ex": "lib/:lib_web_name/plugs/mode.ex",
-     "corex_web/live/hooks/mode_live.ex": "lib/:lib_web_name/live/hooks/mode_live.ex"}
+     "corex_web/live/hooks/mode_live.ex": "lib/:lib_web_name/live/hooks/mode_live.ex",
+     "corex_test/plugs/mode_test.exs": "test/:lib_web_name/plugs/mode_test.exs",
+     "corex_test/controllers/mode_controller_test.exs":
+       "test/:lib_web_name/controllers/mode_controller_test.exs",
+     "corex_test/live/mode_live_test.exs": "test/:lib_web_name/live/mode_live_test.exs"}
   ])
 
   template(:theme, [
@@ -110,6 +110,11 @@ defmodule Corex.New.Single do
     {:eex, :web,
      "corex_web/plugs/locale.ex": "lib/:lib_web_name/plugs/locale.ex",
      "corex_web/shared_events.ex": "lib/:lib_web_name/shared_events.ex"}
+  ])
+
+  template(:cldr, [
+    {:eex, :app,
+     "corex_cldr/cldr.ex": "lib/:app/cldr.ex"}
   ])
 
   def prepare_project(%Project{app: app, base_path: base_path} = project) when not is_nil(app) do
@@ -154,7 +159,10 @@ defmodule Corex.New.Single do
     if Project.html?(project), do: gen_html(project)
     if project.binding[:mode], do: copy_from(project, __MODULE__, :mode)
     if project.binding[:theme], do: copy_from(project, __MODULE__, :theme)
-    if project.binding[:language_switcher], do: copy_from(project, __MODULE__, :language)
+    if project.binding[:language_switcher] do
+      copy_from(project, __MODULE__, :language)
+      copy_from(project, __MODULE__, :cldr)
+    end
     if Project.mailer?(project), do: gen_mailer(project)
     if Project.gettext?(project), do: gen_gettext(project)
 
@@ -209,20 +217,9 @@ defmodule Corex.New.Single do
   end
 
   def gen_assets(%Project{} = project) do
-    javascript? = Project.javascript?(project)
-    css? = Project.css?(project)
-    html? = Project.html?(project)
-
     copy_from(project, __MODULE__, :static)
-
-    if html? or javascript? do
-      command = if javascript?, do: :js, else: :no_js
-      copy_from(project, __MODULE__, command)
-    end
-
-    if html? or css? do
-      copy_from(project, __MODULE__, :css)
-    end
+    copy_from(project, __MODULE__, :js)
+    copy_from(project, __MODULE__, :css)
   end
 
   def gen_mailer(%Project{} = project) do

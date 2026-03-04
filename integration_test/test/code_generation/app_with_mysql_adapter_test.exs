@@ -1,12 +1,12 @@
-defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
-  use Phoenix.Integration.CodeGeneratorCase, async: true
+defmodule Corex.Integration.CodeGeneration.AppWithMySqlAdapterTest do
+  use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "phx.gen.html" do
     @tag database: :mysql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "default_mysql_app", ["--database", "mysql"])
+          generate_corex_app(tmp_dir, "default_mysql_app", ["--database", "mysql"])
 
         mix_run!(~w(phx.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -32,7 +32,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "default_mysql_app", ["--database", "mysql"])
+          generate_corex_app(tmp_dir, "default_mysql_app", ["--database", "mysql"])
 
         mix_run!(~w(phx.gen.json Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -58,7 +58,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "default_mysql_app", ["--database", "mysql", "--live"])
+          generate_corex_app(tmp_dir, "default_mysql_app", ["--database", "mysql", "--live"])
 
         mix_run!(~w(phx.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -85,7 +85,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
   describe "phx.gen.auth + argon2" do
     test "has no compilation or formatter warnings (--live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--database", "mysql", "--binary-id"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mysql", "--binary-id"])
 
         mix_run!(~w(phx.gen.auth Accounts User users --hashing-lib argon2 --live), app_root_path)
 
@@ -96,7 +96,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
 
     test "has no compilation or formatter warnings (--no-live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--database", "mysql", "--binary-id"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mysql", "--binary-id"])
 
         mix_run!(~w(phx.gen.auth Accounts User users --hashing-lib argon2 --no-live), app_root_path)
 
@@ -108,7 +108,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
     @tag database: :mysql
     test "has a passing test suite (--live)" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "default_app", ["--database", "mysql", "--binary-id"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "default_app", ["--database", "mysql", "--binary-id"])
 
         mix_run!(~w(phx.gen.auth Accounts User users --hashing-lib argon2 --live), app_root_path)
 
@@ -120,7 +120,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithMySqlAdapterTest do
     @tag database: :mysql
     test "has a passing test suite (--no-live)" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "default_app", ["--database", "mysql", "--binary-id"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "default_app", ["--database", "mysql", "--binary-id"])
 
         mix_run!(~w(phx.gen.auth Accounts User users --hashing-lib argon2 --no-live), app_root_path)
 

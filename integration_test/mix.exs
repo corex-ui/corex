@@ -1,9 +1,9 @@
 for path <- :code.get_path(),
-    Regex.match?(~r/phx_new-[\w\.\-]+\/ebin$/, List.to_string(path)) do
+    Regex.match?(~r/corex_new-[\w\.\-]+\/ebin$/, List.to_string(path)) do
   Code.delete_path(path)
 end
 
-defmodule Phoenix.Integration.MixProject do
+defmodule Corex.Integration.MixProject do
   use Mix.Project
 
   def project do
@@ -31,8 +31,9 @@ defmodule Phoenix.Integration.MixProject do
   # will not be copied.
   defp deps do
     [
-      {:phx_new, path: "../installer"},
-      {:phoenix, path: "..", override: true},
+      {:corex_new, path: "../installer"},
+      {:corex, path: "..", override: true},
+      {:phoenix, "~> 1.8.1"},
       {:phoenix_ecto, "~> 4.5"},
       {:esbuild, "~> 0.10", runtime: false},
       {:ecto_sql, "~> 3.13"},

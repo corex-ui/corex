@@ -45,15 +45,17 @@ defmodule Corex.MixProject do
       {:ecto, "~> 3.10"},
       {:esbuild, "~> 0.8", only: :dev},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false, warn_if_outdated: true},
-      {:makeup, "~> 1.2", only: [:dev, :test]},
-      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test]},
-      {:makeup_eex, "~> 2.0", only: [:dev, :test]},
-      {:makeup_syntect, "~> 0.1.0", only: [:dev, :test]},
+      {:makeup, "~> 1.2", only: [:dev, :test], optional: true},
+      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test], optional: true},
+      {:makeup_eex, "~> 2.0", only: [:dev, :test], optional: true},
+      {:makeup_syntect, "~> 0.1.0", only: [:dev, :test], optional: true},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:tidewave, "~> 0.5.5", only: :dev},
+      {:ex_cldr, "~> 2.47", only: :dev},
+      {:ex_cldr_languages, "~> 0.3", only: :dev},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false}
     ]
@@ -73,13 +75,14 @@ defmodule Corex.MixProject do
         "esbuild hooks"
       ],
       "assets.watch": "esbuild module --watch",
-      tidewave:
-        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'",
+      "archive.build": &raise_on_archive_build/1,
       "pre.publish": [
         "format --check-formatted",
         "credo --strict",
         "sobelow --exit"
-      ]
+      ],
+      tidewave:
+        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'",
     ]
   end
 
@@ -108,6 +111,13 @@ defmodule Corex.MixProject do
       File.mkdir_p!(Path.dirname(destination))
       File.cp_r!(source, destination, force: true)
     end
+  end
+
+  defp raise_on_archive_build(_) do
+    Mix.raise("""
+    You are trying to install "corex" as an archive, which is not supported. \
+    You probably meant to install "corex_new" instead
+    """)
   end
 
   defp package do

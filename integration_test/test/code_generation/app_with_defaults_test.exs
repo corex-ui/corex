@@ -1,10 +1,10 @@
-defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
-  use Phoenix.Integration.CodeGeneratorCase, async: true
+defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
+  use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "new with defaults" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -14,7 +14,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "default_app")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "default_app")
 
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)
@@ -25,7 +25,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
   describe "phx.gen.html" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         mix_run!(~w(phx.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -48,7 +48,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         mix_run!(~w(phx.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted order:integer:unique), app_root_path)
 
@@ -72,7 +72,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
   describe "phx.gen.json" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         mix_run!(~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -95,7 +95,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         mix_run!(~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), app_root_path)
 
@@ -119,7 +119,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
   describe "phx.gen.live" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
 
         mix_run!(~w(phx.gen.live Blog Post posts title:unique body:string p:boolean s:enum:a:b:c), app_root_path)
 
@@ -145,7 +145,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
 
         mix_run!(~w(phx.gen.live Blog Post posts title body:string public:boolean status:enum:unpublished:published:deleted), app_root_path)
 
@@ -172,7 +172,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
   describe "phx.gen.auth + bcrypt" do
     test "has no compilation or formatter warnings (--live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         mix_run!(~w(phx.gen.auth Accounts User users --live), app_root_path)
 
@@ -183,7 +183,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
 
     test "has no compilation or formatter warnings (--no-live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
         mix_run!(~w(phx.gen.auth Accounts User users --no-live), app_root_path)
 
@@ -195,7 +195,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite (--live)" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "default_app")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "default_app")
 
         mix_run!(~w(phx.gen.auth Accounts User users --live), app_root_path)
 
@@ -207,7 +207,7 @@ defmodule Phoenix.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite (--no-live)" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "default_app")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "default_app")
 
         mix_run!(~w(phx.gen.auth Accounts User users --no-live), app_root_path)
 

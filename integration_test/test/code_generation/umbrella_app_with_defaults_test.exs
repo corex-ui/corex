@@ -1,10 +1,10 @@
-defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
-  use Phoenix.Integration.CodeGeneratorCase, async: true
+defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
+  use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "new umbrella app" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "phx_blog", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--umbrella"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -15,7 +15,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     test "has a passing test suite" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_phoenix_app(tmp_dir, "umbrella_with_defaults", ["--umbrella"])
+          generate_corex_app(tmp_dir, "umbrella_with_defaults", ["--umbrella"])
 
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)
@@ -26,7 +26,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
   describe "phx.gen.html" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
@@ -50,7 +50,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
@@ -75,7 +75,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
   describe "phx.gen.json" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.json Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
@@ -99,7 +99,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.json Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
@@ -124,7 +124,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
   describe "phx.gen.live" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella", "--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella", "--live"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.live Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
@@ -151,7 +151,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella", "--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella", "--live"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
@@ -179,7 +179,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
   describe "phx.gen.auth + bcrypt" do
     test "has no compilation or formatter warnings (--live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.auth Accounts User users --live), web_root_path)
@@ -191,7 +191,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
 
     test "has no compilation or formatter warnings (--no-live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.auth Accounts User users --no-live), web_root_path)
@@ -204,7 +204,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite --live" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.auth Accounts User users --live), web_root_path)
@@ -217,7 +217,7 @@ defmodule Phoenix.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite --no-live" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_phoenix_app(tmp_dir, "rainy_day", ["--umbrella"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
         mix_run!(~w(phx.gen.auth Accounts User users --no-live), web_root_path)

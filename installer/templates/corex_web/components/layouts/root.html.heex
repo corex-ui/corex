@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html<%= if @language_switcher do %> lang={assigns[:locale] || "en"} dir={assigns[:dir] || "ltr"}<% else %> lang="en" dir="ltr"<% end %><%= if @theme do %> data-theme={assigns[:theme]}<% else %> data-theme="neo"<% end %><%= if @mode do %> data-mode={assigns[:mode]}<% else %> data-mode="light"<% end %>>
+<html
+  <%= if @language_switcher do %>lang={assigns[:locale] || "en"}
+  dir={assigns[:dir] || "ltr"}<% else %>lang="en"
+  dir="ltr"<% end %>
+  <%= if @theme do %>data-theme={assigns[:theme]}<% else %>data-theme="neo"<% end %>
+  <%= if @mode do %>data-mode={assigns[:mode]}<% else %>data-mode="light"<% end %>
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -55,8 +61,7 @@
         });
       })();
     </script>
-<% end %>
-  </head>
+<% end %><%= if @mode or @theme, do: "", else: "\n" %>  </head>
   <body class="layout typo">
     {@inner_content}
   </body>

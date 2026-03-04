@@ -249,22 +249,34 @@ defmodule E2eWeb.Layouts do
     doc: "path without locale segment so switching language preserves the URL"
 
   @doc """
-  Language switcher (English / Arabic) using the select component.
-
-  Uses the server event "locale_change" so the LiveView pushes navigate to /locale/path;
-  the plug runs and updates lang/dir. Pass current_path (e.g. from
-  `E2eWeb.Plugs.Locale.path_without_locale(conn.request_path, conn.assigns.locale)` or
-  from LiveView URI in handle_params) to preserve the path when switching.
+  Language switcher using the select component. Labels use Cldr language names
+  in each locale (e.g. English, العربية). Uses the server event "locale_change"
+  so the LiveView pushes navigate to /locale/path; the plug runs and updates
+  lang/dir. Pass current_path (e.g. from
+  `E2eWeb.Plugs.Locale.path_without_locale(conn.request_path, conn.assigns.locale)`
+  or from LiveView URI in handle_params) to preserve the path when switching.
   """
   def locale_switcher(assigns) do
+    locales = Gettext.known_locales(E2eWeb.Gettext)
+
+    collection =
+      Enum.map(locales, fn loc ->
+        label =
+          case E2e.Cldr.Language.to_string(loc, locale: loc) do
+            {:ok, name} -> String.capitalize(name)
+            _ -> String.upcase(loc)
+          end
+
+        %{id: "/#{loc}#{assigns.current_path}", label: label}
+      end)
+
+    assigns = assign(assigns, :collection, collection)
+
     ~H"""
     <.select
       id="locale-select"
       class="select select--sm select--micro"
-      collection={[
-        %{id: "/en#{@current_path}", label: "English"},
-        %{id: "/ar#{@current_path}", label: "العربية"}
-      ]}
+      collection={@collection}
       value={["/#{@locale}#{@current_path}"]}
       redirect
       on_value_change="locale_change"

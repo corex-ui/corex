@@ -86,6 +86,7 @@ defmodule <%= @web_namespace %> do
       import Phoenix.HTML
       # Core UI components
       import <%= @web_namespace %>.CoreComponents
+      use Corex
 
       # Common modules used in templates
       alias Phoenix.LiveView.JS
