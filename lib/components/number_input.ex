@@ -69,8 +69,15 @@ defmodule Corex.NumberInput do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/number-input#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc false
+    defstruct [:decrease, :increase, :scrub]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.NumberInput.Anatomy.{
     Control,
@@ -108,6 +115,7 @@ defmodule Corex.NumberInput do
     doc: "When true, show scrubber instead of increment/decrement buttons"
   )
 
+  attr(:translation, :any, default: nil)
   attr(:rest, :global)
 
   slot(:label, required: false)
@@ -116,9 +124,17 @@ defmodule Corex.NumberInput do
   slot(:scrubber_trigger, required: false)
 
   def number_input(assigns) do
+    default_translation = %Translation{
+      decrease: gettext("Decrease value"),
+      increase: gettext("Increase value"),
+      scrub: gettext("Scrub to adjust value")
+    }
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
     ~H"""
     <div
@@ -151,13 +167,13 @@ defmodule Corex.NumberInput do
         <div {Connect.control(%Control{id: @id})}>
           <input type="text" inputmode="decimal" {Connect.input(%Input{id: @id, disabled: @disabled})} />
           <div {Connect.trigger_group(%TriggerGroup{})}>
-            <button :if={!@scrubber} type="button" {Connect.increment_trigger(%IncrementTrigger{id: @id})}>
+            <button :if={!@scrubber} type="button" {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase})}>
               {render_slot(@increment_trigger)}
             </button>
-            <button :if={!@scrubber} type="button" {Connect.decrement_trigger(%DecrementTrigger{id: @id})}>
+            <button :if={!@scrubber} type="button" {Connect.decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease})}>
             {render_slot(@decrement_trigger)}
           </button>
-            <button :if={@scrubber} type="button" {Connect.scrubber(%Scrubber{id: @id})}>
+            <button :if={@scrubber} type="button" {Connect.scrubber(%Scrubber{id: @id, aria_label: @translation.scrub})}>
               {render_slot(@scrubber_trigger)}
             </button>
           </div>
@@ -165,5 +181,15 @@ defmodule Corex.NumberInput do
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      decrease: partial.decrease || default.decrease,
+      increase: partial.increase || default.increase,
+      scrub: partial.scrub || default.scrub
+    }
   end
 end

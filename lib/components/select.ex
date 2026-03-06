@@ -1,4 +1,6 @@
 defmodule Corex.Select do
+  import Corex.Gettext, only: [gettext: 1]
+
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Select](https://zagjs.com/components/react/select).
 
@@ -438,6 +440,11 @@ defmodule Corex.Select do
     doc: "The placeholder text of the select when no value is selected"
   )
 
+  attr(:placeholder_fallback, :string,
+    default: nil,
+    doc: "Fallback text when placeholder_text is nil (default: gettext(\"Select an option\"))"
+  )
+
   attr(:value, :list, default: [], doc: "The value of the select")
   attr(:disabled, :boolean, default: false, doc: "Whether the select is disabled")
   attr(:close_on_select, :boolean, default: true, doc: "Whether to close the select on select")
@@ -539,6 +546,7 @@ defmodule Corex.Select do
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:placeholder_fallback, fn -> gettext("Select an option") end)
 
     value = Map.get(assigns, :value, [])
 
@@ -596,7 +604,7 @@ defmodule Corex.Select do
           {render_slot(@label)}
         </div>
         <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
+          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || @placeholder_fallback} data-scope="select" data-part="trigger">
             <span :if={@selected_label} data-scope="select" data-part="item-text">
               {@selected_label}
             </span>
@@ -604,7 +612,7 @@ defmodule Corex.Select do
               {render_slot(@placeholder)}
             </span>
             <span :if={!@selected_label and Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
-              {@placeholder_text || "Select an option"}
+              {@placeholder_text || @placeholder_fallback}
             </span>
             {render_slot(@trigger)}
           </button>

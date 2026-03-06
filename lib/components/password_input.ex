@@ -185,8 +185,15 @@ defmodule Corex.PasswordInput do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/password-input#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc false
+    defstruct [:toggle_visibility]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.PasswordInput.Anatomy.{
     Control,
@@ -221,6 +228,7 @@ defmodule Corex.PasswordInput do
   attr(:on_visibility_change_client, :string, default: nil)
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
+  attr(:translation, :any, default: nil)
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
@@ -253,12 +261,16 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(assigns) do
+    default_translation = %Translation{toggle_visibility: gettext("Toggle password visibility")}
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "password-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
     ~H"""
     <div
@@ -301,7 +313,7 @@ defmodule Corex.PasswordInput do
           <button
             :if={@visible_indicator != [] and @hidden_indicator != []}
             type="button"
-            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir})}
+            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir, aria_label: @translation.toggle_visibility})}
           >
             <span {Connect.indicator(%Indicator{id: @id, dir: @dir})} data-state={if @visible, do: "visible", else: "hidden"}>
               <span data-visible="" aria-hidden="true">{render_slot(@visible_indicator)}</span>
@@ -315,5 +327,13 @@ defmodule Corex.PasswordInput do
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      toggle_visibility: partial.toggle_visibility || default.toggle_visibility
+    }
   end
 end

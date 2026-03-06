@@ -82,7 +82,7 @@ defmodule Corex.MixProject do
         "sobelow --exit"
       ],
       tidewave:
-        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'",
+        "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
   end
 

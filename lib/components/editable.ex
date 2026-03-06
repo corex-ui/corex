@@ -56,8 +56,15 @@ defmodule Corex.Editable do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/editable#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc false
+    defstruct [:input, :edit, :submit, :cancel]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.Editable.Anatomy.{
     Area,
@@ -92,6 +99,7 @@ defmodule Corex.Editable do
   attr(:select_on_focus, :boolean, default: true)
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
+  attr(:translation, :any, default: nil)
   attr(:rest, :global)
 
   slot(:label, required: true)
@@ -104,10 +112,19 @@ defmodule Corex.Editable do
     editing = assigns[:default_edit] || false
     value_text = if(empty, do: assigns[:placeholder] || "", else: assigns[:value] || "")
 
+    default_translation = %Translation{
+      input: gettext("editable input"),
+      edit: gettext("edit"),
+      submit: gettext("submit"),
+      cancel: gettext("cancel")
+    }
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "editable-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:empty, empty)
       |> assign(:editing, editing)
       |> assign(:value_text, value_text)
@@ -144,19 +161,19 @@ defmodule Corex.Editable do
       </label>
         <div data-scope="editable" data-part="control">
           <div {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: true})}>
-            <input type="text" {Connect.input(%Input{id: @id, disabled: @disabled, value: @value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: "editable input"})} />
-            <span {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing})}>
+            <input type="text" {Connect.input(%Input{id: @id, disabled: @disabled, value: @value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input})} />
+            <span {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit})}>
               {@value_text}
             </span>
           </div>
           <div {Connect.triggers(%Triggers{})}>
-            <button type="button" {Connect.edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing})}>
+            <button type="button" {Connect.edit_trigger(%EditTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.edit})}>
               {render_slot(@edit_trigger)}
             </button>
-            <button type="button" {Connect.submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing})}>
+            <button type="button" {Connect.submit_trigger(%SubmitTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.submit})}>
               {render_slot(@submit_trigger)}
             </button>
-            <button type="button" {Connect.cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing})}>
+            <button type="button" {Connect.cancel_trigger(%CancelTrigger{id: @id, dir: @dir, editing: @editing, aria_label: @translation.cancel})}>
               {render_slot(@cancel_trigger)}
             </button>
         </div>
@@ -165,5 +182,16 @@ defmodule Corex.Editable do
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      input: partial.input || default.input,
+      edit: partial.edit || default.edit,
+      submit: partial.submit || default.submit,
+      cancel: partial.cancel || default.cancel
+    }
   end
 end

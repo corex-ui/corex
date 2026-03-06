@@ -396,6 +396,13 @@ defmodule Mix.Tasks.Corex.NewTest do
 
       assert File.exists?("phx_blog/priv/gettext/errors.pot")
       assert File.exists?("phx_blog/priv/gettext/en/LC_MESSAGES/errors.po")
+      assert File.exists?("phx_blog/priv/gettext/default.pot")
+      assert File.exists?("phx_blog/priv/gettext/en/LC_MESSAGES/default.po")
+
+      default_pot = File.read!("phx_blog/priv/gettext/default.pot")
+      assert default_pot =~ ~s(msgid "close")
+      assert default_pot =~ ~s(msgid "Select an option")
+      assert default_pot =~ ~s(msgid "Actions")
     end)
   end
 

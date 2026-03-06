@@ -88,22 +88,22 @@ defmodule Corex.NumberInput.Anatomy do
 
   defmodule DecrementTrigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :aria_label]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), aria_label: String.t() | nil}
   end
 
   defmodule IncrementTrigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :aria_label]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), aria_label: String.t() | nil}
   end
 
   defmodule Scrubber do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :aria_label]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), aria_label: String.t() | nil}
   end
 end

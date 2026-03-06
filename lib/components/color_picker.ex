@@ -53,8 +53,15 @@ defmodule Corex.ColorPicker do
   Use `set_open`, `set_value`, `set_format` for programmatic control.
   '''
 
+  defmodule Translation do
+    @moduledoc false
+    defstruct [:hex, :alpha]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.ColorPicker.Anatomy.{
     Content,
@@ -111,12 +118,20 @@ defmodule Corex.ColorPicker do
   attr(:on_pointer_down_outside, :string, default: nil)
   attr(:on_focus_outside, :string, default: nil)
   attr(:on_interact_outside, :string, default: nil)
+  attr(:translation, :any, default: nil)
   attr(:rest, :global)
 
   def color_picker(assigns) do
+    default_translation = %Translation{
+      hex: gettext("Hex color value"),
+      alpha: gettext("Alpha (opacity) value")
+    }
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:default_format, assigns[:default_format] || assigns.format)
       |> assign(:dir, assigns.dir || "ltr")
 
@@ -190,7 +205,7 @@ defmodule Corex.ColorPicker do
             name="channel-input-hex"
             value={@initial.hex_value}
             style={Connect.channel_input_style()}
-            aria-label="Hex color value"
+            aria-label={@translation.hex}
           />
           <input
             data-scope="color-picker"
@@ -199,7 +214,7 @@ defmodule Corex.ColorPicker do
             name="channel-input-alpha"
             value={@initial.alpha_value}
             style={Connect.channel_input_style()}
-            aria-label="Alpha (opacity) value"
+            aria-label={@translation.alpha}
           />
         </div>
         <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
@@ -399,5 +414,14 @@ defmodule Corex.ColorPicker do
       color_picker_id: color_picker_id,
       format: to_string(format)
     })
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      hex: partial.hex || default.hex,
+      alpha: partial.alpha || default.alpha
+    }
   end
 end

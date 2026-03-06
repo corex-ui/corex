@@ -123,8 +123,15 @@ defmodule Corex.Dialog do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/dialog#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc false
+    defstruct [:close]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.Dialog.Anatomy.{
     Backdrop,
@@ -203,6 +210,7 @@ defmodule Corex.Dialog do
     doc: "The client event name when the open state changes"
   )
 
+  attr(:translation, :any, default: nil)
   attr(:rest, :global)
 
   slot :trigger, required: true do
@@ -227,9 +235,13 @@ defmodule Corex.Dialog do
   end
 
   def dialog(assigns) do
+    default_translation = %Translation{close: gettext("Close")}
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "dialog-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
     ~H"""
     <div
@@ -261,7 +273,7 @@ defmodule Corex.Dialog do
         <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
             {render_slot(@title)}
           </h2>
-          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open})}>
+          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}>
           {render_slot(@close_trigger)}
         </button>
         </div>
@@ -309,12 +321,15 @@ defmodule Corex.Dialog do
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:aria_label, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_close_trigger(assigns) do
+    assigns = assign_new(assigns, :aria_label, fn -> gettext("Close") end)
+
     ~H"""
-    <button {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false})} {@rest}>
+    <button {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
@@ -356,5 +371,13 @@ defmodule Corex.Dialog do
       dialog_id: dialog_id,
       open: open
     })
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      close: partial.close || default.close
+    }
   end
 end

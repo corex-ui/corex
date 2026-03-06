@@ -34,7 +34,9 @@ defmodule Corex.New.Single do
   template(:gettext, [
     {:eex, :web,
      "corex_gettext/gettext.ex": "lib/:lib_web_name/gettext.ex",
-     "corex_gettext/errors.pot": "priv/gettext/errors.pot"}
+     "corex_gettext/errors.pot": "priv/gettext/errors.pot",
+     "corex_gettext/default.pot": "priv/gettext/default.pot",
+     "corex_gettext/en/LC_MESSAGES/default.po": "priv/gettext/en/LC_MESSAGES/default.po"}
   ])
 
   template(:html, [

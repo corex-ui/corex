@@ -18,6 +18,7 @@ defmodule <%= @web_namespace %>.Plugs.Theme do
   end
 
   defp parse_theme(nil, _themes, default), do: default
+
   defp parse_theme(theme, themes, default) do
     if theme in themes, do: theme, else: default
   end

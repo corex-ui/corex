@@ -1,5 +1,6 @@
 defmodule Corex.PasswordInput.Connect do
   @moduledoc false
+  import Corex.Gettext, only: [gettext: 1]
   alias Corex.PasswordInput.Anatomy.{
     Control,
     Indicator,
@@ -88,7 +89,7 @@ defmodule Corex.PasswordInput.Connect do
       "data-part" => "visibility-trigger",
       "type" => "button",
       "dir" => assigns.dir,
-      "aria-label" => "Toggle password visibility"
+      "aria-label" => gettext("Toggle password visibility")
     }
   end
 

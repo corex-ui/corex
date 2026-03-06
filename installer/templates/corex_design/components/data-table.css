@@ -1,0 +1,30 @@
+@import "../main.css";
+
+@layer components {
+  [data-scope="data-table"] {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  [data-scope="data-table"][data-part="thead"] {
+    border-bottom: 1px solid var(--color-ui-border, currentColor);
+  }
+
+  [data-scope="data-table"][data-part="thead"] th {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    font-weight: 600;
+  }
+
+  [data-scope="data-table"][data-part="tbody"] tr {
+    border-bottom: 1px solid var(--color-ui-border, currentColor);
+  }
+
+  [data-scope="data-table"][data-part="cell"] {
+    padding: 0.5rem 0.75rem;
+  }
+
+  [data-scope="data-table"][data-part="row"]:hover {
+    background-color: color-mix(in oklch, var(--color-ui-muted, oklch(0.7 0 0)) 20%, transparent);
+  }
+}

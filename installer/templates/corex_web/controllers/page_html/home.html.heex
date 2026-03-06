@@ -1,10 +1,17 @@
-<Layouts.app flash={@flash}<%= if @mode do %> mode={@mode}<% end %><%= if @theme do %> theme={@theme}<% end %><%= if @theme_switcher do %> themes={@themes}<% end %><%= if @language_switcher do %> locale={@locale} current_path={@current_path}<% end %>>
+<Layouts.app
+  flash={@flash}
+  <%= if @mode do %>mode={@mode}<% end %>
+  <%= if @theme do %>theme={@theme}<% end %>
+  <%= if @theme_switcher do %>themes={@themes}<% end %>
+  <%= if @language_switcher do %>locale={@locale}
+  current_path={@current_path}<% end %>
+>
   <section>
-    <h1>Corex</h1>
+    <h1>{gettext("Corex")}</h1>
     <p>
-      From design tokens to accessible, interactive components, <br />
-      Corex provides a complete foundation for creating <br />
-      beautiful, scalable, and performant websites.
+      {gettext(
+        "From design tokens to accessible, interactive components, Corex provides a complete foundation for creating beautiful, scalable, and performant websites."
+      )}
     </p>
     <div class="gap-ui-gap p-ui-padding flex flex-wrap justify-start">
       <.navigate
@@ -12,7 +19,7 @@
         external
         class="button button--brand button--sm md:button--md w-full md:w-auto"
       >
-        Hex Documentation <.icon name="hero-arrow-top-right-on-square" />
+        {gettext("Hex Documentation")} <.heroicon name="hero-arrow-top-right-on-square" />
       </.navigate>
     </div>
   </section>

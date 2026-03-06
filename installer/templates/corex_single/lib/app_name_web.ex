@@ -84,8 +84,7 @@ defmodule <%= @web_namespace %> do
 <% end %>
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
-      import <%= @web_namespace %>.CoreComponents
+      # Corex components
       use Corex
 
       # Common modules used in templates

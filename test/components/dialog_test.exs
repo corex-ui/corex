@@ -121,7 +121,7 @@ defmodule Corex.DialogTest do
       result = Connect.close_trigger(assigns)
       assert result["id"] == "dialog:test-dialog:close-trigger"
       assert result["data-part"] == "close-trigger"
-      assert result["aria-label"] == "Close"
+      assert result["aria-label"] == "Close dialog"
     end
   end
 

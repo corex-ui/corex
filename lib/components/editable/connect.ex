@@ -92,7 +92,7 @@ defmodule Corex.Editable.Connect do
       "id" => "editable:#{assigns.id}:input",
       "required" => data_attr(assigns.required),
       "readonly" => data_attr(assigns.read_only),
-      "aria-label" => assigns.aria_label || "editable input",
+      "aria-label" => assigns.aria_label,
       "data-disabled" => data_attr(assigns.disabled),
       "data-readonly" => data_attr(assigns.read_only)
     }
@@ -111,7 +111,7 @@ defmodule Corex.Editable.Connect do
       "dir" => assigns.dir,
       "id" => "editable:#{assigns.id}:preview",
       "data-placeholder-shown" => data_attr(assigns.empty),
-      "aria-label" => "edit",
+      "aria-label" => assigns.aria_label,
       "tabindex" => "0",
       "hidden" => if(assigns.editing, do: "", else: nil)
     }
@@ -125,7 +125,7 @@ defmodule Corex.Editable.Connect do
       "type" => "button",
       "dir" => assigns.dir,
       "id" => "editable:#{assigns.id}:edit-trigger",
-      "aria-label" => "edit",
+      "aria-label" => assigns.aria_label,
       "hidden" => if(assigns.editing, do: "", else: nil)
     }
   end
@@ -153,7 +153,7 @@ defmodule Corex.Editable.Connect do
       "type" => "button",
       "dir" => assigns.dir,
       "id" => "editable:#{assigns.id}:submit-trigger",
-      "aria-label" => "submit",
+      "aria-label" => assigns.aria_label,
       "hidden" => if(assigns.editing, do: nil, else: "")
     }
   end
@@ -166,7 +166,7 @@ defmodule Corex.Editable.Connect do
       "type" => "button",
       "dir" => assigns.dir,
       "id" => "editable:#{assigns.id}:cancel-trigger",
-      "aria-label" => "cancel",
+      "aria-label" => assigns.aria_label,
       "hidden" => if(assigns.editing, do: nil, else: "")
     }
   end

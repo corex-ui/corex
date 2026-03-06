@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-PLUM2DEK.mjs
+  // ../priv/static/chunk-BVJBLYEU.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -116,6 +116,331 @@ var Corex = (() => {
     const fromDoc = document.documentElement.getAttribute("dir");
     if (fromDoc === "ltr" || fromDoc === "rtl") return fromDoc;
     return "ltr";
+  }
+  function createNormalizer(fn) {
+    return new Proxy({}, {
+      get(_target, key) {
+        if (key === "style")
+          return (props) => {
+            return fn({ style: props }).style;
+          };
+        return fn;
+      }
+    });
+  }
+  function toArray(v2) {
+    if (v2 == null) return [];
+    return Array.isArray(v2) ? v2 : [v2];
+  }
+  function nextIndex(v2, idx, opts = {}) {
+    const { step = 1, loop = true } = opts;
+    const next2 = idx + step;
+    const len = v2.length;
+    const last2 = len - 1;
+    if (idx === -1) return step > 0 ? 0 : last2;
+    if (next2 < 0) return loop ? last2 : 0;
+    if (next2 >= len) return loop ? 0 : idx > len ? len : idx;
+    return next2;
+  }
+  function next(v2, idx, opts = {}) {
+    return v2[nextIndex(v2, idx, opts)];
+  }
+  function prevIndex(v2, idx, opts = {}) {
+    const { step = 1, loop = true } = opts;
+    return nextIndex(v2, idx, { step: -step, loop });
+  }
+  function prev(v2, index, opts = {}) {
+    return v2[prevIndex(v2, index, opts)];
+  }
+  function chunk(v2, size3) {
+    return v2.reduce((rows, value, index) => {
+      var _a;
+      if (index % size3 === 0) rows.push([value]);
+      else (_a = last(rows)) == null ? void 0 : _a.push(value);
+      return rows;
+    }, []);
+  }
+  function partition(arr, fn) {
+    return arr.reduce(
+      ([pass, fail], value) => {
+        if (fn(value)) pass.push(value);
+        else fail.push(value);
+        return [pass, fail];
+      },
+      [[], []]
+    );
+  }
+  function match(key, record, ...args) {
+    var _a;
+    if (key in record) {
+      const fn = record[key];
+      return isFunction(fn) ? fn(...args) : fn;
+    }
+    const error = new Error(`No matching key: ${JSON.stringify(key)} in ${JSON.stringify(Object.keys(record))}`);
+    (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, match);
+    throw error;
+  }
+  function throttle(fn, wait = 0) {
+    let lastCall = 0;
+    let timeout = null;
+    return (...args) => {
+      const now = Date.now();
+      const timeSinceLastCall = now - lastCall;
+      if (timeSinceLastCall >= wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        fn(...args);
+        lastCall = now;
+      } else if (!timeout) {
+        timeout = setTimeout(() => {
+          fn(...args);
+          lastCall = Date.now();
+          timeout = null;
+        }, wait - timeSinceLastCall);
+      }
+    };
+  }
+  function compact(obj) {
+    if (!isPlainObject(obj) || obj === void 0) return obj;
+    const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
+    const filtered = {};
+    for (const key of keys) {
+      const value = obj[key];
+      if (value !== void 0) {
+        filtered[key] = compact(value);
+      }
+    }
+    return filtered;
+  }
+  function pick(obj, keys) {
+    const filtered = {};
+    for (const key of keys) {
+      const value = obj[key];
+      if (value !== void 0) {
+        filtered[key] = value;
+      }
+    }
+    return filtered;
+  }
+  function warn(...a2) {
+    const m2 = a2.length === 1 ? a2[0] : a2[1];
+    const c2 = a2.length === 2 ? a2[0] : true;
+    if (c2 && true) {
+      console.warn(m2);
+    }
+  }
+  function invariant(...a2) {
+    const m2 = a2.length === 1 ? a2[0] : a2[1];
+    const c2 = a2.length === 2 ? a2[0] : true;
+    if (c2 && true) {
+      throw new Error(m2);
+    }
+  }
+  function ensure(c2, m2) {
+    if (c2 == null) throw new Error(m2());
+  }
+  function ensureProps(props, keys, scope) {
+    let missingKeys = [];
+    for (const key of keys) {
+      if (props[key] == null) missingKeys.push(key);
+    }
+    if (missingKeys.length > 0)
+      throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
+  }
+  function joinStatePath(parts29) {
+    return parts29.join(STATE_DELIMITER);
+  }
+  function isAbsoluteStatePath(value) {
+    return value.includes(STATE_DELIMITER);
+  }
+  function isExplicitAbsoluteStatePath(value) {
+    return value.startsWith(ABSOLUTE_PREFIX);
+  }
+  function stripAbsolutePrefix(value) {
+    return isExplicitAbsoluteStatePath(value) ? value.slice(ABSOLUTE_PREFIX.length) : value;
+  }
+  function appendStatePath(base, segment) {
+    return base ? `${base}${STATE_DELIMITER}${segment}` : segment;
+  }
+  function buildStateIndex(machine29) {
+    const index = /* @__PURE__ */ new Map();
+    const idIndex = /* @__PURE__ */ new Map();
+    const visit2 = (basePath, state2) => {
+      index.set(basePath, state2);
+      const stateId = state2.id;
+      if (stateId) {
+        if (idIndex.has(stateId)) {
+          throw new Error(`Duplicate state id: ${stateId}`);
+        }
+        idIndex.set(stateId, basePath);
+      }
+      const childStates = state2.states;
+      if (!childStates) return;
+      for (const [childKey, childState] of Object.entries(childStates)) {
+        if (!childState) continue;
+        const childPath = appendStatePath(basePath, childKey);
+        visit2(childPath, childState);
+      }
+    };
+    for (const [topKey, topState] of Object.entries(machine29.states)) {
+      if (!topState) continue;
+      visit2(topKey, topState);
+    }
+    return { index, idIndex };
+  }
+  function ensureStateIndex(machine29) {
+    const cached = stateIndexCache.get(machine29);
+    if (cached) return cached;
+    const { index, idIndex } = buildStateIndex(machine29);
+    stateIndexCache.set(machine29, index);
+    stateIdIndexCache.set(machine29, idIndex);
+    return index;
+  }
+  function getStatePathById(machine29, stateId) {
+    var _a;
+    ensureStateIndex(machine29);
+    return (_a = stateIdIndexCache.get(machine29)) == null ? void 0 : _a.get(stateId);
+  }
+  function toSegments(value) {
+    if (!value) return [];
+    return String(value).split(STATE_DELIMITER).filter(Boolean);
+  }
+  function getStateChain(machine29, state2) {
+    if (!state2) return [];
+    const stateIndex = ensureStateIndex(machine29);
+    const segments = toSegments(state2);
+    const chain = [];
+    const statePath = [];
+    for (const segment of segments) {
+      statePath.push(segment);
+      const path = joinStatePath(statePath);
+      const current = stateIndex.get(path);
+      if (!current) break;
+      chain.push({ path, state: current });
+    }
+    return chain;
+  }
+  function resolveAbsoluteStateValue(machine29, value) {
+    const stateIndex = ensureStateIndex(machine29);
+    const segments = toSegments(value);
+    if (!segments.length) return value;
+    const resolved = [];
+    for (const segment of segments) {
+      resolved.push(segment);
+      const path = joinStatePath(resolved);
+      if (!stateIndex.has(path)) return value;
+    }
+    let resolvedPath = joinStatePath(resolved);
+    let current = stateIndex.get(resolvedPath);
+    while (current == null ? void 0 : current.initial) {
+      const nextPath = `${resolvedPath}${STATE_DELIMITER}${current.initial}`;
+      const nextState = stateIndex.get(nextPath);
+      if (!nextState) break;
+      resolvedPath = nextPath;
+      current = nextState;
+    }
+    return resolvedPath;
+  }
+  function hasStatePath(machine29, value) {
+    const stateIndex = ensureStateIndex(machine29);
+    return stateIndex.has(value);
+  }
+  function resolveStateValue(machine29, value, source) {
+    const stateValue = String(value);
+    if (isExplicitAbsoluteStatePath(stateValue)) {
+      const stateId = stripAbsolutePrefix(stateValue);
+      const statePath = getStatePathById(machine29, stateId);
+      if (!statePath) {
+        throw new Error(`Unknown state id: ${stateId}`);
+      }
+      return resolveAbsoluteStateValue(machine29, statePath);
+    }
+    if (!isAbsoluteStatePath(stateValue) && source) {
+      const sourceSegments = toSegments(source);
+      for (let index = sourceSegments.length; index >= 1; index--) {
+        const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
+        const candidate = appendStatePath(base, stateValue);
+        if (hasStatePath(machine29, candidate)) return resolveAbsoluteStateValue(machine29, candidate);
+      }
+    }
+    return resolveAbsoluteStateValue(machine29, stateValue);
+  }
+  function findTransition(machine29, state2, eventType) {
+    var _a, _b;
+    const chain = getStateChain(machine29, state2);
+    for (let index = chain.length - 1; index >= 0; index--) {
+      const transitionMap = (_a = chain[index]) == null ? void 0 : _a.state.on;
+      const transition = transitionMap == null ? void 0 : transitionMap[eventType];
+      if (transition) return { transitions: transition, source: (_b = chain[index]) == null ? void 0 : _b.path };
+    }
+    const rootTransitionMap = machine29.on;
+    return { transitions: rootTransitionMap == null ? void 0 : rootTransitionMap[eventType], source: void 0 };
+  }
+  function getExitEnterStates(machine29, prevState, nextState, reenter) {
+    var _a, _b, _c, _d;
+    const prevChain = prevState ? getStateChain(machine29, prevState) : [];
+    const nextChain = getStateChain(machine29, nextState);
+    let commonIndex = 0;
+    while (commonIndex < prevChain.length && commonIndex < nextChain.length && ((_a = prevChain[commonIndex]) == null ? void 0 : _a.path) === ((_b = nextChain[commonIndex]) == null ? void 0 : _b.path)) {
+      commonIndex += 1;
+    }
+    let exiting = prevChain.slice(commonIndex).reverse();
+    let entering = nextChain.slice(commonIndex);
+    const sameLeaf = ((_c = prevChain.at(-1)) == null ? void 0 : _c.path) === ((_d = nextChain.at(-1)) == null ? void 0 : _d.path);
+    if (reenter && sameLeaf) {
+      exiting = prevChain.slice().reverse();
+      entering = nextChain;
+    }
+    return { exiting, entering };
+  }
+  function matchesState(current, value) {
+    if (!current) return false;
+    return current === value || current.startsWith(`${value}${STATE_DELIMITER}`);
+  }
+  function hasTag(machine29, state2, tag) {
+    return getStateChain(machine29, state2).some((item) => {
+      var _a;
+      return (_a = item.state.tags) == null ? void 0 : _a.includes(tag);
+    });
+  }
+  function createGuards() {
+    return {
+      and: (...guards5) => {
+        return function andGuard(params) {
+          return guards5.every((str) => params.guard(str));
+        };
+      },
+      or: (...guards5) => {
+        return function orGuard(params) {
+          return guards5.some((str) => params.guard(str));
+        };
+      },
+      not: (guard) => {
+        return function notGuard(params) {
+          return !params.guard(guard);
+        };
+      }
+    };
+  }
+  function createMachine(config) {
+    ensureStateIndex(config);
+    return config;
+  }
+  function setup() {
+    return {
+      guards: createGuards(),
+      createMachine: (config) => {
+        return createMachine(config);
+      },
+      choose: (transitions) => {
+        return function chooseFn({ choose: choose4 }) {
+          var _a;
+          return (_a = choose4(transitions)) == null ? void 0 : _a.actions;
+        };
+      }
+    };
   }
   function setCaretToEnd(input) {
     if (!input) return;
@@ -869,11 +1194,11 @@ var Corex = (() => {
       onPressEnd,
       isValidKey: isValidKey2 = (e2) => e2.key === "Enter"
     } = options;
-    if (!pointerNode) return noop;
+    if (!pointerNode) return noop2;
     const win = getWindow(pointerNode);
-    let removeStartListeners = noop;
-    let removeEndListeners = noop;
-    let removeAccessibleListeners = noop;
+    let removeStartListeners = noop2;
+    let removeEndListeners = noop2;
+    let removeAccessibleListeners = noop2;
     const getInfo = (event) => ({
       point: getEventPoint(event),
       event
@@ -1014,12 +1339,12 @@ var Corex = (() => {
     if (isSingleKey) {
       items = items.filter((item) => itemToId(item) !== currentId);
     }
-    return items.find((item) => match(getValueText(item), text));
+    return items.find((item) => match2(getValueText(item), text));
   }
   function setAttribute(el, attr, v2) {
     const prev2 = el.getAttribute(attr);
     const exists = prev2 != null;
-    if (prev2 === v2) return noop;
+    if (prev2 === v2) return noop2;
     el.setAttribute(attr, v2);
     return () => {
       if (!exists) {
@@ -1030,12 +1355,12 @@ var Corex = (() => {
     };
   }
   function setStyle(el, style) {
-    if (!el) return noop;
+    if (!el) return noop2;
     const prev2 = Object.keys(style).reduce((acc, key) => {
       acc[key] = el.style.getPropertyValue(key);
       return acc;
     }, {});
-    if (isEqual(prev2, style)) return noop;
+    if (isEqual2(prev2, style)) return noop2;
     Object.assign(el.style, style);
     return () => {
       Object.assign(el.style, prev2);
@@ -1045,9 +1370,9 @@ var Corex = (() => {
     };
   }
   function setStyleProperty(el, prop, value) {
-    if (!el) return noop;
+    if (!el) return noop2;
     const prev2 = el.style.getPropertyValue(prop);
-    if (prev2 === value) return noop;
+    if (prev2 === value) return noop2;
     el.style.setProperty(prop, value);
     return () => {
       el.style.setProperty(prop, prev2);
@@ -1056,7 +1381,7 @@ var Corex = (() => {
       }
     };
   }
-  function isEqual(a2, b2) {
+  function isEqual2(a2, b2) {
     return Object.keys(a2).every((key) => a2[key] === b2[key]);
   }
   function getByTypeaheadImpl(baseItems, options) {
@@ -1139,247 +1464,10 @@ var Corex = (() => {
       timeout
     );
   }
-  function toArray(v2) {
-    if (v2 == null) return [];
-    return Array.isArray(v2) ? v2 : [v2];
-  }
-  function nextIndex(v2, idx, opts = {}) {
-    const { step = 1, loop = true } = opts;
-    const next2 = idx + step;
-    const len = v2.length;
-    const last2 = len - 1;
-    if (idx === -1) return step > 0 ? 0 : last2;
-    if (next2 < 0) return loop ? last2 : 0;
-    if (next2 >= len) return loop ? 0 : idx > len ? len : idx;
-    return next2;
-  }
-  function next(v2, idx, opts = {}) {
-    return v2[nextIndex(v2, idx, opts)];
-  }
-  function prevIndex(v2, idx, opts = {}) {
-    const { step = 1, loop = true } = opts;
-    return nextIndex(v2, idx, { step: -step, loop });
-  }
-  function prev(v2, index, opts = {}) {
-    return v2[prevIndex(v2, index, opts)];
-  }
-  function chunk(v2, size3) {
-    return v2.reduce((rows, value, index) => {
-      var _a;
-      if (index % size3 === 0) rows.push([value]);
-      else (_a = last(rows)) == null ? void 0 : _a.push(value);
-      return rows;
-    }, []);
-  }
-  function partition(arr, fn) {
-    return arr.reduce(
-      ([pass, fail], value) => {
-        if (fn(value)) pass.push(value);
-        else fail.push(value);
-        return [pass, fail];
-      },
-      [[], []]
-    );
-  }
-  function match2(key, record, ...args) {
-    var _a;
-    if (key in record) {
-      const fn = record[key];
-      return isFunction(fn) ? fn(...args) : fn;
-    }
-    const error = new Error(`No matching key: ${JSON.stringify(key)} in ${JSON.stringify(Object.keys(record))}`);
-    (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, match2);
-    throw error;
-  }
-  function throttle(fn, wait = 0) {
-    let lastCall = 0;
-    let timeout = null;
-    return (...args) => {
-      const now = Date.now();
-      const timeSinceLastCall = now - lastCall;
-      if (timeSinceLastCall >= wait) {
-        if (timeout) {
-          clearTimeout(timeout);
-          timeout = null;
-        }
-        fn(...args);
-        lastCall = now;
-      } else if (!timeout) {
-        timeout = setTimeout(() => {
-          fn(...args);
-          lastCall = Date.now();
-          timeout = null;
-        }, wait - timeSinceLastCall);
-      }
-    };
-  }
-  function compact(obj) {
-    if (!isPlainObject(obj) || obj === void 0) return obj;
-    const keys = Reflect.ownKeys(obj).filter((key) => typeof key === "string");
-    const filtered = {};
-    for (const key of keys) {
-      const value = obj[key];
-      if (value !== void 0) {
-        filtered[key] = compact(value);
-      }
-    }
-    return filtered;
-  }
-  function pick(obj, keys) {
-    const filtered = {};
-    for (const key of keys) {
-      const value = obj[key];
-      if (value !== void 0) {
-        filtered[key] = value;
-      }
-    }
-    return filtered;
-  }
-  function splitProps(props28, keys) {
-    const rest = {};
-    const result = {};
-    const keySet = new Set(keys);
-    const ownKeys = Reflect.ownKeys(props28);
-    for (const key of ownKeys) {
-      if (keySet.has(key)) {
-        result[key] = props28[key];
-      } else {
-        rest[key] = props28[key];
-      }
-    }
-    return [result, rest];
-  }
-  function setRafInterval(fn, intervalMs) {
-    const timer = new Timer(({ now, deltaMs }) => {
-      if (deltaMs >= intervalMs) {
-        const startMs = intervalMs > 0 ? now - deltaMs % intervalMs : now;
-        timer.setStartMs(startMs);
-        fn({ startMs, deltaMs });
-      }
-    });
-    timer.start();
-    return () => timer.stop();
-  }
-  function setRafTimeout(fn, delayMs) {
-    const timer = new Timer(({ deltaMs }) => {
-      if (deltaMs >= delayMs) {
-        fn();
-        return false;
-      }
-    });
-    timer.start();
-    return () => timer.stop();
-  }
-  function warn(...a2) {
-    const m2 = a2.length === 1 ? a2[0] : a2[1];
-    const c2 = a2.length === 2 ? a2[0] : true;
-    if (c2 && true) {
-      console.warn(m2);
-    }
-  }
-  function invariant(...a2) {
-    const m2 = a2.length === 1 ? a2[0] : a2[1];
-    const c2 = a2.length === 2 ? a2[0] : true;
-    if (c2 && true) {
-      throw new Error(m2);
-    }
-  }
-  function ensure(c2, m2) {
-    if (c2 == null) throw new Error(m2());
-  }
-  function ensureProps(props28, keys, scope) {
-    let missingKeys = [];
-    for (const key of keys) {
-      if (props28[key] == null) missingKeys.push(key);
-    }
-    if (missingKeys.length > 0)
-      throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
-  }
-  function mergeProps(...args) {
-    let result = {};
-    for (let props28 of args) {
-      if (!props28) continue;
-      for (let key in result) {
-        if (key.startsWith("on") && typeof result[key] === "function" && typeof props28[key] === "function") {
-          result[key] = callAll(props28[key], result[key]);
-          continue;
-        }
-        if (key === "className" || key === "class") {
-          result[key] = clsx(result[key], props28[key]);
-          continue;
-        }
-        if (key === "style") {
-          result[key] = css(result[key], props28[key]);
-          continue;
-        }
-        result[key] = props28[key] !== void 0 ? props28[key] : result[key];
-      }
-      for (let key in props28) {
-        if (result[key] === void 0) {
-          result[key] = props28[key];
-        }
-      }
-      const symbols = Object.getOwnPropertySymbols(props28);
-      for (let symbol of symbols) {
-        result[symbol] = props28[symbol];
-      }
-    }
-    return result;
-  }
-  function memo(getDeps, fn, opts) {
-    let deps = [];
-    let result;
-    return (depArgs) => {
-      var _a;
-      const newDeps = getDeps(depArgs);
-      const depsChanged = newDeps.length !== deps.length || newDeps.some((dep, index) => !isEqual2(deps[index], dep));
-      if (!depsChanged) return result;
-      deps = newDeps;
-      result = fn(newDeps, depArgs);
-      (_a = opts == null ? void 0 : opts.onChange) == null ? void 0 : _a.call(opts, result);
-      return result;
-    };
-  }
-  function createGuards() {
-    return {
-      and: (...guards5) => {
-        return function andGuard(params) {
-          return guards5.every((str) => params.guard(str));
-        };
-      },
-      or: (...guards5) => {
-        return function orGuard(params) {
-          return guards5.some((str) => params.guard(str));
-        };
-      },
-      not: (guard) => {
-        return function notGuard(params) {
-          return !params.guard(guard);
-        };
-      }
-    };
-  }
-  function createMachine(config) {
-    return config;
-  }
-  function setup() {
-    return {
-      guards: createGuards(),
-      createMachine: (config) => {
-        return createMachine(config);
-      },
-      choose: (transitions) => {
-        return function chooseFn({ choose: choose4 }) {
-          var _a;
-          return (_a = choose4(transitions)) == null ? void 0 : _a.actions;
-        };
-      }
-    };
-  }
-  function createScope(props28) {
+  function createScope(props) {
     const getRootNode2 = () => {
       var _a, _b;
-      return (_b = (_a = props28.getRootNode) == null ? void 0 : _a.call(props28)) != null ? _b : document;
+      return (_b = (_a = props.getRootNode) == null ? void 0 : _a.call(props)) != null ? _b : document;
     };
     const getDoc = () => getDocument(getRootNode2());
     const getWin = () => {
@@ -1388,24 +1476,13 @@ var Corex = (() => {
     };
     const getActiveElementFn = () => getActiveElement(getRootNode2());
     const getById = (id) => getRootNode2().getElementById(id);
-    return __spreadProps(__spreadValues({}, props28), {
+    return __spreadProps(__spreadValues({}, props), {
       getRootNode: getRootNode2,
       getDoc,
       getWin,
       getActiveElement: getActiveElementFn,
       isActiveElement,
       getById
-    });
-  }
-  function createNormalizer(fn) {
-    return new Proxy({}, {
-      get(_target, key) {
-        if (key === "style")
-          return (props28) => {
-            return fn({ style: props28 }).style;
-          };
-        return fn;
-      }
     });
   }
   function glob() {
@@ -1462,6 +1539,73 @@ var Corex = (() => {
     const [target, ensureVersion, createSnapshot] = proxyState;
     return createSnapshot(target, ensureVersion());
   }
+  function bindable(props) {
+    var _a, _b;
+    const initial = (_a = props().value) != null ? _a : props().defaultValue;
+    if (props().debug) {
+      console.log(`[bindable > ${props().debug}] initial`, initial);
+    }
+    const eq = (_b = props().isEqual) != null ? _b : Object.is;
+    const store = proxy({ value: initial });
+    const controlled = () => props().value !== void 0;
+    return {
+      initial,
+      ref: store,
+      get() {
+        return controlled() ? props().value : store.value;
+      },
+      set(nextValue) {
+        var _a2, _b2;
+        const prev2 = store.value;
+        const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
+        if (props().debug) {
+          console.log(`[bindable > ${props().debug}] setValue`, { next: next2, prev: prev2 });
+        }
+        if (!controlled()) store.value = next2;
+        if (!eq(next2, prev2)) {
+          (_b2 = (_a2 = props()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
+        }
+      },
+      invoke(nextValue, prevValue) {
+        var _a2, _b2;
+        (_b2 = (_a2 = props()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
+      },
+      hash(value) {
+        var _a2, _b2, _c;
+        return (_c = (_b2 = (_a2 = props()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
+      }
+    };
+  }
+  function createRefs(refs) {
+    const ref2 = { current: refs };
+    return {
+      get(key) {
+        return ref2.current[key];
+      },
+      set(key, value) {
+        ref2.current[key] = value;
+      }
+    };
+  }
+  function mergeMachineProps(prev2, next2) {
+    if (!isPlainObject(prev2) || !isPlainObject(next2)) {
+      return next2 === void 0 ? prev2 : next2;
+    }
+    const result = __spreadValues({}, prev2);
+    for (const key of Object.keys(next2)) {
+      const nextValue = next2[key];
+      const prevValue = prev2[key];
+      if (nextValue === void 0) {
+        continue;
+      }
+      if (isPlainObject(prevValue) && isPlainObject(nextValue)) {
+        result[key] = mergeMachineProps(prevValue, nextValue);
+      } else {
+        result[key] = nextValue;
+      }
+    }
+    return result;
+  }
   function spreadProps(node, attrs, machineId) {
     const scopeKey = machineId || "default";
     let machineMap = prevAttrsMap.get(node);
@@ -1486,14 +1630,17 @@ var Corex = (() => {
       const oldValue = oldAttrs[attrName];
       if (value === oldValue) return;
       if (attrName === "class") {
+        ;
         node.className = value != null ? value : "";
         return;
       }
       if (assignableProps.has(attrName)) {
+        ;
         node[attrName] = value != null ? value : "";
         return;
       }
       if (typeof value === "boolean" && !attrName.includes("aria-")) {
+        ;
         node.toggleAttribute(getAttributeName(node, attrName), value);
         return;
       }
@@ -1510,8 +1657,10 @@ var Corex = (() => {
     for (const key in oldAttrs) {
       if (attrs[key] == null) {
         if (key === "class") {
+          ;
           node.className = "";
         } else if (assignableProps.has(key)) {
+          ;
           node[key] = "";
         } else {
           node.removeAttribute(getAttributeName(node, key));
@@ -1536,76 +1685,9 @@ var Corex = (() => {
       }
     };
   }
-  function bindable(props28) {
-    var _a, _b;
-    const initial = (_a = props28().value) != null ? _a : props28().defaultValue;
-    if (props28().debug) {
-      console.log(`[bindable > ${props28().debug}] initial`, initial);
-    }
-    const eq = (_b = props28().isEqual) != null ? _b : Object.is;
-    const store = proxy({ value: initial });
-    const controlled = () => props28().value !== void 0;
-    return {
-      initial,
-      ref: store,
-      get() {
-        return controlled() ? props28().value : store.value;
-      },
-      set(nextValue) {
-        var _a2, _b2;
-        const prev2 = store.value;
-        const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
-        if (props28().debug) {
-          console.log(`[bindable > ${props28().debug}] setValue`, { next: next2, prev: prev2 });
-        }
-        if (!controlled()) store.value = next2;
-        if (!eq(next2, prev2)) {
-          (_b2 = (_a2 = props28()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
-        }
-      },
-      invoke(nextValue, prevValue) {
-        var _a2, _b2;
-        (_b2 = (_a2 = props28()).onChange) == null ? void 0 : _b2.call(_a2, nextValue, prevValue);
-      },
-      hash(value) {
-        var _a2, _b2, _c;
-        return (_c = (_b2 = (_a2 = props28()).hash) == null ? void 0 : _b2.call(_a2, value)) != null ? _c : String(value);
-      }
-    };
-  }
-  function createRefs(refs) {
-    const ref = { current: refs };
-    return {
-      get(key) {
-        return ref.current[key];
-      },
-      set(key, value) {
-        ref.current[key] = value;
-      }
-    };
-  }
-  function mergeMachineProps(prev2, next2) {
-    if (!isPlainObject(prev2) || !isPlainObject(next2)) {
-      return next2 === void 0 ? prev2 : next2;
-    }
-    const result = __spreadValues({}, prev2);
-    for (const key of Object.keys(next2)) {
-      const nextValue = next2[key];
-      const prevValue = prev2[key];
-      if (nextValue === void 0) {
-        continue;
-      }
-      if (isPlainObject(prevValue) && isPlainObject(nextValue)) {
-        result[key] = mergeMachineProps(prevValue, nextValue);
-      } else {
-        result[key] = nextValue;
-      }
-    }
-    return result;
-  }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, createAnatomy, toKebabCase, isEmpty, __defProp2, __defNormalProp2, __publicField2, clamp, wrap, pipe, noop, isObject, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match, getByTypeahead, visuallyHiddenStyle, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual2, isArray, isBoolean, isObjectLike, isObject2, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop2, callAll, uuid, tryCatch, floor, abs, round, min, max, pow, sign, isNaN2, nan, mod, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, roundValue, clampValue, getValuePercent, getPercentValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, toFixedNumber, countDecimals, decimalOp, incrementValue, decrementValue, toPx, createSplitProps, currentTime, _tick, Timer, clsx, CSS_REGEX, serialize, css, MachineStatus, INIT_STATE, createProps, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, proxyStateMap, buildProxyFunction, proxyFunction, __defProp3, __defNormalProp3, __publicField3, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, VanillaMachine, Component;
-  var init_chunk_PLUM2DEK = __esm({
-    "../priv/static/chunk-PLUM2DEK.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, __defProp2, __defNormalProp2, __publicField2, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
+  var init_chunk_BVJBLYEU = __esm({
+    "../priv/static/chunk-BVJBLYEU.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1638,56 +1720,185 @@ var Corex = (() => {
         if (element == null ? void 0 : element.id) return element.id;
         return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
       };
-      createAnatomy = (name, parts29 = []) => ({
-        parts: (...values) => {
-          if (isEmpty(parts29)) {
-            return createAnatomy(name, values);
-          }
-          throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
-        },
-        extendWith: (...values) => createAnatomy(name, [...parts29, ...values]),
-        omit: (...values) => createAnatomy(name, parts29.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts29),
-        keys: () => parts29,
-        build: () => [...new Set(parts29)].reduce(
-          (prev2, part) => Object.assign(prev2, {
-            [part]: {
-              selector: [
-                `&[data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`,
-                `& [data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`
-              ].join(", "),
-              attrs: { "data-scope": toKebabCase(name), "data-part": toKebabCase(part) }
-            }
-          }),
-          {}
-        )
-      });
-      toKebabCase = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
-      isEmpty = (v2) => v2.length === 0;
       __defProp2 = Object.defineProperty;
       __defNormalProp2 = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField2 = (obj, key, value) => __defNormalProp2(obj, typeof key !== "symbol" ? key + "" : key, value);
+      propMap = {
+        onFocus: "onFocusin",
+        onBlur: "onFocusout",
+        onChange: "onInput",
+        onDoubleClick: "onDblclick",
+        htmlFor: "for",
+        className: "class",
+        defaultValue: "value",
+        defaultChecked: "checked"
+      };
+      caseSensitiveSvgAttrs = /* @__PURE__ */ new Set(["viewBox", "preserveAspectRatio"]);
+      toStyleString = (style) => {
+        let string = "";
+        for (let key in style) {
+          const value = style[key];
+          if (value === null || value === void 0) continue;
+          if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match32) => `-${match32.toLowerCase()}`);
+          string += `${key}:${value};`;
+        }
+        return string;
+      };
+      normalizeProps = createNormalizer((props) => {
+        return Object.entries(props).reduce((acc, [key, value]) => {
+          if (value === void 0) return acc;
+          if (key in propMap) {
+            key = propMap[key];
+          }
+          if (key === "style" && typeof value === "object") {
+            acc.style = toStyleString(value);
+            return acc;
+          }
+          const normalizedKey = caseSensitiveSvgAttrs.has(key) ? key : key.toLowerCase();
+          acc[normalizedKey] = value;
+          return acc;
+        }, {});
+      });
+      __defProp22 = Object.defineProperty;
+      __typeError2 = (msg) => {
+        throw TypeError(msg);
+      };
+      __defNormalProp22 = (obj, key, value) => key in obj ? __defProp22(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField22 = (obj, key, value) => __defNormalProp22(obj, typeof key !== "symbol" ? key + "" : key, value);
+      __accessCheck = (obj, member, msg) => member.has(obj) || __typeError2("Cannot " + msg);
+      __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), getter ? getter.call(obj) : member.get(obj));
+      __privateAdd = (obj, member, value) => member.has(obj) ? __typeError2("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
+      first = (v2) => v2[0];
+      last = (v2) => v2[v2.length - 1];
+      has = (v2, t2) => v2.indexOf(t2) !== -1;
+      add = (v2, ...items) => v2.concat(items);
+      remove = (v2, ...items) => v2.filter((t2) => !items.includes(t2));
+      uniq = (v2) => Array.from(new Set(v2));
+      diff = (a2, b2) => {
+        const set = new Set(b2);
+        return a2.filter((t2) => !set.has(t2));
+      };
+      addOrRemove = (v2, item) => has(v2, item) ? remove(v2, item) : add(v2, item);
+      isArrayLike = (value) => (value == null ? void 0 : value.constructor.name) === "Array";
+      isArrayEqual = (a2, b2) => {
+        if (a2.length !== b2.length) return false;
+        for (let i2 = 0; i2 < a2.length; i2++) {
+          if (!isEqual(a2[i2], b2[i2])) return false;
+        }
+        return true;
+      };
+      isEqual = (a2, b2) => {
+        if (Object.is(a2, b2)) return true;
+        if (a2 == null && b2 != null || a2 != null && b2 == null) return false;
+        if (typeof (a2 == null ? void 0 : a2.isEqual) === "function" && typeof (b2 == null ? void 0 : b2.isEqual) === "function") {
+          return a2.isEqual(b2);
+        }
+        if (typeof a2 === "function" && typeof b2 === "function") {
+          return a2.toString() === b2.toString();
+        }
+        if (isArrayLike(a2) && isArrayLike(b2)) {
+          return isArrayEqual(Array.from(a2), Array.from(b2));
+        }
+        if (!(typeof a2 === "object") || !(typeof b2 === "object")) return false;
+        const keys = Object.keys(b2 != null ? b2 : /* @__PURE__ */ Object.create(null));
+        const length = keys.length;
+        for (let i2 = 0; i2 < length; i2++) {
+          const hasKey = Reflect.has(a2, keys[i2]);
+          if (!hasKey) return false;
+        }
+        for (let i2 = 0; i2 < length; i2++) {
+          const key = keys[i2];
+          if (!isEqual(a2[key], b2[key])) return false;
+        }
+        return true;
+      };
+      isArray = (v2) => Array.isArray(v2);
+      isBoolean = (v2) => v2 === true || v2 === false;
+      isObjectLike = (v2) => v2 != null && typeof v2 === "object";
+      isObject = (v2) => isObjectLike(v2) && !isArray(v2);
+      isString = (v2) => typeof v2 === "string";
+      isFunction = (v2) => typeof v2 === "function";
+      isNull = (v2) => v2 == null;
+      hasProp = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
+      baseGetTag = (v2) => Object.prototype.toString.call(v2);
+      fnToString = Function.prototype.toString;
+      objectCtorString = fnToString.call(Object);
+      isPlainObject = (v2) => {
+        if (!isObjectLike(v2) || baseGetTag(v2) != "[object Object]" || isFrameworkElement(v2)) return false;
+        const proto = Object.getPrototypeOf(v2);
+        if (proto === null) return true;
+        const Ctor = hasProp(proto, "constructor") && proto.constructor;
+        return typeof Ctor == "function" && Ctor instanceof Ctor && fnToString.call(Ctor) == objectCtorString;
+      };
+      isReactElement = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
+      isVueElement = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
+      isFrameworkElement = (x2) => isReactElement(x2) || isVueElement(x2);
+      runIfFn = (v2, ...a2) => {
+        const res = typeof v2 === "function" ? v2(...a2) : v2;
+        return res != null ? res : void 0;
+      };
+      cast = (v2) => v2;
+      identity = (v2) => v2();
+      noop = () => {
+      };
+      callAll = (...fns) => (...a2) => {
+        fns.forEach(function(fn) {
+          fn == null ? void 0 : fn(...a2);
+        });
+      };
+      uuid = /* @__PURE__ */ (() => {
+        let id = 0;
+        return () => {
+          id++;
+          return id.toString(36);
+        };
+      })();
+      tryCatch = (fn, fallback2) => {
+        var _a;
+        try {
+          return fn();
+        } catch (error) {
+          if (error instanceof Error) {
+            (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, tryCatch);
+          }
+          return fallback2 == null ? void 0 : fallback2();
+        }
+      };
+      STATE_DELIMITER = ".";
+      ABSOLUTE_PREFIX = "#";
+      stateIndexCache = /* @__PURE__ */ new WeakMap();
+      stateIdIndexCache = /* @__PURE__ */ new WeakMap();
+      MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
+        MachineStatus2["NotStarted"] = "Not Started";
+        MachineStatus2["Started"] = "Started";
+        MachineStatus2["Stopped"] = "Stopped";
+        return MachineStatus2;
+      })(MachineStatus || {});
+      INIT_STATE = "__init__";
+      __defProp3 = Object.defineProperty;
+      __defNormalProp3 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField3 = (obj, key, value) => __defNormalProp3(obj, typeof key !== "symbol" ? key + "" : key, value);
       clamp = (value) => Math.max(0, Math.min(1, value));
       wrap = (v2, idx) => {
         return v2.map((_2, index) => v2[(Math.max(idx, 0) + index) % v2.length]);
       };
       pipe = (...fns) => (arg) => fns.reduce((acc, fn) => fn(acc), arg);
-      noop = () => void 0;
-      isObject = (v2) => typeof v2 === "object" && v2 !== null;
+      noop2 = () => void 0;
+      isObject2 = (v2) => typeof v2 === "object" && v2 !== null;
       MAX_Z_INDEX = 2147483647;
       dataAttr = (guard) => guard ? "" : void 0;
       ariaAttr = (guard) => guard ? "true" : void 0;
       ELEMENT_NODE = 1;
       DOCUMENT_NODE = 9;
       DOCUMENT_FRAGMENT_NODE = 11;
-      isHTMLElement = (el) => isObject(el) && el.nodeType === ELEMENT_NODE && typeof el.nodeName === "string";
-      isDocument = (el) => isObject(el) && el.nodeType === DOCUMENT_NODE;
-      isWindow = (el) => isObject(el) && el === el.window;
+      isHTMLElement = (el) => isObject2(el) && el.nodeType === ELEMENT_NODE && typeof el.nodeName === "string";
+      isDocument = (el) => isObject2(el) && el.nodeType === DOCUMENT_NODE;
+      isWindow = (el) => isObject2(el) && el === el.window;
       getNodeName = (node) => {
         if (isHTMLElement(node)) return node.localName || "";
         return "#document";
       };
-      isNode = (el) => isObject(el) && el.nodeType !== void 0;
+      isNode = (el) => isObject2(el) && el.nodeType !== void 0;
       isShadowRoot = (el) => isNode(el) && el.nodeType === DOCUMENT_FRAGMENT_NODE && "host" in el;
       isInputElement = (el) => isHTMLElement(el) && el.localName === "input";
       isAnchorElement = (el) => !!(el == null ? void 0 : el.matches("a[href]"));
@@ -1775,9 +1986,9 @@ var Corex = (() => {
       };
       AnimationFrame = class _AnimationFrame {
         constructor() {
-          __publicField2(this, "id", null);
-          __publicField2(this, "fn_cleanup");
-          __publicField2(this, "cleanup", () => {
+          __publicField3(this, "id", null);
+          __publicField3(this, "fn_cleanup");
+          __publicField3(this, "cleanup", () => {
             this.cancel();
           });
         }
@@ -1823,7 +2034,7 @@ var Corex = (() => {
         var _a, _b, _c;
         return sanitize((_c = (_b = (_a = el.dataset) == null ? void 0 : _a.valuetext) != null ? _b : el.textContent) != null ? _c : "");
       };
-      match = (valueText, query2) => {
+      match2 = (valueText, query2) => {
         return valueText.trim().toLowerCase().startsWith(query2.toLowerCase());
       };
       getByTypeahead = /* @__PURE__ */ Object.assign(getByTypeaheadImpl, {
@@ -1842,277 +2053,14 @@ var Corex = (() => {
         whiteSpace: "nowrap",
         wordWrap: "normal"
       };
-      __defProp22 = Object.defineProperty;
-      __typeError2 = (msg) => {
-        throw TypeError(msg);
-      };
-      __defNormalProp22 = (obj, key, value) => key in obj ? __defProp22(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField22 = (obj, key, value) => __defNormalProp22(obj, typeof key !== "symbol" ? key + "" : key, value);
-      __accessCheck = (obj, member, msg) => member.has(obj) || __typeError2("Cannot " + msg);
-      __privateGet = (obj, member, getter) => (__accessCheck(obj, member, "read from private field"), member.get(obj));
-      __privateAdd = (obj, member, value) => member.has(obj) ? __typeError2("Cannot add the same private member more than once") : member instanceof WeakSet ? member.add(obj) : member.set(obj, value);
-      first = (v2) => v2[0];
-      last = (v2) => v2[v2.length - 1];
-      has = (v2, t2) => v2.indexOf(t2) !== -1;
-      add = (v2, ...items) => v2.concat(items);
-      remove = (v2, ...items) => v2.filter((t2) => !items.includes(t2));
-      uniq = (v2) => Array.from(new Set(v2));
-      diff = (a2, b2) => {
-        const set = new Set(b2);
-        return a2.filter((t2) => !set.has(t2));
-      };
-      addOrRemove = (v2, item) => has(v2, item) ? remove(v2, item) : add(v2, item);
-      isArrayLike = (value) => (value == null ? void 0 : value.constructor.name) === "Array";
-      isArrayEqual = (a2, b2) => {
-        if (a2.length !== b2.length) return false;
-        for (let i2 = 0; i2 < a2.length; i2++) {
-          if (!isEqual2(a2[i2], b2[i2])) return false;
-        }
-        return true;
-      };
-      isEqual2 = (a2, b2) => {
-        if (Object.is(a2, b2)) return true;
-        if (a2 == null && b2 != null || a2 != null && b2 == null) return false;
-        if (typeof (a2 == null ? void 0 : a2.isEqual) === "function" && typeof (b2 == null ? void 0 : b2.isEqual) === "function") {
-          return a2.isEqual(b2);
-        }
-        if (typeof a2 === "function" && typeof b2 === "function") {
-          return a2.toString() === b2.toString();
-        }
-        if (isArrayLike(a2) && isArrayLike(b2)) {
-          return isArrayEqual(Array.from(a2), Array.from(b2));
-        }
-        if (!(typeof a2 === "object") || !(typeof b2 === "object")) return false;
-        const keys = Object.keys(b2 != null ? b2 : /* @__PURE__ */ Object.create(null));
-        const length = keys.length;
-        for (let i2 = 0; i2 < length; i2++) {
-          const hasKey = Reflect.has(a2, keys[i2]);
-          if (!hasKey) return false;
-        }
-        for (let i2 = 0; i2 < length; i2++) {
-          const key = keys[i2];
-          if (!isEqual2(a2[key], b2[key])) return false;
-        }
-        return true;
-      };
-      isArray = (v2) => Array.isArray(v2);
-      isBoolean = (v2) => v2 === true || v2 === false;
-      isObjectLike = (v2) => v2 != null && typeof v2 === "object";
-      isObject2 = (v2) => isObjectLike(v2) && !isArray(v2);
-      isString = (v2) => typeof v2 === "string";
-      isFunction = (v2) => typeof v2 === "function";
-      isNull = (v2) => v2 == null;
-      hasProp = (obj, prop) => Object.prototype.hasOwnProperty.call(obj, prop);
-      baseGetTag = (v2) => Object.prototype.toString.call(v2);
-      fnToString = Function.prototype.toString;
-      objectCtorString = fnToString.call(Object);
-      isPlainObject = (v2) => {
-        if (!isObjectLike(v2) || baseGetTag(v2) != "[object Object]" || isFrameworkElement(v2)) return false;
-        const proto = Object.getPrototypeOf(v2);
-        if (proto === null) return true;
-        const Ctor = hasProp(proto, "constructor") && proto.constructor;
-        return typeof Ctor == "function" && Ctor instanceof Ctor && fnToString.call(Ctor) == objectCtorString;
-      };
-      isReactElement = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
-      isVueElement = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
-      isFrameworkElement = (x2) => isReactElement(x2) || isVueElement(x2);
-      runIfFn = (v2, ...a2) => {
-        const res = typeof v2 === "function" ? v2(...a2) : v2;
-        return res != null ? res : void 0;
-      };
-      cast = (v2) => v2;
-      identity = (v2) => v2();
-      noop2 = () => {
-      };
-      callAll = (...fns) => (...a2) => {
-        fns.forEach(function(fn) {
-          fn == null ? void 0 : fn(...a2);
-        });
-      };
-      uuid = /* @__PURE__ */ (() => {
-        let id = 0;
-        return () => {
-          id++;
-          return id.toString(36);
-        };
-      })();
-      tryCatch = (fn, fallback2) => {
-        var _a;
-        try {
-          return fn();
-        } catch (error) {
-          if (error instanceof Error) {
-            (_a = Error.captureStackTrace) == null ? void 0 : _a.call(Error, error, tryCatch);
-          }
-          return fallback2 == null ? void 0 : fallback2();
-        }
-      };
-      ({ floor, abs, round, min, max, pow, sign } = Math);
-      isNaN2 = (v2) => Number.isNaN(v2);
-      nan = (v2) => isNaN2(v2) ? 0 : v2;
-      mod = (v2, m2) => (v2 % m2 + m2) % m2;
-      wrap2 = (v2, vmax) => (v2 % vmax + vmax) % vmax;
-      isValueAtMax = (v2, vmax) => nan(v2) >= vmax;
-      isValueAtMin = (v2, vmin) => nan(v2) <= vmin;
-      isValueWithinRange = (v2, vmin, vmax) => {
-        const value = nan(v2);
-        const minCheck = vmin == null || value >= vmin;
-        const maxCheck = vmax == null || value <= vmax;
-        return minCheck && maxCheck;
-      };
-      roundValue = (v2, vmin, step) => round((nan(v2) - vmin) / step) * step + vmin;
-      clampValue = (v2, vmin, vmax) => min(max(nan(v2), vmin), vmax);
-      getValuePercent = (v2, vmin, vmax) => (nan(v2) - vmin) / (vmax - vmin);
-      getPercentValue = (p2, vmin, vmax, step) => clampValue(roundValue(p2 * (vmax - vmin) + vmin, vmin, step), vmin, vmax);
-      roundToStepPrecision = (v2, step) => {
-        let rv = v2;
-        let ss = step.toString();
-        let pi = ss.indexOf(".");
-        let p2 = pi >= 0 ? ss.length - pi : 0;
-        if (p2 > 0) {
-          let pw = pow(10, p2);
-          rv = round(rv * pw) / pw;
-        }
-        return rv;
-      };
-      roundToDpr = (v2, dpr) => typeof dpr === "number" ? floor(v2 * dpr + 0.5) / dpr : round(v2);
-      snapValueToStep = (v2, vmin, vmax, step) => {
-        const min23 = vmin != null ? Number(vmin) : 0;
-        const max22 = Number(vmax);
-        const remainder = (v2 - min23) % step;
-        let snapped = abs(remainder) * 2 >= step ? v2 + sign(remainder) * (step - abs(remainder)) : v2 - remainder;
-        snapped = roundToStepPrecision(snapped, step);
-        if (!isNaN2(min23) && snapped < min23) {
-          snapped = min23;
-        } else if (!isNaN2(max22) && snapped > max22) {
-          const stepsInRange = floor((max22 - min23) / step);
-          const largestValidStep = min23 + stepsInRange * step;
-          snapped = stepsInRange <= 0 || largestValidStep < min23 ? max22 : largestValidStep;
-        }
-        return roundToStepPrecision(snapped, step);
-      };
-      setValueAtIndex = (vs, i2, v2) => {
-        if (vs[i2] === v2) return vs;
-        return [...vs.slice(0, i2), v2, ...vs.slice(i2 + 1)];
-      };
-      toFixedNumber = (v2, d2 = 0, b2 = 10) => {
-        const pow2 = Math.pow(b2, d2);
-        return round(v2 * pow2) / pow2;
-      };
-      countDecimals = (value) => {
-        if (!Number.isFinite(value)) return 0;
-        let e2 = 1, p2 = 0;
-        while (Math.round(value * e2) / e2 !== value) {
-          e2 *= 10;
-          p2 += 1;
-        }
-        return p2;
-      };
-      decimalOp = (a2, op, b2) => {
-        let result = op === "+" ? a2 + b2 : a2 - b2;
-        if (a2 % 1 !== 0 || b2 % 1 !== 0) {
-          const multiplier = 10 ** Math.max(countDecimals(a2), countDecimals(b2));
-          a2 = Math.round(a2 * multiplier);
-          b2 = Math.round(b2 * multiplier);
-          result = op === "+" ? a2 + b2 : a2 - b2;
-          result /= multiplier;
-        }
-        return result;
-      };
-      incrementValue = (v2, s2) => decimalOp(nan(v2), "+", s2);
-      decrementValue = (v2, s2) => decimalOp(nan(v2), "-", s2);
-      toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
-      createSplitProps = (keys) => {
-        return function split(props28) {
-          return splitProps(props28, keys);
-        };
-      };
-      currentTime = () => performance.now();
-      Timer = class {
-        constructor(onTick) {
-          this.onTick = onTick;
-          __publicField22(this, "frameId", null);
-          __publicField22(this, "pausedAtMs", null);
-          __publicField22(this, "context");
-          __publicField22(this, "cancelFrame", () => {
-            if (this.frameId === null) return;
-            cancelAnimationFrame(this.frameId);
-            this.frameId = null;
-          });
-          __publicField22(this, "setStartMs", (startMs) => {
-            this.context.startMs = startMs;
-          });
-          __publicField22(this, "start", () => {
-            if (this.frameId !== null) return;
-            const now = currentTime();
-            if (this.pausedAtMs !== null) {
-              this.context.startMs += now - this.pausedAtMs;
-              this.pausedAtMs = null;
-            } else {
-              this.context.startMs = now;
-            }
-            this.frameId = requestAnimationFrame(__privateGet(this, _tick));
-          });
-          __publicField22(this, "pause", () => {
-            if (this.frameId === null) return;
-            this.cancelFrame();
-            this.pausedAtMs = currentTime();
-          });
-          __publicField22(this, "stop", () => {
-            if (this.frameId === null) return;
-            this.cancelFrame();
-            this.pausedAtMs = null;
-          });
-          __privateAdd(this, _tick, (now) => {
-            this.context.now = now;
-            this.context.deltaMs = now - this.context.startMs;
-            const shouldContinue = this.onTick(this.context);
-            if (shouldContinue === false) {
-              this.stop();
-              return;
-            }
-            this.frameId = requestAnimationFrame(__privateGet(this, _tick));
-          });
-          this.context = { now: 0, startMs: currentTime(), deltaMs: 0 };
-        }
-        get elapsedMs() {
-          if (this.pausedAtMs !== null) {
-            return this.pausedAtMs - this.context.startMs;
-          }
-          return currentTime() - this.context.startMs;
-        }
-      };
-      _tick = /* @__PURE__ */ new WeakMap();
-      clsx = (...args) => args.map((str) => {
-        var _a;
-        return (_a = str == null ? void 0 : str.trim) == null ? void 0 : _a.call(str);
-      }).filter(Boolean).join(" ");
-      CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
-      serialize = (style) => {
-        const res = {};
-        let match32;
-        while (match32 = CSS_REGEX.exec(style)) {
-          res[match32[1]] = match32[2];
-        }
-        return res;
-      };
-      css = (a2, b2) => {
-        if (isString(a2)) {
-          if (isString(b2)) return `${a2};${b2}`;
-          a2 = serialize(a2);
-        } else if (isString(b2)) {
-          b2 = serialize(b2);
-        }
-        return Object.assign({}, a2 != null ? a2 : {}, b2 != null ? b2 : {});
-      };
-      MachineStatus = /* @__PURE__ */ ((MachineStatus2) => {
-        MachineStatus2["NotStarted"] = "Not Started";
-        MachineStatus2["Started"] = "Started";
-        MachineStatus2["Stopped"] = "Stopped";
-        return MachineStatus2;
-      })(MachineStatus || {});
-      INIT_STATE = "__init__";
-      createProps = () => (props28) => Array.from(new Set(props28));
+      refSet = globalRef("__zag__refSet", () => /* @__PURE__ */ new WeakSet());
+      isReactElement2 = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
+      isVueElement2 = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
+      isDOMElement = (x2) => typeof x2 === "object" && x2 !== null && "nodeType" in x2 && typeof x2.nodeName === "string";
+      isElement = (x2) => isReactElement2(x2) || isVueElement2(x2) || isDOMElement(x2);
+      isObject3 = (x2) => x2 !== null && typeof x2 === "object";
+      canProxy = (x2) => isObject3(x2) && !refSet.has(x2) && (Array.isArray(x2) || !(Symbol.iterator in x2)) && !isElement(x2) && !(x2 instanceof WeakMap) && !(x2 instanceof WeakSet) && !(x2 instanceof Error) && !(x2 instanceof Number) && !(x2 instanceof Date) && !(x2 instanceof String) && !(x2 instanceof RegExp) && !(x2 instanceof ArrayBuffer) && !(x2 instanceof Promise) && !(x2 instanceof File) && !(x2 instanceof Blob) && !(x2 instanceof AbortController);
+      isDev = () => true;
       TRACK_MEMO_SYMBOL = Symbol();
       GET_ORIGINAL_SYMBOL = Symbol();
       getProto = Object.getPrototypeOf;
@@ -2127,14 +2075,6 @@ var Corex = (() => {
       markToTrack = (obj, mark = true) => {
         objectsToTrack.set(obj, mark);
       };
-      refSet = globalRef("__zag__refSet", () => /* @__PURE__ */ new WeakSet());
-      isReactElement2 = (x2) => typeof x2 === "object" && x2 !== null && "$$typeof" in x2 && "props" in x2;
-      isVueElement2 = (x2) => typeof x2 === "object" && x2 !== null && "__v_isVNode" in x2;
-      isDOMElement = (x2) => typeof x2 === "object" && x2 !== null && "nodeType" in x2 && typeof x2.nodeName === "string";
-      isElement = (x2) => isReactElement2(x2) || isVueElement2(x2) || isDOMElement(x2);
-      isObject3 = (x2) => x2 !== null && typeof x2 === "object";
-      canProxy = (x2) => isObject3(x2) && !refSet.has(x2) && (Array.isArray(x2) || !(Symbol.iterator in x2)) && !isElement(x2) && !(x2 instanceof WeakMap) && !(x2 instanceof WeakSet) && !(x2 instanceof Error) && !(x2 instanceof Number) && !(x2 instanceof Date) && !(x2 instanceof String) && !(x2 instanceof RegExp) && !(x2 instanceof ArrayBuffer) && !(x2 instanceof Promise) && !(x2 instanceof File) && !(x2 instanceof Blob) && !(x2 instanceof AbortController);
-      isDev = () => true;
       proxyStateMap = globalRef("__zag__proxyStateMap", () => /* @__PURE__ */ new WeakMap());
       buildProxyFunction = (objectIs = Object.is, newProxy = (target, handler) => new Proxy(target, handler), snapCache = /* @__PURE__ */ new WeakMap(), createSnapshot = (target, version) => {
         const cache = snapCache.get(target);
@@ -2257,8 +2197,8 @@ var Corex = (() => {
               value = getUntracked(value) || value;
             }
             let nextValue = value;
-            if ((_a = Object.getOwnPropertyDescriptor(target, prop)) == null ? void 0 : _a.set) ;
-            else {
+            if ((_a = Object.getOwnPropertyDescriptor(target, prop)) == null ? void 0 : _a.set) {
+            } else {
               if (!proxyStateMap.has(value) && canProxy(value)) {
                 nextValue = proxy(value);
               }
@@ -2301,67 +2241,6 @@ var Corex = (() => {
         versionHolder
       ];
       [proxyFunction] = buildProxyFunction();
-      __defProp3 = Object.defineProperty;
-      __defNormalProp3 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField3 = (obj, key, value) => __defNormalProp3(obj, typeof key !== "symbol" ? key + "" : key, value);
-      propMap = {
-        onFocus: "onFocusin",
-        onBlur: "onFocusout",
-        onChange: "onInput",
-        onDoubleClick: "onDblclick",
-        htmlFor: "for",
-        className: "class",
-        defaultValue: "value",
-        defaultChecked: "checked"
-      };
-      caseSensitiveSvgAttrs = /* @__PURE__ */ new Set(["viewBox", "preserveAspectRatio"]);
-      toStyleString = (style) => {
-        let string = "";
-        for (let key in style) {
-          const value = style[key];
-          if (value === null || value === void 0) continue;
-          if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match32) => `-${match32.toLowerCase()}`);
-          string += `${key}:${value};`;
-        }
-        return string;
-      };
-      normalizeProps = createNormalizer((props28) => {
-        return Object.entries(props28).reduce((acc, [key, value]) => {
-          if (value === void 0) return acc;
-          if (key in propMap) {
-            key = propMap[key];
-          }
-          if (key === "style" && typeof value === "object") {
-            acc.style = toStyleString(value);
-            return acc;
-          }
-          const normalizedKey = caseSensitiveSvgAttrs.has(key) ? key : key.toLowerCase();
-          acc[normalizedKey] = value;
-          return acc;
-        }, {});
-      });
-      prevAttrsMap = /* @__PURE__ */ new WeakMap();
-      assignableProps = /* @__PURE__ */ new Set(["value", "checked", "selected"]);
-      caseSensitiveSvgAttrs2 = /* @__PURE__ */ new Set([
-        "viewBox",
-        "preserveAspectRatio",
-        "clipPath",
-        "clipRule",
-        "fillRule",
-        "strokeWidth",
-        "strokeLinecap",
-        "strokeLinejoin",
-        "strokeDasharray",
-        "strokeDashoffset",
-        "strokeMiterlimit"
-      ]);
-      isSvgElement = (node) => {
-        return node.tagName === "svg" || node.namespaceURI === "http://www.w3.org/2000/svg";
-      };
-      getAttributeName = (node, attrName) => {
-        const shouldPreserveCase = isSvgElement(node) && caseSensitiveSvgAttrs2.has(attrName);
-        return shouldPreserveCase ? attrName : attrName.toLowerCase();
-      };
       bindable.cleanup = (_fn) => {
       };
       bindable.ref = (defaultValue) => {
@@ -2377,66 +2256,60 @@ var Corex = (() => {
         constructor(machine29, userProps = {}) {
           var _a, _b, _c;
           this.machine = machine29;
-          __publicField3(this, "scope");
-          __publicField3(this, "context");
-          __publicField3(this, "prop");
-          __publicField3(this, "state");
-          __publicField3(this, "refs");
-          __publicField3(this, "computed");
-          __publicField3(this, "event", { type: "" });
-          __publicField3(this, "previousEvent", { type: "" });
-          __publicField3(this, "effects", /* @__PURE__ */ new Map());
-          __publicField3(this, "transition", null);
-          __publicField3(this, "cleanups", []);
-          __publicField3(this, "subscriptions", []);
-          __publicField3(this, "userPropsRef");
-          __publicField3(this, "getEvent", () => __spreadProps(__spreadValues({}, this.event), {
+          __publicField2(this, "scope");
+          __publicField2(this, "context");
+          __publicField2(this, "prop");
+          __publicField2(this, "state");
+          __publicField2(this, "refs");
+          __publicField2(this, "computed");
+          __publicField2(this, "event", { type: "" });
+          __publicField2(this, "previousEvent", { type: "" });
+          __publicField2(this, "effects", /* @__PURE__ */ new Map());
+          __publicField2(this, "transition", null);
+          __publicField2(this, "cleanups", []);
+          __publicField2(this, "subscriptions", []);
+          __publicField2(this, "userPropsRef");
+          __publicField2(this, "getEvent", () => __spreadProps(__spreadValues({}, this.event), {
             current: () => this.event,
             previous: () => this.previousEvent
           }));
-          __publicField3(this, "getStateConfig", (state3) => {
-            return this.machine.states[state3];
-          });
-          __publicField3(this, "getState", () => __spreadProps(__spreadValues({}, this.state), {
-            matches: (...values) => values.includes(this.state.get()),
-            hasTag: (tag) => {
-              var _a2, _b2;
-              return !!((_b2 = (_a2 = this.getStateConfig(this.state.get())) == null ? void 0 : _a2.tags) == null ? void 0 : _b2.includes(tag));
-            }
+          __publicField2(this, "getState", () => __spreadProps(__spreadValues({}, this.state), {
+            matches: (...values) => values.some((value) => matchesState(this.state.get(), value)),
+            hasTag: (tag) => hasTag(this.machine, this.state.get(), tag)
           }));
-          __publicField3(this, "debug", (...args) => {
+          __publicField2(this, "debug", (...args) => {
             if (this.machine.debug) console.log(...args);
           });
-          __publicField3(this, "notify", () => {
+          __publicField2(this, "notify", () => {
             this.publish();
           });
-          __publicField3(this, "send", (event) => {
+          __publicField2(this, "send", (event) => {
             if (this.status !== MachineStatus.Started) return;
             queueMicrotask(() => {
-              var _a2, _b2, _c2, _d, _e;
+              var _a2;
               if (!event) return;
               this.previousEvent = this.event;
               this.event = event;
               this.debug("send", event);
               let currentState = this.state.get();
               const eventType = event.type;
-              const transitions = (_d = (_b2 = (_a2 = this.getStateConfig(currentState)) == null ? void 0 : _a2.on) == null ? void 0 : _b2[eventType]) != null ? _d : (_c2 = this.machine.on) == null ? void 0 : _c2[eventType];
+              const { transitions, source } = findTransition(this.machine, currentState, eventType);
               const transition = this.choose(transitions);
               if (!transition) return;
               this.transition = transition;
-              const target = (_e = transition.target) != null ? _e : currentState;
+              const target = resolveStateValue(this.machine, (_a2 = transition.target) != null ? _a2 : currentState, source);
               this.debug("transition", transition);
               const changed = target !== currentState;
               if (changed) {
                 this.state.set(target);
-              } else if (transition.reenter && !changed) {
+              } else if (transition.reenter) {
                 this.state.invoke(currentState, currentState);
               } else {
                 this.action(transition.actions);
               }
             });
           });
-          __publicField3(this, "action", (keys) => {
+          __publicField2(this, "action", (keys) => {
             const strs = isFunction(keys) ? keys(this.getParams()) : keys;
             if (!strs) return;
             const fns = strs.map((s2) => {
@@ -2449,12 +2322,12 @@ var Corex = (() => {
               fn == null ? void 0 : fn(this.getParams());
             }
           });
-          __publicField3(this, "guard", (str) => {
+          __publicField2(this, "guard", (str) => {
             var _a2, _b2;
             if (isFunction(str)) return str(this.getParams());
             return (_b2 = (_a2 = this.machine.implementations) == null ? void 0 : _a2.guards) == null ? void 0 : _b2[str](this.getParams());
           });
-          __publicField3(this, "effect", (keys) => {
+          __publicField2(this, "effect", (keys) => {
             const strs = isFunction(keys) ? keys(this.getParams()) : keys;
             if (!strs) return;
             const fns = strs.map((s2) => {
@@ -2470,7 +2343,7 @@ var Corex = (() => {
             }
             return () => cleanups.forEach((fn) => fn == null ? void 0 : fn());
           });
-          __publicField3(this, "choose", (transitions) => {
+          __publicField2(this, "choose", (transitions) => {
             return toArray(transitions).find((t2) => {
               let result = !t2.guard;
               if (isString(t2.guard)) result = !!this.guard(t2.guard);
@@ -2478,33 +2351,33 @@ var Corex = (() => {
               return result;
             });
           });
-          __publicField3(this, "subscribe", (fn) => {
+          __publicField2(this, "subscribe", (fn) => {
             this.subscriptions.push(fn);
             return () => {
               const index = this.subscriptions.indexOf(fn);
               if (index > -1) this.subscriptions.splice(index, 1);
             };
           });
-          __publicField3(this, "status", MachineStatus.NotStarted);
-          __publicField3(this, "publish", () => {
+          __publicField2(this, "status", MachineStatus.NotStarted);
+          __publicField2(this, "publish", () => {
             this.callTrackers();
             this.subscriptions.forEach((fn) => fn(this.service));
           });
-          __publicField3(this, "trackers", []);
-          __publicField3(this, "setupTrackers", () => {
+          __publicField2(this, "trackers", []);
+          __publicField2(this, "setupTrackers", () => {
             var _a2, _b2;
             (_b2 = (_a2 = this.machine).watch) == null ? void 0 : _b2.call(_a2, this.getParams());
           });
-          __publicField3(this, "callTrackers", () => {
+          __publicField2(this, "callTrackers", () => {
             this.trackers.forEach(({ deps, fn }) => {
               const next2 = deps.map((dep) => dep());
-              if (!isEqual2(fn.prev, next2)) {
+              if (!isEqual(fn.prev, next2)) {
                 fn();
                 fn.prev = next2;
               }
             });
           });
-          __publicField3(this, "getParams", () => ({
+          __publicField2(this, "getParams", () => ({
             state: this.getState(),
             context: this.context,
             event: this.getEvent(),
@@ -2528,8 +2401,8 @@ var Corex = (() => {
           const prop = (key) => {
             var _a2, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props28 = (_b2 = (_a2 = machine29.props) == null ? void 0 : _a2.call(machine29, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
-            return props28[key];
+            const props = (_b2 = (_a2 = machine29.props) == null ? void 0 : _a2.call(machine29, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            return props[key];
           };
           this.prop = prop;
           const context = (_a = machine29.context) == null ? void 0 : _a.call(machine29, {
@@ -2587,26 +2460,34 @@ var Corex = (() => {
           const refs = createRefs((_c = (_b = machine29.refs) == null ? void 0 : _b.call(machine29, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: machine29.initialState({ prop }),
+            defaultValue: resolveStateValue(machine29, machine29.initialState({ prop })),
             onChange: (nextState, prevState) => {
-              var _a2, _b2, _c2, _d;
-              if (prevState) {
-                const exitEffects = this.effects.get(prevState);
+              var _a2, _b2;
+              const { exiting, entering } = getExitEnterStates(this.machine, prevState, nextState, (_a2 = this.transition) == null ? void 0 : _a2.reenter);
+              exiting.forEach((item) => {
+                const exitEffects = this.effects.get(item.path);
                 exitEffects == null ? void 0 : exitEffects();
-                this.effects.delete(prevState);
-              }
-              if (prevState) {
-                this.action((_a2 = this.getStateConfig(prevState)) == null ? void 0 : _a2.exit);
-              }
+                this.effects.delete(item.path);
+              });
+              exiting.forEach((item) => {
+                var _a3;
+                this.action((_a3 = item.state) == null ? void 0 : _a3.exit);
+              });
               this.action((_b2 = this.transition) == null ? void 0 : _b2.actions);
-              const cleanup = this.effect((_c2 = this.getStateConfig(nextState)) == null ? void 0 : _c2.effects);
-              if (cleanup) this.effects.set(nextState, cleanup);
+              entering.forEach((item) => {
+                var _a3;
+                const cleanup = this.effect((_a3 = item.state) == null ? void 0 : _a3.effects);
+                if (cleanup) this.effects.set(item.path, cleanup);
+              });
               if (prevState === INIT_STATE) {
                 this.action(machine29.entry);
-                const cleanup2 = this.effect(machine29.effects);
-                if (cleanup2) this.effects.set(INIT_STATE, cleanup2);
+                const cleanup = this.effect(machine29.effects);
+                if (cleanup) this.effects.set(INIT_STATE, cleanup);
               }
-              this.action((_d = this.getStateConfig(nextState)) == null ? void 0 : _d.entry);
+              entering.forEach((item) => {
+                var _a3;
+                this.action((_a3 = item.state) == null ? void 0 : _a3.entry);
+              });
             }
           }));
           this.state = state2;
@@ -2652,8 +2533,30 @@ var Corex = (() => {
           };
         }
       };
+      prevAttrsMap = /* @__PURE__ */ new WeakMap();
+      assignableProps = /* @__PURE__ */ new Set(["value", "checked", "selected"]);
+      caseSensitiveSvgAttrs2 = /* @__PURE__ */ new Set([
+        "viewBox",
+        "preserveAspectRatio",
+        "clipPath",
+        "clipRule",
+        "fillRule",
+        "strokeWidth",
+        "strokeLinecap",
+        "strokeLinejoin",
+        "strokeDasharray",
+        "strokeDashoffset",
+        "strokeMiterlimit"
+      ]);
+      isSvgElement = (node) => {
+        return node.tagName === "svg" || node.namespaceURI === "http://www.w3.org/2000/svg";
+      };
+      getAttributeName = (node, attrName) => {
+        const shouldPreserveCase = isSvgElement(node) && caseSensitiveSvgAttrs2.has(attrName);
+        return shouldPreserveCase ? attrName : attrName.toLowerCase();
+      };
       Component = class {
-        constructor(el, props28) {
+        constructor(el, props) {
           __publicField(this, "el");
           __publicField(this, "doc");
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -2670,19 +2573,45 @@ var Corex = (() => {
           __publicField(this, "destroy", () => {
             this.machine.stop();
           });
-          __publicField(this, "spreadProps", (el, props28) => {
-            spreadProps(el, props28, this.machine.scope.id);
+          __publicField(this, "spreadProps", (el, props) => {
+            spreadProps(el, props, this.machine.scope.id);
           });
-          __publicField(this, "updateProps", (props28) => {
-            this.machine.updateProps(props28);
+          __publicField(this, "updateProps", (props) => {
+            this.machine.updateProps(props);
           });
           if (!el) throw new Error("Root element not found");
           this.el = el;
           this.doc = document;
-          this.machine = this.initMachine(props28);
+          this.machine = this.initMachine(props);
           this.api = this.initApi();
         }
       };
+      createAnatomy = (name, parts29 = []) => ({
+        parts: (...values) => {
+          if (isEmpty(parts29)) {
+            return createAnatomy(name, values);
+          }
+          throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
+        },
+        extendWith: (...values) => createAnatomy(name, [...parts29, ...values]),
+        omit: (...values) => createAnatomy(name, parts29.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts29),
+        keys: () => parts29,
+        build: () => [...new Set(parts29)].reduce(
+          (prev2, part) => Object.assign(prev2, {
+            [part]: {
+              selector: [
+                `&[data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`,
+                `& [data-scope="${toKebabCase(name)}"][data-part="${toKebabCase(part)}"]`
+              ].join(", "),
+              attrs: { "data-scope": toKebabCase(name), "data-part": toKebabCase(part) }
+            }
+          }),
+          {}
+        )
+      });
+      toKebabCase = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
+      isEmpty = (v2) => v2.length === 0;
     }
   });
 
@@ -2703,12 +2632,12 @@ var Corex = (() => {
       }
       send({ type: "VALUE.SET", value: nextValue });
     }
-    function getItemState(props28) {
+    function getItemState(props) {
       var _a;
       return {
-        expanded: value.includes(props28.value),
-        focused: focusedValue === props28.value,
-        disabled: Boolean((_a = props28.disabled) != null ? _a : prop("disabled"))
+        expanded: value.includes(props.value),
+        focused: focusedValue === props.value,
+        disabled: Boolean((_a = props.disabled) != null ? _a : prop("disabled"))
       };
     }
     return {
@@ -2723,24 +2652,24 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemProps(props28) {
-        const itemState = getItemState(props28);
+      getItemProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts.item.attrs), {
           dir: prop("dir"),
-          id: getItemId(scope, props28.value),
+          id: getItemId(scope, props.value),
           "data-state": itemState.expanded ? "open" : "closed",
           "data-focus": dataAttr(itemState.focused),
           "data-disabled": dataAttr(itemState.disabled),
           "data-orientation": prop("orientation")
         }));
       },
-      getItemContentProps(props28) {
-        const itemState = getItemState(props28);
+      getItemContentProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts.itemContent.attrs), {
           dir: prop("dir"),
           role: "region",
-          id: getItemContentId(scope, props28.value),
-          "aria-labelledby": getItemTriggerId(scope, props28.value),
+          id: getItemContentId(scope, props.value),
+          "aria-labelledby": getItemTriggerId(scope, props.value),
           hidden: !itemState.expanded,
           "data-state": itemState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(itemState.disabled),
@@ -2748,8 +2677,8 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemIndicatorProps(props28) {
-        const itemState = getItemState(props28);
+      getItemIndicatorProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts.itemIndicator.attrs), {
           dir: prop("dir"),
           "aria-hidden": true,
@@ -2759,9 +2688,9 @@ var Corex = (() => {
           "data-orientation": prop("orientation")
         }));
       },
-      getItemTriggerProps(props28) {
-        const { value: value2 } = props28;
-        const itemState = getItemState(props28);
+      getItemTriggerProps(props) {
+        const { value: value2 } = props;
+        const itemState = getItemState(props);
         return normalize.button(__spreadProps(__spreadValues({}, parts.itemTrigger.attrs), {
           type: "button",
           dir: prop("dir"),
@@ -2830,11 +2759,11 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, props, splitProps2, itemProps, splitItemProps, Accordion, AccordionHook;
+  var anatomy, parts, getRootId, getItemId, getItemContentId, getItemTriggerId, getRootEl, getTriggerEls, getFirstTriggerEl, getLastTriggerEl, getNextTriggerEl, getPrevTriggerEl, and, not, machine, Accordion, AccordionHook;
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2865,13 +2794,13 @@ var Corex = (() => {
       getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
       ({ and, not } = createGuards());
       machine = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             collapsible: false,
             multiple: false,
             orientation: "vertical",
             defaultValue: []
-          }, props28);
+          }, props);
         },
         initialState() {
           return "idle";
@@ -2996,27 +2925,10 @@ var Corex = (() => {
           }
         }
       });
-      props = createProps()([
-        "collapsible",
-        "dir",
-        "disabled",
-        "getRootNode",
-        "id",
-        "ids",
-        "multiple",
-        "onFocusChange",
-        "onValueChange",
-        "orientation",
-        "value",
-        "defaultValue"
-      ]);
-      splitProps2 = createSplitProps(props);
-      itemProps = createProps()(["value", "disabled"]);
-      splitItemProps = createSplitProps(itemProps);
       Accordion = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine, props);
         }
         initApi() {
           return connect(this.machine.service, normalizeProps);
@@ -3187,13 +3099,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-QHOSSHQC.mjs
-  function getPointAngle(rect, point, reference = rect.center) {
-    const x2 = point.x - reference.x;
-    const y2 = point.y - reference.y;
-    const deg = Math.atan2(x2, y2) * (180 / Math.PI) + 180;
-    return 360 - deg;
-  }
+  // ../priv/static/chunk-3QRJREC6.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
     const midX = x2 + width / 2;
@@ -3219,393 +3125,102 @@ var Corex = (() => {
     const left = createPoint(v2.minX, v2.maxY);
     return { top, right, bottom, left };
   }
-  function getCacheComputedStyle(el) {
-    if (!styleCache2.has(el)) {
-      const win = el.ownerDocument.defaultView || window;
-      styleCache2.set(el, win.getComputedStyle(el));
-    }
-    return styleCache2.get(el);
-  }
-  function getElementRect(el, opts = {}) {
-    return createRect(getClientRect(el, opts));
-  }
-  function getClientRect(el, opts = {}) {
-    const { excludeScrollbar = false, excludeBorders = false } = opts;
-    const { x: x2, y: y2, width, height } = el.getBoundingClientRect();
-    const r2 = { x: x2, y: y2, width, height };
-    const style = getCacheComputedStyle(el);
-    const { borderLeftWidth, borderTopWidth, borderRightWidth, borderBottomWidth } = style;
-    const borderXWidth = sum(borderLeftWidth, borderRightWidth);
-    const borderYWidth = sum(borderTopWidth, borderBottomWidth);
-    if (excludeBorders) {
-      r2.width -= borderXWidth;
-      r2.height -= borderYWidth;
-      r2.x += px(borderLeftWidth);
-      r2.y += px(borderTopWidth);
-    }
-    if (excludeScrollbar) {
-      const scrollbarWidth = el.offsetWidth - el.clientWidth - borderXWidth;
-      const scrollbarHeight = el.offsetHeight - el.clientHeight - borderYWidth;
-      r2.width -= scrollbarWidth;
-      r2.height -= scrollbarHeight;
-    }
-    return r2;
-  }
-  function getWindowRect(win, opts = {}) {
-    return createRect(getViewportRect(win, opts));
-  }
-  function getViewportRect(win, opts) {
-    const { excludeScrollbar = false } = opts;
-    const { innerWidth, innerHeight, document: doc, visualViewport } = win;
-    const width = (visualViewport == null ? void 0 : visualViewport.width) || innerWidth;
-    const height = (visualViewport == null ? void 0 : visualViewport.height) || innerHeight;
-    const rect = { x: 0, y: 0, width, height };
-    if (excludeScrollbar) {
-      const scrollbarWidth = innerWidth - doc.documentElement.clientWidth;
-      const scrollbarHeight = innerHeight - doc.documentElement.clientHeight;
-      rect.width -= scrollbarWidth;
-      rect.height -= scrollbarHeight;
-    }
-    return rect;
-  }
-  function getElementPolygon(rectValue, placement) {
-    const rect = createRect(rectValue);
-    const { top, right, left, bottom } = getRectCorners(rect);
-    const [base] = placement.split("-");
-    return {
-      top: [left, top, right, bottom],
-      right: [top, right, bottom, left],
-      bottom: [top, left, bottom, right],
-      left: [right, top, left, bottom]
-    }[base];
-  }
-  function isPointInPolygon(polygon, point) {
-    const { x: x2, y: y2 } = point;
-    let c2 = false;
-    for (let i2 = 0, j2 = polygon.length - 1; i2 < polygon.length; j2 = i2++) {
-      const xi = polygon[i2].x;
-      const yi = polygon[i2].y;
-      const xj = polygon[j2].x;
-      const yj = polygon[j2].y;
-      if (yi > y2 !== yj > y2 && x2 < (xj - xi) * (y2 - yi) / (yj - yi) + xi) {
-        c2 = !c2;
-      }
-    }
-    return c2;
-  }
-  function getRectExtentPoint(rect, direction) {
-    const { minX, minY, maxX, maxY, midX, midY } = rect;
-    const x2 = direction.includes("w") ? minX : direction.includes("e") ? maxX : midX;
-    const y2 = direction.includes("n") ? minY : direction.includes("s") ? maxY : midY;
-    return { x: x2, y: y2 };
-  }
-  function getOppositeDirection(direction) {
-    return oppositeDirectionMap[direction];
-  }
-  function resizeRect(rect, offset3, direction, opts) {
-    const { scalingOriginMode, lockAspectRatio } = opts;
-    const extent = getRectExtentPoint(rect, direction);
-    const oppositeDirection = getOppositeDirection(direction);
-    const oppositeExtent = getRectExtentPoint(rect, oppositeDirection);
-    if (scalingOriginMode === "center") {
-      offset3 = { x: offset3.x * 2, y: offset3.y * 2 };
-    }
-    const newExtent = {
-      x: extent.x + offset3.x,
-      y: extent.y + offset3.y
-    };
-    const multiplier = {
-      x: compassDirectionMap[direction].x * 2 - 1,
-      y: compassDirectionMap[direction].y * 2 - 1
-    };
-    const newSize = {
-      width: newExtent.x - oppositeExtent.x,
-      height: newExtent.y - oppositeExtent.y
-    };
-    const scaleX = multiplier.x * newSize.width / rect.width;
-    const scaleY = multiplier.y * newSize.height / rect.height;
-    const largestMagnitude = abs2(scaleX) > abs2(scaleY) ? scaleX : scaleY;
-    const scale = lockAspectRatio ? { x: largestMagnitude, y: largestMagnitude } : {
-      x: extent.x === oppositeExtent.x ? 1 : scaleX,
-      y: extent.y === oppositeExtent.y ? 1 : scaleY
-    };
-    if (extent.y === oppositeExtent.y) {
-      scale.y = abs2(scale.y);
-    } else if (sign2(scale.y) !== sign2(scaleY)) {
-      scale.y *= -1;
-    }
-    if (extent.x === oppositeExtent.x) {
-      scale.x = abs2(scale.x);
-    } else if (sign2(scale.x) !== sign2(scaleX)) {
-      scale.x *= -1;
-    }
-    switch (scalingOriginMode) {
-      case "extent":
-        return transformRect(rect, AffineTransform.scale(scale.x, scale.y, oppositeExtent), false);
-      case "center":
-        return transformRect(
-          rect,
-          AffineTransform.scale(scale.x, scale.y, {
-            x: rect.midX,
-            y: rect.midY
-          }),
-          false
-        );
-    }
-  }
-  function createRectFromPoints(initialPoint, finalPoint, normalized = true) {
-    if (normalized) {
-      return {
-        x: min22(finalPoint.x, initialPoint.x),
-        y: min22(finalPoint.y, initialPoint.y),
-        width: abs2(finalPoint.x - initialPoint.x),
-        height: abs2(finalPoint.y - initialPoint.y)
-      };
-    }
-    return {
-      x: initialPoint.x,
-      y: initialPoint.y,
-      width: finalPoint.x - initialPoint.x,
-      height: finalPoint.y - initialPoint.y
-    };
-  }
-  function transformRect(rect, transform, normalized = true) {
-    const p1 = transform.applyTo({ x: rect.minX, y: rect.minY });
-    const p2 = transform.applyTo({ x: rect.maxX, y: rect.maxY });
-    return createRectFromPoints(p1, p2, normalized);
-  }
-  var __defProp4, __defNormalProp4, __publicField4, AffineTransform, clamp2, clampPoint, defaultMinSize, defaultMaxSize, clampSize, createPoint, subtractPoints, addPoints, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, min2, max2, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min22;
-  var init_chunk_QHOSSHQC = __esm({
-    "../priv/static/chunk-QHOSSHQC.mjs"() {
+  var __defProp4, __defNormalProp4, __publicField4, createPoint, subtractPoints, addPoints;
+  var init_chunk_3QRJREC6 = __esm({
+    "../priv/static/chunk-3QRJREC6.mjs"() {
       "use strict";
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField4 = (obj, key, value) => __defNormalProp4(obj, typeof key !== "symbol" ? key + "" : key, value);
-      AffineTransform = class _AffineTransform {
-        constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
-          __publicField4(this, "m00");
-          __publicField4(this, "m01");
-          __publicField4(this, "m02");
-          __publicField4(this, "m10");
-          __publicField4(this, "m11");
-          __publicField4(this, "m12");
-          __publicField4(this, "rotate", (...args) => {
-            return this.prepend(_AffineTransform.rotate(...args));
-          });
-          __publicField4(this, "scale", (...args) => {
-            return this.prepend(_AffineTransform.scale(...args));
-          });
-          __publicField4(this, "translate", (...args) => {
-            return this.prepend(_AffineTransform.translate(...args));
-          });
-          this.m00 = m00;
-          this.m01 = m01;
-          this.m02 = m02;
-          this.m10 = m10;
-          this.m11 = m11;
-          this.m12 = m12;
-        }
-        applyTo(point) {
-          const { x: x2, y: y2 } = point;
-          const { m00, m01, m02, m10, m11, m12 } = this;
-          return {
-            x: m00 * x2 + m01 * y2 + m02,
-            y: m10 * x2 + m11 * y2 + m12
-          };
-        }
-        prepend(other) {
-          return new _AffineTransform([
-            this.m00 * other.m00 + this.m01 * other.m10,
-            // m00
-            this.m00 * other.m01 + this.m01 * other.m11,
-            // m01
-            this.m00 * other.m02 + this.m01 * other.m12 + this.m02,
-            // m02
-            this.m10 * other.m00 + this.m11 * other.m10,
-            // m10
-            this.m10 * other.m01 + this.m11 * other.m11,
-            // m11
-            this.m10 * other.m02 + this.m11 * other.m12 + this.m12
-            // m12
-          ]);
-        }
-        append(other) {
-          return new _AffineTransform([
-            other.m00 * this.m00 + other.m01 * this.m10,
-            // m00
-            other.m00 * this.m01 + other.m01 * this.m11,
-            // m01
-            other.m00 * this.m02 + other.m01 * this.m12 + other.m02,
-            // m02
-            other.m10 * this.m00 + other.m11 * this.m10,
-            // m10
-            other.m10 * this.m01 + other.m11 * this.m11,
-            // m11
-            other.m10 * this.m02 + other.m11 * this.m12 + other.m12
-            // m12
-          ]);
-        }
-        get determinant() {
-          return this.m00 * this.m11 - this.m01 * this.m10;
-        }
-        get isInvertible() {
-          const det = this.determinant;
-          return isFinite(det) && isFinite(this.m02) && isFinite(this.m12) && det !== 0;
-        }
-        invert() {
-          const det = this.determinant;
-          return new _AffineTransform([
-            this.m11 / det,
-            // m00
-            -this.m01 / det,
-            // m01
-            (this.m01 * this.m12 - this.m11 * this.m02) / det,
-            // m02
-            -this.m10 / det,
-            // m10
-            this.m00 / det,
-            // m11
-            (this.m10 * this.m02 - this.m00 * this.m12) / det
-            // m12
-          ]);
-        }
-        get array() {
-          return [this.m00, this.m01, this.m02, this.m10, this.m11, this.m12, 0, 0, 1];
-        }
-        get float32Array() {
-          return new Float32Array(this.array);
-        }
-        // Static
-        static get identity() {
-          return new _AffineTransform([1, 0, 0, 0, 1, 0]);
-        }
-        static rotate(theta, origin) {
-          const rotation = new _AffineTransform([Math.cos(theta), -Math.sin(theta), 0, Math.sin(theta), Math.cos(theta), 0]);
-          if (origin && (origin.x !== 0 || origin.y !== 0)) {
-            return _AffineTransform.multiply(
-              _AffineTransform.translate(origin.x, origin.y),
-              rotation,
-              _AffineTransform.translate(-origin.x, -origin.y)
-            );
-          }
-          return rotation;
-        }
-        static scale(sx, sy = sx, origin = { x: 0, y: 0 }) {
-          const scale = new _AffineTransform([sx, 0, 0, 0, sy, 0]);
-          if (origin.x !== 0 || origin.y !== 0) {
-            return _AffineTransform.multiply(
-              _AffineTransform.translate(origin.x, origin.y),
-              scale,
-              _AffineTransform.translate(-origin.x, -origin.y)
-            );
-          }
-          return scale;
-        }
-        static translate(tx, ty) {
-          return new _AffineTransform([1, 0, tx, 0, 1, ty]);
-        }
-        static multiply(...[first2, ...rest]) {
-          if (!first2) return _AffineTransform.identity;
-          return rest.reduce((result, item) => result.prepend(item), first2);
-        }
-        get a() {
-          return this.m00;
-        }
-        get b() {
-          return this.m10;
-        }
-        get c() {
-          return this.m01;
-        }
-        get d() {
-          return this.m11;
-        }
-        get tx() {
-          return this.m02;
-        }
-        get ty() {
-          return this.m12;
-        }
-        get scaleComponents() {
-          return { x: this.a, y: this.d };
-        }
-        get translationComponents() {
-          return { x: this.tx, y: this.ty };
-        }
-        get skewComponents() {
-          return { x: this.c, y: this.b };
-        }
-        toString() {
-          return `matrix(${this.a}, ${this.b}, ${this.c}, ${this.d}, ${this.tx}, ${this.ty})`;
-        }
-      };
-      clamp2 = (value, min32, max22) => Math.min(Math.max(value, min32), max22);
-      clampPoint = (position, size3, boundaryRect) => {
-        const x2 = clamp2(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size3.width);
-        const y2 = clamp2(position.y, boundaryRect.y, boundaryRect.y + boundaryRect.height - size3.height);
-        return { x: x2, y: y2 };
-      };
-      defaultMinSize = {
-        width: 0,
-        height: 0
-      };
-      defaultMaxSize = {
-        width: Infinity,
-        height: Infinity
-      };
-      clampSize = (size3, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
-        return {
-          width: Math.min(Math.max(size3.width, minSize.width), maxSize.width),
-          height: Math.min(Math.max(size3.height, minSize.height), maxSize.height)
-        };
-      };
       createPoint = (x2, y2) => ({ x: x2, y: y2 });
       subtractPoints = (a2, b2) => {
         if (!b2) return a2;
         return createPoint(a2.x - b2.x, a2.y - b2.y);
       };
       addPoints = (a2, b2) => createPoint(a2.x + b2.x, a2.y + b2.y);
-      constrainRect = (rect, boundary) => {
-        const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
-        const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
-        return {
-          x: left,
-          y: top,
-          width: Math.min(rect.width, boundary.width),
-          height: Math.min(rect.height, boundary.height)
-        };
+    }
+  });
+
+  // ../priv/static/chunk-G66USZ47.mjs
+  var floor, abs, round, min, max, pow, sign, isNaN2, nan, mod, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, roundValue, clampValue, getValuePercent, getPercentValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, toFixedNumber, countDecimals, decimalOp, incrementValue, decrementValue, toPx;
+  var init_chunk_G66USZ47 = __esm({
+    "../priv/static/chunk-G66USZ47.mjs"() {
+      "use strict";
+      ({ floor, abs, round, min, max, pow, sign } = Math);
+      isNaN2 = (v2) => Number.isNaN(v2);
+      nan = (v2) => isNaN2(v2) ? 0 : v2;
+      mod = (v2, m2) => (v2 % m2 + m2) % m2;
+      wrap2 = (v2, vmax) => (v2 % vmax + vmax) % vmax;
+      isValueAtMax = (v2, vmax) => nan(v2) >= vmax;
+      isValueAtMin = (v2, vmin) => nan(v2) <= vmin;
+      isValueWithinRange = (v2, vmin, vmax) => {
+        const value = nan(v2);
+        const minCheck = vmin == null || value >= vmin;
+        const maxCheck = vmax == null || value <= vmax;
+        return minCheck && maxCheck;
       };
-      isSizeEqual = (a2, b2) => {
-        return a2.width === (b2 == null ? void 0 : b2.width) && a2.height === (b2 == null ? void 0 : b2.height);
+      roundValue = (v2, vmin, step) => round((nan(v2) - vmin) / step) * step + vmin;
+      clampValue = (v2, vmin, vmax) => min(max(nan(v2), vmin), vmax);
+      getValuePercent = (v2, vmin, vmax) => (nan(v2) - vmin) / (vmax - vmin);
+      getPercentValue = (p2, vmin, vmax, step) => clampValue(roundValue(p2 * (vmax - vmin) + vmin, vmin, step), vmin, vmax);
+      roundToStepPrecision = (v2, step) => {
+        let rv = v2;
+        let ss = step.toString();
+        let pi = ss.indexOf(".");
+        let p2 = pi >= 0 ? ss.length - pi : 0;
+        if (p2 > 0) {
+          let pw = pow(10, p2);
+          rv = round(rv * pw) / pw;
+        }
+        return rv;
       };
-      isPointEqual = (a2, b2) => {
-        return a2.x === (b2 == null ? void 0 : b2.x) && a2.y === (b2 == null ? void 0 : b2.y);
+      roundToDpr = (v2, dpr) => typeof dpr === "number" ? floor(v2 * dpr + 0.5) / dpr : round(v2);
+      snapValueToStep = (v2, vmin, vmax, step) => {
+        const min22 = vmin != null ? Number(vmin) : 0;
+        const max22 = Number(vmax);
+        const remainder = (v2 - min22) % step;
+        let snapped = abs(remainder) * 2 >= step ? v2 + sign(remainder) * (step - abs(remainder)) : v2 - remainder;
+        snapped = roundToStepPrecision(snapped, step);
+        if (!isNaN2(min22) && snapped < min22) {
+          snapped = min22;
+        } else if (!isNaN2(max22) && snapped > max22) {
+          const stepsInRange = floor((max22 - min22) / step);
+          const largestValidStep = min22 + stepsInRange * step;
+          snapped = stepsInRange <= 0 || largestValidStep < min22 ? max22 : largestValidStep;
+        }
+        return roundToStepPrecision(snapped, step);
       };
-      styleCache2 = /* @__PURE__ */ new WeakMap();
-      px = (v2) => parseFloat(v2.replace("px", ""));
-      sum = (...vals) => vals.reduce((sum2, v2) => sum2 + (v2 ? px(v2) : 0), 0);
-      ({ min: min2, max: max2 } = Math);
-      compassDirectionMap = {
-        n: { x: 0.5, y: 0 },
-        ne: { x: 1, y: 0 },
-        e: { x: 1, y: 0.5 },
-        se: { x: 1, y: 1 },
-        s: { x: 0.5, y: 1 },
-        sw: { x: 0, y: 1 },
-        w: { x: 0, y: 0.5 },
-        nw: { x: 0, y: 0 }
+      setValueAtIndex = (vs, i2, v2) => {
+        if (vs[i2] === v2) return vs;
+        return [...vs.slice(0, i2), v2, ...vs.slice(i2 + 1)];
       };
-      oppositeDirectionMap = {
-        n: "s",
-        ne: "sw",
-        e: "w",
-        se: "nw",
-        s: "n",
-        sw: "ne",
-        w: "e",
-        nw: "se"
+      toFixedNumber = (v2, d2 = 0, b2 = 10) => {
+        const pow2 = Math.pow(b2, d2);
+        return round(v2 * pow2) / pow2;
       };
-      ({ sign: sign2, abs: abs2, min: min22 } = Math);
+      countDecimals = (value) => {
+        if (!Number.isFinite(value)) return 0;
+        let e2 = 1, p2 = 0;
+        while (Math.round(value * e2) / e2 !== value) {
+          e2 *= 10;
+          p2 += 1;
+        }
+        return p2;
+      };
+      decimalOp = (a2, op, b2) => {
+        let result = op === "+" ? a2 + b2 : a2 - b2;
+        if (a2 % 1 !== 0 || b2 % 1 !== 0) {
+          const multiplier = 10 ** Math.max(countDecimals(a2), countDecimals(b2));
+          a2 = Math.round(a2 * multiplier);
+          b2 = Math.round(b2 * multiplier);
+          result = op === "+" ? a2 + b2 : a2 - b2;
+          result /= multiplier;
+        }
+        return result;
+      };
+      incrementValue = (v2, s2) => decimalOp(nan(v2), "+", s2);
+      decrementValue = (v2, s2) => decimalOp(nan(v2), "-", s2);
+      toPx = (v2) => typeof v2 === "number" ? `${v2}px` : v2;
     }
   });
 
@@ -3614,6 +3229,12 @@ var Corex = (() => {
   __export(angle_slider_exports, {
     AngleSlider: () => AngleSliderHook
   });
+  function getPointAngle(rect, point, reference = rect.center) {
+    const x2 = point.x - reference.x;
+    const y2 = point.y - reference.y;
+    const deg = Math.atan2(x2, y2) * (180 / Math.PI) + 180;
+    return 360 - deg;
+  }
   function mirrorAngle(angle) {
     return (360 - angle) % 360;
   }
@@ -3809,23 +3430,23 @@ var Corex = (() => {
           dir: prop("dir")
         }));
       },
-      getMarkerProps(props28) {
+      getMarkerProps(props) {
         let markerState;
-        if (props28.value < value) {
+        if (props.value < value) {
           markerState = "under-value";
-        } else if (props28.value > value) {
+        } else if (props.value > value) {
           markerState = "over-value";
         } else {
           markerState = "at-value";
         }
-        const markerDisplayAngle = getDisplayAngle(props28.value, dir);
+        const markerDisplayAngle = getDisplayAngle(props.value, dir);
         return normalize.element(__spreadProps(__spreadValues({}, parts2.marker.attrs), {
           dir: prop("dir"),
-          "data-value": props28.value,
+          "data-value": props.value,
           "data-state": markerState,
           "data-disabled": dataAttr(disabled),
           style: {
-            "--marker-value": props28.value,
+            "--marker-value": props.value,
             "--marker-display-value": markerDisplayAngle,
             rotate: `calc(var(--marker-display-value) * 1deg)`
           }
@@ -3833,12 +3454,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy2, parts2, getRootId2, getThumbId, getHiddenInputId, getControlId, getValueTextId, getLabelId, getHiddenInputEl, getControlEl, getThumbEl, MIN_VALUE, MAX_VALUE, machine2, props2, splitProps3, AngleSlider, AngleSliderHook;
+  var anatomy2, parts2, getRootId2, getThumbId, getHiddenInputId, getControlId, getValueTextId, getLabelId, getHiddenInputEl, getControlEl, getThumbEl, MIN_VALUE, MAX_VALUE, machine2, AngleSlider, AngleSliderHook;
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_QHOSSHQC();
-      init_chunk_PLUM2DEK();
+      init_chunk_3QRJREC6();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -3880,11 +3502,11 @@ var Corex = (() => {
       MIN_VALUE = 0;
       MAX_VALUE = 359;
       machine2 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             step: 1,
             defaultValue: 0
-          }, props28);
+          }, props);
         },
         context({ prop, bindable: bindable2 }) {
           return {
@@ -4037,28 +3659,10 @@ var Corex = (() => {
           }
         }
       });
-      props2 = createProps()([
-        "aria-label",
-        "aria-labelledby",
-        "dir",
-        "disabled",
-        "getRootNode",
-        "id",
-        "ids",
-        "invalid",
-        "name",
-        "onValueChange",
-        "onValueChangeEnd",
-        "readOnly",
-        "step",
-        "value",
-        "defaultValue"
-      ]);
-      splitProps3 = createSplitProps(props2);
       AngleSlider = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine2, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine2, props);
         }
         initApi() {
           return connect2(this.machine.service, normalizeProps);
@@ -4279,11 +3883,11 @@ var Corex = (() => {
   function hasLoaded(image) {
     return image.complete && image.naturalWidth !== 0 && image.naturalHeight !== 0;
   }
-  var anatomy3, parts3, getRootId3, getImageId, getFallbackId, getRootEl2, getImageEl, machine3, props3, splitProps4, Avatar, AvatarHook;
+  var anatomy3, parts3, getRootId3, getImageId, getFallbackId, getRootEl2, getImageEl, machine3, Avatar, AvatarHook;
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4388,12 +3992,10 @@ var Corex = (() => {
           }
         }
       });
-      props3 = createProps()(["dir", "id", "ids", "onStatusChange", "getRootNode"]);
-      splitProps4 = createSplitProps(props3);
       Avatar = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine3, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine3, props);
         }
         initApi() {
           return connect3(this.machine.service, normalizeProps);
@@ -4471,6 +4073,264 @@ var Corex = (() => {
   __export(carousel_exports, {
     Carousel: () => CarouselHook
   });
+  function connect4(service, normalize) {
+    const { state: state2, context, computed, send, scope, prop } = service;
+    const isPlaying = state2.matches("autoplay");
+    const isDragging = state2.matches("dragging");
+    const canScrollNext = computed("canScrollNext");
+    const canScrollPrev = computed("canScrollPrev");
+    const horizontal = computed("isHorizontal");
+    const autoSize = prop("autoSize");
+    const pageSnapPoints = Array.from(context.get("pageSnapPoints"));
+    const page = context.get("page");
+    const activePage = pageSnapPoints.length ? clampValue(page, 0, pageSnapPoints.length - 1) : 0;
+    const slidesPerPage = prop("slidesPerPage");
+    const padding = prop("padding");
+    const translations = prop("translations");
+    return {
+      isPlaying,
+      isDragging,
+      page: activePage,
+      pageSnapPoints,
+      canScrollNext,
+      canScrollPrev,
+      getProgress() {
+        return activePage / pageSnapPoints.length;
+      },
+      getProgressText() {
+        var _a, _b;
+        const details = { page: activePage + 1, totalPages: pageSnapPoints.length };
+        return (_b = (_a = translations.progressText) == null ? void 0 : _a.call(translations, details)) != null ? _b : "";
+      },
+      scrollToIndex(index, instant) {
+        send({ type: "INDEX.SET", index, instant });
+      },
+      scrollTo(index, instant) {
+        send({ type: "PAGE.SET", index, instant });
+      },
+      scrollNext(instant) {
+        send({ type: "PAGE.NEXT", instant });
+      },
+      scrollPrev(instant) {
+        send({ type: "PAGE.PREV", instant });
+      },
+      play() {
+        send({ type: "AUTOPLAY.START" });
+      },
+      pause() {
+        send({ type: "AUTOPLAY.PAUSE" });
+      },
+      isInView(index) {
+        return Array.from(context.get("slidesInView")).includes(index);
+      },
+      refresh() {
+        send({ type: "SNAP.REFRESH" });
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.root.attrs), {
+          id: getRootId4(scope),
+          role: "region",
+          "aria-roledescription": "carousel",
+          "data-orientation": prop("orientation"),
+          dir: prop("dir"),
+          style: {
+            "--slides-per-page": slidesPerPage,
+            "--slide-spacing": prop("spacing"),
+            "--slide-item-size": autoSize ? "auto" : "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
+          }
+        }));
+      },
+      getItemGroupProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.itemGroup.attrs), {
+          id: getItemGroupId(scope),
+          "data-orientation": prop("orientation"),
+          "data-dragging": dataAttr(isDragging),
+          dir: prop("dir"),
+          "aria-live": isPlaying ? "off" : "polite",
+          onFocus(event) {
+            if (!contains(event.currentTarget, getEventTarget(event))) return;
+            send({ type: "VIEWPORT.FOCUS" });
+          },
+          onBlur(event) {
+            if (contains(event.currentTarget, event.relatedTarget)) return;
+            send({ type: "VIEWPORT.BLUR" });
+          },
+          onMouseDown(event) {
+            if (event.defaultPrevented) return;
+            if (!prop("allowMouseDrag")) return;
+            if (!isLeftClick(event)) return;
+            const target = getEventTarget(event);
+            if (isFocusable(target) && target !== event.currentTarget) return;
+            event.preventDefault();
+            send({ type: "DRAGGING.START" });
+          },
+          onWheel: throttle((event) => {
+            const axis = prop("orientation") === "horizontal" ? "deltaX" : "deltaY";
+            const isScrollingLeft = event[axis] < 0;
+            if (isScrollingLeft && !computed("canScrollPrev")) return;
+            const isScrollingRight = event[axis] > 0;
+            if (isScrollingRight && !computed("canScrollNext")) return;
+            send({ type: "USER.SCROLL" });
+          }, 150),
+          onTouchStart() {
+            send({ type: "USER.SCROLL" });
+          },
+          style: {
+            display: autoSize ? "flex" : "grid",
+            gap: "var(--slide-spacing)",
+            scrollSnapType: [horizontal ? "x" : "y", prop("snapType")].join(" "),
+            gridAutoFlow: horizontal ? "column" : "row",
+            scrollbarWidth: "none",
+            overscrollBehaviorX: "contain",
+            [horizontal ? "gridAutoColumns" : "gridAutoRows"]: autoSize ? void 0 : "var(--slide-item-size)",
+            [horizontal ? "scrollPaddingInline" : "scrollPaddingBlock"]: padding,
+            [horizontal ? "paddingInline" : "paddingBlock"]: padding,
+            [horizontal ? "overflowX" : "overflowY"]: "auto"
+          }
+        }));
+      },
+      getItemProps(props) {
+        const isInView = context.get("slidesInView").includes(props.index);
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.item.attrs), {
+          id: getItemId2(scope, props.index),
+          dir: prop("dir"),
+          role: "group",
+          "data-index": props.index,
+          "data-inview": dataAttr(isInView),
+          "aria-roledescription": "slide",
+          "data-orientation": prop("orientation"),
+          "aria-label": translations.item(props.index, prop("slideCount")),
+          "aria-hidden": ariaAttr(!isInView),
+          style: {
+            flex: "0 0 auto",
+            [horizontal ? "maxWidth" : "maxHeight"]: "100%",
+            scrollSnapAlign: (() => {
+              var _a;
+              const snapAlign = (_a = props.snapAlign) != null ? _a : "start";
+              const slidesPerMove = prop("slidesPerMove");
+              const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
+              const shouldSnap = (props.index + perMove) % perMove === 0;
+              return shouldSnap ? snapAlign : void 0;
+            })()
+          }
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.control.attrs), {
+          "data-orientation": prop("orientation")
+        }));
+      },
+      getPrevTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.prevTrigger.attrs), {
+          id: getPrevTriggerId(scope),
+          type: "button",
+          disabled: !canScrollPrev,
+          dir: prop("dir"),
+          "aria-label": translations.prevTrigger,
+          "data-orientation": prop("orientation"),
+          "aria-controls": getItemGroupId(scope),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "PAGE.PREV", src: "trigger" });
+          }
+        }));
+      },
+      getNextTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.nextTrigger.attrs), {
+          dir: prop("dir"),
+          id: getNextTriggerId(scope),
+          type: "button",
+          "aria-label": translations.nextTrigger,
+          "data-orientation": prop("orientation"),
+          "aria-controls": getItemGroupId(scope),
+          disabled: !canScrollNext,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "PAGE.NEXT", src: "trigger" });
+          }
+        }));
+      },
+      getIndicatorGroupProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts4.indicatorGroup.attrs), {
+          dir: prop("dir"),
+          id: getIndicatorGroupId(scope),
+          "data-orientation": prop("orientation"),
+          onKeyDown(event) {
+            if (event.defaultPrevented) return;
+            const src = "indicator";
+            const keyMap2 = {
+              ArrowDown(event2) {
+                if (horizontal) return;
+                send({ type: "PAGE.NEXT", src });
+                event2.preventDefault();
+              },
+              ArrowUp(event2) {
+                if (horizontal) return;
+                send({ type: "PAGE.PREV", src });
+                event2.preventDefault();
+              },
+              ArrowRight(event2) {
+                if (!horizontal) return;
+                send({ type: "PAGE.NEXT", src });
+                event2.preventDefault();
+              },
+              ArrowLeft(event2) {
+                if (!horizontal) return;
+                send({ type: "PAGE.PREV", src });
+                event2.preventDefault();
+              },
+              Home(event2) {
+                send({ type: "PAGE.SET", index: 0, src });
+                event2.preventDefault();
+              },
+              End(event2) {
+                send({ type: "PAGE.SET", index: pageSnapPoints.length - 1, src });
+                event2.preventDefault();
+              }
+            };
+            const key = getEventKey(event, {
+              dir: prop("dir"),
+              orientation: prop("orientation")
+            });
+            const exec = keyMap2[key];
+            exec == null ? void 0 : exec(event);
+          }
+        }));
+      },
+      getIndicatorProps(props) {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.indicator.attrs), {
+          dir: prop("dir"),
+          id: getIndicatorId(scope, props.index),
+          type: "button",
+          "data-orientation": prop("orientation"),
+          "data-index": props.index,
+          "data-readonly": dataAttr(props.readOnly),
+          "data-current": dataAttr(props.index === activePage),
+          "aria-label": translations.indicator(props.index),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (props.readOnly) return;
+            send({ type: "PAGE.SET", index: props.index, src: "indicator" });
+          }
+        }));
+      },
+      getAutoplayTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts4.autoplayTrigger.attrs), {
+          type: "button",
+          "data-orientation": prop("orientation"),
+          "data-pressed": dataAttr(isPlaying),
+          "aria-label": isPlaying ? translations.autoplayStop : translations.autoplayStart,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: isPlaying ? "AUTOPLAY.PAUSE" : "AUTOPLAY.START" });
+          }
+        }));
+      },
+      getProgressTextProps() {
+        return normalize.element(__spreadValues({}, parts4.progressText.attrs));
+      }
+    };
+  }
   function getScrollPadding(element) {
     const style = getComputedStyle2(element);
     const rect = element.getBoundingClientRect();
@@ -4581,7 +4441,7 @@ var Corex = (() => {
           ...snapPositions.x.start.map((v2) => v2.position - scrollPadding.x.after),
           ...snapPositions.x.center.map((v2) => v2.position - rect.width / 2),
           ...snapPositions.x.end.map((v2) => v2.position - rect.width + scrollPadding.x.before)
-        ].map(clamp3(0, maxScroll.x))
+        ].map(clamp2(0, maxScroll.x))
       );
       if (usesNegativeScrollLeft) {
         xPositions = xPositions.map((pos) => -pos);
@@ -4592,7 +4452,7 @@ var Corex = (() => {
           ...snapPositions.x.start.map((v2) => v2.position - scrollPadding.x.before),
           ...snapPositions.x.center.map((v2) => v2.position - rect.width / 2),
           ...snapPositions.x.end.map((v2) => v2.position - rect.width + scrollPadding.x.after)
-        ].map(clamp3(0, maxScroll.x))
+        ].map(clamp2(0, maxScroll.x))
       );
     }
     return {
@@ -4602,7 +4462,7 @@ var Corex = (() => {
           ...snapPositions.y.start.map((v2) => v2.position - scrollPadding.y.before),
           ...snapPositions.y.center.map((v2) => v2.position - rect.height / 2),
           ...snapPositions.y.end.map((v2) => v2.position - rect.height + scrollPadding.y.after)
-        ].map(clamp3(0, maxScroll.y))
+        ].map(clamp2(0, maxScroll.y))
       )
     };
   }
@@ -4628,263 +4488,6 @@ var Corex = (() => {
       }
     }
   }
-  function connect4(service, normalize) {
-    const { state: state2, context, computed, send, scope, prop } = service;
-    const isPlaying = state2.matches("autoplay");
-    const isDragging = state2.matches("dragging");
-    const canScrollNext = computed("canScrollNext");
-    const canScrollPrev = computed("canScrollPrev");
-    const horizontal = computed("isHorizontal");
-    const autoSize = prop("autoSize");
-    const pageSnapPoints = Array.from(context.get("pageSnapPoints"));
-    const page = context.get("page");
-    const slidesPerPage = prop("slidesPerPage");
-    const padding = prop("padding");
-    const translations = prop("translations");
-    return {
-      isPlaying,
-      isDragging,
-      page,
-      pageSnapPoints,
-      canScrollNext,
-      canScrollPrev,
-      getProgress() {
-        return page / pageSnapPoints.length;
-      },
-      getProgressText() {
-        var _a, _b;
-        const details = { page: page + 1, totalPages: pageSnapPoints.length };
-        return (_b = (_a = translations.progressText) == null ? void 0 : _a.call(translations, details)) != null ? _b : "";
-      },
-      scrollToIndex(index, instant) {
-        send({ type: "INDEX.SET", index, instant });
-      },
-      scrollTo(index, instant) {
-        send({ type: "PAGE.SET", index, instant });
-      },
-      scrollNext(instant) {
-        send({ type: "PAGE.NEXT", instant });
-      },
-      scrollPrev(instant) {
-        send({ type: "PAGE.PREV", instant });
-      },
-      play() {
-        send({ type: "AUTOPLAY.START" });
-      },
-      pause() {
-        send({ type: "AUTOPLAY.PAUSE" });
-      },
-      isInView(index) {
-        return Array.from(context.get("slidesInView")).includes(index);
-      },
-      refresh() {
-        send({ type: "SNAP.REFRESH" });
-      },
-      getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.root.attrs), {
-          id: getRootId4(scope),
-          role: "region",
-          "aria-roledescription": "carousel",
-          "data-orientation": prop("orientation"),
-          dir: prop("dir"),
-          style: {
-            "--slides-per-page": slidesPerPage,
-            "--slide-spacing": prop("spacing"),
-            "--slide-item-size": autoSize ? "auto" : "calc(100% / var(--slides-per-page) - var(--slide-spacing) * (var(--slides-per-page) - 1) / var(--slides-per-page))"
-          }
-        }));
-      },
-      getItemGroupProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.itemGroup.attrs), {
-          id: getItemGroupId(scope),
-          "data-orientation": prop("orientation"),
-          "data-dragging": dataAttr(isDragging),
-          dir: prop("dir"),
-          "aria-live": isPlaying ? "off" : "polite",
-          onFocus(event) {
-            if (!contains(event.currentTarget, getEventTarget(event))) return;
-            send({ type: "VIEWPORT.FOCUS" });
-          },
-          onBlur(event) {
-            if (contains(event.currentTarget, event.relatedTarget)) return;
-            send({ type: "VIEWPORT.BLUR" });
-          },
-          onMouseDown(event) {
-            if (event.defaultPrevented) return;
-            if (!prop("allowMouseDrag")) return;
-            if (!isLeftClick(event)) return;
-            const target = getEventTarget(event);
-            if (isFocusable(target) && target !== event.currentTarget) return;
-            event.preventDefault();
-            send({ type: "DRAGGING.START" });
-          },
-          onWheel: throttle((event) => {
-            const axis = prop("orientation") === "horizontal" ? "deltaX" : "deltaY";
-            const isScrollingLeft = event[axis] < 0;
-            if (isScrollingLeft && !computed("canScrollPrev")) return;
-            const isScrollingRight = event[axis] > 0;
-            if (isScrollingRight && !computed("canScrollNext")) return;
-            send({ type: "USER.SCROLL" });
-          }, 150),
-          onTouchStart() {
-            send({ type: "USER.SCROLL" });
-          },
-          style: {
-            display: autoSize ? "flex" : "grid",
-            gap: "var(--slide-spacing)",
-            scrollSnapType: [horizontal ? "x" : "y", prop("snapType")].join(" "),
-            gridAutoFlow: horizontal ? "column" : "row",
-            scrollbarWidth: "none",
-            overscrollBehaviorX: "contain",
-            [horizontal ? "gridAutoColumns" : "gridAutoRows"]: autoSize ? void 0 : "var(--slide-item-size)",
-            [horizontal ? "scrollPaddingInline" : "scrollPaddingBlock"]: padding,
-            [horizontal ? "paddingInline" : "paddingBlock"]: padding,
-            [horizontal ? "overflowX" : "overflowY"]: "auto"
-          }
-        }));
-      },
-      getItemProps(props28) {
-        const isInView = context.get("slidesInView").includes(props28.index);
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.item.attrs), {
-          id: getItemId2(scope, props28.index),
-          dir: prop("dir"),
-          role: "group",
-          "data-index": props28.index,
-          "data-inview": dataAttr(isInView),
-          "aria-roledescription": "slide",
-          "data-orientation": prop("orientation"),
-          "aria-label": translations.item(props28.index, prop("slideCount")),
-          "aria-hidden": ariaAttr(!isInView),
-          style: {
-            flex: "0 0 auto",
-            [horizontal ? "maxWidth" : "maxHeight"]: "100%",
-            scrollSnapAlign: (() => {
-              var _a;
-              const snapAlign = (_a = props28.snapAlign) != null ? _a : "start";
-              const slidesPerMove = prop("slidesPerMove");
-              const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
-              const shouldSnap = (props28.index + perMove) % perMove === 0;
-              return shouldSnap ? snapAlign : void 0;
-            })()
-          }
-        }));
-      },
-      getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.control.attrs), {
-          "data-orientation": prop("orientation")
-        }));
-      },
-      getPrevTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts4.prevTrigger.attrs), {
-          id: getPrevTriggerId(scope),
-          type: "button",
-          disabled: !canScrollPrev,
-          dir: prop("dir"),
-          "aria-label": translations.prevTrigger,
-          "data-orientation": prop("orientation"),
-          "aria-controls": getItemGroupId(scope),
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            send({ type: "PAGE.PREV", src: "trigger" });
-          }
-        }));
-      },
-      getNextTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts4.nextTrigger.attrs), {
-          dir: prop("dir"),
-          id: getNextTriggerId(scope),
-          type: "button",
-          "aria-label": translations.nextTrigger,
-          "data-orientation": prop("orientation"),
-          "aria-controls": getItemGroupId(scope),
-          disabled: !canScrollNext,
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            send({ type: "PAGE.NEXT", src: "trigger" });
-          }
-        }));
-      },
-      getIndicatorGroupProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts4.indicatorGroup.attrs), {
-          dir: prop("dir"),
-          id: getIndicatorGroupId(scope),
-          "data-orientation": prop("orientation"),
-          onKeyDown(event) {
-            if (event.defaultPrevented) return;
-            const src = "indicator";
-            const keyMap2 = {
-              ArrowDown(event2) {
-                if (horizontal) return;
-                send({ type: "PAGE.NEXT", src });
-                event2.preventDefault();
-              },
-              ArrowUp(event2) {
-                if (horizontal) return;
-                send({ type: "PAGE.PREV", src });
-                event2.preventDefault();
-              },
-              ArrowRight(event2) {
-                if (!horizontal) return;
-                send({ type: "PAGE.NEXT", src });
-                event2.preventDefault();
-              },
-              ArrowLeft(event2) {
-                if (!horizontal) return;
-                send({ type: "PAGE.PREV", src });
-                event2.preventDefault();
-              },
-              Home(event2) {
-                send({ type: "PAGE.SET", index: 0, src });
-                event2.preventDefault();
-              },
-              End(event2) {
-                send({ type: "PAGE.SET", index: pageSnapPoints.length - 1, src });
-                event2.preventDefault();
-              }
-            };
-            const key = getEventKey(event, {
-              dir: prop("dir"),
-              orientation: prop("orientation")
-            });
-            const exec = keyMap2[key];
-            exec == null ? void 0 : exec(event);
-          }
-        }));
-      },
-      getIndicatorProps(props28) {
-        return normalize.button(__spreadProps(__spreadValues({}, parts4.indicator.attrs), {
-          dir: prop("dir"),
-          id: getIndicatorId(scope, props28.index),
-          type: "button",
-          "data-orientation": prop("orientation"),
-          "data-index": props28.index,
-          "data-readonly": dataAttr(props28.readOnly),
-          "data-current": dataAttr(props28.index === page),
-          "aria-label": translations.indicator(props28.index),
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            if (props28.readOnly) return;
-            send({ type: "PAGE.SET", index: props28.index, src: "indicator" });
-          }
-        }));
-      },
-      getAutoplayTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts4.autoplayTrigger.attrs), {
-          type: "button",
-          "data-orientation": prop("orientation"),
-          "data-pressed": dataAttr(isPlaying),
-          "aria-label": isPlaying ? translations.autoplayStop : translations.autoplayStart,
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            send({ type: isPlaying ? "AUTOPLAY.PAUSE" : "AUTOPLAY.START" });
-          }
-        }));
-      },
-      getProgressTextProps() {
-        return normalize.element(__spreadValues({}, parts4.progressText.attrs));
-      }
-    };
-  }
   function getPageSnapPoints(totalSlides, slidesPerMove, slidesPerPage) {
     if (totalSlides == null || slidesPerPage <= 0) {
       return [];
@@ -4900,14 +4503,12 @@ var Corex = (() => {
     }
     return snapPoints;
   }
-  var getDirection, uniq2, clamp3, anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, machine4, props4, splitProps5, indicatorProps, splitIndicatorProps, itemProps2, splitItemProps2, Carousel, CarouselHook;
+  var anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, getDirection, uniq2, clamp2, machine4, Carousel, CarouselHook;
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
-      getDirection = (element) => getComputedStyle2(element).direction;
-      uniq2 = (arr) => [...new Set(arr)];
-      clamp3 = (min4, max4) => (value) => Math.max(min4, Math.min(max4, value));
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -4958,15 +4559,18 @@ var Corex = (() => {
         const tabbables = getTabbables(el);
         el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
       };
+      getDirection = (element) => getComputedStyle2(element).direction;
+      uniq2 = (arr) => [...new Set(arr)];
+      clamp2 = (min4, max3) => (value) => Math.max(min4, Math.min(max3, value));
       machine4 = createMachine({
-        props({ props: props28 }) {
-          ensureProps(props28, ["slideCount"], "carousel");
+        props({ props }) {
+          ensureProps(props, ["slideCount"], "carousel");
           return __spreadProps(__spreadValues({
             dir: "ltr",
             defaultPage: 0,
             orientation: "horizontal",
             snapType: "mandatory",
-            loop: !!props28.autoplay,
+            loop: !!props.autoplay,
             slidesPerPage: 1,
             slidesPerMove: "auto",
             spacing: "0px",
@@ -4974,7 +4578,7 @@ var Corex = (() => {
             allowMouseDrag: false,
             inViewThreshold: 0.6,
             autoSize: false
-          }, props28), {
+          }, props), {
             translations: __spreadValues({
               nextTrigger: "Next slide",
               prevTrigger: "Previous slide",
@@ -4983,7 +4587,7 @@ var Corex = (() => {
               autoplayStart: "Start slide rotation",
               autoplayStop: "Stop slide rotation",
               progressText: ({ page, totalPages }) => `${page} / ${totalPages}`
-            }, props28.translations)
+            }, props.translations)
           });
         },
         refs() {
@@ -5023,7 +4627,7 @@ var Corex = (() => {
           canScrollPrev: ({ prop, context }) => prop("loop") || context.get("page") > 0,
           autoplayInterval: ({ prop }) => {
             const autoplay = prop("autoplay");
-            return isObject2(autoplay) ? autoplay.delay : 4e3;
+            return isObject(autoplay) ? autoplay.delay : 4e3;
           }
         },
         watch({ track, action, context, prop, send }) {
@@ -5061,7 +4665,7 @@ var Corex = (() => {
             actions: ["clearScrollEndTimer", "setMatchingPage"]
           },
           "SNAP.REFRESH": {
-            actions: ["setSnapPoints", "clampPage"]
+            actions: ["setSnapPoints"]
           },
           "PAGE.SCROLL": {
             actions: ["scrollToPage"]
@@ -5120,9 +4724,29 @@ var Corex = (() => {
                 actions: ["scrollSlides", "invokeDragging"]
               },
               "DRAGGING.END": {
-                target: "idle",
-                actions: ["endDragging", "invokeDraggingEnd"]
+                target: "settling",
+                actions: ["endDragging"]
               }
+            }
+          },
+          settling: {
+            effects: ["trackSettlingScroll"],
+            on: {
+              "DRAGGING.START": {
+                target: "dragging",
+                actions: ["clearScrollEndTimer", "invokeDragStart"]
+              },
+              "SCROLL.END": [
+                {
+                  guard: "isFocused",
+                  target: "focus",
+                  actions: ["clearScrollEndTimer", "setClosestPage", "invokeDraggingEnd"]
+                },
+                {
+                  target: "idle",
+                  actions: ["clearScrollEndTimer", "setClosestPage", "invokeDraggingEnd"]
+                }
+              ]
             }
           },
           userScroll: {
@@ -5202,7 +4826,7 @@ var Corex = (() => {
               });
               const itemEls = getItemEls(scope);
               itemEls.forEach(exec);
-              const cleanups = itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec));
+              const cleanups = [resizeObserverBorderBox.observe(el, exec), ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))];
               return callAll(...cleanups);
             },
             trackSlideIntersections({ scope, prop, context }) {
@@ -5241,6 +4865,30 @@ var Corex = (() => {
                 );
               };
               return addDomEvent(el, "scroll", onScroll, { passive: true });
+            },
+            trackSettlingScroll({ send, refs, scope }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const startTimer = () => {
+                clearTimeout(refs.get("timeoutRef"));
+                refs.set("timeoutRef", void 0);
+                refs.set(
+                  "timeoutRef",
+                  setTimeout(() => {
+                    send({ type: "SCROLL.END" });
+                  }, 200)
+                );
+              };
+              startTimer();
+              const onScroll = () => {
+                startTimer();
+              };
+              const cleanup = addDomEvent(el, "scroll", onScroll, { passive: true });
+              return () => {
+                cleanup();
+                clearTimeout(refs.get("timeoutRef"));
+                refs.set("timeoutRef", void 0);
+              };
             },
             trackDocumentVisibility({ scope, send }) {
               const doc = scope.getDoc();
@@ -5306,8 +4954,13 @@ var Corex = (() => {
               const el = getItemGroupEl(scope);
               if (!el) return;
               const scrollPosition = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
-              const page = context.get("pageSnapPoints").findIndex((point) => Math.abs(point - scrollPosition) < 1);
-              if (page === -1) return;
+              const snapPoints = context.get("pageSnapPoints");
+              if (!snapPoints.length) return;
+              const page = snapPoints.reduce((closestIndex, snapPoint, index) => {
+                const currentDistance = Math.abs(snapPoint - scrollPosition);
+                const closestDistance = Math.abs(snapPoints[closestIndex] - scrollPosition);
+                return currentDistance < closestDistance ? index : closestIndex;
+              }, 0);
               context.set("page", page);
             },
             setNextPage({ context, prop, state: state2 }) {
@@ -5337,15 +4990,15 @@ var Corex = (() => {
               const page = (_a = event.index) != null ? _a : context.get("page");
               context.set("page", page);
             },
-            clampPage({ context }) {
-              const index = clampValue(context.get("page"), 0, context.get("pageSnapPoints").length - 1);
-              context.set("page", index);
-            },
             setSnapPoints({ context, computed, scope }) {
               const el = getItemGroupEl(scope);
               if (!el) return;
               const scrollSnapPoints = getScrollSnapPositions(el);
-              context.set("pageSnapPoints", computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y);
+              const pageSnapPoints = computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y;
+              context.set("pageSnapPoints", pageSnapPoints);
+              if (!pageSnapPoints.length) return;
+              const index = clampValue(context.get("page"), 0, pageSnapPoints.length - 1);
+              context.set("page", index);
             },
             disableScrollSnap({ scope }) {
               const el = getItemGroupEl(scope);
@@ -5364,6 +5017,7 @@ var Corex = (() => {
               const isHorizontal = computed("isHorizontal");
               const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
               const snapPoints = context.get("pageSnapPoints");
+              if (!snapPoints.length) return;
               const closest = snapPoints.reduce((closest2, curr) => {
                 return Math.abs(curr - scrollPos) < Math.abs(closest2 - scrollPos) ? curr : closest2;
               }, snapPoints[0]);
@@ -5373,7 +5027,6 @@ var Corex = (() => {
                   top: isHorizontal ? el.scrollTop : closest,
                   behavior: "smooth"
                 });
-                context.set("page", snapPoints.indexOf(closest));
                 const scrollSnapType = el.dataset.scrollSnapType;
                 if (scrollSnapType) {
                   el.style.setProperty("scroll-snap-type", scrollSnapType);
@@ -5414,39 +5067,10 @@ var Corex = (() => {
           }
         }
       });
-      props4 = createProps()([
-        "dir",
-        "getRootNode",
-        "id",
-        "ids",
-        "loop",
-        "page",
-        "defaultPage",
-        "onPageChange",
-        "orientation",
-        "slideCount",
-        "slidesPerPage",
-        "slidesPerMove",
-        "spacing",
-        "padding",
-        "autoplay",
-        "allowMouseDrag",
-        "inViewThreshold",
-        "translations",
-        "snapType",
-        "autoSize",
-        "onDragStatusChange",
-        "onAutoplayStatusChange"
-      ]);
-      splitProps5 = createSplitProps(props4);
-      indicatorProps = createProps()(["index", "readOnly"]);
-      splitIndicatorProps = createSplitProps(indicatorProps);
-      itemProps2 = createProps()(["index", "snapAlign"]);
-      splitItemProps2 = createSplitProps(itemProps2);
       Carousel = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine4, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine4, props);
         }
         initApi() {
           return connect4(this.machine.service, normalizeProps);
@@ -5595,7 +5219,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-EDSYBTWY.mjs
+  // ../priv/static/chunk-3L7DS5JZ.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -5645,6 +5269,7 @@ var Corex = (() => {
     hasBlurredWindowRecently = false;
   }
   function handleWindowBlur() {
+    if (ignoreFocusEvent) return;
     hasEventBeforeFocus = false;
     hasBlurredWindowRecently = true;
   }
@@ -5699,8 +5324,8 @@ var Corex = (() => {
   function isFocusVisible() {
     return currentModality === "keyboard" || currentModality === "virtual";
   }
-  function trackFocusVisible(props28 = {}) {
-    const { isTextInput, autoFocus, onChange, root } = props28;
+  function trackFocusVisible(props = {}) {
+    const { isTextInput, autoFocus, onChange, root } = props;
     setupGlobalFocusEvents(root);
     onChange == null ? void 0 : onChange({ isFocusVisible: autoFocus || isFocusVisible(), modality: currentModality });
     const handler = (modality, e2) => {
@@ -5713,10 +5338,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_EDSYBTWY = __esm({
-    "../priv/static/chunk-EDSYBTWY.mjs"() {
+  var init_chunk_3L7DS5JZ = __esm({
+    "../priv/static/chunk-3L7DS5JZ.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -5731,6 +5356,9 @@ var Corex = (() => {
       tearDownWindowFocusTracking = (root, loadListener) => {
         const win = getWindow(root);
         const doc = getDocument(root);
+        if (loadListener) {
+          doc.removeEventListener("DOMContentLoaded", loadListener);
+        }
         const listenerData = listenerMap.get(win);
         if (!listenerData) {
           return;
@@ -5878,12 +5506,12 @@ var Corex = (() => {
   function isChecked(checked) {
     return isIndeterminate(checked) ? false : !!checked;
   }
-  var anatomy5, parts5, getRootId5, getLabelId2, getControlId2, getHiddenInputId2, getRootEl3, getHiddenInputEl2, not2, machine5, props5, splitProps6, Checkbox, CheckboxHook;
+  var anatomy5, parts5, getRootId5, getLabelId2, getControlId2, getHiddenInputId2, getRootEl3, getHiddenInputEl2, not2, machine5, Checkbox, CheckboxHook;
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -5906,12 +5534,12 @@ var Corex = (() => {
       getHiddenInputEl2 = (ctx) => ctx.getById(getHiddenInputId2(ctx));
       ({ not: not2 } = createGuards());
       machine5 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           var _a;
           return __spreadProps(__spreadValues({
             value: "on"
-          }, props28), {
-            defaultChecked: (_a = props28.defaultChecked) != null ? _a : false
+          }, props), {
+            defaultChecked: (_a = props.defaultChecked) != null ? _a : false
           });
         },
         initialState() {
@@ -6040,27 +5668,10 @@ var Corex = (() => {
           }
         }
       });
-      props5 = createProps()([
-        "defaultChecked",
-        "checked",
-        "dir",
-        "disabled",
-        "form",
-        "getRootNode",
-        "id",
-        "ids",
-        "invalid",
-        "name",
-        "onCheckedChange",
-        "readOnly",
-        "required",
-        "value"
-      ]);
-      splitProps6 = createSplitProps(props5);
       Checkbox = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine5, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine5, props);
         }
         initApi() {
           return connect5(this.machine.service, normalizeProps);
@@ -6215,6 +5826,92 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/chunk-MEHWRUXO.mjs
+  function setRafInterval(fn, intervalMs) {
+    const timer = new Timer(({ now, deltaMs }) => {
+      if (deltaMs >= intervalMs) {
+        const startMs = intervalMs > 0 ? now - deltaMs % intervalMs : now;
+        timer.setStartMs(startMs);
+        fn({ startMs, deltaMs });
+      }
+    });
+    timer.start();
+    return () => timer.stop();
+  }
+  function setRafTimeout(fn, delayMs) {
+    const timer = new Timer(({ deltaMs }) => {
+      if (deltaMs >= delayMs) {
+        fn();
+        return false;
+      }
+    });
+    timer.start();
+    return () => timer.stop();
+  }
+  var currentTime, _tick, Timer;
+  var init_chunk_MEHWRUXO = __esm({
+    "../priv/static/chunk-MEHWRUXO.mjs"() {
+      "use strict";
+      init_chunk_BVJBLYEU();
+      currentTime = () => performance.now();
+      Timer = class {
+        constructor(onTick) {
+          this.onTick = onTick;
+          __publicField22(this, "frameId", null);
+          __publicField22(this, "pausedAtMs", null);
+          __publicField22(this, "context");
+          __publicField22(this, "cancelFrame", () => {
+            if (this.frameId === null) return;
+            cancelAnimationFrame(this.frameId);
+            this.frameId = null;
+          });
+          __publicField22(this, "setStartMs", (startMs) => {
+            this.context.startMs = startMs;
+          });
+          __publicField22(this, "start", () => {
+            if (this.frameId !== null) return;
+            const now = currentTime();
+            if (this.pausedAtMs !== null) {
+              this.context.startMs += now - this.pausedAtMs;
+              this.pausedAtMs = null;
+            } else {
+              this.context.startMs = now;
+            }
+            this.frameId = requestAnimationFrame(__privateGet(this, _tick));
+          });
+          __publicField22(this, "pause", () => {
+            if (this.frameId === null) return;
+            this.cancelFrame();
+            this.pausedAtMs = currentTime();
+          });
+          __publicField22(this, "stop", () => {
+            if (this.frameId === null) return;
+            this.cancelFrame();
+            this.pausedAtMs = null;
+          });
+          __privateAdd(this, _tick, (now) => {
+            this.context.now = now;
+            this.context.deltaMs = now - this.context.startMs;
+            const shouldContinue = this.onTick(this.context);
+            if (shouldContinue === false) {
+              this.stop();
+              return;
+            }
+            this.frameId = requestAnimationFrame(__privateGet(this, _tick));
+          });
+          this.context = { now: 0, startMs: currentTime(), deltaMs: 0 };
+        }
+        get elapsedMs() {
+          if (this.pausedAtMs !== null) {
+            return this.pausedAtMs - this.context.startMs;
+          }
+          return currentTime() - this.context.startMs;
+        }
+      };
+      _tick = /* @__PURE__ */ new WeakMap();
+    }
+  });
+
   // ../priv/static/clipboard.mjs
   var clipboard_exports = {};
   __export(clipboard_exports, {
@@ -6316,18 +6013,19 @@ var Corex = (() => {
           }
         }));
       },
-      getIndicatorProps(props28) {
+      getIndicatorProps(props) {
         return normalize.element(__spreadProps(__spreadValues({}, parts6.indicator.attrs), {
-          hidden: props28.copied !== copied
+          hidden: props.copied !== copied
         }));
       }
     };
   }
-  var anatomy6, parts6, getRootId6, getInputId, getLabelId3, getInputEl, writeToClipboard, machine6, props6, contextProps, indicatorProps2, splitIndicatorProps2, Clipboard, ClipboardHook;
+  var anatomy6, parts6, getRootId6, getInputId, getLabelId3, getInputEl, writeToClipboard, machine6, Clipboard, ClipboardHook;
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_MEHWRUXO();
+      init_chunk_BVJBLYEU();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6345,11 +6043,11 @@ var Corex = (() => {
       getInputEl = (ctx) => ctx.getById(getInputId(ctx));
       writeToClipboard = (ctx, value) => copyText(ctx.getDoc(), value);
       machine6 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             timeout: 3e3,
             defaultValue: ""
-          }, props28);
+          }, props);
         },
         initialState() {
           return "idle";
@@ -6432,23 +6130,10 @@ var Corex = (() => {
           }
         }
       });
-      props6 = createProps()([
-        "getRootNode",
-        "id",
-        "ids",
-        "value",
-        "defaultValue",
-        "timeout",
-        "onStatusChange",
-        "onValueChange"
-      ]);
-      contextProps = createSplitProps(props6);
-      indicatorProps2 = createProps()(["copied"]);
-      splitIndicatorProps2 = createSplitProps(indicatorProps2);
       Clipboard = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine6, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine6, props);
         }
         initApi() {
           return connect6(this.machine.service, normalizeProps);
@@ -6472,23 +6157,23 @@ var Corex = (() => {
                 '[data-scope="clipboard"][data-part="input"]'
               );
               if (inputEl) {
-                const inputProps2 = __spreadValues({}, this.api.getInputProps());
+                const inputProps = __spreadValues({}, this.api.getInputProps());
                 const inputAriaLabel = this.el.dataset.inputAriaLabel;
                 if (inputAriaLabel) {
-                  inputProps2["aria-label"] = inputAriaLabel;
+                  inputProps["aria-label"] = inputAriaLabel;
                 }
-                this.spreadProps(inputEl, inputProps2);
+                this.spreadProps(inputEl, inputProps);
               }
               const triggerEl = controlEl.querySelector(
                 '[data-scope="clipboard"][data-part="trigger"]'
               );
               if (triggerEl) {
-                const triggerProps2 = __spreadValues({}, this.api.getTriggerProps());
+                const triggerProps = __spreadValues({}, this.api.getTriggerProps());
                 const ariaLabel = this.el.dataset.triggerAriaLabel;
                 if (ariaLabel) {
-                  triggerProps2["aria-label"] = ariaLabel;
+                  triggerProps["aria-label"] = ariaLabel;
                 }
-                this.spreadProps(triggerEl, triggerProps2);
+                this.spreadProps(triggerEl, triggerProps);
               }
             }
           }
@@ -6683,11 +6368,12 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy7, parts7, getRootId7, getContentId, getTriggerId, getContentEl, machine7, props7, splitProps7, Collapsible, CollapsibleHook;
+  var anatomy7, parts7, getRootId7, getContentId, getTriggerId, getContentEl, machine7, Collapsible, CollapsibleHook;
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6953,24 +6639,10 @@ var Corex = (() => {
           }
         }
       });
-      props7 = createProps()([
-        "dir",
-        "disabled",
-        "getRootNode",
-        "id",
-        "ids",
-        "collapsedHeight",
-        "collapsedWidth",
-        "onExitComplete",
-        "onOpenChange",
-        "defaultOpen",
-        "open"
-      ]);
-      splitProps7 = createSplitProps(props7);
       Collapsible = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine7, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine7, props);
         }
         initApi() {
           return connect7(this.machine.service, normalizeProps);
@@ -7078,7 +6750,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-MWK4GDRX.mjs
+  // ../priv/static/chunk-4S73FXZZ.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -7093,6 +6765,61 @@ var Corex = (() => {
   }
   function isGridCollection(v2) {
     return hasProp(v2, "columnCount") && hasProp(v2, "getRows");
+  }
+  function resolveSelectedItems({
+    values,
+    collection: collection5,
+    selectedItemMap
+  }) {
+    var _a;
+    const result = [];
+    for (const value of values) {
+      const item = (_a = collection5.find(value)) != null ? _a : selectedItemMap.get(value);
+      if (item != null) result.push(item);
+    }
+    return result;
+  }
+  function updateSelectedItemMap({
+    selectedItemMap,
+    values,
+    selectedItems,
+    collection: collection5
+  }) {
+    const nextMap = new Map(selectedItemMap);
+    for (const item of selectedItems) {
+      const value = collection5.getItemValue(item);
+      if (value != null) nextMap.set(value, item);
+    }
+    const allowedValues = new Set(values);
+    for (const value of nextMap.keys()) {
+      if (!allowedValues.has(value)) nextMap.delete(value);
+    }
+    return nextMap;
+  }
+  function deriveSelectionState({
+    values,
+    collection: collection5,
+    selectedItemMap
+  }) {
+    const selectedItems = resolveSelectedItems({ values, collection: collection5, selectedItemMap });
+    const nextSelectedItemMap = updateSelectedItemMap({
+      selectedItemMap,
+      values,
+      selectedItems,
+      collection: collection5
+    });
+    return { selectedItems, nextSelectedItemMap };
+  }
+  function createSelectedItemMap({
+    selectedItems,
+    collection: collection5
+  }) {
+    return updateSelectedItemMap({
+      selectedItemMap: /* @__PURE__ */ new Map(),
+      values: selectedItems.map((item) => collection5.getItemValue(item)).filter(Boolean),
+      selectedItems,
+      collection: collection5
+    });
   }
   function access(node, indexPath, options) {
     for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
@@ -7423,26 +7150,26 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_MWK4GDRX = __esm({
-    "../priv/static/chunk-MWK4GDRX.mjs"() {
+  var init_chunk_4S73FXZZ = __esm({
+    "../priv/static/chunk-4S73FXZZ.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
       fallback = {
         itemToValue(item) {
           if (typeof item === "string") return item;
-          if (isObject2(item) && hasProp(item, "value")) return item.value;
+          if (isObject(item) && hasProp(item, "value")) return item.value;
           return "";
         },
         itemToString(item) {
           if (typeof item === "string") return item;
-          if (isObject2(item) && hasProp(item, "label")) return item.label;
+          if (isObject(item) && hasProp(item, "label")) return item.label;
           return fallback.itemToValue(item);
         },
         isItemDisabled(item) {
-          if (isObject2(item) && hasProp(item, "disabled")) return !!item.disabled;
+          if (isObject(item) && hasProp(item, "disabled")) return !!item.disabled;
           return false;
         }
       };
@@ -7455,7 +7182,7 @@ var Corex = (() => {
             return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
           });
           __publicField5(this, "isEqual", (other) => {
-            return isEqual2(this.items, other.items);
+            return isEqual(this.items, other.items);
           });
           __publicField5(this, "setItems", (items) => {
             return this.copy(items);
@@ -8025,7 +7752,7 @@ var Corex = (() => {
             return selection;
           });
           __publicField5(this, "isEqual", (other) => {
-            return isEqual2(Array.from(this), Array.from(other));
+            return isEqual(Array.from(this), Array.from(other));
           });
         }
       };
@@ -8034,7 +7761,7 @@ var Corex = (() => {
           this.options = options;
           __publicField5(this, "rootNode");
           __publicField5(this, "isEqual", (other) => {
-            return isEqual2(this.rootNode, other.rootNode);
+            return isEqual(this.rootNode, other.rootNode);
           });
           __publicField5(this, "getNodeChildren", (node) => {
             var _a, _b, _c, _d;
@@ -8401,31 +8128,38 @@ var Corex = (() => {
       fallbackMethods = {
         nodeToValue(node) {
           if (typeof node === "string") return node;
-          if (isObject2(node) && hasProp(node, "value")) return node.value;
+          if (isObject(node) && hasProp(node, "value")) return node.value;
           return "";
         },
         nodeToString(node) {
           if (typeof node === "string") return node;
-          if (isObject2(node) && hasProp(node, "label")) return node.label;
+          if (isObject(node) && hasProp(node, "label")) return node.label;
           return fallbackMethods.nodeToValue(node);
         },
         isNodeDisabled(node) {
-          if (isObject2(node) && hasProp(node, "disabled")) return !!node.disabled;
+          if (isObject(node) && hasProp(node, "disabled")) return !!node.disabled;
           return false;
         },
         nodeToChildren(node) {
           return node.children;
         },
         nodeToChildrenCount(node) {
-          if (isObject2(node) && hasProp(node, "childrenCount")) return node.childrenCount;
+          if (isObject(node) && hasProp(node, "childrenCount")) return node.childrenCount;
         }
       };
     }
   });
 
-  // ../priv/static/chunk-QYWY7F3J.mjs
-  function clamp4(start, value, end) {
-    return max3(start, min3(value, end));
+  // ../priv/static/chunk-3PXF3EVQ.mjs
+  function getPlacementDetails(placement) {
+    const [side, align] = placement.split("-");
+    return { side, align, hasAlign: align != null };
+  }
+  function getPlacementSide(placement) {
+    return placement.split("-")[0];
+  }
+  function clamp3(start, value, end) {
+    return max2(start, min2(value, end));
   }
   function evaluate(value, param) {
     return typeof value === "function" ? value(param) : value;
@@ -8443,7 +8177,8 @@ var Corex = (() => {
     return axis === "y" ? "height" : "width";
   }
   function getSideAxis(placement) {
-    return yAxisSides.has(getSide(placement)) ? "y" : "x";
+    const firstChar = placement[0];
+    return firstChar === "t" || firstChar === "b" ? "y" : "x";
   }
   function getAlignmentAxis(placement) {
     return getOppositeAxis(getSideAxis(placement));
@@ -8466,7 +8201,7 @@ var Corex = (() => {
     return [getOppositeAlignmentPlacement(placement), oppositePlacement, getOppositeAlignmentPlacement(oppositePlacement)];
   }
   function getOppositeAlignmentPlacement(placement) {
-    return placement.replace(/start|end/g, (alignment) => oppositeAlignmentMap[alignment]);
+    return placement.includes("start") ? placement.replace("start", "end") : placement.replace("end", "start");
   }
   function getSideList(side, isStart, rtl) {
     switch (side) {
@@ -8493,7 +8228,8 @@ var Corex = (() => {
     return list;
   }
   function getOppositePlacement(placement) {
-    return placement.replace(/left|right|bottom|top/g, (side) => oppositeSideMap[side]);
+    const side = getSide(placement);
+    return oppositeSideMap[side] + placement.slice(side.length);
   }
   function expandPaddingObject(padding) {
     return __spreadValues({
@@ -8740,24 +8476,27 @@ var Corex = (() => {
       overflowY,
       display
     } = getComputedStyle3(element);
-    return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && !invalidOverflowDisplayValues.has(display);
+    return /auto|scroll|overlay|hidden|clip/.test(overflow + overflowY + overflowX) && display !== "inline" && display !== "contents";
   }
   function isTableElement(element) {
-    return tableElements.has(getNodeName2(element));
+    return /^(table|td|th)$/.test(getNodeName2(element));
   }
   function isTopLayer(element) {
-    return topLayerSelectors.some((selector) => {
-      try {
-        return element.matches(selector);
-      } catch (_e) {
-        return false;
+    try {
+      if (element.matches(":popover-open")) {
+        return true;
       }
-    });
+    } catch (_e) {
+    }
+    try {
+      return element.matches(":modal");
+    } catch (_e) {
+      return false;
+    }
   }
   function isContainingBlock(elementOrCss) {
-    const webkit = isWebKit();
     const css2 = isElement2(elementOrCss) ? getComputedStyle3(elementOrCss) : elementOrCss;
-    return transformProperties.some((value) => css2[value] ? css2[value] !== "none" : false) || (css2.containerType ? css2.containerType !== "normal" : false) || !webkit && (css2.backdropFilter ? css2.backdropFilter !== "none" : false) || !webkit && (css2.filter ? css2.filter !== "none" : false) || willChangeValues.some((value) => (css2.willChange || "").includes(value)) || containValues.some((value) => (css2.contain || "").includes(value));
+    return isNotNone(css2.transform) || isNotNone(css2.translate) || isNotNone(css2.scale) || isNotNone(css2.rotate) || isNotNone(css2.perspective) || !isWebKit() && (isNotNone(css2.backdropFilter) || isNotNone(css2.filter)) || willChangeRe.test(css2.willChange || "") || containRe.test(css2.contain || "");
   }
   function getContainingBlock(element) {
     let currentNode = getParentNode2(element);
@@ -8772,11 +8511,13 @@ var Corex = (() => {
     return null;
   }
   function isWebKit() {
-    if (typeof CSS === "undefined" || !CSS.supports) return false;
-    return CSS.supports("-webkit-backdrop-filter", "none");
+    if (isWebKitValue == null) {
+      isWebKitValue = typeof CSS !== "undefined" && CSS.supports && CSS.supports("-webkit-backdrop-filter", "none");
+    }
+    return isWebKitValue;
   }
   function isLastTraversableNode(node) {
-    return lastTraversableNodeNames.has(getNodeName2(node));
+    return /^(html|body|#document)$/.test(getNodeName2(node));
   }
   function getComputedStyle3(element) {
     return getWindow2(element).getComputedStyle(element);
@@ -8830,8 +8571,9 @@ var Corex = (() => {
     if (isBody) {
       const frameElement = getFrameElement(win);
       return list.concat(win, win.visualViewport || [], isOverflowElement2(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
+    } else {
+      return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
     }
-    return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
   }
   function getFrameElement(win) {
     return win.parent && Object.getPrototypeOf(win.parent) ? win.frameElement : null;
@@ -8992,7 +8734,7 @@ var Corex = (() => {
       if (getNodeName2(offsetParent) !== "body" || isOverflowElement2(documentElement)) {
         scroll = getNodeScroll(offsetParent);
       }
-      if (isHTMLElement2(offsetParent)) {
+      if (isOffsetParentAnElement) {
         const offsetRect = getBoundingClientRect(offsetParent);
         scale = getScale(offsetParent);
         offsets.x = offsetRect.x + offsetParent.clientLeft;
@@ -9014,12 +8756,12 @@ var Corex = (() => {
     const html = getDocumentElement2(element);
     const scroll = getNodeScroll(element);
     const body = element.ownerDocument.body;
-    const width = max3(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
-    const height = max3(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
+    const width = max2(html.scrollWidth, html.clientWidth, body.scrollWidth, body.clientWidth);
+    const height = max2(html.scrollHeight, html.clientHeight, body.scrollHeight, body.clientHeight);
     let x2 = -scroll.scrollLeft + getWindowScrollBarX(element);
     const y2 = -scroll.scrollTop;
     if (getComputedStyle3(body).direction === "rtl") {
-      x2 += max3(html.clientWidth, body.clientWidth) - width;
+      x2 += max2(html.clientWidth, body.clientWidth) - width;
     }
     return {
       width,
@@ -9028,7 +8770,7 @@ var Corex = (() => {
       y: y2
     };
   }
-  function getViewportRect2(element, strategy) {
+  function getViewportRect(element, strategy) {
     const win = getWindow2(element);
     const html = getDocumentElement2(element);
     const visualViewport = win.visualViewport;
@@ -9084,7 +8826,7 @@ var Corex = (() => {
   function getClientRectFromClippingAncestor(element, clippingAncestor, strategy) {
     let rect;
     if (clippingAncestor === "viewport") {
-      rect = getViewportRect2(element, strategy);
+      rect = getViewportRect(element, strategy);
     } else if (clippingAncestor === "document") {
       rect = getDocumentRect(getDocumentElement2(element));
     } else if (isElement2(clippingAncestor)) {
@@ -9122,7 +8864,7 @@ var Corex = (() => {
       if (!currentNodeIsContaining && computedStyle.position === "fixed") {
         currentContainingBlockComputedStyle = null;
       }
-      const shouldDropCurrentNode = elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && absoluteOrFixed.has(currentContainingBlockComputedStyle.position) || isOverflowElement2(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode);
+      const shouldDropCurrentNode = elementIsFixed ? !currentNodeIsContaining && !currentContainingBlockComputedStyle : !currentNodeIsContaining && computedStyle.position === "static" && !!currentContainingBlockComputedStyle && (currentContainingBlockComputedStyle.position === "absolute" || currentContainingBlockComputedStyle.position === "fixed") || isOverflowElement2(currentNode) && !currentNodeIsContaining && hasFixedPositionAncestor(element, currentNode);
       if (shouldDropCurrentNode) {
         result = result.filter((ancestor) => ancestor !== currentNode);
       } else {
@@ -9142,20 +8884,23 @@ var Corex = (() => {
     } = _ref;
     const elementClippingAncestors = boundary === "clippingAncestors" ? isTopLayer(element) ? [] : getClippingElementAncestors(element, this._c) : [].concat(boundary);
     const clippingAncestors = [...elementClippingAncestors, rootBoundary];
-    const firstClippingAncestor = clippingAncestors[0];
-    const clippingRect = clippingAncestors.reduce((accRect, clippingAncestor) => {
-      const rect = getClientRectFromClippingAncestor(element, clippingAncestor, strategy);
-      accRect.top = max3(rect.top, accRect.top);
-      accRect.right = min3(rect.right, accRect.right);
-      accRect.bottom = min3(rect.bottom, accRect.bottom);
-      accRect.left = max3(rect.left, accRect.left);
-      return accRect;
-    }, getClientRectFromClippingAncestor(element, firstClippingAncestor, strategy));
+    const firstRect = getClientRectFromClippingAncestor(element, clippingAncestors[0], strategy);
+    let top = firstRect.top;
+    let right = firstRect.right;
+    let bottom = firstRect.bottom;
+    let left = firstRect.left;
+    for (let i2 = 1; i2 < clippingAncestors.length; i2++) {
+      const rect = getClientRectFromClippingAncestor(element, clippingAncestors[i2], strategy);
+      top = max2(rect.top, top);
+      right = min2(rect.right, right);
+      bottom = min2(rect.bottom, bottom);
+      left = max2(rect.left, left);
+    }
     return {
-      width: clippingRect.right - clippingRect.left,
-      height: clippingRect.bottom - clippingRect.top,
-      x: clippingRect.left,
-      y: clippingRect.top
+      width: right - left,
+      height: bottom - top,
+      x: left,
+      y: top
     };
   }
   function getDimensions(element) {
@@ -9290,7 +9035,7 @@ var Corex = (() => {
       const rootMargin = -insetTop + "px " + -insetRight + "px " + -insetBottom + "px " + -insetLeft + "px";
       const options = {
         rootMargin,
-        threshold: max3(0, min3(1, threshold)) || 1
+        threshold: max2(0, min2(1, threshold)) || 1
       };
       let isFirstUpdate = true;
       function handleObserve(entries) {
@@ -9337,7 +9082,7 @@ var Corex = (() => {
       animationFrame = false
     } = options;
     const referenceEl = unwrapElement(reference);
-    const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...getOverflowAncestors(floating)] : [];
+    const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...floating ? getOverflowAncestors(floating) : []] : [];
     ancestors.forEach((ancestor) => {
       ancestorScroll && ancestor.addEventListener("scroll", update, {
         passive: true
@@ -9350,7 +9095,7 @@ var Corex = (() => {
     if (elementResize) {
       resizeObserver = new ResizeObserver((_ref) => {
         let [firstEntry] = _ref;
-        if (firstEntry && firstEntry.target === referenceEl && resizeObserver) {
+        if (firstEntry && firstEntry.target === referenceEl && resizeObserver && floating) {
           resizeObserver.unobserve(floating);
           cancelAnimationFrame(reobserveFrame);
           reobserveFrame = requestAnimationFrame(() => {
@@ -9363,7 +9108,9 @@ var Corex = (() => {
       if (referenceEl && !animationFrame) {
         resizeObserver.observe(referenceEl);
       }
-      resizeObserver.observe(floating);
+      if (floating) {
+        resizeObserver.observe(floating);
+      }
     }
     let frameId;
     let prevRefRect = animationFrame ? getBoundingClientRect(reference) : null;
@@ -9466,13 +9213,6 @@ var Corex = (() => {
         };
       }
     };
-  }
-  function getPlacementDetails(placement) {
-    const [side, align] = placement.split("-");
-    return { side, align, hasAlign: align != null };
-  }
-  function getPlacementSide(placement) {
-    return placement.split("-")[0];
   }
   function roundByDpr(win, value) {
     const dpr = win.devicePixelRatio || 1;
@@ -9644,7 +9384,7 @@ var Corex = (() => {
       }
     });
     const autoUpdateOptions = getAutoUpdateOptions(options.listeners);
-    const cancelAutoUpdate = options.listeners ? autoUpdate(reference, floating, update, autoUpdateOptions) : noop2;
+    const cancelAutoUpdate = options.listeners ? autoUpdate(reference, floating, update, autoUpdateOptions) : noop;
     update();
     return () => {
       cancelAutoUpdate == null ? void 0 : cancelAutoUpdate();
@@ -9703,14 +9443,14 @@ var Corex = (() => {
       }
     };
   }
-  var sides, min3, max3, round2, floor2, createCoords, oppositeSideMap, oppositeAlignmentMap, yAxisSides, lrPlacement, rlPlacement, tbPlacement, btPlacement, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, invalidOverflowDisplayValues, tableElements, topLayerSelectors, transformProperties, willChangeValues, containValues, lastTraversableNodeNames, noOffsets, SCROLLBAR_MAX, absoluteOrFixed, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_QYWY7F3J = __esm({
-    "../priv/static/chunk-QYWY7F3J.mjs"() {
+  var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
+  var init_chunk_3PXF3EVQ = __esm({
+    "../priv/static/chunk-3PXF3EVQ.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       sides = ["top", "right", "bottom", "left"];
-      min3 = Math.min;
-      max3 = Math.max;
+      min2 = Math.min;
+      max2 = Math.max;
       round2 = Math.round;
       floor2 = Math.floor;
       createCoords = (v2) => ({
@@ -9723,15 +9463,11 @@ var Corex = (() => {
         bottom: "top",
         top: "bottom"
       };
-      oppositeAlignmentMap = {
-        start: "end",
-        end: "start"
-      };
-      yAxisSides = /* @__PURE__ */ new Set(["top", "bottom"]);
       lrPlacement = ["left", "right"];
       rlPlacement = ["right", "left"];
       tbPlacement = ["top", "bottom"];
       btPlacement = ["bottom", "top"];
+      MAX_RESET_COUNT = 50;
       computePosition = (reference, floating, config) => __async(null, null, function* () {
         const {
           placement = "bottom",
@@ -9739,7 +9475,9 @@ var Corex = (() => {
           middleware = [],
           platform: platform2
         } = config;
-        const validMiddleware = middleware.filter(Boolean);
+        const platformWithDetectOverflow = platform2.detectOverflow ? platform2 : __spreadProps(__spreadValues({}, platform2), {
+          detectOverflow
+        });
         const rtl = yield platform2.isRTL == null ? void 0 : platform2.isRTL(floating);
         let rects = yield platform2.getElementRects({
           reference,
@@ -9751,14 +9489,17 @@ var Corex = (() => {
           y: y2
         } = computeCoordsFromPlacement(rects, placement, rtl);
         let statefulPlacement = placement;
-        let middlewareData = {};
         let resetCount = 0;
-        for (let i2 = 0; i2 < validMiddleware.length; i2++) {
-          var _platform$detectOverf;
+        const middlewareData = {};
+        for (let i2 = 0; i2 < middleware.length; i2++) {
+          const currentMiddleware = middleware[i2];
+          if (!currentMiddleware) {
+            continue;
+          }
           const {
             name,
             fn
-          } = validMiddleware[i2];
+          } = currentMiddleware;
           const {
             x: nextX,
             y: nextY,
@@ -9772,9 +9513,7 @@ var Corex = (() => {
             strategy,
             middlewareData,
             rects,
-            platform: __spreadProps(__spreadValues({}, platform2), {
-              detectOverflow: (_platform$detectOverf = platform2.detectOverflow) != null ? _platform$detectOverf : detectOverflow
-            }),
+            platform: platformWithDetectOverflow,
             elements: {
               reference,
               floating
@@ -9782,10 +9521,8 @@ var Corex = (() => {
           });
           x2 = nextX != null ? nextX : x2;
           y2 = nextY != null ? nextY : y2;
-          middlewareData = __spreadProps(__spreadValues({}, middlewareData), {
-            [name]: __spreadValues(__spreadValues({}, middlewareData[name]), data)
-          });
-          if (reset && resetCount <= 50) {
+          middlewareData[name] = __spreadValues(__spreadValues({}, middlewareData[name]), data);
+          if (reset && resetCount < MAX_RESET_COUNT) {
             resetCount++;
             if (typeof reset === "object") {
               if (reset.placement) {
@@ -9856,12 +9593,12 @@ var Corex = (() => {
             }
             const centerToReference = endDiff / 2 - startDiff / 2;
             const largestPossiblePadding = clientSize / 2 - arrowDimensions[length] / 2 - 1;
-            const minPadding = min3(paddingObject[minProp], largestPossiblePadding);
-            const maxPadding = min3(paddingObject[maxProp], largestPossiblePadding);
+            const minPadding = min2(paddingObject[minProp], largestPossiblePadding);
+            const maxPadding = min2(paddingObject[maxProp], largestPossiblePadding);
             const min$1 = minPadding;
             const max22 = clientSize - arrowDimensions[length] - maxPadding;
             const center = clientSize / 2 - arrowDimensions[length] / 2 + centerToReference;
-            const offset3 = clamp4(min$1, center, max22);
+            const offset3 = clamp3(min$1, center, max22);
             const shouldAddOffset = !middlewareData.arrow && getAlignment(placement) != null && center !== offset3 && rects.reference[length] / 2 - (center < min$1 ? minPadding : maxPadding) - arrowDimensions[length] / 2 < 0;
             const alignmentOffset = shouldAddOffset ? center < min$1 ? center - min$1 : center - max22 : 0;
             return {
@@ -10124,16 +9861,16 @@ var Corex = (() => {
               if (checkMainAxis) {
                 const minSide = mainAxis === "y" ? "top" : "left";
                 const maxSide = mainAxis === "y" ? "bottom" : "right";
-                const min23 = mainAxisCoord + overflow[minSide];
+                const min22 = mainAxisCoord + overflow[minSide];
                 const max22 = mainAxisCoord - overflow[maxSide];
-                mainAxisCoord = clamp4(min23, mainAxisCoord, max22);
+                mainAxisCoord = clamp3(min22, mainAxisCoord, max22);
               }
               if (checkCrossAxis) {
                 const minSide = crossAxis === "y" ? "top" : "left";
                 const maxSide = crossAxis === "y" ? "bottom" : "right";
-                const min23 = crossAxisCoord + overflow[minSide];
+                const min22 = crossAxisCoord + overflow[minSide];
                 const max22 = crossAxisCoord - overflow[maxSide];
-                crossAxisCoord = clamp4(min23, crossAxisCoord, max22);
+                crossAxisCoord = clamp3(min22, crossAxisCoord, max22);
               }
               const limitedCoords = limiter.fn(__spreadProps(__spreadValues({}, state2), {
                 [mainAxis]: mainAxisCoord,
@@ -10258,8 +9995,8 @@ var Corex = (() => {
               }
               const maximumClippingHeight = height - overflow.top - overflow.bottom;
               const maximumClippingWidth = width - overflow.left - overflow.right;
-              const overflowAvailableHeight = min3(height - overflow[heightSide], maximumClippingHeight);
-              const overflowAvailableWidth = min3(width - overflow[widthSide], maximumClippingWidth);
+              const overflowAvailableHeight = min2(height - overflow[heightSide], maximumClippingHeight);
+              const overflowAvailableWidth = min2(width - overflow[widthSide], maximumClippingWidth);
               const noShift = !state2.middlewareData.shift;
               let availableHeight = overflowAvailableHeight;
               let availableWidth = overflowAvailableWidth;
@@ -10270,14 +10007,14 @@ var Corex = (() => {
                 availableHeight = maximumClippingHeight;
               }
               if (noShift && !alignment) {
-                const xMin = max3(overflow.left, 0);
-                const xMax = max3(overflow.right, 0);
-                const yMin = max3(overflow.top, 0);
-                const yMax = max3(overflow.bottom, 0);
+                const xMin = max2(overflow.left, 0);
+                const xMax = max2(overflow.right, 0);
+                const yMin = max2(overflow.top, 0);
+                const yMax = max2(overflow.bottom, 0);
                 if (isYAxis) {
-                  availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max3(overflow.left, overflow.right));
+                  availableWidth = width - 2 * (xMin !== 0 || xMax !== 0 ? xMin + xMax : max2(overflow.left, overflow.right));
                 } else {
-                  availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max3(overflow.top, overflow.bottom));
+                  availableHeight = height - 2 * (yMin !== 0 || yMax !== 0 ? yMin + yMax : max2(overflow.top, overflow.bottom));
                 }
               }
               yield apply(__spreadProps(__spreadValues({}, state2), {
@@ -10297,16 +10034,11 @@ var Corex = (() => {
           }
         };
       };
-      invalidOverflowDisplayValues = /* @__PURE__ */ new Set(["inline", "contents"]);
-      tableElements = /* @__PURE__ */ new Set(["table", "td", "th"]);
-      topLayerSelectors = [":popover-open", ":modal"];
-      transformProperties = ["transform", "translate", "scale", "rotate", "perspective"];
-      willChangeValues = ["transform", "translate", "scale", "rotate", "perspective", "filter"];
-      containValues = ["paint", "layout", "strict", "content"];
-      lastTraversableNodeNames = /* @__PURE__ */ new Set(["html", "body", "#document"]);
+      willChangeRe = /transform|translate|scale|rotate|perspective|filter/;
+      containRe = /paint|layout|strict|content/;
+      isNotNone = (value) => !!value && value !== "none";
       noOffsets = /* @__PURE__ */ createCoords(0);
       SCROLLBAR_MAX = 25;
-      absoluteOrFixed = /* @__PURE__ */ new Set(["absolute", "fixed"]);
       getElementRects = function(data) {
         return __async(this, null, function* () {
           const getOffsetParentFn = this.getOffsetParent || getOffsetParent;
@@ -10410,7 +10142,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-DTH4G7GO.mjs
+  // ../priv/static/chunk-53IVNBLA.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10627,17 +10359,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_DTH4G7GO = __esm({
-    "../priv/static/chunk-DTH4G7GO.mjs"() {
+  var init_chunk_53IVNBLA = __esm({
+    "../priv/static/chunk-53IVNBLA.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-CHUGBG5L.mjs
+  // ../priv/static/chunk-5YVV632C.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10796,11 +10528,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_CHUGBG5L = __esm({
-    "../priv/static/chunk-CHUGBG5L.mjs"() {
+  var init_chunk_5YVV632C = __esm({
+    "../priv/static/chunk-5YVV632C.mjs"() {
       "use strict";
-      init_chunk_DTH4G7GO();
-      init_chunk_PLUM2DEK();
+      init_chunk_53IVNBLA();
+      init_chunk_BVJBLYEU();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10945,10 +10677,10 @@ var Corex = (() => {
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: context.get("currentPlacement")
     }));
-    function getItemState(props28) {
-      const itemDisabled = collection22.getItemDisabled(props28.item);
-      const value = collection22.getItemValue(props28.item);
-      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props28.item)}`);
+    function getItemState(props) {
+      const itemDisabled = collection22.getItemDisabled(props.item);
+      const value = collection22.getItemValue(props.item);
+      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
       return {
         value,
         disabled: Boolean(disabled || itemDisabled),
@@ -10965,7 +10697,7 @@ var Corex = (() => {
       value: context.get("value"),
       valueAsString: computed("valueAsString"),
       hasSelectedItems: computed("hasSelectedItems"),
-      selectedItems: context.get("selectedItems"),
+      selectedItems: computed("selectedItems"),
       collection: prop("collection"),
       multiple: !!prop("multiple"),
       disabled: !!disabled,
@@ -11149,24 +10881,24 @@ var Corex = (() => {
           }
         }));
       },
-      getTriggerProps(props28 = {}) {
+      getTriggerProps(props = {}) {
         return normalize.button(__spreadProps(__spreadValues({}, parts8.trigger.attrs), {
           dir: prop("dir"),
           id: getTriggerId2(scope),
           "aria-haspopup": composite ? "listbox" : "dialog",
           type: "button",
-          tabIndex: props28.focusable ? void 0 : -1,
+          tabIndex: props.focusable ? void 0 : -1,
           "aria-label": translations.triggerLabel,
           "aria-expanded": open,
           "data-state": open ? "open" : "closed",
           "aria-controls": open ? getContentId2(scope) : void 0,
           disabled,
           "data-invalid": dataAttr(invalid),
-          "data-focusable": dataAttr(props28.focusable),
+          "data-focusable": dataAttr(props.focusable),
           "data-readonly": dataAttr(readOnly),
           "data-disabled": dataAttr(disabled),
           onFocus() {
-            if (!props28.focusable) return;
+            if (!props.focusable) return;
             send({ type: "INPUT.FOCUS", src: "trigger" });
           },
           onClick(event2) {
@@ -11253,8 +10985,8 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props28) {
-        const itemState = getItemState(props28);
+      getItemProps(props) {
+        const itemState = getItemState(props);
         const value = itemState.value;
         return normalize.element(__spreadProps(__spreadValues({}, parts8.item.attrs), {
           dir: prop("dir"),
@@ -11273,7 +11005,7 @@ var Corex = (() => {
             send({ type: "ITEM.POINTER_MOVE", value });
           },
           onPointerLeave() {
-            if (props28.persistFocus) return;
+            if (props.persistFocus) return;
             if (itemState.disabled) return;
             const prev2 = event.previous();
             const mouseMoved = prev2 == null ? void 0 : prev2.type.includes("POINTER");
@@ -11289,8 +11021,8 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props28) {
-        const itemState = getItemState(props28);
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts8.itemText.attrs), {
           dir: prop("dir"),
           "data-state": itemState.selected ? "checked" : "unchecked",
@@ -11298,8 +11030,8 @@ var Corex = (() => {
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props28) {
-        const itemState = getItemState(props28);
+      getItemIndicatorProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
         }, parts8.itemIndicator.attrs), {
@@ -11308,8 +11040,8 @@ var Corex = (() => {
           hidden: !itemState.selected
         }));
       },
-      getItemGroupProps(props28) {
-        const { id } = props28;
+      getItemGroupProps(props) {
+        const { id } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroup.attrs), {
           dir: prop("dir"),
           id: getItemGroupId2(scope, id),
@@ -11318,8 +11050,8 @@ var Corex = (() => {
           role: "group"
         }));
       },
-      getItemGroupLabelProps(props28) {
-        const { htmlFor } = props28;
+      getItemGroupLabelProps(props) {
+        const { htmlFor } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts8.itemGroupLabel.attrs), {
           dir: prop("dir"),
           id: getItemGroupLabelId(scope, htmlFor),
@@ -11342,16 +11074,16 @@ var Corex = (() => {
     }
     return result;
   }
-  var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, props8, splitProps8, itemGroupLabelProps, splitItemGroupLabelProps, itemGroupProps, splitItemGroupProps, itemProps3, splitItemProps3, Combobox, ComboboxHook;
+  var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, Combobox, ComboboxHook;
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_MWK4GDRX();
-      init_chunk_QYWY7F3J();
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_4S73FXZZ();
+      init_chunk_3PXF3EVQ();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -11445,17 +11177,17 @@ var Corex = (() => {
       ({ guards, createMachine: createMachine2, choose } = setup());
       ({ and: and2, not: not3 } = guards);
       machine8 = createMachine2({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             loopFocus: true,
             openOnClick: false,
             defaultValue: [],
             defaultInputValue: "",
-            closeOnSelect: !props28.multiple,
+            closeOnSelect: !props.multiple,
             allowCustomValue: false,
             alwaysSubmitOnEnter: false,
             inputBehavior: "none",
-            selectionBehavior: props28.multiple ? "clear" : "replace",
+            selectionBehavior: props.multiple ? "clear" : "replace",
             openOnKeyPress: true,
             openOnChange: true,
             composite: true,
@@ -11463,22 +11195,25 @@ var Corex = (() => {
               clickIfLink(node);
             },
             collection: collection.empty()
-          }, props28), {
+          }, props), {
             positioning: __spreadValues({
               placement: "bottom",
               sameWidth: true
-            }, props28.positioning),
+            }, props.positioning),
             translations: __spreadValues({
               triggerLabel: "Toggle suggestions",
               clearTriggerLabel: "Clear value"
-            }, props28.translations)
+            }, props.translations)
           });
         },
         initialState({ prop }) {
           const open = prop("open") || prop("defaultOpen");
-          return open ? "suggesting" : "idle";
+          return open ? "open.suggesting" : "closed.idle";
         },
         context({ prop, bindable: bindable2, getContext, getEvent }) {
+          var _a, _b;
+          const initialValue = (_b = (_a = prop("value")) != null ? _a : prop("defaultValue")) != null ? _b : [];
+          const initialSelectedItems = prop("collection").findMany(initialValue);
           return {
             currentPlacement: bindable2(() => ({
               defaultValue: void 0
@@ -11486,31 +11221,37 @@ var Corex = (() => {
             value: bindable2(() => ({
               defaultValue: prop("defaultValue"),
               value: prop("value"),
-              isEqual: isEqual2,
+              isEqual,
               hash(value) {
                 return value.join(",");
               },
               onChange(value) {
-                var _a;
+                var _a2, _b2;
                 const context = getContext();
-                const prevSelectedItems = context.get("selectedItems");
                 const collection22 = prop("collection");
-                const effectiveValue = prop("value") || value;
-                const nextItems = effectiveValue.map((v2) => {
-                  const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === v2);
-                  return item || collection22.find(v2);
+                const selectedItemMap = context.get("selectedItemMap");
+                const proposed = deriveSelectionState({
+                  values: value,
+                  collection: collection22,
+                  selectedItemMap
                 });
-                context.set("selectedItems", nextItems);
-                (_a = prop("onValueChange")) == null ? void 0 : _a({ value, items: nextItems });
+                const effectiveValue = (_a2 = prop("value")) != null ? _a2 : value;
+                const effective = effectiveValue === value ? proposed : deriveSelectionState({
+                  values: effectiveValue,
+                  collection: collection22,
+                  selectedItemMap: proposed.nextSelectedItemMap
+                });
+                context.set("selectedItemMap", effective.nextSelectedItemMap);
+                (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
               }
             })),
             highlightedValue: bindable2(() => ({
               defaultValue: prop("defaultHighlightedValue") || null,
               value: prop("highlightedValue"),
               onChange(value) {
-                var _a;
+                var _a2;
                 const item = prop("collection").find(value);
-                (_a = prop("onHighlightChange")) == null ? void 0 : _a({ highlightedValue: value, highlightedItem: item });
+                (_a2 = prop("onHighlightChange")) == null ? void 0 : _a2({ highlightedValue: value, highlightedItem: item });
               }
             })),
             inputValue: bindable2(() => {
@@ -11518,7 +11259,7 @@ var Corex = (() => {
               const value = prop("value") || prop("defaultValue");
               if (!inputValue.trim() && !prop("multiple")) {
                 const valueAsString = prop("collection").stringifyMany(value);
-                inputValue = match2(prop("selectionBehavior"), {
+                inputValue = match(prop("selectionBehavior"), {
                   preserve: inputValue || valueAsString,
                   replace: valueAsString,
                   clear: ""
@@ -11528,10 +11269,10 @@ var Corex = (() => {
                 defaultValue: inputValue,
                 value: prop("inputValue"),
                 onChange(value2) {
-                  var _a;
+                  var _a2;
                   const event = getEvent();
                   const reason = (event.previousEvent || event).src;
-                  (_a = prop("onInputValueChange")) == null ? void 0 : _a({ inputValue: value2, reason });
+                  (_a2 = prop("onInputValueChange")) == null ? void 0 : _a2({ inputValue: value2, reason });
                 }
               };
             }),
@@ -11540,10 +11281,13 @@ var Corex = (() => {
               const highlightedItem = prop("collection").find(highlightedValue);
               return { defaultValue: highlightedItem };
             }),
-            selectedItems: bindable2(() => {
-              const value = prop("value") || prop("defaultValue") || [];
-              const selectedItems = prop("collection").findMany(value);
-              return { defaultValue: selectedItems };
+            selectedItemMap: bindable2(() => {
+              return {
+                defaultValue: createSelectedItemMap({
+                  selectedItems: initialSelectedItems,
+                  collection: prop("collection")
+                })
+              };
             })
           };
         },
@@ -11553,7 +11297,12 @@ var Corex = (() => {
           autoComplete: ({ prop }) => prop("inputBehavior") === "autocomplete",
           autoHighlight: ({ prop }) => prop("inputBehavior") === "autohighlight",
           hasSelectedItems: ({ context }) => context.get("value").length > 0,
-          valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems")),
+          selectedItems: ({ context, prop }) => resolveSelectedItems({
+            values: context.get("value"),
+            collection: prop("collection"),
+            selectedItemMap: context.get("selectedItemMap")
+          }),
+          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems")),
           isCustomValue: ({ context, computed }) => context.get("inputValue") !== computed("valueAsString")
         },
         watch({ context, prop, track, action, send }) {
@@ -11606,167 +11355,173 @@ var Corex = (() => {
           }
         ]),
         states: {
-          idle: {
-            tags: ["idle", "closed"],
-            entry: ["scrollContentToTop", "clearHighlightedValue"],
-            on: {
-              "CONTROLLED.OPEN": {
-                target: "interacting"
+          closed: {
+            tags: ["closed"],
+            initial: "idle",
+            states: {
+              idle: {
+                tags: ["idle"],
+                entry: ["scrollContentToTop", "clearHighlightedValue"],
+                on: {
+                  "CONTROLLED.OPEN": {
+                    target: "open.interacting"
+                  },
+                  "TRIGGER.CLICK": [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+                    }
+                  ],
+                  "INPUT.CLICK": [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+                    }
+                  ],
+                  "INPUT.FOCUS": {
+                    target: "focused"
+                  },
+                  OPEN: [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["invokeOnOpen"]
+                    }
+                  ],
+                  "VALUE.CLEAR": {
+                    target: "focused",
+                    actions: ["clearInputValue", "clearSelectedItems", "setInitialFocus"]
+                  }
+                }
               },
-              "TRIGGER.CLICK": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+              focused: {
+                tags: ["focused"],
+                entry: ["scrollContentToTop", "clearHighlightedValue"],
+                on: {
+                  "CONTROLLED.OPEN": [
+                    {
+                      guard: "isChangeEvent",
+                      target: "open.suggesting"
+                    },
+                    {
+                      target: "open.interacting"
+                    }
+                  ],
+                  "INPUT.CHANGE": [
+                    {
+                      guard: and2("isOpenControlled", "openOnChange"),
+                      actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+                    },
+                    {
+                      guard: "openOnChange",
+                      target: "open.suggesting",
+                      actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+                    },
+                    {
+                      actions: ["setInputValue"]
+                    }
+                  ],
+                  "LAYER.INTERACT_OUTSIDE": {
+                    target: "idle"
+                  },
+                  "INPUT.ESCAPE": {
+                    guard: and2("isCustomValue", not3("allowCustomValue")),
+                    actions: ["revertInputValue"]
+                  },
+                  "INPUT.BLUR": {
+                    target: "idle"
+                  },
+                  "INPUT.CLICK": [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+                    }
+                  ],
+                  "TRIGGER.CLICK": [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+                    }
+                  ],
+                  "INPUT.ARROW_DOWN": [
+                    // == group 1 ==
+                    {
+                      guard: and2("isOpenControlled", "autoComplete"),
+                      actions: ["invokeOnOpen"]
+                    },
+                    {
+                      guard: "autoComplete",
+                      target: "open.interacting",
+                      actions: ["invokeOnOpen"]
+                    },
+                    // == group 2 ==
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+                    }
+                  ],
+                  "INPUT.ARROW_UP": [
+                    // == group 1 ==
+                    {
+                      guard: and2("isOpenControlled", "autoComplete"),
+                      actions: ["invokeOnOpen"]
+                    },
+                    {
+                      guard: "autoComplete",
+                      target: "open.interacting",
+                      actions: ["invokeOnOpen"]
+                    },
+                    // == group 2 ==
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+                    }
+                  ],
+                  OPEN: [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["invokeOnOpen"]
+                    },
+                    {
+                      target: "open.interacting",
+                      actions: ["invokeOnOpen"]
+                    }
+                  ],
+                  "VALUE.CLEAR": {
+                    actions: ["clearInputValue", "clearSelectedItems"]
+                  }
                 }
-              ],
-              "INPUT.CLICK": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-                }
-              ],
-              "INPUT.FOCUS": {
-                target: "focused"
-              },
-              OPEN: [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["invokeOnOpen"]
-                }
-              ],
-              "VALUE.CLEAR": {
-                target: "focused",
-                actions: ["clearInputValue", "clearSelectedItems", "setInitialFocus"]
               }
             }
           },
-          focused: {
-            tags: ["focused", "closed"],
-            entry: ["scrollContentToTop", "clearHighlightedValue"],
-            on: {
-              "CONTROLLED.OPEN": [
-                {
-                  guard: "isChangeEvent",
-                  target: "suggesting"
-                },
-                {
-                  target: "interacting"
-                }
-              ],
-              "INPUT.CHANGE": [
-                {
-                  guard: and2("isOpenControlled", "openOnChange"),
-                  actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
-                },
-                {
-                  guard: "openOnChange",
-                  target: "suggesting",
-                  actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
-                },
-                {
-                  actions: ["setInputValue"]
-                }
-              ],
-              "LAYER.INTERACT_OUTSIDE": {
-                target: "idle"
-              },
-              "INPUT.ESCAPE": {
-                guard: and2("isCustomValue", not3("allowCustomValue")),
-                actions: ["revertInputValue"]
-              },
-              "INPUT.BLUR": {
-                target: "idle"
-              },
-              "INPUT.CLICK": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-                }
-              ],
-              "TRIGGER.CLICK": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
-                }
-              ],
-              "INPUT.ARROW_DOWN": [
-                // == group 1 ==
-                {
-                  guard: and2("isOpenControlled", "autoComplete"),
-                  actions: ["invokeOnOpen"]
-                },
-                {
-                  guard: "autoComplete",
-                  target: "interacting",
-                  actions: ["invokeOnOpen"]
-                },
-                // == group 2 ==
-                {
-                  guard: "isOpenControlled",
-                  actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
-                }
-              ],
-              "INPUT.ARROW_UP": [
-                // == group 1 ==
-                {
-                  guard: and2("isOpenControlled", "autoComplete"),
-                  actions: ["invokeOnOpen"]
-                },
-                {
-                  guard: "autoComplete",
-                  target: "interacting",
-                  actions: ["invokeOnOpen"]
-                },
-                // == group 2 ==
-                {
-                  guard: "isOpenControlled",
-                  actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
-                }
-              ],
-              OPEN: [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
-                },
-                {
-                  target: "interacting",
-                  actions: ["invokeOnOpen"]
-                }
-              ],
-              "VALUE.CLEAR": {
-                actions: ["clearInputValue", "clearSelectedItems"]
-              }
-            }
-          },
-          interacting: {
+          open: {
             tags: ["open", "focused"],
             entry: ["setInitialFocus"],
             effects: ["trackFocusVisible", "scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
@@ -11774,44 +11529,11 @@ var Corex = (() => {
               "CONTROLLED.CLOSE": [
                 {
                   guard: "restoreFocus",
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["setFinalFocus"]
                 },
                 {
-                  target: "idle"
-                }
-              ],
-              CHILDREN_CHANGE: [
-                {
-                  guard: "isHighlightedItemRemoved",
-                  actions: ["clearHighlightedValue"]
-                },
-                {
-                  actions: ["scrollToHighlightedItem"]
-                }
-              ],
-              "INPUT.HOME": {
-                actions: ["highlightFirstItem"]
-              },
-              "INPUT.END": {
-                actions: ["highlightLastItem"]
-              },
-              "INPUT.ARROW_DOWN": [
-                {
-                  guard: and2("autoComplete", "isLastItemHighlighted"),
-                  actions: ["clearHighlightedValue", "scrollContentToTop"]
-                },
-                {
-                  actions: ["highlightNextItem"]
-                }
-              ],
-              "INPUT.ARROW_UP": [
-                {
-                  guard: and2("autoComplete", "isFirstItemHighlighted"),
-                  actions: ["clearHighlightedValue"]
-                },
-                {
-                  actions: ["highlightPrevItem"]
+                  target: "closed.idle"
                 }
               ],
               "INPUT.ENTER": [
@@ -11822,7 +11544,7 @@ var Corex = (() => {
                 },
                 {
                   guard: and2("isCustomValue", not3("hasHighlightedItem"), not3("allowCustomValue")),
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["revertInputValue", "invokeOnClose"]
                 },
                 // == group 2 ==
@@ -11832,30 +11554,13 @@ var Corex = (() => {
                 },
                 {
                   guard: "closeOnSelect",
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
                 },
                 {
                   actions: ["selectHighlightedItem"]
                 }
               ],
-              "INPUT.CHANGE": [
-                {
-                  guard: "autoComplete",
-                  target: "suggesting",
-                  actions: ["setInputValue"]
-                },
-                {
-                  target: "suggesting",
-                  actions: ["clearHighlightedValue", "setInputValue"]
-                }
-              ],
-              "ITEM.POINTER_MOVE": {
-                actions: ["setHighlightedValue"]
-              },
-              "ITEM.POINTER_LEAVE": {
-                actions: ["clearHighlightedValue"]
-              },
               "ITEM.CLICK": [
                 {
                   guard: and2("isOpenControlled", "closeOnSelect"),
@@ -11863,30 +11568,11 @@ var Corex = (() => {
                 },
                 {
                   guard: "closeOnSelect",
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
                 },
                 {
                   actions: ["selectItem"]
-                }
-              ],
-              "LAYER.ESCAPE": [
-                {
-                  guard: and2("isOpenControlled", "autoComplete"),
-                  actions: ["syncInputValue", "invokeOnClose"]
-                },
-                {
-                  guard: "autoComplete",
-                  target: "focused",
-                  actions: ["syncInputValue", "invokeOnClose"]
-                },
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "focused",
-                  actions: ["invokeOnClose", "setFinalFocus"]
                 }
               ],
               "TRIGGER.CLICK": [
@@ -11895,7 +11581,7 @@ var Corex = (() => {
                   actions: ["invokeOnClose"]
                 },
                 {
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["invokeOnClose"]
                 }
               ],
@@ -11907,7 +11593,7 @@ var Corex = (() => {
                 },
                 {
                   guard: and2("isCustomValue", not3("allowCustomValue")),
-                  target: "idle",
+                  target: "closed.idle",
                   actions: ["revertInputValue", "invokeOnClose"]
                 },
                 // == group 2 ==
@@ -11916,7 +11602,7 @@ var Corex = (() => {
                   actions: ["invokeOnClose"]
                 },
                 {
-                  target: "idle",
+                  target: "closed.idle",
                   actions: ["invokeOnClose"]
                 }
               ],
@@ -11926,7 +11612,7 @@ var Corex = (() => {
                   actions: ["invokeOnClose"]
                 },
                 {
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["invokeOnClose", "setFinalFocus"]
                 }
               ],
@@ -11936,167 +11622,140 @@ var Corex = (() => {
                   actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
                 },
                 {
-                  target: "focused",
+                  target: "closed.focused",
                   actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
                 }
               ]
-            }
-          },
-          suggesting: {
-            tags: ["open", "focused"],
-            effects: ["trackFocusVisible", "trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
-            entry: ["setInitialFocus"],
-            on: {
-              "CONTROLLED.CLOSE": [
-                {
-                  guard: "restoreFocus",
-                  target: "focused",
-                  actions: ["setFinalFocus"]
-                },
-                {
-                  target: "idle"
+            },
+            initial: "interacting",
+            states: {
+              interacting: {
+                on: {
+                  CHILDREN_CHANGE: [
+                    {
+                      guard: "isHighlightedItemRemoved",
+                      actions: ["clearHighlightedValue"]
+                    },
+                    {
+                      actions: ["scrollToHighlightedItem"]
+                    }
+                  ],
+                  "INPUT.HOME": {
+                    actions: ["highlightFirstItem"]
+                  },
+                  "INPUT.END": {
+                    actions: ["highlightLastItem"]
+                  },
+                  "INPUT.ARROW_DOWN": [
+                    {
+                      guard: and2("autoComplete", "isLastItemHighlighted"),
+                      actions: ["clearHighlightedValue", "scrollContentToTop"]
+                    },
+                    {
+                      actions: ["highlightNextItem"]
+                    }
+                  ],
+                  "INPUT.ARROW_UP": [
+                    {
+                      guard: and2("autoComplete", "isFirstItemHighlighted"),
+                      actions: ["clearHighlightedValue"]
+                    },
+                    {
+                      actions: ["highlightPrevItem"]
+                    }
+                  ],
+                  "INPUT.CHANGE": [
+                    {
+                      guard: "autoComplete",
+                      target: "suggesting",
+                      actions: ["setInputValue"]
+                    },
+                    {
+                      target: "suggesting",
+                      actions: ["clearHighlightedValue", "setInputValue"]
+                    }
+                  ],
+                  "ITEM.POINTER_MOVE": {
+                    actions: ["setHighlightedValue"]
+                  },
+                  "ITEM.POINTER_LEAVE": {
+                    actions: ["clearHighlightedValue"]
+                  },
+                  "LAYER.ESCAPE": [
+                    {
+                      guard: and2("isOpenControlled", "autoComplete"),
+                      actions: ["syncInputValue", "invokeOnClose"]
+                    },
+                    {
+                      guard: "autoComplete",
+                      target: "closed.focused",
+                      actions: ["syncInputValue", "invokeOnClose"]
+                    },
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      target: "closed.focused",
+                      actions: ["invokeOnClose", "setFinalFocus"]
+                    }
+                  ]
                 }
-              ],
-              CHILDREN_CHANGE: [
-                {
-                  guard: and2("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
-                  actions: ["clearHighlightedValue", "highlightFirstItem"]
-                },
-                {
-                  guard: "isHighlightedItemRemoved",
-                  actions: ["clearHighlightedValue"]
-                },
-                {
-                  guard: "autoHighlight",
-                  actions: ["highlightFirstItem"]
-                }
-              ],
-              "INPUT.ARROW_DOWN": {
-                target: "interacting",
-                actions: ["highlightNextItem"]
               },
-              "INPUT.ARROW_UP": {
-                target: "interacting",
-                actions: ["highlightPrevItem"]
-              },
-              "INPUT.HOME": {
-                target: "interacting",
-                actions: ["highlightFirstItem"]
-              },
-              "INPUT.END": {
-                target: "interacting",
-                actions: ["highlightLastItem"]
-              },
-              "INPUT.ENTER": [
-                // == group 1 ==
-                {
-                  guard: and2("isOpenControlled", "isCustomValue", not3("hasHighlightedItem"), not3("allowCustomValue")),
-                  actions: ["revertInputValue", "invokeOnClose"]
-                },
-                {
-                  guard: and2("isCustomValue", not3("hasHighlightedItem"), not3("allowCustomValue")),
-                  target: "focused",
-                  actions: ["revertInputValue", "invokeOnClose"]
-                },
-                // == group 2 ==
-                {
-                  guard: and2("isOpenControlled", "closeOnSelect"),
-                  actions: ["selectHighlightedItem", "invokeOnClose"]
-                },
-                {
-                  guard: "closeOnSelect",
-                  target: "focused",
-                  actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
-                },
-                {
-                  actions: ["selectHighlightedItem"]
+              suggesting: {
+                on: {
+                  CHILDREN_CHANGE: [
+                    {
+                      guard: and2("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
+                      actions: ["clearHighlightedValue", "highlightFirstItem"]
+                    },
+                    {
+                      guard: "isHighlightedItemRemoved",
+                      actions: ["clearHighlightedValue"]
+                    },
+                    {
+                      guard: "autoHighlight",
+                      actions: ["highlightFirstItem"]
+                    }
+                  ],
+                  "INPUT.ARROW_DOWN": {
+                    target: "interacting",
+                    actions: ["highlightNextItem"]
+                  },
+                  "INPUT.ARROW_UP": {
+                    target: "interacting",
+                    actions: ["highlightPrevItem"]
+                  },
+                  "INPUT.HOME": {
+                    target: "interacting",
+                    actions: ["highlightFirstItem"]
+                  },
+                  "INPUT.END": {
+                    target: "interacting",
+                    actions: ["highlightLastItem"]
+                  },
+                  "INPUT.CHANGE": {
+                    actions: ["setInputValue"]
+                  },
+                  "LAYER.ESCAPE": [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      target: "closed.focused",
+                      actions: ["invokeOnClose"]
+                    }
+                  ],
+                  "ITEM.POINTER_MOVE": {
+                    target: "interacting",
+                    actions: ["setHighlightedValue"]
+                  },
+                  "ITEM.POINTER_LEAVE": {
+                    actions: ["clearHighlightedValue"]
+                  }
                 }
-              ],
-              "INPUT.CHANGE": {
-                actions: ["setInputValue"]
-              },
-              "LAYER.ESCAPE": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "focused",
-                  actions: ["invokeOnClose"]
-                }
-              ],
-              "ITEM.POINTER_MOVE": {
-                target: "interacting",
-                actions: ["setHighlightedValue"]
-              },
-              "ITEM.POINTER_LEAVE": {
-                actions: ["clearHighlightedValue"]
-              },
-              "LAYER.INTERACT_OUTSIDE": [
-                // == group 1 ==
-                {
-                  guard: and2("isOpenControlled", "isCustomValue", not3("allowCustomValue")),
-                  actions: ["revertInputValue", "invokeOnClose"]
-                },
-                {
-                  guard: and2("isCustomValue", not3("allowCustomValue")),
-                  target: "idle",
-                  actions: ["revertInputValue", "invokeOnClose"]
-                },
-                // == group 2 ==
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "idle",
-                  actions: ["invokeOnClose"]
-                }
-              ],
-              "TRIGGER.CLICK": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "focused",
-                  actions: ["invokeOnClose"]
-                }
-              ],
-              "ITEM.CLICK": [
-                {
-                  guard: and2("isOpenControlled", "closeOnSelect"),
-                  actions: ["selectItem", "invokeOnClose"]
-                },
-                {
-                  guard: "closeOnSelect",
-                  target: "focused",
-                  actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
-                },
-                {
-                  actions: ["selectItem"]
-                }
-              ],
-              CLOSE: [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "focused",
-                  actions: ["invokeOnClose", "setFinalFocus"]
-                }
-              ],
-              "VALUE.CLEAR": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
-                },
-                {
-                  target: "focused",
-                  actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
-                }
-              ]
+              }
             }
           }
         },
@@ -12234,7 +11893,7 @@ var Corex = (() => {
               const nextValue = prop("multiple") ? addOrRemove(context.get("value"), highlightedValue) : [highlightedValue];
               (_a = prop("onSelect")) == null ? void 0 : _a({ value: nextValue, itemValue: highlightedValue });
               context.set("value", nextValue);
-              const inputValue = match2(prop("selectionBehavior"), {
+              const inputValue = match(prop("selectionBehavior"), {
                 preserve: context.get("inputValue"),
                 replace: collection22.stringifyMany(nextValue),
                 clear: ""
@@ -12268,7 +11927,7 @@ var Corex = (() => {
                 const nextValue = prop("multiple") ? addOrRemove(context.get("value"), event.value) : [event.value];
                 (_a = prop("onSelect")) == null ? void 0 : _a({ value: nextValue, itemValue: event.value });
                 context.set("value", nextValue);
-                const inputValue = match2(prop("selectionBehavior"), {
+                const inputValue = match(prop("selectionBehavior"), {
                   preserve: context.get("inputValue"),
                   replace: prop("collection").stringifyMany(nextValue),
                   clear: ""
@@ -12282,7 +11941,7 @@ var Corex = (() => {
               flush(() => {
                 const nextValue = remove(context.get("value"), event.value);
                 context.set("value", nextValue);
-                const inputValue = match2(prop("selectionBehavior"), {
+                const inputValue = match(prop("selectionBehavior"), {
                   preserve: context.get("inputValue"),
                   replace: prop("collection").stringifyMany(nextValue),
                   clear: ""
@@ -12322,7 +11981,7 @@ var Corex = (() => {
             },
             revertInputValue({ context, prop, computed }) {
               const selectionBehavior = prop("selectionBehavior");
-              const inputValue = match2(selectionBehavior, {
+              const inputValue = match(selectionBehavior, {
                 replace: computed("hasSelectedItems") ? computed("valueAsString") : "",
                 preserve: context.get("inputValue"),
                 clear: ""
@@ -12333,7 +11992,7 @@ var Corex = (() => {
               const { context, flush, event, prop } = params;
               flush(() => {
                 context.set("value", event.value);
-                const inputValue = match2(prop("selectionBehavior"), {
+                const inputValue = match(prop("selectionBehavior"), {
                   preserve: context.get("inputValue"),
                   replace: prop("collection").stringifyMany(event.value),
                   clear: ""
@@ -12345,7 +12004,7 @@ var Corex = (() => {
               const { context, flush, prop } = params;
               flush(() => {
                 context.set("value", []);
-                const inputValue = match2(prop("selectionBehavior"), {
+                const inputValue = match(prop("selectionBehavior"), {
                   preserve: context.get("inputValue"),
                   replace: prop("collection").stringifyMany([]),
                   clear: ""
@@ -12463,12 +12122,10 @@ var Corex = (() => {
                 const { context, prop } = params;
                 const collection22 = prop("collection");
                 const value = context.get("value");
-                const selectedItems = value.map((v2) => {
-                  const item = context.get("selectedItems").find((item2) => collection22.getItemValue(item2) === v2);
-                  return item || collection22.find(v2);
-                });
-                context.set("selectedItems", selectedItems);
-                const inputValue = match2(prop("selectionBehavior"), {
+                const selectedItemMap = context.get("selectedItemMap");
+                const next2 = deriveSelectionState({ values: value, collection: collection22, selectedItemMap });
+                context.set("selectedItemMap", next2.nextSelectedItemMap);
+                const inputValue = match(prop("selectionBehavior"), {
                   preserve: context.get("inputValue"),
                   replace: collection22.stringifyMany(value),
                   clear: ""
@@ -12486,61 +12143,6 @@ var Corex = (() => {
           }
         }
       });
-      props8 = createProps()([
-        "allowCustomValue",
-        "autoFocus",
-        "closeOnSelect",
-        "collection",
-        "composite",
-        "defaultHighlightedValue",
-        "defaultInputValue",
-        "defaultOpen",
-        "defaultValue",
-        "dir",
-        "disabled",
-        "disableLayer",
-        "form",
-        "getRootNode",
-        "highlightedValue",
-        "id",
-        "ids",
-        "inputBehavior",
-        "inputValue",
-        "invalid",
-        "loopFocus",
-        "multiple",
-        "name",
-        "navigate",
-        "onFocusOutside",
-        "onHighlightChange",
-        "onInputValueChange",
-        "onInteractOutside",
-        "onOpenChange",
-        "onOpenChange",
-        "onPointerDownOutside",
-        "onSelect",
-        "onValueChange",
-        "open",
-        "openOnChange",
-        "openOnClick",
-        "openOnKeyPress",
-        "placeholder",
-        "positioning",
-        "readOnly",
-        "required",
-        "scrollToIndexFn",
-        "selectionBehavior",
-        "translations",
-        "value",
-        "alwaysSubmitOnEnter"
-      ]);
-      splitProps8 = createSplitProps(props8);
-      itemGroupLabelProps = createProps()(["htmlFor"]);
-      splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
-      itemGroupProps = createProps()(["id"]);
-      splitItemGroupProps = createSplitProps(itemGroupProps);
-      itemProps3 = createProps()(["item", "persistFocus"]);
-      splitItemProps3 = createSplitProps(itemProps3);
       Combobox = class extends Component {
         constructor() {
           super(...arguments);
@@ -12586,9 +12188,9 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
+        initMachine(props) {
           const getCollection = () => this.getCollection();
-          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props28), {
+          return new VanillaMachine(machine8, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return getCollection();
             },
@@ -12596,13 +12198,13 @@ var Corex = (() => {
               if (details.open) {
                 this.options = this.allOptions;
               }
-              if (props28.onOpenChange) {
-                props28.onOpenChange(details);
+              if (props.onOpenChange) {
+                props.onOpenChange(details);
               }
             },
             onInputValueChange: (details) => {
-              if (props28.onInputValueChange) {
-                props28.onInputValueChange(details);
+              if (props.onInputValueChange) {
+                props.onInputValueChange(details);
               }
               if (this.el.hasAttribute("data-filter")) {
                 const filtered = this.allOptions.filter(
@@ -12755,7 +12357,7 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const allItems = JSON.parse(el.dataset.collection || "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const props28 = __spreadProps(__spreadValues({
+          const props = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             disabled: getBoolean(el, "disabled"),
@@ -12864,7 +12466,7 @@ var Corex = (() => {
               }
             }
           });
-          const combobox = new Combobox(el, props28);
+          const combobox = new Combobox(el, props);
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
@@ -13063,25 +12665,25 @@ var Corex = (() => {
     const dragging = state2.hasTag("dragging");
     const open = state2.hasTag("open");
     const focused = state2.hasTag("focused");
-    const getAreaChannels = (props28) => {
+    const getAreaChannels = (props) => {
       var _a, _b;
       const channels = areaValue.getChannels();
       return {
-        xChannel: (_a = props28.xChannel) != null ? _a : channels[1],
-        yChannel: (_b = props28.yChannel) != null ? _b : channels[2]
+        xChannel: (_a = props.xChannel) != null ? _a : channels[1],
+        yChannel: (_b = props.yChannel) != null ? _b : channels[2]
       };
     };
     const currentPlacement = context.get("currentPlacement");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: currentPlacement
     }));
-    function getSwatchTriggerState(props28) {
-      const color = normalizeColor(props28.value).toFormat(context.get("format"));
+    function getSwatchTriggerState(props) {
+      const color = normalizeColor(props.value).toFormat(context.get("format"));
       return {
         value: color,
         valueAsString: color.toString("hex"),
         checked: color.isEqual(value),
-        disabled: props28.disabled || !interactive
+        disabled: props.disabled || !interactive
       };
     }
     return {
@@ -13214,8 +12816,8 @@ var Corex = (() => {
           "data-focus": dataAttr(focused)
         }));
       },
-      getAreaProps(props28 = {}) {
-        const { xChannel, yChannel } = getAreaChannels(props28);
+      getAreaProps(props = {}) {
+        const { xChannel, yChannel } = getAreaChannels(props);
         const { areaStyles } = getColorAreaGradient(areaValue, {
           xChannel,
           yChannel,
@@ -13243,8 +12845,8 @@ var Corex = (() => {
           }, areaStyles)
         }));
       },
-      getAreaBackgroundProps(props28 = {}) {
-        const { xChannel, yChannel } = getAreaChannels(props28);
+      getAreaBackgroundProps(props = {}) {
+        const { xChannel, yChannel } = getAreaChannels(props);
         const { areaGradientStyles } = getColorAreaGradient(areaValue, {
           xChannel,
           yChannel,
@@ -13262,8 +12864,8 @@ var Corex = (() => {
           }, areaGradientStyles)
         }));
       },
-      getAreaThumbProps(props28 = {}) {
-        const { xChannel, yChannel } = getAreaChannels(props28);
+      getAreaThumbProps(props = {}) {
+        const { xChannel, yChannel } = getAreaChannels(props);
         const channel = { xChannel, yChannel };
         const xPercent = areaValue.getChannelValuePercent(xChannel);
         const yPercent = 1 - areaValue.getChannelValuePercent(yChannel);
@@ -13337,8 +12939,8 @@ var Corex = (() => {
           }
         }));
       },
-      getTransparencyGridProps(props28 = {}) {
-        const { size: size3 = "12px" } = props28;
+      getTransparencyGridProps(props = {}) {
+        const { size: size3 = "12px" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.transparencyGrid.attrs), {
           style: {
             "--size": size3,
@@ -13354,8 +12956,8 @@ var Corex = (() => {
           }
         }));
       },
-      getChannelSliderProps(props28) {
-        const { orientation = "horizontal", channel, format: format2 } = props28;
+      getChannelSliderProps(props) {
+        const { orientation = "horizontal", channel, format: format2 } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSlider.attrs), {
           "data-channel": channel,
           "data-orientation": orientation,
@@ -13374,8 +12976,8 @@ var Corex = (() => {
           }
         }));
       },
-      getChannelSliderTrackProps(props28) {
-        const { orientation = "horizontal", channel, format: format2 } = props28;
+      getChannelSliderTrackProps(props) {
+        const { orientation = "horizontal", channel, format: format2 } = props;
         const normalizedValue = format2 ? value.toFormat(format2) : areaValue;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderTrack.attrs), {
           id: getChannelSliderTrackId(scope, channel),
@@ -13394,8 +12996,8 @@ var Corex = (() => {
           }
         }));
       },
-      getChannelSliderLabelProps(props28) {
-        const { channel } = props28;
+      getChannelSliderLabelProps(props) {
+        const { channel } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderLabel.attrs), {
           "data-channel": channel,
           onClick(event) {
@@ -13411,13 +13013,13 @@ var Corex = (() => {
           }
         }));
       },
-      getChannelSliderValueTextProps(props28) {
+      getChannelSliderValueTextProps(props) {
         return normalize.element(__spreadProps(__spreadValues({}, parts9.channelSliderValueText.attrs), {
-          "data-channel": props28.channel
+          "data-channel": props.channel
         }));
       },
-      getChannelSliderThumbProps(props28) {
-        const { orientation = "horizontal", channel, format: format2 } = props28;
+      getChannelSliderThumbProps(props) {
+        const { orientation = "horizontal", channel, format: format2 } = props;
         const normalizedValue = format2 ? value.toFormat(format2) : areaValue;
         const channelRange = normalizedValue.getChannelRange(channel);
         const channelValue = normalizedValue.getChannelValue(channel);
@@ -13491,8 +13093,8 @@ var Corex = (() => {
           }
         }));
       },
-      getChannelInputProps(props28) {
-        const { channel } = props28;
+      getChannelInputProps(props) {
+        const { channel } = props;
         const isTextField = channel === "hex" || channel === "css";
         const channelRange = getChannelRange(value, channel);
         return normalize.input(__spreadProps(__spreadValues({}, parts9.channelInput.attrs), {
@@ -13578,8 +13180,8 @@ var Corex = (() => {
         }));
       },
       getSwatchTriggerState,
-      getSwatchTriggerProps(props28) {
-        const swatchState = getSwatchTriggerState(props28);
+      getSwatchTriggerProps(props) {
+        const swatchState = getSwatchTriggerState(props);
         return normalize.button(__spreadProps(__spreadValues({}, parts9.swatchTrigger.attrs), {
           disabled: swatchState.disabled,
           dir: prop("dir"),
@@ -13598,16 +13200,16 @@ var Corex = (() => {
           }
         }));
       },
-      getSwatchIndicatorProps(props28) {
-        const swatchState = getSwatchTriggerState(props28);
+      getSwatchIndicatorProps(props) {
+        const swatchState = getSwatchTriggerState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts9.swatchIndicator.attrs), {
           dir: prop("dir"),
           hidden: !swatchState.checked
         }));
       },
-      getSwatchProps(props28) {
-        const { respectAlpha = true } = props28;
-        const swatchState = getSwatchTriggerState(props28);
+      getSwatchProps(props) {
+        const { respectAlpha = true } = props;
+        const swatchState = getSwatchTriggerState(props);
         const color = swatchState.value.toString(respectAlpha ? "css" : "hex");
         return normalize.element(__spreadProps(__spreadValues({}, parts9.swatch.attrs), {
           dir: prop("dir"),
@@ -13685,17 +13287,45 @@ var Corex = (() => {
       return void 0;
     }
   }
-  var __defProp6, __defNormalProp6, __publicField6, generateRGB_R, generateRGB_G, generateRGB_B, generateHSL_H, generateHSL_S, generateHSL_L, generateHSB_H, generateHSB_S, generateHSB_B, isEqualObject, Color, HEX_COLOR_REGEX, RGB_COLOR_REGEX, HEX_STARTING_REGEX, _RGBColor, RGBColor, HSL_REGEX, _HSLColor, HSLColor, HSB_REGEX, _HSBColor, HSBColor, nativeColors, makeMap, nativeColorMap, parseColor, normalizeColor, anatomy9, parts9, getRootId9, getLabelId5, getHiddenInputId3, getControlId4, getTriggerId3, getContentId3, getPositionerId2, getFormatSelectId, getAreaId, getAreaGradientId, getAreaThumbId, getChannelSliderTrackId, getChannelSliderThumbId, getContentEl3, getAreaThumbEl, getChannelSliderThumbEl, getFormatSelectEl, getHiddenInputEl3, getAreaEl, getAreaValueFromPoint, getControlEl3, getTriggerEl2, getPositionerEl2, getChannelSliderTrackEl, getChannelSliderValueFromPoint, getChannelInputEls, getSliderBackground, formats, formatRegex, parse, HEX_REGEX, and3, hashObject, DEFAULT_COLOR, machine9, props9, splitProps9, areaProps, splitAreaProps, channelProps, splitChannelProps, swatchTriggerProps, splitSwatchTriggerProps, swatchProps, splitSwatchProps, transparencyGridProps, splitTransparencyGridProps, ColorPicker, ColorPickerHook;
+  var anatomy9, parts9, __defProp6, __defNormalProp6, __publicField6, generateRGB_R, generateRGB_G, generateRGB_B, generateHSL_H, generateHSL_S, generateHSL_L, generateHSB_H, generateHSB_S, generateHSB_B, isEqualObject, Color, HEX_COLOR_REGEX, RGB_COLOR_REGEX, HEX_STARTING_REGEX, _RGBColor, RGBColor, HSL_REGEX, _HSLColor, HSLColor, HSB_REGEX, _HSBColor, HSBColor, nativeColors, makeMap, nativeColorMap, parseColor, normalizeColor, getRootId9, getLabelId5, getHiddenInputId3, getControlId4, getTriggerId3, getContentId3, getPositionerId2, getFormatSelectId, getAreaId, getAreaGradientId, getAreaThumbId, getChannelSliderTrackId, getChannelSliderThumbId, getContentEl3, getAreaThumbEl, getChannelSliderThumbEl, getFormatSelectEl, getHiddenInputEl3, getAreaEl, getAreaValueFromPoint, getControlEl3, getTriggerEl2, getPositionerEl2, getChannelSliderTrackEl, getChannelSliderValueFromPoint, getChannelInputEls, getSliderBackground, formats, formatRegex, parse, HEX_REGEX, and3, hashObject, DEFAULT_COLOR, machine9, ColorPicker, ColorPickerHook;
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_QYWY7F3J();
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_PLUM2DEK();
+      init_chunk_G66USZ47();
+      init_chunk_3PXF3EVQ();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_BVJBLYEU();
+      anatomy9 = createAnatomy("color-picker", [
+        "root",
+        "label",
+        "control",
+        "trigger",
+        "positioner",
+        "content",
+        "area",
+        "areaThumb",
+        "valueText",
+        "areaBackground",
+        "channelSlider",
+        "channelSliderLabel",
+        "channelSliderTrack",
+        "channelSliderThumb",
+        "channelSliderValueText",
+        "channelInput",
+        "transparencyGrid",
+        "swatchGroup",
+        "swatchTrigger",
+        "swatchIndicator",
+        "swatch",
+        "eyeDropperTrigger",
+        "formatTrigger",
+        "formatSelect"
+      ]);
+      parts9 = anatomy9.build();
       __defProp6 = Object.defineProperty;
       __defNormalProp6 = (obj, key, value) => key in obj ? __defProp6(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField6 = (obj, key, value) => __defNormalProp6(obj, key + "", value);
+      __publicField6 = (obj, key, value) => __defNormalProp6(obj, typeof key !== "symbol" ? key + "" : key, value);
       generateRGB_R = (orientation, dir, zValue) => {
         const maskImage = `linear-gradient(to ${orientation[Number(!dir)]}, transparent, #000)`;
         const result = {
@@ -13978,16 +13608,16 @@ var Corex = (() => {
           const green = this.green / 255;
           const blue = this.blue / 255;
           const min4 = Math.min(red, green, blue);
-          const max4 = Math.max(red, green, blue);
-          const lightness = (max4 + min4) / 2;
-          const chroma = max4 - min4;
+          const max3 = Math.max(red, green, blue);
+          const lightness = (max3 + min4) / 2;
+          const chroma = max3 - min4;
           let hue = -1;
           let saturation = -1;
           if (chroma === 0) {
             hue = saturation = 0;
           } else {
-            saturation = chroma / (lightness < 0.5 ? max4 + min4 : 2 - max4 - min4);
-            switch (max4) {
+            saturation = chroma / (lightness < 0.5 ? max3 + min4 : 2 - max3 - min4);
+            switch (max3) {
               case red:
                 hue = (green - blue) / chroma + (green < blue ? 6 : 0);
                 break;
@@ -14341,33 +13971,6 @@ var Corex = (() => {
       normalizeColor = (v2) => {
         return typeof v2 === "string" ? parseColor(v2) : v2;
       };
-      anatomy9 = createAnatomy("color-picker", [
-        "root",
-        "label",
-        "control",
-        "trigger",
-        "positioner",
-        "content",
-        "area",
-        "areaThumb",
-        "valueText",
-        "areaBackground",
-        "channelSlider",
-        "channelSliderLabel",
-        "channelSliderTrack",
-        "channelSliderThumb",
-        "channelSliderValueText",
-        "channelInput",
-        "transparencyGrid",
-        "swatchGroup",
-        "swatchTrigger",
-        "swatchIndicator",
-        "swatch",
-        "eyeDropperTrigger",
-        "formatTrigger",
-        "formatSelect"
-      ]);
-      parts9 = anatomy9.build();
       getRootId9 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `color-picker:${ctx.id}`;
@@ -14454,8 +14057,8 @@ var Corex = (() => {
           ...queryAll(getControlEl3(ctx), "input[data-channel]")
         ];
       };
-      getSliderBackground = (props28) => {
-        const { channel, value, dir, orientation } = props28;
+      getSliderBackground = (props) => {
+        const { channel, value, dir, orientation } = props;
         const bgDirection = getSliderBackgroundDirection(orientation, dir);
         const { minValue, maxValue } = value.getChannelRange(channel);
         switch (channel) {
@@ -14496,18 +14099,18 @@ var Corex = (() => {
       };
       DEFAULT_COLOR = parse("#000000");
       machine9 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           var _a, _b;
-          const color = (_b = (_a = props28.value) != null ? _a : props28.defaultValue) != null ? _b : DEFAULT_COLOR;
+          const color = (_b = (_a = props.value) != null ? _a : props.defaultValue) != null ? _b : DEFAULT_COLOR;
           return __spreadProps(__spreadValues({
             dir: "ltr",
             defaultValue: DEFAULT_COLOR,
             defaultFormat: color.getFormat(),
             openAutoFocus: true
-          }, props28), {
+          }, props), {
             positioning: __spreadValues({
               placement: "bottom"
-            }, props28.positioning)
+            }, props.positioning)
           });
         },
         initialState({ prop }) {
@@ -14624,6 +14227,7 @@ var Corex = (() => {
             }
           },
           focused: {
+            id: "color-picker-focused",
             tags: ["closed", "focused"],
             on: {
               "CONTROLLED.OPEN": {
@@ -14665,6 +14269,7 @@ var Corex = (() => {
           open: {
             tags: ["open"],
             effects: ["trackPositioning", "trackDismissableElement"],
+            initial: "idle",
             on: {
               "CONTROLLED.CLOSE": [
                 {
@@ -14676,145 +14281,6 @@ var Corex = (() => {
                   target: "idle"
                 }
               ],
-              "TRIGGER.CLICK": [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "idle",
-                  actions: ["invokeOnClose"]
-                }
-              ],
-              "AREA.POINTER_DOWN": {
-                target: "open:dragging",
-                actions: ["setActiveChannel", "setAreaColorFromPoint", "focusAreaThumb"]
-              },
-              "AREA.FOCUS": {
-                actions: ["setActiveChannel"]
-              },
-              "CHANNEL_SLIDER.POINTER_DOWN": {
-                target: "open:dragging",
-                actions: ["setActiveChannel", "setChannelColorFromPoint", "focusChannelThumb"]
-              },
-              "CHANNEL_SLIDER.FOCUS": {
-                actions: ["setActiveChannel"]
-              },
-              "AREA.ARROW_LEFT": {
-                actions: ["decrementAreaXChannel"]
-              },
-              "AREA.ARROW_RIGHT": {
-                actions: ["incrementAreaXChannel"]
-              },
-              "AREA.ARROW_UP": {
-                actions: ["incrementAreaYChannel"]
-              },
-              "AREA.ARROW_DOWN": {
-                actions: ["decrementAreaYChannel"]
-              },
-              "AREA.PAGE_UP": {
-                actions: ["incrementAreaXChannel"]
-              },
-              "AREA.PAGE_DOWN": {
-                actions: ["decrementAreaXChannel"]
-              },
-              "CHANNEL_SLIDER.ARROW_LEFT": {
-                actions: ["decrementChannel"]
-              },
-              "CHANNEL_SLIDER.ARROW_RIGHT": {
-                actions: ["incrementChannel"]
-              },
-              "CHANNEL_SLIDER.ARROW_UP": {
-                actions: ["incrementChannel"]
-              },
-              "CHANNEL_SLIDER.ARROW_DOWN": {
-                actions: ["decrementChannel"]
-              },
-              "CHANNEL_SLIDER.PAGE_UP": {
-                actions: ["incrementChannel"]
-              },
-              "CHANNEL_SLIDER.PAGE_DOWN": {
-                actions: ["decrementChannel"]
-              },
-              "CHANNEL_SLIDER.HOME": {
-                actions: ["setChannelToMin"]
-              },
-              "CHANNEL_SLIDER.END": {
-                actions: ["setChannelToMax"]
-              },
-              "CHANNEL_INPUT.BLUR": {
-                actions: ["setChannelColorFromInput"]
-              },
-              INTERACT_OUTSIDE: [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  guard: "shouldRestoreFocus",
-                  target: "focused",
-                  actions: ["invokeOnClose", "setReturnFocus"]
-                },
-                {
-                  target: "idle",
-                  actions: ["invokeOnClose"]
-                }
-              ],
-              CLOSE: [
-                {
-                  guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "idle",
-                  actions: ["invokeOnClose"]
-                }
-              ],
-              "SWATCH_TRIGGER.CLICK": [
-                {
-                  guard: and3("isOpenControlled", "closeOnSelect"),
-                  actions: ["setValue", "invokeOnClose"]
-                },
-                {
-                  guard: "closeOnSelect",
-                  target: "focused",
-                  actions: ["setValue", "invokeOnClose", "setReturnFocus"]
-                },
-                {
-                  actions: ["setValue"]
-                }
-              ]
-            }
-          },
-          "open:dragging": {
-            tags: ["open"],
-            exit: ["clearActiveChannel"],
-            effects: ["trackPointerMove", "disableTextSelection", "trackPositioning", "trackDismissableElement"],
-            on: {
-              "CONTROLLED.CLOSE": [
-                {
-                  guard: "shouldRestoreFocus",
-                  target: "focused",
-                  actions: ["setReturnFocus"]
-                },
-                {
-                  target: "idle"
-                }
-              ],
-              "AREA.POINTER_MOVE": {
-                actions: ["setAreaColorFromPoint", "focusAreaThumb"]
-              },
-              "AREA.POINTER_UP": {
-                target: "open",
-                actions: ["invokeOnChangeEnd"]
-              },
-              "CHANNEL_SLIDER.POINTER_MOVE": {
-                actions: ["setChannelColorFromPoint", "focusChannelThumb"]
-              },
-              "CHANNEL_SLIDER.POINTER_UP": {
-                target: "open",
-                actions: ["invokeOnChangeEnd"]
-              },
               INTERACT_OUTSIDE: [
                 {
                   guard: "isOpenControlled",
@@ -14840,6 +14306,116 @@ var Corex = (() => {
                   actions: ["invokeOnClose"]
                 }
               ]
+            },
+            states: {
+              idle: {
+                on: {
+                  "TRIGGER.CLICK": [
+                    {
+                      guard: "isOpenControlled",
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      target: "#color-picker-focused",
+                      actions: ["invokeOnClose"]
+                    }
+                  ],
+                  "AREA.POINTER_DOWN": {
+                    target: "dragging",
+                    actions: ["setActiveChannel", "setAreaColorFromPoint", "focusAreaThumb"]
+                  },
+                  "AREA.FOCUS": {
+                    actions: ["setActiveChannel"]
+                  },
+                  "CHANNEL_SLIDER.POINTER_DOWN": {
+                    target: "dragging",
+                    actions: ["setActiveChannel", "setChannelColorFromPoint", "focusChannelThumb"]
+                  },
+                  "CHANNEL_SLIDER.FOCUS": {
+                    actions: ["setActiveChannel"]
+                  },
+                  "AREA.ARROW_LEFT": {
+                    actions: ["decrementAreaXChannel"]
+                  },
+                  "AREA.ARROW_RIGHT": {
+                    actions: ["incrementAreaXChannel"]
+                  },
+                  "AREA.ARROW_UP": {
+                    actions: ["incrementAreaYChannel"]
+                  },
+                  "AREA.ARROW_DOWN": {
+                    actions: ["decrementAreaYChannel"]
+                  },
+                  "AREA.PAGE_UP": {
+                    actions: ["incrementAreaXChannel"]
+                  },
+                  "AREA.PAGE_DOWN": {
+                    actions: ["decrementAreaXChannel"]
+                  },
+                  "CHANNEL_SLIDER.ARROW_LEFT": {
+                    actions: ["decrementChannel"]
+                  },
+                  "CHANNEL_SLIDER.ARROW_RIGHT": {
+                    actions: ["incrementChannel"]
+                  },
+                  "CHANNEL_SLIDER.ARROW_UP": {
+                    actions: ["incrementChannel"]
+                  },
+                  "CHANNEL_SLIDER.ARROW_DOWN": {
+                    actions: ["decrementChannel"]
+                  },
+                  "CHANNEL_SLIDER.PAGE_UP": {
+                    actions: ["incrementChannel"]
+                  },
+                  "CHANNEL_SLIDER.PAGE_DOWN": {
+                    actions: ["decrementChannel"]
+                  },
+                  "CHANNEL_SLIDER.HOME": {
+                    actions: ["setChannelToMin"]
+                  },
+                  "CHANNEL_SLIDER.END": {
+                    actions: ["setChannelToMax"]
+                  },
+                  "CHANNEL_INPUT.BLUR": {
+                    actions: ["setChannelColorFromInput"]
+                  },
+                  "SWATCH_TRIGGER.CLICK": [
+                    {
+                      guard: and3("isOpenControlled", "closeOnSelect"),
+                      actions: ["setValue", "invokeOnClose"]
+                    },
+                    {
+                      guard: "closeOnSelect",
+                      target: "focused",
+                      actions: ["setValue", "invokeOnClose", "setReturnFocus"]
+                    },
+                    {
+                      actions: ["setValue"]
+                    }
+                  ]
+                }
+              },
+              dragging: {
+                tags: ["dragging"],
+                exit: ["clearActiveChannel"],
+                effects: ["trackPointerMove", "disableTextSelection"],
+                on: {
+                  "AREA.POINTER_MOVE": {
+                    actions: ["setAreaColorFromPoint", "focusAreaThumb"]
+                  },
+                  "AREA.POINTER_UP": {
+                    target: "idle",
+                    actions: ["invokeOnChangeEnd"]
+                  },
+                  "CHANNEL_SLIDER.POINTER_MOVE": {
+                    actions: ["setChannelColorFromPoint", "focusChannelThumb"]
+                  },
+                  "CHANNEL_SLIDER.POINTER_UP": {
+                    target: "idle",
+                    actions: ["invokeOnChangeEnd"]
+                  }
+                }
+              }
             }
           }
         },
@@ -15099,51 +14675,10 @@ var Corex = (() => {
           }
         }
       });
-      props9 = createProps()([
-        "closeOnSelect",
-        "dir",
-        "disabled",
-        "format",
-        "defaultFormat",
-        "getRootNode",
-        "id",
-        "ids",
-        "initialFocusEl",
-        "inline",
-        "name",
-        "positioning",
-        "onFocusOutside",
-        "onFormatChange",
-        "onInteractOutside",
-        "onOpenChange",
-        "onPointerDownOutside",
-        "onValueChange",
-        "onValueChangeEnd",
-        "defaultOpen",
-        "open",
-        "positioning",
-        "required",
-        "readOnly",
-        "value",
-        "defaultValue",
-        "invalid",
-        "openAutoFocus"
-      ]);
-      splitProps9 = createSplitProps(props9);
-      areaProps = createProps()(["xChannel", "yChannel"]);
-      splitAreaProps = createSplitProps(areaProps);
-      channelProps = createProps()(["channel", "orientation"]);
-      splitChannelProps = createSplitProps(channelProps);
-      swatchTriggerProps = createProps()(["value", "disabled"]);
-      splitSwatchTriggerProps = createSplitProps(swatchTriggerProps);
-      swatchProps = createProps()(["value", "respectAlpha"]);
-      splitSwatchProps = createSplitProps(swatchProps);
-      transparencyGridProps = createProps()(["size"]);
-      splitTransparencyGridProps = createSplitProps(transparencyGridProps);
       ColorPicker = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine9, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine9, props);
         }
         initApi() {
           return connect9(this.machine.service, normalizeProps);
@@ -15483,6 +15018,28 @@ var Corex = (() => {
           (_a = this.colorPicker) == null ? void 0 : _a.destroy();
         }
       };
+    }
+  });
+
+  // ../priv/static/chunk-5DET2KLQ.mjs
+  function memo(getDeps, fn, opts) {
+    let deps = [];
+    let result;
+    return (depArgs) => {
+      var _a;
+      const newDeps = getDeps(depArgs);
+      const depsChanged = newDeps.length !== deps.length || newDeps.some((dep, index) => !isEqual(deps[index], dep));
+      if (!depsChanged) return result;
+      deps = newDeps;
+      result = fn(newDeps, depArgs);
+      (_a = opts == null ? void 0 : opts.onChange) == null ? void 0 : _a.call(opts, result);
+      return result;
+    };
+  }
+  var init_chunk_5DET2KLQ = __esm({
+    "../priv/static/chunk-5DET2KLQ.mjs"() {
+      "use strict";
+      init_chunk_BVJBLYEU();
     }
   });
 
@@ -16009,13 +15566,13 @@ var Corex = (() => {
       case "hour": {
         let hours = value.hour;
         let min4 = 0;
-        let max4 = 23;
+        let max3 = 23;
         if ((options === null || options === void 0 ? void 0 : options.hourCycle) === 12) {
           let isPM = hours >= 12;
           min4 = isPM ? 12 : 0;
-          max4 = isPM ? 23 : 11;
+          max3 = isPM ? 23 : 11;
         }
-        mutable.hour = $735220c2d4774dd3$var$cycleValue(hours, amount, min4, max4, options === null || options === void 0 ? void 0 : options.round);
+        mutable.hour = $735220c2d4774dd3$var$cycleValue(hours, amount, min4, max3, options === null || options === void 0 ? void 0 : options.round);
         break;
       }
       case "minute":
@@ -16032,18 +15589,18 @@ var Corex = (() => {
     }
     return mutable;
   }
-  function $735220c2d4774dd3$var$cycleValue(value, amount, min4, max4, round3 = false) {
+  function $735220c2d4774dd3$var$cycleValue(value, amount, min4, max3, round3 = false) {
     if (round3) {
       value += Math.sign(amount);
-      if (value < min4) value = max4;
+      if (value < min4) value = max3;
       let div = Math.abs(amount);
       if (amount > 0) value = Math.ceil(value / div) * div;
       else value = Math.floor(value / div) * div;
-      if (value > max4) value = min4;
+      if (value > max3) value = min4;
     } else {
       value += amount;
-      if (value < min4) value = max4 - (min4 - value - 1);
-      else if (value > max4) value = min4 + (value - max4 - 1);
+      if (value < min4) value = max3 - (min4 - value - 1);
+      else if (value > max3) value = min4 + (value - max3 - 1);
     }
     return value;
   }
@@ -16073,11 +15630,11 @@ var Corex = (() => {
     switch (field) {
       case "hour": {
         let min4 = 0;
-        let max4 = 23;
+        let max3 = 23;
         if ((options === null || options === void 0 ? void 0 : options.hourCycle) === 12) {
           let isPM = dateTime.hour >= 12;
           min4 = isPM ? 12 : 0;
-          max4 = isPM ? 23 : 11;
+          max3 = isPM ? 23 : 11;
         }
         let plainDateTime = (0, $11d87f3f76e88657$export$b21e0b124e224484)(dateTime);
         let minDate = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)($735220c2d4774dd3$export$e5d5e1c1822b6e56(plainDateTime, {
@@ -16088,7 +15645,7 @@ var Corex = (() => {
           (0, $11d87f3f76e88657$export$5107c82f94518f5c)(minDate, dateTime.timeZone, "later")
         ].filter((ms2) => (0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms2, dateTime.timeZone).day === minDate.day)[0];
         let maxDate = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)($735220c2d4774dd3$export$e5d5e1c1822b6e56(plainDateTime, {
-          hour: max4
+          hour: max3
         }), new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
         let maxAbsolute = [
           (0, $11d87f3f76e88657$export$5107c82f94518f5c)(maxDate, dateTime.timeZone, "earlier"),
@@ -16133,9 +15690,9 @@ var Corex = (() => {
     date.day = $fae977aafc393c5c$var$parseNumber(m2[3], 1, date.calendar.getDaysInMonth(date));
     return date;
   }
-  function $fae977aafc393c5c$var$parseNumber(value, min4, max4) {
+  function $fae977aafc393c5c$var$parseNumber(value, min4, max3) {
     let val = Number(value);
-    if (val < min4 || val > max4) throw new RangeError(`Value out of range: ${min4} <= ${val} <= ${max4}`);
+    if (val < min4 || val > max3) throw new RangeError(`Value out of range: ${min4} <= ${val} <= ${max3}`);
     return val;
   }
   function $fae977aafc393c5c$export$f59dee82248f5ad4(time) {
@@ -16229,14 +15786,14 @@ var Corex = (() => {
       // use local timezone
     }));
     let min4 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 0)).find((p2) => p2.type === "hour").value, 10);
-    let max4 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 23)).find((p2) => p2.type === "hour").value, 10);
-    if (min4 === 0 && max4 === 23) return "h23";
-    if (min4 === 24 && max4 === 23) return "h24";
-    if (min4 === 0 && max4 === 11) return "h11";
-    if (min4 === 12 && max4 === 11) return "h12";
+    let max3 = parseInt(formatter.formatToParts(new Date(2020, 2, 3, 23)).find((p2) => p2.type === "hour").value, 10);
+    if (min4 === 0 && max3 === 23) return "h23";
+    if (min4 === 24 && max3 === 23) return "h24";
+    if (min4 === 0 && max3 === 11) return "h11";
+    if (min4 === 12 && max3 === 11) return "h12";
     throw new Error("Unexpected hour cycle result");
   }
-  function alignCenter(date, duration, locale, min4, max4) {
+  function alignCenter(date, duration, locale, min4, max3) {
     const halfDuration = {};
     for (let prop in duration) {
       const key = prop;
@@ -16248,9 +15805,9 @@ var Corex = (() => {
       }
     }
     const aligned = alignStart(date, duration, locale).subtract(halfDuration);
-    return constrainStart(date, aligned, duration, locale, min4, max4);
+    return constrainStart(date, aligned, duration, locale, min4, max3);
   }
-  function alignStart(date, duration, locale, min4, max4) {
+  function alignStart(date, duration, locale, min4, max3) {
     let aligned = date;
     if (duration.years) {
       aligned = $14e0f24ef4ac5c92$export$f91e89d3d0406102(date);
@@ -16259,9 +15816,9 @@ var Corex = (() => {
     } else if (duration.weeks) {
       aligned = $14e0f24ef4ac5c92$export$42c81a444fbfb5d4(date, locale);
     }
-    return constrainStart(date, aligned, duration, locale, min4, max4);
+    return constrainStart(date, aligned, duration, locale, min4, max3);
   }
-  function alignEnd(date, duration, locale, min4, max4) {
+  function alignEnd(date, duration, locale, min4, max3) {
     let d2 = __spreadValues({}, duration);
     if (d2.days) {
       d2.days--;
@@ -16273,14 +15830,14 @@ var Corex = (() => {
       d2.years--;
     }
     let aligned = alignStart(date, duration, locale).subtract(d2);
-    return constrainStart(date, aligned, duration, locale, min4, max4);
+    return constrainStart(date, aligned, duration, locale, min4, max3);
   }
-  function constrainStart(date, aligned, duration, locale, min4, max4) {
+  function constrainStart(date, aligned, duration, locale, min4, max3) {
     if (min4 && date.compare(min4) >= 0) {
       aligned = $14e0f24ef4ac5c92$export$a75f2bff57811055(aligned, alignStart($11d87f3f76e88657$export$93522d1a439f3617(min4), duration, locale));
     }
-    if (max4 && date.compare(max4) <= 0) {
-      aligned = $14e0f24ef4ac5c92$export$5c333a116e949cdd(aligned, alignEnd($11d87f3f76e88657$export$93522d1a439f3617(max4), duration, locale));
+    if (max3 && date.compare(max3) <= 0) {
+      aligned = $14e0f24ef4ac5c92$export$5c333a116e949cdd(aligned, alignEnd($11d87f3f76e88657$export$93522d1a439f3617(max3), duration, locale));
     }
     return aligned;
   }
@@ -16307,15 +15864,15 @@ var Corex = (() => {
     }
     return constrainedDateOnly;
   }
-  function alignDate(date, alignment, duration, locale, min4, max4) {
+  function alignDate(date, alignment, duration, locale, min4, max3) {
     switch (alignment) {
       case "start":
-        return alignStart(date, duration, locale, min4, max4);
+        return alignStart(date, duration, locale, min4, max3);
       case "end":
-        return alignEnd(date, duration, locale, min4, max4);
+        return alignEnd(date, duration, locale, min4, max3);
       case "center":
       default:
-        return alignCenter(date, duration, locale, min4, max4);
+        return alignCenter(date, duration, locale, min4, max3);
     }
   }
   function isDateEqual(dateA, dateB) {
@@ -16350,26 +15907,32 @@ var Corex = (() => {
     return startDate.add(clone);
   }
   function getEraFormat(date) {
-    return (date == null ? void 0 : date.calendar.identifier) === "gregory" && date.era === "BC" ? "short" : void 0;
+    if (!date) return void 0;
+    const id = date.calendar.identifier;
+    if (id === "gregory" || id === "iso8601") {
+      return date.era === "BC" ? "short" : void 0;
+    }
+    return "short";
   }
-  function getDayFormatter(locale, timeZone) {
-    const date = $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
+  function getDayFormatter(locale, timeZone, referenceDate) {
+    const date = referenceDate != null ? referenceDate : $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
     return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
       weekday: "long",
       month: "long",
       year: "numeric",
       day: "numeric",
       era: getEraFormat(date),
+      calendar: date.calendar.identifier,
       timeZone
     });
   }
-  function getMonthFormatter(locale, timeZone) {
-    const date = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone);
+  function getMonthFormatter(locale, timeZone, referenceDate) {
+    const date = referenceDate != null ? referenceDate : $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone);
     return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
       month: "long",
       year: "numeric",
       era: getEraFormat(date),
-      calendar: date == null ? void 0 : date.calendar.identifier,
+      calendar: date.calendar.identifier,
       timeZone
     });
   }
@@ -16450,12 +16013,25 @@ var Corex = (() => {
     const format = getWeekdayFormats(locale, timeZone);
     return weeks.map((index) => format(firstDayOfWeek.add({ days: index })));
   }
-  function getMonthNames(locale, format = "long") {
-    const date = new Date(2021, 0, 1);
+  function getMonthNames(locale, format = "long", referenceDate) {
+    if (!referenceDate || referenceDate.calendar.identifier === "gregory" || referenceDate.calendar.identifier === "iso8601") {
+      const date = new Date(2021, 0, 1);
+      const monthNames2 = [];
+      for (let i2 = 0; i2 < 12; i2++) {
+        monthNames2.push(date.toLocaleString(locale, { month: format }));
+        date.setMonth(date.getMonth() + 1);
+      }
+      return monthNames2;
+    }
+    const monthCount = referenceDate.calendar.getMonthsInYear(referenceDate);
+    const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+      month: format,
+      calendar: referenceDate.calendar.identifier
+    });
     const monthNames = [];
-    for (let i2 = 0; i2 < 12; i2++) {
-      monthNames.push(date.toLocaleString(locale, { month: format }));
-      date.setMonth(date.getMonth() + 1);
+    for (let month = 1; month <= monthCount; month++) {
+      const d2 = referenceDate.set({ month });
+      monthNames.push(formatter.format(d2.toDate("UTC")));
     }
     return monthNames;
   }
@@ -16479,6 +16055,13 @@ var Corex = (() => {
     for (let year = range.from; year <= range.to; year += 1) years.push(year);
     return years;
   }
+  function getDefaultYearRange(referenceDate, min4, max3) {
+    var _a, _b;
+    const calendar = referenceDate.calendar;
+    const fromYear = (_a = min4 == null ? void 0 : min4.year) != null ? _a : $11d87f3f76e88657$export$b4a036af3fc0b032(new $35ea8db9cb2ccb90$export$99faa760c7908e4f(DEFAULT_MIN_YEAR, 1, 1), calendar).year;
+    const toYear = (_b = max3 == null ? void 0 : max3.year) != null ? _b : $11d87f3f76e88657$export$b4a036af3fc0b032(new $35ea8db9cb2ccb90$export$99faa760c7908e4f(DEFAULT_MAX_YEAR, 12, 31), calendar).year;
+    return { from: fromYear, to: toYear };
+  }
   function normalizeYear(year) {
     if (!year) return;
     if (year.length === 3) return year.padEnd(4, "0");
@@ -16501,8 +16084,10 @@ var Corex = (() => {
     }
     return years;
   }
-  function getTodayDate(timeZone) {
-    return $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone != null ? timeZone : $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
+  function getTodayDate(timeZone, calendar) {
+    const tod = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone != null ? timeZone : $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
+    if (calendar) return $11d87f3f76e88657$export$b4a036af3fc0b032(tod, calendar);
+    return tod;
   }
   function getAdjustedDateFn(visibleDuration, locale, minValue, maxValue) {
     return function getDate(options) {
@@ -16657,84 +16242,40 @@ var Corex = (() => {
     }, {});
   }
   function getDateRangePreset(preset, locale, timeZone) {
-    const today3 = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
+    const today = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
     switch (preset) {
       case "thisWeek":
-        return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today3, locale), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today3, locale)];
+        return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today, locale), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today, locale)];
       case "thisMonth":
-        return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3), today3];
+        return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today), today];
       case "thisQuarter":
-        return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3).add({ months: -((today3.month - 1) % 3) }), today3];
+        return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today).add({ months: -((today.month - 1) % 3) }), today];
       case "thisYear":
-        return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today3), today3];
+        return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today), today];
       case "last3Days":
-        return [today3.add({ days: -2 }), today3];
+        return [today.add({ days: -2 }), today];
       case "last7Days":
-        return [today3.add({ days: -6 }), today3];
+        return [today.add({ days: -6 }), today];
       case "last14Days":
-        return [today3.add({ days: -13 }), today3];
+        return [today.add({ days: -13 }), today];
       case "last30Days":
-        return [today3.add({ days: -29 }), today3];
+        return [today.add({ days: -29 }), today];
       case "last90Days":
-        return [today3.add({ days: -89 }), today3];
+        return [today.add({ days: -89 }), today];
       case "lastMonth":
-        return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3.add({ months: -1 })), $14e0f24ef4ac5c92$export$a2258d9c4118825c(today3.add({ months: -1 }))];
+        return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today.add({ months: -1 })), $14e0f24ef4ac5c92$export$a2258d9c4118825c(today.add({ months: -1 }))];
       case "lastQuarter":
         return [
-          $14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3.add({ months: -((today3.month - 1) % 3) - 3 })),
-          $14e0f24ef4ac5c92$export$a2258d9c4118825c(today3.add({ months: -((today3.month - 1) % 3) - 1 }))
+          $14e0f24ef4ac5c92$export$a5a3b454ada2268e(today.add({ months: -((today.month - 1) % 3) - 3 })),
+          $14e0f24ef4ac5c92$export$a2258d9c4118825c(today.add({ months: -((today.month - 1) % 3) - 1 }))
         ];
       case "lastWeek":
-        return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today3, locale).add({ weeks: -1 }), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today3, locale).add({ weeks: -1 })];
+        return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today, locale).add({ weeks: -1 }), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today, locale).add({ weeks: -1 })];
       case "lastYear":
-        return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today3.add({ years: -1 })), $14e0f24ef4ac5c92$export$8b7aa55c66d5569e(today3.add({ years: -1 }))];
+        return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today.add({ years: -1 })), $14e0f24ef4ac5c92$export$8b7aa55c66d5569e(today.add({ years: -1 }))];
       default:
         throw new Error(`Invalid date range preset: ${preset}`);
     }
-  }
-  function createLiveRegion(opts = {}) {
-    var _a;
-    const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
-    const win = (_a = doc.defaultView) != null ? _a : window;
-    const parent = root != null ? root : doc.body;
-    function announce(message, delay2) {
-      const oldRegion = doc.getElementById(ID);
-      oldRegion == null ? void 0 : oldRegion.remove();
-      delay2 = delay2 != null ? delay2 : _delay;
-      const region = doc.createElement("span");
-      region.id = ID;
-      region.dataset.liveAnnouncer = "true";
-      const role = level !== "assertive" ? "status" : "alert";
-      region.setAttribute("aria-live", level);
-      region.setAttribute("role", role);
-      Object.assign(region.style, {
-        border: "0",
-        clip: "rect(0 0 0 0)",
-        height: "1px",
-        margin: "-1px",
-        overflow: "hidden",
-        padding: "0",
-        position: "absolute",
-        width: "1px",
-        whiteSpace: "nowrap",
-        wordWrap: "normal"
-      });
-      parent.appendChild(region);
-      win.setTimeout(() => {
-        region.textContent = message;
-      }, delay2);
-    }
-    function destroy() {
-      const oldRegion = doc.getElementById(ID);
-      oldRegion == null ? void 0 : oldRegion.remove();
-    }
-    return {
-      announce,
-      destroy,
-      toJSON() {
-        return ID;
-      }
-    };
   }
   function adjustStartAndEndDate(value) {
     const [startDate, endDate] = value;
@@ -16752,7 +16293,7 @@ var Corex = (() => {
     return values.slice().filter((date) => date != null).sort((a2, b2) => a2.compare(b2));
   }
   function getRoleDescription(view) {
-    return match2(view, {
+    return match(view, {
       year: "calendar decade",
       month: "calendar year",
       day: "calendar month"
@@ -16813,7 +16354,7 @@ var Corex = (() => {
     const interactive = computed("isInteractive");
     const empty = selectedValue.length === 0;
     const min4 = prop("min");
-    const max4 = prop("max");
+    const max3 = prop("max");
     const locale = prop("locale");
     const timeZone = prop("timeZone");
     const startOfWeek = prop("startOfWeek");
@@ -16834,43 +16375,43 @@ var Corex = (() => {
       const numOfWeeks = prop("fixedWeeks") ? 6 : void 0;
       return getMonthDays(from, locale, numOfWeeks, startOfWeek);
     }
-    function getMonths(props28 = {}) {
-      const { format } = props28;
-      return getMonthNames(locale, format).map((label, index) => {
+    function getMonths(props = {}) {
+      const { format } = props;
+      return getMonthNames(locale, format, focusedValue).map((label, index) => {
         const value = index + 1;
         const dateValue = focusedValue.set({ month: value });
-        const disabled2 = isDateOutsideRange(dateValue, min4, max4);
+        const disabled2 = isDateOutsideRange(dateValue, min4, max3);
         return { label, value, disabled: disabled2 };
       });
     }
     function getYears() {
-      var _a, _b;
-      const range = getYearsRange({ from: (_a = min4 == null ? void 0 : min4.year) != null ? _a : 1900, to: (_b = max4 == null ? void 0 : max4.year) != null ? _b : 2100 });
+      const defaultRange = getDefaultYearRange(focusedValue, min4, max3);
+      const range = getYearsRange(defaultRange);
       return range.map((year) => ({
         label: year.toString(),
         value: year,
-        disabled: !isValueWithinRange(year, min4 == null ? void 0 : min4.year, max4 == null ? void 0 : max4.year)
+        disabled: !isValueWithinRange(year, min4 == null ? void 0 : min4.year, max3 == null ? void 0 : max3.year)
       }));
     }
     function isUnavailable(date) {
-      return isDateUnavailable(date, isDateUnavailableFn, locale, min4, max4);
+      return isDateUnavailable(date, isDateUnavailableFn, locale, min4, max3);
     }
     function focusMonth(month) {
-      const date = startValue != null ? startValue : getTodayDate(timeZone);
+      const date = startValue != null ? startValue : getTodayDate(timeZone, focusedValue.calendar);
       send({ type: "FOCUS.SET", value: date.set({ month }) });
     }
     function focusYear(year) {
-      const date = startValue != null ? startValue : getTodayDate(timeZone);
+      const date = startValue != null ? startValue : getTodayDate(timeZone, focusedValue.calendar);
       send({ type: "FOCUS.SET", value: date.set({ year }) });
     }
-    function getYearTableCellState(props28) {
-      const { value, disabled: disabled2 } = props28;
+    function getYearTableCellState(props) {
+      const { value, disabled: disabled2 } = props;
       const dateValue = focusedValue.set({ year: value });
       const decadeYears = getDecadeRange(startValue.year, { strict: true });
       const isOutsideVisibleRange = !decadeYears.includes(value);
-      const isOutsideRange = isValueWithinRange(value, min4 == null ? void 0 : min4.year, max4 == null ? void 0 : max4.year);
+      const isOutsideRange = isValueWithinRange(value, min4 == null ? void 0 : min4.year, max3 == null ? void 0 : max3.year);
       const cellState = {
-        focused: focusedValue.year === props28.value,
+        focused: focusedValue.year === props.value,
         selectable: isOutsideVisibleRange || isOutsideRange,
         outsideRange: isOutsideVisibleRange,
         selected: !!selectedValue.find((date) => date && date.year === value),
@@ -16883,13 +16424,13 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getMonthTableCellState(props28) {
-      const { value, disabled: disabled2 } = props28;
+    function getMonthTableCellState(props) {
+      const { value, disabled: disabled2 } = props;
       const dateValue = focusedValue.set({ month: value });
-      const formatter = getMonthFormatter(locale, timeZone);
+      const formatter = getMonthFormatter(locale, timeZone, focusedValue);
       const cellState = {
-        focused: focusedValue.month === props28.value,
-        selectable: !isDateOutsideRange(dateValue, min4, max4),
+        focused: focusedValue.month === props.value,
+        selectable: !isDateOutsideRange(dateValue, min4, max3),
         selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
         valueText: formatter.format(dateValue.toDate(timeZone)),
         inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
@@ -16900,9 +16441,9 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getDayTableCellState(props28) {
-      const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props28;
-      const formatter = getDayFormatter(locale, timeZone);
+    function getDayTableCellState(props) {
+      const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props;
+      const formatter = getDayFormatter(locale, timeZone, focusedValue);
       const unitDuration = getUnitDuration(computed("visibleDuration"));
       const outsideDaySelectable = prop("outsideDaySelectable");
       const end = visibleRange.start.add(unitDuration).subtract({ days: 1 });
@@ -16916,11 +16457,11 @@ var Corex = (() => {
       const isLastInHoveredRange = hasHoveredRange && isDateEqual(value, hoveredRangeValue[1]);
       const isSelected = selectedValue.some((date) => isDateEqual(value, date));
       const cellState = {
-        invalid: isDateOutsideRange(value, min4, max4),
-        disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min4, max4) || // Disable unselected dates when max is reached in multiple selection mode
+        invalid: isDateOutsideRange(value, min4, max3),
+        disabled: disabled2 || !outsideDaySelectable && isOutsideRange || isDateOutsideRange(value, min4, max3) || // Disable unselected dates when max is reached in multiple selection mode
         isMaxSelected && !isSelected,
         selected: isSelected,
-        unavailable: isDateUnavailable(value, isDateUnavailableFn, locale, min4, max4) && !disabled2,
+        unavailable: isDateUnavailable(value, isDateUnavailableFn, locale, min4, max3) && !disabled2,
         outsideRange: isOutsideRange,
         today: $14e0f24ef4ac5c92$export$629b0a497aa65267(value, timeZone),
         weekend: $14e0f24ef4ac5c92$export$618d60ea299da42(value, locale),
@@ -16945,8 +16486,8 @@ var Corex = (() => {
       };
       return cellState;
     }
-    function getTableId2(props28) {
-      const { view = "day", id } = props28;
+    function getTableId2(props) {
+      const { view = "day", id } = props;
       return [view, id].filter(Boolean).join(" ");
     }
     return {
@@ -16975,7 +16516,7 @@ var Corex = (() => {
       getOffset(duration) {
         const from = startValue.add(duration);
         const end = endValue.add(duration);
-        const formatter = getMonthFormatter(locale, timeZone);
+        const formatter = getMonthFormatter(locale, timeZone, focusedValue);
         return {
           visibleRange: { start: from, end },
           weeks: getMonthWeeks(from),
@@ -16988,7 +16529,7 @@ var Corex = (() => {
       getMonthWeeks,
       isUnavailable,
       weeks: getMonthWeeks(),
-      weekDays: getWeekDays(getTodayDate(timeZone), startOfWeek, timeZone, locale),
+      weekDays: getWeekDays(startValue, startOfWeek, timeZone, locale),
       visibleRangeText: computed("visibleRangeText"),
       value: selectedValue,
       valueAsDate: selectedValue.filter((date) => date != null).map((date) => date.toDate(timeZone)),
@@ -16998,11 +16539,11 @@ var Corex = (() => {
       focusedValueAsString: prop("format")(focusedValue, { locale, timeZone }),
       visibleRange: computed("visibleRange"),
       selectToday() {
-        const value = constrainValue(getTodayDate(timeZone), min4, max4);
+        const value = constrainValue(getTodayDate(timeZone, focusedValue.calendar), min4, max3);
         send({ type: "VALUE.SET", value: [value] });
       },
       setValue(values) {
-        const computedValue = values.map((date) => constrainValue(date, min4, max4));
+        const computedValue = values.map((date) => constrainValue(date, min4, max3));
         send({ type: "VALUE.SET", value: computedValue });
       },
       setTime(time, index = 0) {
@@ -17019,7 +16560,7 @@ var Corex = (() => {
           second: (_c = time.second) != null ? _c : "second" in dateValue ? dateValue.second : 0,
           millisecond: (_d = time.millisecond) != null ? _d : "millisecond" in dateValue ? dateValue.millisecond : 0
         });
-        values[index] = constrainValue(dateValue, min4, max4);
+        values[index] = constrainValue(dateValue, min4, max3);
         send({ type: "VALUE.SET", value: values });
       },
       clearValue(options = {}) {
@@ -17039,12 +16580,12 @@ var Corex = (() => {
       focusYear,
       getYears,
       getMonths,
-      getYearsGrid(props28 = {}) {
-        const { columns = 1 } = props28;
+      getYearsGrid(props = {}) {
+        const { columns = 1 } = props;
         const years = getDecadeRange(startValue.year, { strict: true }).map((year) => ({
           label: year.toString(),
           value: year,
-          disabled: !isValueWithinRange(year, min4 == null ? void 0 : min4.year, max4 == null ? void 0 : max4.year)
+          disabled: !isValueWithinRange(year, min4 == null ? void 0 : min4.year, max3 == null ? void 0 : max3.year)
         }));
         return chunk(years, columns);
       },
@@ -17052,12 +16593,14 @@ var Corex = (() => {
         const years = getDecadeRange(startValue.year, { strict: true });
         return { start: years.at(0), end: years.at(-1) };
       },
-      getMonthsGrid(props28 = {}) {
-        const { columns = 1, format } = props28;
+      getMonthsGrid(props = {}) {
+        const { columns = 1, format } = props;
         return chunk(getMonths({ format }), columns);
       },
       format(value, opts = { month: "long", year: "numeric" }) {
-        return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, opts).format(value.toDate(timeZone));
+        return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, __spreadProps(__spreadValues({}, opts), {
+          calendar: value.calendar.identifier
+        })).format(value.toDate(timeZone));
       },
       setView(view) {
         send({ type: "VIEW.SET", view });
@@ -17078,8 +16621,8 @@ var Corex = (() => {
           "data-empty": dataAttr(empty)
         }));
       },
-      getLabelProps(props28 = {}) {
-        const { index = 0 } = props28;
+      getLabelProps(props = {}) {
+        const { index = 0 } = props;
         return normalize.label(__spreadProps(__spreadValues({}, parts10.label.attrs), {
           id: getLabelId6(scope, index),
           dir: prop("dir"),
@@ -17117,9 +16660,9 @@ var Corex = (() => {
           "aria-label": translations.content
         }));
       },
-      getTableProps(props28 = {}) {
-        const { view = "day", columns = view === "day" ? 7 : 4 } = props28;
-        const uid = getTableId2(props28);
+      getTableProps(props = {}) {
+        const { view = "day", columns = view === "day" ? 7 : 4 } = props;
+        const uid = getTableId2(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.table.attrs), {
           role: "grid",
           "data-columns": columns,
@@ -17191,8 +16734,8 @@ var Corex = (() => {
           }
         }));
       },
-      getTableHeadProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getTableHeadProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableHead.attrs), {
           "aria-hidden": true,
           dir: prop("dir"),
@@ -17200,54 +16743,56 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableHeaderProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getTableHeaderProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableHeader.attrs), {
           dir: prop("dir"),
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableBodyProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getTableBodyProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableBody.attrs), {
           "data-view": view,
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getTableRowProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getTableRowProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableRow.attrs), {
           "aria-disabled": ariaAttr(disabled),
           "data-disabled": dataAttr(disabled),
           "data-view": view
         }));
       },
-      getWeekNumberHeaderCellProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getWeekNumberHeaderCellProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
           scope: "col",
           "aria-label": translations.weekColumnHeader,
           "data-view": view,
+          "data-type": "week-number",
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getWeekNumberCellProps(props28) {
+      getWeekNumberCellProps(props) {
         var _a;
-        const { weekIndex, week } = props28;
+        const { weekIndex, week } = props;
         const weekNumber = week[0] ? getWeekOfYear(week[0], locale) : 0;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
           role: "rowheader",
           "aria-label": (_a = translations.weekNumberCell) == null ? void 0 : _a.call(translations, weekNumber),
           "data-view": "day",
           "data-week-index": weekIndex,
+          "data-type": "week-number",
           "data-disabled": dataAttr(disabled)
         }));
       },
       getDayTableCellState,
-      getDayTableCellProps(props28) {
-        const { value } = props28;
-        const cellState = getDayTableCellState(props28);
+      getDayTableCellProps(props) {
+        const { value } = props;
+        const cellState = getDayTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
           role: "gridcell",
           "aria-disabled": ariaAttr(!cellState.selectable),
@@ -17257,9 +16802,9 @@ var Corex = (() => {
           "data-value": value.toString()
         }));
       },
-      getDayTableCellTriggerProps(props28) {
-        const { value } = props28;
-        const cellState = getDayTableCellState(props28);
+      getDayTableCellTriggerProps(props) {
+        const { value } = props;
+        const cellState = getDayTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
           id: getCellTriggerId(scope, value.toString()),
           role: "button",
@@ -17298,9 +16843,9 @@ var Corex = (() => {
         }));
       },
       getMonthTableCellState,
-      getMonthTableCellProps(props28) {
-        const { value, columns } = props28;
-        const cellState = getMonthTableCellState(props28);
+      getMonthTableCellProps(props) {
+        const { value, columns } = props;
+        const cellState = getMonthTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
@@ -17311,9 +16856,9 @@ var Corex = (() => {
           "data-value": value
         }));
       },
-      getMonthTableCellTriggerProps(props28) {
-        const { value } = props28;
-        const cellState = getMonthTableCellState(props28);
+      getMonthTableCellTriggerProps(props) {
+        const { value } = props;
+        const cellState = getMonthTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
           dir: prop("dir"),
           role: "button",
@@ -17343,9 +16888,9 @@ var Corex = (() => {
         }));
       },
       getYearTableCellState,
-      getYearTableCellProps(props28) {
-        const { value, columns } = props28;
-        const cellState = getYearTableCellState(props28);
+      getYearTableCellProps(props) {
+        const { value, columns } = props;
+        const cellState = getYearTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCell.attrs), {
           dir: prop("dir"),
           colSpan: columns,
@@ -17356,9 +16901,9 @@ var Corex = (() => {
           "data-value": value
         }));
       },
-      getYearTableCellTriggerProps(props28) {
-        const { value } = props28;
-        const cellState = getYearTableCellState(props28);
+      getYearTableCellTriggerProps(props) {
+        const { value } = props;
+        const cellState = getYearTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
           dir: prop("dir"),
           role: "button",
@@ -17387,8 +16932,8 @@ var Corex = (() => {
           } : void 0
         }));
       },
-      getNextTriggerProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getNextTriggerProps(props = {}) {
+        const { view = "day" } = props;
         const isDisabled = disabled || !computed("isNextVisibleRangeValid");
         return normalize.button(__spreadProps(__spreadValues({}, parts10.nextTrigger.attrs), {
           dir: prop("dir"),
@@ -17403,8 +16948,8 @@ var Corex = (() => {
           }
         }));
       },
-      getPrevTriggerProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getPrevTriggerProps(props = {}) {
+        const { view = "day" } = props;
         const isDisabled = disabled || !computed("isPrevVisibleRangeValid");
         return normalize.button(__spreadProps(__spreadValues({}, parts10.prevTrigger.attrs), {
           dir: prop("dir"),
@@ -17451,15 +16996,15 @@ var Corex = (() => {
           }
         }));
       },
-      getViewProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getViewProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.view.attrs), {
           "data-view": view,
           hidden: context.get("view") !== view
         }));
       },
-      getViewTriggerProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getViewTriggerProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.button(__spreadProps(__spreadValues({}, parts10.viewTrigger.attrs), {
           "data-view": view,
           dir: prop("dir"),
@@ -17474,15 +17019,15 @@ var Corex = (() => {
           }
         }));
       },
-      getViewControlProps(props28 = {}) {
-        const { view = "day" } = props28;
+      getViewControlProps(props = {}) {
+        const { view = "day" } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts10.viewControl.attrs), {
           "data-view": view,
           dir: prop("dir")
         }));
       },
-      getInputProps(props28 = {}) {
-        const { index = 0, fixOnBlur = true } = props28;
+      getInputProps(props = {}) {
+        const { index = 0, fixOnBlur = true } = props;
         return normalize.input(__spreadProps(__spreadValues({}, parts10.input.attrs), {
           id: getInputId3(scope, index),
           autoComplete: "off",
@@ -17574,8 +17119,8 @@ var Corex = (() => {
           style: popperStyles.floating
         }));
       },
-      getPresetTriggerProps(props28) {
-        const value = Array.isArray(props28.value) ? props28.value : getDateRangePreset(props28.value, locale, timeZone);
+      getPresetTriggerProps(props) {
+        const value = Array.isArray(props.value) ? props.value : getDateRangePreset(props.value, locale, timeZone);
         const valueAsString = value.filter((item) => item != null).map((item) => item.toDate(timeZone).toDateString());
         return normalize.button(__spreadProps(__spreadValues({}, parts10.presetTrigger.attrs), {
           "aria-label": translations.presetTrigger(valueAsString),
@@ -17585,6 +17130,50 @@ var Corex = (() => {
             send({ type: "PRESET.CLICK", value });
           }
         }));
+      }
+    };
+  }
+  function createLiveRegion(opts = {}) {
+    var _a;
+    const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
+    const win = (_a = doc.defaultView) != null ? _a : window;
+    const parent = root != null ? root : doc.body;
+    function announce(message, delay2) {
+      const oldRegion = doc.getElementById(ID);
+      oldRegion == null ? void 0 : oldRegion.remove();
+      delay2 = delay2 != null ? delay2 : _delay;
+      const region = doc.createElement("span");
+      region.id = ID;
+      region.dataset.liveAnnouncer = "true";
+      const role = level !== "assertive" ? "status" : "alert";
+      region.setAttribute("aria-live", level);
+      region.setAttribute("role", role);
+      Object.assign(region.style, {
+        border: "0",
+        clip: "rect(0 0 0 0)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: "0",
+        position: "absolute",
+        width: "1px",
+        whiteSpace: "nowrap",
+        wordWrap: "normal"
+      });
+      parent.appendChild(region);
+      win.setTimeout(() => {
+        region.textContent = message;
+      }, delay2);
+    }
+    function destroy() {
+      const oldRegion = doc.getElementById(ID);
+      oldRegion == null ? void 0 : oldRegion.remove();
+    }
+    return {
+      announce,
+      destroy,
+      toJSON() {
+        return ID;
       }
     };
   }
@@ -17635,14 +17224,43 @@ var Corex = (() => {
     const pad = (n2) => String(n2).padStart(2, "0");
     return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
   }
-  var $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, ID, anatomy10, parts10, getLabelId6, getRootId10, getTableId, getContentId4, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl4, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and4, machine10, normalizeValue, preserveTime, props10, splitProps10, inputProps, splitInputProps, presetTriggerProps, splitPresetTriggerProps, tableProps, splitTableProps, tableCellProps, splitTableCellProps, viewProps, splitViewProps, DatePicker, DatePickerHook;
+  var anatomy10, parts10, $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, getLabelId6, getRootId10, getTableId, getContentId4, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl4, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, ID, and4, machine10, normalizeValue, preserveTime, DatePicker, DatePickerHook;
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_QYWY7F3J();
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_PLUM2DEK();
+      init_chunk_5DET2KLQ();
+      init_chunk_G66USZ47();
+      init_chunk_3PXF3EVQ();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_BVJBLYEU();
+      anatomy10 = createAnatomy("date-picker").parts(
+        "clearTrigger",
+        "content",
+        "control",
+        "input",
+        "label",
+        "monthSelect",
+        "nextTrigger",
+        "positioner",
+        "presetTrigger",
+        "prevTrigger",
+        "rangeText",
+        "root",
+        "table",
+        "tableBody",
+        "tableCell",
+        "tableCellTrigger",
+        "tableHead",
+        "tableHeader",
+        "tableRow",
+        "trigger",
+        "view",
+        "viewControl",
+        "viewTrigger",
+        "yearSelect"
+      );
+      parts10 = anatomy10.build();
       $3b62074eb05584b2$var$EPOCH = 1721426;
       $3b62074eb05584b2$var$daysInMonth = {
         standard: [
@@ -18179,38 +17797,12 @@ var Corex = (() => {
       $fb18d541ea1ad717$var$_hasBuggyHour12Behavior = null;
       $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle = null;
       daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+      DEFAULT_MIN_YEAR = 1900;
+      DEFAULT_MAX_YEAR = 2099;
       FUTURE_YEAR_COERCION = 10;
       isValidYear = (year) => year != null && year.length === 4;
       isValidMonth = (month) => month != null && parseFloat(month) <= 12;
       isValidDay = (day) => day != null && parseFloat(day) <= 31;
-      ID = "__live-region__";
-      anatomy10 = createAnatomy("date-picker").parts(
-        "clearTrigger",
-        "content",
-        "control",
-        "input",
-        "label",
-        "monthSelect",
-        "nextTrigger",
-        "positioner",
-        "presetTrigger",
-        "prevTrigger",
-        "rangeText",
-        "root",
-        "table",
-        "tableBody",
-        "tableCell",
-        "tableCellTrigger",
-        "tableHead",
-        "tableHeader",
-        "tableRow",
-        "trigger",
-        "view",
-        "viewControl",
-        "viewTrigger",
-        "yearSelect"
-      );
-      parts10 = anatomy10.build();
       getLabelId6 = (ctx, index) => {
         var _a, _b, _c;
         return (_c = (_b = (_a = ctx.ids) == null ? void 0 : _a.label) == null ? void 0 : _b.call(_a, index)) != null ? _c : `datepicker:${ctx.id}:label:${index}`;
@@ -18305,7 +17897,7 @@ var Corex = (() => {
           return open ? "Close calendar" : "Open calendar";
         },
         viewTrigger(view) {
-          return match2(view, {
+          return match(view, {
             year: "Switch to month view",
             month: "Switch to day view",
             day: "Switch to year view"
@@ -18316,14 +17908,14 @@ var Corex = (() => {
           return `select ${start} to ${end}`;
         },
         prevTrigger(view) {
-          return match2(view, {
+          return match(view, {
             year: "Switch to previous decade",
             month: "Switch to previous year",
             day: "Switch to previous month"
           });
         },
         nextTrigger(view) {
-          return match2(view, {
+          return match(view, {
             year: "Switch to next decade",
             month: "Switch to next year",
             day: "Switch to next month"
@@ -18354,33 +17946,56 @@ var Corex = (() => {
             return { start: start2, end: end2, formatted: `${start2} - ${end2}` };
           }
           if (view === "month") {
-            const formatter2 = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { year: "numeric", timeZone });
+            const formatter2 = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+              year: "numeric",
+              timeZone,
+              calendar: startValue.calendar.identifier
+            });
             const start2 = formatter2.format(startValue.toDate(timeZone));
             const end2 = formatter2.format(endValue.toDate(timeZone));
             const formatted2 = selectionMode === "range" ? `${start2} - ${end2}` : start2;
             return { start: start2, end: end2, formatted: formatted2 };
           }
-          const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { month: "long", year: "numeric", timeZone });
+          const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+            month: "long",
+            year: "numeric",
+            timeZone,
+            calendar: startValue.calendar.identifier
+          });
           const start = formatter.format(startValue.toDate(timeZone));
           const end = formatter.format(endValue.toDate(timeZone));
           const formatted = selectionMode === "range" ? `${start} - ${end}` : start;
           return { start, end, formatted };
         }
       );
+      ID = "__live-region__";
       ({ and: and4 } = createGuards());
       machine10 = createMachine({
-        props({ props: props28 }) {
-          const locale = props28.locale || "en-US";
-          const timeZone = props28.timeZone || "UTC";
-          const selectionMode = props28.selectionMode || "single";
-          const numOfMonths = props28.numOfMonths || 1;
-          const defaultValue = props28.defaultValue ? sortDates(props28.defaultValue).map((date) => constrainValue(date, props28.min, props28.max)) : void 0;
-          const value = props28.value ? sortDates(props28.value).map((date) => constrainValue(date, props28.min, props28.max)) : void 0;
-          let focusedValue = props28.focusedValue || props28.defaultFocusedValue || (value == null ? void 0 : value[0]) || (defaultValue == null ? void 0 : defaultValue[0]) || getTodayDate(timeZone);
-          focusedValue = constrainValue(focusedValue, props28.min, props28.max);
+        props({ props }) {
+          const locale = props.locale || "en-US";
+          const timeZone = props.timeZone || "UTC";
+          const selectionMode = props.selectionMode || "single";
+          const numOfMonths = props.numOfMonths || 1;
+          let calendar;
+          if (props.createCalendar) {
+            const resolved = new Intl.DateTimeFormat(locale).resolvedOptions();
+            const calendarId = resolved.calendar;
+            if (calendarId !== "gregory" && calendarId !== "iso8601") {
+              calendar = props.createCalendar(calendarId);
+            }
+          }
+          const toTargetCalendar = (date) => {
+            if (!calendar) return date;
+            if (date.calendar.identifier === calendar.identifier) return date;
+            return $11d87f3f76e88657$export$b4a036af3fc0b032(date, calendar);
+          };
+          const defaultValue = props.defaultValue ? sortDates(props.defaultValue).map((date) => constrainValue(toTargetCalendar(date), props.min, props.max)) : void 0;
+          const value = props.value ? sortDates(props.value).map((date) => constrainValue(toTargetCalendar(date), props.min, props.max)) : void 0;
+          let focusedValue = props.focusedValue || props.defaultFocusedValue || (value == null ? void 0 : value[0]) || (defaultValue == null ? void 0 : defaultValue[0]) || getTodayDate(timeZone, calendar);
+          focusedValue = constrainValue(toTargetCalendar(focusedValue), props.min, props.max);
           const minView = "day";
           const maxView = "year";
-          const defaultView = clampView(props28.view || minView, minView, maxView);
+          const defaultView = clampView(props.view || minView, minView, maxView);
           return __spreadProps(__spreadValues({
             locale,
             numOfMonths,
@@ -18392,20 +18007,26 @@ var Corex = (() => {
             outsideDaySelectable: false,
             closeOnSelect: true,
             format(date, { locale: locale2, timeZone: timeZone2 }) {
-              const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale2, { timeZone: timeZone2, day: "2-digit", month: "2-digit", year: "numeric" });
+              const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale2, {
+                timeZone: timeZone2,
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                calendar: calendar == null ? void 0 : calendar.identifier
+              });
               return formatter.format(date.toDate(timeZone2));
             },
             parse(value2, { locale: locale2, timeZone: timeZone2 }) {
               return parseDateString(value2, locale2, timeZone2);
             }
-          }, props28), {
-            focusedValue: typeof props28.focusedValue === "undefined" ? void 0 : focusedValue,
+          }, props), {
+            focusedValue: typeof props.focusedValue === "undefined" ? void 0 : focusedValue,
             defaultFocusedValue: focusedValue,
             value,
             defaultValue: defaultValue != null ? defaultValue : [],
             positioning: __spreadValues({
               placement: "bottom"
-            }, props28.positioning)
+            }, props.positioning)
           });
         },
         initialState({ prop }) {
@@ -19259,8 +18880,9 @@ var Corex = (() => {
               setFocusedValue(params, nextValue);
             },
             clearFocusedDate(params) {
-              const { prop } = params;
-              setFocusedValue(params, getTodayDate(prop("timeZone")));
+              const { context, prop } = params;
+              const calendar = context.get("focusedValue").calendar;
+              setFocusedValue(params, getTodayDate(prop("timeZone"), calendar));
             },
             focusPreviousMonthColumn(params) {
               const { context, event } = params;
@@ -19283,14 +18905,17 @@ var Corex = (() => {
               setFocusedValue(params, nextValue);
             },
             focusFirstMonth(params) {
+              var _a, _b, _c;
               const { context } = params;
-              const nextValue = context.get("focusedValue").set({ month: 1 });
-              setFocusedValue(params, nextValue);
+              const focused = context.get("focusedValue");
+              const minMonth = (_c = (_b = (_a = focused.calendar).getMinimumMonthInYear) == null ? void 0 : _b.call(_a, focused)) != null ? _c : 1;
+              setFocusedValue(params, focused.set({ month: minMonth }));
             },
             focusLastMonth(params) {
               const { context } = params;
-              const nextValue = context.get("focusedValue").set({ month: 12 });
-              setFocusedValue(params, nextValue);
+              const focused = context.get("focusedValue");
+              const maxMonth = focused.calendar.getMonthsInYear(focused);
+              setFocusedValue(params, focused.set({ month: maxMonth }));
             },
             focusFirstYear(params) {
               const { context } = params;
@@ -19472,63 +19097,6 @@ var Corex = (() => {
           millisecond: existingDate.millisecond
         });
       };
-      props10 = createProps()([
-        "closeOnSelect",
-        "dir",
-        "disabled",
-        "fixedWeeks",
-        "focusedValue",
-        "format",
-        "parse",
-        "placeholder",
-        "getRootNode",
-        "id",
-        "ids",
-        "inline",
-        "invalid",
-        "isDateUnavailable",
-        "locale",
-        "max",
-        "maxSelectedDates",
-        "min",
-        "name",
-        "numOfMonths",
-        "onFocusChange",
-        "onOpenChange",
-        "onValueChange",
-        "onViewChange",
-        "onVisibleRangeChange",
-        "open",
-        "openOnClick",
-        "defaultOpen",
-        "positioning",
-        "readOnly",
-        "required",
-        "selectionMode",
-        "showWeekNumbers",
-        "startOfWeek",
-        "timeZone",
-        "translations",
-        "value",
-        "defaultView",
-        "defaultValue",
-        "view",
-        "defaultFocusedValue",
-        "outsideDaySelectable",
-        "minView",
-        "maxView"
-      ]);
-      splitProps10 = createSplitProps(props10);
-      inputProps = createProps()(["index", "fixOnBlur"]);
-      splitInputProps = createSplitProps(inputProps);
-      presetTriggerProps = createProps()(["value"]);
-      splitPresetTriggerProps = createSplitProps(presetTriggerProps);
-      tableProps = createProps()(["columns", "id", "view"]);
-      splitTableProps = createSplitProps(tableProps);
-      tableCellProps = createProps()(["disabled", "value", "columns"]);
-      splitTableCellProps = createSplitProps(tableCellProps);
-      viewProps = createProps()(["view"]);
-      splitViewProps = createSplitProps(viewProps);
       DatePicker = class extends Component {
         constructor() {
           super(...arguments);
@@ -19619,8 +19187,8 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine10, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine10, props);
         }
         initApi() {
           return connect10(this.machine.service, normalizeProps);
@@ -19728,7 +19296,7 @@ var Corex = (() => {
           const pushEvent = this.pushEvent.bind(this);
           const liveSocket = this.liveSocket;
           const min4 = getString(el, "min");
-          const max4 = getString(el, "max");
+          const max3 = getString(el, "max");
           const positioningJson = getString(el, "positioning");
           const parseList = (v2) => v2 ? v2.map((x2) => parse2(x2)) : void 0;
           const parseOne = (v2) => v2 ? parse2(v2) : void 0;
@@ -19747,7 +19315,7 @@ var Corex = (() => {
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             min: min4 ? parse2(min4) : void 0,
-            max: max4 ? parse2(max4) : void 0,
+            max: max3 ? parse2(max3) : void 0,
             numOfMonths: getNumber(el, "numOfMonths"),
             startOfWeek: getNumber(el, "startOfWeek"),
             fixedWeeks: getBoolean(el, "fixedWeeks"),
@@ -19852,7 +19420,7 @@ var Corex = (() => {
           if (inputWrapper) inputWrapper.removeAttribute("data-loading");
           const parseList = (v2) => v2 ? v2.map((x2) => parse2(x2)) : void 0;
           const min4 = getString(el, "min");
-          const max4 = getString(el, "max");
+          const max3 = getString(el, "max");
           const positioningJson = getString(el, "positioning");
           const isControlled = getBoolean(el, "controlled");
           const focusedStr = getString(el, "focusedValue");
@@ -19869,7 +19437,7 @@ var Corex = (() => {
             outsideDaySelectable: getBoolean(this.el, "outsideDaySelectable"),
             closeOnSelect: getBoolean(this.el, "closeOnSelect"),
             min: min4 ? parse2(min4) : void 0,
-            max: max4 ? parse2(max4) : void 0,
+            max: max3 ? parse2(max3) : void 0,
             numOfMonths: getNumber(this.el, "numOfMonths"),
             startOfWeek: getNumber(this.el, "startOfWeek"),
             fixedWeeks: getBoolean(this.el, "fixedWeeks"),
@@ -19916,6 +19484,90 @@ var Corex = (() => {
   __export(dialog_exports, {
     Dialog: () => DialogHook
   });
+  function connect11(service, normalize) {
+    const { state: state2, send, context, prop, scope } = service;
+    const ariaLabel = prop("aria-label");
+    const open = state2.matches("open");
+    return {
+      open,
+      setOpen(nextOpen) {
+        const open2 = state2.matches("open");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "OPEN" : "CLOSE" });
+      },
+      getTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.trigger.attrs), {
+          dir: prop("dir"),
+          id: getTriggerId5(scope),
+          "aria-haspopup": "dialog",
+          type: "button",
+          "aria-expanded": open,
+          "data-state": open ? "open" : "closed",
+          "aria-controls": getContentId5(scope),
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            send({ type: "TOGGLE" });
+          }
+        }));
+      },
+      getBackdropProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.backdrop.attrs), {
+          dir: prop("dir"),
+          hidden: !open,
+          id: getBackdropId(scope),
+          "data-state": open ? "open" : "closed"
+        }));
+      },
+      getPositionerProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.positioner.attrs), {
+          dir: prop("dir"),
+          id: getPositionerId4(scope),
+          style: {
+            pointerEvents: open ? void 0 : "none"
+          }
+        }));
+      },
+      getContentProps() {
+        const rendered = context.get("rendered");
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.content.attrs), {
+          dir: prop("dir"),
+          role: prop("role"),
+          hidden: !open,
+          id: getContentId5(scope),
+          tabIndex: -1,
+          "data-state": open ? "open" : "closed",
+          "aria-modal": true,
+          "aria-label": ariaLabel || void 0,
+          "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
+          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
+        }));
+      },
+      getTitleProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.title.attrs), {
+          dir: prop("dir"),
+          id: getTitleId(scope)
+        }));
+      },
+      getDescriptionProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts11.description.attrs), {
+          dir: prop("dir"),
+          id: getDescriptionId(scope)
+        }));
+      },
+      getCloseTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts11.closeTrigger.attrs), {
+          dir: prop("dir"),
+          id: getCloseTriggerId(scope),
+          type: "button",
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            event.stopPropagation();
+            send({ type: "CLOSE" });
+          }
+        }));
+      }
+    };
+  }
   function ariaHidden(targetsOrFn, options = {}) {
     const { defer = true } = options;
     const func = defer ? raf2 : (v2) => v2();
@@ -20017,97 +19669,58 @@ var Corex = (() => {
       body.removeAttribute(LOCK_CLASSNAME);
     };
   }
-  function connect11(service, normalize) {
-    const { state: state2, send, context, prop, scope } = service;
-    const ariaLabel = prop("aria-label");
-    const open = state2.matches("open");
-    return {
-      open,
-      setOpen(nextOpen) {
-        const open2 = state2.matches("open");
-        if (open2 === nextOpen) return;
-        send({ type: nextOpen ? "OPEN" : "CLOSE" });
-      },
-      getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts11.trigger.attrs), {
-          dir: prop("dir"),
-          id: getTriggerId5(scope),
-          "aria-haspopup": "dialog",
-          type: "button",
-          "aria-expanded": open,
-          "data-state": open ? "open" : "closed",
-          "aria-controls": getContentId5(scope),
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            send({ type: "TOGGLE" });
-          }
-        }));
-      },
-      getBackdropProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.backdrop.attrs), {
-          dir: prop("dir"),
-          hidden: !open,
-          id: getBackdropId(scope),
-          "data-state": open ? "open" : "closed"
-        }));
-      },
-      getPositionerProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.positioner.attrs), {
-          dir: prop("dir"),
-          id: getPositionerId4(scope),
-          style: {
-            pointerEvents: open ? void 0 : "none"
-          }
-        }));
-      },
-      getContentProps() {
-        const rendered = context.get("rendered");
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.content.attrs), {
-          dir: prop("dir"),
-          role: prop("role"),
-          hidden: !open,
-          id: getContentId5(scope),
-          tabIndex: -1,
-          "data-state": open ? "open" : "closed",
-          "aria-modal": true,
-          "aria-label": ariaLabel || void 0,
-          "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
-          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
-        }));
-      },
-      getTitleProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.title.attrs), {
-          dir: prop("dir"),
-          id: getTitleId(scope)
-        }));
-      },
-      getDescriptionProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts11.description.attrs), {
-          dir: prop("dir"),
-          id: getDescriptionId(scope)
-        }));
-      },
-      getCloseTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts11.closeTrigger.attrs), {
-          dir: prop("dir"),
-          id: getCloseTriggerId(scope),
-          type: "button",
-          onClick(event) {
-            if (event.defaultPrevented) return;
-            event.stopPropagation();
-            send({ type: "CLOSE" });
-          }
-        }));
-      }
-    };
-  }
-  var counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTriggerEl4, getTitleEl, getDescriptionEl, getCloseTriggerEl, machine11, props11, splitProps11, Dialog, DialogHook;
+  var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTriggerEl4, getTitleEl, getDescriptionEl, getCloseTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DialogHook;
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_PLUM2DEK();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_BVJBLYEU();
+      anatomy11 = createAnatomy("dialog").parts(
+        "trigger",
+        "backdrop",
+        "positioner",
+        "content",
+        "title",
+        "description",
+        "closeTrigger"
+      );
+      parts11 = anatomy11.build();
+      getPositionerId4 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.positioner) != null ? _b : `dialog:${ctx.id}:positioner`;
+      };
+      getBackdropId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.backdrop) != null ? _b : `dialog:${ctx.id}:backdrop`;
+      };
+      getContentId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `dialog:${ctx.id}:content`;
+      };
+      getTriggerId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `dialog:${ctx.id}:trigger`;
+      };
+      getTitleId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.title) != null ? _b : `dialog:${ctx.id}:title`;
+      };
+      getDescriptionId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.description) != null ? _b : `dialog:${ctx.id}:description`;
+      };
+      getCloseTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.closeTrigger) != null ? _b : `dialog:${ctx.id}:close`;
+      };
+      getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
+      getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
+      getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
+      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
+      getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
+      getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
+      getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -20129,8 +19742,8 @@ var Corex = (() => {
         if (node.hasAttribute("aria-live")) return true;
         return node.matches("[data-live-announcer]");
       };
-      walkTreeOutside = (originalTarget, props28) => {
-        const { parentNode, markerName, controlAttribute, followControlledElements = true } = props28;
+      walkTreeOutside = (originalTarget, props) => {
+        const { parentNode, markerName, controlAttribute, explicitBooleanValue, followControlledElements = true } = props;
         const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
         markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
         const markerCounter = markerMap[markerName];
@@ -20161,7 +19774,7 @@ var Corex = (() => {
               try {
                 if (isIgnoredNode(node)) return;
                 const attr = node.getAttribute(controlAttribute);
-                const alreadyHidden = attr === "true";
+                const alreadyHidden = explicitBooleanValue ? attr === "true" : attr !== null && attr !== "false";
                 const counterValue = (counterMap.get(node) || 0) + 1;
                 const markerValue = (markerCounter.get(node) || 0) + 1;
                 counterMap.set(node, counterValue);
@@ -20174,7 +19787,7 @@ var Corex = (() => {
                   node.setAttribute(markerName, "");
                 }
                 if (!alreadyHidden) {
-                  node.setAttribute(controlAttribute, "true");
+                  node.setAttribute(controlAttribute, explicitBooleanValue ? "true" : "");
                 }
               } catch (e2) {
                 console.error("[zag-js > ariaHidden] cannot operate on ", node, e2);
@@ -20220,6 +19833,7 @@ var Corex = (() => {
           parentNode,
           markerName,
           controlAttribute: "aria-hidden",
+          explicitBooleanValue: true,
           followControlledElements
         });
       };
@@ -20791,7 +20405,7 @@ var Corex = (() => {
           return this;
         }
       };
-      isKeyboardEvent = (event) => event.type === "keydown";
+      isKeyboardEvent = (event) => (event == null ? void 0 : event.type) === "keydown";
       isTabEvent = (event) => isKeyboardEvent(event) && (event == null ? void 0 : event.key) === "Tab";
       isKeyForward = (e2) => isKeyboardEvent(e2) && e2.key === "Tab" && !(e2 == null ? void 0 : e2.shiftKey);
       isKeyBackward = (e2) => isKeyboardEvent(e2) && e2.key === "Tab" && (e2 == null ? void 0 : e2.shiftKey);
@@ -20800,56 +20414,11 @@ var Corex = (() => {
       delay = (fn) => setTimeout(fn, 0);
       isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
       LOCK_CLASSNAME = "data-scroll-lock";
-      anatomy11 = createAnatomy("dialog").parts(
-        "trigger",
-        "backdrop",
-        "positioner",
-        "content",
-        "title",
-        "description",
-        "closeTrigger"
-      );
-      parts11 = anatomy11.build();
-      getPositionerId4 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.positioner) != null ? _b : `dialog:${ctx.id}:positioner`;
-      };
-      getBackdropId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.backdrop) != null ? _b : `dialog:${ctx.id}:backdrop`;
-      };
-      getContentId5 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `dialog:${ctx.id}:content`;
-      };
-      getTriggerId5 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `dialog:${ctx.id}:trigger`;
-      };
-      getTitleId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.title) != null ? _b : `dialog:${ctx.id}:title`;
-      };
-      getDescriptionId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.description) != null ? _b : `dialog:${ctx.id}:description`;
-      };
-      getCloseTriggerId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.closeTrigger) != null ? _b : `dialog:${ctx.id}:close`;
-      };
-      getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
-      getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
-      getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
-      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
-      getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
-      getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
-      getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
       machine11 = createMachine({
-        props({ props: props28, scope }) {
-          const alertDialog = props28.role === "alertdialog";
+        props({ props, scope }) {
+          const alertDialog = props.role === "alertdialog";
           const initialFocusEl = alertDialog ? () => getCloseTriggerEl(scope) : void 0;
-          const modal = typeof props28.modal === "boolean" ? props28.modal : true;
+          const modal = typeof props.modal === "boolean" ? props.modal : true;
           return __spreadValues({
             role: "dialog",
             modal,
@@ -20859,7 +20428,7 @@ var Corex = (() => {
             closeOnEscape: true,
             restoreFocus: true,
             initialFocusEl
-          }, props28);
+          }, props);
         },
         initialState({ prop }) {
           const open = prop("open") || prop("defaultOpen");
@@ -21032,38 +20601,10 @@ var Corex = (() => {
           }
         }
       });
-      props11 = createProps()([
-        "aria-label",
-        "closeOnEscape",
-        "closeOnInteractOutside",
-        "dir",
-        "finalFocusEl",
-        "getRootNode",
-        "getRootNode",
-        "id",
-        "id",
-        "ids",
-        "initialFocusEl",
-        "modal",
-        "onEscapeKeyDown",
-        "onFocusOutside",
-        "onInteractOutside",
-        "onOpenChange",
-        "onPointerDownOutside",
-        "onRequestDismiss",
-        "defaultOpen",
-        "open",
-        "persistentElements",
-        "preventScroll",
-        "restoreFocus",
-        "role",
-        "trapFocus"
-      ]);
-      splitProps11 = createSplitProps(props11);
       Dialog = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine11, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine11, props);
         }
         initApi() {
           return connect11(this.machine.service, normalizeProps);
@@ -21418,12 +20959,12 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy12, parts12, getRootId11, getAreaId2, getLabelId7, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine12, props12, splitProps12, Editable, EditableHook;
+  var anatomy12, parts12, getRootId11, getAreaId2, getLabelId7, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine12, Editable, EditableHook;
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_DTH4G7GO();
-      init_chunk_PLUM2DEK();
+      init_chunk_53IVNBLA();
+      init_chunk_BVJBLYEU();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -21478,19 +21019,19 @@ var Corex = (() => {
       getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
       getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
       machine12 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             activationMode: "focus",
             submitMode: "both",
             defaultValue: "",
             selectOnFocus: true
-          }, props28), {
+          }, props), {
             translations: __spreadValues({
               input: "editable input",
               edit: "edit",
               submit: "submit",
               cancel: "cancel"
-            }, props28.translations)
+            }, props.translations)
           });
         },
         initialState({ prop }) {
@@ -21686,8 +21227,8 @@ var Corex = (() => {
               setElementValue(inputEl, context.get("value"));
             },
             setValue({ context, prop, event }) {
-              const max4 = prop("maxLength");
-              const value = max4 != null ? event.value.slice(0, max4) : event.value;
+              const max3 = prop("maxLength");
+              const value = max3 != null ? event.value.slice(0, max3) : event.value;
               context.set("value", value);
             },
             setPreviousValue({ context }) {
@@ -21705,42 +21246,10 @@ var Corex = (() => {
           }
         }
       });
-      props12 = createProps()([
-        "activationMode",
-        "autoResize",
-        "dir",
-        "disabled",
-        "finalFocusEl",
-        "form",
-        "getRootNode",
-        "id",
-        "ids",
-        "invalid",
-        "maxLength",
-        "name",
-        "onEditChange",
-        "onFocusOutside",
-        "onInteractOutside",
-        "onPointerDownOutside",
-        "onValueChange",
-        "onValueCommit",
-        "onValueRevert",
-        "placeholder",
-        "readOnly",
-        "required",
-        "selectOnFocus",
-        "edit",
-        "defaultEdit",
-        "submitMode",
-        "translations",
-        "defaultValue",
-        "value"
-      ]);
-      splitProps12 = createSplitProps(props12);
       Editable = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine12, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine12, props);
         }
         initApi() {
           return connect12(this.machine.service, normalizeProps);
@@ -21854,6 +21363,136 @@ var Corex = (() => {
   __export(floating_panel_exports, {
     FloatingPanel: () => FloatingPanelHook
   });
+  function getCacheComputedStyle(el) {
+    if (!styleCache2.has(el)) {
+      const win = el.ownerDocument.defaultView || window;
+      styleCache2.set(el, win.getComputedStyle(el));
+    }
+    return styleCache2.get(el);
+  }
+  function getElementRect(el, opts = {}) {
+    return createRect(getClientRect(el, opts));
+  }
+  function getClientRect(el, opts = {}) {
+    const { excludeScrollbar = false, excludeBorders = false } = opts;
+    const { x: x2, y: y2, width, height } = el.getBoundingClientRect();
+    const r2 = { x: x2, y: y2, width, height };
+    const style = getCacheComputedStyle(el);
+    const { borderLeftWidth, borderTopWidth, borderRightWidth, borderBottomWidth } = style;
+    const borderXWidth = sum(borderLeftWidth, borderRightWidth);
+    const borderYWidth = sum(borderTopWidth, borderBottomWidth);
+    if (excludeBorders) {
+      r2.width -= borderXWidth;
+      r2.height -= borderYWidth;
+      r2.x += px(borderLeftWidth);
+      r2.y += px(borderTopWidth);
+    }
+    if (excludeScrollbar) {
+      const scrollbarWidth = el.offsetWidth - el.clientWidth - borderXWidth;
+      const scrollbarHeight = el.offsetHeight - el.clientHeight - borderYWidth;
+      r2.width -= scrollbarWidth;
+      r2.height -= scrollbarHeight;
+    }
+    return r2;
+  }
+  function getWindowRect(win, opts = {}) {
+    return createRect(getViewportRect2(win, opts));
+  }
+  function getViewportRect2(win, opts) {
+    const { excludeScrollbar = false } = opts;
+    const { innerWidth, innerHeight, document: doc, visualViewport } = win;
+    const width = (visualViewport == null ? void 0 : visualViewport.width) || innerWidth;
+    const height = (visualViewport == null ? void 0 : visualViewport.height) || innerHeight;
+    const rect = { x: 0, y: 0, width, height };
+    if (excludeScrollbar) {
+      const scrollbarWidth = innerWidth - doc.documentElement.clientWidth;
+      const scrollbarHeight = innerHeight - doc.documentElement.clientHeight;
+      rect.width -= scrollbarWidth;
+      rect.height -= scrollbarHeight;
+    }
+    return rect;
+  }
+  function getRectExtentPoint(rect, direction) {
+    const { minX, minY, maxX, maxY, midX, midY } = rect;
+    const x2 = direction.includes("w") ? minX : direction.includes("e") ? maxX : midX;
+    const y2 = direction.includes("n") ? minY : direction.includes("s") ? maxY : midY;
+    return { x: x2, y: y2 };
+  }
+  function getOppositeDirection(direction) {
+    return oppositeDirectionMap[direction];
+  }
+  function resizeRect(rect, offset3, direction, opts) {
+    const { scalingOriginMode, lockAspectRatio } = opts;
+    const extent = getRectExtentPoint(rect, direction);
+    const oppositeDirection = getOppositeDirection(direction);
+    const oppositeExtent = getRectExtentPoint(rect, oppositeDirection);
+    if (scalingOriginMode === "center") {
+      offset3 = { x: offset3.x * 2, y: offset3.y * 2 };
+    }
+    const newExtent = {
+      x: extent.x + offset3.x,
+      y: extent.y + offset3.y
+    };
+    const multiplier = {
+      x: compassDirectionMap[direction].x * 2 - 1,
+      y: compassDirectionMap[direction].y * 2 - 1
+    };
+    const newSize = {
+      width: newExtent.x - oppositeExtent.x,
+      height: newExtent.y - oppositeExtent.y
+    };
+    const scaleX = multiplier.x * newSize.width / rect.width;
+    const scaleY = multiplier.y * newSize.height / rect.height;
+    const largestMagnitude = abs2(scaleX) > abs2(scaleY) ? scaleX : scaleY;
+    const scale = lockAspectRatio ? { x: largestMagnitude, y: largestMagnitude } : {
+      x: extent.x === oppositeExtent.x ? 1 : scaleX,
+      y: extent.y === oppositeExtent.y ? 1 : scaleY
+    };
+    if (extent.y === oppositeExtent.y) {
+      scale.y = abs2(scale.y);
+    } else if (sign2(scale.y) !== sign2(scaleY)) {
+      scale.y *= -1;
+    }
+    if (extent.x === oppositeExtent.x) {
+      scale.x = abs2(scale.x);
+    } else if (sign2(scale.x) !== sign2(scaleX)) {
+      scale.x *= -1;
+    }
+    switch (scalingOriginMode) {
+      case "extent":
+        return transformRect(rect, AffineTransform.scale(scale.x, scale.y, oppositeExtent), false);
+      case "center":
+        return transformRect(
+          rect,
+          AffineTransform.scale(scale.x, scale.y, {
+            x: rect.midX,
+            y: rect.midY
+          }),
+          false
+        );
+    }
+  }
+  function createRectFromPoints(initialPoint, finalPoint, normalized = true) {
+    if (normalized) {
+      return {
+        x: min3(finalPoint.x, initialPoint.x),
+        y: min3(finalPoint.y, initialPoint.y),
+        width: abs2(finalPoint.x - initialPoint.x),
+        height: abs2(finalPoint.y - initialPoint.y)
+      };
+    }
+    return {
+      x: initialPoint.x,
+      y: initialPoint.y,
+      width: finalPoint.x - initialPoint.x,
+      height: finalPoint.y - initialPoint.y
+    };
+  }
+  function transformRect(rect, transform, normalized = true) {
+    const p1 = transform.applyTo({ x: rect.minX, y: rect.minY });
+    const p2 = transform.applyTo({ x: rect.maxX, y: rect.maxY });
+    return createRectFromPoints(p1, p2, normalized);
+  }
   function getResizeAxisStyle(axis) {
     switch (axis) {
       case "n":
@@ -22054,12 +21693,12 @@ var Corex = (() => {
           }
         }));
       },
-      getStageTriggerProps(props28) {
-        if (!validStages.has(props28.stage)) {
-          throw new Error(`[zag-js] Invalid stage: ${props28.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
+      getStageTriggerProps(props) {
+        if (!validStages.has(props.stage)) {
+          throw new Error(`[zag-js] Invalid stage: ${props.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
         }
         const translations = prop("translations");
-        const actionProps = match2(props28.stage, {
+        const actionProps = match(props.stage, {
           minimized: () => ({
             "aria-label": translations.minimize,
             hidden: isStaged
@@ -22076,13 +21715,13 @@ var Corex = (() => {
         return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts13.stageTrigger.attrs), {
           dir: prop("dir"),
           disabled: prop("disabled"),
-          "data-stage": props28.stage
+          "data-stage": props.stage
         }), actionProps), {
           type: "button",
           onClick(event) {
             if (event.defaultPrevented) return;
             if (!prop("resizable")) return;
-            const type = match2(props28.stage, {
+            const type = match(props.stage, {
               minimized: () => "MINIMIZE",
               maximized: () => "MAXIMIZE",
               default: () => "RESTORE"
@@ -22091,11 +21730,11 @@ var Corex = (() => {
           }
         }));
       },
-      getResizeTriggerProps(props28) {
+      getResizeTriggerProps(props) {
         return normalize.element(__spreadProps(__spreadValues({}, parts13.resizeTrigger.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(!canResize),
-          "data-axis": props28.axis,
+          "data-axis": props.axis,
           onPointerDown(event) {
             if (!canResize) return;
             if (!isLeftClick(event)) return;
@@ -22103,7 +21742,7 @@ var Corex = (() => {
             event.stopPropagation();
             send({
               type: "RESIZE_START",
-              axis: props28.axis,
+              axis: props.axis,
               position: { x: event.clientX, y: event.clientY }
             });
           },
@@ -22117,7 +21756,7 @@ var Corex = (() => {
           style: __spreadValues({
             position: "absolute",
             touchAction: "none"
-          }, getResizeAxisStyle(props28.axis))
+          }, getResizeAxisStyle(props.axis))
         }));
       },
       getDragTriggerProps() {
@@ -22221,12 +21860,13 @@ var Corex = (() => {
     }
     return void 0;
   }
-  var anatomy13, parts13, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, machine13, props13, splitProps13, resizeTriggerProps, splitResizeTriggerProps, FloatingPanel, FloatingPanelHook;
+  var anatomy13, parts13, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, machine13, FloatingPanel, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_QHOSSHQC();
-      init_chunk_PLUM2DEK();
+      init_chunk_3QRJREC6();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -22241,6 +21881,224 @@ var Corex = (() => {
         "control"
       );
       parts13 = anatomy13.build();
+      AffineTransform = class _AffineTransform {
+        constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
+          __publicField4(this, "m00");
+          __publicField4(this, "m01");
+          __publicField4(this, "m02");
+          __publicField4(this, "m10");
+          __publicField4(this, "m11");
+          __publicField4(this, "m12");
+          __publicField4(this, "rotate", (...args) => {
+            return this.prepend(_AffineTransform.rotate(...args));
+          });
+          __publicField4(this, "scale", (...args) => {
+            return this.prepend(_AffineTransform.scale(...args));
+          });
+          __publicField4(this, "translate", (...args) => {
+            return this.prepend(_AffineTransform.translate(...args));
+          });
+          this.m00 = m00;
+          this.m01 = m01;
+          this.m02 = m02;
+          this.m10 = m10;
+          this.m11 = m11;
+          this.m12 = m12;
+        }
+        applyTo(point) {
+          const { x: x2, y: y2 } = point;
+          const { m00, m01, m02, m10, m11, m12 } = this;
+          return {
+            x: m00 * x2 + m01 * y2 + m02,
+            y: m10 * x2 + m11 * y2 + m12
+          };
+        }
+        prepend(other) {
+          return new _AffineTransform([
+            this.m00 * other.m00 + this.m01 * other.m10,
+            // m00
+            this.m00 * other.m01 + this.m01 * other.m11,
+            // m01
+            this.m00 * other.m02 + this.m01 * other.m12 + this.m02,
+            // m02
+            this.m10 * other.m00 + this.m11 * other.m10,
+            // m10
+            this.m10 * other.m01 + this.m11 * other.m11,
+            // m11
+            this.m10 * other.m02 + this.m11 * other.m12 + this.m12
+            // m12
+          ]);
+        }
+        append(other) {
+          return new _AffineTransform([
+            other.m00 * this.m00 + other.m01 * this.m10,
+            // m00
+            other.m00 * this.m01 + other.m01 * this.m11,
+            // m01
+            other.m00 * this.m02 + other.m01 * this.m12 + other.m02,
+            // m02
+            other.m10 * this.m00 + other.m11 * this.m10,
+            // m10
+            other.m10 * this.m01 + other.m11 * this.m11,
+            // m11
+            other.m10 * this.m02 + other.m11 * this.m12 + other.m12
+            // m12
+          ]);
+        }
+        get determinant() {
+          return this.m00 * this.m11 - this.m01 * this.m10;
+        }
+        get isInvertible() {
+          const det = this.determinant;
+          return isFinite(det) && isFinite(this.m02) && isFinite(this.m12) && det !== 0;
+        }
+        invert() {
+          const det = this.determinant;
+          return new _AffineTransform([
+            this.m11 / det,
+            // m00
+            -this.m01 / det,
+            // m01
+            (this.m01 * this.m12 - this.m11 * this.m02) / det,
+            // m02
+            -this.m10 / det,
+            // m10
+            this.m00 / det,
+            // m11
+            (this.m10 * this.m02 - this.m00 * this.m12) / det
+            // m12
+          ]);
+        }
+        get array() {
+          return [this.m00, this.m01, this.m02, this.m10, this.m11, this.m12, 0, 0, 1];
+        }
+        get float32Array() {
+          return new Float32Array(this.array);
+        }
+        // Static
+        static get identity() {
+          return new _AffineTransform([1, 0, 0, 0, 1, 0]);
+        }
+        static rotate(theta, origin) {
+          const rotation = new _AffineTransform([Math.cos(theta), -Math.sin(theta), 0, Math.sin(theta), Math.cos(theta), 0]);
+          if (origin && (origin.x !== 0 || origin.y !== 0)) {
+            return _AffineTransform.multiply(
+              _AffineTransform.translate(origin.x, origin.y),
+              rotation,
+              _AffineTransform.translate(-origin.x, -origin.y)
+            );
+          }
+          return rotation;
+        }
+        static scale(sx, sy = sx, origin = { x: 0, y: 0 }) {
+          const scale = new _AffineTransform([sx, 0, 0, 0, sy, 0]);
+          if (origin.x !== 0 || origin.y !== 0) {
+            return _AffineTransform.multiply(
+              _AffineTransform.translate(origin.x, origin.y),
+              scale,
+              _AffineTransform.translate(-origin.x, -origin.y)
+            );
+          }
+          return scale;
+        }
+        static translate(tx, ty) {
+          return new _AffineTransform([1, 0, tx, 0, 1, ty]);
+        }
+        static multiply(...[first2, ...rest]) {
+          if (!first2) return _AffineTransform.identity;
+          return rest.reduce((result, item) => result.prepend(item), first2);
+        }
+        get a() {
+          return this.m00;
+        }
+        get b() {
+          return this.m10;
+        }
+        get c() {
+          return this.m01;
+        }
+        get d() {
+          return this.m11;
+        }
+        get tx() {
+          return this.m02;
+        }
+        get ty() {
+          return this.m12;
+        }
+        get scaleComponents() {
+          return { x: this.a, y: this.d };
+        }
+        get translationComponents() {
+          return { x: this.tx, y: this.ty };
+        }
+        get skewComponents() {
+          return { x: this.c, y: this.b };
+        }
+        toString() {
+          return `matrix(${this.a}, ${this.b}, ${this.c}, ${this.d}, ${this.tx}, ${this.ty})`;
+        }
+      };
+      clamp4 = (value, min22, max3) => Math.min(Math.max(value, min22), max3);
+      clampPoint = (position, size3, boundaryRect) => {
+        const x2 = clamp4(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size3.width);
+        const y2 = clamp4(position.y, boundaryRect.y, boundaryRect.y + boundaryRect.height - size3.height);
+        return { x: x2, y: y2 };
+      };
+      defaultMinSize = {
+        width: 0,
+        height: 0
+      };
+      defaultMaxSize = {
+        width: Infinity,
+        height: Infinity
+      };
+      clampSize = (size3, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
+        return {
+          width: Math.min(Math.max(size3.width, minSize.width), maxSize.width),
+          height: Math.min(Math.max(size3.height, minSize.height), maxSize.height)
+        };
+      };
+      constrainRect = (rect, boundary) => {
+        const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
+        const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
+        return {
+          x: left,
+          y: top,
+          width: Math.min(rect.width, boundary.width),
+          height: Math.min(rect.height, boundary.height)
+        };
+      };
+      isSizeEqual = (a2, b2) => {
+        return a2.width === (b2 == null ? void 0 : b2.width) && a2.height === (b2 == null ? void 0 : b2.height);
+      };
+      isPointEqual = (a2, b2) => {
+        return a2.x === (b2 == null ? void 0 : b2.x) && a2.y === (b2 == null ? void 0 : b2.y);
+      };
+      styleCache2 = /* @__PURE__ */ new WeakMap();
+      px = (v2) => parseFloat(v2.replace("px", ""));
+      sum = (...vals) => vals.reduce((sum2, v2) => sum2 + (v2 ? px(v2) : 0), 0);
+      compassDirectionMap = {
+        n: { x: 0.5, y: 0 },
+        ne: { x: 1, y: 0 },
+        e: { x: 1, y: 0.5 },
+        se: { x: 1, y: 1 },
+        s: { x: 0.5, y: 1 },
+        sw: { x: 0, y: 1 },
+        w: { x: 0, y: 0.5 },
+        nw: { x: 0, y: 0 }
+      };
+      oppositeDirectionMap = {
+        n: "s",
+        ne: "sw",
+        e: "w",
+        se: "nw",
+        s: "n",
+        sw: "ne",
+        w: "e",
+        nw: "se"
+      };
+      ({ sign: sign2, abs: abs2, min: min3 } = Math);
       getTriggerId6 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `float:${ctx.id}:trigger`;
@@ -22318,8 +22176,8 @@ var Corex = (() => {
         restore: "Restore window"
       };
       machine13 = createMachine({
-        props({ props: props28 }) {
-          ensureProps(props28, ["id"], "floating-panel");
+        props({ props }) {
+          ensureProps(props, ["id"], "floating-panel");
           return __spreadProps(__spreadValues({
             strategy: "fixed",
             gridSize: 1,
@@ -22328,9 +22186,9 @@ var Corex = (() => {
             allowOverflow: true,
             resizable: true,
             draggable: true
-          }, props28), {
-            hasSpecifiedPosition: !!props28.defaultPosition || !!props28.position,
-            translations: __spreadValues(__spreadValues({}, defaultTranslations2), props28.translations)
+          }, props), {
+            hasSpecifiedPosition: !!props.defaultPosition || !!props.position,
+            translations: __spreadValues(__spreadValues({}, defaultTranslations2), props.translations)
           });
         },
         initialState({ prop }) {
@@ -22439,119 +22297,122 @@ var Corex = (() => {
           open: {
             tags: ["open"],
             entry: ["bringToFrontOfPanelStack"],
-            effects: ["trackBoundaryRect"],
-            on: {
-              DRAG_START: {
-                guard: not4("isMaximized"),
-                target: "open.dragging",
-                actions: ["setPrevPosition"]
-              },
-              RESIZE_START: {
-                guard: not4("isMinimized"),
-                target: "open.resizing",
-                actions: ["setPrevSize"]
-              },
-              "CONTROLLED.CLOSE": {
-                target: "closed",
-                actions: ["resetRect", "focusTriggerEl"]
-              },
-              CLOSE: [
-                {
-                  guard: "isOpenControlled",
-                  target: "closed",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "closed",
-                  actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+            initial: "idle",
+            states: {
+              idle: {
+                effects: ["trackBoundaryRect"],
+                on: {
+                  DRAG_START: {
+                    guard: not4("isMaximized"),
+                    target: "dragging",
+                    actions: ["setPrevPosition"]
+                  },
+                  RESIZE_START: {
+                    guard: not4("isMinimized"),
+                    target: "resizing",
+                    actions: ["setPrevSize"]
+                  },
+                  "CONTROLLED.CLOSE": {
+                    target: "closed",
+                    actions: ["resetRect", "focusTriggerEl"]
+                  },
+                  CLOSE: [
+                    {
+                      guard: "isOpenControlled",
+                      target: "closed",
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      target: "closed",
+                      actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+                    }
+                  ],
+                  ESCAPE: [
+                    {
+                      guard: and5("isOpenControlled", "closeOnEsc"),
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      guard: "closeOnEsc",
+                      target: "closed",
+                      actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+                    }
+                  ],
+                  MINIMIZE: {
+                    actions: ["setMinimized"]
+                  },
+                  MAXIMIZE: {
+                    actions: ["setMaximized"]
+                  },
+                  RESTORE: {
+                    actions: ["setRestored"]
+                  },
+                  MOVE: {
+                    actions: ["setPositionFromKeyboard"]
+                  }
                 }
-              ],
-              ESCAPE: [
-                {
-                  guard: and5("isOpenControlled", "closeOnEsc"),
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  guard: "closeOnEsc",
-                  target: "closed",
-                  actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+              },
+              dragging: {
+                effects: ["trackPointerMove"],
+                exit: ["clearPrevPosition"],
+                on: {
+                  DRAG: {
+                    actions: ["setPosition"]
+                  },
+                  DRAG_END: {
+                    target: "idle",
+                    actions: ["invokeOnDragEnd"]
+                  },
+                  "CONTROLLED.CLOSE": {
+                    target: "closed",
+                    actions: ["resetRect"]
+                  },
+                  CLOSE: [
+                    {
+                      guard: "isOpenControlled",
+                      target: "closed",
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      target: "closed",
+                      actions: ["invokeOnClose", "resetRect"]
+                    }
+                  ],
+                  ESCAPE: {
+                    target: "idle"
+                  }
                 }
-              ],
-              MINIMIZE: {
-                actions: ["setMinimized"]
               },
-              MAXIMIZE: {
-                actions: ["setMaximized"]
-              },
-              RESTORE: {
-                actions: ["setRestored"]
-              },
-              MOVE: {
-                actions: ["setPositionFromKeyboard"]
-              }
-            }
-          },
-          "open.dragging": {
-            tags: ["open"],
-            effects: ["trackPointerMove"],
-            exit: ["clearPrevPosition"],
-            on: {
-              DRAG: {
-                actions: ["setPosition"]
-              },
-              DRAG_END: {
-                target: "open",
-                actions: ["invokeOnDragEnd"]
-              },
-              "CONTROLLED.CLOSE": {
-                target: "closed",
-                actions: ["resetRect"]
-              },
-              CLOSE: [
-                {
-                  guard: "isOpenControlled",
-                  target: "closed",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "closed",
-                  actions: ["invokeOnClose", "resetRect"]
+              resizing: {
+                effects: ["trackPointerMove"],
+                exit: ["clearPrevSize"],
+                on: {
+                  DRAG: {
+                    actions: ["setSize"]
+                  },
+                  DRAG_END: {
+                    target: "idle",
+                    actions: ["invokeOnResizeEnd"]
+                  },
+                  "CONTROLLED.CLOSE": {
+                    target: "closed",
+                    actions: ["resetRect"]
+                  },
+                  CLOSE: [
+                    {
+                      guard: "isOpenControlled",
+                      target: "closed",
+                      actions: ["invokeOnClose"]
+                    },
+                    {
+                      target: "closed",
+                      actions: ["invokeOnClose", "resetRect"]
+                    }
+                  ],
+                  ESCAPE: {
+                    target: "idle"
+                  }
                 }
-              ],
-              ESCAPE: {
-                target: "open"
-              }
-            }
-          },
-          "open.resizing": {
-            tags: ["open"],
-            effects: ["trackPointerMove"],
-            exit: ["clearPrevSize"],
-            on: {
-              DRAG: {
-                actions: ["setSize"]
-              },
-              DRAG_END: {
-                target: "open",
-                actions: ["invokeOnResizeEnd"]
-              },
-              "CONTROLLED.CLOSE": {
-                target: "closed",
-                actions: ["resetRect"]
-              },
-              CLOSE: [
-                {
-                  guard: "isOpenControlled",
-                  target: "closed",
-                  actions: ["invokeOnClose"]
-                },
-                {
-                  target: "closed",
-                  actions: ["invokeOnClose", "resetRect"]
-                }
-              ],
-              ESCAPE: {
-                target: "open"
               }
             }
           }
@@ -22766,7 +22627,7 @@ var Corex = (() => {
               invariant(event.step == null, "step is required");
               const position = context.get("position");
               const step = event.step;
-              let nextPosition = match2(event.direction, {
+              let nextPosition = match(event.direction, {
                 left: { x: position.x - step, y: position.y },
                 right: { x: position.x + step, y: position.y },
                 up: { x: position.x, y: position.y - step },
@@ -22814,45 +22675,10 @@ var Corex = (() => {
           }
         }
       });
-      props13 = createProps()([
-        "allowOverflow",
-        "closeOnEscape",
-        "defaultOpen",
-        "defaultPosition",
-        "defaultSize",
-        "dir",
-        "disabled",
-        "draggable",
-        "getAnchorPosition",
-        "getBoundaryEl",
-        "getRootNode",
-        "gridSize",
-        "id",
-        "ids",
-        "lockAspectRatio",
-        "maxSize",
-        "minSize",
-        "onOpenChange",
-        "onPositionChange",
-        "onPositionChangeEnd",
-        "onSizeChange",
-        "onSizeChangeEnd",
-        "onStageChange",
-        "open",
-        "persistRect",
-        "position",
-        "resizable",
-        "size",
-        "strategy",
-        "translations"
-      ]);
-      splitProps13 = createSplitProps(props13);
-      resizeTriggerProps = createProps()(["axis"]);
-      splitResizeTriggerProps = createSplitProps(resizeTriggerProps);
       FloatingPanel = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine13, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine13, props);
         }
         initApi() {
           return connect13(this.machine.service, normalizeProps);
@@ -23025,16 +22851,16 @@ var Corex = (() => {
     const focusVisible = refs.get("focusVisible") && focused;
     const inputState = refs.get("inputState");
     const value = context.get("value");
-    const selectedItems = context.get("selectedItems");
+    const selectedItems = computed("selectedItems");
     const highlightedValue = context.get("highlightedValue");
     const highlightedItem = context.get("highlightedItem");
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
     const ariaActiveDescendant = highlightedValue ? getItemId4(scope, highlightedValue) : void 0;
-    function getItemState(props28) {
-      const itemDisabled = collection22.getItemDisabled(props28.item);
-      const value2 = collection22.getItemValue(props28.item);
-      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props28.item)}`);
+    function getItemState(props) {
+      const itemDisabled = collection22.getItemDisabled(props.item);
+      const value2 = collection22.getItemValue(props.item);
+      ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
       const highlighted = highlightedValue === value2;
       return {
         value: value2,
@@ -23090,7 +22916,7 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getInputProps(props28 = {}) {
+      getInputProps(props = {}) {
         return normalize.input(__spreadProps(__spreadValues({}, parts14.input.attrs), {
           dir: prop("dir"),
           disabled,
@@ -23105,14 +22931,14 @@ var Corex = (() => {
           enterKeyHint: "go",
           onFocus() {
             queueMicrotask(() => {
-              send({ type: "INPUT.FOCUS", autoHighlight: !!(props28 == null ? void 0 : props28.autoHighlight) });
+              send({ type: "INPUT.FOCUS", autoHighlight: !!(props == null ? void 0 : props.autoHighlight) });
             });
           },
           onBlur() {
             send({ type: "CONTENT.BLUR", src: "input" });
           },
           onInput(event) {
-            if (!(props28 == null ? void 0 : props28.autoHighlight)) return;
+            if (!(props == null ? void 0 : props.autoHighlight)) return;
             if (event.currentTarget.value.trim()) return;
             queueMicrotask(() => {
               send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
@@ -23135,11 +22961,13 @@ var Corex = (() => {
                 if (!isGridCollection(collection22)) return;
                 if (event.ctrlKey) return;
                 forwardEvent();
+                break;
               }
               case "Home":
               case "End": {
                 if (highlightedValue == null && event.shiftKey) return;
                 forwardEvent();
+                break;
               }
               case "ArrowDown":
               case "ArrowUp": {
@@ -23151,6 +22979,8 @@ var Corex = (() => {
                   event.preventDefault();
                   send({ type: "ITEM.CLICK", value: highlightedValue });
                 }
+                break;
+              default:
                 break;
             }
           }
@@ -23170,8 +23000,8 @@ var Corex = (() => {
           "data-disabled": dataAttr(disabled)
         }));
       },
-      getItemProps(props28) {
-        const itemState = getItemState(props28);
+      getItemProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           id: getItemId4(scope, itemState.value),
           role: "option"
@@ -23187,7 +23017,7 @@ var Corex = (() => {
           "data-disabled": dataAttr(itemState.disabled),
           "aria-disabled": ariaAttr(itemState.disabled),
           onPointerMove(event) {
-            if (!props28.highlightOnHover) return;
+            if (!props.highlightOnHover) return;
             if (itemState.disabled || event.pointerType !== "mouse") return;
             if (itemState.highlighted) return;
             send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
@@ -23210,32 +23040,32 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props28) {
-        const itemState = getItemState(props28);
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts14.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props28) {
-        const itemState = getItemState(props28);
+      getItemIndicatorProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts14.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-state": itemState.selected ? "checked" : "unchecked",
           hidden: !itemState.selected
         }));
       },
-      getItemGroupLabelProps(props28) {
-        const { htmlFor } = props28;
+      getItemGroupLabelProps(props) {
+        const { htmlFor } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroupLabel.attrs), {
           id: getItemGroupLabelId2(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
         }));
       },
-      getItemGroupProps(props28) {
-        const { id } = props28;
+      getItemGroupProps(props) {
+        const { id } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts14.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           "data-orientation": prop("orientation"),
@@ -23407,13 +23237,13 @@ var Corex = (() => {
       isItemDisabled: (item) => !!item.disabled
     });
   }
-  var anatomy14, parts14, collection2, gridCollection, getRootId12, getContentId7, getLabelId8, getItemId4, getItemGroupId3, getItemGroupLabelId2, getContentEl7, getItemEl2, guards2, createMachine3, or, machine14, diff2, props14, splitProps14, itemProps4, splitItemProps4, itemGroupProps2, splitItemGroupProps2, itemGroupLabelProps2, splitItemGroupLabelProps2, Listbox, ListboxHook;
+  var anatomy14, parts14, collection2, gridCollection, getRootId12, getContentId7, getLabelId8, getItemId4, getItemGroupId3, getItemGroupLabelId2, getContentEl7, getItemEl2, guards2, createMachine3, or, machine14, diff2, Listbox, ListboxHook;
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_MWK4GDRX();
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_4S73FXZZ();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -23468,7 +23298,7 @@ var Corex = (() => {
       ({ guards: guards2, createMachine: createMachine3 } = setup());
       ({ or } = guards2);
       machine14 = createMachine3({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             loopFocus: false,
             composite: true,
@@ -23478,18 +23308,35 @@ var Corex = (() => {
             collection: collection2.empty(),
             orientation: "vertical",
             selectionMode: "single"
-          }, props28);
+          }, props);
         },
-        context({ prop, bindable: bindable2 }) {
+        context({ prop, bindable: bindable2, getContext }) {
+          var _a, _b;
+          const initialValue = (_b = (_a = prop("value")) != null ? _a : prop("defaultValue")) != null ? _b : [];
+          const initialSelectedItems = prop("collection").findMany(initialValue);
           return {
             value: bindable2(() => ({
               defaultValue: prop("defaultValue"),
               value: prop("value"),
-              isEqual: isEqual2,
+              isEqual,
               onChange(value) {
-                var _a;
-                const items = prop("collection").findMany(value);
-                return (_a = prop("onValueChange")) == null ? void 0 : _a({ value, items });
+                var _a2, _b2;
+                const context = getContext();
+                const collection22 = prop("collection");
+                const selectedItemMap = context.get("selectedItemMap");
+                const proposed = deriveSelectionState({
+                  values: value,
+                  collection: collection22,
+                  selectedItemMap
+                });
+                const effectiveValue = (_a2 = prop("value")) != null ? _a2 : value;
+                const effective = effectiveValue === value ? proposed : deriveSelectionState({
+                  values: effectiveValue,
+                  collection: collection22,
+                  selectedItemMap: proposed.nextSelectedItemMap
+                });
+                context.set("selectedItemMap", effective.nextSelectedItemMap);
+                return (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
               }
             })),
             highlightedValue: bindable2(() => ({
@@ -23497,8 +23344,8 @@ var Corex = (() => {
               value: prop("highlightedValue"),
               sync: true,
               onChange(value) {
-                var _a;
-                (_a = prop("onHighlightChange")) == null ? void 0 : _a({
+                var _a2;
+                (_a2 = prop("onHighlightChange")) == null ? void 0 : _a2({
                   highlightedValue: value,
                   highlightedItem: prop("collection").find(value),
                   highlightedIndex: prop("collection").indexOf(value)
@@ -23508,11 +23355,13 @@ var Corex = (() => {
             highlightedItem: bindable2(() => ({
               defaultValue: null
             })),
-            selectedItems: bindable2(() => {
-              var _a, _b;
-              const value = (_b = (_a = prop("value")) != null ? _a : prop("defaultValue")) != null ? _b : [];
-              const items = prop("collection").findMany(value);
-              return { defaultValue: items };
+            selectedItemMap: bindable2(() => {
+              return {
+                defaultValue: createSelectedItemMap({
+                  selectedItems: initialSelectedItems,
+                  collection: prop("collection")
+                })
+              };
             }),
             focused: bindable2(() => ({
               sync: true,
@@ -23538,7 +23387,12 @@ var Corex = (() => {
             return selection;
           },
           multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
-          valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+          selectedItems: ({ context, prop }) => resolveSelectedItems({
+            values: context.get("value"),
+            collection: prop("collection"),
+            selectedItemMap: context.get("selectedItemMap")
+          }),
+          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
         },
         initialState() {
           return "idle";
@@ -23728,14 +23582,12 @@ var Corex = (() => {
               context.set("value", []);
             },
             syncSelectedItems({ context, prop }) {
-              const collection22 = prop("collection");
-              const prevSelectedItems = context.get("selectedItems");
-              const value = context.get("value");
-              const selectedItems = value.map((value2) => {
-                const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === value2);
-                return item || collection22.find(value2);
+              const next2 = deriveSelectionState({
+                values: context.get("value"),
+                collection: prop("collection"),
+                selectedItemMap: context.get("selectedItemMap")
               });
-              context.set("selectedItems", selectedItems);
+              context.set("selectedItemMap", next2.nextSelectedItemMap);
             },
             syncHighlightedItem({ context, prop }) {
               const collection22 = prop("collection");
@@ -23787,40 +23639,10 @@ var Corex = (() => {
         for (const item of b2) result.delete(item);
         return result;
       };
-      props14 = createProps()([
-        "collection",
-        "defaultHighlightedValue",
-        "defaultValue",
-        "dir",
-        "disabled",
-        "deselectable",
-        "disallowSelectAll",
-        "getRootNode",
-        "highlightedValue",
-        "id",
-        "ids",
-        "loopFocus",
-        "onHighlightChange",
-        "onSelect",
-        "onValueChange",
-        "orientation",
-        "scrollToIndexFn",
-        "selectionMode",
-        "selectOnHighlight",
-        "typeahead",
-        "value"
-      ]);
-      splitProps14 = createSplitProps(props14);
-      itemProps4 = createProps()(["item", "highlightOnHover"]);
-      splitItemProps4 = createSplitProps(itemProps4);
-      itemGroupProps2 = createProps()(["id"]);
-      splitItemGroupProps2 = createSplitProps(itemGroupProps2);
-      itemGroupLabelProps2 = createProps()(["htmlFor"]);
-      splitItemGroupLabelProps2 = createSplitProps(itemGroupLabelProps2);
       Listbox = class extends Component {
-        constructor(el, props28) {
+        constructor(el, props) {
           var _a;
-          super(el, props28);
+          super(el, props);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "init", () => {
@@ -23831,7 +23653,7 @@ var Corex = (() => {
               this.render();
             });
           });
-          const collectionFromProps = props28.collection;
+          const collectionFromProps = props.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
         }
         get options() {
@@ -23868,10 +23690,10 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
+        initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props28.collection;
-          return new VanillaMachine(machine14, __spreadProps(__spreadValues({}, props28), {
+          const collectionFromProps = props.collection;
+          return new VanillaMachine(machine14, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return collectionFromProps != null ? collectionFromProps : getCollection();
             }
@@ -24124,8 +23946,8 @@ var Corex = (() => {
           }
         }));
       },
-      getContentProps(props28) {
-        const { index } = props28;
+      getContentProps(props) {
+        const { index } = props;
         const clone = index > 0;
         return normalize.element(__spreadProps(__spreadValues({}, parts15.content.attrs), {
           id: dom.getContentId(scope, index),
@@ -24154,8 +23976,8 @@ var Corex = (() => {
           }
         }));
       },
-      getEdgeProps(props28) {
-        const { side: side2 } = props28;
+      getEdgeProps(props) {
+        const { side: side2 } = props;
         const dir = prop("dir");
         return normalize.element(__spreadProps(__spreadValues({}, parts15.edge.attrs), {
           dir,
@@ -24165,7 +23987,7 @@ var Corex = (() => {
           style: __spreadValues({
             pointerEvents: "none",
             position: "absolute"
-          }, getEdgePositionStyles({ side: side2 }))
+          }, getEdgePositionStyles({ side: side2, dir }))
         }));
       },
       getItemProps() {
@@ -24185,11 +24007,11 @@ var Corex = (() => {
     }
     return contentSize < rootSize ? rootSize / speed : contentSize / speed;
   }
-  var anatomy15, parts15, dom, getEdgePositionStyles, getMarqueeTranslate, machine15, props15, splitProps15, Marquee, MarqueeHook;
+  var anatomy15, parts15, dom, getEdgePositionStyles, getMarqueeTranslate, machine15, Marquee, MarqueeHook;
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
       dom = {
@@ -24250,7 +24072,7 @@ var Corex = (() => {
         return shouldBeNegative ? "-100%" : "100%";
       };
       machine15 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             dir: "ltr",
             side: "start",
@@ -24265,7 +24087,7 @@ var Corex = (() => {
             translations: {
               root: "Marquee content"
             }
-          }, props28);
+          }, props);
         },
         refs() {
           return {
@@ -24352,6 +24174,7 @@ var Corex = (() => {
               const contentElements = viewportEl.querySelectorAll('[data-part="content"]');
               contentElements.forEach((el) => {
                 el.style.animation = "none";
+                el.offsetHeight;
                 el.style.animation = "";
               });
             },
@@ -24417,30 +24240,9 @@ var Corex = (() => {
           }
         }
       });
-      props15 = createProps()([
-        "autoFill",
-        "defaultPaused",
-        "delay",
-        "dir",
-        "getRootNode",
-        "id",
-        "ids",
-        "loopCount",
-        "onComplete",
-        "onLoopComplete",
-        "onPauseChange",
-        "paused",
-        "pauseOnInteraction",
-        "reverse",
-        "side",
-        "spacing",
-        "speed",
-        "translations"
-      ]);
-      splitProps15 = createSplitProps(props15);
       Marquee = class extends Component {
-        initMachine(props28) {
-          return new VanillaMachine(machine15, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine15, props);
         }
         initApi() {
           return connect15(this.machine.service, normalizeProps);
@@ -24615,6 +24417,37 @@ var Corex = (() => {
   __export(menu_exports, {
     Menu: () => MenuHook
   });
+  function mergeProps(...args) {
+    let result = {};
+    for (let props of args) {
+      if (!props) continue;
+      for (let key in result) {
+        if (key.startsWith("on") && typeof result[key] === "function" && typeof props[key] === "function") {
+          result[key] = callAll(props[key], result[key]);
+          continue;
+        }
+        if (key === "className" || key === "class") {
+          result[key] = clsx(result[key], props[key]);
+          continue;
+        }
+        if (key === "style") {
+          result[key] = css(result[key], props[key]);
+          continue;
+        }
+        result[key] = props[key] !== void 0 ? props[key] : result[key];
+      }
+      for (let key in props) {
+        if (result[key] === void 0) {
+          result[key] = props[key];
+        }
+      }
+      const symbols = Object.getOwnPropertySymbols(props);
+      for (let symbol of symbols) {
+        result[symbol] = props[symbol];
+      }
+    }
+    return result;
+  }
   function dispatchSelectionEvent(el, value) {
     if (!el) return;
     const win = getWindow(el);
@@ -24633,27 +24466,27 @@ var Corex = (() => {
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: anchorPoint ? "bottom" : currentPlacement
     }));
-    function getItemState(props28) {
+    function getItemState(props) {
       return {
-        id: getItemId5(scope, props28.value),
-        disabled: !!props28.disabled,
-        highlighted: highlightedValue === props28.value
+        id: getItemId5(scope, props.value),
+        disabled: !!props.disabled,
+        highlighted: highlightedValue === props.value
       };
     }
-    function getOptionItemProps(props28) {
+    function getOptionItemProps(props) {
       var _a;
-      const valueText = (_a = props28.valueText) != null ? _a : props28.value;
-      return __spreadProps(__spreadValues({}, props28), { id: props28.value, valueText });
+      const valueText = (_a = props.valueText) != null ? _a : props.value;
+      return __spreadProps(__spreadValues({}, props), { id: props.value, valueText });
     }
-    function getOptionItemState(props28) {
-      const itemState = getItemState(getOptionItemProps(props28));
+    function getOptionItemState(props) {
+      const itemState = getItemState(getOptionItemProps(props));
       return __spreadProps(__spreadValues({}, itemState), {
-        checked: !!props28.checked
+        checked: !!props.checked
       });
     }
-    function getItemProps(props28) {
-      const { closeOnSelect, valueText, value } = props28;
-      const itemState = getItemState(props28);
+    function getItemProps(props) {
+      const { closeOnSelect, valueText, value } = props;
+      const itemState = getItemState(props);
       const id = getItemId5(scope, value);
       return normalize.element(__spreadProps(__spreadValues({}, parts16.item.attrs), {
         id,
@@ -24719,12 +24552,12 @@ var Corex = (() => {
       reposition(options = {}) {
         send({ type: "POSITIONING.SET", options });
       },
-      addItemListener(props28) {
-        const node = scope.getById(props28.id);
+      addItemListener(props) {
+        const node = scope.getById(props.id);
         if (!node) return;
         const listener = () => {
           var _a;
-          return (_a = props28.onSelect) == null ? void 0 : _a.call(props28);
+          return (_a = props.onSelect) == null ? void 0 : _a.call(props);
         };
         node.addEventListener(itemSelectEvent, listener);
         return () => node.removeEventListener(itemSelectEvent, listener);
@@ -24764,8 +24597,8 @@ var Corex = (() => {
         }));
       },
       getTriggerItemProps(childApi) {
-        const triggerProps2 = childApi.getTriggerProps();
-        return mergeProps(getItemProps({ value: triggerProps2.id }), triggerProps2);
+        const triggerProps = childApi.getTriggerProps();
+        return mergeProps(getItemProps({ value: triggerProps.id }), triggerProps);
       },
       getTriggerProps() {
         return normalize.button(__spreadProps(__spreadValues({}, isSubmenu ? parts16.triggerItem.attrs : parts16.trigger.attrs), {
@@ -24955,10 +24788,10 @@ var Corex = (() => {
       getItemState,
       getItemProps,
       getOptionItemState,
-      getOptionItemProps(props28) {
-        const { type, disabled, closeOnSelect } = props28;
-        const option = getOptionItemProps(props28);
-        const itemState = getOptionItemState(props28);
+      getOptionItemProps(props) {
+        const { type, disabled, closeOnSelect } = props;
+        const option = getOptionItemProps(props);
+        const itemState = getOptionItemState(props);
         return __spreadValues(__spreadValues({}, getItemProps(option)), normalize.element(__spreadProps(__spreadValues({
           "data-type": type
         }, parts16.item.attrs), {
@@ -24976,43 +24809,68 @@ var Corex = (() => {
           }
         })));
       },
-      getItemIndicatorProps(props28) {
-        const itemState = getOptionItemState(cast(props28));
+      getItemIndicatorProps(props) {
+        const itemState = getOptionItemState(cast(props));
         const dataState = itemState.checked ? "checked" : "unchecked";
         return normalize.element(__spreadProps(__spreadValues({}, parts16.itemIndicator.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
-          "data-state": hasProp(props28, "checked") ? dataState : void 0,
-          hidden: hasProp(props28, "checked") ? !itemState.checked : void 0
+          "data-state": hasProp(props, "checked") ? dataState : void 0,
+          hidden: hasProp(props, "checked") ? !itemState.checked : void 0
         }));
       },
-      getItemTextProps(props28) {
-        const itemState = getOptionItemState(cast(props28));
+      getItemTextProps(props) {
+        const itemState = getOptionItemState(cast(props));
         const dataState = itemState.checked ? "checked" : "unchecked";
         return normalize.element(__spreadProps(__spreadValues({}, parts16.itemText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted),
-          "data-state": hasProp(props28, "checked") ? dataState : void 0
+          "data-state": hasProp(props, "checked") ? dataState : void 0
         }));
       },
-      getItemGroupLabelProps(props28) {
+      getItemGroupLabelProps(props) {
         return normalize.element(__spreadProps(__spreadValues({}, parts16.itemGroupLabel.attrs), {
-          id: getGroupLabelId(scope, props28.htmlFor),
+          id: getGroupLabelId(scope, props.htmlFor),
           dir: prop("dir")
         }));
       },
-      getItemGroupProps(props28) {
+      getItemGroupProps(props) {
         return normalize.element(__spreadProps(__spreadValues({
-          id: getGroupId(scope, props28.id)
+          id: getGroupId(scope, props.id)
         }, parts16.itemGroup.attrs), {
           dir: prop("dir"),
-          "aria-labelledby": getGroupLabelId(scope, props28.id),
+          "aria-labelledby": getGroupLabelId(scope, props.id),
           role: "group"
         }));
       }
     };
+  }
+  function getElementPolygon(rectValue, placement) {
+    const rect = createRect(rectValue);
+    const { top, right, left, bottom } = getRectCorners(rect);
+    const [base] = placement.split("-");
+    return {
+      top: [left, top, right, bottom],
+      right: [top, right, bottom, left],
+      bottom: [top, left, bottom, right],
+      left: [right, top, left, bottom]
+    }[base];
+  }
+  function isPointInPolygon(polygon, point) {
+    const { x: x2, y: y2 } = point;
+    let c2 = false;
+    for (let i2 = 0, j2 = polygon.length - 1; i2 < polygon.length; j2 = i2++) {
+      const xi = polygon[i2].x;
+      const yi = polygon[i2].y;
+      const xj = polygon[j2].x;
+      const yj = polygon[j2].y;
+      if (yi > y2 !== yj > y2 && x2 < (xj - xi) * (y2 - yi) / (yj - yi) + xi) {
+        c2 = !c2;
+      }
+    }
+    return c2;
   }
   function closeRootMenu(ctx) {
     let parent = ctx.parent;
@@ -25040,16 +24898,16 @@ var Corex = (() => {
     }
     return getItemId5(scope, value);
   }
-  var anatomy16, parts16, getTriggerId7, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl6, getItemEl3, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine16, props16, splitProps16, itemProps5, splitItemProps5, itemGroupLabelProps3, splitItemGroupLabelProps3, itemGroupProps3, splitItemGroupProps3, optionItemProps, splitOptionItemProps, Menu, MenuHook;
+  var anatomy16, parts16, clsx, CSS_REGEX, serialize, css, getTriggerId7, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl6, getItemEl3, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine16, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_QHOSSHQC();
-      init_chunk_QYWY7F3J();
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_3QRJREC6();
+      init_chunk_3PXF3EVQ();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy16 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -25067,6 +24925,28 @@ var Corex = (() => {
         "triggerItem"
       );
       parts16 = anatomy16.build();
+      clsx = (...args) => args.map((str) => {
+        var _a;
+        return (_a = str == null ? void 0 : str.trim) == null ? void 0 : _a.call(str);
+      }).filter(Boolean).join(" ");
+      CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
+      serialize = (style) => {
+        const res = {};
+        let match4;
+        while (match4 = CSS_REGEX.exec(style)) {
+          res[match4[1]] = match4[2];
+        }
+        return res;
+      };
+      css = (a2, b2) => {
+        if (isString(a2)) {
+          if (isString(b2)) return `${a2};${b2}`;
+          a2 = serialize(a2);
+        } else if (isString(b2)) {
+          b2 = serialize(b2);
+        }
+        return Object.assign({}, a2 != null ? a2 : {}, b2 != null ? b2 : {});
+      };
       getTriggerId7 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `menu:${ctx.id}:trigger`;
@@ -25144,7 +25024,7 @@ var Corex = (() => {
       itemSelectEvent = "menu:select";
       ({ not: not5, and: and6, or: or2 } = createGuards());
       machine16 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             closeOnSelect: true,
             typeahead: true,
@@ -25153,11 +25033,11 @@ var Corex = (() => {
             navigate(details) {
               clickIfLink(details.node);
             }
-          }, props28), {
+          }, props), {
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
-            }, props28.positioning)
+            }, props.positioning)
           });
         },
         initialState({ prop }) {
@@ -25673,7 +25553,7 @@ var Corex = (() => {
               return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
             },
             trackPositioning({ context, prop, scope, refs }) {
-              if (!!getContextTriggerEl(scope)) return;
+              if (getContextTriggerEl(scope)) return;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
               context.set("currentPlacement", positioning.placement);
               const getPositionerEl22 = () => getPositionerEl6(scope);
@@ -25764,7 +25644,7 @@ var Corex = (() => {
           },
           actions: {
             setAnchorPoint({ context, event }) {
-              context.set("anchorPoint", (prev2) => isEqual2(prev2, event.point) ? prev2 : event.point);
+              context.set("anchorPoint", (prev2) => isEqual(prev2, event.point) ? prev2 : event.point);
             },
             setSubmenuPlacement({ context, computed, refs }) {
               if (!context.get("isSubmenu")) return;
@@ -25977,57 +25857,14 @@ var Corex = (() => {
           }
         }
       });
-      props16 = createProps()([
-        "anchorPoint",
-        "aria-label",
-        "closeOnSelect",
-        "composite",
-        "defaultHighlightedValue",
-        "defaultOpen",
-        "dir",
-        "getRootNode",
-        "highlightedValue",
-        "id",
-        "ids",
-        "loopFocus",
-        "navigate",
-        "onEscapeKeyDown",
-        "onFocusOutside",
-        "onHighlightChange",
-        "onInteractOutside",
-        "onOpenChange",
-        "onPointerDownOutside",
-        "onRequestDismiss",
-        "onSelect",
-        "open",
-        "positioning",
-        "typeahead"
-      ]);
-      splitProps16 = createSplitProps(props16);
-      itemProps5 = createProps()(["closeOnSelect", "disabled", "value", "valueText"]);
-      splitItemProps5 = createSplitProps(itemProps5);
-      itemGroupLabelProps3 = createProps()(["htmlFor"]);
-      splitItemGroupLabelProps3 = createSplitProps(itemGroupLabelProps3);
-      itemGroupProps3 = createProps()(["id"]);
-      splitItemGroupProps3 = createSplitProps(itemGroupProps3);
-      optionItemProps = createProps()([
-        "checked",
-        "closeOnSelect",
-        "disabled",
-        "onCheckedChange",
-        "type",
-        "value",
-        "valueText"
-      ]);
-      splitOptionItemProps = createSplitProps(optionItemProps);
       Menu = class extends Component {
         constructor() {
           super(...arguments);
           __publicField(this, "children", []);
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine16, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine16, props);
         }
         initApi() {
           return connect16(this.machine.service, normalizeProps);
@@ -26060,8 +25897,8 @@ var Corex = (() => {
             const childMenu = this.children.find((child) => child.el.id === `menu:${nestedMenuId}`);
             if (!childMenu) continue;
             const applyProps = () => {
-              const triggerProps2 = this.api.getTriggerItemProps(childMenu.api);
-              this.spreadProps(triggerEl, triggerProps2);
+              const triggerProps = this.api.getTriggerItemProps(childMenu.api);
+              this.spreadProps(triggerEl, triggerProps);
             };
             applyProps();
             this.machine.subscribe(applyProps);
@@ -26349,128 +26186,6 @@ var Corex = (() => {
   __export(number_input_exports, {
     NumberInput: () => NumberInputHook
   });
-  function $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options = {}) {
-    let { numberingSystem } = options;
-    if (numberingSystem && locale.includes("-nu-")) {
-      if (!locale.includes("-u-")) locale += "-u-";
-      locale += `-nu-${numberingSystem}`;
-    }
-    if (options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
-      var _UNITS_unit;
-      let { unit, unitDisplay = "short" } = options;
-      if (!unit) throw new Error('unit option must be provided with style: "unit"');
-      if (!((_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay])) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
-      options = __spreadProps(__spreadValues({}, options), {
-        style: "decimal"
-      });
-    }
-    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
-    if ($488c6ddbf4ef74c2$var$formatterCache.has(cacheKey)) return $488c6ddbf4ef74c2$var$formatterCache.get(cacheKey);
-    let numberFormatter = new Intl.NumberFormat(locale, options);
-    $488c6ddbf4ef74c2$var$formatterCache.set(cacheKey, numberFormatter);
-    return numberFormatter;
-  }
-  function $488c6ddbf4ef74c2$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
-    if (signDisplay === "auto") return numberFormat.format(num);
-    else if (signDisplay === "never") return numberFormat.format(Math.abs(num));
-    else {
-      let needsPositiveSign = false;
-      if (signDisplay === "always") needsPositiveSign = num > 0 || Object.is(num, 0);
-      else if (signDisplay === "exceptZero") {
-        if (Object.is(num, -0) || Object.is(num, 0)) num = Math.abs(num);
-        else needsPositiveSign = num > 0;
-      }
-      if (needsPositiveSign) {
-        let negative = numberFormat.format(-num);
-        let noSign = numberFormat.format(num);
-        let minus = negative.replace(noSign, "").replace(/\u200e|\u061C/, "");
-        if ([
-          ...minus
-        ].length !== 1) console.warn("@react-aria/i18n polyfill for NumberFormat signDisplay: Unsupported case");
-        let positive = negative.replace(noSign, "!!!").replace(minus, "+").replace("!!!", noSign);
-        return positive;
-      } else return numberFormat.format(num);
-    }
-  }
-  function $6c7bd7858deea686$var$getNumberParserImpl(locale, options, value) {
-    let defaultParser = $6c7bd7858deea686$var$getCachedNumberParser(locale, options);
-    if (!locale.includes("-nu-") && !defaultParser.isValidPartialNumber(value)) {
-      for (let numberingSystem of $6c7bd7858deea686$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
-        let parser = $6c7bd7858deea686$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
-        if (parser.isValidPartialNumber(value)) return parser;
-      }
-    }
-    return defaultParser;
-  }
-  function $6c7bd7858deea686$var$getCachedNumberParser(locale, options) {
-    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
-    let parser = $6c7bd7858deea686$var$numberParserCache.get(cacheKey);
-    if (!parser) {
-      parser = new $6c7bd7858deea686$var$NumberParserImpl(locale, options);
-      $6c7bd7858deea686$var$numberParserCache.set(cacheKey, parser);
-    }
-    return parser;
-  }
-  function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
-    var _allParts_find, _posAllParts_find, _decimalParts_find, _allParts_find1;
-    let symbolFormatter = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
-      // Resets so we get the full range of symbols
-      minimumSignificantDigits: 1,
-      maximumSignificantDigits: 21,
-      roundingIncrement: 1,
-      roundingPriority: "auto",
-      roundingMode: "halfExpand"
-    }));
-    let allParts = symbolFormatter.formatToParts(-10000.111);
-    let posAllParts = symbolFormatter.formatToParts(10000.111);
-    let pluralParts = $6c7bd7858deea686$var$pluralNumbers.map((n2) => symbolFormatter.formatToParts(n2));
-    var _allParts_find_value;
-    let minusSign = (_allParts_find_value = (_allParts_find = allParts.find((p2) => p2.type === "minusSign")) === null || _allParts_find === void 0 ? void 0 : _allParts_find.value) !== null && _allParts_find_value !== void 0 ? _allParts_find_value : "-";
-    let plusSign = (_posAllParts_find = posAllParts.find((p2) => p2.type === "plusSign")) === null || _posAllParts_find === void 0 ? void 0 : _posAllParts_find.value;
-    if (!plusSign && ((originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "exceptZero" || (originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "always")) plusSign = "+";
-    let decimalParts = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })).formatToParts(1e-3);
-    let decimal = (_decimalParts_find = decimalParts.find((p2) => p2.type === "decimal")) === null || _decimalParts_find === void 0 ? void 0 : _decimalParts_find.value;
-    let group2 = (_allParts_find1 = allParts.find((p2) => p2.type === "group")) === null || _allParts_find1 === void 0 ? void 0 : _allParts_find1.value;
-    let allPartsLiterals = allParts.filter((p2) => !$6c7bd7858deea686$var$nonLiteralParts.has(p2.type)).map((p2) => $6c7bd7858deea686$var$escapeRegex(p2.value));
-    let pluralPartsLiterals = pluralParts.flatMap((p2) => p2.filter((p22) => !$6c7bd7858deea686$var$nonLiteralParts.has(p22.type)).map((p22) => $6c7bd7858deea686$var$escapeRegex(p22.value)));
-    let sortedLiterals = [
-      .../* @__PURE__ */ new Set([
-        ...allPartsLiterals,
-        ...pluralPartsLiterals
-      ])
-    ].sort((a2, b2) => b2.length - a2.length);
-    let literals = sortedLiterals.length === 0 ? new RegExp("[\\p{White_Space}]", "gu") : new RegExp(`${sortedLiterals.join("|")}|[\\p{White_Space}]`, "gu");
-    let numerals = [
-      ...new Intl.NumberFormat(intlOptions.locale, {
-        useGrouping: false
-      }).format(9876543210)
-    ].reverse();
-    let indexes = new Map(numerals.map((d2, i2) => [
-      d2,
-      i2
-    ]));
-    let numeral = new RegExp(`[${numerals.join("")}]`, "g");
-    let index = (d2) => String(indexes.get(d2));
-    return {
-      minusSign,
-      plusSign,
-      decimal,
-      group: group2,
-      literals,
-      numeral,
-      index
-    };
-  }
-  function $6c7bd7858deea686$var$replaceAll(str, find2, replace2) {
-    if (str.replaceAll) return str.replaceAll(find2, replace2);
-    return str.split(find2).join(replace2);
-  }
-  function $6c7bd7858deea686$var$escapeRegex(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
   function recordCursor(inputEl, scope) {
     if (!inputEl || !scope.isActiveElement(inputEl)) return;
     try {
@@ -26810,11 +26525,251 @@ var Corex = (() => {
       }
     };
   }
-  var $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, anatomy17, parts17, getRootId13, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId9, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine17, props17, splitProps17, NumberInput, NumberInputHook;
+  function $488c6ddbf4ef74c2$var$getCachedNumberFormatter(locale, options = {}) {
+    let { numberingSystem } = options;
+    if (numberingSystem && locale.includes("-nu-")) {
+      if (!locale.includes("-u-")) locale += "-u-";
+      locale += `-nu-${numberingSystem}`;
+    }
+    if (options.style === "unit" && !$488c6ddbf4ef74c2$var$supportsUnit) {
+      var _UNITS_unit;
+      let { unit, unitDisplay = "short" } = options;
+      if (!unit) throw new Error('unit option must be provided with style: "unit"');
+      if (!((_UNITS_unit = $488c6ddbf4ef74c2$var$UNITS[unit]) === null || _UNITS_unit === void 0 ? void 0 : _UNITS_unit[unitDisplay])) throw new Error(`Unsupported unit ${unit} with unitDisplay = ${unitDisplay}`);
+      options = __spreadProps(__spreadValues({}, options), {
+        style: "decimal"
+      });
+    }
+    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
+    if ($488c6ddbf4ef74c2$var$formatterCache.has(cacheKey)) return $488c6ddbf4ef74c2$var$formatterCache.get(cacheKey);
+    let numberFormatter = new Intl.NumberFormat(locale, options);
+    $488c6ddbf4ef74c2$var$formatterCache.set(cacheKey, numberFormatter);
+    return numberFormatter;
+  }
+  function $488c6ddbf4ef74c2$export$711b50b3c525e0f2(numberFormat, signDisplay, num) {
+    if (signDisplay === "auto") return numberFormat.format(num);
+    else if (signDisplay === "never") return numberFormat.format(Math.abs(num));
+    else {
+      let needsPositiveSign = false;
+      if (signDisplay === "always") needsPositiveSign = num > 0 || Object.is(num, 0);
+      else if (signDisplay === "exceptZero") {
+        if (Object.is(num, -0) || Object.is(num, 0)) num = Math.abs(num);
+        else needsPositiveSign = num > 0;
+      }
+      if (needsPositiveSign) {
+        let negative = numberFormat.format(-num);
+        let noSign = numberFormat.format(num);
+        let minus = negative.replace(noSign, "").replace(/\u200e|\u061C/, "");
+        if ([
+          ...minus
+        ].length !== 1) console.warn("@react-aria/i18n polyfill for NumberFormat signDisplay: Unsupported case");
+        let positive = negative.replace(noSign, "!!!").replace(minus, "+").replace("!!!", noSign);
+        return positive;
+      } else return numberFormat.format(num);
+    }
+  }
+  function $6c7bd7858deea686$var$getNumberParserImpl(locale, options, value) {
+    let defaultParser = $6c7bd7858deea686$var$getCachedNumberParser(locale, options);
+    if (!locale.includes("-nu-") && !defaultParser.isValidPartialNumber(value)) {
+      for (let numberingSystem of $6c7bd7858deea686$var$NUMBERING_SYSTEMS) if (numberingSystem !== defaultParser.options.numberingSystem) {
+        let parser = $6c7bd7858deea686$var$getCachedNumberParser(locale + (locale.includes("-u-") ? "-nu-" : "-u-nu-") + numberingSystem, options);
+        if (parser.isValidPartialNumber(value)) return parser;
+      }
+    }
+    return defaultParser;
+  }
+  function $6c7bd7858deea686$var$getCachedNumberParser(locale, options) {
+    let cacheKey = locale + (options ? Object.entries(options).sort((a2, b2) => a2[0] < b2[0] ? -1 : 1).join() : "");
+    let parser = $6c7bd7858deea686$var$numberParserCache.get(cacheKey);
+    if (!parser) {
+      parser = new $6c7bd7858deea686$var$NumberParserImpl(locale, options);
+      $6c7bd7858deea686$var$numberParserCache.set(cacheKey, parser);
+    }
+    return parser;
+  }
+  function $6c7bd7858deea686$var$getSymbols(locale, formatter, intlOptions, originalOptions) {
+    var _allParts_find, _posAllParts_find, _decimalParts_find, _allParts_find1;
+    let symbolFormatter = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
+      // Resets so we get the full range of symbols
+      minimumSignificantDigits: 1,
+      maximumSignificantDigits: 21,
+      roundingIncrement: 1,
+      roundingPriority: "auto",
+      roundingMode: "halfExpand"
+    }));
+    let allParts = symbolFormatter.formatToParts(-10000.111);
+    let posAllParts = symbolFormatter.formatToParts(10000.111);
+    let pluralParts = $6c7bd7858deea686$var$pluralNumbers.map((n2) => symbolFormatter.formatToParts(n2));
+    var _allParts_find_value;
+    let minusSign = (_allParts_find_value = (_allParts_find = allParts.find((p2) => p2.type === "minusSign")) === null || _allParts_find === void 0 ? void 0 : _allParts_find.value) !== null && _allParts_find_value !== void 0 ? _allParts_find_value : "-";
+    let plusSign = (_posAllParts_find = posAllParts.find((p2) => p2.type === "plusSign")) === null || _posAllParts_find === void 0 ? void 0 : _posAllParts_find.value;
+    if (!plusSign && ((originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "exceptZero" || (originalOptions === null || originalOptions === void 0 ? void 0 : originalOptions.signDisplay) === "always")) plusSign = "+";
+    let decimalParts = new Intl.NumberFormat(locale, __spreadProps(__spreadValues({}, intlOptions), {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    })).formatToParts(1e-3);
+    let decimal = (_decimalParts_find = decimalParts.find((p2) => p2.type === "decimal")) === null || _decimalParts_find === void 0 ? void 0 : _decimalParts_find.value;
+    let group2 = (_allParts_find1 = allParts.find((p2) => p2.type === "group")) === null || _allParts_find1 === void 0 ? void 0 : _allParts_find1.value;
+    let allPartsLiterals = allParts.filter((p2) => !$6c7bd7858deea686$var$nonLiteralParts.has(p2.type)).map((p2) => $6c7bd7858deea686$var$escapeRegex(p2.value));
+    let pluralPartsLiterals = pluralParts.flatMap((p2) => p2.filter((p22) => !$6c7bd7858deea686$var$nonLiteralParts.has(p22.type)).map((p22) => $6c7bd7858deea686$var$escapeRegex(p22.value)));
+    let sortedLiterals = [
+      .../* @__PURE__ */ new Set([
+        ...allPartsLiterals,
+        ...pluralPartsLiterals
+      ])
+    ].sort((a2, b2) => b2.length - a2.length);
+    let literals = sortedLiterals.length === 0 ? new RegExp("[\\p{White_Space}]", "gu") : new RegExp(`${sortedLiterals.join("|")}|[\\p{White_Space}]`, "gu");
+    let numerals = [
+      ...new Intl.NumberFormat(intlOptions.locale, {
+        useGrouping: false
+      }).format(9876543210)
+    ].reverse();
+    let indexes = new Map(numerals.map((d2, i2) => [
+      d2,
+      i2
+    ]));
+    let numeral = new RegExp(`[${numerals.join("")}]`, "g");
+    let index = (d2) => String(indexes.get(d2));
+    return {
+      minusSign,
+      plusSign,
+      decimal,
+      group: group2,
+      literals,
+      numeral,
+      index
+    };
+  }
+  function $6c7bd7858deea686$var$replaceAll(str, find2, replace2) {
+    if (str.replaceAll) return str.replaceAll(find2, replace2);
+    return str.split(find2).join(replace2);
+  }
+  function $6c7bd7858deea686$var$escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+  var anatomy17, parts17, getRootId13, getInputId5, getIncrementTriggerId, getDecrementTriggerId, getScrubberId, getCursorId, getLabelId9, getInputEl4, getIncrementTriggerEl, getDecrementTriggerEl, getCursorEl, getPressedTriggerEl, setupVirtualCursor, preventTextSelection, getMousemoveValue, createVirtualCursor, $488c6ddbf4ef74c2$var$formatterCache, $488c6ddbf4ef74c2$var$supportsSignDisplay, $488c6ddbf4ef74c2$var$supportsUnit, $488c6ddbf4ef74c2$var$UNITS, $488c6ddbf4ef74c2$export$cc77c4ff7e8673c5, $6c7bd7858deea686$var$CURRENCY_SIGN_REGEX, $6c7bd7858deea686$var$NUMBERING_SYSTEMS, $6c7bd7858deea686$export$cd11ab140839f11d, $6c7bd7858deea686$var$numberParserCache, $6c7bd7858deea686$var$NumberParserImpl, $6c7bd7858deea686$var$nonLiteralParts, $6c7bd7858deea686$var$pluralNumbers, createFormatter, createParser, parseValue, formatValue, getDefaultStep, choose2, guards3, createMachine4, not6, and7, machine17, NumberInput, NumberInputHook;
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_5DET2KLQ();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
+      anatomy17 = createAnatomy("numberInput").parts(
+        "root",
+        "label",
+        "input",
+        "control",
+        "valueText",
+        "incrementTrigger",
+        "decrementTrigger",
+        "scrubber"
+      );
+      parts17 = anatomy17.build();
+      getRootId13 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `number-input:${ctx.id}`;
+      };
+      getInputId5 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `number-input:${ctx.id}:input`;
+      };
+      getIncrementTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.incrementTrigger) != null ? _b : `number-input:${ctx.id}:inc`;
+      };
+      getDecrementTriggerId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.decrementTrigger) != null ? _b : `number-input:${ctx.id}:dec`;
+      };
+      getScrubberId = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.scrubber) != null ? _b : `number-input:${ctx.id}:scrubber`;
+      };
+      getCursorId = (ctx) => `number-input:${ctx.id}:cursor`;
+      getLabelId9 = (ctx) => {
+        var _a, _b;
+        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `number-input:${ctx.id}:label`;
+      };
+      getInputEl4 = (ctx) => ctx.getById(getInputId5(ctx));
+      getIncrementTriggerEl = (ctx) => ctx.getById(getIncrementTriggerId(ctx));
+      getDecrementTriggerEl = (ctx) => ctx.getById(getDecrementTriggerId(ctx));
+      getCursorEl = (ctx) => ctx.getDoc().getElementById(getCursorId(ctx));
+      getPressedTriggerEl = (ctx, hint) => {
+        let btnEl = null;
+        if (hint === "increment") {
+          btnEl = getIncrementTriggerEl(ctx);
+        }
+        if (hint === "decrement") {
+          btnEl = getDecrementTriggerEl(ctx);
+        }
+        return btnEl;
+      };
+      setupVirtualCursor = (ctx, point) => {
+        if (isSafari()) return;
+        createVirtualCursor(ctx, point);
+        return () => {
+          var _a;
+          (_a = getCursorEl(ctx)) == null ? void 0 : _a.remove();
+        };
+      };
+      preventTextSelection = (ctx) => {
+        const doc = ctx.getDoc();
+        const html = doc.documentElement;
+        const body = doc.body;
+        body.style.pointerEvents = "none";
+        html.style.userSelect = "none";
+        html.style.cursor = "ew-resize";
+        return () => {
+          body.style.pointerEvents = "";
+          html.style.userSelect = "";
+          html.style.cursor = "";
+          if (!html.style.length) {
+            html.removeAttribute("style");
+          }
+          if (!body.style.length) {
+            body.removeAttribute("style");
+          }
+        };
+      };
+      getMousemoveValue = (ctx, opts) => {
+        const { point, isRtl, event } = opts;
+        const win = ctx.getWin();
+        const x2 = roundToDpr(event.movementX, win.devicePixelRatio);
+        const y2 = roundToDpr(event.movementY, win.devicePixelRatio);
+        let hint = x2 > 0 ? "increment" : x2 < 0 ? "decrement" : null;
+        if (isRtl && hint === "increment") hint = "decrement";
+        if (isRtl && hint === "decrement") hint = "increment";
+        const newPoint = { x: point.x + x2, y: point.y + y2 };
+        const width = win.innerWidth;
+        const half = roundToDpr(7.5, win.devicePixelRatio);
+        newPoint.x = wrap2(newPoint.x + half, width) - half;
+        return { hint, point: newPoint };
+      };
+      createVirtualCursor = (ctx, point) => {
+        const doc = ctx.getDoc();
+        const el = doc.createElement("div");
+        el.className = "scrubber--cursor";
+        el.id = getCursorId(ctx);
+        Object.assign(el.style, {
+          width: "15px",
+          height: "15px",
+          position: "fixed",
+          pointerEvents: "none",
+          left: "0px",
+          top: "0px",
+          zIndex: MAX_Z_INDEX,
+          transform: point ? `translate3d(${point.x}px, ${point.y}px, 0px)` : void 0,
+          willChange: "transform"
+        });
+        el.innerHTML = `
+      <svg width="46" height="15" style="left: -15.5px; position: absolute; top: 0; filter: drop-shadow(rgba(0, 0, 0, 0.4) 0px 1px 1.1px);">
+        <g transform="translate(2 3)">
+          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z" style="stroke-width: 2px; stroke: white;"></path>
+          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z"></path>
+        </g>
+      </svg>`;
+        doc.body.appendChild(el);
+      };
       $488c6ddbf4ef74c2$var$formatterCache = /* @__PURE__ */ new Map();
       $488c6ddbf4ef74c2$var$supportsSignDisplay = false;
       try {
@@ -27043,122 +26998,6 @@ var Corex = (() => {
         0.1,
         1.1
       ];
-      anatomy17 = createAnatomy("numberInput").parts(
-        "root",
-        "label",
-        "input",
-        "control",
-        "valueText",
-        "incrementTrigger",
-        "decrementTrigger",
-        "scrubber"
-      );
-      parts17 = anatomy17.build();
-      getRootId13 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `number-input:${ctx.id}`;
-      };
-      getInputId5 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.input) != null ? _b : `number-input:${ctx.id}:input`;
-      };
-      getIncrementTriggerId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.incrementTrigger) != null ? _b : `number-input:${ctx.id}:inc`;
-      };
-      getDecrementTriggerId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.decrementTrigger) != null ? _b : `number-input:${ctx.id}:dec`;
-      };
-      getScrubberId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.scrubber) != null ? _b : `number-input:${ctx.id}:scrubber`;
-      };
-      getCursorId = (ctx) => `number-input:${ctx.id}:cursor`;
-      getLabelId9 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.label) != null ? _b : `number-input:${ctx.id}:label`;
-      };
-      getInputEl4 = (ctx) => ctx.getById(getInputId5(ctx));
-      getIncrementTriggerEl = (ctx) => ctx.getById(getIncrementTriggerId(ctx));
-      getDecrementTriggerEl = (ctx) => ctx.getById(getDecrementTriggerId(ctx));
-      getCursorEl = (ctx) => ctx.getDoc().getElementById(getCursorId(ctx));
-      getPressedTriggerEl = (ctx, hint) => {
-        let btnEl = null;
-        if (hint === "increment") {
-          btnEl = getIncrementTriggerEl(ctx);
-        }
-        if (hint === "decrement") {
-          btnEl = getDecrementTriggerEl(ctx);
-        }
-        return btnEl;
-      };
-      setupVirtualCursor = (ctx, point) => {
-        if (isSafari()) return;
-        createVirtualCursor(ctx, point);
-        return () => {
-          var _a;
-          (_a = getCursorEl(ctx)) == null ? void 0 : _a.remove();
-        };
-      };
-      preventTextSelection = (ctx) => {
-        const doc = ctx.getDoc();
-        const html = doc.documentElement;
-        const body = doc.body;
-        body.style.pointerEvents = "none";
-        html.style.userSelect = "none";
-        html.style.cursor = "ew-resize";
-        return () => {
-          body.style.pointerEvents = "";
-          html.style.userSelect = "";
-          html.style.cursor = "";
-          if (!html.style.length) {
-            html.removeAttribute("style");
-          }
-          if (!body.style.length) {
-            body.removeAttribute("style");
-          }
-        };
-      };
-      getMousemoveValue = (ctx, opts) => {
-        const { point, isRtl, event } = opts;
-        const win = ctx.getWin();
-        const x2 = roundToDpr(event.movementX, win.devicePixelRatio);
-        const y2 = roundToDpr(event.movementY, win.devicePixelRatio);
-        let hint = x2 > 0 ? "increment" : x2 < 0 ? "decrement" : null;
-        if (isRtl && hint === "increment") hint = "decrement";
-        if (isRtl && hint === "decrement") hint = "increment";
-        const newPoint = { x: point.x + x2, y: point.y + y2 };
-        const width = win.innerWidth;
-        const half = roundToDpr(7.5, win.devicePixelRatio);
-        newPoint.x = wrap2(newPoint.x + half, width) - half;
-        return { hint, point: newPoint };
-      };
-      createVirtualCursor = (ctx, point) => {
-        const doc = ctx.getDoc();
-        const el = doc.createElement("div");
-        el.className = "scrubber--cursor";
-        el.id = getCursorId(ctx);
-        Object.assign(el.style, {
-          width: "15px",
-          height: "15px",
-          position: "fixed",
-          pointerEvents: "none",
-          left: "0px",
-          top: "0px",
-          zIndex: MAX_Z_INDEX,
-          transform: point ? `translate3d(${point.x}px, ${point.y}px, 0px)` : void 0,
-          willChange: "transform"
-        });
-        el.innerHTML = `
-      <svg width="46" height="15" style="left: -15.5px; position: absolute; top: 0; filter: drop-shadow(rgba(0, 0, 0, 0.4) 0px 1px 1.1px);">
-        <g transform="translate(2 3)">
-          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z" style="stroke-width: 2px; stroke: white;"></path>
-          <path fill-rule="evenodd" d="M 15 4.5L 15 2L 11.5 5.5L 15 9L 15 6.5L 31 6.5L 31 9L 34.5 5.5L 31 2L 31 4.5Z"></path>
-        </g>
-      </svg>`;
-        doc.body.appendChild(el);
-      };
       createFormatter = (locale, options = {}) => {
         return new Intl.NumberFormat(locale, options);
       };
@@ -27187,13 +27026,13 @@ var Corex = (() => {
       ({ choose: choose2, guards: guards3, createMachine: createMachine4 } = setup());
       ({ not: not6, and: and7 } = guards3);
       machine17 = createMachine4({
-        props({ props: props28 }) {
-          const step = getDefaultStep(props28.step, props28.formatOptions);
+        props({ props }) {
+          const step = getDefaultStep(props.step, props.formatOptions);
           return __spreadProps(__spreadValues({
             dir: "ltr",
             locale: "en-US",
             focusInputOnChange: true,
-            clampValueOnBlur: !props28.allowOverflow,
+            clampValueOnBlur: !props.allowOverflow,
             allowOverflow: false,
             inputMode: "decimal",
             pattern: "-?[0-9]*(.[0-9]+)?",
@@ -27202,11 +27041,11 @@ var Corex = (() => {
             min: Number.MIN_SAFE_INTEGER,
             max: Number.MAX_SAFE_INTEGER,
             spinOnPress: true
-          }, props28), {
+          }, props), {
             translations: __spreadValues({
               incrementLabel: "increment value",
               decrementLabel: "decrease value"
-            }, props28.translations)
+            }, props.translations)
           });
         },
         initialState() {
@@ -27616,42 +27455,10 @@ var Corex = (() => {
           }
         }
       });
-      props17 = createProps()([
-        "allowMouseWheel",
-        "allowOverflow",
-        "clampValueOnBlur",
-        "dir",
-        "disabled",
-        "focusInputOnChange",
-        "form",
-        "formatOptions",
-        "getRootNode",
-        "id",
-        "ids",
-        "inputMode",
-        "invalid",
-        "locale",
-        "max",
-        "min",
-        "name",
-        "onFocusChange",
-        "onValueChange",
-        "onValueCommit",
-        "onValueInvalid",
-        "pattern",
-        "required",
-        "readOnly",
-        "spinOnPress",
-        "step",
-        "translations",
-        "value",
-        "defaultValue"
-      ]);
-      splitProps17 = createSplitProps(props17);
       NumberInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine17, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine17, props);
         }
         initApi() {
           return connect17(this.machine.service, normalizeProps);
@@ -27875,11 +27682,11 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy18, parts18, getInputId6, getInputEl5, passwordManagerProps, machine18, props18, splitProps18, PasswordInput, PasswordInputHook;
+  var anatomy18, parts18, getInputId6, getInputEl5, passwordManagerProps, machine18, PasswordInput, PasswordInputHook;
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -27907,18 +27714,18 @@ var Corex = (() => {
         "data-protonpass-ignore": "true"
       };
       machine18 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             id: uuid(),
             defaultVisible: false,
             autoComplete: "current-password",
             ignorePasswordManagers: false
-          }, props28), {
+          }, props), {
             translations: __spreadValues({
               visibilityTrigger(visible) {
                 return visible ? "Hide password" : "Show password";
               }
-            }, props28.translations)
+            }, props.translations)
           });
         },
         context({ prop, bindable: bindable2 }) {
@@ -27989,28 +27796,10 @@ var Corex = (() => {
           }
         }
       });
-      props18 = createProps()([
-        "defaultVisible",
-        "dir",
-        "id",
-        "onVisibilityChange",
-        "visible",
-        "ids",
-        "getRootNode",
-        "disabled",
-        "invalid",
-        "required",
-        "readOnly",
-        "translations",
-        "ignorePasswordManagers",
-        "autoComplete",
-        "name"
-      ]);
-      splitProps18 = createSplitProps(props18);
       PasswordInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine18, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine18, props);
         }
         initApi() {
           return connect18(this.machine.service, normalizeProps);
@@ -28199,9 +27988,9 @@ var Corex = (() => {
           id: getControlId7(scope)
         }));
       },
-      getInputProps(props28) {
+      getInputProps(props) {
         var _a;
-        const { index } = props28;
+        const { index } = props;
         const inputType = prop("type") === "numeric" ? "tel" : "text";
         return normalize.input(__spreadProps(__spreadValues({}, parts19.input.attrs), {
           dir: prop("dir"),
@@ -28323,11 +28112,12 @@ var Corex = (() => {
   function fill(value, count) {
     return Array.from({ length: count }).fill("").map((v2, i2) => value[i2] || v2);
   }
-  var anatomy19, parts19, getRootId14, getInputId7, getHiddenInputId4, getLabelId10, getControlId7, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl4, setInputValue, REGEX, choose3, createMachine5, machine19, props19, splitProps19, PinInput, PinInputHook;
+  var anatomy19, parts19, getRootId14, getInputId7, getHiddenInputId4, getLabelId10, getControlId7, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl4, setInputValue, REGEX, choose3, createMachine5, machine19, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
       getRootId14 = (ctx) => {
@@ -28370,16 +28160,16 @@ var Corex = (() => {
       };
       ({ choose: choose3, createMachine: createMachine5 } = setup());
       machine19 = createMachine5({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             placeholder: "\u25CB",
             otp: false,
             type: "numeric",
-            defaultValue: props28.count ? fill([], props28.count) : []
-          }, props28), {
+            defaultValue: props.count ? fill([], props.count) : []
+          }, props), {
             translations: __spreadValues({
               inputLabel: (index, length) => `pin code ${index + 1} of ${length}`
-            }, props28.translations)
+            }, props.translations)
           });
         },
         initialState() {
@@ -28390,7 +28180,7 @@ var Corex = (() => {
             value: bindable2(() => ({
               value: prop("value"),
               defaultValue: prop("defaultValue"),
-              isEqual: isEqual2,
+              isEqual,
               onChange(value) {
                 var _a;
                 (_a = prop("onValueChange")) == null ? void 0 : _a({ value, valueAsString: value.join("") });
@@ -28637,38 +28427,10 @@ var Corex = (() => {
           }
         }
       });
-      props19 = createProps()([
-        "autoFocus",
-        "blurOnComplete",
-        "count",
-        "defaultValue",
-        "dir",
-        "disabled",
-        "form",
-        "getRootNode",
-        "id",
-        "ids",
-        "invalid",
-        "mask",
-        "name",
-        "onValueChange",
-        "onValueComplete",
-        "onValueInvalid",
-        "otp",
-        "pattern",
-        "placeholder",
-        "readOnly",
-        "required",
-        "selectOnFocus",
-        "translations",
-        "type",
-        "value"
-      ]);
-      splitProps19 = createSplitProps(props19);
       PinInput = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine19, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine19, props);
         }
         initApi() {
           return connect19(this.machine.service, normalizeProps);
@@ -28804,20 +28566,20 @@ var Corex = (() => {
     const groupDisabled = computed("isDisabled");
     const groupInvalid = prop("invalid");
     const readOnly = prop("readOnly");
-    function getItemState(props28) {
+    function getItemState(props) {
       return {
-        value: props28.value,
-        invalid: !!props28.invalid || !!groupInvalid,
-        disabled: !!props28.disabled || groupDisabled,
-        checked: context.get("value") === props28.value,
-        focused: context.get("focusedValue") === props28.value,
-        focusVisible: context.get("focusVisibleValue") === props28.value,
-        hovered: context.get("hoveredValue") === props28.value,
-        active: context.get("activeValue") === props28.value
+        value: props.value,
+        invalid: !!props.invalid || !!groupInvalid,
+        disabled: !!props.disabled || groupDisabled,
+        checked: context.get("value") === props.value,
+        focused: context.get("focusedValue") === props.value,
+        focusVisible: context.get("focusVisibleValue") === props.value,
+        hovered: context.get("hoveredValue") === props.value,
+        active: context.get("activeValue") === props.value
       };
     }
-    function getItemDataAttrs(props28) {
-      const itemState = getItemState(props28);
+    function getItemDataAttrs(props) {
+      const itemState = getItemState(props);
       return {
         "data-focus": dataAttr(itemState.focused),
         "data-focus-visible": dataAttr(itemState.focusVisible),
@@ -28875,17 +28637,17 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props28) {
-        const itemState = getItemState(props28);
+      getItemProps(props) {
+        const itemState = getItemState(props);
         return normalize.label(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, parts20.item.attrs), {
           dir: prop("dir"),
-          id: getItemId6(scope, props28.value),
-          htmlFor: getItemHiddenInputId(scope, props28.value)
-        }), getItemDataAttrs(props28)), {
+          id: getItemId6(scope, props.value),
+          htmlFor: getItemHiddenInputId(scope, props.value)
+        }), getItemDataAttrs(props)), {
           onPointerMove() {
             if (itemState.disabled) return;
             if (itemState.hovered) return;
-            send({ type: "SET_HOVERED", value: props28.value, hovered: true });
+            send({ type: "SET_HOVERED", value: props.value, hovered: true });
           },
           onPointerLeave() {
             if (itemState.disabled) return;
@@ -28897,7 +28659,7 @@ var Corex = (() => {
             if (itemState.focused && event.pointerType === "mouse") {
               event.preventDefault();
             }
-            send({ type: "SET_ACTIVE", value: props28.value, active: true });
+            send({ type: "SET_ACTIVE", value: props.value, active: true });
           },
           onPointerUp() {
             if (itemState.disabled) return;
@@ -28906,35 +28668,35 @@ var Corex = (() => {
           onClick() {
             var _a;
             if (!itemState.disabled && isSafari()) {
-              (_a = getItemHiddenInputEl(scope, props28.value)) == null ? void 0 : _a.focus();
+              (_a = getItemHiddenInputEl(scope, props.value)) == null ? void 0 : _a.focus();
             }
           }
         }));
       },
-      getItemTextProps(props28) {
+      getItemTextProps(props) {
         return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts20.itemText.attrs), {
           dir: prop("dir"),
-          id: getItemLabelId(scope, props28.value)
-        }), getItemDataAttrs(props28)));
+          id: getItemLabelId(scope, props.value)
+        }), getItemDataAttrs(props)));
       },
-      getItemControlProps(props28) {
-        const itemState = getItemState(props28);
+      getItemControlProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadValues(__spreadProps(__spreadValues({}, parts20.itemControl.attrs), {
           dir: prop("dir"),
-          id: getItemControlId(scope, props28.value),
+          id: getItemControlId(scope, props.value),
           "data-active": dataAttr(itemState.active),
           "aria-hidden": true
-        }), getItemDataAttrs(props28)));
+        }), getItemDataAttrs(props)));
       },
-      getItemHiddenInputProps(props28) {
-        const itemState = getItemState(props28);
+      getItemHiddenInputProps(props) {
+        const itemState = getItemState(props);
         return normalize.input({
           "data-ownedby": getRootId15(scope),
-          id: getItemHiddenInputId(scope, props28.value),
+          id: getItemHiddenInputId(scope, props.value),
           type: "radio",
           name: prop("name") || prop("id"),
           form: prop("form"),
-          value: props28.value,
+          value: props.value,
           required: prop("required"),
           "aria-invalid": itemState.invalid || void 0,
           onClick(event) {
@@ -28943,7 +28705,7 @@ var Corex = (() => {
               return;
             }
             if (event.currentTarget.checked) {
-              send({ type: "SET_VALUE", value: props28.value, isTrusted: true });
+              send({ type: "SET_VALUE", value: props.value, isTrusted: true });
             }
           },
           onBlur() {
@@ -28951,12 +28713,12 @@ var Corex = (() => {
           },
           onFocus() {
             const focusVisible = isFocusVisible();
-            send({ type: "SET_FOCUSED", value: props28.value, focused: true, focusVisible });
+            send({ type: "SET_FOCUSED", value: props.value, focused: true, focusVisible });
           },
           onKeyDown(event) {
             if (event.defaultPrevented) return;
             if (event.key === " ") {
-              send({ type: "SET_ACTIVE", value: props28.value, active: true });
+              send({ type: "SET_ACTIVE", value: props.value, active: true });
             }
           },
           onKeyUp(event) {
@@ -28997,12 +28759,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy20, parts20, getRootId15, getLabelId11, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, not7, machine20, props20, splitProps20, itemProps6, splitItemProps6, RadioGroup, RadioGroupHook;
+  var anatomy20, parts20, getRootId15, getLabelId11, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, not7, machine20, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_G66USZ47();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -29071,10 +28834,10 @@ var Corex = (() => {
       };
       ({ not: not7 } = createGuards());
       machine20 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             orientation: "vertical"
-          }, props28);
+          }, props);
         },
         initialState() {
           return "idle";
@@ -29228,29 +28991,10 @@ var Corex = (() => {
           }
         }
       });
-      props20 = createProps()([
-        "dir",
-        "disabled",
-        "form",
-        "getRootNode",
-        "id",
-        "ids",
-        "invalid",
-        "name",
-        "onValueChange",
-        "orientation",
-        "readOnly",
-        "required",
-        "value",
-        "defaultValue"
-      ]);
-      splitProps20 = createSplitProps(props20);
-      itemProps6 = createProps()(["value", "disabled", "invalid"]);
-      splitItemProps6 = createSplitProps(itemProps6);
       RadioGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine20, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine20, props);
         }
         initApi() {
           return connect20(this.machine.service, normalizeProps);
@@ -29398,15 +29142,15 @@ var Corex = (() => {
     const focused = state2.matches("focused");
     const highlightedValue = context.get("highlightedValue");
     const highlightedItem = context.get("highlightedItem");
-    const selectedItems = context.get("selectedItems");
+    const selectedItems = computed("selectedItems");
     const currentPlacement = context.get("currentPlacement");
     const isTypingAhead = computed("isTypingAhead");
     const interactive = computed("isInteractive");
     const ariaActiveDescendant = highlightedValue ? getItemId7(scope, highlightedValue) : void 0;
-    function getItemState(props28) {
-      const _disabled = collection22.getItemDisabled(props28.item);
-      const value = collection22.getItemValue(props28.item);
-      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props28.item)}`);
+    function getItemState(props) {
+      const _disabled = collection22.getItemDisabled(props.item);
+      const value = collection22.getItemValue(props.item);
+      ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
       return {
         value,
         disabled: Boolean(disabled || _disabled),
@@ -29599,8 +29343,8 @@ var Corex = (() => {
           "data-readonly": dataAttr(readOnly)
         }));
       },
-      getItemProps(props28) {
-        const itemState = getItemState(props28);
+      getItemProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           id: getItemId7(scope, itemState.value),
           role: "option"
@@ -29625,7 +29369,7 @@ var Corex = (() => {
           onPointerLeave(event) {
             var _a;
             if (itemState.disabled) return;
-            if (props28.persistFocus) return;
+            if (props.persistFocus) return;
             if (event.pointerType !== "mouse") return;
             const pointerMoved = (_a = service.event.previous()) == null ? void 0 : _a.type.includes("POINTER");
             if (!pointerMoved) return;
@@ -29633,16 +29377,16 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props28) {
-        const itemState = getItemState(props28);
+      getItemTextProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts21.itemText.attrs), {
           "data-state": itemState.selected ? "checked" : "unchecked",
           "data-disabled": dataAttr(itemState.disabled),
           "data-highlighted": dataAttr(itemState.highlighted)
         }));
       },
-      getItemIndicatorProps(props28) {
-        const itemState = getItemState(props28);
+      getItemIndicatorProps(props) {
+        const itemState = getItemState(props);
         return normalize.element(__spreadProps(__spreadValues({
           "aria-hidden": true
         }, parts21.itemIndicator.attrs), {
@@ -29650,16 +29394,16 @@ var Corex = (() => {
           hidden: !itemState.selected
         }));
       },
-      getItemGroupLabelProps(props28) {
-        const { htmlFor } = props28;
+      getItemGroupLabelProps(props) {
+        const { htmlFor } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts21.itemGroupLabel.attrs), {
           id: getItemGroupLabelId3(scope, htmlFor),
           dir: prop("dir"),
           role: "presentation"
         }));
       },
-      getItemGroupProps(props28) {
-        const { id } = props28;
+      getItemGroupProps(props) {
+        const { id } = props;
         return normalize.element(__spreadProps(__spreadValues({}, parts21.itemGroup.attrs), {
           "data-disabled": dataAttr(disabled),
           id: getItemGroupId4(scope, id),
@@ -29840,16 +29584,16 @@ var Corex = (() => {
     }
     return result;
   }
-  var anatomy21, parts21, collection3, getRootId16, getContentId9, getTriggerId8, getClearTriggerId3, getLabelId12, getControlId8, getItemId7, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl7, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine21, props21, splitProps21, itemProps7, splitItemProps7, itemGroupProps4, splitItemGroupProps4, itemGroupLabelProps4, splitItemGroupLabelProps4, Select, SelectHook;
+  var anatomy21, parts21, collection3, getRootId16, getContentId9, getTriggerId8, getClearTriggerId3, getLabelId12, getControlId8, getItemId7, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl7, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine21, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_MWK4GDRX();
-      init_chunk_QYWY7F3J();
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_4S73FXZZ();
+      init_chunk_3PXF3EVQ();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy21 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -29932,39 +29676,56 @@ var Corex = (() => {
       };
       ({ and: and8, not: not8, or: or3 } = createGuards());
       machine21 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           var _a;
           return __spreadProps(__spreadValues({
             loopFocus: false,
-            closeOnSelect: !props28.multiple,
+            closeOnSelect: !props.multiple,
             composite: true,
             defaultValue: []
-          }, props28), {
-            collection: (_a = props28.collection) != null ? _a : collection3.empty(),
+          }, props), {
+            collection: (_a = props.collection) != null ? _a : collection3.empty(),
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
-            }, props28.positioning)
+            }, props.positioning)
           });
         },
-        context({ prop, bindable: bindable2 }) {
+        context({ prop, bindable: bindable2, getContext }) {
+          var _a, _b;
+          const initialValue = (_b = (_a = prop("value")) != null ? _a : prop("defaultValue")) != null ? _b : [];
+          const initialSelectedItems = prop("collection").findMany(initialValue);
           return {
             value: bindable2(() => ({
               defaultValue: prop("defaultValue"),
               value: prop("value"),
-              isEqual: isEqual2,
+              isEqual,
               onChange(value) {
-                var _a;
-                const items = prop("collection").findMany(value);
-                return (_a = prop("onValueChange")) == null ? void 0 : _a({ value, items });
+                var _a2, _b2;
+                const context = getContext();
+                const collection22 = prop("collection");
+                const selectedItemMap = context.get("selectedItemMap");
+                const proposed = deriveSelectionState({
+                  values: value,
+                  collection: collection22,
+                  selectedItemMap
+                });
+                const effectiveValue = (_a2 = prop("value")) != null ? _a2 : value;
+                const effective = effectiveValue === value ? proposed : deriveSelectionState({
+                  values: effectiveValue,
+                  collection: collection22,
+                  selectedItemMap: proposed.nextSelectedItemMap
+                });
+                context.set("selectedItemMap", effective.nextSelectedItemMap);
+                return (_b2 = prop("onValueChange")) == null ? void 0 : _b2({ value, items: proposed.selectedItems });
               }
             })),
             highlightedValue: bindable2(() => ({
               defaultValue: prop("defaultHighlightedValue") || null,
               value: prop("highlightedValue"),
               onChange(value) {
-                var _a;
-                (_a = prop("onHighlightChange")) == null ? void 0 : _a({
+                var _a2;
+                (_a2 = prop("onHighlightChange")) == null ? void 0 : _a2({
                   highlightedValue: value,
                   highlightedItem: prop("collection").find(value),
                   highlightedIndex: prop("collection").indexOf(value)
@@ -29980,11 +29741,13 @@ var Corex = (() => {
             highlightedItem: bindable2(() => ({
               defaultValue: null
             })),
-            selectedItems: bindable2(() => {
-              var _a, _b;
-              const value = (_b = (_a = prop("value")) != null ? _a : prop("defaultValue")) != null ? _b : [];
-              const items = prop("collection").findMany(value);
-              return { defaultValue: items };
+            selectedItemMap: bindable2(() => {
+              return {
+                defaultValue: createSelectedItemMap({
+                  selectedItems: initialSelectedItems,
+                  collection: prop("collection")
+                })
+              };
             })
           };
         },
@@ -29998,7 +29761,12 @@ var Corex = (() => {
           isTypingAhead: ({ refs }) => refs.get("typeahead").keysSoFar !== "",
           isDisabled: ({ prop, context }) => !!prop("disabled") || !!context.get("fieldsetDisabled"),
           isInteractive: ({ prop }) => !(prop("disabled") || prop("readOnly")),
-          valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+          selectedItems: ({ context, prop }) => resolveSelectedItems({
+            values: context.get("value"),
+            collection: prop("collection"),
+            selectedItemMap: context.get("selectedItemMap")
+          }),
+          valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
         },
         initialState({ prop }) {
           const open = prop("open") || prop("defaultOpen");
@@ -30588,18 +30356,20 @@ var Corex = (() => {
               const collection22 = prop("collection");
               const highlightedItem = collection22.find(context.get("highlightedValue"));
               if (highlightedItem) context.set("highlightedItem", highlightedItem);
-              const selectedItems = collection22.findMany(context.get("value"));
-              context.set("selectedItems", selectedItems);
+              const next2 = deriveSelectionState({
+                values: context.get("value"),
+                collection: collection22,
+                selectedItemMap: context.get("selectedItemMap")
+              });
+              context.set("selectedItemMap", next2.nextSelectedItemMap);
             },
             syncSelectedItems({ context, prop }) {
-              const collection22 = prop("collection");
-              const prevSelectedItems = context.get("selectedItems");
-              const value = context.get("value");
-              const selectedItems = value.map((value2) => {
-                const item = prevSelectedItems.find((item2) => collection22.getItemValue(item2) === value2);
-                return item || collection22.find(value2);
+              const next2 = deriveSelectionState({
+                values: context.get("value"),
+                collection: prop("collection"),
+                selectedItemMap: context.get("selectedItemMap")
               });
-              context.set("selectedItems", selectedItems);
+              context.set("selectedItemMap", next2.nextSelectedItemMap);
             },
             syncHighlightedItem({ context, prop }) {
               const collection22 = prop("collection");
@@ -30619,51 +30389,10 @@ var Corex = (() => {
           }
         }
       });
-      props21 = createProps()([
-        "autoComplete",
-        "closeOnSelect",
-        "collection",
-        "composite",
-        "defaultHighlightedValue",
-        "defaultOpen",
-        "defaultValue",
-        "deselectable",
-        "dir",
-        "disabled",
-        "form",
-        "getRootNode",
-        "highlightedValue",
-        "id",
-        "ids",
-        "invalid",
-        "loopFocus",
-        "multiple",
-        "name",
-        "onFocusOutside",
-        "onHighlightChange",
-        "onInteractOutside",
-        "onOpenChange",
-        "onPointerDownOutside",
-        "onSelect",
-        "onValueChange",
-        "open",
-        "positioning",
-        "readOnly",
-        "required",
-        "scrollToIndexFn",
-        "value"
-      ]);
-      splitProps21 = createSplitProps(props21);
-      itemProps7 = createProps()(["item", "persistFocus"]);
-      splitItemProps7 = createSplitProps(itemProps7);
-      itemGroupProps4 = createProps()(["id"]);
-      splitItemGroupProps4 = createSplitProps(itemGroupProps4);
-      itemGroupLabelProps4 = createProps()(["htmlFor"]);
-      splitItemGroupLabelProps4 = createSplitProps(itemGroupLabelProps4);
       Select = class extends Component {
-        constructor(el, props28) {
+        constructor(el, props) {
           var _a;
-          super(el, props28);
+          super(el, props);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "placeholder", "");
@@ -30675,7 +30404,7 @@ var Corex = (() => {
               this.render();
             });
           });
-          const collectionFromProps = props28.collection;
+          const collectionFromProps = props.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
           this.placeholder = getString(this.el, "placeholder") || "";
         }
@@ -30713,10 +30442,10 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
+        initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props28.collection;
-          return new VanillaMachine(machine21, __spreadProps(__spreadValues({}, props28), {
+          const collectionFromProps = props.collection;
+          return new VanillaMachine(machine21, __spreadProps(__spreadValues({}, props), {
             get collection() {
               return collectionFromProps != null ? collectionFromProps : getCollection();
             }
@@ -30938,6 +30667,130 @@ var Corex = (() => {
   __export(signature_pad_exports, {
     SignaturePad: () => SignaturePadHook
   });
+  function connect22(service, normalize) {
+    const { state: state2, send, prop, computed, context, scope } = service;
+    const drawing = state2.matches("drawing");
+    const empty = computed("isEmpty");
+    const interactive = computed("isInteractive");
+    const disabled = !!prop("disabled");
+    const required = !!prop("required");
+    const translations = prop("translations");
+    return {
+      empty,
+      drawing,
+      currentPath: context.get("currentPath"),
+      paths: context.get("paths"),
+      clear() {
+        send({ type: "CLEAR" });
+      },
+      getDataUrl(type, quality) {
+        if (computed("isEmpty")) return Promise.resolve("");
+        return getDataUrl2(scope, { type, quality });
+      },
+      getLabelProps() {
+        return normalize.label(__spreadProps(__spreadValues({}, parts22.label.attrs), {
+          id: getLabelId13(scope),
+          "data-disabled": dataAttr(disabled),
+          "data-required": dataAttr(required),
+          htmlFor: getHiddenInputId5(scope),
+          onClick(event) {
+            if (!interactive) return;
+            if (event.defaultPrevented) return;
+            const controlEl = getControlEl5(scope);
+            controlEl == null ? void 0 : controlEl.focus({ preventScroll: true });
+          }
+        }));
+      },
+      getRootProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
+          "data-disabled": dataAttr(disabled),
+          id: getRootId17(scope)
+        }));
+      },
+      getControlProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.control.attrs), {
+          tabIndex: disabled ? void 0 : 0,
+          id: getControlId9(scope),
+          role: "application",
+          "aria-roledescription": "signature pad",
+          "aria-label": translations.control,
+          "aria-disabled": disabled,
+          "data-disabled": dataAttr(disabled),
+          onPointerDown(event) {
+            if (!isLeftClick(event)) return;
+            if (isModifierKey(event)) return;
+            if (!interactive) return;
+            const target = getEventTarget(event);
+            if (target == null ? void 0 : target.closest("[data-part=clear-trigger]")) return;
+            event.currentTarget.setPointerCapture(event.pointerId);
+            const point = { x: event.clientX, y: event.clientY };
+            const controlEl = getControlEl5(scope);
+            if (!controlEl) return;
+            const { offset: offset3 } = getRelativePoint(point, controlEl);
+            send({ type: "POINTER_DOWN", point: offset3, pressure: event.pressure });
+          },
+          onPointerUp(event) {
+            if (!interactive) return;
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }
+          },
+          style: {
+            position: "relative",
+            touchAction: "none",
+            userSelect: "none",
+            WebkitUserSelect: "none"
+          }
+        }));
+      },
+      getSegmentProps() {
+        return normalize.svg(__spreadProps(__spreadValues({}, parts22.segment.attrs), {
+          style: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            pointerEvents: "none",
+            fill: prop("drawing").fill
+          }
+        }));
+      },
+      getSegmentPathProps(props) {
+        return normalize.path(__spreadProps(__spreadValues({}, parts22.segmentPath.attrs), {
+          d: props.path
+        }));
+      },
+      getGuideProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts22.guide.attrs), {
+          "data-disabled": dataAttr(disabled)
+        }));
+      },
+      getClearTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts22.clearTrigger.attrs), {
+          type: "button",
+          "aria-label": translations.clearTrigger,
+          hidden: !context.get("paths").length || drawing,
+          disabled,
+          onClick() {
+            send({ type: "CLEAR" });
+          }
+        }));
+      },
+      getHiddenInputProps(props) {
+        return normalize.input({
+          id: getHiddenInputId5(scope),
+          type: "text",
+          hidden: true,
+          disabled,
+          required: prop("required"),
+          readOnly: true,
+          name: prop("name"),
+          value: props.value
+        });
+      }
+    };
+  }
   function i(e2, t2, n2, r2 = (e3) => e3) {
     return e2 * r2(0.5 - t2 * (0.5 - n2));
   }
@@ -31107,130 +30960,6 @@ var Corex = (() => {
   function R(e2, t2 = {}) {
     return P(L(e2, t2), t2);
   }
-  function connect22(service, normalize) {
-    const { state: state2, send, prop, computed, context, scope } = service;
-    const drawing = state2.matches("drawing");
-    const empty = computed("isEmpty");
-    const interactive = computed("isInteractive");
-    const disabled = !!prop("disabled");
-    const required = !!prop("required");
-    const translations = prop("translations");
-    return {
-      empty,
-      drawing,
-      currentPath: context.get("currentPath"),
-      paths: context.get("paths"),
-      clear() {
-        send({ type: "CLEAR" });
-      },
-      getDataUrl(type, quality) {
-        if (computed("isEmpty")) return Promise.resolve("");
-        return getDataUrl2(scope, { type, quality });
-      },
-      getLabelProps() {
-        return normalize.label(__spreadProps(__spreadValues({}, parts22.label.attrs), {
-          id: getLabelId13(scope),
-          "data-disabled": dataAttr(disabled),
-          "data-required": dataAttr(required),
-          htmlFor: getHiddenInputId5(scope),
-          onClick(event) {
-            if (!interactive) return;
-            if (event.defaultPrevented) return;
-            const controlEl = getControlEl5(scope);
-            controlEl == null ? void 0 : controlEl.focus({ preventScroll: true });
-          }
-        }));
-      },
-      getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.root.attrs), {
-          "data-disabled": dataAttr(disabled),
-          id: getRootId17(scope)
-        }));
-      },
-      getControlProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.control.attrs), {
-          tabIndex: disabled ? void 0 : 0,
-          id: getControlId9(scope),
-          role: "application",
-          "aria-roledescription": "signature pad",
-          "aria-label": translations.control,
-          "aria-disabled": disabled,
-          "data-disabled": dataAttr(disabled),
-          onPointerDown(event) {
-            if (!isLeftClick(event)) return;
-            if (isModifierKey(event)) return;
-            if (!interactive) return;
-            const target = getEventTarget(event);
-            if (target == null ? void 0 : target.closest("[data-part=clear-trigger]")) return;
-            event.currentTarget.setPointerCapture(event.pointerId);
-            const point = { x: event.clientX, y: event.clientY };
-            const controlEl = getControlEl5(scope);
-            if (!controlEl) return;
-            const { offset: offset3 } = getRelativePoint(point, controlEl);
-            send({ type: "POINTER_DOWN", point: offset3, pressure: event.pressure });
-          },
-          onPointerUp(event) {
-            if (!interactive) return;
-            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-              event.currentTarget.releasePointerCapture(event.pointerId);
-            }
-          },
-          style: {
-            position: "relative",
-            touchAction: "none",
-            userSelect: "none",
-            WebkitUserSelect: "none"
-          }
-        }));
-      },
-      getSegmentProps() {
-        return normalize.svg(__spreadProps(__spreadValues({}, parts22.segment.attrs), {
-          style: {
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            pointerEvents: "none",
-            fill: prop("drawing").fill
-          }
-        }));
-      },
-      getSegmentPathProps(props28) {
-        return normalize.path(__spreadProps(__spreadValues({}, parts22.segmentPath.attrs), {
-          d: props28.path
-        }));
-      },
-      getGuideProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts22.guide.attrs), {
-          "data-disabled": dataAttr(disabled)
-        }));
-      },
-      getClearTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, parts22.clearTrigger.attrs), {
-          type: "button",
-          "aria-label": translations.clearTrigger,
-          hidden: !context.get("paths").length || drawing,
-          disabled,
-          onClick() {
-            send({ type: "CLEAR" });
-          }
-        }));
-      },
-      getHiddenInputProps(props28) {
-        return normalize.input({
-          id: getHiddenInputId5(scope),
-          type: "text",
-          hidden: true,
-          disabled,
-          required: prop("required"),
-          readOnly: true,
-          name: prop("name"),
-          value: props28.value
-        });
-      }
-    };
-  }
   function getSvgPathFromStroke(points, closed = true) {
     const len = points.length;
     if (len < 4) {
@@ -31243,7 +30972,7 @@ var Corex = (() => {
       b2[1],
       c2[1]
     ).toFixed(2)} T`;
-    for (let i2 = 2, max4 = len - 1; i2 < max4; i2++) {
+    for (let i2 = 2, max3 = len - 1; i2 < max3; i2++) {
       a2 = points[i2];
       b2 = points[i2 + 1];
       result += `${average(a2[0], b2[0]).toFixed(2)},${average(a2[1], b2[1]).toFixed(2)} `;
@@ -31273,21 +31002,11 @@ var Corex = (() => {
       streamline: (_d = getNumber(el, "drawingStreamline")) != null ? _d : 0.65
     };
   }
-  var e, t, n, r, a, E, D, O, F, z, anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, average, machine22, props22, splitProps22, SignaturePad, SignaturePadHook;
+  var anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z, average, machine22, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
-      ({ PI: e } = Math);
-      t = e + 1e-4;
-      n = 0.5;
-      r = [1, 1];
-      ({ min: a } = Math);
-      E = [0, 0];
-      D = [0, 0];
-      O = [0, 0];
-      F = [0, 0];
-      z = R;
+      init_chunk_BVJBLYEU();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -31319,23 +31038,33 @@ var Corex = (() => {
       getDataUrl2 = (ctx, options) => {
         return getDataUrl(getSegmentEl(ctx), options);
       };
+      ({ PI: e } = Math);
+      t = e + 1e-4;
+      n = 0.5;
+      r = [1, 1];
+      ({ min: a } = Math);
+      E = [0, 0];
+      D = [0, 0];
+      O = [0, 0];
+      F = [0, 0];
+      z = R;
       average = (a2, b2) => (a2 + b2) / 2;
       machine22 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             defaultPaths: []
-          }, props28), {
+          }, props), {
             drawing: __spreadValues({
               size: 2,
               simulatePressure: false,
               thinning: 0.7,
               smoothing: 0.4,
               streamline: 0.6
-            }, props28.drawing),
+            }, props.drawing),
             translations: __spreadValues({
               control: "signature pad",
               clearTrigger: "clear signature"
-            }, props28.translations)
+            }, props.translations)
           });
         },
         initialState() {
@@ -31451,23 +31180,6 @@ var Corex = (() => {
           }
         }
       });
-      props22 = createProps()([
-        "defaultPaths",
-        "dir",
-        "disabled",
-        "drawing",
-        "getRootNode",
-        "id",
-        "ids",
-        "name",
-        "onDraw",
-        "onDrawEnd",
-        "paths",
-        "readOnly",
-        "required",
-        "translations"
-      ]);
-      splitProps22 = createSplitProps(props22);
       SignaturePad = class extends Component {
         constructor() {
           super(...arguments);
@@ -31508,9 +31220,9 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          this.name = props28.name;
-          return new VanillaMachine(machine22, props28);
+        initMachine(props) {
+          this.name = props.name;
+          return new VanillaMachine(machine22, props);
         }
         setName(name) {
           this.name = name;
@@ -31773,12 +31485,12 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy23, parts23, getRootId18, getLabelId14, getThumbId2, getControlId10, getHiddenInputId6, getRootEl6, getHiddenInputEl5, not9, machine23, props23, splitProps23, Switch, SwitchHook;
+  var anatomy23, parts23, getRootId18, getLabelId14, getThumbId2, getControlId10, getHiddenInputId6, getRootEl6, getHiddenInputEl5, not9, machine23, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_EDSYBTWY();
-      init_chunk_PLUM2DEK();
+      init_chunk_3L7DS5JZ();
+      init_chunk_BVJBLYEU();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
       getRootId18 = (ctx) => {
@@ -31805,12 +31517,12 @@ var Corex = (() => {
       getHiddenInputEl5 = (ctx) => ctx.getById(getHiddenInputId6(ctx));
       ({ not: not9 } = createGuards());
       machine23 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             defaultChecked: false,
             label: "switch",
             value: "on"
-          }, props28);
+          }, props);
         },
         initialState() {
           return "ready";
@@ -31943,28 +31655,10 @@ var Corex = (() => {
           }
         }
       });
-      props23 = createProps()([
-        "checked",
-        "defaultChecked",
-        "dir",
-        "disabled",
-        "form",
-        "getRootNode",
-        "id",
-        "ids",
-        "invalid",
-        "label",
-        "name",
-        "onCheckedChange",
-        "readOnly",
-        "required",
-        "value"
-      ]);
-      splitProps23 = createSplitProps(props23);
       Switch = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine23, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine23, props);
         }
         initApi() {
           return connect23(this.machine.service, normalizeProps);
@@ -32132,11 +31826,11 @@ var Corex = (() => {
     const isVertical = prop("orientation") === "vertical";
     const isHorizontal = prop("orientation") === "horizontal";
     const composite = prop("composite");
-    function getTriggerState(props28) {
+    function getTriggerState(props) {
       return {
-        selected: context.get("value") === props28.value,
-        focused: context.get("focusedValue") === props28.value,
-        disabled: !!props28.disabled
+        selected: context.get("value") === props.value,
+        focused: context.get("focusedValue") === props.value,
+        disabled: !!props.disabled
       };
     }
     return {
@@ -32228,9 +31922,9 @@ var Corex = (() => {
         }));
       },
       getTriggerState,
-      getTriggerProps(props28) {
-        const { value, disabled } = props28;
-        const triggerState = getTriggerState(props28);
+      getTriggerProps(props) {
+        const { value, disabled } = props;
+        const triggerState = getTriggerState(props);
         return normalize.button(__spreadProps(__spreadValues({}, parts24.trigger.attrs), {
           role: "tab",
           type: "button",
@@ -32268,8 +31962,8 @@ var Corex = (() => {
           }
         }));
       },
-      getContentProps(props28) {
-        const { value } = props28;
+      getContentProps(props) {
+        const { value } = props;
         const selected = context.get("value") === value;
         return normalize.element(__spreadProps(__spreadValues({}, parts24.content.attrs), {
           dir: prop("dir"),
@@ -32309,11 +32003,12 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, createMachine6, machine24, props24, splitProps24, triggerProps, splitTriggerProps, contentProps, splitContentProps, Tabs, TabsHook;
+  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, createMachine6, machine24, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -32364,7 +32059,7 @@ var Corex = (() => {
       };
       ({ createMachine: createMachine6 } = setup());
       machine24 = createMachine6({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             dir: "ltr",
             orientation: "horizontal",
@@ -32375,7 +32070,7 @@ var Corex = (() => {
               clickIfLink(details.node);
             },
             defaultValue: null
-          }, props28);
+          }, props);
         },
         initialState() {
           return "idle";
@@ -32606,7 +32301,7 @@ var Corex = (() => {
                 const triggerEl = getTriggerEl8(scope, context.get("value"));
                 if (!triggerEl) return;
                 const rect = getOffsetRect2(triggerEl);
-                context.set("indicatorRect", (prev2) => isEqual2(prev2, rect) ? prev2 : rect);
+                context.set("indicatorRect", (prev2) => isEqual(prev2, rect) ? prev2 : rect);
               };
               exec();
               const triggerEls = getElements2(scope);
@@ -32625,32 +32320,10 @@ var Corex = (() => {
           }
         }
       });
-      props24 = createProps()([
-        "activationMode",
-        "composite",
-        "deselectable",
-        "dir",
-        "getRootNode",
-        "id",
-        "ids",
-        "loopFocus",
-        "navigate",
-        "onFocusChange",
-        "onValueChange",
-        "orientation",
-        "translations",
-        "value",
-        "defaultValue"
-      ]);
-      splitProps24 = createSplitProps(props24);
-      triggerProps = createProps()(["disabled", "value"]);
-      splitTriggerProps = createSplitProps(triggerProps);
-      contentProps = createProps()(["value"]);
-      splitContentProps = createSplitProps(contentProps);
       Tabs = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine24, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine24, props);
         }
         initApi() {
           return connect24(this.machine.service, normalizeProps);
@@ -32843,23 +32516,23 @@ var Corex = (() => {
       getControlProps() {
         return normalize.element(__spreadValues({}, parts25.control.attrs));
       },
-      getItemProps(props28) {
-        const value = time[props28.type];
+      getItemProps(props) {
+        const value = time[props.type];
         return normalize.element(__spreadProps(__spreadValues({}, parts25.item.attrs), {
-          "data-type": props28.type,
+          "data-type": props.type,
           style: {
             "--value": value
           }
         }));
       },
-      getItemLabelProps(props28) {
+      getItemLabelProps(props) {
         return normalize.element(__spreadProps(__spreadValues({}, parts25.itemLabel.attrs), {
-          "data-type": props28.type
+          "data-type": props.type
         }));
       },
-      getItemValueProps(props28) {
+      getItemValueProps(props) {
         return normalize.element(__spreadProps(__spreadValues({}, parts25.itemValue.attrs), {
-          "data-type": props28.type
+          "data-type": props.type
         }));
       },
       getSeparatorProps() {
@@ -32867,14 +32540,14 @@ var Corex = (() => {
           "aria-hidden": true
         }, parts25.separator.attrs));
       },
-      getActionTriggerProps(props28) {
-        if (!validActions.has(props28.action)) {
+      getActionTriggerProps(props) {
+        if (!validActions.has(props.action)) {
           throw new Error(
-            `[zag-js] Invalid action: ${props28.action}. Must be one of: ${Array.from(validActions).join(", ")}`
+            `[zag-js] Invalid action: ${props.action}. Must be one of: ${Array.from(validActions).join(", ")}`
           );
         }
         return normalize.button(__spreadProps(__spreadValues({}, parts25.actionTrigger.attrs), {
-          hidden: match2(props28.action, {
+          hidden: match(props.action, {
             start: () => running || paused,
             pause: () => !running,
             reset: () => !running && !paused,
@@ -32884,7 +32557,7 @@ var Corex = (() => {
           type: "button",
           onClick(event) {
             if (event.defaultPrevented) return;
-            send({ type: props28.action.toUpperCase() });
+            send({ type: props.action.toUpperCase() });
           }
         }));
       }
@@ -32926,8 +32599,8 @@ var Corex = (() => {
       milliseconds: padStart(time.milliseconds, 3)
     };
   }
-  function validateProps(props28) {
-    const { startMs, targetMs, countdown, interval } = props28;
+  function validateProps(props) {
+    const { startMs, targetMs, countdown, interval } = props;
     if (interval != null && (typeof interval !== "number" || interval <= 0)) {
       throw new Error(`[timer] Invalid interval: ${interval}. Must be a positive number.`);
     }
@@ -32957,11 +32630,14 @@ var Corex = (() => {
       );
     }
   }
-  var anatomy25, parts25, getRootId20, getAreaId3, validActions, machine25, props25, splitProps25, Timer2, TimerHook;
+  var anatomy25, parts25, getRootId20, getAreaId3, validActions, machine25, Timer2, TimerHook;
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_5DET2KLQ();
+      init_chunk_MEHWRUXO();
+      init_chunk_G66USZ47();
+      init_chunk_BVJBLYEU();
       anatomy25 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -32983,12 +32659,12 @@ var Corex = (() => {
       };
       validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
       machine25 = createMachine({
-        props({ props: props28 }) {
-          validateProps(props28);
+        props({ props }) {
+          validateProps(props);
           return __spreadValues({
             interval: 1e3,
             startMs: 0
-          }, props28);
+          }, props);
         },
         initialState({ prop }) {
           return prop("autoStart") ? "running" : "idle";
@@ -33133,19 +32809,6 @@ var Corex = (() => {
           }
         }
       });
-      props25 = createProps()([
-        "autoStart",
-        "countdown",
-        "getRootNode",
-        "id",
-        "ids",
-        "interval",
-        "onComplete",
-        "onTick",
-        "startMs",
-        "targetMs"
-      ]);
-      splitProps25 = createSplitProps(props25);
       Timer2 = class extends Component {
         constructor() {
           super(...arguments);
@@ -33160,8 +32823,8 @@ var Corex = (() => {
           });
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine25, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine25, props);
         }
         initApi() {
           return connect25(this.machine.service, normalizeProps);
@@ -33598,8 +33261,8 @@ var Corex = (() => {
       }
     });
   }
-  function createToastStore(props28 = {}) {
-    const attrs = withDefaults(props28, {
+  function createToastStore(props = {}) {
+    const attrs = withDefaults(props, {
       placement: "bottom",
       overlap: false,
       max: 24,
@@ -33841,9 +33504,10 @@ var Corex = (() => {
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_CHUGBG5L();
-      init_chunk_DTH4G7GO();
-      init_chunk_PLUM2DEK();
+      init_chunk_MEHWRUXO();
+      init_chunk_5YVV632C();
+      init_chunk_53IVNBLA();
+      init_chunk_BVJBLYEU();
       anatomy26 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -33871,12 +33535,12 @@ var Corex = (() => {
       ({ guards: guards4, createMachine: createMachine22 } = setup());
       ({ and: and9 } = guards4);
       groupMachine = createMachine22({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadProps(__spreadValues({
             dir: "ltr",
             id: uuid()
-          }, props28), {
-            store: props28.store
+          }, props), {
+            store: props.store
           });
         },
         initialState({ prop }) {
@@ -34124,12 +33788,12 @@ var Corex = (() => {
       });
       ({ not: not10 } = createGuards());
       machine26 = createMachine({
-        props({ props: props28 }) {
-          ensureProps(props28, ["id", "type", "parent", "removeDelay"], "toast");
+        props({ props }) {
+          ensureProps(props, ["id", "type", "parent", "removeDelay"], "toast");
           return __spreadProps(__spreadValues({
             closable: true
-          }, props28), {
-            duration: getToastDuration(props28.duration, props28.type)
+          }, props), {
+            duration: getToastDuration(props.duration, props.type)
           });
         },
         initialState({ prop }) {
@@ -34375,15 +34039,15 @@ var Corex = (() => {
       toastGroups = /* @__PURE__ */ new Map();
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
-        constructor(el, props28) {
-          super(el, props28);
+        constructor(el, props) {
+          super(el, props);
           __publicField(this, "parts");
           __publicField(this, "duration");
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
-          this.duration = props28.duration;
+          this.duration = props.duration;
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.innerHTML = `
@@ -34415,8 +34079,8 @@ var Corex = (() => {
           };
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine26, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine26, props);
         }
         initApi() {
           return connect26(this.machine.service, normalizeProps);
@@ -34457,9 +34121,9 @@ var Corex = (() => {
         }
       };
       ToastGroup = class extends Component {
-        constructor(el, props28) {
+        constructor(el, props) {
           var _a;
-          super(el, props28);
+          super(el, props);
           __publicField(this, "toastComponents", /* @__PURE__ */ new Map());
           __publicField(this, "groupEl");
           __publicField(this, "store");
@@ -34470,7 +34134,7 @@ var Corex = (() => {
             this.toastComponents.clear();
             this.machine.stop();
           });
-          this.store = props28.store;
+          this.store = props.store;
           this.groupEl = (_a = el.querySelector('[data-part="group"]')) != null ? _a : (() => {
             const g2 = document.createElement("div");
             g2.setAttribute("data-scope", "toast");
@@ -34480,8 +34144,8 @@ var Corex = (() => {
           })();
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(group.machine, props28);
+        initMachine(props) {
+          return new VanillaMachine(group.machine, props);
         }
         initApi() {
           return group.connect(this.machine.service, normalizeProps);
@@ -34678,12 +34342,12 @@ var Corex = (() => {
     const isSingle = !prop("multiple");
     const rovingFocus = prop("rovingFocus");
     const isHorizontal = prop("orientation") === "horizontal";
-    function getItemState(props28) {
-      const id = getItemId8(scope, props28.value);
+    function getItemState(props) {
+      const id = getItemId8(scope, props.value);
       return {
         id,
-        disabled: Boolean(props28.disabled || disabled),
-        pressed: !!value.includes(props28.value),
+        disabled: Boolean(props.disabled || disabled),
+        pressed: !!value.includes(props.value),
         focused: context.get("focusedId") === id
       };
     }
@@ -34722,8 +34386,8 @@ var Corex = (() => {
         }));
       },
       getItemState,
-      getItemProps(props28) {
-        const itemState = getItemState(props28);
+      getItemProps(props) {
+        const itemState = getItemState(props);
         const rovingTabIndex = itemState.focused ? 0 : -1;
         return normalize.button(__spreadProps(__spreadValues({}, parts27.item.attrs), {
           id: itemState.id,
@@ -34747,7 +34411,7 @@ var Corex = (() => {
           },
           onClick(event) {
             if (itemState.disabled) return;
-            send({ type: "TOGGLE.CLICK", id: itemState.id, value: props28.value });
+            send({ type: "TOGGLE.CLICK", id: itemState.id, value: props.value });
             if (isSafari()) {
               event.currentTarget.focus({ preventScroll: true });
             }
@@ -34796,11 +34460,11 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy27, parts27, getRootId22, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not11, and10, machine27, props26, splitProps26, itemProps8, splitItemProps8, ToggleGroup, ToggleGroupHook;
+  var anatomy27, parts27, getRootId22, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not11, and10, machine27, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_PLUM2DEK();
+      init_chunk_BVJBLYEU();
       anatomy27 = createAnatomy("toggle-group").parts("root", "item");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -34823,14 +34487,14 @@ var Corex = (() => {
       getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
       ({ not: not11, and: and10 } = createGuards());
       machine27 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             defaultValue: [],
             orientation: "horizontal",
             rovingFocus: true,
             loopFocus: true,
             deselectable: true
-          }, props28);
+          }, props);
         },
         initialState() {
           return "idle";
@@ -34963,7 +34627,7 @@ var Corex = (() => {
               } else if (prop("multiple")) {
                 next2 = addOrRemove(next2, event.value);
               } else {
-                const isSelected = isEqual2(next2, [event.value]);
+                const isSelected = isEqual(next2, [event.value]);
                 next2 = isSelected && prop("deselectable") ? [] : [event.value];
               }
               context.set("value", next2);
@@ -34999,28 +34663,10 @@ var Corex = (() => {
           }
         }
       });
-      props26 = createProps()([
-        "dir",
-        "disabled",
-        "getRootNode",
-        "id",
-        "ids",
-        "loopFocus",
-        "multiple",
-        "onValueChange",
-        "orientation",
-        "rovingFocus",
-        "value",
-        "defaultValue",
-        "deselectable"
-      ]);
-      splitProps26 = createSplitProps(props26);
-      itemProps8 = createProps()(["value", "disabled"]);
-      splitItemProps8 = createSplitProps(itemProps8);
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine27, props28);
+        initMachine(props) {
+          return new VanillaMachine(machine27, props);
         }
         initApi() {
           return connect27(this.machine.service, normalizeProps);
@@ -35047,7 +34693,7 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const props28 = __spreadProps(__spreadValues({
+          const props = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             defaultValue: getStringList(el, "defaultValue"),
@@ -35080,7 +34726,7 @@ var Corex = (() => {
               }
             }
           });
-          const toggleGroup = new ToggleGroup(el, props28);
+          const toggleGroup = new ToggleGroup(el, props);
           toggleGroup.init();
           this.toggleGroup = toggleGroup;
           this.onSetValue = (event) => {
@@ -35183,8 +34829,8 @@ var Corex = (() => {
     };
     const firstNode = collection22.getFirstNode(void 0, { skip });
     const firstNodeValue = firstNode ? collection22.getNodeValue(firstNode) : null;
-    function getNodeState(props28) {
-      const { node, indexPath } = props28;
+    function getNodeState(props) {
+      const { node, indexPath } = props;
       const value = collection22.getNodeValue(node);
       return {
         id: getNodeId(scope, value),
@@ -35388,13 +35034,13 @@ var Corex = (() => {
         }));
       },
       getNodeState,
-      getItemProps(props28) {
-        const nodeState = getNodeState(props28);
+      getItemProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
-          "data-path": props28.indexPath.join("/"),
+          "data-path": props.indexPath.join("/"),
           "data-value": nodeState.value,
           tabIndex: nodeState.focused ? 0 : -1,
           "data-focus": dataAttr(nodeState.focused),
@@ -35427,16 +35073,16 @@ var Corex = (() => {
           }
         }));
       },
-      getItemTextProps(props28) {
-        const itemState = getNodeState(props28);
+      getItemTextProps(props) {
+        const itemState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
         }));
       },
-      getItemIndicatorProps(props28) {
-        const itemState = getNodeState(props28);
+      getItemIndicatorProps(props) {
+        const itemState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
@@ -35445,8 +35091,8 @@ var Corex = (() => {
           hidden: !itemState.selected
         }));
       },
-      getBranchProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
@@ -35456,7 +35102,7 @@ var Corex = (() => {
           "data-value": nodeState.value,
           "aria-level": nodeState.depth,
           "aria-selected": nodeState.disabled ? void 0 : nodeState.selected,
-          "data-path": props28.indexPath.join("/"),
+          "data-path": props.indexPath.join("/"),
           "data-selected": dataAttr(nodeState.selected),
           "aria-expanded": nodeState.expanded,
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -35469,8 +35115,8 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchIndicatorProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchIndicatorProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -35480,8 +35126,8 @@ var Corex = (() => {
           "data-loading": dataAttr(nodeState.loading)
         }));
       },
-      getBranchTriggerProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchTriggerProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
@@ -35497,14 +35143,14 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchControlProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchControlProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
           tabIndex: nodeState.focused ? 0 : -1,
-          "data-path": props28.indexPath.join("/"),
+          "data-path": props.indexPath.join("/"),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
           "data-selected": dataAttr(nodeState.selected),
@@ -35529,8 +35175,8 @@ var Corex = (() => {
           }
         }));
       },
-      getBranchTextProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchTextProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -35538,26 +35184,26 @@ var Corex = (() => {
           "data-loading": dataAttr(nodeState.loading)
         }));
       },
-      getBranchContentProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchContentProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-depth": nodeState.depth,
-          "data-path": props28.indexPath.join("/"),
+          "data-path": props.indexPath.join("/"),
           "data-value": nodeState.value,
           hidden: !nodeState.expanded
         }));
       },
-      getBranchIndentGuideProps(props28) {
-        const nodeState = getNodeState(props28);
+      getBranchIndentGuideProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts28.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
-      getNodeCheckboxProps(props28) {
-        const nodeState = getNodeState(props28);
+      getNodeCheckboxProps(props) {
+        const nodeState = getNodeState(props);
         const checkedState = nodeState.checked;
         return normalize.element(__spreadProps(__spreadValues({}, parts28.nodeCheckbox.attrs), {
           tabIndex: -1,
@@ -35576,8 +35222,8 @@ var Corex = (() => {
           }
         }));
       },
-      getNodeRenameInputProps(props28) {
-        const nodeState = getNodeState(props28);
+      getNodeRenameInputProps(props) {
+        const nodeState = getNodeState(props);
         return normalize.input(__spreadProps(__spreadValues({}, parts28.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
@@ -35653,13 +35299,13 @@ var Corex = (() => {
       const loadedValues2 = [];
       const nodeWithErrors = [];
       const nextLoadingStatus = context.get("loadingStatus");
-      let collection32 = prop("collection");
+      let collection222 = prop("collection");
       results.forEach((result, index) => {
         const { id, indexPath, node, valuePath } = nodesToLoad[index];
         if (result.status === "fulfilled") {
           nextLoadingStatus[id] = "loaded";
           loadedValues2.push(id);
-          collection32 = collection32.replace(indexPath, __spreadProps(__spreadValues({}, node), { children: result.value }));
+          collection222 = collection222.replace(indexPath, __spreadProps(__spreadValues({}, node), { children: result.value }));
         } else {
           pendingAborts.delete(id);
           Reflect.deleteProperty(nextLoadingStatus, id);
@@ -35669,7 +35315,7 @@ var Corex = (() => {
       context.set("loadingStatus", nextLoadingStatus);
       if (loadedValues2.length) {
         context.set("expandedValue", (prev2) => uniq(add(prev2, ...loadedValues2)));
-        (_a = prop("onLoadChildrenComplete")) == null ? void 0 : _a({ collection: collection32 });
+        (_a = prop("onLoadChildrenComplete")) == null ? void 0 : _a({ collection: collection222 });
       }
       if (nodeWithErrors.length) {
         (_b = prop("onLoadChildrenError")) == null ? void 0 : _b({ nodes: nodeWithErrors });
@@ -35738,12 +35384,12 @@ var Corex = (() => {
     }
     return root;
   }
-  var anatomy28, parts28, collection4, getRootId23, getLabelId15, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and11, machine28, props27, splitProps27, itemProps9, splitItemProps9, TreeView, TreeViewHook;
+  var anatomy28, parts28, collection4, getRootId23, getLabelId15, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and11, machine28, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_MWK4GDRX();
-      init_chunk_PLUM2DEK();
+      init_chunk_4S73FXZZ();
+      init_chunk_BVJBLYEU();
       anatomy28 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
@@ -35795,7 +35441,7 @@ var Corex = (() => {
       };
       ({ and: and11 } = createGuards());
       machine28 = createMachine({
-        props({ props: props28 }) {
+        props({ props }) {
           return __spreadValues({
             selectionMode: "single",
             collection: collection4.empty(),
@@ -35803,7 +35449,7 @@ var Corex = (() => {
             expandOnClick: true,
             defaultExpandedValue: [],
             defaultSelectedValue: []
-          }, props28);
+          }, props);
         },
         initialState() {
           return "idle";
@@ -35813,7 +35459,7 @@ var Corex = (() => {
             expandedValue: bindable2(() => ({
               defaultValue: prop("defaultExpandedValue"),
               value: prop("expandedValue"),
-              isEqual: isEqual2,
+              isEqual,
               onChange(expandedValue) {
                 var _a;
                 const ctx = getContext();
@@ -35830,7 +35476,7 @@ var Corex = (() => {
             selectedValue: bindable2(() => ({
               defaultValue: prop("defaultSelectedValue"),
               value: prop("selectedValue"),
-              isEqual: isEqual2,
+              isEqual,
               onChange(selectedValue) {
                 var _a;
                 const ctx = getContext();
@@ -35863,7 +35509,7 @@ var Corex = (() => {
             checkedValue: bindable2(() => ({
               defaultValue: prop("defaultCheckedValue") || [],
               value: prop("checkedValue"),
-              isEqual: isEqual2,
+              isEqual,
               onChange(value) {
                 var _a;
                 (_a = prop("onCheckedChange")) == null ? void 0 : _a({ checkedValue: value });
@@ -36408,49 +36054,16 @@ var Corex = (() => {
           }
         }
       });
-      props27 = createProps()([
-        "ids",
-        "collection",
-        "dir",
-        "expandedValue",
-        "expandOnClick",
-        "defaultFocusedValue",
-        "focusedValue",
-        "getRootNode",
-        "id",
-        "onExpandedChange",
-        "onFocusChange",
-        "onSelectionChange",
-        "checkedValue",
-        "selectedValue",
-        "selectionMode",
-        "typeahead",
-        "defaultExpandedValue",
-        "defaultSelectedValue",
-        "defaultCheckedValue",
-        "onCheckedChange",
-        "onLoadChildrenComplete",
-        "onLoadChildrenError",
-        "loadChildren",
-        "canRename",
-        "onRenameStart",
-        "onBeforeRename",
-        "onRenameComplete",
-        "scrollToIndexFn"
-      ]);
-      splitProps27 = createSplitProps(props27);
-      itemProps9 = createProps()(["node", "indexPath"]);
-      splitItemProps9 = createSplitProps(itemProps9);
       TreeView = class extends Component {
-        constructor(el, props28) {
+        constructor(el, props) {
           var _a;
-          const treeData = (_a = props28.treeData) != null ? _a : buildTreeFromDOM(el);
+          const treeData = (_a = props.treeData) != null ? _a : buildTreeFromDOM(el);
           const treeCollection = collection4({
             nodeToValue: (node) => node.id,
             nodeToString: (node) => node.name,
             rootNode: treeData
           });
-          super(el, __spreadProps(__spreadValues({}, props28), { collection: treeCollection }));
+          super(el, __spreadProps(__spreadValues({}, props), { collection: treeCollection }));
           __publicField(this, "treeCollection");
           __publicField(this, "syncTree", () => {
             const treeEl = this.el.querySelector('[data-scope="tree-view"][data-part="tree"]');
@@ -36461,8 +36074,8 @@ var Corex = (() => {
           this.treeCollection = treeCollection;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initMachine(props28) {
-          return new VanillaMachine(machine28, __spreadValues({}, props28));
+        initMachine(props) {
+          return new VanillaMachine(machine28, __spreadValues({}, props));
         }
         initApi() {
           return connect28(this.machine.service, normalizeProps);

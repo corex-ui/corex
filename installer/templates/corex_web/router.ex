@@ -30,7 +30,8 @@ defmodule <%= @web_namespace %>.Router do
     pipe_through :browser
     get "/", PageController, :home
 <%= if @on_mount_optional do %>
-    live_session :default, on_mount: [<%= Enum.join(@on_mount_hooks, ", ") %>] do
+    live_session :default,
+      on_mount: [<%= Enum.join(@on_mount_hooks, ", ") %>] do
       live "/live", ExampleLive
     end
 <% else %>    live "/live", ExampleLive
@@ -40,7 +41,8 @@ defmodule <%= @web_namespace %>.Router do
     pipe_through :browser
     get "/", PageController, :home
 <%= if @on_mount_optional do %>
-    live_session :default, on_mount: [<%= Enum.join(@on_mount_hooks, ", ") %>] do
+    live_session :default,
+      on_mount: [<%= Enum.join(@on_mount_hooks, ", ") %>] do
       live "/live", ExampleLive
     end
 <% else %>    live "/live", ExampleLive

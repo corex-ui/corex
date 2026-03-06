@@ -9,6 +9,23 @@ defmodule Corex.EditableTest do
       assert html =~ ~r/data-scope="editable"/
       assert html =~ ~r/data-part="root"/
     end
+
+    test "uses default translation when not provided" do
+      Application.delete_env(:corex, :gettext_backend)
+      html = render_component(&CorexTest.ComponentHelpers.render_editable/1, [])
+      assert html =~ ~r/aria-label="editable input"/
+    end
+
+    test "uses custom translation when provided" do
+      translation = %Corex.Editable.Translation{input: "Custom input"}
+
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_editable_with_translation/1,
+          translation: translation
+        )
+
+      assert html =~ ~r/aria-label="Custom input"/
+    end
   end
 
   describe "Connect.root/1" do

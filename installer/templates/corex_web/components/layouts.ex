@@ -76,7 +76,7 @@ defmodule <%= @web_namespace %>.Layouts do
             href="https://github.com/corex-ui/corex"
             target="_blank"
             class="button button--sm button--circle"
-            aria-label="Go to Corex UI Github"
+            aria-label=<%= maybe_heex_attr_gettext.("Go to Corex UI Github", @gettext) %>
           >
             <svg
               aria-hidden="true"
@@ -98,7 +98,7 @@ defmodule <%= @web_namespace %>.Layouts do
             href="https://hexdocs.pm/corex"
             target="_blank"
             class="button button--sm button--circle"
-            aria-label="Go to Corex Hex docs"
+            aria-label=<%= maybe_heex_attr_gettext.("Go to Corex Hex docs", @gettext) %>
           >
             <svg
               aria-hidden="true"
@@ -164,7 +164,7 @@ defmodule <%= @web_namespace %>.Layouts do
 
     <.toast_group id="layout-toast" class="toast" flash={@flash}>
       <:loading>
-        <.icon name="hero-arrow-path" />
+        <.heroicon name="hero-arrow-path" />
       </:loading>
     </.toast_group>
 
@@ -221,10 +221,10 @@ defmodule <%= @web_namespace %>.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.icon name="hero-language" />
+        <.heroicon name="hero-language" />
       </:trigger>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -249,10 +249,10 @@ defmodule <%= @web_namespace %>.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.icon name="hero-swatch" />
+        <.heroicon name="hero-swatch" />
       </:trigger>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.select>
     """
@@ -269,8 +269,8 @@ defmodule <%= @web_namespace %>.Layouts do
       on_value_change_client="phx:set-mode"
     >
       <:item value="dark">
-        <.icon name="hero-sun" class="icon state-on" />
-        <.icon name="hero-moon" class="icon state-off" />
+        <.heroicon name="hero-sun" class="icon state-on" />
+        <.heroicon name="hero-moon" class="icon state-off" />
       </:item>
     </.toggle_group>
     """

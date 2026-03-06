@@ -71,8 +71,15 @@ defmodule Corex.FloatingPanel do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/floating-panel#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc false
+    defstruct [:minimize, :maximize, :restore, :close]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.FloatingPanel.Anatomy.{
     Body,
@@ -118,6 +125,7 @@ defmodule Corex.FloatingPanel do
   attr(:on_position_change, :string, default: nil)
   attr(:on_size_change, :string, default: nil)
   attr(:on_stage_change, :string, default: nil)
+  attr(:translation, :any, default: nil)
   attr(:rest, :global)
 
   slot(:open_trigger, required: true)
@@ -131,11 +139,20 @@ defmodule Corex.FloatingPanel do
   def floating_panel(assigns) do
     initial_open = if assigns[:controlled], do: assigns[:open], else: assigns[:default_open]
 
+    default_translation = %Translation{
+      minimize: gettext("Minimize window"),
+      maximize: gettext("Maximize window"),
+      restore: gettext("Restore window"),
+      close: gettext("Close window")
+    }
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "floating-panel-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:open, fn -> false end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:initial_open, initial_open)
       |> assign(:resize_axes, @resize_axes)
       |> assign(:stages, @stages)
@@ -182,16 +199,16 @@ defmodule Corex.FloatingPanel do
               <div {Connect.header(%Header{id: @id})}>
                 <div {Connect.title(%Title{id: @id})}>Panel</div>
                 <div {Connect.control(%Control{id: @id})}>
-                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized"})} aria-label="Minimize window">
+                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized"})} aria-label={@translation.minimize}>
                     {render_slot(@minimize_trigger)}
                   </button>
-                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized"})} aria-label="Maximize window">
+                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized"})} aria-label={@translation.maximize}>
                     {render_slot(@maximize_trigger)}
                   </button>
-                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default"})} aria-label="Restore window">
+                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default"})} aria-label={@translation.restore}>
                     {render_slot(@default_trigger)}
                   </button>
-                  <button type="button" {Connect.close_trigger(%CloseTrigger{id: @id})} aria-label="Close window">
+                  <button type="button" {Connect.close_trigger(%CloseTrigger{id: @id})} aria-label={@translation.close}>
                     {render_slot(@close_trigger)}
                   </button>
                 </div>
@@ -206,5 +223,16 @@ defmodule Corex.FloatingPanel do
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      minimize: partial.minimize || default.minimize,
+      maximize: partial.maximize || default.maximize,
+      restore: partial.restore || default.restore,
+      close: partial.close || default.close
+    }
   end
 end

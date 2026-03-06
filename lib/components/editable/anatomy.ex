@@ -106,12 +106,13 @@ defmodule Corex.Editable.Anatomy do
 
   defmodule Preview do
     @moduledoc false
-    defstruct [:id, :dir, :value_text, empty: false, editing: false]
+    defstruct [:id, :dir, :value_text, :aria_label, empty: false, editing: false]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
             value_text: String.t() | nil,
+            aria_label: String.t() | nil,
             empty: boolean(),
             editing: boolean()
           }
@@ -119,9 +120,14 @@ defmodule Corex.Editable.Anatomy do
 
   defmodule EditTrigger do
     @moduledoc false
-    defstruct [:id, :dir, editing: false]
+    defstruct [:id, :dir, :aria_label, editing: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), editing: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            aria_label: String.t() | nil,
+            editing: boolean()
+          }
   end
 
   defmodule Control do
@@ -140,15 +146,25 @@ defmodule Corex.Editable.Anatomy do
 
   defmodule SubmitTrigger do
     @moduledoc false
-    defstruct [:id, :dir, editing: false]
+    defstruct [:id, :dir, :aria_label, editing: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), editing: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            aria_label: String.t() | nil,
+            editing: boolean()
+          }
   end
 
   defmodule CancelTrigger do
     @moduledoc false
-    defstruct [:id, :dir, editing: false]
+    defstruct [:id, :dir, :aria_label, editing: false]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), editing: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            aria_label: String.t() | nil,
+            editing: boolean()
+          }
   end
 end

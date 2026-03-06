@@ -31,6 +31,8 @@
 @import "../corex/components/button.css";
 @import "../corex/components/link.css";
 @import "../corex/components/toast.css";
+@import "../corex/components/data-table.css";
+@import "../corex/components/data-list.css";
 <%= if @mode do %>@import "../corex/components/toggle-group.css";
 <% end %><%= if @theme or @language_switcher do %>@import "../corex/components/select.css";
 <% end %>

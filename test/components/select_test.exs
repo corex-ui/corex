@@ -9,6 +9,25 @@ defmodule Corex.SelectTest do
       assert html =~ ~r/data-scope="select"/
       assert html =~ ~r/data-part="root"/
     end
+
+    test "uses placeholder_fallback for aria-label and placeholder span when no selection" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
+          placeholder_fallback: "Select an option"
+        )
+
+      assert html =~ ~r/aria-label="Select an option"/
+      assert html =~ "Select an option"
+    end
+
+    test "uses custom placeholder_fallback when provided" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
+          placeholder_fallback: "Choose one"
+        )
+
+      assert html =~ "Choose one"
+    end
   end
 
   describe "Connect.root/1" do

@@ -102,12 +102,13 @@ defmodule Corex.Dialog.Anatomy do
 
   defmodule CloseTrigger do
     @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [:id, :dir, :open, :aria_label]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean()
+            open: boolean(),
+            aria_label: String.t() | nil
           }
   end
 end

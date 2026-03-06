@@ -93,7 +93,7 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "decrement-trigger",
       "type" => "button",
       "id" => "number-input:#{assigns.id}:dec",
-      "aria-label" => "Decrease value"
+      "aria-label" => assigns.aria_label
     }
   end
 
@@ -104,7 +104,7 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "increment-trigger",
       "type" => "button",
       "id" => "number-input:#{assigns.id}:inc",
-      "aria-label" => "Increase value"
+      "aria-label" => assigns.aria_label
     }
   end
 
@@ -115,7 +115,7 @@ defmodule Corex.NumberInput.Connect do
       "data-part" => "scrubber",
       "type" => "button",
       "id" => "number-input:#{assigns.id}:scrubber",
-      "aria-label" => "Scrub to adjust value"
+      "aria-label" => assigns.aria_label
     }
   end
 end

@@ -2,7 +2,7 @@ defmodule <%= @web_namespace %>.ModeControllerTest do
   use <%= @web_namespace %>.ConnCase, async: true
 
   test "GET / renders data-mode, mode toggle, and mode script", %{conn: conn} do
-    conn = get(conn, ~p"/")
+    conn = get(conn, ~p"/en")
     html = html_response(conn, 200)
     assert html =~ "data-mode=\"light\""
     assert html =~ "mode-switcher"
