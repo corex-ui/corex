@@ -30,7 +30,7 @@ config :esbuild,
     env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
   ]
 
-# Configure tailwind (the version is required)
+<%= if @tailwind do %># Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.12",
   <%= @web_app_name %>: [
@@ -40,3 +40,4 @@ config :tailwind,
     ),
     cd: Path.expand("../apps/<%= @web_app_name %>", __DIR__)
   ]
+<% end %>

@@ -4,6 +4,8 @@ defmodule Corex.New.Generator do
   alias Corex.New.{Project}
 
   @phoenix Path.expand("../..", __DIR__)
+  @corex_installer Path.expand("../..", __DIR__)
+  @corex_root Path.expand("..", @corex_installer)
   @phoenix_version Version.parse!(Mix.Project.config()[:phoenix_version] || "1.8.4")
   @corex_version Mix.Project.config()[:version]
 
@@ -129,8 +131,10 @@ defmodule Corex.New.Generator do
         [
           @new_project_rules_files["project.md"],
           @new_project_rules_files["phoenix.md"],
+          @new_project_rules_files["corex.md"],
           project.binding[:javascript] && project.binding[:css] &&
             @new_project_rules_files["assets.md"],
+          project.binding[:tidewave] && @new_project_rules_files["tidewave.md"],
           "\n<!-- usage-rules-start -->",
           if(@rules_files["elixir.md"], do: [
             "<!-- phoenix:elixir-start -->\n",
@@ -244,7 +248,8 @@ defmodule Corex.New.Generator do
     dashboard = Keyword.get(opts, :dashboard, true)
     gettext = Keyword.get(opts, :gettext, true)
     esbuild = true
-    tailwind = true
+    design = Keyword.get(opts, :design, true)
+    tailwind = design
     css = true
     locales = parse_locales(Keyword.get(opts, :lang, opts[:language] || "en"))
     default_locale = List.first(locales) || "en"
@@ -256,10 +261,11 @@ defmodule Corex.New.Generator do
     default_theme = List.first(themes) || "neo"
     mailer = Keyword.get(opts, :mailer, true)
     dev = Keyword.get(opts, :dev, false)
-    phoenix_path = phoenix_path(project, dev, false)
-    phoenix_path_umbrella_root = phoenix_path(project, dev, true)
+    phoenix_path = phoenix_path(project)
     agents_md = Keyword.get(opts, :agents_md, true)
     designex = Keyword.get(opts, :designex, false)
+    a11y = Keyword.get(opts, :a11y, true)
+    tidewave = Keyword.get(opts, :tidewave, true)
 
     # detect if we're inside a docker env, but if we're in github actions,
     # we want to treat it like regular env for end-user testing purposes
@@ -303,9 +309,11 @@ defmodule Corex.New.Generator do
       web_app_name: project.web_app,
       endpoint_module: inspect(Module.concat(project.web_namespace, Endpoint)),
       web_namespace: inspect(project.web_namespace),
-      phoenix_dep: phoenix_dep(phoenix_path),
-      phoenix_dep_umbrella_root: phoenix_dep(phoenix_path_umbrella_root),
+      phoenix_dep: phoenix_dep(),
+      phoenix_dep_umbrella_root: phoenix_dep(),
       phoenix_js_path: phoenix_js_path(phoenix_path),
+      corex_dep: corex_dep(project, dev, false),
+      corex_dep_umbrella_root: corex_dep(project, dev, true),
       phoenix_version: @phoenix_version,
       pubsub_server: pubsub_server,
       secret_key_base_dev: random_string(64),
@@ -317,6 +325,7 @@ defmodule Corex.New.Generator do
       javascript: esbuild,
       css: css,
       tailwind: tailwind,
+      design: design,
       designex: designex,
       mode: mode,
       theme: theme,
@@ -329,7 +338,6 @@ defmodule Corex.New.Generator do
       locales: locales,
       language_switcher: language_switcher,
       rtl_locales: rtl_locales,
-      corex_dep: corex_dep(),
       mailer: mailer,
       ecto: ecto,
       html: html,
@@ -349,6 +357,8 @@ defmodule Corex.New.Generator do
       dev: dev,
       inside_docker_env?: inside_docker_env?,
       agents_md: agents_md,
+      a11y: a11y,
+      tidewave: tidewave,
       config_regex_E: Version.match?(System.version(), "~> 1.19.3 or ~> 1.20") && "E" || ""
     ]
 
@@ -522,53 +532,40 @@ defmodule Corex.New.Generator do
   defp nil_if_empty([]), do: nil
   defp nil_if_empty(other), do: other
 
-  defp phoenix_path(%Project{} = project, true = _dev, umbrella_root?) do
-    absolute = Path.expand(project.project_path)
-    relative = Path.relative_to(absolute, @phoenix)
-
-    if absolute == relative do
-      Mix.raise("--dev projects must be generated inside Phoenix directory")
-    end
-
-    project
-    |> phoenix_path_prefix(umbrella_root?)
-    |> Path.join(relative)
-    |> Path.split()
-    |> Enum.map(fn _ -> ".." end)
-    |> Path.join()
-  end
-
-  defp phoenix_path(%Project{}, false = _dev, _umbrella_root?) do
+  defp phoenix_path(%Project{}) do
     "deps/phoenix"
   end
 
-  defp phoenix_path_prefix(%Project{in_umbrella?: false}, _), do: ".."
-  defp phoenix_path_prefix(%Project{in_umbrella?: true}, true = _umbrella_root?), do: ".."
-  defp phoenix_path_prefix(%Project{in_umbrella?: true}, false = _umbrella_root?), do: "../../../"
-
-  case @phoenix_version do
-    %Version{pre: "dev"} ->
-      defp phoenix_dep("deps/phoenix") do
-        ~s[{:phoenix, github: "phoenixframework/phoenix", override: true}]
-      end
-
-    %Version{pre: ["rc", _]} ->
-      defp phoenix_dep("deps/phoenix") do
-        ~s[{:phoenix, "~> #{unquote(to_string(@phoenix_version))}", override: true}]
-      end
-
-    %Version{} ->
-      defp phoenix_dep("deps/phoenix") do
-        ~s[{:phoenix, "~> #{unquote(to_string(@phoenix_version))}"}]
-      end
+  defp phoenix_dep do
+    ~s[{:phoenix, "~> 1.8.4"}]
   end
 
-  defp phoenix_dep(path),
-    do: ~s[{:phoenix, path: #{inspect(path)}, override: true}]
+  defp corex_path(%Project{} = project, true = _dev, umbrella_root?) do
+    absolute =
+      if umbrella_root? do
+        Path.expand(project.project_path)
+      else
+        path = if project.in_umbrella?, do: project.web_path, else: project.project_path
+        Path.expand(path)
+      end
 
-  defp corex_dep do
+    if Path.relative_to(absolute, @corex_installer) == absolute do
+      Mix.raise("--dev projects must be generated inside Corex installer directory")
+    end
+
+    relative = Path.relative_to(absolute, @corex_root)
+    segments = Path.split(relative)
+    List.duplicate("..", length(segments)) |> Path.join()
+  end
+
+  defp corex_dep(%Project{}, false = _dev, _umbrella_root?) do
     vsn = to_string(@corex_version)
     ~s[{:corex, "~> #{major_minor(vsn)}"}]
+  end
+
+  defp corex_dep(%Project{} = project, true = _dev, umbrella_root?) do
+    path = corex_path(project, true, umbrella_root?)
+    ~s[{:corex, path: #{inspect(path)}, override: true}]
   end
 
   defp major_minor(version) do

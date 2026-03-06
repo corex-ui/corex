@@ -19,8 +19,8 @@ config :<%= @app_name %>, <%= @endpoint_module %>,<%= if @inside_docker_env? do 
   debug_errors: true,
   secret_key_base: "<%= @secret_key_base_dev %>",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:<%= @app_name %>, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:<%= @app_name %>, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:<%= @app_name %>, ~w(--sourcemap=inline --watch)]}<%= if @tailwind do %>,
+    tailwind: {Tailwind, :install_and_run, [:<%= @app_name %>, ~w(--watch)]}<% end %>
   ]
 
 # ## SSL Support

@@ -44,6 +44,8 @@ defmodule Mix.Tasks.Corex.New do
 
     * `--designex` - keep design tokens and designex-related files under `assets/corex/design` so you can run designex for token builds; when not set, only built CSS/tokens are copied (same as `mix corex.design` vs `mix corex.design --designex`)
 
+    * `--no-design` - do not include Corex design (tokens, component CSS) or Tailwind; use a prebuilt default.css instead (same as original Phoenix installer with no Tailwind)
+
     * `--mode` - enable light/dark mode switching (adds Mode plug, root script, and mode_toggle in layout); when omitted, app stays static light only; no default config, user can change behavior themselves
 
     * `--theme` - colon-separated theme names (e.g. `uno:leo`); when multiple themes are given, enables theme switching; each must be one of neo, uno, duo, leo
@@ -61,6 +63,10 @@ defmodule Mix.Tasks.Corex.New do
     * `--no-version-check` - skip the version check for the latest corex_new version
 
     * `--no-agents-md` - do not generate an `AGENTS.md` file
+
+    * `--no-a11y` - do not include accessibility testing (Wallaby, a11y_audit) or the home-page a11y test
+
+    * `--no-tidewave` - do not include Tidewave dev dependency or the Tidewave Plug in the endpoint
 
   When passing the `--no-ecto` flag, Phoenix generators such as
   `phx.gen.html`, `phx.gen.json`, `phx.gen.live`, and `phx.gen.context`
@@ -135,6 +141,7 @@ defmodule Mix.Tasks.Corex.New do
 
   @switches [
     dev: :boolean,
+    design: :boolean,
     designex: :boolean,
     live: :boolean,
     mode: :boolean,
@@ -157,7 +164,9 @@ defmodule Mix.Tasks.Corex.New do
     adapter: :string,
     inside_docker_env: :boolean,
     version_check: :boolean,
-    agents_md: :boolean
+    agents_md: :boolean,
+    a11y: :boolean,
+    tidewave: :boolean
   ]
 
   @reserved_app_names ~w(server table)

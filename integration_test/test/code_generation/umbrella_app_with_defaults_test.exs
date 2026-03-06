@@ -23,13 +23,13 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     end
   end
 
-  describe "phx.gen.html" do
+  describe "corex.gen.html" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
+        mix_run!(~w(corex.gen.html Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
 
         modify_file(Path.join(web_root_path, "lib/rainy_day_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -53,7 +53,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
+        mix_run!(~w(corex.gen.html Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
 
         modify_file(Path.join(web_root_path, "lib/rainy_day_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -121,13 +121,13 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     end
   end
 
-  describe "phx.gen.live" do
+  describe "corex.gen.live" do
     test "has no compilation or formatter warnings" do
       with_installer_tmp("umbrella_app_with_defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella", "--live"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.live Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
+        mix_run!(~w(corex.gen.live Blog Post posts title:unique body:string status:enum:unpublished:published:deleted), web_root_path)
 
         modify_file(Path.join(web_root_path, "lib/rainy_day_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -154,7 +154,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella", "--live"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
+        mix_run!(~w(corex.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), web_root_path)
 
         modify_file(Path.join(web_root_path, "lib/rainy_day_web/router.ex"), fn file ->
           inject_before_final_end(file, """
@@ -176,13 +176,13 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
     end
   end
 
-  describe "phx.gen.auth + bcrypt" do
+  describe "corex.gen.auth + bcrypt" do
     test "has no compilation or formatter warnings (--live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --live), web_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --live), web_root_path)
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -194,7 +194,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --no-live), web_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --no-live), web_root_path)
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -207,7 +207,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --live), web_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --live), web_root_path)
 
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)
@@ -220,7 +220,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
         {app_root_path, _} = generate_corex_app(tmp_dir, "rainy_day", ["--umbrella"])
         web_root_path = Path.join(app_root_path, "apps/rainy_day_web")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --no-live), web_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --no-live), web_root_path)
 
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)

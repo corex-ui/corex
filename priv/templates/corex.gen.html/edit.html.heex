@@ -1,8 +1,8 @@
 <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-  <.header>
-    Edit <%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}
-    <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
-  </.header>
+  <div>
+    <h1 class="text-lg font-semibold">Edit <%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</h1>
+    <p class="mt-1 text-sm text-zinc-500">Use this form to manage <%= schema.singular %> records in your database.</p>
+  </div>
 
   <.<%= schema.singular %>_form changeset={@changeset} action={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}"} return_to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>"} />
 </Layouts.app>

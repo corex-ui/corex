@@ -1,12 +1,10 @@
 <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-  <.header>
-    Listing <%= schema.human_plural %>
-    <:actions>
-      <.button href={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}>
-        <.icon name="hero-plus" /> New <%= schema.human_singular %>
-      </.button>
-    </:actions>
-  </.header>
+  <div class="flex items-center justify-between gap-4">
+    <h1 class="text-lg font-semibold">Listing <%= schema.human_plural %></h1>
+    <.action class="button button--primary" href={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}>
+      <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
+    </.action>
+  </div>
 
   <.table id="<%= schema.plural %>" rows={@<%= schema.collection %>} row_click={&JS.navigate(~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}><%= for {k, _} <- schema.attrs do %>
     <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>

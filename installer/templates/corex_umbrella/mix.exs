@@ -32,7 +32,7 @@ defmodule <%= @root_app_module %>.MixProject do
   # and cannot be accessed from applications inside the apps/ folder.
   defp deps do
     [
-      <%= if @dev or @phoenix_version.pre != [] do %><%= @phoenix_dep_umbrella_root %>,
+      <%= if @dev do %><%= @corex_dep_umbrella_root %>,
       <% end %># Required to run "mix format" on ~H/.heex files from the umbrella root
       {:phoenix_live_view, ">= 0.0.0"}
     ]

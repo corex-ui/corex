@@ -153,7 +153,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   use Mix.Task
 
   alias Mix.Phoenix.{Context, Schema}
-  alias Mix.Tasks.Corex.Gen
+  alias Mix.Tasks.Phx.Gen
   alias Mix.Tasks.Corex.Gen.Auth.{HashingLibrary, Injector, Migration}
 
   @switches [
@@ -178,7 +178,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       )
     end
 
-    Mix.Phoenix.ensure_live_view_compat!(__MODULE__)
+    Mix.Corex.ensure_live_view_compat!(__MODULE__)
 
     {opts, parsed} = OptionParser.parse!(args, strict: @switches)
     validate_args!(parsed)
@@ -232,7 +232,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       agents_md: Keyword.get(opts, :agents_md, true)
     ]
 
-    paths = Mix.Phoenix.generator_paths()
+    paths = Mix.Corex.generator_paths()
 
     prompt_for_conflicts(binding)
 
@@ -430,7 +430,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
     binding
     |> files_to_be_generated()
-    |> Mix.Phoenix.prompt_for_conflicts()
+    |> Mix.Corex.prompt_for_conflicts()
   end
 
   defp prompt_for_scope_conflicts(binding) do
@@ -482,9 +482,9 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     scope_config = binding[:scope_config]
 
     singular = schema.singular
-    web_pre = Mix.Phoenix.web_path(context_app)
-    web_test_pre = Mix.Phoenix.web_test_path(context_app)
-    migrations_pre = Mix.Phoenix.context_app_path(context_app, "priv/repo/migrations")
+    web_pre = Mix.Corex.web_path(context_app)
+    web_test_pre = Mix.Corex.web_test_path(context_app)
+    migrations_pre = Mix.Corex.context_app_path(context_app, "priv/repo/migrations")
     web_path = to_string(schema.web_path)
     controller_pre = Path.join([web_pre, "controllers", web_path])
 
@@ -608,7 +608,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp copy_new_files(%Context{} = context, binding, paths) do
     files = files_to_be_generated(binding)
-    Mix.Phoenix.copy_from(paths, "priv/templates/corex.gen.auth", binding, files)
+    Mix.Corex.copy_from(paths, "priv/templates/corex.gen.auth", binding, files)
     inject_context_functions(context, paths, binding)
     inject_tests(context, paths, binding)
     inject_context_test_fixtures(context, paths, binding)
@@ -617,19 +617,19 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp inject_context_functions(%Context{file: file} = context, paths, binding) do
-    Gen.Context.ensure_context_file_exists(context, paths, binding)
+    Gen.Context.ensure_context_file_exists(context, Mix.Phoenix.generator_paths(), binding)
 
     paths
-    |> Mix.Phoenix.eval_from("priv/templates/corex.gen.auth/context_functions.ex", binding)
+    |> Mix.Corex.eval_from("priv/templates/corex.gen.auth/context_functions.ex", binding)
     |> prepend_newline()
     |> inject_before_final_end(file)
   end
 
   defp inject_tests(%Context{test_file: test_file} = context, paths, binding) do
-    Gen.Context.ensure_test_file_exists(context, paths, binding)
+    Gen.Context.ensure_test_file_exists(context, Mix.Phoenix.generator_paths(), binding)
 
     paths
-    |> Mix.Phoenix.eval_from("priv/templates/corex.gen.auth/test_cases.exs", binding)
+    |> Mix.Corex.eval_from("priv/templates/corex.gen.auth/test_cases.exs", binding)
     |> prepend_newline()
     |> inject_before_final_end(test_file)
   end
@@ -639,10 +639,10 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
          paths,
          binding
        ) do
-    Gen.Context.ensure_test_fixtures_file_exists(context, paths, binding)
+    Gen.Context.ensure_test_fixtures_file_exists(context, Mix.Phoenix.generator_paths(), binding)
 
     paths
-    |> Mix.Phoenix.eval_from("priv/templates/corex.gen.auth/context_fixtures_functions.ex", binding)
+    |> Mix.Corex.eval_from("priv/templates/corex.gen.auth/context_fixtures_functions.ex", binding)
     |> prepend_newline()
     |> inject_before_final_end(test_fixtures_file)
   end
@@ -651,18 +651,18 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     test_file = "test/support/conn_case.ex"
 
     paths
-    |> Mix.Phoenix.eval_from("priv/templates/corex.gen.auth/conn_case.exs", binding)
+    |> Mix.Corex.eval_from("priv/templates/corex.gen.auth/conn_case.exs", binding)
     |> inject_before_final_end(test_file)
 
     context
   end
 
   defp inject_routes(%Context{context_app: ctx_app} = context, paths, binding) do
-    web_prefix = Mix.Phoenix.web_path(ctx_app)
+    web_prefix = Mix.Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
 
     paths
-    |> Mix.Phoenix.eval_from("priv/templates/corex.gen.auth/routes.ex", binding)
+    |> Mix.Corex.eval_from("priv/templates/corex.gen.auth/routes.ex", binding)
     |> inject_before_final_end(file_path)
 
     context
@@ -671,7 +671,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp maybe_inject_mix_dependency(%Context{context_app: ctx_app} = context, %HashingLibrary{
          mix_dependency: mix_dependency
        }) do
-    file_path = Mix.Phoenix.context_app_path(ctx_app, "mix.exs")
+    file_path = Mix.Corex.context_app_path(ctx_app, "mix.exs")
 
     file = File.read!(file_path)
 
@@ -701,7 +701,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp maybe_inject_router_import(%Context{context_app: ctx_app} = context, binding) do
-    web_prefix = Mix.Phoenix.web_path(ctx_app)
+    web_prefix = Mix.Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
     auth_module = Keyword.fetch!(binding, :auth_module)
     inject = "import #{inspect(auth_module)}"
@@ -748,7 +748,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp maybe_inject_router_plug(%Context{context_app: ctx_app} = context, binding) do
-    web_prefix = Mix.Phoenix.web_path(ctx_app)
+    web_prefix = Mix.Corex.web_path(ctx_app)
     file_path = Path.join(web_prefix, "router.ex")
     help_text = Injector.router_plug_help_text(file_path, binding)
 
@@ -825,7 +825,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp potential_layout_file_paths(%Context{context_app: ctx_app}) do
-    web_prefix = Mix.Phoenix.web_path(ctx_app)
+    web_prefix = Mix.Corex.web_path(ctx_app)
 
     for file_name <- ~w(root.html.heex) do
       Path.join([web_prefix, "components", "layouts", file_name])
@@ -834,7 +834,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
   defp inject_hashing_config(context, %HashingLibrary{} = hashing_library) do
     file_path =
-      if Mix.Phoenix.in_umbrella?(File.cwd!()) do
+      if Mix.Corex.in_umbrella?(File.cwd!()) do
         Path.expand("../../")
       else
         File.cwd!()
@@ -879,7 +879,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     scope_config = binding[:scope_config].config_string
 
     file_path =
-      if Mix.Phoenix.in_umbrella?(File.cwd!()) do
+      if Mix.Corex.in_umbrella?(File.cwd!()) do
         Path.expand("../../")
       else
         File.cwd!()
@@ -919,12 +919,12 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       auth_content =
         """
         <!-- phoenix-gen-auth-start -->
-        #{Mix.Phoenix.eval_from(paths, "priv/templates/corex.gen.auth/AGENTS.md", binding)}
+        #{Mix.Corex.eval_from(paths, "priv/templates/corex.gen.auth/AGENTS.md", binding)}
         <!-- phoenix-gen-auth-end -->
         """
 
       file_path =
-        if Mix.Phoenix.in_umbrella?(File.cwd!()) do
+        if Mix.Corex.in_umbrella?(File.cwd!()) do
           Path.expand("../../")
         else
           File.cwd!()

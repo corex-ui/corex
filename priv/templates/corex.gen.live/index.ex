@@ -7,14 +7,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-      <.header>
-        Listing <%= schema.human_plural %>
-        <:actions>
-          <.button variant="primary" navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}>
-            <.icon name="hero-plus" /> New <%= schema.human_singular %>
-          </.button>
-        </:actions>
-      </.header>
+      <div class="flex items-center justify-between gap-4">
+        <h1 class="text-lg font-semibold">Listing <%= schema.human_plural %></h1>
+        <.action class="button button--primary" navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}>
+          <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
+        </.action>
+      </div>
 
       <.table
         id="<%= schema.plural %>"

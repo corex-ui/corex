@@ -9,7 +9,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm">
         <div class="text-center">
-          <.header>Welcome {@<%= schema.singular %>.email}</.header>
+          <h1 class="text-lg font-semibold">Welcome {@<%= schema.singular %>.email}</h1>
         </div>
 
         <.form
@@ -22,17 +22,18 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           phx-trigger-action={@trigger_submit}
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
-          <.button
+          <.action
             name={@form[:remember_me].name}
             value="true"
             phx-disable-with="Confirming..."
             class="btn btn-primary w-full"
+            type="submit"
           >
             Confirm and stay logged in
-          </.button>
-          <.button phx-disable-with="Confirming..." class="btn btn-primary btn-soft w-full mt-2">
+          </.action>
+          <.action phx-disable-with="Confirming..." class="btn btn-primary btn-soft w-full mt-2" type="submit">
             Confirm and log in only this time
-          </.button>
+          </.action>
         </.form>
 
         <.form
@@ -46,21 +47,22 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
           <%%= if @<%= scope_config.scope.assign_key %> do %>
-            <.button phx-disable-with="Logging in..." class="btn btn-primary w-full">
+            <.action phx-disable-with="Logging in..." class="btn btn-primary w-full" type="submit">
               Log in
-            </.button>
+            </.action>
           <%% else %>
-            <.button
+            <.action
               name={@form[:remember_me].name}
               value="true"
               phx-disable-with="Logging in..."
               class="btn btn-primary w-full"
+              type="submit"
             >
               Keep me logged in on this device
-            </.button>
-            <.button phx-disable-with="Logging in..." class="btn btn-primary btn-soft w-full mt-2">
+            </.action>
+            <.action phx-disable-with="Logging in..." class="btn btn-primary btn-soft w-full mt-2" type="submit">
               Log me in only this time
-            </.button>
+            </.action>
           <%% end %>
         </.form>
 

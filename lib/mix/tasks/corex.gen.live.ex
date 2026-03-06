@@ -36,7 +36,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   The schema is responsible for mapping the database fields into an
   Elixir struct. It is followed by a list of attributes with their
-  respective names and types. See `mix corex.gen.schema` for more
+  respective names and types. See `mix phx.gen.schema` for more
   information on attributes.
 
   Overall, this generator will add the following files to `lib/`:
@@ -46,8 +46,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     * a LiveView in `lib/app_web/live/user_live/show.ex`
     * a LiveView in `lib/app_web/live/user_live/index.ex`
     * a LiveView in `lib/app_web/live/user_live/form.ex`
-    * a components module in `lib/app_web/components/core_components.ex`
-      if none exists
 
   After file generation is complete, there will be output regarding required
   updates to the `lib/app_web/router.ex` file.
@@ -113,13 +111,14 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   In the cases above, tests are still generated, but they will all fail.
 
   You can also change the table name or configure the migrations to
-  use binary ids for primary keys, see `mix help corex.gen.schema` for more
-  information.
+  use binary ids for primary keys, see `mix help phx.gen.schema` for more
+  information. Context and schema generation use Phoenix; run `mix phx.gen.context`
+  or `mix phx.gen.schema` when you need only context or schema.
   """
   use Mix.Task
 
   alias Mix.Phoenix.{Context, Schema, Scope}
-  alias Mix.Tasks.Corex.Gen
+  alias Mix.Tasks.Phx.Gen
 
   @doc false
   def run(args) do
@@ -173,13 +172,12 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         if(schema.scope && schema.scope.route_prefix, do: ", scope: scope", else: "")
     ]
 
-    paths = Mix.Phoenix.generator_paths()
+    paths = Mix.Corex.generator_paths()
 
     prompt_for_conflicts(context)
 
     context
     |> copy_new_files(binding, paths)
-    |> maybe_inject_imports()
     |> print_shell_instructions()
   end
 
@@ -199,7 +197,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     context
     |> files_to_be_generated()
     |> Kernel.++(context_files(context))
-    |> Mix.Phoenix.prompt_for_conflicts()
+    |> Mix.Corex.prompt_for_conflicts()
   end
 
   defp context_files(%Context{generate?: true} = context) do
@@ -211,8 +209,8 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp files_to_be_generated(%Context{schema: schema, context_app: context_app}) do
-    web_prefix = Mix.Phoenix.web_path(context_app)
-    test_prefix = Mix.Phoenix.web_test_path(context_app)
+    web_prefix = Mix.Corex.web_path(context_app)
+    test_prefix = Mix.Corex.web_test_path(context_app)
     web_path = to_string(schema.web_path)
     live_subdir = "#{schema.singular}_live"
     web_live = Path.join([web_prefix, "live", web_path, live_subdir])
@@ -222,9 +220,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       {:eex, "show.ex", Path.join(web_live, "show.ex")},
       {:eex, "index.ex", Path.join(web_live, "index.ex")},
       {:eex, "form.ex", Path.join(web_live, "form.ex")},
-      {:eex, "live_test.exs", Path.join(test_live, "#{schema.singular}_live_test.exs")},
-      {:new_eex, "core_components.ex",
-       Path.join([web_prefix, "components", "core_components.ex"])}
+      {:eex, "live_test.exs", Path.join(test_live, "#{schema.singular}_live_test.exs")}
     ]
   end
 
@@ -243,61 +239,16 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         }
       )
 
-    Mix.Phoenix.copy_from(paths, "priv/templates/corex.gen.live", binding, files)
-    if context.generate?, do: Gen.Context.copy_new_files(context, paths, binding)
+    Mix.Corex.copy_from(paths, "priv/templates/corex.gen.live", binding, files)
+    if context.generate?, do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
 
     context
-  end
-
-  defp maybe_inject_imports(%Context{context_app: ctx_app} = context) do
-    web_prefix = Mix.Phoenix.web_path(ctx_app)
-    [lib_prefix, web_dir] = Path.split(web_prefix)
-    file_path = Path.join(lib_prefix, "#{web_dir}.ex")
-    file = File.read!(file_path)
-    inject = "import #{inspect(context.web_module)}.CoreComponents"
-
-    if String.contains?(file, inject) do
-      :ok
-    else
-      do_inject_imports(context, file, file_path, inject)
-    end
-
-    context
-  end
-
-  defp do_inject_imports(context, file, file_path, inject) do
-    Mix.shell().info([:green, "* injecting ", :reset, Path.relative_to_cwd(file_path)])
-
-    new_file =
-      String.replace(
-        file,
-        "use Phoenix.Component",
-        "use Phoenix.Component\n      #{inject}"
-      )
-
-    if file != new_file do
-      File.write!(file_path, new_file)
-    else
-      Mix.shell().info("""
-
-      Could not find use Phoenix.Component in #{file_path}.
-
-      This typically happens because your application was not generated
-      with the --live flag:
-
-          mix corex.new my_app --live
-
-      Please make sure LiveView is installed and that #{inspect(context.web_module)}
-      defines both `live_view/0` and `live_component/0` functions,
-      and that both functions import #{inspect(context.web_module)}.CoreComponents.
-      """)
-    end
   end
 
   @doc false
   def print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
     prefix = Module.concat(context.web_module, schema.web_namespace)
-    web_path = Mix.Phoenix.web_path(ctx_app)
+    web_path = Mix.Corex.web_path(ctx_app)
 
     if schema.web_namespace do
       Mix.shell().info("""
@@ -314,7 +265,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     else
       Mix.shell().info("""
 
-      Add the live routes to your browser scope in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:
+      Add the live routes to your browser scope in #{Mix.Corex.web_path(ctx_app)}/router.ex:
 
       #{for line <- live_route_instructions(schema), do: "    #{line}"}
       """)

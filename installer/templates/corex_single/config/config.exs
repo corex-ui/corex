@@ -44,7 +44,7 @@ config :esbuild,
     env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
   ]
 
-# Configure tailwind (the version is required)
+<%= if @tailwind do %># Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.12",
   <%= @app_name %>: [
@@ -55,7 +55,7 @@ config :tailwind,
     cd: Path.expand("..<%= if @in_umbrella, do: "/apps/#{@app_name}" %>", __DIR__),
   ]
 
-# Configure Elixir's Logger
+<% end %># Configure Elixir's Logger
 config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]

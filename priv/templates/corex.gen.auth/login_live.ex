@@ -9,9 +9,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm space-y-4">
         <div class="text-center">
-          <.header>
-            <p>Log in</p>
-            <:subtitle>
+          <div>
+            <h1 class="text-lg font-semibold">Log in</h1>
+            <p class="mt-1 text-sm text-zinc-500">
               <%%= if @<%= scope_config.scope.assign_key %> do %>
                 You need to reauthenticate to perform sensitive actions on your account.
               <%% else %>
@@ -21,12 +21,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                   phx-no-format
                 >Sign up</.link> for an account now.
               <%% end %>
-            </:subtitle>
-          </.header>
+            </p>
+          </div>
         </div>
 
         <div :if={local_mail_adapter?()} class="alert alert-info">
-          <.icon name="hero-information-circle" class="size-6 shrink-0" />
+          <.heroicon name="hero-information-circle" class="size-6 shrink-0" />
           <div>
             <p>You are running the local mail adapter.</p>
             <p>
@@ -52,9 +52,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             required
             phx-mounted={JS.focus()}
           />
-          <.button class="btn btn-primary w-full">
+          <.action class="btn btn-primary w-full" type="submit">
             Log in with email <span aria-hidden="true">→</span>
-          </.button>
+          </.action>
         </.form>
 
         <div class="divider">or</div>
@@ -83,12 +83,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             autocomplete="current-password"
             spellcheck="false"
           />
-          <.button class="btn btn-primary w-full" name={@form[:remember_me].name} value="true">
+          <.action class="btn btn-primary w-full" type="submit" name={@form[:remember_me].name} value="true">
             Log in and stay logged in <span aria-hidden="true">→</span>
-          </.button>
-          <.button class="btn btn-primary btn-soft w-full mt-2">
+          </.action>
+          <.action class="btn btn-primary btn-soft w-full mt-2" type="submit">
             Log in only this time
-          </.button>
+          </.action>
         </.form>
       </div>
     </Layouts.app>
@@ -129,6 +129,6 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   end
 
   defp local_mail_adapter? do
-    Application.get_env(:<%= Mix.Phoenix.otp_app() %>, <%= inspect context.base_module %>.Mailer)[:adapter] == Swoosh.Adapters.Local
+    Application.get_env(:<%= Mix.Corex.otp_app() %>, <%= inspect context.base_module %>.Mailer)[:adapter] == Swoosh.Adapters.Local
   end
 end

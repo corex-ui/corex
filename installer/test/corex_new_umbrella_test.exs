@@ -169,11 +169,6 @@ defmodule Mix.Tasks.Corex.New.UmbrellaTest do
       end)
 
       assert_file(
-        web_path(@app, "lib/#{@app}_web/components/core_components.ex"),
-        "defmodule PhxUmbWeb.CoreComponents"
-      )
-
-      assert_file(
         web_path(@app, "lib/#{@app}_web/components/layouts.ex"),
         "defmodule PhxUmbWeb.Layouts"
       )
@@ -391,6 +386,37 @@ defmodule Mix.Tasks.Corex.New.UmbrellaTest do
         assert file =~ ~s|socket "/live"|
         refute file =~ ~s|plug Phoenix.LiveDashboard.RequestLogger|
       end)
+    end)
+  end
+
+  test "new umbrella with defaults includes tidewave and a11y" do
+    in_tmp("new umbrella tidewave a11y", fn ->
+      Mix.Tasks.Corex.New.run([@app, "--umbrella"])
+
+      assert_file(web_path(@app, "mix.exs"), fn file ->
+        assert file =~ ~r/tidewave/
+        assert file =~ ~r/wallaby/
+        assert file =~ ~r/a11y_audit/
+      end)
+
+      assert_file(web_path(@app, "lib/#{@app}_web/endpoint.ex"), fn file ->
+        assert file =~ ~r/Tidewave/
+      end)
+
+      assert_file(web_path(@app, "test/#{@app}_web/controllers/page_controller_a11y_test.exs"))
+    end)
+  end
+
+  test "new umbrella with --no-a11y omits a11y deps and test" do
+    in_tmp("new umbrella no a11y", fn ->
+      Mix.Tasks.Corex.New.run([@app, "--umbrella", "--no-a11y"])
+
+      assert_file(web_path(@app, "mix.exs"), fn file ->
+        refute file =~ ~r/wallaby/
+        refute file =~ ~r/a11y_audit/
+      end)
+
+      refute File.exists?(web_path(@app, "test/#{@app}_web/controllers/page_controller_a11y_test.exs"))
     end)
   end
 

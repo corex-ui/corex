@@ -119,6 +119,80 @@ defmodule Mix.Tasks.Corex.NewTest do
     end)
   end
 
+  test "new with defaults includes tidewave and a11y" do
+    in_tmp("new with defaults tidewave a11y", fn ->
+      Mix.Tasks.Corex.New.run([@app_name])
+
+      assert_file("phx_blog/mix.exs", fn file ->
+        assert file =~ ~r/tidewave/
+        assert file =~ ~r/wallaby/
+        assert file =~ ~r/a11y_audit/
+      end)
+
+      assert_file("phx_blog/lib/phx_blog_web/endpoint.ex", fn file ->
+        assert file =~ ~r/Tidewave/
+      end)
+
+      assert_file("phx_blog/test/phx_blog_web/controllers/page_controller_a11y_test.exs")
+      assert_file("phx_blog/test/test_helper.exs", fn file ->
+        assert file =~ ~r/wallaby/
+        assert file =~ ~r/base_url/
+      end)
+    end)
+  end
+
+  test "new with --no-a11y omits a11y deps and test" do
+    in_tmp("new with no a11y", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--no-a11y"])
+
+      assert_file("phx_blog/mix.exs", fn file ->
+        refute file =~ ~r/wallaby/
+        refute file =~ ~r/a11y_audit/
+      end)
+
+      refute File.exists?("phx_blog/test/phx_blog_web/controllers/page_controller_a11y_test.exs")
+
+      assert_file("phx_blog/test/test_helper.exs", fn file ->
+        refute file =~ ~r/wallaby/
+      end)
+    end)
+  end
+
+  test "new with --no-tidewave omits Tidewave dep and plug" do
+    in_tmp("new with no tidewave", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--no-tidewave"])
+
+      assert_file("phx_blog/mix.exs", fn file ->
+        refute file =~ ~r/tidewave/
+      end)
+
+      assert_file("phx_blog/lib/phx_blog_web/endpoint.ex", fn file ->
+        refute file =~ ~r/Tidewave/
+      end)
+    end)
+  end
+
+  test "new with --no-design omits Tailwind and Corex design, uses default.css" do
+    in_tmp("new with no design", fn ->
+      Mix.Tasks.Corex.New.run([@app_name, "--no-design"])
+
+      assert_file("phx_blog/mix.exs", fn file ->
+        refute file =~ ~r/:tailwind/
+      end)
+
+      assert_file("phx_blog/config/config.exs", fn file ->
+        refute file =~ ~r/config :tailwind/
+      end)
+
+      assert_file("phx_blog/config/dev.exs", fn file ->
+        refute file =~ ~r/tailwind: \{Tailwind/
+      end)
+
+      assert File.exists?("phx_blog/priv/static/assets/css/app.css")
+      refute File.exists?("phx_blog/assets/corex")
+    end)
+  end
+
   test "new with defaults" do
     in_tmp("new with defaults", fn ->
       Mix.Tasks.Corex.New.run([@app_name])
@@ -126,7 +200,8 @@ defmodule Mix.Tasks.Corex.NewTest do
       assert_file("phx_blog/README.md")
 
       assert_file("phx_blog/AGENTS.md", fn file ->
-        assert file =~ "### UI/UX & design guidelines"
+        assert file =~ "Corex"
+        assert file =~ "Tidewave"
       end)
 
       assert_file("phx_blog/.formatter.exs", fn file ->
@@ -208,10 +283,6 @@ defmodule Mix.Tasks.Corex.NewTest do
       assert_file("phx_blog/lib/phx_blog_web/components/layouts.ex", fn file ->
         assert file =~ "defmodule PhxBlogWeb.Layouts"
         assert file =~ ~S|gettext("Attempting to reconnect")|
-      end)
-
-      assert_file("phx_blog/lib/phx_blog_web/components/core_components.ex", fn file ->
-        assert file =~ ~S|gettext("close")|
       end)
 
       assert_file("phx_blog/lib/phx_blog_web/router.ex", fn file ->

@@ -10,10 +10,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     ~H"""
     <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="text-center">
-        <.header>
-          Account Settings
-          <:subtitle>Manage your account email address and password settings</:subtitle>
-        </.header>
+        <div>
+          <h1 class="text-lg font-semibold">Account Settings</h1>
+          <p class="mt-1 text-sm text-zinc-500">Manage your account email address and password settings</p>
+        </div>
       </div>
 
       <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
@@ -25,7 +25,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           spellcheck="false"
           required
         />
-        <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
+        <.action class="btn btn-primary" phx-disable-with="Changing..." type="submit">Change Email</.action>
       </.form>
 
       <div class="divider" />
@@ -61,9 +61,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           autocomplete="new-password"
           spellcheck="false"
         />
-        <.button variant="primary" phx-disable-with="Saving...">
+        <.action class="btn btn-primary" phx-disable-with="Saving..." type="submit">
           Save Password
-        </.button>
+        </.action>
       </.form>
     </Layouts.app>
     """

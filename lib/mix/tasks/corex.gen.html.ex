@@ -36,7 +36,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   The schema is responsible for mapping the database fields into an
   Elixir struct. It is followed by a list of attributes with their
-  respective names and types. See `mix corex.gen.schema` for more
+  respective names and types. See `mix phx.gen.schema` for more
   information on attributes.
 
   Overall, this generator will add the following files to `lib/`:
@@ -109,13 +109,14 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   In the cases above, tests are still generated, but they will all fail.
 
   You can also change the table name or configure the migrations to
-  use binary ids for primary keys, see `mix corex.gen.schema` for more
-  information.
+  use binary ids for primary keys, see `mix phx.gen.schema` for more
+  information. Context and schema generation use Phoenix; run `mix phx.gen.context`
+  or `mix phx.gen.schema` when you need only context or schema.
   """
   use Mix.Task
 
   alias Mix.Phoenix.{Context, Schema, Scope}
-  alias Mix.Tasks.Corex.Gen
+  alias Mix.Tasks.Phx.Gen
 
   @doc false
   def run(args) do
@@ -163,7 +164,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
         if(schema.scope && schema.scope.route_prefix, do: ", scope: scope", else: "")
     ]
 
-    paths = Mix.Phoenix.generator_paths()
+    paths = Mix.Corex.generator_paths()
 
     prompt_for_conflicts(context)
 
@@ -176,7 +177,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     context
     |> files_to_be_generated()
     |> Kernel.++(context_files(context))
-    |> Mix.Phoenix.prompt_for_conflicts()
+    |> Mix.Corex.prompt_for_conflicts()
   end
 
   defp context_files(%Context{generate?: true} = context) do
@@ -190,8 +191,8 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   @doc false
   def files_to_be_generated(%Context{schema: schema, context_app: context_app}) do
     singular = schema.singular
-    web_prefix = Mix.Phoenix.web_path(context_app)
-    test_prefix = Mix.Phoenix.web_test_path(context_app)
+    web_prefix = Mix.Corex.web_path(context_app)
+    test_prefix = Mix.Corex.web_test_path(context_app)
     web_path = to_string(schema.web_path)
     controller_pre = Path.join([web_prefix, "controllers", web_path])
     test_pre = Path.join([test_prefix, "controllers", web_path])
@@ -213,8 +214,8 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   @doc false
   def copy_new_files(%Context{} = context, paths, binding) do
     files = files_to_be_generated(context)
-    Mix.Phoenix.copy_from(paths, "priv/templates/corex.gen.html", binding, files)
-    if context.generate?, do: Gen.Context.copy_new_files(context, paths, binding)
+    Mix.Corex.copy_from(paths, "priv/templates/corex.gen.html", binding, files)
+    if context.generate?, do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
     context
   end
 

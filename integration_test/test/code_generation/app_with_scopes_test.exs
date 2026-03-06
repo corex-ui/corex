@@ -1,15 +1,15 @@
 defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
   use Corex.Integration.CodeGeneratorCase, async: true
 
-  describe "phx.gen.auth" do
-    test "generates scope for phx.gen.live" do
+  describe "corex.gen.auth" do
+    test "generates scope for corex.gen.live" do
       with_installer_tmp("scopes", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --live), app_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --live), app_root_path)
         # we need to wait, otherwise we'd generate two migrations with the same version...
         Process.sleep(1500)
-        mix_run!(~w(phx.gen.live Blog Post posts title:string), app_root_path)
+        mix_run!(~w(corex.gen.live Blog Post posts title:string), app_root_path)
 
         modify_file(Path.join(app_root_path, "lib/scopes_web/router.ex"), fn file ->
           String.replace(
@@ -35,14 +35,14 @@ defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
       end)
     end
 
-    test "generates scope for phx.gen.html" do
+    test "generates scope for corex.gen.html" do
       with_installer_tmp("scopes", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --no-live), app_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --no-live), app_root_path)
         # we need to wait, otherwise we'd generate two migrations with the same version...
         Process.sleep(1500)
-        mix_run!(~w(phx.gen.html Blog Post posts title:string), app_root_path)
+        mix_run!(~w(corex.gen.html Blog Post posts title:string), app_root_path)
 
         modify_file(Path.join(app_root_path, "lib/scopes_web/router.ex"), fn file ->
           String.replace(
@@ -69,7 +69,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
       with_installer_tmp("scopes", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
-        mix_run!(~w(phx.gen.auth Accounts User users --no-live), app_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --no-live), app_root_path)
         # we need to wait, otherwise we'd generate two migrations with the same version...
         Process.sleep(1500)
         mix_run!(~w(phx.gen.json Blog Post posts title:string), app_root_path)
@@ -104,7 +104,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
         {app_root_path, _} = generate_corex_app(tmp_dir, "scopes")
 
         # First generate authentication system
-        mix_run!(~w(phx.gen.auth Accounts User users --live), app_root_path)
+        mix_run!(~w(corex.gen.auth Accounts User users --live), app_root_path)
 
         # sleep to have fresh migration name
         Process.sleep(1500)
@@ -427,14 +427,14 @@ defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
         Process.sleep(1500)
 
         mix_run!(
-          ~w(phx.gen.html Blog1 Article articles title:string --scope organization),
+          ~w(corex.gen.html Blog1 Article articles title:string --scope organization),
           app_root_path
         )
 
         Process.sleep(1500)
 
         mix_run!(
-          ~w(phx.gen.live Blog2 Post posts title:string --scope organization),
+          ~w(corex.gen.live Blog2 Post posts title:string --scope organization),
           app_root_path
         )
 

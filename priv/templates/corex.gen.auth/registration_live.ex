@@ -10,16 +10,16 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm">
         <div class="text-center">
-          <.header>
-            Register for an account
-            <:subtitle>
+          <div>
+            <h1 class="text-lg font-semibold">Register for an account</h1>
+            <p class="mt-1 text-sm text-zinc-500">
               Already registered?
               <.link navigate={~p"<%= schema.route_prefix %>/log-in"} class="font-semibold text-brand hover:underline">
                 Log in
               </.link>
               to your account now.
-            </:subtitle>
-          </.header>
+            </p>
+          </div>
         </div>
 
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
@@ -33,9 +33,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             phx-mounted={JS.focus()}
           />
 
-          <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
+          <.action phx-disable-with="Creating account..." class="btn btn-primary w-full" type="submit">
             Create an account
-          </.button>
+          </.action>
         </.form>
       </div>
     </Layouts.app>

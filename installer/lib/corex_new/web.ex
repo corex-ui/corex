@@ -43,7 +43,6 @@ defmodule Corex.New.Web do
 
   template(:html, [
     {:eex, :web,
-     "corex_web/components/core_components.ex": "lib/:web_app/components/core_components.ex",
      "corex_web/components/layouts.ex": "lib/:web_app/components/layouts.ex",
      "corex_web/controllers/page_controller.ex": "lib/:web_app/controllers/page_controller.ex",
      "corex_web/controllers/error_html.ex": "lib/:web_app/controllers/error_html.ex",
@@ -56,6 +55,12 @@ defmodule Corex.New.Web do
      "corex_assets/topbar.js": "assets/vendor/topbar.js",
      "corex_web/components/layouts/root.html.heex": "lib/:web_app/components/layouts/root.html.heex"},
     {:eex, :web, "corex_assets/logo.svg": "priv/static/images/logo.svg"}
+  ])
+
+  template(:a11y, [
+    {:eex, :web,
+     "corex_test/controllers/page_controller_a11y_test.exs":
+       "test/:web_app/controllers/page_controller_a11y_test.exs"}
   ])
 
   def prepare_project(%Project{app: app} = project) when not is_nil(app) do
@@ -78,6 +83,7 @@ defmodule Corex.New.Web do
     copy_from(project, __MODULE__, :new)
 
     if Project.html?(project), do: gen_html(project)
+    if project.binding[:a11y], do: copy_from(project, __MODULE__, :a11y)
     if Project.gettext?(project), do: gen_gettext(project)
 
     Corex.New.Single.gen_assets(project)

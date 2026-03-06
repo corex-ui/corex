@@ -8,16 +8,16 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-      <.header>
-        {@page_title}
-        <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
-      </.header>
+      <div>
+        <h1 class="text-lg font-semibold">{@page_title}</h1>
+        <p class="mt-1 text-sm text-zinc-500">Use this form to manage <%= schema.singular %> records in your database.</p>
+      </div>
 
       <.form for={@form} id="<%= schema.singular %>-form" phx-change="validate" phx-submit="save">
-<%= Mix.Tasks.Phx.Gen.Html.indent_inputs(inputs, 8) %>
+<%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 8) %>
         <footer>
-          <.button phx-disable-with="Saving..." variant="primary">Save <%= schema.human_singular %></.button>
-          <.button navigate={return_path(<%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)}>Cancel</.button>
+          <.action phx-disable-with="Saving..." class="button button--primary" type="submit">Save <%= schema.human_singular %></.action>
+          <.action navigate={return_path(<%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)}>Cancel</.action>
         </footer>
       </.form>
     </Layouts.app>

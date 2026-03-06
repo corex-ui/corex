@@ -54,8 +54,8 @@ defmodule <%= @app_module %>.MixProject do
       {:phoenix_live_view, "~> 1.1.0"},
       {:lazy_html, ">= 0.1.0", only: :test},<%= if @dashboard do %>
       {:phoenix_live_dashboard, "~> 0.8.3"},<% end %>
-      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
+      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},<%= if @tailwind do %>
+      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},<% end %>
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -73,7 +73,10 @@ defmodule <%= @app_module %>.MixProject do
       {:ex_cldr_territories, "~> 2.10"},<% end %>
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {<%= inspect @web_adapter_app %>, "<%= @web_adapter_vsn %>"}
+      {<%= inspect @web_adapter_app %>, "<%= @web_adapter_vsn %>"}<%= if @tidewave do %>,
+      {:tidewave, "~> 0.5", only: :dev}<% end %><%= if @a11y do %>,
+      {:wallaby, "~> 0.30", only: :test},
+      {:a11y_audit, "~> 0.3.1", only: :test}<% end %>
     ]
   end
 

@@ -44,7 +44,6 @@ defmodule Corex.New.Single do
      "corex_web/controllers/error_html.ex": "lib/:lib_web_name/controllers/error_html.ex",
      "corex_test/controllers/error_html_test.exs":
        "test/:lib_web_name/controllers/error_html_test.exs",
-     "corex_web/components/core_components.ex": "lib/:lib_web_name/components/core_components.ex",
      "corex_web/controllers/page_controller.ex": "lib/:lib_web_name/controllers/page_controller.ex",
      "corex_web/controllers/page_html.ex": "lib/:lib_web_name/controllers/page_html.ex",
      "corex_web/controllers/page_html/home.html.heex":
@@ -58,6 +57,12 @@ defmodule Corex.New.Single do
        "lib/:lib_web_name/components/layouts/root.html.heex",
      "corex_web/components/layouts.ex": "lib/:lib_web_name/components/layouts.ex"},
     {:eex, :web, "corex_assets/logo.svg": "priv/static/images/logo.svg"}
+  ])
+
+  template(:a11y, [
+    {:eex, :web,
+     "corex_test/controllers/page_controller_a11y_test.exs":
+       "test/:lib_web_name/controllers/page_controller_a11y_test.exs"}
   ])
 
   template(:ecto, [
@@ -159,6 +164,7 @@ defmodule Corex.New.Single do
 
     if Project.ecto?(project), do: gen_ecto(project)
     if Project.html?(project), do: gen_html(project)
+    if project.binding[:a11y], do: copy_from(project, __MODULE__, :a11y)
     if project.binding[:mode], do: copy_from(project, __MODULE__, :mode)
     if project.binding[:theme], do: copy_from(project, __MODULE__, :theme)
     if project.binding[:language_switcher] do
@@ -169,7 +175,7 @@ defmodule Corex.New.Single do
     if Project.gettext?(project), do: gen_gettext(project)
 
     gen_assets(project)
-    if Project.html?(project), do: gen_design(project)
+    if Project.html?(project) and project.binding[:design], do: gen_design(project)
     project
   end
 
@@ -221,7 +227,19 @@ defmodule Corex.New.Single do
   def gen_assets(%Project{} = project) do
     copy_from(project, __MODULE__, :static)
     copy_from(project, __MODULE__, :js)
-    copy_from(project, __MODULE__, :css)
+
+    if project.binding[:tailwind] do
+      copy_from(project, __MODULE__, :css)
+    else
+      copy_default_css(project)
+    end
+  end
+
+  defp copy_default_css(%Project{} = project) do
+    src = Path.expand("../../templates/corex_static/default.css", __DIR__)
+    dest = Project.join_path(project, :web, "priv/static/assets/css/app.css")
+    File.mkdir_p!(Path.dirname(dest))
+    File.cp!(src, dest)
   end
 
   def gen_mailer(%Project{} = project) do
