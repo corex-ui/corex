@@ -43,7 +43,12 @@ defmodule E2eWeb.SwitchFormLive do
         {:noreply,
          socket
          |> assign(:submitted, %{notifications: data.notifications})
-         |> assign(:form, Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, params), as: :preferences))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, params),
+             as: :preferences
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
@@ -85,11 +90,13 @@ defmodule E2eWeb.SwitchFormLive do
             {msg}
           </:error>
         </.switch>
-        <.action type="submit" id="switch-form-live-submit" class="button button--accent">Submit</.action>
+        <.action type="submit" id="switch-form-live-submit" class="button button--accent">
+          Submit
+        </.action>
       </.form>
 
       <div :if={@submitted} id="switch-form-result">
-        <p>Submitted: notifications=<%= @submitted.notifications %></p>
+        <p>Submitted: notifications={@submitted.notifications}</p>
       </div>
     </Layouts.app>
     """

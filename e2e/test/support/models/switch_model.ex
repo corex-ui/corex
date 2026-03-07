@@ -15,12 +15,23 @@ defmodule E2eWeb.SwitchModel do
     click(session, css("[data-scope='switch'][data-part='control']"))
   end
 
+  def press_space_on_switch(session) do
+    session
+    |> focus_element("[data-scope='switch'][data-part='control']")
+    |> then(&Wallaby.Browser.send_keys(&1, [:space]))
+  end
+
+  defp focus_element(session, selector) do
+    Wallaby.Browser.execute_script(session, "document.querySelector('#{selector}').focus()")
+  end
+
   def click_terms_checkbox(session) do
     click(session, css("[data-scope='checkbox'][data-part='control']"))
   end
 
-  def submit_form(session) do
-    click(session, button("Submit"))
+  def submit_form(session, mode \\ :static) do
+    id = if mode == :live, do: "switch-form-live-submit", else: "switch-form-submit"
+    click(session, css("##{id}"))
   end
 
   def see_submitted_value(session, key, value) do

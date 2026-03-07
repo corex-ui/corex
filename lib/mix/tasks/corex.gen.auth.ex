@@ -96,7 +96,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       $ mix corex.gen.auth Backoffice Admin admins
 
   Note that when invoking `corex.gen.auth` multiple times, it will also generate
-  multiple [scopes](guides/authn_authz/scopes.md). Typically, only one scope is needed,
+  multiple [scopes](https://hexdocs.pm/phoenix/scopes.html). Typically, only one scope is needed,
   thus you will probably want to customize the generated code afterwards. Also, it
   is expected that the generated code is not fully free of conflicts. One example is the
   browser pipeline, which will try to assign both scopes as `:current_scope` by default.
@@ -1064,10 +1064,12 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   @doc false
+  @spec raise_with_help(String.t()) :: no_return()
   def raise_with_help(msg) do
     raise_with_help(msg, :general)
   end
 
+  @spec raise_with_help(String.t(), :general | :phx_generator_args | :hashing_lib) :: no_return()
   defp raise_with_help(msg, :general) do
     Mix.raise("""
     #{msg}

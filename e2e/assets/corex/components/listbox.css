@@ -72,6 +72,19 @@
 
   .listbox [data-scope="listbox"][data-part="item"] {
     @apply ui-item;
+
+    display: flex;
+    align-items: center;
+  }
+
+  .listbox [data-scope="listbox"][data-part="item-text"] {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .listbox [data-scope="listbox"][data-part="item-indicator"] {
+    flex-shrink: 0;
+    margin-inline-start: auto;
   }
 
   .listbox

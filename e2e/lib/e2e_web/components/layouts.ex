@@ -276,7 +276,7 @@ defmodule E2eWeb.Layouts do
     <.select
       id="locale-select"
       class="select select--sm select--micro"
-      collection={@collection}
+      items={@collection}
       value={["/#{@locale}#{@current_path}"]}
       redirect
       on_value_change="locale_change"
@@ -310,7 +310,7 @@ defmodule E2eWeb.Layouts do
     <.select
       id="theme-select"
       class="select select--sm select--micro"
-      collection={[
+      items={[
         %{id: "neo", label: "Neo"},
         %{id: "uno", label: "Uno"},
         %{id: "duo", label: "Duo"},
@@ -427,7 +427,9 @@ defmodule E2eWeb.Layouts do
       component_item("Collapsible", "collapsible", locale),
       component_item("Dialog", "dialog", locale),
       component_item("Floating Panel", "floating-panel", locale),
-      component_item("Listbox", "listbox", locale),
+      component_item("Listbox", "listbox", locale,
+        extra: [[label: "Stream", id: "/#{locale}/live/listbox/stream"]]
+      ),
       component_item("Marquee", "marquee", locale),
       component_item("Menu", "menu", locale),
       component_item("Navigate", "navigate", locale),
@@ -462,7 +464,12 @@ defmodule E2eWeb.Layouts do
       ),
       component_item("Date Picker", "date-picker", locale),
       component_item("Editable", "editable", locale),
-      component_item("Native Input", "native-input", locale),
+      component_item("Native Input", "native-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/native-input/form"],
+          [label: "Form (Live)", id: "/#{locale}/live/native-input/form"]
+        ]
+      ),
       component_item("Number Input", "number-input", locale),
       component_item("Password Input", "password-input", locale),
       component_item("Pin Input", "pin-input", locale),

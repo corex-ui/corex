@@ -65,15 +65,18 @@ defmodule E2eWeb.Router do
       live "/controlled/angle-slider", AngleSliderControlledLive
       live "/live/avatar", AvatarLive
       live "/live/carousel", CarouselLive
+      live "/live/data-table", DataTableLive
       live "/live/editable", EditableLive
       live "/live/floating-panel", FloatingPanelLive
       live "/live/listbox", ListboxLive
+      live "/live/listbox/stream", ListboxStreamLive
       live "/live/marquee", MarqueeLive
       live "/live/color-picker", ColorPickerLive
       live "/live/number-input", NumberInputLive
       live "/live/password-input", PasswordInputLive
       live "/live/pin-input", PinInputLive
       live "/live/native-input", NativeInputLive
+      live "/live/native-input/form", NativeInputFormLive
       live "/live/radio-group", RadioGroupLive
       live "/live/timer", TimerLive
     end
@@ -129,6 +132,8 @@ defmodule E2eWeb.Router do
     get "/password-input", PageController, :password_input_page
     get "/pin-input", PageController, :pin_input_page
     get "/native-input", PageController, :native_input_page
+    get "/native-input/form", PageController, :native_input_form_page
+    post "/native-input/form", PageController, :native_input_form_submit
     get "/radio-group", PageController, :radio_group_page
     get "/timer", PageController, :timer_page
 

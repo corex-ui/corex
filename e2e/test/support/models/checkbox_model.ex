@@ -15,8 +15,19 @@ defmodule E2eWeb.CheckboxModel do
     click(session, css("[data-scope='checkbox'][data-part='control']"))
   end
 
-  def submit_form(session) do
-    click(session, button("Submit"))
+  def press_space_on_checkbox(session) do
+    session
+    |> focus_element("#checkbox-form-terms [data-scope='checkbox'][data-part='control']")
+    |> then(&Wallaby.Browser.send_keys(&1, [:space]))
+  end
+
+  defp focus_element(session, selector) do
+    Wallaby.Browser.execute_script(session, "document.querySelector('#{selector}').focus()")
+  end
+
+  def submit_form(session, mode \\ :static) do
+    id = if mode == :live, do: "checkbox-form-live-submit", else: "checkbox-form-submit"
+    click(session, css("##{id}"))
   end
 
   def see_submitted_value(session, key, value) do

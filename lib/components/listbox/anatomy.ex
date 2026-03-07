@@ -7,7 +7,7 @@ defmodule Corex.Listbox.Anatomy do
 
     defstruct [
       :id,
-      collection: [],
+      items: [],
       value: [],
       controlled: false,
       disabled: false,
@@ -24,7 +24,7 @@ defmodule Corex.Listbox.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            collection: list(map()),
+            items: list(map()),
             value: list(String.t()),
             controlled: boolean(),
             disabled: boolean(),
@@ -55,13 +55,6 @@ defmodule Corex.Listbox.Anatomy do
   end
 
   defmodule ValueText do
-    @moduledoc false
-    defstruct [:id]
-
-    @type t :: %__MODULE__{id: String.t()}
-  end
-
-  defmodule Input do
     @moduledoc false
     defstruct [:id]
 

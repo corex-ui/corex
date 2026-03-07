@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-BVJBLYEU.mjs
+  // ../priv/static/chunk-UK7T6PHM.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -116,6 +116,9 @@ var Corex = (() => {
     const fromDoc = document.documentElement.getAttribute("dir");
     if (fromDoc === "ltr" || fromDoc === "rtl") return fromDoc;
     return "ltr";
+  }
+  function canPushEvent(liveSocket) {
+    return !liveSocket.main.isDead && liveSocket.main.isConnected();
   }
   function createNormalizer(fn) {
     return new Proxy({}, {
@@ -1686,8 +1689,8 @@ var Corex = (() => {
     };
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, __defProp2, __defNormalProp2, __publicField2, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_BVJBLYEU = __esm({
-    "../priv/static/chunk-BVJBLYEU.mjs"() {
+  var init_chunk_UK7T6PHM = __esm({
+    "../priv/static/chunk-UK7T6PHM.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2569,6 +2572,7 @@ var Corex = (() => {
               this.render();
             });
             this.machine.start();
+            this.el.removeAttribute("data-js");
           });
           __publicField(this, "destroy", () => {
             this.machine.stop();
@@ -2763,7 +2767,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2991,7 +2995,7 @@ var Corex = (() => {
             onValueChange: (details) => {
               var _a, _b;
               const eventName = getString(el, "onValueChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(this.liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   value: (_a = details.value) != null ? _a : null
@@ -3013,7 +3017,7 @@ var Corex = (() => {
             onFocusChange: (details) => {
               var _a, _b;
               const eventName = getString(el, "onFocusChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(this.liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   value: (_a = details.value) != null ? _a : null
@@ -3042,17 +3046,14 @@ var Corex = (() => {
           el.addEventListener("phx:accordion:set-value", this.onSetValue);
           this.handlers = [];
           this.handlers.push(
-            this.handleEvent(
-              "accordion_set_value",
-              (payload) => {
-                const targetId = payload.accordion_id;
-                if (targetId) {
-                  const matches = el.id === targetId || el.id === `accordion:${targetId}`;
-                  if (!matches) return;
-                }
-                accordion.api.setValue(payload.value);
+            this.handleEvent("accordion_set_value", (payload) => {
+              const targetId = payload.id;
+              if (targetId) {
+                const matches = el.id === targetId || el.id === `accordion:${targetId}`;
+                if (!matches) return;
               }
-            )
+              accordion.api.setValue(payload.value);
+            })
           );
           this.handlers.push(
             this.handleEvent("accordion_value", () => {
@@ -3460,7 +3461,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_3QRJREC6();
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -3887,7 +3888,7 @@ var Corex = (() => {
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4508,7 +4509,7 @@ var Corex = (() => {
     "../priv/static/carousel.mjs"() {
       "use strict";
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5219,7 +5220,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-3L7DS5JZ.mjs
+  // ../priv/static/chunk-FVGZORDS.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -5338,10 +5339,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_3L7DS5JZ = __esm({
-    "../priv/static/chunk-3L7DS5JZ.mjs"() {
+  var init_chunk_FVGZORDS = __esm({
+    "../priv/static/chunk-FVGZORDS.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -5510,8 +5511,8 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -5723,7 +5724,7 @@ var Corex = (() => {
             readOnly: getBoolean(el, "readOnly"),
             onCheckedChange: (details) => {
               const eventName = getString(el, "onCheckedChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(this.liveSocket)) {
                 pushEvent(eventName, {
                   checked: details.checked,
                   id: el.id
@@ -5735,8 +5736,8 @@ var Corex = (() => {
                   new CustomEvent(eventNameClient, {
                     bubbles: true,
                     detail: {
-                      value: details,
-                      id: el.id
+                      id: el.id,
+                      checked: details.checked
                     }
                   })
                 );
@@ -5826,7 +5827,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-MEHWRUXO.mjs
+  // ../priv/static/chunk-DTDRPOIT.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -5849,10 +5850,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_MEHWRUXO = __esm({
-    "../priv/static/chunk-MEHWRUXO.mjs"() {
+  var init_chunk_DTDRPOIT = __esm({
+    "../priv/static/chunk-DTDRPOIT.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6024,8 +6025,8 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_MEHWRUXO();
-      init_chunk_BVJBLYEU();
+      init_chunk_DTDRPOIT();
+      init_chunk_UK7T6PHM();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6373,7 +6374,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6750,7 +6751,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-4S73FXZZ.mjs
+  // ../priv/static/chunk-Z5C4OFDG.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -7150,10 +7151,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_4S73FXZZ = __esm({
-    "../priv/static/chunk-4S73FXZZ.mjs"() {
+  var init_chunk_Z5C4OFDG = __esm({
+    "../priv/static/chunk-Z5C4OFDG.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -8150,7 +8151,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-3PXF3EVQ.mjs
+  // ../priv/static/chunk-YGFRHRLH.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9444,10 +9445,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_3PXF3EVQ = __esm({
-    "../priv/static/chunk-3PXF3EVQ.mjs"() {
+  var init_chunk_YGFRHRLH = __esm({
+    "../priv/static/chunk-YGFRHRLH.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10142,7 +10143,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-53IVNBLA.mjs
+  // ../priv/static/chunk-YEKBDBKP.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10359,17 +10360,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_53IVNBLA = __esm({
-    "../priv/static/chunk-53IVNBLA.mjs"() {
+  var init_chunk_YEKBDBKP = __esm({
+    "../priv/static/chunk-YEKBDBKP.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-5YVV632C.mjs
+  // ../priv/static/chunk-ZTVKZLPW.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10528,11 +10529,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_5YVV632C = __esm({
-    "../priv/static/chunk-5YVV632C.mjs"() {
+  var init_chunk_ZTVKZLPW = __esm({
+    "../priv/static/chunk-ZTVKZLPW.mjs"() {
       "use strict";
-      init_chunk_53IVNBLA();
-      init_chunk_BVJBLYEU();
+      init_chunk_YEKBDBKP();
+      init_chunk_UK7T6PHM();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -11078,12 +11079,12 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_4S73FXZZ();
-      init_chunk_3PXF3EVQ();
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_Z5C4OFDG();
+      init_chunk_YGFRHRLH();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -13292,10 +13293,10 @@ var Corex = (() => {
     "../priv/static/color-picker.mjs"() {
       "use strict";
       init_chunk_G66USZ47();
-      init_chunk_3PXF3EVQ();
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_BVJBLYEU();
+      init_chunk_YGFRHRLH();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_UK7T6PHM();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -15021,7 +15022,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-5DET2KLQ.mjs
+  // ../priv/static/chunk-V4EFVTXH.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -15036,10 +15037,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_5DET2KLQ = __esm({
-    "../priv/static/chunk-5DET2KLQ.mjs"() {
+  var init_chunk_V4EFVTXH = __esm({
+    "../priv/static/chunk-V4EFVTXH.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
     }
   });
 
@@ -17228,12 +17229,12 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_5DET2KLQ();
+      init_chunk_V4EFVTXH();
       init_chunk_G66USZ47();
-      init_chunk_3PXF3EVQ();
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_BVJBLYEU();
+      init_chunk_YGFRHRLH();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_UK7T6PHM();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -19673,9 +19674,9 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_BVJBLYEU();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_UK7T6PHM();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -20963,8 +20964,8 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_53IVNBLA();
-      init_chunk_BVJBLYEU();
+      init_chunk_YEKBDBKP();
+      init_chunk_UK7T6PHM();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -21866,7 +21867,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_3QRJREC6();
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -23241,9 +23242,9 @@ var Corex = (() => {
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_4S73FXZZ();
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_Z5C4OFDG();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -23662,6 +23663,19 @@ var Corex = (() => {
         setOptions(options) {
           this._options = Array.isArray(options) ? options : [];
         }
+        getOrderedGroupIds() {
+          var _a;
+          const seen = /* @__PURE__ */ new Set();
+          const ids = [];
+          for (const item of this.options) {
+            const id = (_a = item.group) != null ? _a : "default";
+            if (!seen.has(id)) {
+              seen.add(id);
+              ids.push(id);
+            }
+          }
+          return ids;
+        }
         getCollection() {
           const items = this.options;
           if (this.hasGroups) {
@@ -23692,15 +23706,68 @@ var Corex = (() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props.collection;
           return new VanillaMachine(machine14, __spreadProps(__spreadValues({}, props), {
             get collection() {
-              return collectionFromProps != null ? collectionFromProps : getCollection();
+              return getCollection();
             }
           }));
         }
         initApi() {
           return connect14(this.machine.service, normalizeProps);
+        }
+        renderItems() {
+          var _a, _b;
+          const contentEl = this.el.querySelector(
+            '[data-scope="listbox"][data-part="content"]'
+          );
+          if (!contentEl) return;
+          const templatesContainer = this.el.querySelector(
+            '[data-templates="listbox"]'
+          );
+          if (!templatesContainer) return;
+          contentEl.querySelectorAll(
+            '[data-scope="listbox"][data-part="empty"]:not([data-template])'
+          ).forEach((el) => el.remove());
+          contentEl.querySelectorAll(
+            '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
+          ).forEach((el) => el.remove());
+          contentEl.querySelectorAll(
+            '[data-scope="listbox"][data-part="item"]:not([data-template])'
+          ).forEach((el) => el.remove());
+          const items = this.options;
+          if (items.length === 0) {
+            const emptyTemplate = templatesContainer.querySelector(
+              '[data-scope="listbox"][data-part="empty"][data-template]'
+            );
+            if (emptyTemplate) {
+              const emptyEl = emptyTemplate.cloneNode(true);
+              emptyEl.removeAttribute("data-template");
+              contentEl.appendChild(emptyEl);
+            }
+          } else if (this.hasGroups) {
+            const groupIds = this.getOrderedGroupIds();
+            for (const groupId of groupIds) {
+              const template = templatesContainer.querySelector(
+                `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+              );
+              if (!template) continue;
+              const groupEl = template.cloneNode(true);
+              groupEl.removeAttribute("data-template");
+              groupEl.querySelectorAll("[data-template]").forEach((e2) => e2.removeAttribute("data-template"));
+              contentEl.appendChild(groupEl);
+            }
+          } else {
+            for (const item of items) {
+              const value = String((_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "");
+              const template = templatesContainer.querySelector(
+                `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
+              );
+              if (!template) continue;
+              const itemEl = template.cloneNode(true);
+              itemEl.removeAttribute("data-template");
+              contentEl.appendChild(itemEl);
+            }
+          }
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
@@ -23758,6 +23825,7 @@ var Corex = (() => {
           );
           if (contentEl) {
             this.spreadProps(contentEl, this.api.getContentProps());
+            this.renderItems();
             this.applyItemProps();
           }
         }
@@ -23766,8 +23834,8 @@ var Corex = (() => {
         mounted() {
           var _a;
           const el = this.el;
-          const allItems = JSON.parse((_a = el.dataset.collection) != null ? _a : "[]");
-          const hasGroups = allItems.some((item) => item.group !== void 0);
+          const allItems = JSON.parse((_a = el.dataset.items) != null ? _a : "[]");
+          const hasGroups = allItems.some((item) => Boolean(item.group));
           const valueList = getStringList(el, "value");
           const defaultValueList = getStringList(el, "defaultValue");
           const controlled = getBoolean(el, "controlled");
@@ -23815,20 +23883,35 @@ var Corex = (() => {
           zag.init();
           this.listbox = zag;
           this.handlers = [];
+          this.handleContentClick = (e2) => {
+            var _a2, _b;
+            const btn = (_b = (_a2 = e2.target).closest) == null ? void 0 : _b.call(
+              _a2,
+              "[data-phx-push][data-phx-push-id]"
+            );
+            if (btn && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+              e2.stopPropagation();
+              e2.preventDefault();
+              this.pushEvent(btn.dataset.phxPush, { id: btn.dataset.phxPushId });
+            }
+          };
+          el.addEventListener("click", this.handleContentClick, true);
         },
         updated() {
           var _a;
-          const newItems = JSON.parse((_a = this.el.dataset.collection) != null ? _a : "[]");
-          const hasGroups = newItems.some((item) => item.group !== void 0);
+          const newItems = JSON.parse((_a = this.el.dataset.items) != null ? _a : "[]");
+          const hasGroups = newItems.some((item) => Boolean(item.group));
           const valueList = getStringList(this.el, "value");
+          const defaultValueList = getStringList(this.el, "defaultValue");
           const controlled = getBoolean(this.el, "controlled");
           if (this.listbox) {
             this.listbox.hasGroups = hasGroups;
             this.listbox.setOptions(newItems);
+            this.listbox.render();
             this.listbox.updateProps(__spreadProps(__spreadValues({
-              collection: buildCollection(newItems, hasGroups),
+              collection: this.listbox.getCollection(),
               id: this.el.id
-            }, controlled && valueList ? { value: valueList } : {}), {
+            }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
               disabled: getBoolean(this.el, "disabled"),
               dir: getString(this.el, "dir", ["ltr", "rtl"]),
               orientation: getString(this.el, "orientation", [
@@ -23842,6 +23925,9 @@ var Corex = (() => {
           var _a;
           if (this.handlers) {
             for (const h2 of this.handlers) this.removeHandleEvent(h2);
+          }
+          if (this.handleContentClick) {
+            this.el.removeEventListener("click", this.handleContentClick, true);
           }
           (_a = this.listbox) == null ? void 0 : _a.destroy();
         }
@@ -24011,7 +24097,7 @@ var Corex = (() => {
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
       dom = {
@@ -24903,11 +24989,11 @@ var Corex = (() => {
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_3QRJREC6();
-      init_chunk_3PXF3EVQ();
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_YGFRHRLH();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy16 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -26651,9 +26737,9 @@ var Corex = (() => {
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_5DET2KLQ();
+      init_chunk_V4EFVTXH();
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy17 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -27686,7 +27772,7 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -28117,7 +28203,7 @@ var Corex = (() => {
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
       getRootId14 = (ctx) => {
@@ -28764,8 +28850,8 @@ var Corex = (() => {
     "../priv/static/radio-group.mjs"() {
       "use strict";
       init_chunk_G66USZ47();
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -29588,12 +29674,12 @@ var Corex = (() => {
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_4S73FXZZ();
-      init_chunk_3PXF3EVQ();
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_Z5C4OFDG();
+      init_chunk_YGFRHRLH();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy21 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -30403,6 +30489,7 @@ var Corex = (() => {
               this.api = this.initApi();
               this.render();
             });
+            this.el.removeAttribute("data-js");
           });
           const collectionFromProps = props.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
@@ -30554,7 +30641,7 @@ var Corex = (() => {
       SelectHook = {
         mounted() {
           const el = this.el;
-          const allItems = JSON.parse(el.dataset.collection || "[]");
+          const allItems = JSON.parse(el.dataset.items || "[]");
           const hasGroups = allItems.some((item) => item.group !== void 0);
           const initialCollection = buildCollection2(allItems, hasGroups);
           const selectComponent = new Select(el, __spreadProps(__spreadValues({
@@ -30602,9 +30689,8 @@ var Corex = (() => {
               const valueInput = el.querySelector(
                 '[data-scope="select"][data-part="value-input"]'
               );
-              if (valueInput) {
+              if (valueInput && getBoolean(el, "controlled")) {
                 valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-                valueInput.dispatchEvent(new Event("input", { bubbles: true }));
                 valueInput.dispatchEvent(new Event("change", { bubbles: true }));
               }
               const payload = {
@@ -30617,7 +30703,7 @@ var Corex = (() => {
                 el.dispatchEvent(new CustomEvent(clientEventName, { bubbles: true, detail: payload }));
               }
               const serverEventName = getString(el, "onValueChange");
-              if (serverEventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+              if (serverEventName && canPushEvent(this.liveSocket)) {
                 this.pushEvent(serverEventName, payload);
               }
             }
@@ -30629,7 +30715,7 @@ var Corex = (() => {
           this.handlers = [];
         },
         updated() {
-          const newItems = JSON.parse(this.el.dataset.collection || "[]");
+          const newItems = JSON.parse(this.el.dataset.items || "[]");
           const hasGroups = newItems.some((item) => item.group !== void 0);
           if (this.select) {
             this.select.hasGroups = hasGroups;
@@ -31006,7 +31092,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -31489,8 +31575,8 @@ var Corex = (() => {
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_3L7DS5JZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_FVGZORDS();
+      init_chunk_UK7T6PHM();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
       getRootId18 = (ctx) => {
@@ -31708,7 +31794,7 @@ var Corex = (() => {
             label: getString(el, "label"),
             onCheckedChange: (details) => {
               const eventName = getString(el, "onCheckedChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(this.liveSocket)) {
                 pushEvent(eventName, {
                   checked: details.checked,
                   id: el.id
@@ -31720,8 +31806,8 @@ var Corex = (() => {
                   new CustomEvent(eventNameClient, {
                     bubbles: true,
                     detail: {
-                      value: details,
-                      id: el.id
+                      id: el.id,
+                      checked: details.checked
                     }
                   })
                 );
@@ -31731,8 +31817,8 @@ var Corex = (() => {
           zagSwitch.init();
           this.zagSwitch = zagSwitch;
           this.onSetChecked = (event) => {
-            const { value } = event.detail;
-            zagSwitch.api.setChecked(value);
+            const { checked } = event.detail;
+            zagSwitch.api.setChecked(checked);
           };
           el.addEventListener("phx:switch:set-checked", this.onSetChecked);
           this.handlers = [];
@@ -31740,7 +31826,7 @@ var Corex = (() => {
             this.handleEvent("switch_set_checked", (payload) => {
               const targetId = payload.id;
               if (targetId && targetId !== el.id) return;
-              zagSwitch.api.setChecked(payload.value);
+              zagSwitch.api.setChecked(payload.checked);
             })
           );
           this.handlers.push(
@@ -32008,7 +32094,7 @@ var Corex = (() => {
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -32634,10 +32720,10 @@ var Corex = (() => {
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_5DET2KLQ();
-      init_chunk_MEHWRUXO();
+      init_chunk_V4EFVTXH();
+      init_chunk_DTDRPOIT();
       init_chunk_G66USZ47();
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy25 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -33504,10 +33590,10 @@ var Corex = (() => {
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_MEHWRUXO();
-      init_chunk_5YVV632C();
-      init_chunk_53IVNBLA();
-      init_chunk_BVJBLYEU();
+      init_chunk_DTDRPOIT();
+      init_chunk_ZTVKZLPW();
+      init_chunk_YEKBDBKP();
+      init_chunk_UK7T6PHM();
       anatomy26 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -34464,7 +34550,7 @@ var Corex = (() => {
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_BVJBLYEU();
+      init_chunk_UK7T6PHM();
       anatomy27 = createAnatomy("toggle-group").parts("root", "item");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -35388,8 +35474,8 @@ var Corex = (() => {
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_4S73FXZZ();
-      init_chunk_BVJBLYEU();
+      init_chunk_Z5C4OFDG();
+      init_chunk_UK7T6PHM();
       anatomy28 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",

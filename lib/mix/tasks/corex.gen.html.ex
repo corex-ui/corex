@@ -59,7 +59,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   ## Scopes
 
-  If your application configures its own default [scope](scopes.md), then this generator
+  If your application configures its own default [scope](https://hexdocs.pm/phoenix/scopes.html), then this generator
   will automatically make sure all of your context operations are correctly scoped.
   You can pass the `--no-scope` flag to disable the scoping.
 

@@ -276,6 +276,12 @@ defmodule Corex.Checkbox do
       "The direction of the checkbox. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["vertical", "horizontal"],
+    doc: "Layout orientation for CSS (vertical or horizontal)"
+  )
+
   attr(:read_only, :boolean,
     default: false,
     doc: "Whether the checkbox is read-only"
@@ -371,16 +377,16 @@ defmodule Corex.Checkbox do
       })}
     >
 
-      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked})}>
+      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
 
       <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
-      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked})}>
-          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked})}>
+      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
           {render_slot(@control)}
           </span>
       </div>
-      <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked})}>
+      <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
       {render_slot(@label)}
       </span>
       </label>
@@ -428,7 +434,7 @@ defmodule Corex.Checkbox do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
              is_boolean(checked) do
     LiveView.push_event(socket, "checkbox_set_checked", %{
-      checkbox_id: checkbox_id,
+      id: checkbox_id,
       checked: checked
     })
   end
@@ -464,7 +470,7 @@ defmodule Corex.Checkbox do
   def toggle_checked(socket, checkbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do
     LiveView.push_event(socket, "checkbox_toggle_checked", %{
-      checkbox_id: checkbox_id
+      id: checkbox_id
     })
   end
 end

@@ -808,6 +808,18 @@ var Listbox = class extends Component {
   setOptions(options) {
     this._options = Array.isArray(options) ? options : [];
   }
+  getOrderedGroupIds() {
+    const seen = /* @__PURE__ */ new Set();
+    const ids = [];
+    for (const item of this.options) {
+      const id = item.group ?? "default";
+      if (!seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+    return ids;
+  }
   getCollection() {
     const items = this.options;
     if (this.hasGroups) {
@@ -829,11 +841,10 @@ var Listbox = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     const getCollection = this.getCollection.bind(this);
-    const collectionFromProps = props.collection;
     return new VanillaMachine(machine, {
       ...props,
       get collection() {
-        return collectionFromProps ?? getCollection();
+        return getCollection();
       }
     });
   }
@@ -848,6 +859,59 @@ var Listbox = class extends Component {
       this.render();
     });
   };
+  renderItems() {
+    const contentEl = this.el.querySelector(
+      '[data-scope="listbox"][data-part="content"]'
+    );
+    if (!contentEl) return;
+    const templatesContainer = this.el.querySelector(
+      '[data-templates="listbox"]'
+    );
+    if (!templatesContainer) return;
+    contentEl.querySelectorAll(
+      '[data-scope="listbox"][data-part="empty"]:not([data-template])'
+    ).forEach((el) => el.remove());
+    contentEl.querySelectorAll(
+      '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
+    ).forEach((el) => el.remove());
+    contentEl.querySelectorAll(
+      '[data-scope="listbox"][data-part="item"]:not([data-template])'
+    ).forEach((el) => el.remove());
+    const items = this.options;
+    if (items.length === 0) {
+      const emptyTemplate = templatesContainer.querySelector(
+        '[data-scope="listbox"][data-part="empty"][data-template]'
+      );
+      if (emptyTemplate) {
+        const emptyEl = emptyTemplate.cloneNode(true);
+        emptyEl.removeAttribute("data-template");
+        contentEl.appendChild(emptyEl);
+      }
+    } else if (this.hasGroups) {
+      const groupIds = this.getOrderedGroupIds();
+      for (const groupId of groupIds) {
+        const template = templatesContainer.querySelector(
+          `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+        );
+        if (!template) continue;
+        const groupEl = template.cloneNode(true);
+        groupEl.removeAttribute("data-template");
+        groupEl.querySelectorAll("[data-template]").forEach((e) => e.removeAttribute("data-template"));
+        contentEl.appendChild(groupEl);
+      }
+    } else {
+      for (const item of items) {
+        const value = String(item.id ?? item.value ?? "");
+        const template = templatesContainer.querySelector(
+          `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
+        );
+        if (!template) continue;
+        const itemEl = template.cloneNode(true);
+        itemEl.removeAttribute("data-template");
+        contentEl.appendChild(itemEl);
+      }
+    }
+  }
   applyItemProps() {
     const contentEl = this.el.querySelector(
       '[data-scope="listbox"][data-part="content"]'
@@ -898,6 +962,7 @@ var Listbox = class extends Component {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
+      this.renderItems();
       this.applyItemProps();
     }
   }
@@ -924,8 +989,8 @@ function buildCollection(items, hasGroups) {
 var ListboxHook = {
   mounted() {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.collection ?? "[]");
-    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const allItems = JSON.parse(el.dataset.items ?? "[]");
+    const hasGroups = allItems.some((item) => Boolean(item.group));
     const valueList = getStringList(el, "value");
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
@@ -973,19 +1038,32 @@ var ListboxHook = {
     zag.init();
     this.listbox = zag;
     this.handlers = [];
+    this.handleContentClick = (e) => {
+      const btn = e.target.closest?.(
+        "[data-phx-push][data-phx-push-id]"
+      );
+      if (btn && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.pushEvent(btn.dataset.phxPush, { id: btn.dataset.phxPushId });
+      }
+    };
+    el.addEventListener("click", this.handleContentClick, true);
   },
   updated() {
-    const newItems = JSON.parse(this.el.dataset.collection ?? "[]");
-    const hasGroups = newItems.some((item) => item.group !== void 0);
+    const newItems = JSON.parse(this.el.dataset.items ?? "[]");
+    const hasGroups = newItems.some((item) => Boolean(item.group));
     const valueList = getStringList(this.el, "value");
+    const defaultValueList = getStringList(this.el, "defaultValue");
     const controlled = getBoolean(this.el, "controlled");
     if (this.listbox) {
       this.listbox.hasGroups = hasGroups;
       this.listbox.setOptions(newItems);
+      this.listbox.render();
       this.listbox.updateProps({
-        collection: buildCollection(newItems, hasGroups),
+        collection: this.listbox.getCollection(),
         id: this.el.id,
-        ...controlled && valueList ? { value: valueList } : {},
+        ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
         disabled: getBoolean(this.el, "disabled"),
         dir: getString(this.el, "dir", ["ltr", "rtl"]),
         orientation: getString(this.el, "orientation", [
@@ -998,6 +1076,9 @@ var ListboxHook = {
   destroyed() {
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
+    }
+    if (this.handleContentClick) {
+      this.el.removeEventListener("click", this.handleContentClick, true);
     }
     this.listbox?.destroy();
   }

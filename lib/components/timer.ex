@@ -76,10 +76,21 @@ defmodule Corex.Timer do
   attr(:on_complete, :string, default: nil)
   attr(:rest, :global)
 
-  slot(:start_trigger, required: true)
-  slot(:pause_trigger, required: true)
-  slot(:resume_trigger, required: true)
-  slot(:reset_trigger, required: true)
+  slot :start_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :pause_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :resume_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :reset_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
 
   def timer(assigns) do
     assigns =

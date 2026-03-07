@@ -18,10 +18,6 @@ defmodule E2eWeb.AccordionLive do
     {:noreply, push_event(socket, "accordion_value", %{})}
   end
 
-  def handle_event("get_focused_value", _params, socket) do
-    {:noreply, push_event(socket, "accordion_focused_value", %{})}
-  end
-
   def handle_event("accordion_value_response", %{"value" => value}, socket) do
     {:noreply, assign(socket, :accordion_value, value)}
   end
@@ -78,9 +74,6 @@ defmodule E2eWeb.AccordionLive do
         </.action>
         <.action phx-click="get_value" class="button button--sm">
           Get current value
-        </.action>
-        <.action phx-click="get_focused_value" class="button button--sm">
-          Get focused value
         </.action>
       </div>
       <div :if={@accordion_value != nil || @accordion_focused_value != nil} class="layout__row">

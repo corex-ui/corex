@@ -2,7 +2,6 @@ defmodule Corex.Listbox.Connect do
   @moduledoc false
   alias Corex.Listbox.Anatomy.{
     Content,
-    Input,
     Item,
     ItemGroup,
     ItemGroupLabel,
@@ -46,7 +45,7 @@ defmodule Corex.Listbox.Connect do
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-collection" => Corex.Json.encode!(encode_collection(assigns.collection)),
+      "data-items" => Corex.Json.encode!(encode_collection(assigns.items)),
       "data-value" =>
         if assigns.controlled do
           Enum.join(validate_value!(assigns.value), ",")
@@ -99,15 +98,6 @@ defmodule Corex.Listbox.Connect do
       "data-scope" => "listbox",
       "data-part" => "value-text",
       "id" => "listbox:#{assigns.id}:value-text"
-    }
-  end
-
-  @spec input(Input.t()) :: map()
-  def input(assigns) do
-    %{
-      "data-scope" => "listbox",
-      "data-part" => "input",
-      "id" => "listbox:#{assigns.id}:input"
     }
   end
 

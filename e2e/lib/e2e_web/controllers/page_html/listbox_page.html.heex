@@ -13,7 +13,7 @@
   <.listbox
     id="my-listbox"
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -31,7 +31,7 @@
   <h3>Grouped</h3>
   <.listbox
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -56,7 +56,7 @@
   <h3>Extended</h3>
   <.listbox
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -81,7 +81,7 @@
   <.listbox
     class="listbox"
     aria_label="Extended grouped countries"
-    collection={[
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},

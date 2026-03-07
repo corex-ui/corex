@@ -21,10 +21,10 @@ defmodule Corex.HiddenInput do
   @doc type: :component
   use Phoenix.Component
 
-  attr(:id, :string, required: false)
-  attr(:name, :string, required: false)
-  attr(:value, :any, default: nil)
-  attr(:form, :string, required: false)
+  attr(:id, :string, required: false, doc: "The id of the hidden input")
+  attr(:name, :string, required: false, doc: "The name attribute for form submission")
+  attr(:value, :any, default: nil, doc: "The value of the hidden input")
+  attr(:form, :string, required: false, doc: "The id of the form this input belongs to")
 
   attr(:field, Phoenix.HTML.FormField, doc: "A form field struct from the form, e.g. @form[:id]")
 

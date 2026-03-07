@@ -30,8 +30,7 @@ defmodule E2eWeb.AdminLive.Form do
         <.select
           class="select"
           field={@form[:country]}
-          controlled
-          placeholder="Select a country"
+          translation={%Corex.Select.Translation{placeholder: gettext("Select a country")}}
           items={[
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
@@ -90,8 +89,12 @@ defmodule E2eWeb.AdminLive.Form do
         </.checkbox>
 
         <footer class="flex w-full justify-between gap-ui-gap">
-          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">Cancel</.navigate>
-          <.action phx-disable-with="Saving..." type="submit" class="button button--accent">Save Admin</.action>
+          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">
+            Cancel
+          </.navigate>
+          <.action phx-disable-with="Saving..." type="submit" class="button button--accent">
+            Save Admin
+          </.action>
         </footer>
       </.form>
     </Layouts.app>

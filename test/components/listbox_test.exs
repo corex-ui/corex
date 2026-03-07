@@ -46,15 +46,6 @@ defmodule Corex.ListboxTest do
     end
   end
 
-  describe "Connect.input/1" do
-    test "returns input attributes" do
-      assigns = %{id: "test-listbox"}
-      result = Connect.input(assigns)
-      assert result["id"] == "listbox:test-listbox:input"
-      assert result["data-part"] == "input"
-    end
-  end
-
   describe "Connect.item_group/1" do
     test "returns item group attributes" do
       assigns = %{id: "test-listbox", group_id: "g1"}
@@ -112,7 +103,7 @@ defmodule Corex.ListboxTest do
     test "returns props when controlled" do
       assigns = %{
         id: "test-listbox",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr",
@@ -135,7 +126,7 @@ defmodule Corex.ListboxTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-listbox",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: ["a"],
         dir: "ltr",

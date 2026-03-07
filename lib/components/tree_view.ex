@@ -181,12 +181,15 @@ defmodule Corex.TreeView do
 
   attr(:rest, :global)
 
-  slot(:label, doc: "Optional label slot")
+  slot :label, doc: "Optional label slot" do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:indicator,
+  slot :indicator,
     doc:
-      "Content shown in each branch indicator (e.g. chevron icon). Rendered in each branch on the server."
-  )
+      "Content shown in each branch indicator (e.g. chevron icon). Rendered in each branch on the server." do
+    attr(:class, :string, required: false)
+  end
 
   def tree_view(assigns) do
     assigns =
@@ -247,7 +250,9 @@ defmodule Corex.TreeView do
   attr(:expanded_value, :list, default: [])
   attr(:value, :list, default: [])
   attr(:focused_value, :string, default: nil)
-  slot(:indicator, doc: "Indicator content for branches")
+  slot :indicator, doc: "Indicator content for branches" do
+    attr(:class, :string, required: false)
+  end
 
   defp tree_node(assigns) do
     item = assigns.item
@@ -336,8 +341,14 @@ defmodule Corex.TreeView do
   @doc "Renders a tree branch (node with children). For custom server-rendered branches or testing."
   attr(:branch, :map, required: true)
   slot(:inner_block, required: true)
-  slot(:trigger, required: true)
-  slot(:indicator, required: true)
+
+  slot :trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :indicator, required: true do
+    attr(:class, :string, required: false)
+  end
 
   def tree_branch(assigns) do
     ~H"""

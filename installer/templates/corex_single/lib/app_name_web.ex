@@ -79,7 +79,7 @@ defmodule <%= @web_namespace %> do
 
   defp html_helpers do
     quote do<%= if @gettext do %>
-      # Translation
+      # Translations
       use Gettext, backend: <%= @web_namespace %>.Gettext
 <% end %>
       # HTML escaping functionality

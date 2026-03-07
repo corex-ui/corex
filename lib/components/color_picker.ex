@@ -54,7 +54,13 @@ defmodule Corex.ColorPicker do
   '''
 
   defmodule Translation do
-    @moduledoc false
+    @moduledoc """
+    Translation struct for ColorPicker component strings.
+
+    Without gettext: `translation={%ColorPicker.Translation{ hex: "Hex color value" }}`
+
+    With gettext: `translation={%ColorPicker.Translation{ hex: gettext("Hex color value") }}`
+    """
     defstruct [:hex, :alpha]
   end
 
@@ -83,7 +89,7 @@ defmodule Corex.ColorPicker do
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
-  attr(:id, :string, required: false)
+  attr(:id, :string, required: false, doc: "The id of the color picker")
 
   attr(:default_value, :string,
     default: nil,
@@ -91,9 +97,9 @@ defmodule Corex.ColorPicker do
   )
 
   attr(:value, :string, default: nil, doc: "Controlled value when controlled is true")
-  attr(:controlled, :boolean, default: false)
-  attr(:name, :string, default: nil)
-  attr(:label, :string, default: "Select Color")
+  attr(:controlled, :boolean, default: false, doc: "Whether value is controlled externally")
+  attr(:name, :string, default: nil, doc: "The name attribute for form submission")
+  attr(:label, :string, default: "Select Color", doc: "Label for the color picker trigger")
   attr(:format, :string, default: "rgba", values: ["rgba", "hsla", "hsba", "hex"])
   attr(:default_format, :string, default: nil, values: [nil, "rgba", "hsla", "hsba", "hex"])
   attr(:close_on_select, :boolean, default: true)
@@ -118,7 +124,7 @@ defmodule Corex.ColorPicker do
   attr(:on_pointer_down_outside, :string, default: nil)
   attr(:on_focus_outside, :string, default: nil)
   attr(:on_interact_outside, :string, default: nil)
-  attr(:translation, :any, default: nil)
+  attr(:translation, Corex.ColorPicker.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
   def color_picker(assigns) do

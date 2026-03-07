@@ -12,15 +12,16 @@ defmodule E2eWeb.SelectModel do
   end
 
   def click_select_trigger(session) do
-    click(session, css("[id='select:select-form-country'] [data-part='control']"))
+    click(session, css("#select-form-country [data-part='trigger']"))
   end
 
   def select_item(session, value) when is_binary(value) do
-    click(session, css("[id='select:select-form-country'] [data-value='#{value}']"))
+    click(session, css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
   end
 
-  def submit_form(session) do
-    click(session, button("Submit"))
+  def submit_form(session, mode \\ :static) do
+    id = if mode == :live, do: "select-form-live-submit", else: "select-form-submit"
+    click(session, css("##{id}"))
   end
 
   def see_submitted_value(session, key, value) do

@@ -7,7 +7,7 @@ import type { Direction } from "@zag-js/types";
 import { getString, getBoolean, canPushEvent } from "../lib/util";
 
 type SwitchHookState = {
-  switch?: Switch;
+  zagSwitch?: Switch;
   handlers?: Array<CallbackRef>;
   onSetChecked?: (event: Event) => void;
   wasFocused?: boolean;

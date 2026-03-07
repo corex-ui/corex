@@ -26,12 +26,14 @@ defmodule E2eWeb.SelectFormTest do
     |> Select.see_flash("Submitted: country=")
   end
 
-  feature "live form (controlled) - submit without selection does not show success", %{session: session} do
+  feature "live form (controlled) - submit without selection does not show success", %{
+    session: session
+  } do
     session =
       session
       |> Select.goto_form(:live)
       |> Select.wait(500)
-      |> Select.submit_form()
+      |> Select.submit_form(:live)
       |> Select.wait(1500)
 
     refute_has(session, Wallaby.Query.text("country=bel"))
@@ -43,11 +45,11 @@ defmodule E2eWeb.SelectFormTest do
     |> Select.goto_form(:live)
     |> Select.wait(500)
     |> Select.click_select_trigger()
-    |> Select.wait(300)
-    |> Select.select_item("bel")
     |> Select.wait(500)
-    |> Select.submit_form()
-    |> Select.wait(2000)
+    |> Select.select_item("bel")
+    |> Select.wait(1000)
+    |> Select.submit_form(:live)
+    |> Select.wait(3000)
     |> Select.see_submitted_value("country", "bel")
   end
 

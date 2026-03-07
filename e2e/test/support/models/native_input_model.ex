@@ -1,3 +1,47 @@
 defmodule E2eWeb.NativeInputModel do
   use E2eWeb.Model, component: "native-input"
+
+  def goto_form(session, mode) do
+    path =
+      case mode do
+        :static -> "/en/native-input/form"
+        :live -> "/en/live/native-input/form"
+      end
+
+    visit(session, path)
+  end
+
+  def fill_input(session, id, value) when is_binary(id) do
+    input_id = if String.ends_with?(id, "-input"), do: id, else: "#{id}-input"
+    fill_in(session, css("##{input_id}"), with: value)
+  end
+
+  def fill_input_by_label(session, label, value) do
+    fill_in(session, text_field(label), with: value)
+  end
+
+  def click_checkbox(session) do
+    click(
+      session,
+      css("form [data-scope='native-input'][data-part='input'][type='checkbox']")
+    )
+  end
+
+  def select_option(session, id, value) do
+    input_id = if String.ends_with?(id, "-input"), do: id, else: "#{id}-input"
+    set_value(session, css("##{input_id}"), value)
+  end
+
+  def submit_form(session, mode \\ :static) do
+    id = if mode == :live, do: "native-input-form-live-submit", else: "native-input-form-submit"
+    click(session, css("##{id}"))
+  end
+
+  def see_submitted_value(session, key, value) do
+    assert_has(session, Wallaby.Query.text("#{key}=#{value}"))
+  end
+
+  def see_flash(session, flash_text) do
+    assert_has(session, Wallaby.Query.text(flash_text))
+  end
 end

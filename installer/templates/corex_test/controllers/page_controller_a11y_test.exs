@@ -6,6 +6,7 @@ defmodule <%= @web_namespace %>.PageControllerA11yTest do
 <%= if @language_switcher do %>    default_locale = Application.get_env(:<%= @app_name %>, :locales, ["en"]) |> List.first()
     path = "/#{default_locale}"
 <% else %>    path = ~p"/"
+
 <% end %>    session
     |> visit(path)
     |> A11yAudit.Wallaby.assert_no_violations()

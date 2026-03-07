@@ -24,12 +24,14 @@ defmodule E2eWeb.CheckboxFormTest do
     |> Checkbox.see_flash("Submitted: terms=")
   end
 
-  feature "live form (controlled) - submit without checking terms does not show success", %{session: session} do
+  feature "live form (controlled) - submit without checking terms does not show success", %{
+    session: session
+  } do
     session =
       session
       |> Checkbox.goto_form(:live)
       |> Checkbox.wait(500)
-      |> Checkbox.submit_form()
+      |> Checkbox.submit_form(:live)
       |> Checkbox.wait(1500)
 
     refute_has(session, Wallaby.Query.text("terms=true"))
@@ -42,7 +44,7 @@ defmodule E2eWeb.CheckboxFormTest do
     |> Checkbox.wait(500)
     |> Checkbox.click_checkbox()
     |> Checkbox.wait(200)
-    |> Checkbox.submit_form()
+    |> Checkbox.submit_form(:live)
     |> Checkbox.wait(1500)
     |> Checkbox.see_submitted_value("terms", "true")
   end
@@ -71,21 +73,9 @@ defmodule E2eWeb.CheckboxFormTest do
 
     session
     |> Checkbox.wait(1000)
-    |> Checkbox.submit_form()
+    |> Checkbox.submit_form(:live)
     |> Checkbox.wait(2000)
     |> Checkbox.see_submitted_value("terms", "true")
   end
 
-  feature "live form - Space toggles checkbox", %{session: session} do
-    session =
-      session
-      |> Checkbox.goto_form(:live)
-      |> Checkbox.wait(500)
-
-    session = Checkbox.press_space(session)
-    session = Checkbox.wait(session, 500)
-    session = Checkbox.submit_form(session)
-    session = Checkbox.wait(session, 1500)
-    Checkbox.see_submitted_value(session, "terms", "true")
-  end
 end

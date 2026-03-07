@@ -12,7 +12,7 @@ defmodule Corex.Listbox do
   <.listbox
     id="my-listbox"
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -33,7 +33,7 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -64,7 +64,7 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -91,7 +91,7 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     class="listbox"
-    collection={[
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -108,6 +108,61 @@ defmodule Corex.Listbox do
       <.icon name="hero-check" />
     </:item_indicator>
   </.listbox>
+  ```
+
+  ### Stream
+
+  Use with `Phoenix.LiveView.stream/3` to add or remove items dynamically. Keep a list in sync with the stream and pass it as `items`. The listbox uses `phx-update="ignore"` and updates via `data-items`; the JS hook rebuilds the list when items change.
+
+  For actions inside the `:item` slot (e.g. a remove button), use `data-phx-push` and `data-phx-push-id` so the listbox hook can delegate clicks to LiveView:
+
+  ```heex
+  def mount(_params, _session, socket) do
+    {:ok,
+     socket
+     |> stream_configure(:items, dom_id: &"listbox:my-listbox:item:#{&1.id}")
+     |> stream(:items, @initial_items)
+     |> assign(:items_list, @initial_items)}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.listbox id="my-listbox" class="listbox" items={@items_list}>
+      <:label>Choose an item</:label>
+      <:empty>No items</:empty>
+      <:item :let={%{item: entry}}>
+        <span class="flex items-center justify-between gap-2 w-full">
+          <span class="flex items-center gap-2">
+            <.action
+              phx-click={JS.push("remove_item", value: %{id: entry.id})}
+              data-phx-push="remove_item"
+              data-phx-push-id={entry.id}
+              class="button button--sm"
+            >
+              <.icon name="hero-trash" />
+            </.action>
+            <span>{entry.label}</span>
+          </span>
+        </span>
+      </:item>
+      <:item_indicator>
+        <.icon name="hero-check" />
+      </:item_indicator>
+    </.listbox>
+    """
+  end
+
+  def handle_event("remove_item", %{"id" => id}, socket) do
+    item = Enum.find(socket.assigns.items_list, &(&1.id == id))
+    if item do
+      {:noreply,
+       socket
+       |> stream_delete(:items, item)
+       |> assign(:items_list, List.delete(socket.assigns.items_list, item))}
+    else
+      {:noreply, socket}
+    end
+  end
   ```
 
   <!-- tabs-close -->
@@ -138,7 +193,7 @@ defmodule Corex.Listbox do
   You can then use modifiers
 
   ```heex
-  <.listbox class="listbox listbox--accent listbox--lg" collection={[]}>
+  <.listbox class="listbox listbox--accent listbox--lg" items={[]}>
   </.listbox>
   ```
 
@@ -150,7 +205,6 @@ defmodule Corex.Listbox do
 
   alias Corex.Listbox.Anatomy.{
     Content,
-    Input,
     Item,
     ItemGroup,
     ItemGroupLabel,
@@ -163,49 +217,81 @@ defmodule Corex.Listbox do
   }
 
   alias Corex.Listbox.Connect
-  import Corex.Helpers, only: [validate_value!: 1]
 
-  attr(:id, :string, required: false)
+  import Corex.Helpers,
+    only: [
+      validate_value!: 1,
+      normalize_items: 1,
+      normalize_groups: 1,
+      has_groups?: 1,
+      entry_value: 1,
+      entry_selected?: 2
+    ]
 
-  attr(:collection, :list,
+  attr(:id, :string, required: false, doc: "The id of the listbox")
+
+  attr(:items, :list,
     required: true,
     doc: "List of Corex.List.Item or maps with id/value, label, disabled, group"
   )
 
   attr(:value, :list, default: [], doc: "Selected value(s)")
-  attr(:controlled, :boolean, default: false)
-  attr(:disabled, :boolean, default: false)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
-  attr(:loop_focus, :boolean, default: false)
-  attr(:selection_mode, :string, default: "single", values: ["single", "multiple", "extended"])
-  attr(:select_on_highlight, :boolean, default: false)
-  attr(:deselectable, :boolean, default: false)
-  attr(:typeahead, :boolean, default: false)
-  attr(:on_value_change, :string, default: nil)
-  attr(:on_value_change_client, :string, default: nil)
+  attr(:controlled, :boolean, default: false, doc: "Whether the listbox is controlled")
+  attr(:disabled, :boolean, default: false, doc: "Whether the listbox is disabled")
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
+
+  attr(:orientation, :string,
+    default: "vertical",
+    values: ["horizontal", "vertical"],
+    doc: "Layout orientation of items"
+  )
+
+  attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus within the listbox")
+
+  attr(:selection_mode, :string,
+    default: "single",
+    values: ["single", "multiple", "extended"],
+    doc: "How items can be selected"
+  )
+
+  attr(:select_on_highlight, :boolean,
+    default: false,
+    doc: "Select item when highlighted via keyboard"
+  )
+
+  attr(:deselectable, :boolean, default: false, doc: "Whether selection can be cleared")
+  attr(:typeahead, :boolean, default: false, doc: "Enable typeahead search")
+  attr(:on_value_change, :string, default: nil, doc: "Server event name on value change")
+  attr(:on_value_change_client, :string, default: nil, doc: "Client event name on value change")
   attr(:aria_label, :string, default: nil, doc: "Accessible name when no label slot is provided")
   attr(:rest, :global)
 
-  slot(:label, required: false)
-  slot(:item, required: false)
-  slot(:item_indicator, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :item, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :item_indicator, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :empty, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def listbox(assigns) do
-    items = normalize_collection(assigns.collection)
-    has_groups = Enum.any?(items, &Map.get(&1, :group))
-
-    groups =
-      if has_groups,
-        do: items |> Enum.map(& &1.group) |> Enum.uniq() |> Enum.reject(&is_nil/1),
-        else: []
+    items = normalize_items(assigns.items)
+    has_groups = has_groups?(items)
+    groups = normalize_groups(items)
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "listbox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:value, validate_value!(assigns[:value] || []))
-      |> assign(:collection, items)
       |> assign(:items, items)
       |> assign(:has_groups, has_groups)
       |> assign(:groups, groups)
@@ -217,7 +303,7 @@ defmodule Corex.Listbox do
       {@rest}
       {Connect.props(%Props{
         id: @id,
-        collection: @collection,
+        items: @items,
         value: @value,
         controlled: @controlled,
         disabled: @disabled,
@@ -233,7 +319,7 @@ defmodule Corex.Listbox do
       })}
     >
       <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label {Connect.label(%Label{id: @id, dir: @dir})}>
+         <label {Connect.label(%Label{id: @id, dir: @dir})}>
           <%= if @label != [] do %>
             {render_slot(@label)}
           <% else %>
@@ -241,8 +327,10 @@ defmodule Corex.Listbox do
           <% end %>
         </label>
         <span {Connect.value_text(%ValueText{id: @id})} />
-        <input type="hidden" {Connect.input(%Input{id: @id})} />
         <div {content_attrs(@id, @dir, @orientation, @label != [] || @aria_label != nil)}>
+          <div :if={@items == [] && @empty != []} data-scope="listbox" data-part="empty">
+            <%= render_slot(@empty) %>
+          </div>
           <div :for={group_id <- @groups} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id})}>
             <div {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id})}>{group_id}</div>
             <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs(@id, entry)}>
@@ -276,19 +364,44 @@ defmodule Corex.Listbox do
           </div>
         </div>
       </div>
+      <div style="display: none;" data-templates="listbox">
+        <div :if={@empty != []} data-scope="listbox" data-part="empty" data-template="true">
+          <%= render_slot(@empty) %>
+        </div>
+        <div :for={group_id <- @groups} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id})} data-template="true">
+          <div {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id})}>{group_id}</div>
+          <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs(@id, entry)} data-template="true">
+            <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
+            <%= for item_slot <- @item || [] do %>
+              <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
+            <% end %>
+            <span
+              {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+              hidden={!entry_selected?(entry, @value)}
+            >
+              <%= if @item_indicator != [] do %>
+                <%= render_slot(@item_indicator) %>
+              <% end %>
+            </span>
+          </div>
+        </div>
+        <div :for={entry <- if(@has_groups, do: [], else: @items)} {item_attrs(@id, entry)} data-template="true">
+          <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
+          <%= for item_slot <- @item || [] do %>
+            <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
+          <% end %>
+          <span
+            {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+            hidden={!entry_selected?(entry, @value)}
+          >
+            <%= if @item_indicator != [] do %>
+              <%= render_slot(@item_indicator) %>
+            <% end %>
+          </span>
+        </div>
+      </div>
     </div>
     """
-  end
-
-  defp entry_value(entry) do
-    to_string(
-      Map.get(entry, :value) || Map.get(entry, :id) || Map.get(entry, "value") ||
-        Map.get(entry, "id") || ""
-    )
-  end
-
-  defp entry_selected?(entry, value_list) do
-    Enum.member?(value_list, entry_value(entry))
   end
 
   defp content_attrs(id, dir, orientation, has_label) do
@@ -296,7 +409,7 @@ defmodule Corex.Listbox do
     |> Map.put("data-layout", "list")
     |> Map.put("data-orientation", orientation)
     |> then(fn attrs ->
-      if has_label, do: Map.put(attrs, "aria-labelledby", "select:#{id}:label"), else: attrs
+      if has_label, do: Map.put(attrs, "aria-labelledby", "listbox:#{id}:label"), else: attrs
     end)
   end
 
@@ -312,25 +425,4 @@ defmodule Corex.Listbox do
     end
   end
 
-  defp normalize_collection(items) when is_list(items) do
-    Enum.map(items, fn
-      %Corex.List.Item{} = item ->
-        %{
-          id: item.id,
-          value: item.id,
-          label: item.label,
-          disabled: item.disabled,
-          group: item.group
-        }
-
-      m when is_map(m) ->
-        %{
-          id: Map.get(m, :id),
-          value: Map.get(m, :value) || Map.get(m, :id),
-          label: Map.get(m, :label),
-          disabled: !!Map.get(m, :disabled),
-          group: Map.get(m, :group)
-        }
-    end)
-  end
 end

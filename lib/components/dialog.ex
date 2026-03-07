@@ -124,7 +124,13 @@ defmodule Corex.Dialog do
   '''
 
   defmodule Translation do
-    @moduledoc false
+    @moduledoc """
+    Translation struct for Dialog component strings.
+
+    Without gettext: `translation={%Dialog.Translation{ close: "Close" }}`
+
+    With gettext: `translation={%Dialog.Translation{ close: gettext("Close") }}`
+    """
     defstruct [:close]
   end
 
@@ -210,7 +216,7 @@ defmodule Corex.Dialog do
     doc: "The client event name when the open state changes"
   )
 
-  attr(:translation, :any, default: nil)
+  attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
   slot :trigger, required: true do

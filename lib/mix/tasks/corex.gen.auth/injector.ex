@@ -197,9 +197,9 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
     {already_injected_str, indent_spaces(template, padding, newline)}
   end
 
-  defp formatting_info(template, tag) do
+  defp formatting_info(template, tag) when is_binary(template) and is_binary(tag) do
     {padding, newline} =
-      case Regex.run(~r/<?(([\r\n]{1})\s*)#{tag}/m, template, global: false) do
+      case Regex.run(~r/<?(([\r\n]{1})\s*)#{tag}/m, template) do
         [_, pre, "\n"] -> {String.trim_leading(pre, "\n") <> "  ", "\n"}
         [_, "\r\n" <> pre, "\r"] -> {String.trim_leading(pre, "\r\n") <> "  ", "\r\n"}
         _ -> {"", "\n"}

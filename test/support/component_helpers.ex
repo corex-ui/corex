@@ -270,25 +270,25 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_listbox(assigns) do
     ~H"""
-    <.listbox collection={[%{label: "A", id: "a"}]} />
+    <.listbox items={[%{label: "A", id: "a"}]} />
     """
   end
 
   def render_listbox_grouped(assigns) do
     ~H"""
-    <.listbox collection={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]} />
+    <.listbox items={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]} />
     """
   end
 
   def render_listbox_list_items(assigns) do
     ~H"""
-    <.listbox collection={[%Corex.List.Item{id: "li-1", label: "Item 1"}, %Corex.List.Item{id: "li-2", label: "Item 2"}]} />
+    <.listbox items={[%Corex.List.Item{id: "li-1", label: "Item 1"}, %Corex.List.Item{id: "li-2", label: "Item 2"}]} />
     """
   end
 
   def render_listbox_controlled(assigns) do
     ~H"""
-    <.listbox collection={[%{label: "A", id: "a"}]} controlled value={["a"]} />
+    <.listbox items={[%{label: "A", id: "a"}]} controlled value={["a"]} />
     """
   end
 
@@ -343,7 +343,10 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_with_opts(assigns) do
     ~H"""
-    <.select items={[%{label: "A", id: "a"}]} placeholder={@placeholder}>
+    <.select
+      items={[%{label: "A", id: "a"}]}
+      translation={%Corex.Select.Translation{placeholder: @placeholder}}
+    >
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -426,13 +429,15 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
-  def render_tabs_custom_slots_only(assigns) do
+  def render_tabs_with_indicator(assigns) do
+    assigns =
+      assign_new(assigns, :items, fn ->
+        Corex.Content.new([[trigger: "T1", content: "C1"]])
+      end)
+
     ~H"""
-    <.tabs id="custom-tabs" value="tab-2">
-      <:trigger value="tab-1">Tab 1</:trigger>
-      <:trigger value="tab-2">Tab 2</:trigger>
-      <:content value="tab-1">Content 1</:content>
-      <:content value="tab-2">Content 2</:content>
+    <.tabs items={@items}>
+      <:indicator :let={_item}><span data-indicator>!</span></:indicator>
     </.tabs>
     """
   end

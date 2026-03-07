@@ -11,7 +11,7 @@ defmodule E2eWeb.ErrorHTMLTest do
   end
 
   test "returns 404 for nonexistent route", %{conn: conn} do
-    conn = get(conn, "/nonexistent")
+    conn = get(conn, "/en/nonexistent")
     assert conn.status == 404
     assert html_response(conn, 404) =~ "404"
     assert html_response(conn, 404) =~ "does not exist"

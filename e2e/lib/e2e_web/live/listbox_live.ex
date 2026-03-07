@@ -22,7 +22,7 @@ defmodule E2eWeb.ListboxLive do
       <.listbox
         id="my-listbox"
         class="listbox"
-        collection={[
+        items={[
           %{label: "France", id: "fra", disabled: true},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
@@ -40,7 +40,7 @@ defmodule E2eWeb.ListboxLive do
       <h3>Grouped</h3>
       <.listbox
         class="listbox"
-        collection={[
+        items={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
@@ -65,7 +65,7 @@ defmodule E2eWeb.ListboxLive do
       <h3>Extended</h3>
       <.listbox
         class="listbox"
-        collection={[
+        items={[
           %{label: "France", id: "fra"},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
@@ -90,7 +90,7 @@ defmodule E2eWeb.ListboxLive do
       <.listbox
         class="listbox"
         aria_label="Extended grouped countries"
-        collection={[
+        items={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},

@@ -437,17 +437,14 @@ var AccordionHook = {
     el.addEventListener("phx:accordion:set-value", this.onSetValue);
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent(
-        "accordion_set_value",
-        (payload) => {
-          const targetId = payload.id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `accordion:${targetId}`;
-            if (!matches) return;
-          }
-          accordion.api.setValue(payload.value);
+      this.handleEvent("accordion_set_value", (payload) => {
+        const targetId = payload.id;
+        if (targetId) {
+          const matches = el.id === targetId || el.id === `accordion:${targetId}`;
+          if (!matches) return;
         }
-      )
+        accordion.api.setValue(payload.value);
+      })
     );
     this.handlers.push(
       this.handleEvent("accordion_value", () => {

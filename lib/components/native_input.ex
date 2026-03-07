@@ -116,13 +116,16 @@ defmodule Corex.NativeInput do
       ~w(autocomplete disabled maxlength minlength pattern placeholder readonly required cols rows list form min max step accept)
   )
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:icon,
+  slot :icon,
     required: false,
     doc:
-      "Optional. Ignored for textarea, date, datetime-local, time, month, week, color, number, checkbox, radio, select."
-  )
+      "Optional. Ignored for textarea, date, datetime-local, time, month, week, color, number, checkbox, radio, select." do
+    attr(:class, :string, required: false)
+  end
 
   slot(:error, required: false) do
     attr(:class, :string, required: false)
@@ -144,6 +147,7 @@ defmodule Corex.NativeInput do
   end
 
   @types_ignoring_icon ~w(textarea date datetime-local time month week color number checkbox radio select)
+  @date_time_types ~w(date datetime-local time month week)
 
   def native_input(%{type: "checkbox"} = assigns) do
     assigns =
@@ -271,15 +275,30 @@ defmodule Corex.NativeInput do
               {@rest}
             >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
           <% else %>
-            <input
-              type={@type}
-              id={"#{@id}-input"}
-              name={@name}
-              value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-              data-scope="native-input"
-              data-part="input"
-              {@rest}
-            />
+            <%= if show_date_placeholder?(@type, @value, @rest) do %>
+              <div data-scope="native-input" data-part="date-wrapper">
+                <input
+                  type={@type}
+                  id={"#{@id}-input"}
+                  name={@name}
+                  value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+                  data-scope="native-input"
+                  data-part="input"
+                  {@rest}
+                />
+                <span data-scope="native-input" data-part="placeholder-overlay" aria-hidden="true">{Map.get(@rest, :placeholder)}</span>
+              </div>
+            <% else %>
+              <input
+                type={@type}
+                id={"#{@id}-input"}
+                name={@name}
+                value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+                data-scope="native-input"
+                data-part="input"
+                {@rest}
+              />
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -293,4 +312,16 @@ defmodule Corex.NativeInput do
   defp show_icon?(%{type: type, icon: icon}) do
     icon != [] and type not in @types_ignoring_icon
   end
+
+  defp show_date_placeholder?(type, value, rest) do
+    type in @date_time_types and
+      blank_value?(value) and
+      is_binary(Map.get(rest, :placeholder)) and
+      String.trim(Map.get(rest, :placeholder) || "") != ""
+  end
+
+  defp blank_value?(nil), do: true
+  defp blank_value?(""), do: true
+  defp blank_value?(val) when is_binary(val), do: String.trim(val) == ""
+  defp blank_value?(_), do: false
 end

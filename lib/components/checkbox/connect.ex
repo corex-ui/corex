@@ -29,10 +29,12 @@ defmodule Corex.Checkbox.Connect do
   @spec root(Root.t()) :: map()
   def root(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "checkbox",
       "data-part" => "root",
+      "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}",
       "htmlFor" => "checkbox:#{assigns.id}:input",
@@ -63,10 +65,12 @@ defmodule Corex.Checkbox.Connect do
   @spec control(Control.t()) :: map()
   def control(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "checkbox",
       "data-part" => "control",
+      "data-orientation" => orientation,
       "aria-hidden" => "true",
       "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:control",
@@ -77,10 +81,12 @@ defmodule Corex.Checkbox.Connect do
   @spec label(Label.t()) :: map()
   def label(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "checkbox",
       "data-part" => "label",
+      "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:label",
       "data-state" => state
@@ -90,10 +96,12 @@ defmodule Corex.Checkbox.Connect do
   @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "checkbox",
       "data-part" => "indicator",
+      "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "checkbox:#{assigns.id}:indicator",
       "data-state" => state

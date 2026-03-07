@@ -43,7 +43,7 @@ defmodule Corex.Checkbox.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :checked]
+    defstruct [:id, :dir, :checked, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -79,7 +79,7 @@ defmodule Corex.Checkbox.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :checked]
+    defstruct [:id, :dir, :checked, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -90,7 +90,7 @@ defmodule Corex.Checkbox.Anatomy do
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, :checked]
+    defstruct [:id, :dir, :checked, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -101,7 +101,7 @@ defmodule Corex.Checkbox.Anatomy do
 
   defmodule Indicator do
     @moduledoc false
-    defstruct [:id, :dir, :checked]
+    defstruct [:id, :dir, :checked, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),

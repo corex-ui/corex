@@ -186,7 +186,13 @@ defmodule Corex.PasswordInput do
   '''
 
   defmodule Translation do
-    @moduledoc false
+    @moduledoc """
+    Translation struct for PasswordInput component strings.
+
+    Without gettext: `translation={%PasswordInput.Translation{ toggle_visibility: "Toggle password visibility" }}`
+
+    With gettext: `translation={%PasswordInput.Translation{ toggle_visibility: gettext("Toggle password visibility") }}`
+    """
     defstruct [:toggle_visibility]
   end
 
@@ -228,7 +234,7 @@ defmodule Corex.PasswordInput do
   attr(:on_visibility_change_client, :string, default: nil)
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
-  attr(:translation, :any, default: nil)
+  attr(:translation, Corex.PasswordInput.Translation, default: nil, doc: "Override translatable strings")
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
@@ -237,14 +243,21 @@ defmodule Corex.PasswordInput do
 
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
   slot(:error, required: false) do
     attr(:class, :string, required: false)
   end
 
-  slot(:visible_indicator, required: false, doc: "Icon shown when password is visible")
-  slot(:hidden_indicator, required: false, doc: "Icon shown when password is hidden")
+  slot :visible_indicator, required: false, doc: "Icon shown when password is visible" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :hidden_indicator, required: false, doc: "Icon shown when password is hidden" do
+    attr(:class, :string, required: false)
+  end
 
   def password_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []

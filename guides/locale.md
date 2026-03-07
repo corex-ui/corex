@@ -32,7 +32,15 @@ Set **`lang`** on the root `<html>` so the initial HTML and LiveView have the co
 
 ## Implementation
 
-Corex components (Select, Editable, Dialog, etc.) use your application’s gettext backend for user-facing strings. Configure `config :corex, :gettext_backend, MyAppWeb.Gettext` (the generator sets this in `config.exs`). Each component that needs translatable labels exposes a **Translation** struct (e.g. `Corex.Editable.Translation`) with one field per string; you can pass `translation={%Editable.Translation{ input: "Champ éditable" }}` to override only some fields; the rest fall back to gettext defaults. The generator seeds the **default** domain (`default.pot` and `en/LC_MESSAGES/default.po`) with layout, home, and Corex component strings so new apps are ready to translate. Run `mix gettext.extract` and `mix gettext.merge priv/gettext` to add or update locales. Set the locale for the request process (e.g. `Gettext.put_locale/1` in a plug or LiveView) so component defaults are translated correctly.
+Corex components (Select, Editable, Dialog, etc.) use your application’s gettext backend for user-facing strings. Configure `config :corex, :gettext_backend, MyAppWeb.Gettext` (the generator sets this in `config.exs`). 
+
+Each component that needs translatable labels exposes a **Translation** struct (e.g. `Corex.Editable.Translation`) with one field per string; you can pass `translation={%Editable.Translation{ input: "Champ éditable" }}` to override only some fields; the rest fall back to gettext defaults. 
+
+The generator seeds the **default** domain (`default.pot` and `en/LC_MESSAGES/default.po`) with layout, home, and Corex component strings so new apps are ready to translate.
+
+Run `mix gettext.extract` and `mix gettext.merge priv/gettext` to add or update locales. 
+
+Set the locale for the request process (e.g. `Gettext.put_locale/1` in a plug or LiveView) so component defaults are translated correctly.
 
 ### 1. Gettext Setup
 

@@ -70,7 +70,13 @@ defmodule Corex.NumberInput do
   '''
 
   defmodule Translation do
-    @moduledoc false
+    @moduledoc """
+    Translation struct for NumberInput component strings.
+
+    Without gettext: `translation={%NumberInput.Translation{ decrease: "Decrease value" }}`
+
+    With gettext: `translation={%NumberInput.Translation{ decrease: gettext("Decrease value") }}`
+    """
     defstruct [:decrease, :increase, :scrub]
   end
 
@@ -115,13 +121,24 @@ defmodule Corex.NumberInput do
     doc: "When true, show scrubber instead of increment/decrement buttons"
   )
 
-  attr(:translation, :any, default: nil)
+  attr(:translation, Corex.NumberInput.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
-  slot(:label, required: false)
-  slot(:decrement_trigger, required: false)
-  slot(:increment_trigger, required: false)
-  slot(:scrubber_trigger, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :decrement_trigger, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :increment_trigger, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :scrubber_trigger, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def number_input(assigns) do
     default_translation = %Translation{

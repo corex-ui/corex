@@ -6,6 +6,8 @@ defmodule Corex.DataList do
   @doc type: :component
   use Phoenix.Component
 
+  attr(:rest, :global, doc: "Additional attributes for the root element")
+
   @doc """
   Renders a list with data.
 
@@ -18,11 +20,12 @@ defmodule Corex.DataList do
   """
   slot :item, required: true do
     attr(:title, :string, required: true)
+    attr(:class, :string, required: false)
   end
 
   def data_list(assigns) do
     ~H"""
-    <ul data-scope="data-list" data-part="root">
+    <ul data-scope="data-list" data-part="root" {@rest}>
       <li :for={item <- @item} data-scope="data-list" data-part="item">
         <div data-scope="data-list" data-part="content">
           <div data-scope="data-list" data-part="title">{item.title}</div>

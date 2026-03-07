@@ -29,10 +29,12 @@ defmodule Corex.Switch.Connect do
   @spec root(Root.t()) :: map()
   def root(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "switch",
       "data-part" => "root",
+      "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}",
       "htmlFor" => "switch:#{assigns.id}:input",
@@ -70,10 +72,12 @@ defmodule Corex.Switch.Connect do
   @spec control(Control.t()) :: map()
   def control(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "switch",
       "data-part" => "control",
+      "data-orientation" => orientation,
       "aria-hidden" => "true",
       "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}:control",
@@ -84,10 +88,12 @@ defmodule Corex.Switch.Connect do
   @spec thumb(Thumb.t()) :: map()
   def thumb(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "switch",
       "data-part" => "thumb",
+      "data-orientation" => orientation,
       "aria-hidden" => "true",
       "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}:thumb",
@@ -98,10 +104,12 @@ defmodule Corex.Switch.Connect do
   @spec label(Label.t()) :: map()
   def label(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
+    orientation = Map.get(assigns, :orientation, "vertical")
 
     %{
       "data-scope" => "switch",
       "data-part" => "label",
+      "data-orientation" => orientation,
       "aria-hidden" => "true",
       "dir" => assigns.dir,
       "id" => "switch:#{assigns.id}:label",

@@ -2,14 +2,13 @@ defmodule Corex.Select.Connect do
   @moduledoc false
   alias Corex.Select.Anatomy.{Content, Control, Label, Positioner, Props, Root}
 
-  import Corex.Helpers,
-    only: [get_boolean: 1, validate_value!: 1]
+  import Corex.Helpers, only: [get_boolean: 1, validate_value!: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     base = %{
       "id" => assigns.id,
-      "data-items" => Corex.Json.encode!(validate_collection!(assigns.items)),
+      "data-items" => Corex.Json.encode!(assigns.items),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-value" =>
         if assigns.controlled do
@@ -52,9 +51,12 @@ defmodule Corex.Select.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
     %{
       "data-scope" => "select",
       "data-part" => "root",
+      "data-orientation" => orientation,
       "id" => "select:#{assigns.id}",
       "data-invalid" => get_boolean(assigns.invalid),
       "data-readonly" => get_boolean(assigns.read_only)
@@ -63,9 +65,12 @@ defmodule Corex.Select.Connect do
 
   @spec label(Label.t()) :: map()
   def label(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
     %{
       "data-scope" => "select",
       "data-part" => "label",
+      "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "select:#{assigns.id}:label",
       "data-required" => get_boolean(assigns.required),
@@ -77,9 +82,12 @@ defmodule Corex.Select.Connect do
 
   @spec control(Control.t()) :: map()
   def control(assigns) do
+    orientation = Map.get(assigns, :orientation, "vertical")
+
     %{
       "data-scope" => "select",
       "data-part" => "control",
+      "data-orientation" => orientation,
       "dir" => assigns.dir,
       "id" => "select:#{assigns.id}:control",
       "data-disabled" => get_boolean(assigns.disabled),
@@ -111,23 +119,5 @@ defmodule Corex.Select.Connect do
       "hidden" => "true",
       "aria-labelledby" => "select:#{assigns.id}:label"
     }
-  end
-
-  defp validate_collection!(items) when is_list(items) do
-    Enum.map(items, fn
-      %Corex.List.Item{} = item ->
-        item
-
-      %{id: _, label: _} = map ->
-        struct(Corex.List.Item, map)
-
-      other ->
-        raise ArgumentError, """
-        <.select> items must be Corex.List.Item or maps with :id and :label.
-
-        Got:
-        #{inspect(other)}
-        """
-    end)
   end
 end

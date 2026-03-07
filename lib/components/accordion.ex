@@ -294,7 +294,7 @@ defmodule Corex.Accordion do
   alias Corex.Accordion.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_value!: 1]
+  import Corex.Helpers, only: [validate_value!: 1, validate_content_items_required!: 2, content_items_data_json: 1]
 
   @doc """
   Renders an accordion component.
@@ -372,32 +372,35 @@ defmodule Corex.Accordion do
 
   attr(:rest, :global)
 
-  slot(:indicator,
+  slot :indicator,
     required: false,
     doc:
-      "Optional slot for content after each trigger. Use :let={item} for per-item customization."
-  )
+      "Optional slot for content after each trigger. Use :let={item} for per-item customization." do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:trigger,
+  slot :trigger,
     required: false,
     doc:
-      "Optional slot for custom trigger rendering. When provided with content, replaces default item rendering. Use :let={item} to access the item."
-  )
+      "Optional slot for custom trigger rendering. When provided with content, replaces default item rendering. Use :let={item} to access the item." do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:content,
+  slot :content,
     required: false,
     doc:
-      "Optional slot for custom content rendering. When provided with trigger, replaces default item rendering. Use :let={item} to access the item."
-  )
+      "Optional slot for custom content rendering. When provided with trigger, replaces default item rendering. Use :let={item} to access the item." do
+    attr(:class, :string, required: false)
+  end
 
   def accordion(assigns) do
     assigns =
       assigns
       |> assign_new(:id, fn -> "accordion-#{System.unique_integer([:positive])}" end)
-      |> validate_items()
+      |> validate_content_items_required!("Accordion")
 
     ~H"""
-    <div id={@id} phx-hook="Accordion" data-js="pending" data-items={items_data_json(@items)} {@rest}
+    <div id={@id} phx-hook="Accordion" data-js="pending" data-items={content_items_data_json(@items)} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
@@ -565,59 +568,23 @@ defmodule Corex.Accordion do
     """
   end
 
-  defp validate_items(%{items: nil} = _assigns) do
-    raise ArgumentError, """
-    accordion requires :items to be a list of %Corex.Content.Item{} structs.
-
-    Example:
-
-        items = Corex.Content.new([
-          [trigger: "Trigger text", content: "Content text"],
-          [trigger: "Another trigger", content: "More content", disabled: true]
-        ])
-        <.accordion items={items} />
-    """
-  end
-
-  defp validate_items(%{items: items} = assigns) when is_list(items) do
-    Enum.each(items, fn item ->
-      unless is_struct(item, Corex.Content.Item) do
-        raise ArgumentError, """
-        Invalid item in :items attribute. Expected %Corex.Content.Item{} struct, got: #{inspect(item)}
-
-        Please use Corex.Content.new/1:
-
-        items = Corex.Content.new([
-          [trigger: "Trigger text", content: "Content text"],
-          [trigger: "Another trigger", content: "More content", disabled: true]
-        ])
-        """
-      end
-    end)
-
-    assigns
-  end
-
-  defp validate_items(assigns), do: assigns
-
-  defp items_data_json(items) when is_list(items) do
-    items
-    |> Enum.with_index()
-    |> Enum.map(fn {item, i} ->
-      %{"value" => item.id || "item-#{i}", "disabled" => !!item.disabled}
-    end)
-    |> Jason.encode!()
-  end
-
   @doc type: :component
   @doc """
   Renders a loading skeleton for the accordion component.
   """
   attr(:count, :integer, default: 3)
   attr(:rest, :global)
-  slot(:trigger)
-  slot(:indicator)
-  slot(:content)
+  slot :trigger do
+    attr(:class, :string, required: false)
+  end
+
+  slot :indicator do
+    attr(:class, :string, required: false)
+  end
+
+  slot :content do
+    attr(:class, :string, required: false)
+  end
 
   def accordion_skeleton(assigns) do
     ~H"""

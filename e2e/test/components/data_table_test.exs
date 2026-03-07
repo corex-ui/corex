@@ -1,0 +1,65 @@
+defmodule E2eWeb.DataTableTest do
+  use E2eWeb.ConnCase, async: true
+
+  import Phoenix.LiveViewTest
+
+  @locale "en"
+
+  describe "data_table with list" do
+    test "renders headers and rows", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ "ID"
+      assert html =~ "Name"
+      assert html =~ "Role"
+      assert html =~ "Alice"
+      assert html =~ "Bob"
+      assert html =~ "Admin"
+      assert html =~ "User"
+    end
+
+    test "renders action slot", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ ~r/data-action="list-1"/
+      assert html =~ ~r/data-action="list-2"/
+    end
+
+    test "uses data-table data attributes", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ ~r/data-scope="data-table"/
+      assert html =~ ~r/data-part="root"/
+    end
+  end
+
+  describe "data_table with stream" do
+    test "renders streamed rows", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ "Stream A"
+      assert html =~ "Stream B"
+    end
+
+    test "uses phx-update stream on tbody", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ ~r/id="stream-table"/
+      assert html =~ ~r/phx-update="stream"/
+    end
+
+    test "renders action slot for stream rows", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ ~r/data-action="stream-10"/
+      assert html =~ ~r/data-action="stream-11"/
+    end
+
+    test "has row ids for stream", %{conn: conn} do
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+
+      assert html =~ ~r/id="stream_rows-10"/
+      assert html =~ ~r/id="stream_rows-11"/
+    end
+  end
+end

@@ -94,9 +94,17 @@ defmodule Corex.RadioGroup do
 
   attr(:rest, :global)
 
-  slot(:label, required: false)
-  slot(:item_control, required: false)
-  slot(:item, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :item_control, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :item, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def radio_group(assigns) do
     assigns =

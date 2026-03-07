@@ -56,7 +56,12 @@ defmodule E2eWeb.CheckboxFormLive do
         {:noreply,
          socket
          |> assign(:submitted, %{terms: data.terms})
-         |> assign(:form, Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, params), as: :preferences))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, params),
+             as: :preferences
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
@@ -91,21 +96,22 @@ defmodule E2eWeb.CheckboxFormLive do
             {msg}
           </:error>
         </.checkbox>
-        <.switch field={@form[:notifications]} class="switch" controlled>
-          <:label>Enable notifications</:label>
-          <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.switch>
-        <.action type="button" phx-click="set_terms_checked" id="checkbox-form-set-checked" class="button button--sm">
+        <input type="hidden" name="preferences[notifications]" value="false" />
+        <.action
+          type="button"
+          phx-click="set_terms_checked"
+          id="checkbox-form-set-checked"
+          class="button button--sm"
+        >
           Set checked from server
         </.action>
-        <.action type="submit" id="checkbox-form-live-submit" class="button button--accent">Submit</.action>
+        <.action type="submit" id="checkbox-form-live-submit" class="button button--accent">
+          Submit
+        </.action>
       </.form>
 
       <div :if={@submitted} id="checkbox-form-result">
-        <p>Submitted: terms=<%= @submitted.terms %></p>
+        <p>Submitted: terms={@submitted.terms}</p>
       </div>
     </Layouts.app>
     """

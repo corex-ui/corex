@@ -16,18 +16,18 @@ msgstr ""
 msgid "Actions"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:168
-#: lib/e2e_web/components/layouts.ex:174
+#: lib/e2e_web/components/layouts.ex:231
+#: lib/e2e_web/components/layouts.ex:238
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:173
+#: lib/e2e_web/components/layouts.ex:237
 #, elixir-autogen, elixir-format
 msgid "Something went wrong!"
 msgstr ""
 
-#: lib/e2e_web/components/layouts.ex:167
+#: lib/e2e_web/components/layouts.ex:230
 #, elixir-autogen, elixir-format
 msgid "We can't find the internet"
 msgstr ""
@@ -35,4 +35,9 @@ msgstr ""
 #: lib/e2e_web/components/core_components.ex:74
 #, elixir-autogen, elixir-format
 msgid "close"
+msgstr ""
+
+#: lib/e2e_web/translations/corex.ex:5
+#, elixir-autogen
+msgid "Digit %{digit}"
 msgstr ""

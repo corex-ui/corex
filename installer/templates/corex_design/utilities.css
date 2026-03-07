@@ -78,10 +78,12 @@
 
   &:hover {
     background-color: --value(--color-ui-* -hover, [color]);
+    color: --value(--color-ui--text, [color]);
   }
 
   &:active {
     background-color: --value(--color-ui-* -active, [color]);
+    color: --value(--color-ui--text, [color]);
   }
 
   &:focus-visible {

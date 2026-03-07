@@ -101,7 +101,7 @@ defmodule E2eWeb.ToastLive do
           class="select"
           field={@form[:type]}
           placeholder="Select flash type"
-          collection={[
+          items={[
             %{label: "Info", id: "info"},
             %{label: "Error", id: "error"},
             %{label: "Success", id: "success"}

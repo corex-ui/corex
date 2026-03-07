@@ -44,7 +44,13 @@ defmodule Corex.PinInput do
   '''
 
   defmodule Translation do
-    @moduledoc false
+    @moduledoc """
+    Translation struct for PinInput component strings.
+
+    Without gettext: `translation={%PinInput.Translation{ digit: "Box %{digit}" }}`
+
+    With gettext: `translation={%PinInput.Translation{ digit: "Digit %{digit}" }}` (add to catalog; component calls gettext at render)
+    """
     defstruct [:digit]
   end
 
@@ -53,7 +59,7 @@ defmodule Corex.PinInput do
 
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.PinInput.Connect
-  import Corex.Gettext, only: [gettext: 1]
+  import Corex.Gettext, only: [gettext: 2]
   import Corex.Helpers, only: [validate_value!: 1]
 
   attr(:id, :string, required: false)
@@ -77,13 +83,15 @@ defmodule Corex.PinInput do
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
   attr(:on_value_complete, :string, default: nil)
-  attr(:translation, :any, default: nil)
+  attr(:translation, Corex.PinInput.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def pin_input(assigns) do
-    default_translation = %Translation{digit: gettext("Digit %{digit}")}
+    default_translation = %Translation{digit: "Digit %{digit}"}
 
     assigns =
       assigns
@@ -137,7 +145,7 @@ defmodule Corex.PinInput do
             inputmode={@type}
             maxlength="1"
             autocomplete={if(@otp, do: "one-time-code", else: "off")}
-            {Connect.input(%Input{id: @id, index: i, aria_label: Corex.Gettext.gettext(@translation.digit, digit: i + 1)})}
+            {Connect.input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1)})}
           />
         </div>
       </div>

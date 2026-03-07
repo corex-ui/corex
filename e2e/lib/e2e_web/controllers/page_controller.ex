@@ -43,6 +43,7 @@ defmodule E2eWeb.PageController do
 
   def checkbox_form_submit(conn, params) do
     terms = params["terms"] || params["user"]["terms"]
+
     conn
     |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/checkbox/form")
@@ -54,6 +55,7 @@ defmodule E2eWeb.PageController do
 
   def switch_form_submit(conn, params) do
     notifications = params["notifications"] || params["user"]["notifications"]
+
     conn
     |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/switch/form")
@@ -103,6 +105,7 @@ defmodule E2eWeb.PageController do
 
   def select_form_submit(conn, params) do
     country = params["country"] || params["select_form"]["country"]
+
     conn
     |> put_flash(:info, "Submitted: country=#{inspect(country)}")
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/select/form")
@@ -173,6 +176,18 @@ defmodule E2eWeb.PageController do
 
   def native_input_page(conn, _params) do
     render(conn, :native_input_page)
+  end
+
+  def native_input_form_page(conn, _params) do
+    render(conn, :native_input_form_page)
+  end
+
+  def native_input_form_submit(conn, params) do
+    profile = params["profile"] || %{}
+
+    conn
+    |> put_flash(:info, "Submitted: name=#{profile["name"]}, agree=#{profile["agree"]}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/native-input/form")
   end
 
   def floating_panel_page(conn, _params) do

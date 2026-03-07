@@ -32,19 +32,19 @@ defmodule CorexWeb.Listbox do
   capture variants: [
             basic: %{
               class: "listbox",
-              collection: @collection,
+              items: @collection,
               label: [%{inner_block: "Choose a country"}],
               item_indicator: [%{inner_block: "<.icon name=\"hero-check\" />"}]
             },
             grouped: %{
               class: "listbox",
-              collection: @grouped_collection,
+              items: @grouped_collection,
               label: [%{inner_block: "Choose a country"}],
               item_indicator: [%{inner_block: "<.icon name=\"hero-check\" />"}]
             },
             multiple: %{
               class: "listbox",
-              collection: @collection,
+              items: @collection,
               value: ["bel", "deu"],
               selection_mode: "multiple",
               label: [%{inner_block: "Choose countries"}],

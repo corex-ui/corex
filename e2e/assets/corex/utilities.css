@@ -76,14 +76,6 @@
   padding-inline: --value(--spacing-ui-padding-*, [length]);
   gap: --value(--spacing-ui-gap-*, [length]);
 
-  &:hover {
-    background-color: --value(--color-ui-* -hover, [color]);
-  }
-
-  &:active {
-    background-color: --value(--color-ui-* -active, [color]);
-  }
-
   &:focus-visible {
     outline-color: --value(--color-ui-* --text, [color]);
   }

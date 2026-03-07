@@ -24,7 +24,8 @@ defmodule E2eWeb.SwitchFormTest do
     |> Switch.see_flash("Submitted: notifications=")
   end
 
-  feature "live form (controlled) - submit without toggling then toggle and submit shows success", %{session: session} do
+  feature "live form (controlled) - submit without toggling then toggle and submit shows success",
+          %{session: session} do
     session =
       session
       |> Switch.goto_form(:live)
@@ -32,7 +33,7 @@ defmodule E2eWeb.SwitchFormTest do
       |> Switch.click_terms_checkbox()
       |> Switch.wait(200)
 
-    session = Switch.submit_form(session)
+    session = Switch.submit_form(session, :live)
     session = Switch.wait(session, 500)
     Switch.see_submitted_value(session, "notifications", "false")
 
@@ -40,7 +41,7 @@ defmodule E2eWeb.SwitchFormTest do
       session
       |> Switch.click_switch()
       |> Switch.wait(200)
-      |> Switch.submit_form()
+      |> Switch.submit_form(:live)
       |> Switch.wait(500)
 
     Switch.see_submitted_value(session, "notifications", "true")
@@ -66,9 +67,9 @@ defmodule E2eWeb.SwitchFormTest do
       |> Switch.goto_form(:live)
       |> Switch.wait(500)
 
-    session = Switch.press_space(session)
+    session = Switch.press_space_on_switch(session)
     session = Switch.wait(session, 500)
-    session = Switch.submit_form(session)
+    session = Switch.submit_form(session, :live)
     session = Switch.wait(session, 1500)
     Switch.see_submitted_value(session, "notifications", "true")
   end

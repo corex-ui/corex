@@ -20,15 +20,6 @@ defmodule Corex.TabsTest do
       assert html =~ ~r/data-orientation="horizontal"/
     end
 
-    test "renders with custom slots only" do
-      html = render_component(&CorexTest.ComponentHelpers.render_tabs_custom_slots_only/1, [])
-      assert html =~ ~r/data-scope="tabs"/
-      assert html =~ ~r/Tab 1/
-      assert html =~ ~r/Tab 2/
-      assert html =~ ~r/Content 1/
-      assert html =~ ~r/Content 2/
-    end
-
     test "renders with items and custom trigger/content slots" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_tabs_items_with_custom_slots/1, [])
@@ -38,6 +29,25 @@ defmodule Corex.TabsTest do
       assert html =~ ~r/B/
       assert html =~ ~r/A content/
       assert html =~ ~r/B content/
+    end
+
+    test "renders with indicator slot" do
+      html = render_component(&CorexTest.ComponentHelpers.render_tabs_with_indicator/1, [])
+      assert html =~ ~r/data-scope="tabs"/
+      assert html =~ ~r/data-part="item-indicator"/
+      assert html =~ ~r/data-indicator/
+    end
+
+    test "raises when items is nil" do
+      assert_raise ArgumentError, ~r/Tabs requires :items/, fn ->
+        render_component(&Tabs.tabs/1, items: nil)
+      end
+    end
+
+    test "raises when items is not a list of Corex.Content.Item" do
+      assert_raise ArgumentError, ~r/Corex\.Content\.Item.*got:/, fn ->
+        render_component(&Tabs.tabs/1, items: [[trigger: "T1", content: "C1"]])
+      end
     end
   end
 
@@ -168,6 +178,38 @@ defmodule Corex.TabsTest do
       assert result["aria-disabled"] == "true"
       assert result["disabled"] == true
       assert result["tabindex"] == -1
+    end
+  end
+
+  describe "Connect.indicator/1" do
+    test "returns indicator attributes when selected" do
+      assigns = %{
+        id: "test-tabs",
+        value: "tab-1",
+        values: ["tab-1"],
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: false
+      }
+
+      result = Connect.indicator(assigns)
+      assert result["data-scope"] == "tabs"
+      assert result["data-part"] == "item-indicator"
+      assert result["data-state"] == "open"
+    end
+
+    test "returns indicator attributes when not selected" do
+      assigns = %{
+        id: "test-tabs",
+        value: "tab-1",
+        values: ["tab-2"],
+        dir: "ltr",
+        orientation: "vertical",
+        disabled: false
+      }
+
+      result = Connect.indicator(assigns)
+      assert result["data-state"] == "closed"
     end
   end
 

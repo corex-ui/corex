@@ -53,7 +53,12 @@ defmodule E2eWeb.SelectFormLive do
         {:noreply,
          socket
          |> assign(:submitted, %{country: data.country})
-         |> assign(:form, Phoenix.Component.to_form(SelectForm.changeset(%SelectForm{}, params), as: :select_form))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(SelectForm.changeset(%SelectForm{}, params),
+             as: :select_form
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
@@ -98,11 +103,13 @@ defmodule E2eWeb.SelectFormLive do
             {msg}
           </:error>
         </.select>
-        <.action type="submit" id="select-form-live-submit" class="button button--accent">Submit</.action>
+        <.action type="submit" id="select-form-live-submit" class="button button--accent">
+          Submit
+        </.action>
       </.form>
 
       <div :if={@submitted} id="select-form-result">
-        <p>Submitted: country=<%= @submitted.country %></p>
+        <p>Submitted: country={@submitted.country}</p>
       </div>
     </Layouts.app>
     """

@@ -1402,7 +1402,7 @@ function transformPositioningOptions(obj) {
 var SelectHook = {
   mounted() {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.collection || "[]");
+    const allItems = JSON.parse(el.dataset.items || "[]");
     const hasGroups = allItems.some((item) => item.group !== void 0);
     const initialCollection = buildCollection(allItems, hasGroups);
     const selectComponent = new Select(el, {
@@ -1449,9 +1449,8 @@ var SelectHook = {
         const valueInput = el.querySelector(
           '[data-scope="select"][data-part="value-input"]'
         );
-        if (valueInput) {
+        if (valueInput && getBoolean(el, "controlled")) {
           valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
-          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
           valueInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
         const payload = {
@@ -1476,7 +1475,7 @@ var SelectHook = {
     this.handlers = [];
   },
   updated() {
-    const newItems = JSON.parse(this.el.dataset.collection || "[]");
+    const newItems = JSON.parse(this.el.dataset.items || "[]");
     const hasGroups = newItems.some((item) => item.group !== void 0);
     if (this.select) {
       this.select.hasGroups = hasGroups;

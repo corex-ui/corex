@@ -3,9 +3,23 @@ defmodule Corex.DataTable do
   Renders a table with data based on Phoenix Core Components.
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for DataTable component strings.
+
+    Without gettext: `translation={%DataTable.Translation{ actions: "Actions" }}`
+
+    With gettext: `translation={%DataTable.Translation{ actions: gettext("Actions") }}`
+    """
+    defstruct [:actions]
+  end
+
   @doc type: :component
   use Phoenix.Component
   import Corex.Gettext, only: [gettext: 1]
+
+  attr(:translation, Corex.DataTable.Translation, default: nil, doc: "Override translatable strings")
+  attr(:rest, :global)
 
   @doc """
   Renders a table with data.
@@ -17,8 +31,8 @@ defmodule Corex.DataTable do
         <:col :let={user} label="username">{user.username}</:col>
       </.data_table>
   """
-  attr(:id, :string, required: true)
-  attr(:rows, :list, required: true)
+  attr(:id, :string, required: true, doc: "The id of the table, used for LiveStream updates")
+  attr(:rows, :list, required: true, doc: "The list of row data to render")
   attr(:row_id, :any, default: nil, doc: "the function for generating the row id")
   attr(:row_click, :any, default: nil, doc: "the function for handling phx-click on each row")
 
@@ -29,23 +43,35 @@ defmodule Corex.DataTable do
 
   slot :col, required: true do
     attr(:label, :string)
+    attr(:class, :string, required: false)
   end
 
-  slot(:action, doc: "the slot for showing user actions in the last table column")
+  slot :action, doc: "the slot for showing user actions in the last table column" do
+    attr(:class, :string, required: false)
+  end
 
   def data_table(assigns) do
+    default_translation = %Translation{actions: gettext("Actions")}
+    translation = merge_translation(assigns[:translation], default_translation)
+
     assigns =
-      with %{rows: %Phoenix.LiveView.LiveStream{}} <- assigns do
-        assign(assigns, row_id: assigns.row_id || fn {id, _item} -> id end)
-      end
+      assigns
+      |> assign(:translation, translation)
+      |> then(fn a ->
+        with %{rows: %Phoenix.LiveView.LiveStream{}} <- a do
+          assign(a, :row_id, a.row_id || fn {id, _item} -> id end)
+        else
+          _ -> a
+        end
+      end)
 
     ~H"""
-    <table data-scope="data-table" data-part="root">
+    <table data-scope="data-table" data-part="root" {@rest}>
       <thead data-scope="data-table" data-part="thead">
         <tr>
           <th :for={col <- @col} data-scope="data-table" data-part="cell">{col[:label]}</th>
           <th :if={@action != []} data-scope="data-table" data-part="cell">
-            <span class="sr-only">{gettext("Actions")}</span>
+            <span class="sr-only">{@translation.actions}</span>
           </th>
         </tr>
       </thead>
@@ -71,5 +97,13 @@ defmodule Corex.DataTable do
       </tbody>
     </table>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      actions: partial.actions || default.actions
+    }
   end
 end

@@ -255,6 +255,12 @@ defmodule Corex.Switch do
       "The direction of the switch. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["vertical", "horizontal"],
+    doc: "Layout orientation for CSS (vertical or horizontal)"
+  )
+
   attr(:read_only, :boolean,
     default: false,
     doc: "Whether the switch is read-only"
@@ -345,15 +351,15 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
       <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
-        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked})}>
-          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked})}></span>
+      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}></span>
         </span>
         <span
           :if={@label}
-          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked})}
+          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
         >
           {render_slot(@label)}
         </span>
@@ -438,7 +444,7 @@ defmodule Corex.Switch do
   def toggle_checked(socket, switch_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) do
     LiveView.push_event(socket, "switch_toggle_checked", %{
-      switch_id: switch_id
+      id: switch_id
     })
   end
 end
