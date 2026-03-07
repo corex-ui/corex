@@ -3,25 +3,26 @@ import {
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunk-4S73FXZZ.mjs";
+} from "./chunk-Z5C4OFDG.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-3PXF3EVQ.mjs";
+} from "./chunk-YGFRHRLH.mjs";
 import {
   trackDismissableElement
-} from "./chunk-5YVV632C.mjs";
-import "./chunk-53IVNBLA.mjs";
+} from "./chunk-ZTVKZLPW.mjs";
+import "./chunk-YEKBDBKP.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-3L7DS5JZ.mjs";
+} from "./chunk-FVGZORDS.mjs";
 import {
   Component,
   VanillaMachine,
   addOrRemove,
   ariaAttr,
+  canPushEvent,
   contains,
   createAnatomy,
   createGuards,
@@ -47,7 +48,7 @@ import {
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-BVJBLYEU.mjs";
+} from "./chunk-UK7T6PHM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
@@ -1276,6 +1277,7 @@ var Select = class extends Component {
       this.api = this.initApi();
       this.render();
     });
+    this.el.removeAttribute("data-js");
   };
   applyItemProps() {
     const contentEl = this.el.querySelector(
@@ -1462,7 +1464,7 @@ var SelectHook = {
           el.dispatchEvent(new CustomEvent(clientEventName, { bubbles: true, detail: payload }));
         }
         const serverEventName = getString(el, "onValueChange");
-        if (serverEventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (serverEventName && canPushEvent(this.liveSocket)) {
           this.pushEvent(serverEventName, payload);
         }
       }

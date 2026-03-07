@@ -17,7 +17,7 @@ defmodule Corex.DataList do
       </.data_list>
   """
   slot :item, required: true do
-    attr :title, :string, required: true
+    attr(:title, :string, required: true)
   end
 
   def data_list(assigns) do
@@ -32,6 +32,4 @@ defmodule Corex.DataList do
     </ul>
     """
   end
-
-
 end

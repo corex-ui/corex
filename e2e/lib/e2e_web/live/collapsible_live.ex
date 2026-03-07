@@ -32,27 +32,27 @@ defmodule E2eWeb.CollapsibleLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Collapsible.set_open("my-collapsible", true)}
           class="button button--sm"
         >
           Open
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Collapsible.set_open("my-collapsible", false)}
           class="button button--sm"
         >
           Close
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_open" value="true" class="button button--sm">
+        <.action phx-click="set_open" value="true" class="button button--sm">
           Open
-        </button>
-        <button phx-click="set_open" value="false" class="button button--sm">
+        </.action>
+        <.action phx-click="set_open" value="false" class="button button--sm">
           Close
-        </button>
+        </.action>
       </div>
       <.collapsible
         id="my-collapsible"

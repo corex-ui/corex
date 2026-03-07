@@ -326,6 +326,7 @@ defmodule Corex.Switch do
     <div
       id={@id}
       phx-hook="Switch"
+      data-js="pending"
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -401,7 +402,7 @@ defmodule Corex.Switch do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) and
              is_boolean(checked) do
     LiveView.push_event(socket, "switch_set_checked", %{
-      switch_id: switch_id,
+      id: switch_id,
       checked: checked
     })
   end

@@ -42,6 +42,8 @@ defmodule Corex.New.Single do
   template(:html, [
     {:eex, :web,
      "corex_web/controllers/error_html.ex": "lib/:lib_web_name/controllers/error_html.ex",
+     "corex_web/controllers/error_html/404.html.heex":
+       "lib/:lib_web_name/controllers/error_html/404.html.heex",
      "corex_test/controllers/error_html_test.exs":
        "test/:lib_web_name/controllers/error_html_test.exs",
      "corex_web/controllers/page_controller.ex": "lib/:lib_web_name/controllers/page_controller.ex",

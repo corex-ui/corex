@@ -41,45 +41,45 @@ defmodule E2eWeb.ColorPickerLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.ColorPicker.set_open("my-color-picker", true)}
           class="button button--sm"
         >
           Open
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ColorPicker.set_open("my-color-picker", false)}
           class="button button--sm"
         >
           Close
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ColorPicker.set_value("my-color-picker", "#FF0000")}
           class="button button--sm"
         >
           Set Red
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ColorPicker.set_value("my-color-picker", "#1909C0")}
           class="button button--sm"
         >
           Set Blue
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_open" phx-value-open="true" class="button button--sm">
+        <.action phx-click="set_open" phx-value-open="true" class="button button--sm">
           Open
-        </button>
-        <button phx-click="set_open" phx-value-open="false" class="button button--sm">
+        </.action>
+        <.action phx-click="set_open" phx-value-open="false" class="button button--sm">
           Close
-        </button>
-        <button phx-click="set_value" phx-value-value="#FF0000" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" phx-value-value="#FF0000" class="button button--sm">
           Set Red
-        </button>
-        <button phx-click="set_value" phx-value-value="#00FF00" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" phx-value-value="#00FF00" class="button button--sm">
           Set Green
-        </button>
+        </.action>
       </div>
       <div :if={@value != nil} class="layout__row">
         <p>

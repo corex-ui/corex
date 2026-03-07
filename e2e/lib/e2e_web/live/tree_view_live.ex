@@ -91,61 +91,61 @@ defmodule E2eWeb.TreeViewLive do
       <h3>Client Api</h3>
       <section class="layout__section">
         <div class="layout__row">
-          <button
+          <.action
             phx-click={Corex.TreeView.set_expanded_value("my-tree", ["accordion", "checkbox"])}
             class="button button--sm"
           >
             Expand Accordion & Checkbox
-          </button>
-          <button
+          </.action>
+          <.action
             phx-click={Corex.TreeView.set_expanded_value("my-tree", [])}
             class="button button--sm"
           >
             Collapse all
-          </button>
-          <button
+          </.action>
+          <.action
             phx-click={Corex.TreeView.set_selected_value("my-tree", ["/#{@locale}/accordion"])}
             class="button button--sm"
           >
             Select Controller (Accordion)
-          </button>
-          <button
+          </.action>
+          <.action
             phx-click={Corex.TreeView.set_selected_value("my-tree", [])}
             class="button button--sm"
           >
             Clear selection
-          </button>
+          </.action>
         </div>
       </section>
       <h3>Server Api</h3>
       <section class="layout__section">
         <div class="layout__row">
-          <button
+          <.action
             phx-click="set_expanded_value"
             value={Enum.join(["accordion", "checkbox"], ",")}
             class="button button--sm"
           >
             Expand Accordion & Checkbox
-          </button>
-          <button phx-click="set_expanded_value" value="" class="button button--sm">
+          </.action>
+          <.action phx-click="set_expanded_value" value="" class="button button--sm">
             Collapse all
-          </button>
-          <button
+          </.action>
+          <.action
             phx-click="set_selected_value"
             value={"/#{@locale}/accordion"}
             class="button button--sm"
           >
             Select Controller (Accordion)
-          </button>
-          <button phx-click="set_selected_value" value="" class="button button--sm">
+          </.action>
+          <.action phx-click="set_selected_value" value="" class="button button--sm">
             Clear selection
-          </button>
-          <button phx-click="get_expanded_value" class="button button--sm">
+          </.action>
+          <.action phx-click="get_expanded_value" class="button button--sm">
             Get expanded value
-          </button>
-          <button phx-click="get_selected_value" class="button button--sm">
+          </.action>
+          <.action phx-click="get_selected_value" class="button button--sm">
             Get selected value
-          </button>
+          </.action>
         </div>
       </section>
       <div :if={@tree_expanded_value != nil || @tree_selected_value != nil} class="layout__row">

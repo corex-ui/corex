@@ -397,7 +397,7 @@ defmodule Corex.Accordion do
       |> validate_items()
 
     ~H"""
-    <div id={@id} phx-hook="Accordion" data-items={items_data_json(@items)} {@rest}
+    <div id={@id} phx-hook="Accordion" data-js="pending" data-items={items_data_json(@items)} {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
@@ -670,7 +670,7 @@ defmodule Corex.Accordion do
   def set_value(socket, accordion_id, value)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(accordion_id) do
     LiveView.push_event(socket, "accordion_set_value", %{
-      accordion_id: accordion_id,
+      id: accordion_id,
       value: validate_value!(value)
     })
   end

@@ -46,6 +46,8 @@ defmodule Corex.New.Web do
      "corex_web/components/layouts.ex": "lib/:web_app/components/layouts.ex",
      "corex_web/controllers/page_controller.ex": "lib/:web_app/controllers/page_controller.ex",
      "corex_web/controllers/error_html.ex": "lib/:web_app/controllers/error_html.ex",
+     "corex_web/controllers/error_html/404.html.heex":
+       "lib/:web_app/controllers/error_html/404.html.heex",
      "corex_web/controllers/page_html.ex": "lib/:web_app/controllers/page_html.ex",
      "corex_web/controllers/page_html/home.html.heex":
        "lib/:web_app/controllers/page_html/home.html.heex",

@@ -2,6 +2,7 @@ import {
   Component,
   VanillaMachine,
   add,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
@@ -20,7 +21,7 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunk-BVJBLYEU.mjs";
+} from "./chunk-UK7T6PHM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
@@ -386,7 +387,7 @@ var AccordionHook = {
       dir: getDir(el),
       onValueChange: (details) => {
         const eventName = getString(el, "onValueChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             value: details.value ?? null
@@ -407,7 +408,7 @@ var AccordionHook = {
       },
       onFocusChange: (details) => {
         const eventName = getString(el, "onFocusChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             value: details.value ?? null
@@ -439,7 +440,7 @@ var AccordionHook = {
       this.handleEvent(
         "accordion_set_value",
         (payload) => {
-          const targetId = payload.accordion_id;
+          const targetId = payload.id;
           if (targetId) {
             const matches = el.id === targetId || el.id === `accordion:${targetId}`;
             if (!matches) return;

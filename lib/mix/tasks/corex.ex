@@ -25,16 +25,16 @@ defmodule Mix.Tasks.Corex do
   def run(args) do
     case args do
       [] -> general()
-      _ -> Mix.raise "Invalid arguments, expected: mix phx"
+      _ -> Mix.raise("Invalid arguments, expected: mix phx")
     end
   end
 
   defp general() do
     Application.ensure_all_started(:phoenix)
-    Mix.shell().info "Phoenix v#{Application.spec(:phoenix, :vsn)}"
-    Mix.shell().info "Peace of mind from prototype to production"
-    Mix.shell().info "\n## Options\n"
-    Mix.shell().info "-v, --version        # Prints Phoenix version\n"
+    Mix.shell().info("Phoenix v#{Application.spec(:phoenix, :vsn)}")
+    Mix.shell().info("Peace of mind from prototype to production")
+    Mix.shell().info("\n## Options\n")
+    Mix.shell().info("-v, --version        # Prints Phoenix version\n")
     Mix.Tasks.Help.run(["--search", "corex."])
   end
 end

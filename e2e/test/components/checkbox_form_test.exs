@@ -1,0 +1,91 @@
+defmodule E2eWeb.CheckboxFormTest do
+  use ExUnit.Case, async: false
+  use Wallaby.Feature
+
+  alias E2eWeb.CheckboxModel, as: Checkbox
+
+  feature "static form - submit unchecked includes terms=false", %{session: session} do
+    session
+    |> Checkbox.goto_form(:static)
+    |> Checkbox.wait(500)
+    |> Checkbox.submit_form()
+    |> Checkbox.wait(500)
+    |> Checkbox.see_flash("Submitted: terms=")
+  end
+
+  feature "static form - click checkbox then submit includes terms", %{session: session} do
+    session
+    |> Checkbox.goto_form(:static)
+    |> Checkbox.wait(500)
+    |> Checkbox.click_checkbox()
+    |> Checkbox.wait(200)
+    |> Checkbox.submit_form()
+    |> Checkbox.wait(500)
+    |> Checkbox.see_flash("Submitted: terms=")
+  end
+
+  feature "live form (controlled) - submit without checking terms does not show success", %{session: session} do
+    session =
+      session
+      |> Checkbox.goto_form(:live)
+      |> Checkbox.wait(500)
+      |> Checkbox.submit_form()
+      |> Checkbox.wait(1500)
+
+    refute_has(session, Wallaby.Query.text("terms=true"))
+    assert_has(session, Wallaby.Query.text("Accept terms"))
+  end
+
+  feature "live form (controlled) - check terms then submit shows success", %{session: session} do
+    session
+    |> Checkbox.goto_form(:live)
+    |> Checkbox.wait(500)
+    |> Checkbox.click_checkbox()
+    |> Checkbox.wait(200)
+    |> Checkbox.submit_form()
+    |> Checkbox.wait(1500)
+    |> Checkbox.see_submitted_value("terms", "true")
+  end
+
+  feature "static form - checkbox form has no A11y violations", %{session: session} do
+    session
+    |> Checkbox.goto_form(:static)
+    |> Checkbox.wait(500)
+    |> Checkbox.check_accessibility()
+  end
+
+  feature "live form - checkbox form has no A11y violations", %{session: session} do
+    session
+    |> Checkbox.goto_form(:live)
+    |> Checkbox.wait(500)
+    |> Checkbox.check_accessibility()
+  end
+
+  feature "live form - server set_checked updates checkbox state", %{session: session} do
+    session =
+      session
+      |> Checkbox.goto_form(:live)
+      |> Checkbox.wait(500)
+
+    session = click(session, Wallaby.Query.css("#checkbox-form-set-checked"))
+
+    session
+    |> Checkbox.wait(1000)
+    |> Checkbox.submit_form()
+    |> Checkbox.wait(2000)
+    |> Checkbox.see_submitted_value("terms", "true")
+  end
+
+  feature "live form - Space toggles checkbox", %{session: session} do
+    session =
+      session
+      |> Checkbox.goto_form(:live)
+      |> Checkbox.wait(500)
+
+    session = Checkbox.press_space(session)
+    session = Checkbox.wait(session, 500)
+    session = Checkbox.submit_form(session)
+    session = Checkbox.wait(session, 1500)
+    Checkbox.see_submitted_value(session, "terms", "true")
+  end
+end

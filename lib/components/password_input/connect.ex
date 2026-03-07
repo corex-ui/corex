@@ -1,6 +1,7 @@
 defmodule Corex.PasswordInput.Connect do
   @moduledoc false
   import Corex.Gettext, only: [gettext: 1]
+
   alias Corex.PasswordInput.Anatomy.{
     Control,
     Indicator,

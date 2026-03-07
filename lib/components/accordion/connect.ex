@@ -1,17 +1,13 @@
 defmodule Corex.Accordion.Connect do
   @moduledoc false
   alias Corex.Accordion.Anatomy.{Item, Props, Root}
-  import Corex.Helpers, only: [validate_value!: 1]
-
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-collapsible" => data_attr(assigns.collapsible),
+      "data-collapsible" => get_boolean(assigns.collapsible),
       "data-default-value" =>
         if assigns.controlled do
           nil
@@ -24,8 +20,8 @@ defmodule Corex.Accordion.Connect do
         else
           nil
         end,
-      "data-controlled" => data_attr(assigns.controlled),
-      "data-multiple" => data_attr(assigns.multiple),
+      "data-controlled" => get_boolean(assigns.controlled),
+      "data-multiple" => get_boolean(assigns.multiple),
       "data-orientation" => assigns.orientation,
       "data-dir" => assigns.dir,
       "data-on-value-change" => assigns.on_value_change,

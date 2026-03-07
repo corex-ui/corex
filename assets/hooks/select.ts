@@ -6,7 +6,7 @@ import type { Props, ValueChangeDetails } from "@zag-js/select";
 import type { Direction } from "@zag-js/types";
 import type { PositioningOptions } from "@zag-js/popper";
 
-import { getString, getBoolean, getStringList } from "../lib/util";
+import { getString, getBoolean, getStringList, canPushEvent } from "../lib/util";
 
 type SelectItem = {
   id?: string;
@@ -56,7 +56,7 @@ function transformPositioningOptions(obj: Record<string, unknown>): PositioningO
 const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SelectHookState) {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.collection || "[]") as SelectItem[];
+    const allItems = JSON.parse(el.dataset.items || "[]") as SelectItem[];
     const hasGroups = allItems.some((item: SelectItem) => item.group !== undefined);
     const initialCollection = buildCollection(allItems, hasGroups);
     const selectComponent = new Select(el, {
@@ -138,7 +138,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
         }
 
         const serverEventName = getString(el, "onValueChange");
-        if (serverEventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (serverEventName && canPushEvent(this.liveSocket)) {
           this.pushEvent(serverEventName, payload);
         }
       },
@@ -152,7 +152,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & SelectHookState) {
-    const newItems = JSON.parse(this.el.dataset.collection || "[]") as SelectItem[];
+    const newItems = JSON.parse(this.el.dataset.items || "[]") as SelectItem[];
     const hasGroups = newItems.some((item: SelectItem) => item.group !== undefined);
 
     if (this.select) {

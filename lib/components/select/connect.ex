@@ -9,7 +9,7 @@ defmodule Corex.Select.Connect do
   def props(assigns) do
     base = %{
       "id" => assigns.id,
-      "data-collection" => Corex.Json.encode!(validate_collection!(assigns.collection)),
+      "data-items" => Corex.Json.encode!(validate_collection!(assigns.items)),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-value" =>
         if assigns.controlled do

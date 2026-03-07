@@ -1,0 +1,33 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Select form</h1>
+  <p>Plain HTML form (no LiveView)</p>
+  <form action={~p"/#{@locale}/select/form"} method="post" id="select-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.select
+      name="country"
+      id="select-form-country"
+      class="select"
+      placeholder="Select a country"
+      items={[
+        %{label: "France", id: "fra"},
+        %{label: "Belgium", id: "bel"},
+        %{label: "Germany", id: "deu"},
+        %{label: "Netherlands", id: "nld"},
+        %{label: "Switzerland", id: "che"},
+        %{label: "Austria", id: "aut"}
+      ]}
+    >
+      <:label>Country</:label>
+      <:trigger>
+        <.icon name="hero-chevron-down" />
+      </:trigger>
+    </.select>
+    <.action type="submit" id="select-form-submit" class="button button--accent">Submit</.action>
+  </form>
+</Layouts.app>

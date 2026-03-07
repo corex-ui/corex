@@ -39,6 +39,7 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
       this.render();
     });
     this.machine.start();
+    this.el.removeAttribute("data-js");
   };
 
   destroy = () => {

@@ -32,36 +32,36 @@ defmodule E2eWeb.ClipboardLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Clipboard.set_value("my-clipboard", "Hello, World!")}
           class="button button--sm"
         >
           Set to "Hello, World!"
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Clipboard.set_value("my-clipboard", "info@netoum.com")}
           class="button button--sm"
         >
           Set to "info@netoum.com"
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Clipboard.copy("my-clipboard")}
           class="button button--sm"
         >
           Copy
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="Hello, World!" class="button button--sm">
+        <.action phx-click="set_value" value="Hello, World!" class="button button--sm">
           Set to "Hello, World!"
-        </button>
-        <button phx-click="set_value" value="info@netoum.com" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="info@netoum.com" class="button button--sm">
           Set to "info@netoum.com"
-        </button>
-        <button phx-click="copy" class="button button--sm">
+        </.action>
+        <.action phx-click="copy" class="button button--sm">
           Copy
-        </button>
+        </.action>
       </div>
       <.clipboard
         id="my-clipboard"

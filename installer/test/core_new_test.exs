@@ -255,7 +255,10 @@ defmodule Mix.Tasks.Corex.NewTest do
       end)
 
       assert_file("phx_blog/test/phx_blog_web/controllers/page_controller_test.exs")
-      assert_file("phx_blog/test/phx_blog_web/controllers/error_html_test.exs")
+      assert_file("phx_blog/test/phx_blog_web/controllers/error_html_test.exs", fn file ->
+        assert file =~ "returns 404 for nonexistent route"
+        assert file =~ "renders 404.html"
+      end)
       assert_file("phx_blog/test/phx_blog_web/controllers/error_json_test.exs")
       assert_file("phx_blog/test/support/conn_case.ex")
       assert_file("phx_blog/test/test_helper.exs")
@@ -274,6 +277,14 @@ defmodule Mix.Tasks.Corex.NewTest do
         "phx_blog/lib/phx_blog_web/controllers/error_html.ex",
         ~r/defmodule PhxBlogWeb.ErrorHTML/
       )
+
+      assert_file("phx_blog/lib/phx_blog_web/controllers/error_html.ex", ~r/embed_templates "error_html\/\*"/)
+
+      assert_file("phx_blog/lib/phx_blog_web/controllers/error_html/404.html.heex", fn file ->
+        assert file =~ "404"
+        assert file =~ "Page Not Found"
+        assert file =~ "does not exist"
+      end)
 
       assert_file(
         "phx_blog/lib/phx_blog_web/controllers/error_json.ex",

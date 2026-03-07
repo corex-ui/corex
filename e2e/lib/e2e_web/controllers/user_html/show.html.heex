@@ -9,15 +9,16 @@
     User {@user.id}
     <:subtitle>This is a user record from your database.</:subtitle>
     <:actions>
-      <.button navigate={~p"/#{@locale}/users"} class="button">
+      <.navigate to={~p"/#{@locale}/users"} type="navigate" class="button">
         <.icon name="hero-arrow-left" />
-      </.button>
-      <.button
-        navigate={~p"/#{@locale}/users/#{@user}/edit?return_to=show"}
+      </.navigate>
+      <.navigate
+        to={~p"/#{@locale}/users/#{@user}/edit?return_to=show"}
+        type="navigate"
         class="button button--accent"
       >
         <.icon name="hero-pencil-square" /> Edit user
-      </.button>
+      </.navigate>
     </:actions>
   </.header>
 

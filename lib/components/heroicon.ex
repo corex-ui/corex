@@ -3,10 +3,10 @@ defmodule Corex.Heroicon do
   Renders a Heroicon.
   """
 
-@doc type: :component
-use Phoenix.Component
+  @doc type: :component
+  use Phoenix.Component
 
-@doc """
+  @doc """
   Renders a [Heroicon](https://heroicons.com).
 
   Heroicons come in three styles – outline, solid, and mini.
@@ -24,12 +24,12 @@ use Phoenix.Component
       <.heroicon name="hero-x-mark" />
       <.heroicon name="hero-arrow-path" class="ml-1 size-3 motion-safe:animate-spin" />
   """
-  attr :name, :string, required: true
-  attr :class, :any, default: ""
+  attr(:name, :string, required: true)
+  attr(:class, :any, default: "")
 
   def heroicon(%{name: "hero-" <> _} = assigns) do
     ~H"""
     <span class={[@name, @class]} />
     """
-end
+  end
 end

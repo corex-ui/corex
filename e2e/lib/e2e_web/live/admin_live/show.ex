@@ -17,15 +17,16 @@ defmodule E2eWeb.AdminLive.Show do
         Admin {@admin.id}
         <:subtitle>This is a admin record from your database.</:subtitle>
         <:actions>
-          <.button class="button" navigate={~p"/#{@locale}/admins"}>
+          <.navigate to={~p"/#{@locale}/admins"} type="navigate" class="button">
             <.icon name="hero-arrow-left" />
-          </.button>
-          <.button
+          </.navigate>
+          <.navigate
+            to={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}
+            type="navigate"
             class="button button--accent"
-            navigate={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}
           >
             <.icon name="hero-pencil-square" /> Edit admin
-          </.button>
+          </.navigate>
         </:actions>
       </.header>
 

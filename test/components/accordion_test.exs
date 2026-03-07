@@ -10,6 +10,7 @@ defmodule Corex.AccordionTest do
       html = render_component(&Accordion.accordion/1, items: items)
       assert html =~ ~r/data-scope="accordion"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/data-js="pending"/
       assert html =~ ~r/T1/
       assert html =~ ~r/C1/
     end

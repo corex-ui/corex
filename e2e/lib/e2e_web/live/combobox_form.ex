@@ -202,9 +202,9 @@ defmodule E2eWeb.ComboboxForm do
           </:error>
         </.combobox>
 
-        <.button type="submit" class="button button--accent">
+        <.action type="submit" class="button button--accent">
           Save
-        </.button>
+        </.action>
       </.form>
     </Layouts.app>
     """

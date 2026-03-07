@@ -1,0 +1,110 @@
+defmodule E2eWeb.SelectFormLive do
+  use E2eWeb, :live_view
+
+  alias E2e.Form.SelectForm
+  alias Corex.Form
+
+  @country_collection [
+    %{label: "France", id: "fra"},
+    %{label: "Belgium", id: "bel"},
+    %{label: "Germany", id: "deu"},
+    %{label: "Netherlands", id: "nld"},
+    %{label: "Switzerland", id: "che"},
+    %{label: "Austria", id: "aut"}
+  ]
+
+  @impl true
+  def mount(_params, _session, socket) do
+    {:ok,
+     socket
+     |> assign(:page_title, "Select form")
+     |> assign(:submitted, nil)
+     |> assign(:country_collection, @country_collection)
+     |> assign_form()}
+  end
+
+  defp assign_form(socket) do
+    form =
+      %SelectForm{}
+      |> SelectForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :select_form)
+
+    assign(socket, :form, form)
+  end
+
+  @impl true
+  def handle_event("validate", %{"select_form" => params}, socket) do
+    changeset =
+      %SelectForm{}
+      |> SelectForm.changeset(params)
+      |> Map.put(:action, :validate)
+
+    {:noreply,
+     socket
+     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :select_form))}
+  end
+
+  @impl true
+  def handle_event("save", %{"select_form" => params}, socket) do
+    case SelectForm.changeset(%SelectForm{}, params) do
+      %Ecto.Changeset{valid?: true} = changeset ->
+        data = Ecto.Changeset.apply_changes(changeset)
+
+        {:noreply,
+         socket
+         |> assign(:submitted, %{country: data.country})
+         |> assign(:form, Phoenix.Component.to_form(SelectForm.changeset(%SelectForm{}, params), as: :select_form))}
+
+      %Ecto.Changeset{} = changeset ->
+        {:noreply,
+         socket
+         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :select_form))}
+    end
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <Layouts.app
+      flash={@flash}
+      mode={@mode}
+      theme={@theme}
+      locale={@locale}
+      current_path={@current_path}
+    >
+      <h1>Select form (LiveView)</h1>
+      <p>Phoenix form with Ecto changeset and controlled select</p>
+
+      <.form
+        for={@form}
+        id={Form.get_form_id(@form)}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <.select
+          field={@form[:country]}
+          class="select"
+          controlled
+          id="select-form-country"
+          placeholder="Select a country"
+          items={@country_collection}
+        >
+          <:label>Country</:label>
+          <:trigger>
+            <.icon name="hero-chevron-down" />
+          </:trigger>
+          <:error :let={msg}>
+            <.icon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.select>
+        <.action type="submit" id="select-form-live-submit" class="button button--accent">Submit</.action>
+      </.form>
+
+      <div :if={@submitted} id="select-form-result">
+        <p>Submitted: country=<%= @submitted.country %></p>
+      </div>
+    </Layouts.app>
+    """
+  end
+end

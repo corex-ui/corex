@@ -447,7 +447,12 @@ defmodule E2eWeb.Layouts do
           [label: "Controlled", id: "/#{locale}/controlled/angle-slider"]
         ]
       ),
-      component_item("Checkbox", "checkbox", locale),
+      component_item("Checkbox", "checkbox", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/checkbox/form"],
+          [label: "Form (Live)", id: "/#{locale}/live/checkbox/form"]
+        ]
+      ),
       component_item("Color Picker", "color-picker", locale),
       component_item("Combobox", "combobox", locale,
         extra: [
@@ -462,9 +467,19 @@ defmodule E2eWeb.Layouts do
       component_item("Password Input", "password-input", locale),
       component_item("Pin Input", "pin-input", locale),
       component_item("Radio Group", "radio-group", locale),
-      component_item("Select", "select", locale),
+      component_item("Select", "select", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/select/form"],
+          [label: "Form (Live)", id: "/#{locale}/live/select/form"]
+        ]
+      ),
       component_item("Signature", "signature", locale),
-      component_item("Switch", "switch", locale)
+      component_item("Switch", "switch", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/switch/form"],
+          [label: "Form (Live)", id: "/#{locale}/live/switch/form"]
+        ]
+      )
     ])
   end
 

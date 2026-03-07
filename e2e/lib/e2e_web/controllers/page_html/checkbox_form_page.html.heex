@@ -1,0 +1,17 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Checkbox form</h1>
+  <p>Plain HTML form (no LiveView)</p>
+  <form action={~p"/#{@locale}/checkbox/form"} method="post" id="checkbox-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.checkbox name="terms" id="checkbox-form-terms" class="checkbox">
+      <:label>Accept terms</:label>
+    </.checkbox>
+    <.action type="submit" id="checkbox-form-submit" class="button button--accent">Submit</.action>
+  </form>
+</Layouts.app>

@@ -77,6 +77,7 @@ export class Select extends Component<Props, Api> {
       this.api = this.initApi();
       this.render();
     });
+    this.el.removeAttribute("data-js");
   };
 
   applyItemProps(): void {

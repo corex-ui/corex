@@ -7,7 +7,7 @@ defmodule Corex.Select do
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder can be set via the `placeholder_text` attribute or via the optional `:placeholder` slot.
+  The placeholder can be set via the `placeholder` attribute or via the optional `:placeholder_content` slot.
   When both are provided, the slot content is shown (the slot overrides the attribute).
 
   ### Minimal
@@ -18,8 +18,8 @@ defmodule Corex.Select do
   <.select
     id="my-select"
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    placeholder="Select a country"
+    items={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -41,8 +41,8 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    placeholder="Select a country"
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -66,18 +66,18 @@ defmodule Corex.Select do
 
   ### With custom placeholder slot
 
-  Use the `:placeholder` slot to fully customize the placeholder (e.g. icon + text):
+  Use the `:placeholder_content` slot to fully customize the placeholder (e.g. icon + text):
 
   ```heex
   <.select
     id="my-select"
     class="select"
-    collection={[...]}
+    items={[...]}
   >
-    <:placeholder>
+    <:placeholder_content>
       <.icon name="hero-globe-alt" class="opacity-60" />
       <span>Choose a country</span>
-    </:placeholder>
+    </:placeholder_content>
     <:trigger>
       <.icon name="hero-chevron-down" />
     </:trigger>
@@ -92,8 +92,8 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    placeholder="Select a country"
+    items={[
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -126,8 +126,8 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    placeholder="Select a country"
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -164,8 +164,8 @@ defmodule Corex.Select do
     id="nav-select"
     class="select"
     redirect
-    placeholder_text="Go to"
-    collection={[
+    placeholder="Go to"
+    items={[
       %{label: "Account", id: ~p"/account"},
       %{label: "Settings", id: ~p"/settings"}
     ]}
@@ -196,8 +196,8 @@ defmodule Corex.Select do
         class="select"
         redirect
         on_value_change="nav_change"
-        placeholder_text="Go to"
-        collection={[
+        placeholder="Go to"
+        items={[
           %{label: "Account", id: ~p"/account"},
           %{label: "Settings", id: ~p"/settings"}
         ]}
@@ -233,8 +233,8 @@ defmodule Corex.Select do
     <.select
       field={f[:country]}
       class="select"
-      placeholder_text="Select a country"
-      collection={[
+      placeholder="Select a country"
+      items={[
         %{label: "France", id: "fra", disabled: true},
         %{label: "Belgium", id: "bel"},
         %{label: "Germany", id: "deu"},
@@ -276,8 +276,8 @@ defmodule Corex.Select do
           field={@form[:country]}
           class="select"
           controlled
-          placeholder_text="Select a country"
-          collection={[
+          placeholder="Select a country"
+          items={[
             %{label: "France", id: "fra", disabled: true},
             %{label: "Belgium", id: "bel"},
             %{label: "Germany", id: "deu"},
@@ -350,8 +350,8 @@ defmodule Corex.Select do
           field={@form[:country]}
           class="select"
           controlled
-          placeholder_text="Select a country"
-          collection={[
+          placeholder="Select a country"
+          items={[
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
             %{label: "Germany", id: "deu"}
@@ -432,17 +432,12 @@ defmodule Corex.Select do
   alias Corex.Select.Connect
 
   attr(:id, :string, required: false)
-  attr(:collection, :list, default: [])
+  attr(:items, :list, default: [])
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
 
-  attr(:placeholder_text, :string,
+  attr(:placeholder, :string,
     default: nil,
     doc: "The placeholder text of the select when no value is selected"
-  )
-
-  attr(:placeholder_fallback, :string,
-    default: nil,
-    doc: "Fallback text when placeholder_text is nil (default: gettext(\"Select an option\"))"
   )
 
   attr(:value, :list, default: [], doc: "The value of the select")
@@ -498,9 +493,9 @@ defmodule Corex.Select do
 
   slot(:trigger, required: true, doc: "The trigger button content")
 
-  slot(:placeholder,
+  slot(:placeholder_content,
     required: false,
-    doc: "Custom placeholder content. When provided, overrides the placeholder_text attribute"
+    doc: "Custom placeholder content. When provided, overrides the placeholder attribute"
   )
 
   slot(:item_indicator, required: false, doc: "Optional indicator for selected items")
@@ -527,7 +522,7 @@ defmodule Corex.Select do
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     value = get_value(field.value)
-    selected_label = get_selected_label(assigns.collection, value)
+    selected_label = get_selected_label(assigns.items, value)
 
     assigns
     |> assign(field: nil)
@@ -546,18 +541,18 @@ defmodule Corex.Select do
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
-      |> assign_new(:placeholder_fallback, fn -> gettext("Select an option") end)
+      |> assign_new(:placeholder, fn -> gettext("Select an option") end)
 
     value = Map.get(assigns, :value, [])
 
     value_list = get_value(value)
-    selected_label = get_selected_label(assigns.collection, value_list)
+    selected_label = get_selected_label(assigns.items, value_list)
 
     assigns = assign(assigns, :selected_label, selected_label)
 
-    options = transform_collection_to_options(assigns.collection)
+    options = transform_collection_to_options(assigns.items)
 
-    grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
+    grouped_items = Enum.group_by(assigns.items, &Map.get(&1, :group))
 
     has_groups =
       grouped_items
@@ -580,12 +575,12 @@ defmodule Corex.Select do
       |> assign(:options, options)
       |> assign(:options_with_prompt, options_with_prompt)
       |> assign(:selected_for_options, selected_for_options)
-      |> assign(:disabled_values, get_disabled_values(assigns.collection))
+      |> assign(:disabled_values, get_disabled_values(assigns.items))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
-    <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
-      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder_text, value: @value,
+    <div id={@id} phx-hook="Select" data-js="pending" {@rest} {Connect.props(%Props{
+      id: @id, items: @items, controlled: @controlled, placeholder: @placeholder, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
       required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
@@ -604,15 +599,15 @@ defmodule Corex.Select do
           {render_slot(@label)}
         </div>
         <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || @placeholder_fallback} data-scope="select" data-part="trigger">
+          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={@selected_label || @placeholder} data-scope="select" data-part="trigger">
             <span :if={@selected_label} data-scope="select" data-part="item-text">
               {@selected_label}
             </span>
-            <span :if={!@selected_label and !Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
-              {render_slot(@placeholder)}
+            <span :if={!@selected_label and !Enum.empty?(@placeholder_content)} data-scope="select" data-part="item-text">
+              {render_slot(@placeholder_content)}
             </span>
-            <span :if={!@selected_label and Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
-              {@placeholder_text || @placeholder_fallback}
+            <span :if={!@selected_label and Enum.empty?(@placeholder_content)} data-scope="select" data-part="item-text">
+              {@placeholder}
             </span>
             {render_slot(@trigger)}
           </button>
@@ -640,7 +635,7 @@ defmodule Corex.Select do
                 </li>
               </ul>
             </li>
-            <li :if={!@has_groups} :for={item <- @collection} data-scope="select" data-part="item" data-value={item.id}>
+            <li :if={!@has_groups} :for={item <- @items} data-scope="select" data-part="item" data-value={item.id}>
               <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
                 {render_slot(@item, item)}
               </span>

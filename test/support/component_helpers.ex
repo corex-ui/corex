@@ -7,6 +7,7 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.Action
   import Corex.Avatar
   import Corex.Carousel
+  import Corex.Checkbox
   import Corex.Clipboard
   import Corex.Collapsible
   import Corex.Combobox
@@ -22,6 +23,7 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.RadioGroup
   import Corex.Select
   import Corex.SignaturePad
+  import Corex.Switch
   import Corex.Tabs
   import Corex.Timer
   import Corex.ToggleGroup
@@ -76,6 +78,19 @@ defmodule CorexTest.ComponentHelpers do
       <:prev_trigger>Prev</:prev_trigger>
       <:next_trigger>Next</:next_trigger>
     </.carousel>
+    """
+  end
+
+  def render_checkbox(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:checked, fn -> false end)
+      |> assign_new(:name, fn -> "cb-#{System.unique_integer([:positive])}" end)
+
+    ~H"""
+    <.checkbox checked={@checked} name={@name}>
+      <:label>Label</:label>
+    </.checkbox>
     """
   end
 
@@ -320,7 +335,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select(assigns) do
     ~H"""
-    <.select collection={[%{label: "A", id: "a"}]}>
+    <.select items={[%{label: "A", id: "a"}]}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -328,7 +343,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_with_opts(assigns) do
     ~H"""
-    <.select collection={[%{label: "A", id: "a"}]} placeholder_fallback={@placeholder_fallback}>
+    <.select items={[%{label: "A", id: "a"}]} placeholder={@placeholder}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -336,7 +351,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_controlled_multiple(assigns) do
     ~H"""
-    <.select collection={[%{label: "A", id: "a"}, %{label: "B", id: "b"}]} controlled value={["a"]} multiple>
+    <.select items={[%{label: "A", id: "a"}, %{label: "B", id: "b"}]} controlled value={["a"]} multiple>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -344,7 +359,28 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_grouped(assigns) do
     ~H"""
-    <.select collection={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]}>
+    <.select items={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]}>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_uncontrolled_value(assigns) do
+    ~H"""
+    <.select items={[%{label: "A", id: "a"}]} value={["a"]}>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_with_field(assigns) do
+    form = Phoenix.Component.to_form(%{"country" => "fra"}, as: :user)
+    field = form[:country]
+
+    assigns = assign(assigns, :field, field)
+
+    ~H"""
+    <.select field={@field} items={[%{id: "fra", label: "France"}, %{id: "deu", label: "Germany"}]}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -435,6 +471,19 @@ defmodule CorexTest.ComponentHelpers do
       <:label>Sign</:label>
       <:clear_trigger>Clear</:clear_trigger>
     </.signature_pad>
+    """
+  end
+
+  def render_switch(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:checked, fn -> false end)
+      |> assign_new(:name, fn -> "sw-#{System.unique_integer([:positive])}" end)
+
+    ~H"""
+    <.switch checked={@checked} name={@name}>
+      <:label>Label</:label>
+    </.switch>
     """
   end
 

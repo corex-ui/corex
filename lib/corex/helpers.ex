@@ -17,6 +17,8 @@ defmodule Corex.Helpers do
     end
   end
 
+  def data_state(bool, true_val, false_val), do: if(bool, do: true_val, else: false_val)
+
   def validate_value!([]), do: []
 
   def validate_value!(value) when is_list(value) do

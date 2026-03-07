@@ -38,6 +38,8 @@ defmodule E2eWeb.Router do
       live "/controlled/accordion", AccordionControlledLive
       live "/async/accordion", AccordionAsyncLive
       live "/live/checkbox", CheckboxLive
+      live "/live/checkbox/form", CheckboxFormLive
+      live "/live/switch/form", SwitchFormLive
       live "/live/clipboard", ClipboardLive
       live "/live/code", CodeLive
       live "/live/action", ActionLive
@@ -53,6 +55,7 @@ defmodule E2eWeb.Router do
       live "/live/tabs", TabsLive
 
       live "/live/select", SelectLive
+      live "/live/select/form", SelectFormLive
       live "/live/signature", SignatureLive
       live "/live/toast", ToastLive
       live "/live/toggle-group", ToggleGroupLive
@@ -80,6 +83,10 @@ defmodule E2eWeb.Router do
     get "/accordion", PageController, :accordion_page
     get "/action", PageController, :action_page
     get "/checkbox", PageController, :checkbox_page
+    get "/checkbox/form", PageController, :checkbox_form_page
+    post "/checkbox/form", PageController, :checkbox_form_submit
+    get "/switch/form", PageController, :switch_form_page
+    post "/switch/form", PageController, :switch_form_submit
 
     get "/clipboard", PageController, :clipboard_page
     get "/code", PageController, :code_page
@@ -96,6 +103,8 @@ defmodule E2eWeb.Router do
     get "/dialog", PageController, :dialog_page
 
     get "/select", PageController, :select_page
+    get "/select/form", PageController, :select_form_page
+    post "/select/form", PageController, :select_form_submit
 
     get "/signature", PageController, :signature_page
 

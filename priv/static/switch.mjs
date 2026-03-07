@@ -1,10 +1,11 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-3L7DS5JZ.mjs";
+} from "./chunk-FVGZORDS.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
@@ -19,7 +20,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-BVJBLYEU.mjs";
+} from "./chunk-UK7T6PHM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+switch@1.35.3/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
@@ -349,7 +350,7 @@ var SwitchHook = {
       label: getString(el, "label"),
       onCheckedChange: (details) => {
         const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             checked: details.checked,
             id: el.id
@@ -361,8 +362,8 @@ var SwitchHook = {
             new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: {
-                value: details,
-                id: el.id
+                id: el.id,
+                checked: details.checked
               }
             })
           );
@@ -372,8 +373,8 @@ var SwitchHook = {
     zagSwitch.init();
     this.zagSwitch = zagSwitch;
     this.onSetChecked = (event) => {
-      const { value } = event.detail;
-      zagSwitch.api.setChecked(value);
+      const { checked } = event.detail;
+      zagSwitch.api.setChecked(checked);
     };
     el.addEventListener("phx:switch:set-checked", this.onSetChecked);
     this.handlers = [];
@@ -381,7 +382,7 @@ var SwitchHook = {
       this.handleEvent("switch_set_checked", (payload) => {
         const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
-        zagSwitch.api.setChecked(payload.value);
+        zagSwitch.api.setChecked(payload.checked);
       })
     );
     this.handlers.push(

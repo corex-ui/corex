@@ -29,31 +29,31 @@ defmodule E2eWeb.MenuLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Menu.set_open("my-menu", true)}
           class="button button--sm"
         >
           Open menu
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Menu.set_open("my-menu", false)}
           class="button button--sm"
         >
           Close menu
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="true" class="button button--sm">
+        <.action phx-click="set_value" value="true" class="button button--sm">
           Open menu
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value="false"
           class="button button--sm"
         >
           Close menu
-        </button>
+        </.action>
       </div>
 
       <.menu

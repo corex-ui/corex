@@ -33,15 +33,15 @@ defmodule E2eWeb.SignatureLive do
       </div>
       <h3>Client API</h3>
       <div class="layout__row">
-        <button phx-click={Corex.SignaturePad.clear("my-signature-pad")} class="button button--sm">
+        <.action phx-click={Corex.SignaturePad.clear("my-signature-pad")} class="button button--sm">
           Clear Signature
-        </button>
+        </.action>
       </div>
       <h3>Server API</h3>
       <div class="layout__row">
-        <button phx-click="clear_signature" class="button button--sm">
+        <.action phx-click="clear_signature" class="button button--sm">
           Clear Signature
-        </button>
+        </.action>
       </div>
       <.signature_pad id="my-signature-pad" on_draw_end="signature_drawn">
         <:label>Sign here</:label>
@@ -54,13 +54,9 @@ defmodule E2eWeb.SignatureLive do
         <h3>On Draw End</h3>
         <p>Signature URL: <code>{String.slice(@signature_url, 0, 50)}...</code></p>
         <img src={@signature_url} alt="Signature" class="max-w-xs border" />
-        <a
-          href={@signature_url}
-          download="signature.png"
-          class="button button--sm"
-        >
+        <.navigate to={@signature_url} download="signature.png" class="button button--sm">
           Download Image
-        </a>
+        </.navigate>
       </div>
     </Layouts.app>
     """

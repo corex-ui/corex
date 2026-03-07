@@ -45,43 +45,43 @@ defmodule E2eWeb.AccordionLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
           class="button button--sm"
         >
           Open Lorem
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "donec"])}
           class="button button--sm"
         >
           Open Lorem & Donec
-        </button>
-        <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
+        </.action>
+        <.action phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
+        <.action phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
           Open Lorem
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value={Enum.join(["lorem", "donec"], ",")}
           class="button button--sm"
         >
           Open Lorem & Donec
-        </button>
-        <button phx-click="set_value" value="" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="" class="button button--sm">
           Close all Items
-        </button>
-        <button phx-click="get_value" class="button button--sm">
+        </.action>
+        <.action phx-click="get_value" class="button button--sm">
           Get current value
-        </button>
-        <button phx-click="get_focused_value" class="button button--sm">
+        </.action>
+        <.action phx-click="get_focused_value" class="button button--sm">
           Get focused value
-        </button>
+        </.action>
       </div>
       <div :if={@accordion_value != nil || @accordion_focused_value != nil} class="layout__row">
         <p :if={@accordion_value != nil}>

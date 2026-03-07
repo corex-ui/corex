@@ -16,9 +16,9 @@ defmodule E2eWeb.AdminLive.Index do
       <.header>
         Listing Admins
         <:actions>
-          <.button class="button button--accent" navigate={~p"/#{@locale}/admins/new"}>
+          <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
             <.icon name="hero-plus" /> New Admin
-          </.button>
+          </.navigate>
         </:actions>
       </.header>
 

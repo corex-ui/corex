@@ -32,20 +32,20 @@ defmodule CorexWeb.Select do
   capture variants: [
             basic: %{
               class: "select",
-              placeholder_text: "Select a country",
-              collection: @collection,
+              placeholder: "Select a country",
+              items: @collection,
               trigger: [%{inner_block: "<.icon name=\"hero-chevron-down\" />"}]
             },
             grouped: %{
               class: "select",
-              placeholder_text: "Select a country",
-              collection: @grouped_collection,
+              placeholder: "Select a country",
+              items: @grouped_collection,
               trigger: [%{inner_block: "<.icon name=\"hero-chevron-down\" />"}]
             },
             with_value: %{
               class: "select",
-              placeholder_text: "Select a country",
-              collection: @collection,
+              placeholder: "Select a country",
+              items: @collection,
               value: ["bel"],
               trigger: [%{inner_block: "<.icon name=\"hero-chevron-down\" />"}]
             }

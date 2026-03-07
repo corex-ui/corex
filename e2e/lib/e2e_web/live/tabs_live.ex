@@ -24,37 +24,37 @@ defmodule E2eWeb.TabsLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Tabs.set_value("my-tabs", "lorem")}
           class="button button--sm"
         >
           Open Item 1
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Tabs.set_value("my-tabs", "duis")}
           class="button button--sm"
         >
           Open Item 1 and 2
-        </button>
-        <button phx-click={Corex.Tabs.set_value("my-tabs", nil)} class="button button--sm">
+        </.action>
+        <.action phx-click={Corex.Tabs.set_value("my-tabs", nil)} class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="lorem" class="button button--sm">
+        <.action phx-click="set_value" value="lorem" class="button button--sm">
           Open Item 1
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value="duis"
           class="button button--sm"
         >
           Open Item 1 and 2
-        </button>
-        <button phx-click="set_value" value={nil} class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value={nil} class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <.tabs
         id="my-tabs"

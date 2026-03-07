@@ -10,20 +10,41 @@ defmodule Corex.SelectTest do
       assert html =~ ~r/data-part="root"/
     end
 
-    test "uses placeholder_fallback for aria-label and placeholder span when no selection" do
+    test "has data-js=pending on root" do
+      html = render_component(&CorexTest.ComponentHelpers.render_select/1, [])
+      assert html =~ ~r/data-js="pending"/
+    end
+
+    test "controlled select has data-value" do
+      html = render_component(&CorexTest.ComponentHelpers.render_select_controlled_multiple/1, [])
+      assert html =~ ~r/data-value="a"/
+    end
+
+    test "uncontrolled select with value has data-default-value" do
+      html = render_component(&CorexTest.ComponentHelpers.render_select_uncontrolled_value/1, [])
+      assert html =~ ~r/data-default-value="a"/
+    end
+
+    test "with field from form has correct name and id" do
+      html = render_component(&CorexTest.ComponentHelpers.render_select_with_field/1, [])
+      assert html =~ ~r/name="user\[country\]"/
+      assert html =~ ~r/id="user_country"/
+    end
+
+    test "uses placeholder for aria-label and placeholder span when no selection" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
-          placeholder_fallback: "Select an option"
+          placeholder: "Select an option"
         )
 
       assert html =~ ~r/aria-label="Select an option"/
       assert html =~ "Select an option"
     end
 
-    test "uses custom placeholder_fallback when provided" do
+    test "uses custom placeholder when provided" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
-          placeholder_fallback: "Choose one"
+          placeholder: "Choose one"
         )
 
       assert html =~ "Choose one"
@@ -86,7 +107,7 @@ defmodule Corex.SelectTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-select",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr"
@@ -99,7 +120,7 @@ defmodule Corex.SelectTest do
     test "returns props when controlled" do
       assigns = %{
         id: "test-select",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr"
@@ -112,7 +133,7 @@ defmodule Corex.SelectTest do
     test "returns props with redirect" do
       assigns = %{
         id: "test-select",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -126,7 +147,7 @@ defmodule Corex.SelectTest do
     test "returns props with positioning" do
       assigns = %{
         id: "test-select",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -140,7 +161,7 @@ defmodule Corex.SelectTest do
     test "returns props with on_value_change" do
       assigns = %{
         id: "test-select",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -154,7 +175,7 @@ defmodule Corex.SelectTest do
     test "returns props with on_value_change_client" do
       assigns = %{
         id: "test-select",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: [],
         dir: "ltr",
@@ -181,6 +202,8 @@ defmodule Corex.SelectTest do
 
   defp default_select_props do
     %{
+      id: "test-select",
+      items: [%{id: "a", label: "A"}],
       invalid: false,
       read_only: false,
       disabled: false,
@@ -191,6 +214,9 @@ defmodule Corex.SelectTest do
       multiple: false,
       form: nil,
       required: false,
+      value: [],
+      controlled: false,
+      dir: "ltr",
       positioning: nil,
       on_value_change: nil,
       on_value_change_client: nil,

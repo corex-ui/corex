@@ -215,7 +215,10 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   def copy_new_files(%Context{} = context, paths, binding) do
     files = files_to_be_generated(context)
     Mix.Corex.copy_from(paths, "priv/templates/corex.gen.html", binding, files)
-    if context.generate?, do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
+
+    if context.generate?,
+      do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
+
     context
   end
 

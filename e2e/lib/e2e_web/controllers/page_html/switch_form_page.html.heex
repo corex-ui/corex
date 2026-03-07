@@ -1,0 +1,17 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Switch form</h1>
+  <p>Plain HTML form (no LiveView)</p>
+  <form action={~p"/#{@locale}/switch/form"} method="post" id="switch-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.switch name="notifications" id="switch-form-notifications" class="switch">
+      <:label>Enable notifications</:label>
+    </.switch>
+    <.action type="submit" id="switch-form-submit" class="button button--accent">Submit</.action>
+  </form>
+</Layouts.app>

@@ -351,6 +351,7 @@ defmodule Corex.Checkbox do
     <div
       id={@id}
       phx-hook="Checkbox"
+      data-js="pending"
       {@rest}
       {Connect.props(%Props{
         id: @id,

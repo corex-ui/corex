@@ -9,7 +9,7 @@ defmodule Corex.Select.Anatomy do
 
     defstruct [
       :id,
-      collection: [],
+      items: [],
       controlled: false,
       placeholder: nil,
       value: [],
@@ -32,7 +32,7 @@ defmodule Corex.Select.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            collection: list(Tree.Item.t() | map()),
+            items: list(Tree.Item.t() | map()),
             controlled: boolean(),
             placeholder: String.t() | nil,
             value: list(String.t()),

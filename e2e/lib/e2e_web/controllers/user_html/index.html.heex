@@ -8,9 +8,9 @@
   <.header>
     Listing Users
     <:actions>
-      <.button href={~p"/#{@locale}/users/new"} class="button button--accent">
+      <.navigate to={~p"/#{@locale}/users/new"} type="href" class="button button--accent">
         <.icon name="hero-plus" /> New User
-      </.button>
+      </.navigate>
     </:actions>
   </.header>
 

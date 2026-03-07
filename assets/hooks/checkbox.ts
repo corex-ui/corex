@@ -3,7 +3,7 @@ import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/typ
 import { Checkbox } from "../components/checkbox";
 import type { CheckedChangeDetails } from "@zag-js/checkbox";
 
-import { getString, getBoolean, getDir } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
 
 type CheckboxHookState = {
   checkbox?: Checkbox;
@@ -33,7 +33,7 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
 
       onCheckedChange: (details: CheckedChangeDetails) => {
         const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             checked: details.checked,
             id: el.id,
@@ -46,8 +46,8 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
             new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: {
-                value: details,
                 id: el.id,
+                checked: details.checked,
               },
             })
           );

@@ -8,8 +8,8 @@
   <.select
     class="select"
     field={f[:country]}
-    placeholder_text="Select a country"
-    collection={[
+    placeholder="Select a country"
+    items={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -68,7 +68,7 @@
     </:error>
   </.checkbox>
   <footer class="flex w-full justify-between gap-ui-gap">
-    <.button :if={@return_to} href={@return_to} class="button">Cancel</.button>
-    <.button class="button button--accent ">Save User</.button>
+    <.navigate :if={@return_to} to={@return_to} type="href" class="button">Cancel</.navigate>
+    <.action type="submit" class="button button--accent">Save User</.action>
   </footer>
 </.form>

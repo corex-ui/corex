@@ -24,27 +24,27 @@ defmodule E2eWeb.DatePickerLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-01-15")}
           class="button button--sm"
         >
           Set to 2024-01-15
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-12-25")}
           class="button button--sm"
         >
           Set to 2024-12-25
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="2024-01-15" class="button button--sm">
+        <.action phx-click="set_value" value="2024-01-15" class="button button--sm">
           Set to 2024-01-15
-        </button>
-        <button phx-click="set_value" value="2024-12-25" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="2024-12-25" class="button button--sm">
           Set to 2024-12-25
-        </button>
+        </.action>
       </div>
       <.date_picker
         id="my-date-picker"

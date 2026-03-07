@@ -60,37 +60,37 @@ defmodule E2eWeb.AccordionControlledLive do
       </div>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
           class="button button--sm"
         >
           Open Item 1
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "duis"])}
           class="button button--sm"
         >
           Open Item 1 and 2
-        </button>
-        <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
+        </.action>
+        <.action phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
+        <.action phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
           Open Item 1
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value={Enum.join(["lorem", "duis"], ",")}
           class="button button--sm"
         >
           Open Item 1 and 2
-        </button>
-        <button phx-click="set_value" value="" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="" class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <.accordion
         id="my-accordion"

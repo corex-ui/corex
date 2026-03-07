@@ -1,10 +1,11 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-3L7DS5JZ.mjs";
+} from "./chunk-FVGZORDS.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
@@ -19,7 +20,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-BVJBLYEU.mjs";
+} from "./chunk-UK7T6PHM.mjs";
 
 // ../node_modules/.pnpm/@zag-js+checkbox@1.35.3/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
@@ -348,7 +349,7 @@ var CheckboxHook = {
       readOnly: getBoolean(el, "readOnly"),
       onCheckedChange: (details) => {
         const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             checked: details.checked,
             id: el.id
@@ -360,8 +361,8 @@ var CheckboxHook = {
             new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: {
-                value: details,
-                id: el.id
+                id: el.id,
+                checked: details.checked
               }
             })
           );

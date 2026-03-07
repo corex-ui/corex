@@ -37,6 +37,28 @@ defmodule E2eWeb.PageController do
     render(conn, :checkbox_page)
   end
 
+  def checkbox_form_page(conn, _params) do
+    render(conn, :checkbox_form_page)
+  end
+
+  def checkbox_form_submit(conn, params) do
+    terms = params["terms"] || params["user"]["terms"]
+    conn
+    |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/checkbox/form")
+  end
+
+  def switch_form_page(conn, _params) do
+    render(conn, :switch_form_page)
+  end
+
+  def switch_form_submit(conn, params) do
+    notifications = params["notifications"] || params["user"]["notifications"]
+    conn
+    |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/switch/form")
+  end
+
   def toast_page(conn, params) do
     initial_values = %{
       message: params["message"] || "Hello, World!",
@@ -73,6 +95,17 @@ defmodule E2eWeb.PageController do
 
   def select_page(conn, _params) do
     render(conn, :select_page)
+  end
+
+  def select_form_page(conn, _params) do
+    render(conn, :select_form_page)
+  end
+
+  def select_form_submit(conn, params) do
+    country = params["country"] || params["select_form"]["country"]
+    conn
+    |> put_flash(:info, "Submitted: country=#{inspect(country)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/select/form")
   end
 
   def tabs_page(conn, _params) do

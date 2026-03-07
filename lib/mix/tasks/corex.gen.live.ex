@@ -240,7 +240,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       )
 
     Mix.Corex.copy_from(paths, "priv/templates/corex.gen.live", binding, files)
-    if context.generate?, do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
+
+    if context.generate?,
+      do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
 
     context
   end

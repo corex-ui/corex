@@ -149,6 +149,10 @@ defmodule Mix.Tasks.Corex.New.UmbrellaTest do
 
       assert_file(web_path(@app, "test/#{@app}_web/controllers/page_controller_test.exs"))
       assert_file(web_path(@app, "test/#{@app}_web/controllers/error_html_test.exs"))
+      assert_file(web_path(@app, "lib/#{@app}_web/controllers/error_html/404.html.heex"), fn file ->
+        assert file =~ "404"
+        assert file =~ "does not exist"
+      end)
       assert_file(web_path(@app, "test/#{@app}_web/controllers/error_json_test.exs"))
       assert_file(web_path(@app, "test/support/conn_case.ex"))
       assert_file(web_path(@app, "test/test_helper.exs"))
