@@ -80,7 +80,7 @@ defmodule E2e.MixProject do
       {:ex_cldr_languages, "~> 0.3"},
       {:ex_cldr_territories, "~> 2.10.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
-      {:designex, "~> 1.0", only: :dev}
+      {:designex, "~> 1.0", only: [:dev, :test]}
     ]
   end
 
