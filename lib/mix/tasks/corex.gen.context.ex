@@ -9,6 +9,8 @@ defmodule Mix.Tasks.Corex.Gen.Context do
 
   use Mix.Task
 
+  alias Mix.Tasks.Phx.Gen.Context, as: PhxContext
+
   @doc false
-  def run(args), do: Mix.Tasks.Phx.Gen.Context.run(args)
+  def run(args), do: PhxContext.run(args)
 end

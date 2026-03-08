@@ -3,6 +3,7 @@ defmodule E2eWeb.SelectFormLive do
 
   alias E2e.Form.SelectForm
   alias Corex.Form
+  alias Corex.Toast
 
   @country_collection [
     %{label: "France", id: "fra"},
@@ -18,7 +19,6 @@ defmodule E2eWeb.SelectFormLive do
     {:ok,
      socket
      |> assign(:page_title, "Select form")
-     |> assign(:submitted, nil)
      |> assign(:country_collection, @country_collection)
      |> assign_form()}
   end
@@ -27,7 +27,7 @@ defmodule E2eWeb.SelectFormLive do
     form =
       %SelectForm{}
       |> SelectForm.changeset(%{})
-      |> Phoenix.Component.to_form(as: :select_form)
+      |> Phoenix.Component.to_form(as: :select_form, id: "select-form")
 
     assign(socket, :form, form)
   end
@@ -41,7 +41,7 @@ defmodule E2eWeb.SelectFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :select_form))}
+     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :select_form, id: "select-form"))}
   end
 
   @impl true
@@ -49,21 +49,23 @@ defmodule E2eWeb.SelectFormLive do
     case SelectForm.changeset(%SelectForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
+        message = "Submitted: country=#{data.country}"
 
         {:noreply,
          socket
-         |> assign(:submitted, %{country: data.country})
+         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
          |> assign(
            :form,
            Phoenix.Component.to_form(SelectForm.changeset(%SelectForm{}, params),
-             as: :select_form
+             as: :select_form,
+             id: "select-form"
            )
          )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :select_form))}
+         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :select_form, id: "select-form"))}
     end
   end
 
@@ -78,7 +80,7 @@ defmodule E2eWeb.SelectFormLive do
       current_path={@current_path}
     >
       <h1>Select form (LiveView)</h1>
-      <p>Phoenix form with Ecto changeset and controlled select</p>
+      <p>Phoenix form with Ecto changeset and select</p>
 
       <.form
         for={@form}
@@ -89,7 +91,6 @@ defmodule E2eWeb.SelectFormLive do
         <.select
           field={@form[:country]}
           class="select"
-          controlled
           id="select-form-country"
           placeholder="Select a country"
           items={@country_collection}
@@ -107,10 +108,6 @@ defmodule E2eWeb.SelectFormLive do
           Submit
         </.action>
       </.form>
-
-      <div :if={@submitted} id="select-form-result">
-        <p>Submitted: country={@submitted.country}</p>
-      </div>
     </Layouts.app>
     """
   end

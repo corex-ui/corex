@@ -1,0 +1,30 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Number Input form</h1>
+  <p>Plain HTML form (no LiveView)</p>
+  <form action={~p"/#{@locale}/number-input/form"} method="post" id="number-input-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.number_input
+      name="number_input_form[value]"
+      id="number-input-form-value"
+      default_value="0"
+      class="number-input"
+    >
+      <:label>Value</:label>
+      <:decrement_trigger>
+        <.icon name="hero-chevron-down" class="icon" />
+      </:decrement_trigger>
+      <:increment_trigger>
+        <.icon name="hero-chevron-up" class="icon" />
+      </:increment_trigger>
+    </.number_input>
+    <.action type="submit" id="number-input-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

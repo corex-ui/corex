@@ -266,57 +266,67 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     |> Enum.reject(fn {_key, type} -> type == :map end)
     |> Enum.map(fn
       {key, :integer} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="number" label="#{label(key)}" />)
+        native_input_block("number", key, label(key))
 
       {key, :float} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="number" label="#{label(key)}" step="any" />)
+        native_input_block("number", key, label(key), ~s( step="any"))
 
       {key, :decimal} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="number" label="#{label(key)}" step="any" />)
+        native_input_block("number", key, label(key), ~s( step="any"))
 
       {key, :boolean} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="checkbox" label="#{label(key)}" />)
+        native_input_block("checkbox", key, label(key))
 
       {key, :text} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="textarea" label="#{label(key)}" />)
+        native_input_block("textarea", key, label(key))
 
       {key, :date} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="date" label="#{label(key)}" />)
+        native_input_block("date", key, label(key))
 
       {key, :time} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="time" label="#{label(key)}" />)
+        native_input_block("time", key, label(key))
 
       {key, :utc_datetime} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="datetime-local" label="#{label(key)}" />)
+        native_input_block("datetime-local", key, label(key))
 
       {key, :naive_datetime} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="datetime-local" label="#{label(key)}" />)
+        native_input_block("datetime-local", key, label(key))
 
       {key, {:array, _} = type} ->
         ~s"""
-        <.input
+        <.native_input
           field={f[#{inspect(key)}]}
           type="select"
           multiple
-          label="#{label(key)}"
           options={#{inspect(default_options(type))}}
-        />
+        >
+          <:label>#{label(key)}</:label>
+        </.native_input>
         """
 
       {key, {:enum, _}} ->
         ~s"""
-        <.input
+        <.native_input
           field={f[#{inspect(key)}]}
           type="select"
-          label="#{label(key)}"
           prompt="Choose a value"
           options={Ecto.Enum.values(#{inspect(schema.module)}, #{inspect(key)})}
-        />
+        >
+          <:label>#{label(key)}</:label>
+        </.native_input>
         """
 
       {key, _} ->
-        ~s(<.input field={f[#{inspect(key)}]} type="text" label="#{label(key)}" />)
+        native_input_block("text", key, label(key))
     end)
+  end
+
+  defp native_input_block(type, key, label_text, extra_attrs \\ "") do
+    ~s"""
+    <.native_input field={f[#{inspect(key)}]} type="#{type}"#{extra_attrs}>
+      <:label>#{label_text}</:label>
+    </.native_input>
+    """
   end
 
   defp default_options({:array, :string}),

@@ -445,6 +445,8 @@ defmodule E2eWeb.Layouts do
     Corex.Tree.new([
       component_item("Angle Slider", "angle-slider", locale,
         extra: [
+          [label: "Form", id: "/#{locale}/angle-slider/form"],
+          [label: "Form Live", id: "/#{locale}/live/angle-slider/form"],
           [label: "Playground", id: "/#{locale}/playground/angle-slider"],
           [label: "Controlled", id: "/#{locale}/controlled/angle-slider"]
         ]
@@ -452,39 +454,80 @@ defmodule E2eWeb.Layouts do
       component_item("Checkbox", "checkbox", locale,
         extra: [
           [label: "Form", id: "/#{locale}/checkbox/form"],
-          [label: "Form (Live)", id: "/#{locale}/live/checkbox/form"]
+          [label: "Form Live", id: "/#{locale}/live/checkbox/form"]
         ]
       ),
-      component_item("Color Picker", "color-picker", locale),
+      component_item("Color Picker", "color-picker", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/color-picker/form"],
+          [label: "Form Live", id: "/#{locale}/live/color-picker/form"]
+        ]
+      ),
       component_item("Combobox", "combobox", locale,
         extra: [
-          [label: "Fetch", id: "/#{locale}/live/combobox-fetch"],
-          [label: "Form", id: "/#{locale}/live/combobox-form"]
+          [label: "Form", id: "/#{locale}/combobox/form"],
+          [label: "Form Live", id: "/#{locale}/live/combobox-form"],
+          [label: "Fetch", id: "/#{locale}/live/combobox-fetch"]
         ]
       ),
-      component_item("Date Picker", "date-picker", locale),
-      component_item("Editable", "editable", locale),
+      component_item("Date Picker", "date-picker", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/date-picker/form"],
+          [label: "Form Live", id: "/#{locale}/live/date-picker/form"]
+        ]
+      ),
+      component_item("Editable", "editable", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/editable/form"],
+          [label: "Form Live", id: "/#{locale}/live/editable/form"]
+        ]
+      ),
       component_item("Native Input", "native-input", locale,
         extra: [
           [label: "Form", id: "/#{locale}/native-input/form"],
-          [label: "Form (Live)", id: "/#{locale}/live/native-input/form"]
+          [label: "Form Live", id: "/#{locale}/live/native-input/form"]
         ]
       ),
-      component_item("Number Input", "number-input", locale),
-      component_item("Password Input", "password-input", locale),
-      component_item("Pin Input", "pin-input", locale),
-      component_item("Radio Group", "radio-group", locale),
+      component_item("Number Input", "number-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/number-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/number-input/form"]
+        ]
+      ),
+      component_item("Password Input", "password-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/password-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/password-input/form"]
+        ]
+      ),
+      component_item("Pin Input", "pin-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/pin-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/pin-input/form"]
+        ]
+      ),
+      component_item("Radio Group", "radio-group", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/radio-group/form"],
+          [label: "Form Live", id: "/#{locale}/live/radio-group/form"]
+        ]
+      ),
       component_item("Select", "select", locale,
         extra: [
           [label: "Form", id: "/#{locale}/select/form"],
-          [label: "Form (Live)", id: "/#{locale}/live/select/form"]
+          [label: "Form Live", id: "/#{locale}/live/select/form"]
         ]
       ),
-      component_item("Signature", "signature", locale),
+      component_item("Signature", "signature", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/signature/form"],
+          [label: "Form Live", id: "/#{locale}/live/signature/form"]
+        ]
+      ),
       component_item("Switch", "switch", locale,
         extra: [
           [label: "Form", id: "/#{locale}/switch/form"],
-          [label: "Form (Live)", id: "/#{locale}/live/switch/form"]
+          [label: "Form Live", id: "/#{locale}/live/switch/form"]
         ]
       )
     ])

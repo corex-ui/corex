@@ -16,6 +16,23 @@ defmodule E2eWeb.NativeInputModel do
     fill_in(session, css("##{input_id}"), with: value)
   end
 
+  def fill_input_via_script(session, id, value) when is_binary(value) do
+    input_id = if String.ends_with?(id, "-input"), do: id, else: "#{id}-input"
+    escaped = String.replace(value, "'", "\\'")
+    script = """
+    (function() {
+      var el = document.getElementById('#{input_id}');
+      if (!el) return 'not found';
+      el.value = '#{escaped}';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return 'ok';
+    })()
+    """
+    Wallaby.Browser.execute_script(session, script)
+    session
+  end
+
   def fill_input_by_label(session, label, value) do
     fill_in(session, text_field(label), with: value)
   end
@@ -38,10 +55,10 @@ defmodule E2eWeb.NativeInputModel do
   end
 
   def see_submitted_value(session, key, value) do
-    assert_has(session, Wallaby.Query.text("#{key}=#{value}"))
+    wait_for_text(session, "#{key}=#{value}")
   end
 
   def see_flash(session, flash_text) do
-    assert_has(session, Wallaby.Query.text(flash_text))
+    wait_for_text(session, flash_text)
   end
 end

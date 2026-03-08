@@ -8,12 +8,13 @@ defmodule E2e.Form.NativeInputProfile do
     field :birth_date, :date
     field :reminder_time, :time
     field :role, :string
+    field :tags, {:array, :string}, default: []
     field :agree, :boolean, default: false
   end
 
   def changeset(profile, attrs \\ %{}) do
     profile
-    |> cast(attrs, [:name, :email, :birth_date, :reminder_time, :role, :agree])
+    |> cast(attrs, [:name, :email, :birth_date, :reminder_time, :role, :tags, :agree])
     |> validate_required([:name, :email, :agree])
     |> validate_acceptance(:agree)
   end

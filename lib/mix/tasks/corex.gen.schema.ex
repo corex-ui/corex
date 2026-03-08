@@ -9,6 +9,8 @@ defmodule Mix.Tasks.Corex.Gen.Schema do
 
   use Mix.Task
 
+  alias Mix.Tasks.Phx.Gen.Schema, as: PhxSchema
+
   @doc false
-  def run(args), do: Mix.Tasks.Phx.Gen.Schema.run(args)
+  def run(args), do: PhxSchema.run(args)
 end

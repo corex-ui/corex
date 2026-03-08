@@ -134,6 +134,17 @@ defmodule E2eWeb.NativeInputLive do
         >
           <:label>Role</:label>
         </.native_input>
+        <.native_input
+          type="select"
+          multiple
+          id="select-multiple"
+          name="user[tags][]"
+          options={[{"Elixir", "elixir"}, {"Phoenix", "phoenix"}, {"LiveView", "liveview"}, {"Ecto", "ecto"}, {"OTP", "otp"}]}
+          prompt="Choose tags..."
+          class="native-input"
+        >
+          <:label>Tags</:label>
+        </.native_input>
       </div>
     </Layouts.app>
     """

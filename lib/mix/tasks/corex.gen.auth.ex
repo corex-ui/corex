@@ -153,8 +153,10 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   use Mix.Task
 
   alias Mix.Phoenix.{Context, Schema}
-  alias Mix.Tasks.Phx.Gen
+  alias Mix.Phoenix.Scope
   alias Mix.Tasks.Corex.Gen.Auth.{HashingLibrary, Injector, Migration}
+  alias Mix.Tasks.Phx.Gen
+  alias Mix.Tasks.Phx.Gen.Notifier
 
   @switches [
     web: :string,
@@ -211,6 +213,8 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
 
     migration = Migration.build(ecto_adapter)
 
+    layout_opts = layout_generators_opts(context, web_app_name(context))
+
     binding = [
       context: context,
       schema: schema,
@@ -229,7 +233,11 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       datetime_now: datetime_now(schema),
       scope_config:
         scope_config(context, opts[:scope], Keyword.get(opts, :assign_key, "current_scope")),
-      agents_md: Keyword.get(opts, :agents_md, true)
+      agents_md: Keyword.get(opts, :agents_md, true),
+      layout_mode: layout_opts[:mode],
+      layout_theme: layout_opts[:theme],
+      layout_theme_switcher: layout_opts[:theme_switcher],
+      layout_language_switcher: layout_opts[:language_switcher]
     ]
 
     paths = Mix.Corex.generator_paths()
@@ -247,7 +255,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     |> maybe_inject_router_plug(binding)
     |> maybe_inject_app_layout_menu(binding)
     |> maybe_inject_agents_md(paths, binding)
-    |> Mix.Tasks.Phx.Gen.Notifier.maybe_print_mailer_installation_instructions()
+    |> Notifier.maybe_print_mailer_installation_instructions()
     |> print_shell_instructions()
   end
 
@@ -255,6 +263,18 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     context.web_module
     |> inspect()
     |> Phoenix.Naming.underscore()
+  end
+
+  defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
+    generators =
+      Application.get_env(context_app, :generators, [])[:layout] ||
+        (try do
+           Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
+         rescue
+           ArgumentError -> []
+         end)
+
+    generators || []
   end
 
   defp validate_args!([_, _, _]), do: :ok
@@ -333,7 +353,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp scope_config(context, requested_scope, assign_key) do
-    existing_scopes = Mix.Phoenix.Scope.scopes_from_config(context.context_app)
+    existing_scopes = Scope.scopes_from_config(context.context_app)
 
     {_, default_scope} =
       Enum.find(existing_scopes, {nil, nil}, fn {_, scope} -> scope.default end)
@@ -360,15 +380,15 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp find_scope_name(context, existing_scopes) do
     cond do
       # user
-      is_new_scope?(existing_scopes, context.schema.singular) ->
+      new_scope?(existing_scopes, context.schema.singular) ->
         context.schema.singular
 
       # accounts_user
-      is_new_scope?(existing_scopes, "#{context.basename}_#{context.schema.singular}") ->
+      new_scope?(existing_scopes, "#{context.basename}_#{context.schema.singular}") ->
         "#{context.basename}_#{context.schema.singular}"
 
       # my_app_accounts_user
-      is_new_scope?(
+      new_scope?(
         existing_scopes,
         "#{context.context_app}_#{context.basename}_#{context.schema.singular}"
       ) ->
@@ -378,20 +398,20 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
         Mix.raise("""
         Could not generate a scope name for #{context.schema.singular}! These scopes already exist:
 
-            * #{Enum.map(existing_scopes, fn {name, _scope} -> name end) |> Enum.join("\n    * ")}
+            * #{Enum.map_join(existing_scopes, "\n    * ", fn {name, _scope} -> name end)}
 
         You can customize the scope name by passing the --scope option.
         """)
     end
   end
 
-  defp is_new_scope?(existing_scopes, bin_key) do
+  defp new_scope?(existing_scopes, bin_key) do
     key = String.to_atom(bin_key)
     not Map.has_key?(existing_scopes, key)
   end
 
   defp new_scope(context, key, default_scope, assign_key) do
-    Mix.Phoenix.Scope.new!(key, %{
+    Scope.new!(key, %{
       default: !default_scope,
       module: Module.concat([context.module, "Scope"]),
       assign_key: String.to_atom(assign_key),
@@ -912,48 +932,43 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   end
 
   defp maybe_inject_agents_md(%Context{} = context, paths, binding) do
-    if binding[:agents_md] do
-      # we add our own comment marker (not related to usage_rules)
-      # to check if corex.gen.auth already ran as we only want to inject once
-      # even if other options were used
-      auth_content =
-        """
-        <!-- phoenix-gen-auth-start -->
-        #{Mix.Corex.eval_from(paths, "priv/templates/corex.gen.auth/AGENTS.md", binding)}
-        <!-- phoenix-gen-auth-end -->
-        """
+    if binding[:agents_md], do: do_inject_agents_md(context, paths, binding), else: context
+  end
 
-      file_path =
-        if Mix.Corex.in_umbrella?(File.cwd!()) do
-          Path.expand("../../")
-        else
-          File.cwd!()
-        end
-        |> Path.join("AGENTS.md")
+  defp do_inject_agents_md(context, paths, binding) do
+    auth_content =
+      """
+      <!-- phoenix-gen-auth-start -->
+      #{Mix.Corex.eval_from(paths, "priv/templates/corex.gen.auth/AGENTS.md", binding)}
+      <!-- phoenix-gen-auth-end -->
+      """
 
-      with true <- File.exists?(file_path),
-           content = File.read!(file_path),
-           false <- content =~ "<!-- phoenix-gen-auth-start -->" do
-        print_injecting(file_path)
-        # inject before usage rules
-        case String.split(content, "<!-- usage-rules-start -->", parts: 2) do
-          [pre, post] ->
-            File.write!(file_path, [
-              pre,
-              String.trim_trailing(auth_content),
-              "\n\n",
-              "<!-- usage-rules-start -->",
-              post
-            ])
+    file_path =
+      (if Mix.Corex.in_umbrella?(File.cwd!()), do: Path.expand("../../"), else: File.cwd!())
+      |> Path.join("AGENTS.md")
 
-          _ ->
-            # just append
-            File.write!(file_path, content <> "\n\n" <> String.trim_trailing(auth_content))
-        end
-      end
+    if File.exists?(file_path), do: maybe_inject_agents_md_file(context, file_path, auth_content), else: context
+  end
+
+  defp maybe_inject_agents_md_file(context, file_path, auth_content) do
+    content = File.read!(file_path)
+    unless content =~ "<!-- phoenix-gen-auth-start -->" do
+      inject_agents_md_content(file_path, content, auth_content)
     end
-
     context
+  end
+
+  defp inject_agents_md_content(file_path, content, auth_content) do
+    print_injecting(file_path)
+    new_content =
+      case String.split(content, "<!-- usage-rules-start -->", parts: 2) do
+        [pre, post] ->
+          [pre, String.trim_trailing(auth_content), "\n\n", "<!-- usage-rules-start -->", post]
+
+        _ ->
+          content <> "\n\n" <> String.trim_trailing(auth_content)
+      end
+    File.write!(file_path, new_content)
   end
 
   defp print_shell_instructions(%Context{} = context) do

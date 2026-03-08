@@ -352,7 +352,10 @@ defmodule Corex.New.Generator do
       web_adapter_module: web_adapter_module,
       web_adapter_vsn: web_adapter_vsn,
       web_adapter_docs: web_adapter_docs,
-      generators: nil_if_empty(project.generators ++ adapter_generators(adapter_config)),
+      generators: nil_if_empty(
+        project.generators ++ adapter_generators(adapter_config) ++
+          layout_generators(mode, theme, theme_switcher, language_switcher)
+      ),
       namespaced?: namespaced?(project),
       dev: dev,
       inside_docker_env?: inside_docker_env?,
@@ -528,6 +531,21 @@ defmodule Corex.New.Generator do
     |> Keyword.take([:binary_id, :migration, :sample_binary_id])
     |> Enum.filter(fn {_, value} -> not is_nil(value) end)
   end
+
+  defp layout_generators(mode, theme, theme_switcher, language_switcher) do
+    layout_opts =
+      []
+      |> maybe_put(:mode, mode)
+      |> maybe_put(:theme, theme)
+      |> maybe_put(:theme_switcher, theme_switcher)
+      |> maybe_put(:language_switcher, language_switcher)
+
+    if layout_opts == [], do: [], else: [layout: layout_opts]
+  end
+
+  defp maybe_put(list, _key, false), do: list
+  defp maybe_put(list, _key, nil), do: list
+  defp maybe_put(list, key, _value), do: Keyword.put(list, key, true)
 
   defp nil_if_empty([]), do: nil
   defp nil_if_empty(other), do: other

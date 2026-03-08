@@ -3,13 +3,13 @@ defmodule E2eWeb.SwitchFormLive do
 
   alias E2e.Form.Preferences
   alias Corex.Form
+  alias Corex.Toast
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:page_title, "Switch form")
-     |> assign(:submitted, nil)
      |> assign_form()}
   end
 
@@ -39,10 +39,11 @@ defmodule E2eWeb.SwitchFormLive do
     case Preferences.changeset(%Preferences{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
+        message = "Submitted: notifications=#{data.notifications}"
 
         {:noreply,
          socket
-         |> assign(:submitted, %{notifications: data.notifications})
+         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
          |> assign(
            :form,
            Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, params),
@@ -76,13 +77,6 @@ defmodule E2eWeb.SwitchFormLive do
         phx-change="validate"
         phx-submit="save"
       >
-        <.checkbox field={@form[:terms]} class="checkbox" controlled>
-          <:label>Accept terms</:label>
-          <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.checkbox>
         <.switch field={@form[:notifications]} class="switch" controlled>
           <:label>Enable notifications</:label>
           <:error :let={msg}>
@@ -94,10 +88,6 @@ defmodule E2eWeb.SwitchFormLive do
           Submit
         </.action>
       </.form>
-
-      <div :if={@submitted} id="switch-form-result">
-        <p>Submitted: notifications={@submitted.notifications}</p>
-      </div>
     </Layouts.app>
     """
   end

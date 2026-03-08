@@ -36,26 +36,31 @@ defmodule Mix.Corex do
       )
 
     for {format, source_file_path, target} <- mapping do
-      source =
-        Enum.find_value(roots, fn root ->
-          source = Path.join(root, source_file_path)
-          if File.exists?(source), do: source
-        end) || raise "could not find #{source_file_path} in any of the sources"
+      source = find_source(roots, source_file_path)
+      copy_from_format(format, source, target, binding)
+    end
+  end
 
-      case format do
-        :text ->
-          Mix.Generator.create_file(target, File.read!(source))
+  defp find_source(roots, source_file_path) do
+    Enum.find_value(roots, fn root ->
+      path = Path.join(root, source_file_path)
+      if File.exists?(path), do: path
+    end) || raise "could not find #{source_file_path} in any of the sources"
+  end
 
-        :eex ->
-          Mix.Generator.create_file(target, EEx.eval_file(source, binding))
+  defp copy_from_format(:text, source, target, _binding) do
+    Mix.Generator.create_file(target, File.read!(source))
+  end
 
-        :new_eex ->
-          if File.exists?(target) do
-            :ok
-          else
-            Mix.Generator.create_file(target, EEx.eval_file(source, binding))
-          end
-      end
+  defp copy_from_format(:eex, source, target, binding) do
+    Mix.Generator.create_file(target, EEx.eval_file(source, binding))
+  end
+
+  defp copy_from_format(:new_eex, source, target, binding) do
+    if File.exists?(target) do
+      :ok
+    else
+      Mix.Generator.create_file(target, EEx.eval_file(source, binding))
     end
   end
 

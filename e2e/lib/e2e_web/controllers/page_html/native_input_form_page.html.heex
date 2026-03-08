@@ -56,6 +56,17 @@
       <:label>Role</:label>
     </.native_input>
     <.native_input
+      type="select"
+      multiple
+      name="profile[tags][]"
+      id="native-input-form-tags"
+      options={[Elixir: "elixir", Phoenix: "phoenix", LiveView: "liveview", Ecto: "ecto", OTP: "otp"]}
+      prompt="Choose tags..."
+      class="native-input"
+    >
+      <:label>Tags</:label>
+    </.native_input>
+    <.native_input
       type="checkbox"
       name="profile[agree]"
       id="native-input-form-agree"

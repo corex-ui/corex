@@ -19,16 +19,34 @@ defmodule E2eWeb.SelectModel do
     click(session, css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
   end
 
+  def set_select_value(session, id, value) do
+    hidden_id = if String.ends_with?(id, "-value"), do: id, else: "#{id}-value"
+
+    script = """
+    (function() {
+      var el = document.getElementById('#{hidden_id}');
+      if (!el) return 'not found';
+      el.value = '#{value}';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return 'ok';
+    })()
+    """
+
+    Wallaby.Browser.execute_script(session, script)
+    session
+  end
+
   def submit_form(session, mode \\ :static) do
     id = if mode == :live, do: "select-form-live-submit", else: "select-form-submit"
     click(session, css("##{id}"))
   end
 
   def see_submitted_value(session, key, value) do
-    assert_has(session, Wallaby.Query.text("#{key}=#{value}"))
+    wait_for_text(session, "#{key}=#{value}")
   end
 
   def see_flash(session, flash_text) do
-    assert_has(session, Wallaby.Query.text(flash_text))
+    wait_for_text(session, flash_text)
   end
 end

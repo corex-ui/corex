@@ -1,0 +1,25 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Signature form</h1>
+  <p>Plain HTML form (no LiveView)</p>
+  <form action={~p"/#{@locale}/signature/form"} method="post" id="signature-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.signature_pad
+      name="signature_form[signature]"
+      id="signature-form-signature"
+    >
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.icon name="hero-x-mark" />
+      </:clear_trigger>
+    </.signature_pad>
+    <.action type="submit" id="signature-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

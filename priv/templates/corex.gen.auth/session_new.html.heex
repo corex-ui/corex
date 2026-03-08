@@ -1,4 +1,4 @@
-<Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
   <div class="mx-auto max-w-sm space-y-4">
     <div class="text-center">
       <div>
@@ -7,11 +7,11 @@
           <%%= if @<%= scope_config.scope.assign_key %> do %>
             You need to reauthenticate to perform sensitive actions on your account.
           <%% else %>
-            Don't have an account? <.link
-              navigate={~p"<%= schema.route_prefix %>/register"}
-              class="font-semibold text-brand hover:underline"
-              phx-no-format
-            >Sign up</.link> for an account now.
+            Don't have an account?
+            <.navigate to={~p"<%= schema.route_prefix %>/register"} class="link link--brand">
+              Sign up
+            </.navigate>
+            for an account now.
           <%% end %>
         </p>
       </div>
@@ -22,23 +22,29 @@
       <div>
         <p>You are running the local mail adapter.</p>
         <p>
-          To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
+          To see sent emails, visit <.navigate to="/dev/mailbox" class="link">the mailbox page</.navigate>.
         </p>
       </div>
     </div>
 
     <.form :let={f} for={@form} as={:<%= schema.singular %>} id="login_form_magic" action={~p"<%= schema.route_prefix %>/log-in"}>
-      <.input
+      <.native_input
         readonly={!!@<%= scope_config.scope.assign_key %>}
         field={f[:email]}
         type="email"
-        label="Email"
         autocomplete="username"
         spellcheck="false"
         required
         phx-mounted={JS.focus()}
-      />
-      <.action class="btn btn-primary w-full" type="submit">
+        class="native-input"
+      >
+        <:label>Email</:label>
+        <:error :let={msg}>{msg}</:error>
+      </.native_input>
+      <.action
+        class="button button--brand button--sm w-full"
+        type="submit"
+      >
         Log in with email <span aria-hidden="true">→</span>
       </.action>
     </.form>
@@ -46,26 +52,40 @@
     <div class="divider">or</div>
 
     <.form :let={f} for={@form} as={:<%= schema.singular %>} id="login_form_password" action={~p"<%= schema.route_prefix %>/log-in"}>
-      <.input
+      <.native_input
         readonly={!!@<%= scope_config.scope.assign_key %>}
         field={f[:email]}
         type="email"
-        label="Email"
         autocomplete="username"
         spellcheck="false"
         required
-      />
-      <.input
+        class="native-input"
+      >
+        <:label>Email</:label>
+        <:error :let={msg}>{msg}</:error>
+      </.native_input>
+      <.native_input
         field={f[:password]}
         type="password"
-        label="Password"
         autocomplete="current-password"
         spellcheck="false"
-      />
-      <.action class="btn btn-primary w-full" type="submit" name={@form[:remember_me].name} value="true">
+        class="native-input"
+      >
+        <:label>Password</:label>
+        <:error :let={msg}>{msg}</:error>
+      </.native_input>
+      <.action
+        class="button button--brand button--sm w-full"
+        type="submit"
+        name={@form[:remember_me].name}
+        value="true"
+      >
         Log in and stay logged in <span aria-hidden="true">→</span>
       </.action>
-      <.action class="btn btn-primary btn-soft w-full mt-2" type="submit">
+      <.action
+        class="button button--accent button--sm w-full mt-2"
+        type="submit"
+      >
         Log in only this time
       </.action>
     </.form>

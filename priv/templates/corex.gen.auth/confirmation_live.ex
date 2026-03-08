@@ -6,7 +6,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm">
         <div class="text-center">
           <h1 class="text-lg font-semibold">Welcome {@<%= schema.singular %>.email}</h1>
@@ -26,12 +26,16 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             name={@form[:remember_me].name}
             value="true"
             phx-disable-with="Confirming..."
-            class="btn btn-primary w-full"
+            class="button button--brand button--sm w-full"
             type="submit"
           >
             Confirm and stay logged in
           </.action>
-          <.action phx-disable-with="Confirming..." class="btn btn-primary btn-soft w-full mt-2" type="submit">
+          <.action
+            phx-disable-with="Confirming..."
+            class="button button--accent button--sm w-full mt-2"
+            type="submit"
+          >
             Confirm and log in only this time
           </.action>
         </.form>
@@ -47,7 +51,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
           <%%= if @<%= scope_config.scope.assign_key %> do %>
-            <.action phx-disable-with="Logging in..." class="btn btn-primary w-full" type="submit">
+            <.action
+              phx-disable-with="Logging in..."
+              class="button button--brand button--sm w-full"
+              type="submit"
+            >
               Log in
             </.action>
           <%% else %>
@@ -55,12 +63,16 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               name={@form[:remember_me].name}
               value="true"
               phx-disable-with="Logging in..."
-              class="btn btn-primary w-full"
+              class="button button--brand button--sm w-full"
               type="submit"
             >
               Keep me logged in on this device
             </.action>
-            <.action phx-disable-with="Logging in..." class="btn btn-primary btn-soft w-full mt-2" type="submit">
+            <.action
+              phx-disable-with="Logging in..."
+              class="button button--accent button--sm w-full mt-2"
+              type="submit"
+            >
               Log me in only this time
             </.action>
           <%% end %>

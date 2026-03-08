@@ -93,9 +93,17 @@ defmodule Corex.Helpers do
 
   def normalize_groups(items) when is_list(items) do
     if has_groups?(items) do
-      group_by_group(items)
-      |> Enum.map(fn {g, _} -> g end)
-      |> Enum.reject(&is_nil/1)
+      items
+      |> Enum.reduce({[], MapSet.new()}, fn item, {acc, seen} ->
+        g = Map.get(item, :group)
+        cond do
+          is_nil(g) -> {acc, seen}
+          MapSet.member?(seen, g) -> {acc, seen}
+          true -> {[g | acc], MapSet.put(seen, g)}
+        end
+      end)
+      |> elem(0)
+      |> Enum.reverse()
     else
       []
     end

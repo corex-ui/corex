@@ -182,14 +182,10 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp validate_context!(context) do
-    cond do
-      context.schema.singular == "form" ->
-        Gen.Context.raise_with_help(
-          "cannot use form as the schema name because it conflicts with the LiveView assigns!"
-        )
-
-      true ->
-        :ok
+    if context.schema.singular == "form" do
+      Gen.Context.raise_with_help(
+        "cannot use form as the schema name because it conflicts with the LiveView assigns!"
+      )
     end
   end
 

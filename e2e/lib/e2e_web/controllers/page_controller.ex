@@ -29,6 +29,20 @@ defmodule E2eWeb.PageController do
     render(conn, :combobox_page)
   end
 
+  def combobox_form_page(conn, _params) do
+    render(conn, :combobox_form_page)
+  end
+
+  def combobox_form_submit(conn, params) do
+    combobox_params = params["combobox"] || %{}
+    name = combobox_params["name"] || ""
+    country = combobox_params["country"] || combobox_params["airport"] || ""
+
+    conn
+    |> put_flash(:info, "Submitted: name=#{inspect(name)}, country=#{inspect(country)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/combobox/form")
+  end
+
   def color_picker_page(conn, _params) do
     render(conn, :color_picker_page)
   end
@@ -142,12 +156,61 @@ defmodule E2eWeb.PageController do
     |> render(:code_page)
   end
 
+  def angle_slider_form_page(conn, _params) do
+    render(conn, :angle_slider_form_page)
+  end
+
+  def angle_slider_form_submit(conn, params) do
+    angle = get_in(params, ["angle_slider_form", "angle"]) || "0"
+
+    conn
+    |> put_flash(:info, "Submitted: angle=#{angle}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/angle-slider/form")
+  end
+
+  def color_picker_form_page(conn, _params) do
+    render(conn, :color_picker_form_page)
+  end
+
+  def color_picker_form_submit(conn, params) do
+    color = get_in(params, ["color_picker_form", "color"]) || "#3b82f6"
+
+    conn
+    |> put_flash(:info, "Submitted: color=#{color}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/color-picker/form")
+  end
+
   def date_picker_page(conn, _params) do
     render(conn, :date_picker_page)
   end
 
+  def date_picker_form_page(conn, _params) do
+    render(conn, :date_picker_form_page)
+  end
+
+  def date_picker_form_submit(conn, params) do
+    date = get_in(params, ["date_picker_form", "date"]) || ""
+
+    conn
+    |> put_flash(:info, "Submitted: date=#{date}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/date-picker/form")
+  end
+
   def signature_page(conn, _params) do
     render(conn, :signature_page)
+  end
+
+  def signature_form_page(conn, _params) do
+    render(conn, :signature_form_page)
+  end
+
+  def signature_form_submit(conn, params) do
+    sig = get_in(params, ["signature_form", "signature"]) || ""
+    preview = if sig != "", do: String.slice(sig, 0, 30) <> "...", else: "(empty)"
+
+    conn
+    |> put_flash(:info, "Submitted: signature=#{preview}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/signature/form")
   end
 
   def menu_page(conn, _params) do
@@ -174,6 +237,18 @@ defmodule E2eWeb.PageController do
     render(conn, :editable_page, value_text: "My custom value")
   end
 
+  def editable_form_page(conn, _params) do
+    render(conn, :editable_form_page)
+  end
+
+  def editable_form_submit(conn, params) do
+    text = get_in(params, ["editable_form", "text"]) || ""
+
+    conn
+    |> put_flash(:info, "Submitted: text=#{inspect(text)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/editable/form")
+  end
+
   def native_input_page(conn, _params) do
     render(conn, :native_input_page)
   end
@@ -184,9 +259,10 @@ defmodule E2eWeb.PageController do
 
   def native_input_form_submit(conn, params) do
     profile = params["profile"] || %{}
+    tags = profile["tags"] || []
 
     conn
-    |> put_flash(:info, "Submitted: name=#{profile["name"]}, agree=#{profile["agree"]}")
+    |> put_flash(:info, "Submitted: name=#{profile["name"]}, agree=#{profile["agree"]}, tags=#{inspect(tags)}")
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/native-input/form")
   end
 
@@ -206,16 +282,62 @@ defmodule E2eWeb.PageController do
     render(conn, :number_input_page)
   end
 
+  def number_input_form_page(conn, _params) do
+    render(conn, :number_input_form_page)
+  end
+
+  def number_input_form_submit(conn, params) do
+    value = get_in(params, ["number_input_form", "value"]) || "0"
+
+    conn
+    |> put_flash(:info, "Submitted: value=#{value}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/number-input/form")
+  end
+
   def password_input_page(conn, _params) do
     render(conn, :password_input_page)
+  end
+
+  def password_input_form_page(conn, _params) do
+    render(conn, :password_input_form_page)
+  end
+
+  def password_input_form_submit(conn, _params) do
+    conn
+    |> put_flash(:info, "Submitted: password=***")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/password-input/form")
   end
 
   def pin_input_page(conn, _params) do
     render(conn, :pin_input_page)
   end
 
+  def pin_input_form_page(conn, _params) do
+    render(conn, :pin_input_form_page)
+  end
+
+  def pin_input_form_submit(conn, params) do
+    pin = get_in(params, ["pin_input_form", "pin"]) || ""
+
+    conn
+    |> put_flash(:info, "Submitted: pin=#{inspect(pin)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/pin-input/form")
+  end
+
   def radio_group_page(conn, _params) do
     render(conn, :radio_group_page)
+  end
+
+  def radio_group_form_page(conn, _params) do
+    render(conn, :radio_group_form_page)
+  end
+
+  def radio_group_form_submit(conn, params) do
+    choice = get_in(params, ["radio_group_form", "choice"]) || ""
+
+    conn
+    |> put_flash(:info, "Submitted: choice=#{inspect(choice)}")
+    |> redirect(to: ~p"/#{conn.assigns[:locale]}/radio-group/form")
   end
 
   def timer_page(conn, _params) do

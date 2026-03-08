@@ -26,7 +26,20 @@ defmodule E2eWeb.SelectFormTest do
     |> Select.see_flash("Submitted: country=")
   end
 
-  feature "live form (controlled) - submit without selection does not show success", %{
+  feature "live form - select country then submit shows success", %{session: session} do
+    session
+    |> Select.goto_form(:live)
+    |> Select.wait(500)
+    |> Select.click_select_trigger()
+    |> Select.wait(500)
+    |> Select.select_item("bel")
+    |> Select.wait(500)
+    |> Select.submit_form(:live)
+    |> Select.wait(2000)
+    |> Select.see_flash("country=bel")
+  end
+
+  feature "live form - submit without selection does not show success", %{
     session: session
   } do
     session =
@@ -38,19 +51,6 @@ defmodule E2eWeb.SelectFormTest do
 
     refute_has(session, Wallaby.Query.text("country=bel"))
     assert_has(session, Wallaby.Query.text("Country"))
-  end
-
-  feature "live form (controlled) - select country then submit shows success", %{session: session} do
-    session
-    |> Select.goto_form(:live)
-    |> Select.wait(500)
-    |> Select.click_select_trigger()
-    |> Select.wait(500)
-    |> Select.select_item("bel")
-    |> Select.wait(1000)
-    |> Select.submit_form(:live)
-    |> Select.wait(3000)
-    |> Select.see_submitted_value("country", "bel")
   end
 
   feature "static form - select form has no A11y violations", %{session: session} do

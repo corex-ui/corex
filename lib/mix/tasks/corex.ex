@@ -16,6 +16,8 @@ defmodule Mix.Tasks.Corex do
 
   @version Mix.Project.config()[:version]
 
+  alias Mix.Tasks.Help
+
   @impl true
   @doc false
   def run([version]) when version in ~w(-v --version) do
@@ -29,12 +31,12 @@ defmodule Mix.Tasks.Corex do
     end
   end
 
-  defp general() do
+  defp general do
     Application.ensure_all_started(:phoenix)
     Mix.shell().info("Phoenix v#{Application.spec(:phoenix, :vsn)}")
     Mix.shell().info("Peace of mind from prototype to production")
     Mix.shell().info("\n## Options\n")
     Mix.shell().info("-v, --version        # Prints Phoenix version\n")
-    Mix.Tasks.Help.run(["--search", "corex."])
+    Help.run(["--search", "corex."])
   end
 end

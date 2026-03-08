@@ -25,24 +25,20 @@ defmodule E2eWeb.SwitchModel do
     Wallaby.Browser.execute_script(session, "document.querySelector('#{selector}').focus()")
   end
 
-  def click_terms_checkbox(session) do
-    click(session, css("[data-scope='checkbox'][data-part='control']"))
-  end
-
   def submit_form(session, mode \\ :static) do
     id = if mode == :live, do: "switch-form-live-submit", else: "switch-form-submit"
     click(session, css("##{id}"))
   end
 
   def see_submitted_value(session, key, value) do
-    assert_has(session, Wallaby.Query.text("#{key}=#{value}"))
+    wait_for_text(session, "#{key}=#{value}")
   end
 
   def see_error(session, error_text) do
-    assert_has(session, Wallaby.Query.text(error_text))
+    wait_for_text(session, error_text)
   end
 
   def see_flash(session, flash_text) do
-    assert_has(session, Wallaby.Query.text(flash_text))
+    wait_for_text(session, flash_text)
   end
 end

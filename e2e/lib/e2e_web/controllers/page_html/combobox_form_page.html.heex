@@ -1,0 +1,48 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <h1>Combobox form</h1>
+  <p>Plain HTML form (no LiveView)</p>
+  <form action={~p"/#{@locale}/combobox/form"} method="post" id="combobox-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.native_input
+      type="text"
+      name="combobox[name]"
+      id="combobox-form-name"
+      placeholder="Your name"
+      class="native-input"
+    >
+      <:label>Name</:label>
+    </.native_input>
+    <.combobox
+      name="combobox[country]"
+      id="combobox-form-country"
+      class="combobox"
+      placeholder="Select a country"
+      collection={[
+        %{label: "France", id: "fra"},
+        %{label: "Belgium", id: "bel"},
+        %{label: "Germany", id: "deu"},
+        %{label: "Netherlands", id: "nld"},
+        %{label: "Switzerland", id: "che"},
+        %{label: "Austria", id: "aut"}
+      ]}
+    >
+      <:label>Country</:label>
+      <:empty>No results</:empty>
+      <:trigger>
+        <.icon name="hero-chevron-down" />
+      </:trigger>
+      <:clear_trigger>
+        <.icon name="hero-backspace" />
+      </:clear_trigger>
+    </.combobox>
+    <.action type="submit" id="combobox-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

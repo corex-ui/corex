@@ -7,6 +7,9 @@ defmodule <%= @web_namespace %>.ConnCase do
   import other functionality to make it easier
   to build common data structures and query the data layer.
 
+  After a redirect with flash (e.g. form submit), use `follow_redirect/2`
+  to load the destination page before asserting on the rendered HTML or toast.
+
   Finally, if the test case interacts with the database,
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
@@ -16,6 +19,10 @@ defmodule <%= @web_namespace %>.ConnCase do
   """
 
   use ExUnit.CaseTemplate
+
+  def follow_redirect(conn, status \\ 302) do
+    Phoenix.ConnTest.get(conn, Phoenix.ConnTest.redirected_to(conn, status))
+  end
 
   using do
     quote do

@@ -5,7 +5,7 @@ import Config
 config :<%= @app_name %>, <%= @endpoint_module %>,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "<%= @secret_key_base_test %>",
-  server: false<%= if @mailer do %>
+  server: <%= @a11y %><%= if @mailer do %>
 
 # In test we don't send emails
 config :<%= @app_name %>, <%= @app_module %>.Mailer,

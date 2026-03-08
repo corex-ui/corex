@@ -125,26 +125,86 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "app with --designex" do
-    test "keeps design folder" do
+    test "keeps design folder, compiles, and format check passes" do
       with_installer_tmp("corex_designex", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--designex"])
 
         assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
         assert_dir(Path.join(app_root_path, "assets/corex/design"))
       end)
     end
   end
 
+  describe "app with --no-tidewave" do
+    test "compiles and format check passes" do
+      with_installer_tmp("corex_no_tidewave", fn tmp_dir ->
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-tidewave"])
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+      end)
+    end
+  end
+
   describe "app with --lang and --rtl" do
-    test "generates locale and RTL files" do
+    test "generates locale and RTL files, compiles, and format check passes" do
       with_installer_tmp("corex_lang_rtl", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "my_app", ["--lang", "en:ar", "--rtl", "ar"])
 
         assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
         assert_file(Path.join(app_root_path, "priv/gettext/ar/LC_MESSAGES/errors.po"))
         assert_file(Path.join(app_root_path, "lib/my_app_web/plugs/locale.ex"))
         assert_file(Path.join(app_root_path, "lib/my_app_web/shared_events.ex"))
+      end)
+    end
+  end
+
+  describe "app with --mode, --theme, and --lang (combined)" do
+    test "compiles and format check passes" do
+      with_installer_tmp("corex_mode_theme_lang", fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", [
+            "--mode",
+            "--theme", "neo:uno",
+            "--lang", "en:fr"
+          ])
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+      end)
+    end
+
+    @tag database: :sqlite3
+    test "compiles, format check passes, and test suite passes (sqlite3)" do
+      with_installer_tmp("corex_mode_theme_lang_sqlite3", fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "phx_blog", [
+            "--database", "sqlite3",
+            "--mode",
+            "--theme", "neo:uno",
+            "--lang", "en:fr"
+          ])
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+        drop_test_database(app_root_path)
+        assert_tests_pass(app_root_path)
+      end)
+    end
+  end
+
+  describe "app with --no-ecto --no-dashboard" do
+    test "compiles, format check passes, and tests pass" do
+      with_installer_tmp("corex_no_ecto_no_dashboard", fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--no-ecto", "--no-dashboard"])
+
+        assert_no_compilation_warnings(app_root_path)
+        assert_passes_formatter_check(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
   end

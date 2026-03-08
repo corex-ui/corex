@@ -1,7 +1,8 @@
 defmodule E2eWeb.CheckboxFormLive do
   use E2eWeb, :live_view
 
-  alias E2e.Form.Preferences
+  alias Corex.Toast
+  alias E2e.Form.Terms
   alias Corex.Form
 
   @impl true
@@ -9,64 +10,46 @@ defmodule E2eWeb.CheckboxFormLive do
     {:ok,
      socket
      |> assign(:page_title, "Checkbox form")
-     |> assign(:submitted, nil)
      |> assign_form()}
   end
 
   defp assign_form(socket) do
     form =
-      %Preferences{}
-      |> Preferences.changeset(%{})
-      |> Phoenix.Component.to_form(as: :preferences)
+      %Terms{}
+      |> Terms.changeset(%{})
+      |> Phoenix.Component.to_form(as: :terms)
 
     assign(socket, :form, form)
   end
 
   @impl true
-  def handle_event("validate", %{"preferences" => params}, socket) do
+  def handle_event("validate", %{"terms" => params}, socket) do
     changeset =
-      %Preferences{}
-      |> Preferences.changeset(params)
+      %Terms{}
+      |> Terms.changeset(params)
       |> Map.put(:action, :validate)
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :preferences))}
+     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :terms))}
   end
 
   @impl true
-  def handle_event("set_terms_checked", _params, socket) do
-    form =
-      %Preferences{}
-      |> Preferences.changeset(%{"terms" => "true", "notifications" => "false"})
-      |> Phoenix.Component.to_form(as: :preferences)
-
-    {:noreply,
-     socket
-     |> assign(:form, form)
-     |> push_event("checkbox_set_checked", %{id: "checkbox-form-terms", checked: true})}
-  end
-
-  @impl true
-  def handle_event("save", %{"preferences" => params}, socket) do
-    case Preferences.changeset(%Preferences{}, params) do
+  def handle_event("save", %{"terms" => params}, socket) do
+    case Terms.changeset(%Terms{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
+        message = "Submitted: terms=#{data.terms}"
 
         {:noreply,
          socket
-         |> assign(:submitted, %{terms: data.terms})
-         |> assign(
-           :form,
-           Phoenix.Component.to_form(Preferences.changeset(%Preferences{}, params),
-             as: :preferences
-           )
-         )}
+         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
+         |> assign(:form, Phoenix.Component.to_form(Terms.changeset(%Terms{}, params), as: :terms))}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :preferences))}
+         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :terms))}
     end
   end
 
@@ -96,23 +79,10 @@ defmodule E2eWeb.CheckboxFormLive do
             {msg}
           </:error>
         </.checkbox>
-        <input type="hidden" name="preferences[notifications]" value="false" />
-        <.action
-          type="button"
-          phx-click="set_terms_checked"
-          id="checkbox-form-set-checked"
-          class="button button--sm"
-        >
-          Set checked from server
-        </.action>
         <.action type="submit" id="checkbox-form-live-submit" class="button button--accent">
           Submit
         </.action>
       </.form>
-
-      <div :if={@submitted} id="checkbox-form-result">
-        <p>Submitted: terms={@submitted.terms}</p>
-      </div>
     </Layouts.app>
     """
   end

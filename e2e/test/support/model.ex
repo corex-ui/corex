@@ -48,6 +48,29 @@ defmodule E2eWeb.Model do
         session
       end
 
+      def wait_for_text(session, text, opts \\ []) do
+        timeout_ms = Keyword.get(opts, :timeout, 5_000)
+        interval_ms = Keyword.get(opts, :interval, 200)
+        deadline = System.monotonic_time(:millisecond) + timeout_ms
+
+        wait_until_text_visible(session, text, deadline, interval_ms)
+        assert_has(session, Wallaby.Query.text(text))
+        session
+      end
+
+      defp wait_until_text_visible(session, text, deadline, interval_ms) do
+        if has?(session, Wallaby.Query.text(text)) do
+          :ok
+        else
+          if System.monotonic_time(:millisecond) >= deadline do
+            raise "Expected to find text \"#{text}\" within timeout, but it was not visible"
+          else
+            Process.sleep(interval_ms)
+            wait_until_text_visible(session, text, deadline, interval_ms)
+          end
+        end
+      end
+
       def see(session, text_value) do
         assert_has(session, Wallaby.Query.text(text_value))
       end

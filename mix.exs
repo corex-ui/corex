@@ -158,19 +158,6 @@ defmodule Corex.MixProject do
 
   defp groups_for_modules do
     [
-      Translations: [
-        Corex.Combobox.Translation,
-        Corex.ColorPicker.Translation,
-        Corex.DataTable.Translation,
-        Corex.Dialog.Translation,
-        Corex.Editable.Translation,
-        Corex.FloatingPanel.Translation,
-        Corex.NumberInput.Translation,
-        Corex.PasswordInput.Translation,
-        Corex.PinInput.Translation,
-        Corex.Select.Translation,
-        Corex.Toast.Translation
-      ],
       Components: [
         Corex.Accordion,
         Corex.Action,
@@ -179,8 +166,11 @@ defmodule Corex.MixProject do
         Corex.Clipboard,
         Corex.Code,
         Corex.Collapsible,
+        Corex.DataList,
+        Corex.DataTable,
         Corex.Dialog,
         Corex.FloatingPanel,
+        Corex.Heroicon,
         Corex.Listbox,
         Corex.Marquee,
         Corex.Menu,
@@ -227,6 +217,19 @@ defmodule Corex.MixProject do
       ],
       Positioning: [
         Corex.Positioning
+      ],
+      Translations: [
+        Corex.Combobox.Translation,
+        Corex.ColorPicker.Translation,
+        Corex.DataTable.Translation,
+        Corex.Dialog.Translation,
+        Corex.Editable.Translation,
+        Corex.FloatingPanel.Translation,
+        Corex.NumberInput.Translation,
+        Corex.PasswordInput.Translation,
+        Corex.PinInput.Translation,
+        Corex.Select.Translation,
+        Corex.Toast.Translation
       ]
     ]
   end

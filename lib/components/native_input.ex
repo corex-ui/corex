@@ -93,8 +93,7 @@ defmodule Corex.NativeInput do
   attr(:type, :string, required: true, values: @types)
   attr(:id, :string, required: false)
   attr(:name, :string, required: false)
-  attr(:value, :any, default: nil)
-  attr(:form, :string, required: false)
+  attr(:value, :any)
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:class, :any, default: nil)
   attr(:prompt, :string, default: nil, doc: "Prompt for select inputs")
@@ -105,7 +104,7 @@ defmodule Corex.NativeInput do
   )
 
   attr(:multiple, :boolean, default: false, doc: "Multiple flag for select inputs")
-  attr(:checked, :boolean, default: nil, doc: "Checked flag for checkbox. Defaults from value.")
+  attr(:checked, :boolean, doc: "Checked flag for checkbox. Defaults from value.")
 
   attr(:field, Phoenix.HTML.FormField,
     doc: "A form field struct from the form, e.g. @form[:email]"
@@ -134,20 +133,17 @@ defmodule Corex.NativeInput do
   def native_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
-    assigns =
-      assigns
-      |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:value, fn -> field.value end)
-      |> assign_new(:form, fn -> field.form.id end)
-
-    native_input(assigns)
+    assigns
+    |> assign(field: nil, id: assigns[:id] || field.id)
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+    |> assign_new(:name, fn ->
+      if assigns.multiple, do: field.name <> "[]", else: field.name
+    end)
+    |> assign_new(:value, fn -> field.value end)
+    |> native_input()
   end
 
   @types_ignoring_icon ~w(textarea date datetime-local time month week color number checkbox radio select)
-  @date_time_types ~w(date datetime-local time month week)
 
   def native_input(%{type: "checkbox"} = assigns) do
     assigns =
@@ -181,7 +177,7 @@ defmodule Corex.NativeInput do
           <span :if={@label != []}>{render_slot(@label)}</span>
         </label>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -190,7 +186,9 @@ defmodule Corex.NativeInput do
 
   def native_input(%{type: "select"} = assigns) do
     assigns =
-      assign_new(assigns, :id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      assigns
+      |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:value, fn -> nil end)
 
     ~H"""
     <div id={@id} class={@class} data-scope="native-input" data-part="root">
@@ -210,7 +208,7 @@ defmodule Corex.NativeInput do
           {Phoenix.HTML.Form.options_for_select(@options || [], @value)}
         </select>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -221,6 +219,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:value, fn -> nil end)
       |> assign(:options, assigns[:options] || [])
 
     ~H"""
@@ -243,7 +242,7 @@ defmodule Corex.NativeInput do
           <label for={"#{@id}-input-#{opt_value}"}>{opt_label}</label>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -254,6 +253,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:value, fn -> nil end)
       |> assign(:show_icon, show_icon?(assigns))
 
     ~H"""
@@ -275,34 +275,19 @@ defmodule Corex.NativeInput do
               {@rest}
             >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
           <% else %>
-            <%= if show_date_placeholder?(@type, @value, @rest) do %>
-              <div data-scope="native-input" data-part="date-wrapper">
-                <input
-                  type={@type}
-                  id={"#{@id}-input"}
-                  name={@name}
-                  value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-                  data-scope="native-input"
-                  data-part="input"
-                  {@rest}
-                />
-                <span data-scope="native-input" data-part="placeholder-overlay" aria-hidden="true">{Map.get(@rest, :placeholder)}</span>
-              </div>
-            <% else %>
-              <input
-                type={@type}
-                id={"#{@id}-input"}
-                name={@name}
-                value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-                data-scope="native-input"
-                data-part="input"
-                {@rest}
-              />
-            <% end %>
+            <input
+              type={@type}
+              id={"#{@id}-input"}
+              name={@name}
+              value={Phoenix.HTML.Form.normalize_value(@type, @value)}
+              data-scope="native-input"
+              data-part="input"
+              {@rest}
+            />
           <% end %>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -312,16 +297,4 @@ defmodule Corex.NativeInput do
   defp show_icon?(%{type: type, icon: icon}) do
     icon != [] and type not in @types_ignoring_icon
   end
-
-  defp show_date_placeholder?(type, value, rest) do
-    type in @date_time_types and
-      blank_value?(value) and
-      is_binary(Map.get(rest, :placeholder)) and
-      String.trim(Map.get(rest, :placeholder) || "") != ""
-  end
-
-  defp blank_value?(nil), do: true
-  defp blank_value?(""), do: true
-  defp blank_value?(val) when is_binary(val), do: String.trim(val) == ""
-  defp blank_value?(_), do: false
 end

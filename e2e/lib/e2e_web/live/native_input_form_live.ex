@@ -2,14 +2,22 @@ defmodule E2eWeb.NativeInputFormLive do
   use E2eWeb, :live_view
 
   alias E2e.Form.NativeInputProfile
-  alias Corex.Form
+  alias Corex.Toast
+
+  @tag_options [
+    "Elixir": "elixir",
+    "Phoenix": "phoenix",
+    "LiveView": "liveview",
+    "Ecto": "ecto",
+    "OTP": "otp"
+  ]
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:page_title, "NativeInput form")
-     |> assign(:submitted, nil)
+     |> assign(:tag_options, @tag_options)
      |> assign_form()}
   end
 
@@ -17,7 +25,7 @@ defmodule E2eWeb.NativeInputFormLive do
     form =
       %NativeInputProfile{}
       |> NativeInputProfile.changeset(%{})
-      |> Phoenix.Component.to_form(as: :profile)
+      |> Phoenix.Component.to_form(as: :profile, id: "profile")
 
     assign(socket, :form, form)
   end
@@ -39,17 +47,11 @@ defmodule E2eWeb.NativeInputFormLive do
     case NativeInputProfile.changeset(%NativeInputProfile{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
+        message = "Submitted: name=#{data.name}, agree=#{data.agree}, tags=#{inspect(data.tags)}"
 
         {:noreply,
          socket
-         |> assign(:submitted, %{
-           name: data.name,
-           email: data.email,
-           birth_date: data.birth_date,
-           reminder_time: data.reminder_time,
-           role: data.role,
-           agree: data.agree
-         })
+         |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
          |> assign(
            :form,
            Phoenix.Component.to_form(NativeInputProfile.changeset(%NativeInputProfile{}, params),
@@ -60,7 +62,7 @@ defmodule E2eWeb.NativeInputFormLive do
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :profile))}
+         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :profile, id: "profile"))}
     end
   end
 
@@ -79,7 +81,6 @@ defmodule E2eWeb.NativeInputFormLive do
 
       <.form
         for={@form}
-        id={Form.get_form_id(@form)}
         phx-change="validate"
         phx-submit="save"
       >
@@ -125,6 +126,18 @@ defmodule E2eWeb.NativeInputFormLive do
           <:label>Role</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
+        <.native_input
+          field={@form[:tags]}
+          type="select"
+          multiple
+          id="native-input-form-tags"
+          options={@tag_options}
+          prompt="Choose tags..."
+          class="native-input"
+        >
+          <:label>Tags</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
         <.native_input field={@form[:agree]} type="checkbox" class="native-input">
           <:label>I agree</:label>
           <:error :let={msg}>{msg}</:error>
@@ -133,12 +146,6 @@ defmodule E2eWeb.NativeInputFormLive do
           Submit
         </.action>
       </.form>
-
-      <div :if={@submitted} id="native-input-form-result">
-        <p>
-          Submitted: name={@submitted.name}, email={@submitted.email}, role={@submitted.role}, agree={@submitted.agree}
-        </p>
-      </div>
     </Layouts.app>
     """
   end

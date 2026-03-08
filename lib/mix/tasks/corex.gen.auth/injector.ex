@@ -12,9 +12,9 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
   @spec mix_dependency_inject(String.t(), String.t()) ::
           {:ok, String.t()} | :already_injected | {:error, :unable_to_inject}
   def mix_dependency_inject(mixfile, dependency) do
-    with :ok <- ensure_not_already_injected(mixfile, dependency),
-         {:ok, new_mixfile} <- do_mix_dependency_inject(mixfile, dependency) do
-      {:ok, new_mixfile}
+    case ensure_not_already_injected(mixfile, dependency) do
+      :ok -> do_mix_dependency_inject(mixfile, dependency)
+      other -> other
     end
   end
 
@@ -142,11 +142,11 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
   Injects a menu in the application layout
   """
   def app_layout_menu_inject(binding, template_str) do
-    with {:error, :unable_to_inject} <-
-           app_layout_menu_inject_at_end_of_nav_tag(binding, template_str),
-         {:error, :unable_to_inject} <-
-           app_layout_menu_inject_after_opening_body_tag(binding, template_str) do
-      {:error, :unable_to_inject}
+    case app_layout_menu_inject_at_end_of_nav_tag(binding, template_str) do
+      {:error, :unable_to_inject} ->
+        app_layout_menu_inject_after_opening_body_tag(binding, template_str)
+      result ->
+        result
     end
   end
 

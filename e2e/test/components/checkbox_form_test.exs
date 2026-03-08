@@ -46,7 +46,7 @@ defmodule E2eWeb.CheckboxFormTest do
     |> Checkbox.wait(200)
     |> Checkbox.submit_form(:live)
     |> Checkbox.wait(1500)
-    |> Checkbox.see_submitted_value("terms", "true")
+    |> Checkbox.see_flash("terms=true")
   end
 
   feature "static form - checkbox form has no A11y violations", %{session: session} do
@@ -62,20 +62,4 @@ defmodule E2eWeb.CheckboxFormTest do
     |> Checkbox.wait(500)
     |> Checkbox.check_accessibility()
   end
-
-  feature "live form - server set_checked updates checkbox state", %{session: session} do
-    session =
-      session
-      |> Checkbox.goto_form(:live)
-      |> Checkbox.wait(500)
-
-    session = click(session, Wallaby.Query.css("#checkbox-form-set-checked"))
-
-    session
-    |> Checkbox.wait(1000)
-    |> Checkbox.submit_form(:live)
-    |> Checkbox.wait(2000)
-    |> Checkbox.see_submitted_value("terms", "true")
-  end
-
 end

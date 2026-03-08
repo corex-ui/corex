@@ -6,7 +6,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm space-y-4">
         <div class="text-center">
           <div>
@@ -15,11 +15,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               <%%= if @<%= scope_config.scope.assign_key %> do %>
                 You need to reauthenticate to perform sensitive actions on your account.
               <%% else %>
-                Don't have an account? <.link
-                  navigate={~p"<%= schema.route_prefix %>/register"}
-                  class="font-semibold text-brand hover:underline"
-                  phx-no-format
-                >Sign up</.link> for an account now.
+                Don't have an account?
+                <.navigate to={~p"<%= schema.route_prefix %>/register"} class="link link--brand">
+                  Sign up
+                </.navigate>
+                for an account now.
               <%% end %>
             </p>
           </div>
@@ -30,7 +30,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <div>
             <p>You are running the local mail adapter.</p>
             <p>
-              To see sent emails, visit <.link href="/dev/mailbox" class="underline">the mailbox page</.link>.
+              To see sent emails, visit <.navigate to="/dev/mailbox" class="link">the mailbox page</.navigate>.
             </p>
           </div>
         </div>
@@ -42,17 +42,20 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           action={~p"<%= schema.route_prefix %>/log-in"}
           phx-submit="submit_magic"
         >
-          <.input
+          <.native_input
             readonly={!!@<%= scope_config.scope.assign_key %>}
             field={f[:email]}
             type="email"
-            label="Email"
             autocomplete="username"
             spellcheck="false"
             required
             phx-mounted={JS.focus()}
-          />
-          <.action class="btn btn-primary w-full" type="submit">
+            class="native-input"
+          >
+            <:label>Email</:label>
+            <:error :let={msg}>{msg}</:error>
+          </.native_input>
+          <.action class="button button--brand button--sm w-full" type="submit">
             Log in with email <span aria-hidden="true">→</span>
           </.action>
         </.form>
@@ -67,26 +70,37 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           phx-submit="submit_password"
           phx-trigger-action={@trigger_submit}
         >
-          <.input
+          <.native_input
             readonly={!!@<%= scope_config.scope.assign_key %>}
             field={f[:email]}
             type="email"
-            label="Email"
             autocomplete="username"
             spellcheck="false"
             required
-          />
-          <.input
+            class="native-input"
+          >
+            <:label>Email</:label>
+            <:error :let={msg}>{msg}</:error>
+          </.native_input>
+          <.native_input
             field={@form[:password]}
             type="password"
-            label="Password"
             autocomplete="current-password"
             spellcheck="false"
-          />
-          <.action class="btn btn-primary w-full" type="submit" name={@form[:remember_me].name} value="true">
+            class="native-input"
+          >
+            <:label>Password</:label>
+            <:error :let={msg}>{msg}</:error>
+          </.native_input>
+          <.action
+            class="button button--brand button--sm w-full"
+            type="submit"
+            name={@form[:remember_me].name}
+            value="true"
+          >
             Log in and stay logged in <span aria-hidden="true">→</span>
           </.action>
-          <.action class="btn btn-primary btn-soft w-full mt-2" type="submit">
+          <.action class="button button--accent button--sm w-full mt-2" type="submit">
             Log in only this time
           </.action>
         </.form>

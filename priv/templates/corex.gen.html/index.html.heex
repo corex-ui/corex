@@ -6,7 +6,7 @@
     </.action>
   </div>
 
-  <.table id="<%= schema.plural %>" rows={@<%= schema.collection %>} row_click={&JS.navigate(~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}><%= for {k, _} <- schema.attrs do %>
+  <.data_table id="<%= schema.plural %>" rows={@<%= schema.collection %>} row_click={&JS.navigate(~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}><%= for {k, _} <- schema.attrs do %>
     <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
     <:action :let={<%= schema.singular %>}>
       <div class="sr-only">
@@ -19,5 +19,5 @@
         Delete
       </.link>
     </:action>
-  </.table>
+  </.data_table>
 </Layouts.app>

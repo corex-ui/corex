@@ -7,33 +7,40 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm">
         <div class="text-center">
           <div>
             <h1 class="text-lg font-semibold">Register for an account</h1>
             <p class="mt-1 text-sm text-zinc-500">
               Already registered?
-              <.link navigate={~p"<%= schema.route_prefix %>/log-in"} class="font-semibold text-brand hover:underline">
+              <.navigate to={~p"<%= schema.route_prefix %>/log-in"} class="link link--brand">
                 Log in
-              </.link>
+              </.navigate>
               to your account now.
             </p>
           </div>
         </div>
 
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
-          <.input
+          <.native_input
             field={@form[:email]}
             type="email"
-            label="Email"
             autocomplete="username"
             spellcheck="false"
             required
             phx-mounted={JS.focus()}
-          />
+            class="native-input"
+          >
+            <:label>Email</:label>
+            <:error :let={msg}>{msg}</:error>
+          </.native_input>
 
-          <.action phx-disable-with="Creating account..." class="btn btn-primary w-full" type="submit">
+          <.action
+            phx-disable-with="Creating account..."
+            class="button button--brand button--sm w-full"
+            type="submit"
+          >
             Create an account
           </.action>
         </.form>

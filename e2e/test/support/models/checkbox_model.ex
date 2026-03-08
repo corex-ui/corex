@@ -31,14 +31,14 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def see_submitted_value(session, key, value) do
-    assert_has(session, Wallaby.Query.text("#{key}=#{value}"))
+    wait_for_text(session, "#{key}=#{value}")
   end
 
   def see_error(session, error_text) do
-    assert_has(session, Wallaby.Query.text(error_text))
+    wait_for_text(session, error_text)
   end
 
   def see_flash(session, flash_text) do
-    assert_has(session, Wallaby.Query.text(flash_text))
+    wait_for_text(session, flash_text)
   end
 end

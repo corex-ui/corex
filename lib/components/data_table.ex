@@ -57,13 +57,7 @@ defmodule Corex.DataTable do
     assigns =
       assigns
       |> assign(:translation, translation)
-      |> then(fn a ->
-        with %{rows: %Phoenix.LiveView.LiveStream{}} <- a do
-          assign(a, :row_id, a.row_id || fn {id, _item} -> id end)
-        else
-          _ -> a
-        end
-      end)
+      |> resolve_row_id()
 
     ~H"""
     <table data-scope="data-table" data-part="root" {@rest}>
@@ -98,6 +92,12 @@ defmodule Corex.DataTable do
     </table>
     """
   end
+
+  defp resolve_row_id(%{rows: %Phoenix.LiveView.LiveStream{}} = assigns) do
+    assign(assigns, :row_id, assigns.row_id || fn {id, _item} -> id end)
+  end
+
+  defp resolve_row_id(assigns), do: assigns
 
   defp merge_translation(nil, default), do: default
 

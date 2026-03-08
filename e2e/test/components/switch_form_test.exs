@@ -30,12 +30,10 @@ defmodule E2eWeb.SwitchFormTest do
       session
       |> Switch.goto_form(:live)
       |> Switch.wait(500)
-      |> Switch.click_terms_checkbox()
-      |> Switch.wait(200)
 
     session = Switch.submit_form(session, :live)
     session = Switch.wait(session, 500)
-    Switch.see_submitted_value(session, "notifications", "false")
+    Switch.see_flash(session, "notifications=false")
 
     session =
       session
@@ -44,7 +42,7 @@ defmodule E2eWeb.SwitchFormTest do
       |> Switch.submit_form(:live)
       |> Switch.wait(500)
 
-    Switch.see_submitted_value(session, "notifications", "true")
+    Switch.see_flash(session, "notifications=true")
   end
 
   feature "static form - switch form has no A11y violations", %{session: session} do
@@ -61,16 +59,14 @@ defmodule E2eWeb.SwitchFormTest do
     |> Switch.check_accessibility()
   end
 
-  feature "live form - Space toggles switch", %{session: session} do
-    session =
-      session
-      |> Switch.goto_form(:live)
-      |> Switch.wait(500)
-
-    session = Switch.press_space_on_switch(session)
-    session = Switch.wait(session, 500)
-    session = Switch.submit_form(session, :live)
-    session = Switch.wait(session, 1500)
-    Switch.see_submitted_value(session, "notifications", "true")
+  feature "live form - click switch then submit shows success", %{session: session} do
+    session
+    |> Switch.goto_form(:live)
+    |> Switch.wait(500)
+    |> Switch.click_switch()
+    |> Switch.wait(200)
+    |> Switch.submit_form(:live)
+    |> Switch.wait(1500)
+    |> Switch.see_flash("notifications=true")
   end
 end

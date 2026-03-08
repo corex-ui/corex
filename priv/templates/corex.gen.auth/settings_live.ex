@@ -8,24 +8,35 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="text-center">
         <div>
           <h1 class="text-lg font-semibold">Account Settings</h1>
-          <p class="mt-1 text-sm text-zinc-500">Manage your account email address and password settings</p>
+          <p class="mt-1 text-sm text-zinc-500">
+            Manage your account email address and password settings
+          </p>
         </div>
       </div>
 
       <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
-        <.input
+        <.native_input
           field={@email_form[:email]}
           type="email"
-          label="Email"
           autocomplete="username"
           spellcheck="false"
           required
-        />
-        <.action class="btn btn-primary" phx-disable-with="Changing..." type="submit">Change Email</.action>
+          class="native-input"
+        >
+          <:label>Email</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.action
+          class="button button--brand button--sm"
+          phx-disable-with="Changing..."
+          type="submit"
+        >
+          Change Email
+        </.action>
       </.form>
 
       <div class="divider" />
@@ -46,22 +57,32 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           spellcheck="false"
           value={@current_email}
         />
-        <.input
+        <.native_input
           field={@password_form[:password]}
           type="password"
-          label="New password"
           autocomplete="new-password"
           spellcheck="false"
           required
-        />
-        <.input
+          class="native-input"
+        >
+          <:label>New password</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
           field={@password_form[:password_confirmation]}
           type="password"
-          label="Confirm new password"
           autocomplete="new-password"
           spellcheck="false"
-        />
-        <.action class="btn btn-primary" phx-disable-with="Saving..." type="submit">
+          class="native-input"
+        >
+          <:label>Confirm new password</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.action
+          class="button button--brand button--sm"
+          phx-disable-with="Saving..."
+          type="submit"
+        >
           Save Password
         </.action>
       </.form>
