@@ -1,4 +1,4 @@
-<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
   <div class="mx-auto max-w-sm space-y-4">
     <div class="text-center">
       <div>
@@ -8,7 +8,7 @@
             You need to reauthenticate to perform sensitive actions on your account.
           <%% else %>
             Don't have an account?
-            <.navigate to={~p"<%= schema.route_prefix %>/register"} class="link link--brand">
+            <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register"} class="link link--brand">
               Sign up
             </.navigate>
             for an account now.
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <.form :let={f} for={@form} as={:<%= schema.singular %>} id="login_form_magic" action={~p"<%= schema.route_prefix %>/log-in"}>
+    <.form :let={f} for={@form} as={:<%= schema.singular %>} id="login_form_magic" action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"}>
       <.native_input
         readonly={!!@<%= scope_config.scope.assign_key %>}
         field={f[:email]}
@@ -51,7 +51,7 @@
 
     <div class="divider">or</div>
 
-    <.form :let={f} for={@form} as={:<%= schema.singular %>} id="login_form_password" action={~p"<%= schema.route_prefix %>/log-in"}>
+    <.form :let={f} for={@form} as={:<%= schema.singular %>} id="login_form_password" action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"}>
       <.native_input
         readonly={!!@<%= scope_config.scope.assign_key %>}
         field={f[:email]}

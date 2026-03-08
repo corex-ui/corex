@@ -7,14 +7,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm">
         <div class="text-center">
           <div>
             <h1 class="text-lg font-semibold">Register for an account</h1>
             <p class="mt-1 text-sm text-zinc-500">
               Already registered?
-              <.navigate to={~p"<%= schema.route_prefix %>/log-in"} class="link link--brand">
+              <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"} class="link link--brand">
                 Log in
               </.navigate>
               to your account now.
@@ -68,7 +68,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         {:ok, _} =
           <%= inspect context.alias %>.deliver_login_instructions(
             <%= schema.singular %>,
-            &url(~p"<%= schema.route_prefix %>/log-in/#{&1}")
+            &url(~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= schema.route_prefix %>/log-in/#{&1}")
           )
 
         {:noreply,
@@ -77,7 +77,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
            :info,
            "An email was sent to #{<%= schema.singular %>.email}, please access it to confirm your account."
          )
-         |> push_navigate(to: ~p"<%= schema.route_prefix %>/log-in")}
+         |> push_navigate(to: ~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= schema.route_prefix %>/log-in")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign_form(socket, changeset)}

@@ -1,11 +1,11 @@
-<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
   <div class="mx-auto max-w-sm">
     <div class="text-center">
       <div>
         <h1 class="text-lg font-semibold">Register for an account</h1>
         <p class="mt-1 text-sm text-zinc-500">
           Already registered?
-          <.navigate to={~p"<%= schema.route_prefix %>/log-in"} class="link link--brand">
+          <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"} class="link link--brand">
             Log in
           </.navigate>
           to your account now.
@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <.form :let={f} for={@changeset} action={~p"<%= schema.route_prefix %>/register"}>
+    <.form :let={f} for={@changeset} action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register"}>
       <.native_input
         field={f[:email]}
         type="email"

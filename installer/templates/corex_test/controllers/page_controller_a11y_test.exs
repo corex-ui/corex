@@ -3,7 +3,7 @@ defmodule <%= @web_namespace %>.PageControllerA11yTest do
   use Wallaby.Feature
 
   feature "home page has no accessibility violations", %{session: session} do
-<%= if @language_switcher do %>    default_locale = Application.get_env(:<%= @app_name %>, :locales, ["en"]) |> List.first()
+<%= if @locale do %>    default_locale = Application.get_env(:<%= @app_name %>, :locales, ["en"]) |> List.first()
     path = "/#{default_locale}"
 
 <% else %>    path = ~p"/"

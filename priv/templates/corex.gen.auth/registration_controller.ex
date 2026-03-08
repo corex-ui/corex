@@ -15,7 +15,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         {:ok, _} =
           <%= inspect context.alias %>.deliver_login_instructions(
             <%= schema.singular %>,
-            &url(~p"<%= schema.route_prefix %>/log-in/#{&1}")
+            &url(~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in/#{&1}")
           )
 
         conn
@@ -23,7 +23,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           :info,
           "An email was sent to #{<%= schema.singular %>.email}, please access it to confirm your account."
         )
-        |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+        |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
 
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, :new, changeset: changeset)

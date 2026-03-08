@@ -3,8 +3,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
-
-  alias <%= inspect context.module %>
+  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <% end %>alias <%= inspect context.module %>
 
   setup do
     %{unconfirmed_<%= schema.singular %>: unconfirmed_<%= schema.singular %>_fixture(), confirmed_<%= schema.singular %>: <%= schema.singular %>_fixture()}
@@ -17,7 +17,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      {:ok, _lv, html} = live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      {:ok, _lv, html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
       assert html =~ "Confirm and stay logged in"
     end
 
@@ -27,7 +27,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      {:ok, _lv, html} = live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      {:ok, _lv, html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
       refute html =~ "Confirm my account"
       assert html =~ "Keep me logged in on this device"
     end
@@ -40,7 +40,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      {:ok, _lv, html} = live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      {:ok, _lv, html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
       refute html =~ "Confirm my account"
       assert html =~ "Log in"
     end
@@ -51,7 +51,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
 
       form = form(lv, "#confirmation_form", %{"<%= schema.singular %>" => %{"token" => token}})
       render_submit(form)
@@ -64,14 +64,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       assert <%= inspect context.alias %>.get_<%= schema.singular %>!(<%= schema.singular %>.id).confirmed_at
       # we are logged in now
       assert get_session(conn, :<%= schema.singular %>_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
 
       # log out, new conn
       conn = build_conn()
 
       {:ok, _lv, html} =
-        live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
-        |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/log-in")
+        live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
 
       assert html =~ "Magic link is invalid or it has expired"
     end
@@ -85,7 +85,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
 
       form = form(lv, "#login_form", %{"<%= schema.singular %>" => %{"token" => token}})
       render_submit(form)
@@ -101,16 +101,16 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       conn = build_conn()
 
       {:ok, _lv, html} =
-        live(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
-        |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/log-in")
+        live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
 
       assert html =~ "Magic link is invalid or it has expired"
     end
 
     test "raises error for invalid token", %{conn: conn} do
       {:ok, _lv, html} =
-        live(conn, ~p"<%= schema.route_prefix %>/log-in/invalid-token")
-        |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/log-in")
+        live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/invalid-token")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
 
       assert html =~ "Magic link is invalid or it has expired"
     end

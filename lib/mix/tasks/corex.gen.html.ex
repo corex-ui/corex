@@ -156,10 +156,9 @@ defmodule Mix.Tasks.Corex.Gen.Html do
       schema: schema,
       primary_key: schema.opts[:primary_key] || :id,
       scope: schema.scope,
-      layout_mode: layout_opts[:mode],
-      layout_theme: layout_opts[:theme],
-      layout_theme_switcher: layout_opts[:theme_switcher],
-      layout_language_switcher: layout_opts[:language_switcher],
+      layout_mode: layout_mode?(layout_opts),
+      layout_theme: layout_theme?(layout_opts),
+      layout_locale: layout_locale?(layout_opts),
       inputs: inputs(schema),
       conn_scope: conn_scope,
       context_scope_prefix: context_scope_prefix,
@@ -230,6 +229,9 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   @doc false
   def print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
+    layout_opts = layout_generators_opts(context, web_app_name(context))
+    layout_locale = layout_locale?(layout_opts)
+
     resource_path =
       if schema.scope && schema.scope.route_prefix do
         "#{schema.scope.route_prefix}/#{schema.plural}"
@@ -237,10 +239,17 @@ defmodule Mix.Tasks.Corex.Gen.Html do
         "/#{schema.plural}"
       end
 
+    scope_instruction =
+      if layout_locale do
+        "Add the resource inside the existing scope \"/:locale\" block in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:"
+      else
+        "Add the resource to your browser scope in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:"
+      end
+
     if schema.web_namespace do
       Mix.shell().info("""
 
-      Add the resource to your #{schema.web_namespace} :browser scope in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:
+      #{scope_instruction}
 
           scope "/#{schema.web_path}", #{inspect(Module.concat(context.web_module, schema.web_namespace))} do
             pipe_through :browser
@@ -251,7 +260,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     else
       Mix.shell().info("""
 
-      Add the resource to your browser scope in #{Mix.Phoenix.web_path(ctx_app)}/router.ex:
+      #{scope_instruction}
 
           resources "#{resource_path}", #{inspect(schema.alias)}Controller#{if schema.opts[:primary_key], do: ~s[, param: "#{schema.opts[:primary_key]}"]}
       """)
@@ -304,6 +313,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
           field={f[#{inspect(key)}]}
           type="select"
           multiple
+          class="native-input"
           options={#{inspect(default_options(type))}}
         >
           <:label>#{label(key)}</:label>
@@ -316,6 +326,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
           field={f[#{inspect(key)}]}
           type="select"
           prompt="Choose a value"
+          class="native-input"
           options={Ecto.Enum.values(#{inspect(schema.module)}, #{inspect(key)})}
         >
           <:label>#{label(key)}</:label>
@@ -329,7 +340,9 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   defp native_input_block(type, key, label_text, extra_attrs \\ "") do
     ~s"""
-    <.native_input field={f[#{inspect(key)}]} type="#{type}"#{extra_attrs}>
+    <.native_input
+    class="native-input"
+    field={f[#{inspect(key)}]} type="#{type}"#{extra_attrs}>
       <:label>#{label_text}</:label>
     </.native_input>
     """
@@ -360,17 +373,13 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     |> Phoenix.Naming.underscore()
   end
 
-  defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
-    generators =
-      Application.get_env(context_app, :generators, [])[:layout] ||
-        try do
-          Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
-        rescue
-          ArgumentError -> []
-        end
-
-    generators || []
+  defp layout_generators_opts(_context, _web_app_name) do
+    Application.get_env(:corex, :generators, [])[:layout] || []
   end
+
+  defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
+  defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
+  defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 
   @doc false
   def indent_inputs(inputs, column_padding) do

@@ -3,26 +3,26 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   alias <%= inspect context.module %>
   import <%= inspect context.module %>Fixtures
-
-  setup :register_and_log_in_<%= schema.singular %>
+  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <% end %>setup :register_and_log_in_<%= schema.singular %>
 
   describe "GET <%= schema.route_prefix %>/settings" do
     test "renders settings page", %{conn: conn} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
       response = html_response(conn, 200)
       assert response =~ "Settings"
     end
 
     test "redirects if <%= schema.singular %> is not logged in" do
       conn = build_conn()
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings")
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
     end
 
     @tag token_authenticated_at: <%= inspect datetime_module %>.add(<%= datetime_now %>, -11, :minute)
     test "redirects if <%= schema.singular %> is not in sudo mode", %{conn: conn} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings")
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "You must re-authenticate to access this page."
@@ -32,7 +32,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   describe "PUT <%= schema.route_prefix %>/settings (change password form)" do
     test "updates the <%= schema.singular %> password and resets tokens", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       new_password_conn =
-        put(conn, ~p"<%= schema.route_prefix %>/settings", %{
+        put(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings", %{
           "action" => "update_password",
           "<%= schema.singular %>" => %{
             "password" => "new valid password",
@@ -40,7 +40,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           }
         })
 
-      assert redirected_to(new_password_conn) == ~p"<%= schema.route_prefix %>/settings"
+      assert redirected_to(new_password_conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
 
       assert get_session(new_password_conn, :<%= schema.singular %>_token) != get_session(conn, :<%= schema.singular %>_token)
 
@@ -52,7 +52,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
     test "does not update password on invalid data", %{conn: conn} do
       old_password_conn =
-        put(conn, ~p"<%= schema.route_prefix %>/settings", %{
+        put(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings", %{
           "action" => "update_password",
           "<%= schema.singular %>" => %{
             "password" => "too short",
@@ -73,12 +73,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     @tag :capture_log
     test "updates the <%= schema.singular %> email", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       conn =
-        put(conn, ~p"<%= schema.route_prefix %>/settings", %{
+        put(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings", %{
           "action" => "update_email",
           "<%= schema.singular %>" => %{"email" => unique_<%= schema.singular %>_email()}
         })
 
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/settings"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "A link to confirm your email"
@@ -88,7 +88,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
     test "does not update email on invalid data", %{conn: conn} do
       conn =
-        put(conn, ~p"<%= schema.route_prefix %>/settings", %{
+        put(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings", %{
           "action" => "update_email",
           "<%= schema.singular %>" => %{"email" => "with spaces"}
         })
@@ -112,8 +112,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "updates the <%= schema.singular %> email once", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>, token: token, email: email} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/#{token}")
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/settings"
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{token}")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "Email changed successfully"
@@ -121,17 +121,17 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       refute <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(<%= schema.singular %>.email)
       assert <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(email)
 
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/#{token}")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{token}")
 
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/settings"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
                "Email change link is invalid or it has expired"
     end
 
     test "does not update email with invalid token", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/oops")
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/settings"
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/oops")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
                "Email change link is invalid or it has expired"
@@ -141,8 +141,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
     test "redirects if <%= schema.singular %> is not logged in", %{token: token} do
       conn = build_conn()
-      conn = get(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/#{token}")
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{token}")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
     end
   end
 end

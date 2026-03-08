@@ -3,17 +3,17 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   import <%= inspect context.module %>Fixtures
   alias <%= inspect context.module %>
-
-  setup do
+  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <% end %>setup do
     %{unconfirmed_<%= schema.singular %>: unconfirmed_<%= schema.singular %>_fixture(), <%= schema.singular %>: <%= schema.singular %>_fixture()}
   end<%= if not live? do %>
 
   describe "GET <%= schema.route_prefix %>/log-in" do
     test "renders login page", %{conn: conn} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/log-in")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
       response = html_response(conn, 200)
       assert response =~ "Log in"
-      assert response =~ ~p"<%= schema.route_prefix %>/register"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register"
       assert response =~ "Log in with email"
     end
 
@@ -21,7 +21,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       html =
         conn
         |> log_in_<%= schema.singular %>(<%= schema.singular %>)
-        |> get(~p"<%= schema.route_prefix %>/log-in")
+        |> get(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
         |> html_response(200)
 
       assert html =~ "You need to reauthenticate"
@@ -33,10 +33,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "renders login page (email + password)", %{conn: conn} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/log-in?mode=password")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in?mode=password")
       response = html_response(conn, 200)
       assert response =~ "Log in"
-      assert response =~ ~p"<%= schema.route_prefix %>/register"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register"
       assert response =~ "Log in with email"
     end
   end
@@ -48,7 +48,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      conn = get(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
       assert html_response(conn, 200) =~ "Confirm and stay logged in"
     end
 
@@ -58,15 +58,15 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%= inspect context.alias %>.deliver_login_instructions(<%= schema.singular %>, url)
         end)
 
-      conn = get(conn, ~p"<%= schema.route_prefix %>/log-in/#{token}")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/#{token}")
       html = html_response(conn, 200)
       refute html =~ "Confirm my account"
       assert html =~ "Log in"
     end
 
     test "raises error for invalid token", %{conn: conn} do
-      conn = get(conn, ~p"<%= schema.route_prefix %>/log-in/invalid-token")
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in/invalid-token")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "Magic link is invalid or it has expired."
@@ -78,26 +78,26 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <%= schema.singular %> = set_password(<%= schema.singular %>)
 
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{"email" => <%= schema.singular %>.email, "password" => valid_<%= schema.singular %>_password()}
         })
 
       assert get_session(conn, :<%= schema.singular %>_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>")
       response = html_response(conn, 200)
       assert response =~ <%= schema.singular %>.email
-      assert response =~ ~p"<%= schema.route_prefix %>/settings"
-      assert response =~ ~p"<%= schema.route_prefix %>/log-out"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-out"
     end
 
     test "logs the <%= schema.singular %> in with remember me", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       <%= schema.singular %> = set_password(<%= schema.singular %>)
 
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{
             "email" => <%= schema.singular %>.email,
             "password" => valid_<%= schema.singular %>_password(),
@@ -106,7 +106,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         })
 
       assert conn.resp_cookies["_<%= web_app_name %>_<%= schema.singular %>_remember_me"]
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
     end
 
     test "logs the <%= schema.singular %> in with return to", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
@@ -115,7 +115,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       conn =
         conn
         |> init_test_session(<%= schema.singular %>_return_to: "/foo/bar")
-        |> post(~p"<%= schema.route_prefix %>/log-in", %{
+        |> post(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{
             "email" => <%= schema.singular %>.email,
             "password" => valid_<%= schema.singular %>_password()
@@ -128,12 +128,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
     test "<%= if live?, do: "redirects to login page", else: "emits error message" %> with invalid credentials", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in?mode=password", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in?mode=password", %{
           "<%= schema.singular %>" => %{"email" => <%= schema.singular %>.email, "password" => "invalid_password"}
         })
 
       <%= if live? do %>assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"<% else %>response = html_response(conn, 200)
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"<% else %>response = html_response(conn, 200)
       assert response =~ "Log in"
       assert response =~ "Invalid email or password"<% end %>
     end
@@ -142,7 +142,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   describe "POST <%= schema.route_prefix %>/log-in - magic link" do
     <%= if not live? do %>test "sends magic link email when <%= schema.singular %> exists", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{"email" => <%= schema.singular %>.email}
         })
 
@@ -154,19 +154,19 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       {token, _hashed_token} = generate_<%= schema.singular %>_magic_link_token(<%= schema.singular %>)
 
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{"token" => token}
         })
 
       assert get_session(conn, :<%= schema.singular %>_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>")
       response = html_response(conn, 200)
       assert response =~ <%= schema.singular %>.email
-      assert response =~ ~p"<%= schema.route_prefix %>/settings"
-      assert response =~ ~p"<%= schema.route_prefix %>/log-out"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-out"
     end
 
     test "confirms unconfirmed <%= schema.singular %>", %{conn: conn, unconfirmed_<%= schema.singular %>: <%= schema.singular %>} do
@@ -174,49 +174,49 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       refute <%= schema.singular %>.confirmed_at
 
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{"token" => token},
           "_action" => "confirmed"
         })
 
       assert get_session(conn, :<%= schema.singular %>_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "<%= schema.human_singular %> confirmed successfully."
 
       assert <%= inspect context.alias %>.get_<%= schema.singular %>!(<%= schema.singular %>.id).confirmed_at
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>")
       response = html_response(conn, 200)
       assert response =~ <%= schema.singular %>.email
-      assert response =~ ~p"<%= schema.route_prefix %>/settings"
-      assert response =~ ~p"<%= schema.route_prefix %>/log-out"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
+      assert response =~ ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-out"
     end
 
     test "<%= if live?, do: "redirects to login page", else: "emits error message" %> when magic link is invalid", %{conn: conn} do
       conn =
-        post(conn, ~p"<%= schema.route_prefix %>/log-in", %{
+        post(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in", %{
           "<%= schema.singular %>" => %{"token" => "invalid"}
         })
 
       <%= if live? do %>assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "The link is invalid or it has expired."
 
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"<% else %>assert html_response(conn, 200) =~ "The link is invalid or it has expired."<% end %>
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"<% else %>assert html_response(conn, 200) =~ "The link is invalid or it has expired."<% end %>
     end
   end
 
   describe "DELETE <%= schema.route_prefix %>/log-out" do
     test "logs the <%= schema.singular %> out", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
-      conn = conn |> log_in_<%= schema.singular %>(<%= schema.singular %>) |> delete(~p"<%= schema.route_prefix %>/log-out")
-      assert redirected_to(conn) == ~p"/"
+      conn = conn |> log_in_<%= schema.singular %>(<%= schema.singular %>) |> delete(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-out")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
       refute get_session(conn, :<%= schema.singular %>_token)
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
     end
 
     test "succeeds even if the <%= schema.singular %> is not logged in", %{conn: conn} do
-      conn = delete(conn, ~p"<%= schema.route_prefix %>/log-out")
-      assert redirected_to(conn) == ~p"/"
+      conn = delete(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-out")
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
       refute get_session(conn, :<%= schema.singular %>_token)
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Logged out successfully"
     end

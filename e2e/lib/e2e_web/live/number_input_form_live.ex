@@ -27,6 +27,7 @@ defmodule E2eWeb.NumberInputFormLive do
     params =
       Map.get(event_params, "number_input_form") ||
         socket.assigns.form.params
+
     changeset =
       %NumberInputForm{}
       |> NumberInputForm.changeset(params)
@@ -70,6 +71,7 @@ defmodule E2eWeb.NumberInputFormLive do
     params =
       Map.get(event_params, "number_input_form") ||
         socket.assigns.form.params
+
     case NumberInputForm.changeset(%NumberInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)

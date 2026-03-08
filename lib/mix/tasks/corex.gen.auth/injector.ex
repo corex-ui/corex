@@ -170,6 +170,8 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
   def app_layout_menu_code_to_inject(binding, padding \\ 4, newline \\ "\n") do
     schema = binding[:schema]
     scope_config = binding[:scope_config]
+    layout_locale = binding[:layout_locale]
+    locale_prefix = if layout_locale, do: "/" <> "\#{@locale}", else: ""
     already_injected_str = "#{schema.route_prefix}/log-in"
 
     template = """
@@ -180,17 +182,17 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
             {@#{scope_config.scope.assign_key}.#{schema.singular}.email}
           </li>
           <li>
-            <.navigate to={~p"#{schema.route_prefix}/settings"} type="href">Settings</.navigate>
+            <.navigate to={~p"#{locale_prefix}#{schema.route_prefix}/settings"} type="href">Settings</.navigate>
           </li>
           <li>
-            <.navigate to={~p"#{schema.route_prefix}/log-out"} type="href" method="delete">Log out</.navigate>
+            <.navigate to={~p"#{locale_prefix}#{schema.route_prefix}/log-out"} type="href" method="delete">Log out</.navigate>
           </li>
         <% else %>
           <li>
-            <.navigate to={~p"#{schema.route_prefix}/register"} type="href">Register</.navigate>
+            <.navigate to={~p"#{locale_prefix}#{schema.route_prefix}/register"} type="href">Register</.navigate>
           </li>
           <li>
-            <.navigate to={~p"#{schema.route_prefix}/log-in"} type="href">Log in</.navigate>
+            <.navigate to={~p"#{locale_prefix}#{schema.route_prefix}/log-in"} type="href">Log in</.navigate>
           </li>
         <% end %>
       </ul>

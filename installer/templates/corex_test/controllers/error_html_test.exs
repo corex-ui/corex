@@ -12,7 +12,7 @@ defmodule <%= @web_namespace %>.ErrorHTMLTest do
 
   test "returns 404 for nonexistent route", %{conn: conn} do
     path =
-      <%= if @language_switcher do %>"/" <> (Application.get_env(:<%= @app_name %>, :locales, ["en"]) |> List.first()) <> "/nonexistent"<% else %>"/nonexistent"<% end %>
+      <%= if @locale do %>"/" <> (Application.get_env(:<%= @app_name %>, :locales, ["en"]) |> List.first()) <> "/nonexistent"<% else %>"/nonexistent"<% end %>
 
     conn = get(conn, path)
     assert conn.status == 404

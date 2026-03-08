@@ -9,7 +9,7 @@ defmodule <%= @web_namespace %>.Router do
     plug <%= @web_namespace %>.Plugs.Mode
 <% end %><%= if @theme do %>
     plug <%= @web_namespace %>.Plugs.Theme
-<% end %><%= if @language_switcher do %>
+<% end %><%= if @locale do %>
     plug <%= @web_namespace %>.Plugs.Locale
 <% end %>
     plug :put_root_layout, html: {<%= @web_namespace %>.Layouts, :root}
@@ -20,7 +20,7 @@ defmodule <%= @web_namespace %>.Router do
   pipeline :api do
     plug :accepts, ["json"]
   end
-<%= if @language_switcher do %>
+<%= if @locale do %>
   scope "/", <%= @web_namespace %> do
     pipe_through :browser
     get "/", PageController, :home

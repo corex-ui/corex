@@ -4,23 +4,23 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   alias <%= inspect context.module %>
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
-
-  describe "Settings page" do
+  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <% end %>describe "Settings page" do
     test "renders settings page", %{conn: conn} do
       {:ok, _lv, html} =
         conn
         |> log_in_<%= schema.singular %>(<%= schema.singular %>_fixture())
-        |> live(~p"<%= schema.route_prefix %>/settings")
+        |> live(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       assert html =~ "Change Email"
       assert html =~ "Save Password"
     end
 
     test "redirects if <%= schema.singular %> is not logged in", %{conn: conn} do
-      assert {:error, redirect} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      assert {:error, redirect} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       assert {:redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"<%= schema.route_prefix %>/log-in"
+      assert path == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
       assert %{"error" => "You must log in to access this page."} = flash
     end
 
@@ -30,8 +30,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         |> log_in_<%= schema.singular %>(<%= schema.singular %>_fixture(),
           token_authenticated_at: <%= inspect datetime_module %>.add(<%= datetime_now %>, -11, :minute)
         )
-        |> live(~p"<%= schema.route_prefix %>/settings")
-        |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/log-in")
+        |> live(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
 
       assert conn.resp_body =~ "You must re-authenticate to access this page."
     end
@@ -46,7 +46,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     test "updates the <%= schema.singular %> email", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       new_email = unique_<%= schema.singular %>_email()
 
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       result =
         lv
@@ -60,7 +60,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "renders errors with invalid data (phx-change)", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       result =
         lv
@@ -75,7 +75,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "renders errors with invalid data (phx-submit)", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       result =
         lv
@@ -98,7 +98,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     test "updates the <%= schema.singular %> password", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
       new_password = valid_<%= schema.singular %>_password()
 
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       form =
         form(lv, "#password_form", %{
@@ -113,7 +113,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
       new_password_conn = follow_trigger_action(form, conn)
 
-      assert redirected_to(new_password_conn) == ~p"<%= schema.route_prefix %>/settings"
+      assert redirected_to(new_password_conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
 
       assert get_session(new_password_conn, :<%= schema.singular %>_token) != get_session(conn, :<%= schema.singular %>_token)
 
@@ -124,7 +124,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "renders errors with invalid data (phx-change)", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       result =
         lv
@@ -142,7 +142,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "renders errors with invalid data (phx-submit)", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/settings")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings")
 
       result =
         lv
@@ -174,27 +174,27 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
 
     test "updates the <%= schema.singular %> email once", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>, token: token, email: email} do
-      {:error, redirect} = live(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/#{token}")
+      {:error, redirect} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{token}")
 
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"<%= schema.route_prefix %>/settings"
+      assert path == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
       assert %{"info" => message} = flash
       assert message == "Email changed successfully."
       refute <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(<%= schema.singular %>.email)
       assert <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(email)
 
       # use confirm token again
-      {:error, redirect} = live(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/#{token}")
+      {:error, redirect} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{token}")
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"<%= schema.route_prefix %>/settings"
+      assert path == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
       assert %{"error" => message} = flash
       assert message == "Email change link is invalid or it has expired."
     end
 
     test "does not update email with invalid token", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
-      {:error, redirect} = live(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/oops")
+      {:error, redirect} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/oops")
       assert {:live_redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"<%= schema.route_prefix %>/settings"
+      assert path == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
       assert %{"error" => message} = flash
       assert message == "Email change link is invalid or it has expired."
       assert <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(<%= schema.singular %>.email)
@@ -202,9 +202,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
     test "redirects if <%= schema.singular %> is not logged in", %{token: token} do
       conn = build_conn()
-      {:error, redirect} = live(conn, ~p"<%= schema.route_prefix %>/settings/confirm-email/#{token}")
+      {:error, redirect} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{token}")
       assert {:redirect, %{to: path, flash: flash}} = redirect
-      assert path == ~p"<%= schema.route_prefix %>/log-in"
+      assert path == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
       assert %{"error" => message} = flash
       assert message == "You must log in to access this page."
     end

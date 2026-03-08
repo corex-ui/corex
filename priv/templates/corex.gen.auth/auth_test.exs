@@ -7,15 +7,16 @@ defmodule <%= inspect auth_module %>Test do
   alias <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Auth
 
   import <%= inspect context.module %>Fixtures
-
-  @remember_me_cookie "_<%= web_app_name %>_<%= schema.singular %>_remember_me"
+  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <% end %>@remember_me_cookie "_<%= web_app_name %>_<%= schema.singular %>_remember_me"
   @remember_me_cookie_max_age 60 * 60 * 24 * 14
 
   setup %{conn: conn} do
     conn =
       conn
       |> Map.replace!(:secret_key_base, <%= inspect endpoint_module %>.config(:secret_key_base))
-      |> init_test_session(%{})
+      |> init_test_session(%{})<%= if layout_locale do %>
+      |> Map.update!(:params, &Map.put(&1 || %{}, "locale", @locale))<% end %>
 
     %{<%= schema.singular %>: %{<%= schema.singular %>_fixture() | authenticated_at: <%= datetime_now %>}, conn: conn}
   end
@@ -25,7 +26,7 @@ defmodule <%= inspect auth_module %>Test do
       conn = <%= inspect schema.alias %>Auth.log_in_<%= schema.singular %>(conn, <%= schema.singular %>)
       assert token = get_session(conn, :<%= schema.singular %>_token)<%= if live? do %>
       assert get_session(conn, :live_socket_id) == "<%= schema.plural %>_sessions:#{Base.url_encode64(token)}"<% end %>
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
       assert <%= inspect context.alias %>.get_<%= schema.singular %>_by_session_token(token)
     end
 
@@ -80,7 +81,7 @@ defmodule <%= inspect auth_module %>Test do
         |> assign(:<%= scope_config.scope.assign_key %>, <%= inspect scope_config.scope.alias %>.for_<%= schema.singular %>(<%= schema.singular %>))
         |> <%= inspect schema.alias %>Auth.log_in_<%= schema.singular %>(<%= schema.singular %>)
 
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/settings"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"
     end<% end %>
 
     test "writes a cookie if remember_me was set in previous session", %{conn: conn, <%= schema.singular %>: <%= schema.singular %>} do
@@ -120,7 +121,7 @@ defmodule <%= inspect auth_module %>Test do
       refute get_session(conn, :<%= schema.singular %>_token)
       refute conn.cookies[@remember_me_cookie]
       assert %{max_age: 0} = conn.resp_cookies[@remember_me_cookie]
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
       refute <%= inspect context.alias %>.get_<%= schema.singular %>_by_session_token(<%= schema.singular %>_token)
     end
 
@@ -139,7 +140,7 @@ defmodule <%= inspect auth_module %>Test do
       conn = conn |> fetch_cookies() |> <%= inspect schema.alias %>Auth.log_out_<%= schema.singular %>()
       refute get_session(conn, :<%= schema.singular %>_token)
       assert %{max_age: 0} = conn.resp_cookies[@remember_me_cookie]
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
     end
   end
 
@@ -337,7 +338,7 @@ defmodule <%= inspect auth_module %>Test do
         |> assign(:<%= scope_config.scope.assign_key %>, Scope.for_<%= schema.singular %>(<%= schema.singular %>))
         |> <%= inspect schema.alias %>Auth.require_sudo_mode([])
 
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "You must re-authenticate to access this page."
@@ -356,7 +357,7 @@ defmodule <%= inspect auth_module %>Test do
         |> <%= inspect schema.alias %>Auth.redirect_if_<%= schema.singular %>_is_authenticated([])
 
       assert conn.halted
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>"
     end
 
     test "does not redirect if <%= schema.singular %> is not authenticated", %{conn: conn} do
@@ -375,7 +376,7 @@ defmodule <%= inspect auth_module %>Test do
       conn = conn |> fetch_flash() |> <%= inspect schema.alias %>Auth.require_authenticated_<%= schema.singular %>([])
       assert conn.halted
 
-      assert redirected_to(conn) == ~p"<%= schema.route_prefix %>/log-in"
+      assert redirected_to(conn) == ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"
 
       assert Phoenix.Flash.get(conn.assigns.flash, :error) ==
                "You must log in to access this page."

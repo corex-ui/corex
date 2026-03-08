@@ -32,7 +32,7 @@ defmodule <%= @web_namespace %>.Layouts do
   attr :theme, :string, default: "neo"
 <% end %><%= if @theme_switcher do %>
   attr :themes, :list, default: []
-<% end %><%= if @language_switcher do %>
+<% end %><%= if @locale do %>
   attr :locale, :string, default: "en"
   attr :current_path, :string, default: "/"
 <% end %>
@@ -155,7 +155,7 @@ defmodule <%= @web_namespace %>.Layouts do
             </svg>
           </a>
         </div>
-<%= if @language_switcher do %>
+<%= if @locale do %>
         <div class="layout__row gap-0 sm:gap-1">
           <.locale_switcher locale={@locale} current_path={@current_path} />
         </div>
@@ -185,7 +185,7 @@ defmodule <%= @web_namespace %>.Layouts do
     />
     """
   end
-<%= if @language_switcher do %>
+<%= if @locale do %>
   attr :locale, :string, default: "en"
   attr :current_path, :string, default: "/"
 

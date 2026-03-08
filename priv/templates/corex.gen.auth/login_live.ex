@@ -6,7 +6,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm space-y-4">
         <div class="text-center">
           <div>
@@ -16,7 +16,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                 You need to reauthenticate to perform sensitive actions on your account.
               <%% else %>
                 Don't have an account?
-                <.navigate to={~p"<%= schema.route_prefix %>/register"} class="link link--brand">
+                <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register"} class="link link--brand">
                   Sign up
                 </.navigate>
                 for an account now.
@@ -39,7 +39,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           :let={f}
           for={@form}
           id="login_form_magic"
-          action={~p"<%= schema.route_prefix %>/log-in"}
+          action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"}
           phx-submit="submit_magic"
         >
           <.native_input
@@ -66,7 +66,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           :let={f}
           for={@form}
           id="login_form_password"
-          action={~p"<%= schema.route_prefix %>/log-in"}
+          action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"}
           phx-submit="submit_password"
           phx-trigger-action={@trigger_submit}
         >
@@ -129,7 +129,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     if <%= schema.singular %> = <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(email) do
       <%= inspect context.alias %>.deliver_login_instructions(
         <%= schema.singular %>,
-        &url(~p"<%= schema.route_prefix %>/log-in/#{&1}")
+        &url(~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= schema.route_prefix %>/log-in/#{&1}")
       )
     end
 
@@ -139,7 +139,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     {:noreply,
      socket
      |> put_flash(:info, info)
-     |> push_navigate(to: ~p"<%= schema.route_prefix %>/log-in")}
+     |> push_navigate(to: ~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= schema.route_prefix %>/log-in")}
   end
 
   defp local_mail_adapter? do

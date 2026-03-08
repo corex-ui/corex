@@ -225,7 +225,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       endpoint_module: Module.concat([context.web_module, Endpoint]),
       auth_module:
         Module.concat([context.web_module, schema.web_namespace, "#{inspect(schema.alias)}Auth"]),
-      router_scope: router_scope(context),
+      router_scope: router_scope(context, layout_locale?(layout_opts)),
       web_path_prefix: web_path_prefix(schema),
       test_case_options: test_case_options(ecto_adapter),
       live?: Keyword.fetch!(context.opts, :live),
@@ -234,10 +234,9 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       scope_config:
         scope_config(context, opts[:scope], Keyword.get(opts, :assign_key, "current_scope")),
       agents_md: Keyword.get(opts, :agents_md, true),
-      layout_mode: layout_opts[:mode],
-      layout_theme: layout_opts[:theme],
-      layout_theme_switcher: layout_opts[:theme_switcher],
-      layout_language_switcher: layout_opts[:language_switcher]
+      layout_mode: layout_mode?(layout_opts),
+      layout_theme: layout_theme?(layout_opts),
+      layout_locale: layout_locale?(layout_opts)
     ]
 
     paths = Mix.Corex.generator_paths()
@@ -265,17 +264,13 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     |> Phoenix.Naming.underscore()
   end
 
-  defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
-    generators =
-      Application.get_env(context_app, :generators, [])[:layout] ||
-        try do
-          Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
-        rescue
-          ArgumentError -> []
-        end
-
-    generators || []
+  defp layout_generators_opts(_context, _web_app_name) do
+    Application.get_env(:corex, :generators, [])[:layout] || []
   end
+
+  defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
+  defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
+  defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 
   defp validate_args!([_, _, _]), do: :ok
 
@@ -996,13 +991,23 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
     context
   end
 
-  defp router_scope(%Context{schema: schema} = context) do
+  defp router_scope(%Context{schema: schema} = context, false) do
     prefix = Module.concat(context.web_module, schema.web_namespace)
 
     if schema.web_namespace do
       ~s|"/#{schema.web_path}", #{inspect(prefix)}|
     else
       ~s|"/", #{inspect(context.web_module)}|
+    end
+  end
+
+  defp router_scope(%Context{schema: schema} = context, true) do
+    prefix = Module.concat(context.web_module, schema.web_namespace)
+
+    if schema.web_namespace do
+      ~s|"/:locale/#{schema.web_path}", #{inspect(prefix)}|
+    else
+      ~s|"/:locale", #{inspect(context.web_module)}|
     end
   end
 

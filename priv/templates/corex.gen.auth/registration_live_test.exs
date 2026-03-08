@@ -3,10 +3,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
-
-  describe "Registration page" do
+  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <% end %>describe "Registration page" do
     test "renders registration page", %{conn: conn} do
-      {:ok, _lv, html} = live(conn, ~p"<%= schema.route_prefix %>/register")
+      {:ok, _lv, html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")
 
       assert html =~ "Register"
       assert html =~ "Log in"
@@ -16,14 +16,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       result =
         conn
         |> log_in_<%= schema.singular %>(<%= schema.singular %>_fixture())
-        |> live(~p"<%= schema.route_prefix %>/register")
-        |> follow_redirect(conn, ~p"/")
+        |> live(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% else %>/<% end %>")
 
       assert {:ok, _conn} = result
     end
 
     test "renders errors for invalid data", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/register")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")
 
       result =
         lv
@@ -37,21 +37,21 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   describe "register <%= schema.singular %>" do
     test "creates account but does not log in", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/register")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")
 
       email = unique_<%= schema.singular %>_email()
       form = form(lv, "#registration_form", <%= schema.singular %>: valid_<%= schema.singular %>_attributes(email: email))
 
       {:ok, _lv, html} =
         render_submit(form)
-        |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/log-in")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
 
       assert html =~
                ~r/An email was sent to .*, please access it to confirm your account/
     end
 
     test "renders errors for duplicated email", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/register")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")
 
       <%= schema.singular %> = <%= schema.singular %>_fixture(%{email: "test@email.com"})
 
@@ -68,13 +68,13 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   describe "registration navigation" do
     test "redirects to login page when the Log in button is clicked", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"<%= schema.route_prefix %>/register")
+      {:ok, lv, _html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")
 
       {:ok, _login_live, login_html} =
         lv
         |> element("main a", "Log in")
         |> render_click()
-        |> follow_redirect(conn, ~p"<%= schema.route_prefix %>/log-in")
+        |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in")
 
       assert login_html =~ "Log in"
     end

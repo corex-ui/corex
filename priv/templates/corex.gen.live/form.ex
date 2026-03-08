@@ -7,7 +7,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
       <div>
         <h1 class="text-lg font-semibold">{@page_title}</h1>
         <p class="mt-1 text-sm text-zinc-500">
@@ -21,7 +21,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <.action phx-disable-with="Saving..." class="button button--primary" type="submit">
             Save <%= schema.human_singular %>
           </.action>
-          <.navigate to={return_path(<%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate">Cancel</.navigate>
+          <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate">Cancel</.navigate>
         </footer>
       </.form>
     </Layouts.app>
@@ -74,8 +74,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
          socket
          |> put_flash(:info, "<%= schema.human_singular %> updated successfully")
          <%= if scope do %>|> push_navigate(
-           to: return_path(<%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
-         )}<% else %>|> push_navigate(to: return_path(socket.assigns.return_to, <%= schema.singular %>))}<% end %>
+           to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %><%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
+         )}<% else %>|> push_navigate(to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %>socket.assigns.return_to, <%= schema.singular %>))}<% end %>
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -89,14 +89,17 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
          socket
          |> put_flash(:info, "<%= schema.human_singular %> created successfully")
          <%= if scope do %>|> push_navigate(
-           to: return_path(<%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
-         )}<% else %>|> push_navigate(to: return_path(socket.assigns.return_to, <%= schema.singular %>))}<% end %>
+           to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %><%= context_scope_prefix %>socket.assigns.return_to, <%= schema.singular %>)
+         )}<% else %>|> push_navigate(to: return_path(<%= if layout_locale do %>socket.assigns.locale, <% end %>socket.assigns.return_to, <%= schema.singular %>))}<% end %>
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 
-  defp return_path(<%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
+  <%= if layout_locale do %>defp return_path(locale, <%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"/#{locale}<%= scope_param_route_prefix %><%= schema.route_prefix %>"
+  defp return_path(locale, <%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"/#{locale}<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"
+<% else %>defp return_path(<%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
   defp return_path(<%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"
+<% end %>
 end

@@ -9,12 +9,12 @@ defmodule <%= @web_namespace %>.ExampleLive do
   @impl true
   def render(assigns) do
     ~H"""
-<%= if @mode or @theme or @theme_switcher or @language_switcher do %>    <Layouts.app
+<%= if @mode or @theme or @theme_switcher or @locale do %>    <Layouts.app
       flash={@flash}
 <%= if @mode do %>      mode={@mode}
 <% end %><%= if @theme do %>      theme={@theme}
 <% end %><%= if @theme_switcher do %>      themes={@themes}
-<% end %><%= if @language_switcher do %>      locale={@locale}
+<% end %><%= if @locale do %>      locale={@locale}
       current_path={@current_path}
 <% end %>    >
 <% else %>    <Layouts.app flash={@flash}>

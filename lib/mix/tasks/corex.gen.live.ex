@@ -160,10 +160,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       schema: schema,
       primary_key: schema.opts[:primary_key] || :id,
       scope: schema.scope,
-      layout_mode: layout_opts[:mode],
-      layout_theme: layout_opts[:theme],
-      layout_theme_switcher: layout_opts[:theme_switcher],
-      layout_language_switcher: layout_opts[:language_switcher],
+      layout_mode: layout_mode?(layout_opts),
+      layout_theme: layout_theme?(layout_opts),
+      layout_locale: layout_locale?(layout_opts),
       inputs: inputs(schema),
       socket_scope: socket_scope,
       context_scope_prefix: context_scope_prefix,
@@ -251,8 +250,17 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   @doc false
   def print_shell_instructions(%Context{schema: schema, context_app: ctx_app} = context) do
+    layout_opts = layout_generators_opts(context, web_app_name(context))
+    layout_locale = layout_locale?(layout_opts)
     prefix = Module.concat(context.web_module, schema.web_namespace)
     web_path = Mix.Corex.web_path(ctx_app)
+
+    scope_instruction =
+      if layout_locale do
+        "Add the live routes inside the existing scope \"/:locale\" block in #{web_path}/router.ex:"
+      else
+        "Add the live routes to your browser scope in #{web_path}/router.ex:"
+      end
 
     if schema.web_namespace do
       Mix.shell().info("""
@@ -269,7 +277,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     else
       Mix.shell().info("""
 
-      Add the live routes to your browser scope in #{Mix.Corex.web_path(ctx_app)}/router.ex:
+      #{scope_instruction}
 
       #{for line <- live_route_instructions(schema), do: "    #{line}"}
       """)
@@ -422,15 +430,11 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     |> Phoenix.Naming.underscore()
   end
 
-  defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
-    generators =
-      Application.get_env(context_app, :generators, [])[:layout] ||
-        try do
-          Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
-        rescue
-          ArgumentError -> []
-        end
-
-    generators || []
+  defp layout_generators_opts(_context, _web_app_name) do
+    Application.get_env(:corex, :generators, [])[:layout] || []
   end
+
+  defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
+  defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
+  defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
 end

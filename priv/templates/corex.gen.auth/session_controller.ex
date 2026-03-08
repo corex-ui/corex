@@ -25,7 +25,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       _ ->
         conn
         |> put_flash(:error, "The link is invalid or it has expired.")
-        |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+        |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
     end
   end
 
@@ -42,7 +42,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       conn
       |> put_flash(:error, "Invalid email or password")
       |> put_flash(:email, String.slice(email, 0, 160))
-      |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+      |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
     end
   end
 
@@ -55,7 +55,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     <%= inspect schema.alias %>Auth.disconnect_sessions(expired_tokens)
 
     conn
-    |> put_session(:<%= schema.singular %>_return_to, ~p"<%= schema.route_prefix %>/settings")
+    |> put_session(:<%= schema.singular %>_return_to, ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/settings")
     |> create(params, "Password updated successfully!")
   end<% else %>
 
@@ -108,7 +108,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     if <%= schema.singular %> = <%= inspect context.alias %>.get_<%= schema.singular %>_by_email(email) do
       <%= inspect context.alias %>.deliver_login_instructions(
         <%= schema.singular %>,
-        &url(~p"<%= schema.route_prefix %>/log-in/#{&1}")
+        &url(~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in/#{&1}")
       )
     end
 
@@ -117,7 +117,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
     conn
     |> put_flash(:info, info)
-    |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+    |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
   end
 
   def confirm(conn, %{"token" => token}) do
@@ -131,7 +131,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     else
       conn
       |> put_flash(:error, "Magic link is invalid or it has expired.")
-      |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+      |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
     end
   end<% end %>
 

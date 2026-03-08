@@ -8,7 +8,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="text-center">
         <div>
           <h1 class="text-lg font-semibold">Account Settings</h1>
@@ -44,7 +44,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <.form
         for={@password_form}
         id="password_form"
-        action={~p"<%= schema.route_prefix %>/update-password"}
+        action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/update-password"}
         method="post"
         phx-change="validate_password"
         phx-submit="update_password"
@@ -101,7 +101,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           put_flash(socket, :error, "Email change link is invalid or it has expired.")
       end
 
-    {:ok, push_navigate(socket, to: ~p"<%= schema.route_prefix %>/settings")}
+    {:ok, push_navigate(socket, to: ~p"<%= if layout_locale do %>/#{socket.params["locale"]}<% end %><%= schema.route_prefix %>/settings")}
   end
 
   def mount(_params, _session, socket) do
@@ -142,7 +142,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         <%= inspect context.alias %>.deliver_<%= schema.singular %>_update_email_instructions(
           Ecto.Changeset.apply_action!(changeset, :insert),
           <%= schema.singular %>.email,
-          &url(~p"<%= schema.route_prefix %>/settings/confirm-email/#{&1}")
+          &url(~p"<%= if layout_locale do %>/#{socket.assigns.locale}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{&1}")
         )
 
         info = "A link to confirm your email change has been sent to the new address."

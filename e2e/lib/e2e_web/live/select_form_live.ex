@@ -37,6 +37,7 @@ defmodule E2eWeb.SelectFormLive do
     params =
       Map.get(event_params, "select_form") ||
         socket.assigns.form.params
+
     changeset =
       %SelectForm{}
       |> SelectForm.changeset(params)
@@ -59,6 +60,7 @@ defmodule E2eWeb.SelectFormLive do
     params =
       Map.get(event_params, "select_form") ||
         socket.assigns.form.params
+
     case SelectForm.changeset(%SelectForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)

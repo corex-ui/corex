@@ -337,6 +337,7 @@ defmodule Corex.New.Generator do
       default_theme: default_theme,
       locales: locales,
       language_switcher: language_switcher,
+      locale: language_switcher,
       rtl_locales: rtl_locales,
       mailer: mailer,
       ecto: ecto,
@@ -353,9 +354,9 @@ defmodule Corex.New.Generator do
       web_adapter_vsn: web_adapter_vsn,
       web_adapter_docs: web_adapter_docs,
       generators: nil_if_empty(
-        project.generators ++ adapter_generators(adapter_config) ++
-          layout_generators(mode, theme, theme_switcher, language_switcher)
+        project.generators ++ adapter_generators(adapter_config)
       ),
+      corex_generators: layout_generators(mode, theme, language_switcher),
       namespaced?: namespaced?(project),
       dev: dev,
       inside_docker_env?: inside_docker_env?,
@@ -532,20 +533,19 @@ defmodule Corex.New.Generator do
     |> Enum.filter(fn {_, value} -> not is_nil(value) end)
   end
 
-  defp layout_generators(mode, theme, theme_switcher, language_switcher) do
+  defp layout_generators(mode, theme, locale) do
     layout_opts =
       []
-      |> maybe_put(:mode, mode)
-      |> maybe_put(:theme, theme)
-      |> maybe_put(:theme_switcher, theme_switcher)
-      |> maybe_put(:language_switcher, language_switcher)
+      |> maybe_put_layout(:mode, mode, "mode")
+      |> maybe_put_layout(:theme, theme, "theme")
+      |> maybe_put_layout(:locale, locale, "locale")
 
     if layout_opts == [], do: [], else: [layout: layout_opts]
   end
 
-  defp maybe_put(list, _key, false), do: list
-  defp maybe_put(list, _key, nil), do: list
-  defp maybe_put(list, key, _value), do: Keyword.put(list, key, true)
+  defp maybe_put_layout(list, _key, false, _val), do: list
+  defp maybe_put_layout(list, _key, nil, _val), do: list
+  defp maybe_put_layout(list, key, _value, val), do: Keyword.put(list, key, val)
 
   defp nil_if_empty([]), do: nil
   defp nil_if_empty(other), do: other

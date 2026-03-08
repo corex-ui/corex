@@ -22,7 +22,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         <%= inspect context.alias %>.deliver_<%= schema.singular %>_update_email_instructions(
           Ecto.Changeset.apply_action!(changeset, :insert),
           <%= schema.singular %>.email,
-          &url(~p"<%= schema.route_prefix %>/settings/confirm-email/#{&1}")
+          &url(~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/settings/confirm-email/#{&1}")
         )
 
         conn
@@ -30,7 +30,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           :info,
           "A link to confirm your email change has been sent to the new address."
         )
-        |> redirect(to: ~p"<%= schema.route_prefix %>/settings")
+        |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/settings")
 
       changeset ->
         render(conn, :edit, email_changeset: %{changeset | action: :insert})
@@ -45,7 +45,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       {:ok, {<%= schema.singular %>, _}} ->
         conn
         |> put_flash(:info, "Password updated successfully.")
-        |> put_session(:<%= schema.singular %>_return_to, ~p"<%= schema.route_prefix %>/settings")
+        |> put_session(:<%= schema.singular %>_return_to, ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/settings")
         |> <%= inspect schema.alias %>Auth.log_in_<%= schema.singular %>(<%= schema.singular %>)
 
       {:error, changeset} ->
@@ -58,12 +58,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       {:ok, _<%= schema.singular %>} ->
         conn
         |> put_flash(:info, "Email changed successfully.")
-        |> redirect(to: ~p"<%= schema.route_prefix %>/settings")
+        |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/settings")
 
       {:error, _} ->
         conn
         |> put_flash(:error, "Email change link is invalid or it has expired.")
-        |> redirect(to: ~p"<%= schema.route_prefix %>/settings")
+        |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/settings")
     end
   end
 

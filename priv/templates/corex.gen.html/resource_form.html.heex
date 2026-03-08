@@ -2,6 +2,6 @@
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 2) %>
   <footer>
     <.action class="button button--primary" type="submit">Save <%= schema.human_singular %></.action>
-    <.action :if={@return_to} href={@return_to}>Cancel</.action>
+    <.navigate :if={@return_to} to={@return_to} type="href" class="button">Cancel</.navigate>
   </footer>
 </.form>

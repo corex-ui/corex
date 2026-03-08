@@ -6,10 +6,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
       <div class="flex items-center justify-between gap-4">
         <h1 class="text-lg font-semibold">Listing <%= schema.human_plural %></h1>
-        <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button button--primary">
+        <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button button--primary">
           <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
         </.navigate>
       </div>
@@ -17,14 +17,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       <.data_table
         id="<%= schema.plural %>"
         rows={@streams.<%= schema.collection %>}
-        row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
+        row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
       ><%= for {k, _} <- schema.attrs do %>
         <:col :let={{_id, <%= schema.singular %>}} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
         <:action :let={{_id, <%= schema.singular %>}}>
           <div class="sr-only">
-            <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} type="navigate">Show</.navigate>
+            <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} type="navigate">Show</.navigate>
           </div>
-          <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"} type="navigate">Edit</.navigate>
+          <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"} type="navigate">Edit</.navigate>
         </:action>
         <:action :let={{id, <%= schema.singular %>}}>
           <.link

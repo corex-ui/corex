@@ -6,7 +6,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
       <div class="mx-auto max-w-sm">
         <div class="text-center">
           <h1 class="text-lg font-semibold">Welcome {@<%= schema.singular %>.email}</h1>
@@ -18,7 +18,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           id="confirmation_form"
           phx-mounted={JS.focus_first()}
           phx-submit="submit"
-          action={~p"<%= schema.route_prefix %>/log-in?_action=confirmed"}
+          action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in?_action=confirmed"}
           phx-trigger-action={@trigger_submit}
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
@@ -46,7 +46,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           id="login_form"
           phx-submit="submit"
           phx-mounted={JS.focus_first()}
-          action={~p"<%= schema.route_prefix %>/log-in"}
+          action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"}
           phx-trigger-action={@trigger_submit}
         >
           <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
@@ -97,7 +97,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       {:ok,
        socket
        |> put_flash(:error, "Magic link is invalid or it has expired.")
-       |> push_navigate(to: ~p"<%= schema.route_prefix %>/log-in")}
+       |> push_navigate(to: ~p"<%= if layout_locale do %>/#{socket.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")}
     end
   end
 

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html
-  <%= if @language_switcher do %>lang={assigns[:locale] || "en"}
+  <%= if @locale do %>lang={assigns[:locale] || "en"}
   dir={assigns[:dir] || "ltr"}<% else %>lang="en"
   dir="ltr"<% end %>
   <%= if @theme do %>data-theme={assigns[:theme]}<% else %>data-theme="neo"<% end %>

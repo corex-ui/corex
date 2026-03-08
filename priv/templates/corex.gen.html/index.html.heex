@@ -1,23 +1,23 @@
-<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
   <div class="flex items-center justify-between gap-4">
     <h1 class="text-lg font-semibold">Listing <%= schema.human_plural %></h1>
-    <.action class="button button--primary" href={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}>
+    <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="href" class="button button--primary">
       <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
-    </.action>
+    </.navigate>
   </div>
 
-  <.data_table id="<%= schema.plural %>" rows={@<%= schema.collection %>} row_click={&JS.navigate(~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}><%= for {k, _} <- schema.attrs do %>
+  <.data_table id="<%= schema.plural %>" rows={@<%= schema.collection %>} row_click={&JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}><%= for {k, _} <- schema.attrs do %>
     <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
     <:action :let={<%= schema.singular %>}>
       <div class="sr-only">
-        <.link navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"}>Show</.link>
+        <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} type="href">Show</.navigate>
       </div>
-      <.link navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}>Edit</.link>
+      <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"} type="href">Edit</.navigate>
     </:action>
     <:action :let={<%= schema.singular %>}>
-      <.link href={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} method="delete" data-confirm="Are you sure?">
+      <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} type="href" method="delete" data-confirm="Are you sure?">
         Delete
-      </.link>
+      </.navigate>
     </:action>
   </.data_table>
 </Layouts.app>

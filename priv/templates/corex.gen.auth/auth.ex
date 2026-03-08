@@ -56,7 +56,7 @@ defmodule <%= inspect auth_module %> do
     conn
     |> renew_session(nil)
     |> delete_resp_cookie(@remember_me_cookie)
-    |> redirect(to: ~p"/")
+    |> redirect(to: <%= if layout_locale do %>if(conn.params["locale"], do: ~p"/#{conn.params["locale"]}", else: ~p"/")<% else %>~p"/"<% end %>)
   end
 
   @doc """
@@ -215,7 +215,7 @@ defmodule <%= inspect auth_module %> do
     {:cont, mount_<%= scope_config.scope.assign_key %>(socket, session)}
   end
 
-  def on_mount(:require_authenticated, _params, session, socket) do
+  def on_mount(:require_authenticated, params, session, socket) do
     socket = mount_<%= scope_config.scope.assign_key %>(socket, session)
 
     if socket.assigns.<%= scope_config.scope.assign_key %> && socket.assigns.<%= scope_config.scope.assign_key %>.<%= schema.singular %> do
@@ -224,13 +224,13 @@ defmodule <%= inspect auth_module %> do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+        |> Phoenix.LiveView.redirect(to: ~p"<%= if layout_locale do %>/#{params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
 
       {:halt, socket}
     end
   end
 
-  def on_mount(:require_sudo_mode, _params, session, socket) do
+  def on_mount(:require_sudo_mode, params, session, socket) do
     socket = mount_<%= scope_config.scope.assign_key %>(socket, session)
 
     if <%= inspect context.alias %>.sudo_mode?(socket.assigns.<%= scope_config.scope.assign_key %>.<%= schema.singular %>, -10) do
@@ -239,7 +239,7 @@ defmodule <%= inspect auth_module %> do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must re-authenticate to access this page.")
-        |> Phoenix.LiveView.redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+        |> Phoenix.LiveView.redirect(to: ~p"<%= if layout_locale do %>/#{params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
 
       {:halt, socket}
     end
@@ -257,12 +257,29 @@ defmodule <%= inspect auth_module %> do
   end
 
   @doc "Returns the path to redirect to after log in."
-  # the <%= schema.singular %> was already logged in, redirect to settings
-  def signed_in_path(%Plug.Conn{assigns: %{<%= scope_config.scope.assign_key %>: %<%= inspect scope_config.scope.alias %>{<%= schema.singular %>: %<%= inspect context.alias %>.<%= inspect schema.alias %>{}}}}) do
+  <%= if layout_locale do %>def signed_in_path(%Plug.Conn{params: %{"locale" => locale}, assigns: %{<%= scope_config.scope.assign_key %>: %<%= inspect scope_config.scope.alias %>{<%= schema.singular %>: %<%= inspect context.alias %>.<%= inspect schema.alias %>{}}}}) do
+    ~p"/#{locale}<%= schema.route_prefix %>/settings"
+  end
+
+  def signed_in_path(%Plug.Conn{params: %{"locale" => locale}}) do
+    ~p"/#{locale}"
+  end
+
+  def signed_in_path(%{params: %{"locale" => locale}, assigns: %{<%= scope_config.scope.assign_key %>: %<%= inspect scope_config.scope.alias %>{<%= schema.singular %>: %<%= inspect context.alias %>.<%= inspect schema.alias %>{}}}}) do
+    ~p"/#{locale}<%= schema.route_prefix %>/settings"
+  end
+
+  def signed_in_path(%{params: %{"locale" => locale}}) do
+    ~p"/#{locale}"
+  end
+  <% else %>def signed_in_path(%Plug.Conn{assigns: %{<%= scope_config.scope.assign_key %>: %<%= inspect scope_config.scope.alias %>{<%= schema.singular %>: %<%= inspect context.alias %>.<%= inspect schema.alias %>{}}}}) do
     ~p"<%= schema.route_prefix %>/settings"
   end
 
-  def signed_in_path(_), do: ~p"/"
+  def signed_in_path(%{assigns: %{<%= scope_config.scope.assign_key %>: %<%= inspect scope_config.scope.alias %>{<%= schema.singular %>: %<%= inspect context.alias %>.<%= inspect schema.alias %>{}}}}) do
+    ~p"<%= schema.route_prefix %>/settings"
+  end
+  <% end %>def signed_in_path(_), do: ~p"/"
 
   <% else %>defp put_token_in_session(conn, token) do
     put_session(conn, :<%= schema.singular %>_token, token)
@@ -278,7 +295,7 @@ defmodule <%= inspect auth_module %> do
       conn
       |> put_flash(:error, "You must re-authenticate to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+      |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
       |> halt()
     end
   end
@@ -308,7 +325,7 @@ defmodule <%= inspect auth_module %> do
       conn
       |> put_flash(:error, "You must log in to access this page.")
       |> maybe_store_return_to()
-      |> redirect(to: ~p"<%= schema.route_prefix %>/log-in")
+      |> redirect(to: ~p"<%= if layout_locale do %>/#{conn.params["locale"]}<% end %><%= schema.route_prefix %>/log-in")
       |> halt()
     end
   end

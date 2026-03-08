@@ -33,7 +33,8 @@
 @import "../corex/components/toast.css";
 @import "../corex/components/data-table.css";
 @import "../corex/components/data-list.css";
+@import "../corex/components/native-input.css";
 <%= if @mode do %>@import "../corex/components/toggle-group.css";
-<% end %><%= if @theme or @language_switcher do %>@import "../corex/components/select.css";
+<% end %><%= if @theme or @locale do %>@import "../corex/components/select.css";
 <% end %>
 /* This file is for your main application CSS */
