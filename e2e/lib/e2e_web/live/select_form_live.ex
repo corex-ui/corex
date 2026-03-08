@@ -33,7 +33,10 @@ defmodule E2eWeb.SelectFormLive do
   end
 
   @impl true
-  def handle_event("validate", %{"select_form" => params}, socket) do
+  def handle_event("validate", event_params, socket) do
+    params =
+      Map.get(event_params, "select_form") ||
+        socket.assigns.form.params
     changeset =
       %SelectForm{}
       |> SelectForm.changeset(params)
@@ -52,7 +55,10 @@ defmodule E2eWeb.SelectFormLive do
   end
 
   @impl true
-  def handle_event("save", %{"select_form" => params}, socket) do
+  def handle_event("save", event_params, socket) do
+    params =
+      Map.get(event_params, "select_form") ||
+        socket.assigns.form.params
     case SelectForm.changeset(%SelectForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
