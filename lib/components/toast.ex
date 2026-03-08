@@ -148,7 +148,10 @@ defmodule Corex.Toast do
     doc: "configuration for error flash messages (Corex.Flash.Error struct)"
   )
 
-  attr(:translation, Corex.Toast.Translation, default: nil, doc: "Override default titles for info/error flash messages")
+  attr(:translation, Corex.Toast.Translation,
+    default: nil,
+    doc: "Override default titles for info/error flash messages"
+  )
 
   slot :loading,
     doc: "the loading spinner icon to display when duration is infinity" do

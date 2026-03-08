@@ -267,7 +267,10 @@ defmodule Corex.Combobox do
   attr(:open, :boolean, default: false, doc: "Whether the combobox is open")
   attr(:value, :list, default: [], doc: "The value of the combobox")
 
-  attr(:translation, Corex.Combobox.Translation, default: nil, doc: "Override translatable strings")
+  attr(:translation, Corex.Combobox.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
 
   attr(:always_submit_on_enter, :boolean,
     default: false,
@@ -321,7 +324,9 @@ defmodule Corex.Combobox do
     attr(:class, :string, required: false)
   end
 
-  slot :empty, required: false, doc: "Content when there are no results. When omitted, translation.empty is used" do
+  slot :empty,
+    required: false,
+    doc: "Content when there are no results. When omitted, translation.empty is used" do
     attr(:class, :string, required: false)
   end
 
@@ -379,6 +384,7 @@ defmodule Corex.Combobox do
       placeholder: gettext("Select an option"),
       empty: gettext("No results")
     }
+
     translation = assigns[:translation] || default_translation
     placeholder = translation.placeholder
     empty_text = translation.empty

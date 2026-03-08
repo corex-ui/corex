@@ -92,9 +92,7 @@ export class Listbox extends Component<Props<Item>, Api> {
     );
     if (!contentEl) return;
 
-    const templatesContainer = this.el.querySelector<HTMLElement>(
-      '[data-templates="listbox"]'
-    );
+    const templatesContainer = this.el.querySelector<HTMLElement>('[data-templates="listbox"]');
     if (!templatesContainer) return;
 
     contentEl

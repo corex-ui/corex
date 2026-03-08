@@ -103,7 +103,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       assert html =~ "Log in with email"
 
       assert html =~
-               ~s(<input type="email" name="<%= schema.singular %>[email]" id="login_form_magic_email" value="#{<%= schema.singular %>.email}")
+               ~s(name="<%= schema.singular %>[email]" value="#{<%= schema.singular %>.email}")
     end
   end
 end

@@ -250,6 +250,7 @@ defmodule Corex.TreeView do
   attr(:expanded_value, :list, default: [])
   attr(:value, :list, default: [])
   attr(:focused_value, :string, default: nil)
+
   slot :indicator, doc: "Indicator content for branches" do
     attr(:class, :string, required: false)
   end

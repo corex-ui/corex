@@ -31,13 +31,21 @@ defmodule E2eWeb.AngleSliderFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :angle_slider_form, id: "angle-slider-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :angle_slider_form,
+         id: "angle-slider-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("angle_changed", %{"value" => value}, socket) do
     angle = parse_float(value)
     params = %{"angle" => to_string(angle)}
+
     changeset =
       %AngleSliderForm{}
       |> AngleSliderForm.changeset(params)
@@ -45,7 +53,14 @@ defmodule E2eWeb.AngleSliderFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :angle_slider_form, id: "angle-slider-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :angle_slider_form,
+         id: "angle-slider-form"
+       )
+     )}
   end
 
   @impl true
@@ -58,12 +73,25 @@ defmodule E2eWeb.AngleSliderFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(AngleSliderForm.changeset(%AngleSliderForm{}, params), as: :angle_slider_form, id: "angle-slider-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(AngleSliderForm.changeset(%AngleSliderForm{}, params),
+             as: :angle_slider_form,
+             id: "angle-slider-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :angle_slider_form, id: "angle-slider-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :angle_slider_form,
+             id: "angle-slider-form"
+           )
+         )}
     end
   end
 
@@ -123,14 +151,20 @@ defmodule E2eWeb.AngleSliderFormLive do
         Ecto.Changeset.get_field(form.source, :angle)
 
     case raw do
-      nil -> 0.0
-      "" -> 0.0
+      nil ->
+        0.0
+
+      "" ->
+        0.0
+
       val when is_binary(val) ->
         case Float.parse(val) do
           {num, _} -> num
           :error -> 0.0
         end
-      val when is_number(val) -> val * 1.0
+
+      val when is_number(val) ->
+        val * 1.0
     end
   end
 end

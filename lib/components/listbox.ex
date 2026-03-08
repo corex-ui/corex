@@ -424,5 +424,4 @@ defmodule Corex.Listbox do
       base
     end
   end
-
 end

@@ -418,7 +418,12 @@ defmodule Corex.Select do
   import Corex.Helpers, only: [normalize_items: 1, has_groups?: 1, group_by_group: 1]
 
   attr(:id, :string, required: false, doc: "The id of the select component")
-  attr(:items, :list, default: [], doc: "List of items (maps with :id and :label, or Corex.List.Item)")
+
+  attr(:items, :list,
+    default: [],
+    doc: "List of items (maps with :id and :label, or Corex.List.Item)"
+  )
+
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
 
   attr(:value, :list, default: [], doc: "The value of the select")
@@ -690,5 +695,4 @@ defmodule Corex.Select do
         end
     end
   end
-
 end

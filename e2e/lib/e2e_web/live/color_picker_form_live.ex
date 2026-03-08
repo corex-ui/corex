@@ -31,12 +31,20 @@ defmodule E2eWeb.ColorPickerFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :color_picker_form, id: "color-picker-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :color_picker_form,
+         id: "color-picker-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("color_changed", %{"valueAsString" => value}, socket) do
     params = %{"color" => value}
+
     changeset =
       %ColorPickerForm{}
       |> ColorPickerForm.changeset(params)
@@ -44,7 +52,14 @@ defmodule E2eWeb.ColorPickerFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :color_picker_form, id: "color-picker-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :color_picker_form,
+         id: "color-picker-form"
+       )
+     )}
   end
 
   @impl true
@@ -57,12 +72,25 @@ defmodule E2eWeb.ColorPickerFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(ColorPickerForm.changeset(%ColorPickerForm{}, params), as: :color_picker_form, id: "color-picker-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(ColorPickerForm.changeset(%ColorPickerForm{}, params),
+             as: :color_picker_form,
+             id: "color-picker-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :color_picker_form, id: "color-picker-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :color_picker_form,
+             id: "color-picker-form"
+           )
+         )}
     end
   end
 

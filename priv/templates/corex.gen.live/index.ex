@@ -6,15 +6,15 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
       <div class="flex items-center justify-between gap-4">
         <h1 class="text-lg font-semibold">Listing <%= schema.human_plural %></h1>
-        <.action class="button button--primary" navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}>
+        <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"} type="navigate" class="button button--primary">
           <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
-        </.action>
+        </.navigate>
       </div>
 
-      <.table
+      <.data_table
         id="<%= schema.plural %>"
         rows={@streams.<%= schema.collection %>}
         row_click={fn {_id, <%= schema.singular %>} -> JS.navigate(~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}") end}
@@ -22,19 +22,20 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         <:col :let={{_id, <%= schema.singular %>}} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
         <:action :let={{_id, <%= schema.singular %>}}>
           <div class="sr-only">
-            <.link navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"}>Show</.link>
+            <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} type="navigate">Show</.navigate>
           </div>
-          <.link navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}>Edit</.link>
+          <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"} type="navigate">Edit</.navigate>
         </:action>
         <:action :let={{id, <%= schema.singular %>}}>
           <.link
-            phx-click={JS.push("delete", value: %{<%= primary_key %>: <%= schema.singular %>.<%= primary_key %>}) |> hide("##{id}")}
+            href="#"
+            phx-click={JS.push("delete", value: %{<%= primary_key %>: <%= schema.singular %>.<%= primary_key %>}) |> JS.hide(to: "##{id}")}
             data-confirm="Are you sure?"
           >
             Delete
           </.link>
         </:action>
-      </.table>
+      </.data_table>
     </Layouts.app>
     """
   end

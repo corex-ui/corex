@@ -83,7 +83,12 @@ defmodule Corex.PinInput do
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
   attr(:on_value_complete, :string, default: nil)
-  attr(:translation, Corex.PinInput.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:translation, Corex.PinInput.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false do

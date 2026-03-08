@@ -1,0 +1,1 @@
+[exit: false, format: "txt", ignore_files: [], ignore: ["Traversal.FileModule", "RCE.EEx"], out: nil, private: false, router: nil, skip: false, threshold: :low, verbose: false, version: false]

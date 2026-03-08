@@ -121,7 +121,11 @@ defmodule Corex.NumberInput do
     doc: "When true, show scrubber instead of increment/decrement buttons"
   )
 
-  attr(:translation, Corex.NumberInput.Translation, default: nil, doc: "Override translatable strings")
+  attr(:translation, Corex.NumberInput.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false do

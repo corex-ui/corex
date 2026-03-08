@@ -268,11 +268,11 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
     generators =
       Application.get_env(context_app, :generators, [])[:layout] ||
-        (try do
-           Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
-         rescue
-           ArgumentError -> []
-         end)
+        try do
+          Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
+        rescue
+          ArgumentError -> []
+        end
 
     generators || []
   end
@@ -944,22 +944,27 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       """
 
     file_path =
-      (if Mix.Corex.in_umbrella?(File.cwd!()), do: Path.expand("../../"), else: File.cwd!())
+      if(Mix.Corex.in_umbrella?(File.cwd!()), do: Path.expand("../../"), else: File.cwd!())
       |> Path.join("AGENTS.md")
 
-    if File.exists?(file_path), do: maybe_inject_agents_md_file(context, file_path, auth_content), else: context
+    if File.exists?(file_path),
+      do: maybe_inject_agents_md_file(context, file_path, auth_content),
+      else: context
   end
 
   defp maybe_inject_agents_md_file(context, file_path, auth_content) do
     content = File.read!(file_path)
+
     unless content =~ "<!-- phoenix-gen-auth-start -->" do
       inject_agents_md_content(file_path, content, auth_content)
     end
+
     context
   end
 
   defp inject_agents_md_content(file_path, content, auth_content) do
     print_injecting(file_path)
+
     new_content =
       case String.split(content, "<!-- usage-rules-start -->", parts: 2) do
         [pre, post] ->
@@ -968,6 +973,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
         _ ->
           content <> "\n\n" <> String.trim_trailing(auth_content)
       end
+
     File.write!(file_path, new_content)
   end
 

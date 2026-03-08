@@ -153,11 +153,17 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         {"", "", "", ""}
       end
 
+    layout_opts = layout_generators_opts(context, web_app_name(context))
+
     binding = [
       context: context,
       schema: schema,
       primary_key: schema.opts[:primary_key] || :id,
       scope: schema.scope,
+      layout_mode: layout_opts[:mode],
+      layout_theme: layout_opts[:theme],
+      layout_theme_switcher: layout_opts[:theme_switcher],
+      layout_language_switcher: layout_opts[:language_switcher],
       inputs: inputs(schema),
       socket_scope: socket_scope,
       context_scope_prefix: context_scope_prefix,
@@ -316,57 +322,67 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         nil
 
       {key, :integer} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="number" label="#{label(key)}" />)
+        native_input_block("number", key)
 
       {key, :float} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="number" label="#{label(key)}" step="any" />)
+        native_input_block("number", key, ~s( step="any"))
 
       {key, :decimal} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="number" label="#{label(key)}" step="any" />)
+        native_input_block("number", key, ~s( step="any"))
 
       {key, :boolean} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="checkbox" label="#{label(key)}" />)
+        native_input_block("checkbox", key)
 
       {key, :text} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="textarea" label="#{label(key)}" />)
+        native_input_block("textarea", key)
 
       {key, :date} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="date" label="#{label(key)}" />)
+        native_input_block("date", key)
 
       {key, :time} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="time" label="#{label(key)}" />)
+        native_input_block("time", key)
 
       {key, :utc_datetime} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="datetime-local" label="#{label(key)}" />)
+        native_input_block("datetime-local", key)
 
       {key, :naive_datetime} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="datetime-local" label="#{label(key)}" />)
+        native_input_block("datetime-local", key)
 
       {key, {:array, _} = type} ->
         ~s"""
-        <.input
+        <.native_input
           field={@form[#{inspect(key)}]}
           type="select"
           multiple
-          label="#{label(key)}"
           options={#{inspect(default_options(type))}}
-        />
+        >
+          <:label>#{label(key)}</:label>
+        </.native_input>
         """
 
       {key, {:enum, _}} ->
         ~s"""
-        <.input
+        <.native_input
           field={@form[#{inspect(key)}]}
           type="select"
-          label="#{label(key)}"
           prompt="Choose a value"
           options={Ecto.Enum.values(#{inspect(schema.module)}, #{inspect(key)})}
-        />
+        >
+          <:label>#{label(key)}</:label>
+        </.native_input>
         """
 
       {key, _} ->
-        ~s(<.input field={@form[#{inspect(key)}]} type="text" label="#{label(key)}" />)
+        native_input_block("text", key)
     end)
+  end
+
+  defp native_input_block(type, key, extra_attrs \\ "") do
+    ~s"""
+    <.native_input field={@form[#{inspect(key)}]} type="#{type}"#{extra_attrs}>
+      <:label>#{label(key)}</:label>
+    </.native_input>
+    """
   end
 
   defp default_options({:array, :string}),
@@ -399,4 +415,22 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp scope_assign_route_prefix(_), do: ""
+
+  defp web_app_name(%Context{} = context) do
+    context.web_module
+    |> inspect()
+    |> Phoenix.Naming.underscore()
+  end
+
+  defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
+    generators =
+      Application.get_env(context_app, :generators, [])[:layout] ||
+        try do
+          Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
+        rescue
+          ArgumentError -> []
+        end
+
+    generators || []
+  end
 end

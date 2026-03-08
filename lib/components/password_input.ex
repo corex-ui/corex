@@ -234,7 +234,11 @@ defmodule Corex.PasswordInput do
   attr(:on_visibility_change_client, :string, default: nil)
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
-  attr(:translation, Corex.PasswordInput.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:translation, Corex.PasswordInput.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
 
   attr(:field, Phoenix.HTML.FormField,
     doc:

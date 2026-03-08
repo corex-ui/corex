@@ -25,15 +25,14 @@ defmodule <%= @endpoint_module %> do
     from: :<%= @web_app_name %>,
     gzip: not code_reloading?,
     only: <%= @web_namespace %>.static_paths(),
+    # Code reloading can be explicitly enabled under the
+    # :code_reloader configuration of your endpoint.
     raise_on_missing_only: code_reloading?<%= if @tidewave do %>
 
   if Mix.env() == :dev do
     plug Tidewave
   end
-
-<% end %>  # Code reloading can be explicitly enabled under the
-  # :code_reloader configuration of your endpoint.
-  if code_reloading? do
+<% end %><%= if @tidewave do "\n" else "\n\n" end %>  if code_reloading? do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader<%= if @ecto do %>

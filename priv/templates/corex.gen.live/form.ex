@@ -7,17 +7,21 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
       <div>
         <h1 class="text-lg font-semibold">{@page_title}</h1>
-        <p class="mt-1 text-sm text-zinc-500">Use this form to manage <%= schema.singular %> records in your database.</p>
+        <p class="mt-1 text-sm text-zinc-500">
+          Use this form to manage <%= schema.singular %> records in your database.
+        </p>
       </div>
 
       <.form for={@form} id="<%= schema.singular %>-form" phx-change="validate" phx-submit="save">
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 8) %>
         <footer>
-          <.action phx-disable-with="Saving..." class="button button--primary" type="submit">Save <%= schema.human_singular %></.action>
-          <.action navigate={return_path(<%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)}>Cancel</.action>
+          <.action phx-disable-with="Saving..." class="button button--primary" type="submit">
+            Save <%= schema.human_singular %>
+          </.action>
+          <.navigate to={return_path(<%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate">Cancel</.navigate>
         </footer>
       </.form>
     </Layouts.app>

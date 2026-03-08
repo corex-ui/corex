@@ -98,14 +98,34 @@ defmodule Corex.Editable do
   attr(:form, :string, default: nil, doc: "The id of the form this input belongs to")
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
   attr(:edit, :boolean, default: false, doc: "Controlled edit state when controlled_edit is true")
-  attr(:controlled_edit, :boolean, default: false, doc: "Whether edit state is controlled externally")
+
+  attr(:controlled_edit, :boolean,
+    default: false,
+    doc: "Whether edit state is controlled externally"
+  )
+
   attr(:default_edit, :boolean, default: false, doc: "Initial edit state when uncontrolled")
   attr(:placeholder, :string, default: nil, doc: "Placeholder text when value is empty")
-  attr(:activation_mode, :string, default: nil, values: [nil, "dblclick", "focus"], doc: "How to activate edit mode")
+
+  attr(:activation_mode, :string,
+    default: nil,
+    values: [nil, "dblclick", "focus"],
+    doc: "How to activate edit mode"
+  )
+
   attr(:select_on_focus, :boolean, default: true, doc: "Whether to select all text on focus")
   attr(:on_value_change, :string, default: nil, doc: "Server event name when value changes")
-  attr(:on_value_change_client, :string, default: nil, doc: "Client event name when value changes")
-  attr(:translation, Corex.Editable.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:on_value_change_client, :string,
+    default: nil,
+    doc: "Client event name when value changes"
+  )
+
+  attr(:translation, Corex.Editable.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
   slot :label, required: true do

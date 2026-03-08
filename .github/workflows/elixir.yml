@@ -93,3 +93,72 @@ jobs:
       run: mix test
       env:
         MIX_ENV: test
+
+  installer-tests:
+    name: Installer tests
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.15.2'
+        otp-version: '26.0'
+
+    - name: Restore installer dependencies cache
+      uses: actions/cache@v3
+      with:
+        path: installer/deps
+        key: ${{ runner.os }}-mix-installer-${{ hashFiles('installer/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-installer-
+
+    - name: Install installer dependencies
+      working-directory: installer
+      run: mix deps.get
+
+    - name: Run installer tests
+      working-directory: installer
+      run: mix test
+
+  integration-tests:
+    name: Integration tests
+    runs-on: ubuntu-22.04
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Elixir
+      uses: erlef/setup-beam@v1
+      with:
+        elixir-version: '1.15.2'
+        otp-version: '26.0'
+
+    - name: Restore integration test dependencies cache
+      uses: actions/cache@v3
+      with:
+        path: integration_test/deps
+        key: ${{ runner.os }}-mix-integration-${{ hashFiles('integration_test/mix.lock') }}
+        restore-keys: ${{ runner.os }}-mix-integration-
+
+    - name: Install integration test dependencies
+      working-directory: integration_test
+      run: mix deps.get
+
+    - name: Run integration tests
+      working-directory: integration_test
+      run: mix test --exclude database:mysql --exclude database:mssql

@@ -31,12 +31,20 @@ defmodule E2eWeb.EditableFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :editable_form, id: "editable-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :editable_form,
+         id: "editable-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("text_changed", %{"value" => value}, socket) do
     params = %{"text" => value}
+
     changeset =
       %EditableForm{}
       |> EditableForm.changeset(params)
@@ -44,7 +52,14 @@ defmodule E2eWeb.EditableFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :editable_form, id: "editable-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :editable_form,
+         id: "editable-form"
+       )
+     )}
   end
 
   @impl true
@@ -57,12 +72,25 @@ defmodule E2eWeb.EditableFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(EditableForm.changeset(%EditableForm{}, params), as: :editable_form, id: "editable-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(EditableForm.changeset(%EditableForm{}, params),
+             as: :editable_form,
+             id: "editable-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :editable_form, id: "editable-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :editable_form,
+             id: "editable-form"
+           )
+         )}
     end
   end
 

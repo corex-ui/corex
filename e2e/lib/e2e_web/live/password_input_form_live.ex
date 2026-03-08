@@ -25,6 +25,7 @@ defmodule E2eWeb.PasswordInputFormLive do
   @impl true
   def handle_event("validate", event_params, socket) do
     params = Map.get(event_params, "password_input_form", %{})
+
     changeset =
       %PasswordInputForm{}
       |> PasswordInputForm.changeset(params)
@@ -32,12 +33,20 @@ defmodule E2eWeb.PasswordInputFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :password_input_form, id: "password-input-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :password_input_form,
+         id: "password-input-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("save", event_params, socket) do
     params = Map.get(event_params, "password_input_form", %{})
+
     case PasswordInputForm.changeset(%PasswordInputForm{}, params) do
       %Ecto.Changeset{valid?: true} ->
         message = "Submitted: password=***"
@@ -45,12 +54,25 @@ defmodule E2eWeb.PasswordInputFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(PasswordInputForm.changeset(%PasswordInputForm{}, %{}), as: :password_input_form, id: "password-input-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(PasswordInputForm.changeset(%PasswordInputForm{}, %{}),
+             as: :password_input_form,
+             id: "password-input-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :password_input_form, id: "password-input-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :password_input_form,
+             id: "password-input-form"
+           )
+         )}
     end
   end
 

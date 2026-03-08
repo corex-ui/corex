@@ -6,19 +6,23 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
       <div class="flex items-center justify-between gap-4">
         <div>
           <h1 class="text-lg font-semibold"><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</h1>
           <p class="mt-1 text-sm text-zinc-500">This is a <%= schema.singular %> record from your database.</p>
         </div>
         <div class="flex gap-2">
-          <.action navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>"}>
+          <.navigate to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>"} type="navigate" aria_label="Back to list">
             <.heroicon name="hero-arrow-left" />
-          </.action>
-          <.action class="button button--primary" navigate={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}>
+          </.navigate>
+          <.navigate
+            to={~p"<%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}
+            type="navigate"
+            class="button button--primary"
+          >
             <.heroicon name="hero-pencil-square" /> Edit <%= schema.singular %>
-          </.action>
+          </.navigate>
         </div>
       </div>
 

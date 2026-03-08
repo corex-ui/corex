@@ -49,13 +49,20 @@ defmodule E2eWeb.Layouts do
   def app(assigns) do
     locale = assigns.locale || "en"
 
+    current_path = assigns.current_path || "/"
+    form_menu = form_menu_items(locale)
+    corex_menu = corex_menu_items(locale)
+    form_components_menu = form_components_menu_items(locale)
+    full_path = "/#{locale}#{current_path}"
+
     assigns =
       assigns
-      |> assign(:form_menu, form_menu_items(locale))
-      |> assign(:corex_menu, corex_menu_items(locale))
-      |> assign(:form_components_menu, form_components_menu_items(locale))
-      |> assign(:prev_path, prev_next_paths(locale, assigns.current_path || "/", :prev))
-      |> assign(:next_path, prev_next_paths(locale, assigns.current_path || "/", :next))
+      |> assign(:form_menu, form_menu)
+      |> assign(:corex_menu, corex_menu)
+      |> assign(:form_components_menu, form_components_menu)
+      |> assign(:full_path, full_path)
+      |> assign(:prev_path, prev_next_paths(locale, current_path, :prev))
+      |> assign(:next_path, prev_next_paths(locale, current_path, :next))
 
     ~H"""
     <header class="layout__header">
@@ -94,7 +101,8 @@ defmodule E2eWeb.Layouts do
                   class="tree-view navigation px-ui-padding"
                   on_selection_change="handle_menu"
                   redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@form_menu, @full_path)}
                   items={@form_menu}
                 >
                   <:label>Phoenix Form</:label>
@@ -107,7 +115,8 @@ defmodule E2eWeb.Layouts do
                   on_selection_change="handle_menu"
                   class="tree-view navigation px-ui-padding"
                   redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@corex_menu, @full_path)}
                   items={@corex_menu}
                 >
                   <:label>Corex Components</:label>
@@ -120,7 +129,8 @@ defmodule E2eWeb.Layouts do
                   on_selection_change="handle_menu"
                   class="tree-view navigation px-ui-padding"
                   redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@form_components_menu, @full_path)}
                   items={@form_components_menu}
                 >
                   <:label>Form Components</:label>
@@ -159,7 +169,8 @@ defmodule E2eWeb.Layouts do
           class="tree-view navigation px-ui-padding"
           on_selection_change="handle_menu"
           redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@form_menu, @full_path)}
           items={@form_menu}
         >
           <:label>Phoenix Form</:label>
@@ -172,7 +183,8 @@ defmodule E2eWeb.Layouts do
           on_selection_change="handle_menu"
           class="tree-view navigation px-ui-padding"
           redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@corex_menu, @full_path)}
           items={@corex_menu}
         >
           <:label>Corex Components</:label>
@@ -185,7 +197,8 @@ defmodule E2eWeb.Layouts do
           on_selection_change="handle_menu"
           class="tree-view navigation px-ui-padding"
           redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@form_components_menu, @full_path)}
           items={@form_components_menu}
         >
           <:label>Form Components</:label>
@@ -377,6 +390,22 @@ defmodule E2eWeb.Layouts do
 
       %{id: _id, children: children} when is_list(children) and children != [] ->
         flatten_tree_ids(children)
+
+      _ ->
+        []
+    end)
+  end
+
+  defp ancestor_ids_for_path(items, full_path) when is_list(items) do
+    Enum.flat_map(items, fn
+      %{id: id, children: children} when is_list(children) and children != [] ->
+        leaf_ids = flatten_tree_ids(children)
+
+        if full_path in leaf_ids do
+          [id | ancestor_ids_for_path(children, full_path)]
+        else
+          ancestor_ids_for_path(children, full_path)
+        end
 
       _ ->
         []

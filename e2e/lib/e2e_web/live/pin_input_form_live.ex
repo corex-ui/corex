@@ -25,6 +25,7 @@ defmodule E2eWeb.PinInputFormLive do
   @impl true
   def handle_event("validate", event_params, socket) do
     params = Map.get(event_params, "pin_input_form", %{})
+
     changeset =
       %PinInputForm{}
       |> PinInputForm.changeset(params)
@@ -32,13 +33,21 @@ defmodule E2eWeb.PinInputFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :pin_input_form, id: "pin-input-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :pin_input_form,
+         id: "pin-input-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("pin_changed", %{"value" => value}, socket) do
     pin = if is_list(value), do: Enum.join(value, ""), else: to_string(value)
     params = %{"pin" => pin}
+
     changeset =
       %PinInputForm{}
       |> PinInputForm.changeset(params)
@@ -46,12 +55,20 @@ defmodule E2eWeb.PinInputFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :pin_input_form, id: "pin-input-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :pin_input_form,
+         id: "pin-input-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("save", event_params, socket) do
     params = Map.get(event_params, "pin_input_form", %{})
+
     case PinInputForm.changeset(%PinInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
@@ -60,12 +77,25 @@ defmodule E2eWeb.PinInputFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(PinInputForm.changeset(%PinInputForm{}, %{}), as: :pin_input_form, id: "pin-input-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(PinInputForm.changeset(%PinInputForm{}, %{}),
+             as: :pin_input_form,
+             id: "pin-input-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :pin_input_form, id: "pin-input-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :pin_input_form,
+             id: "pin-input-form"
+           )
+         )}
     end
   end
 

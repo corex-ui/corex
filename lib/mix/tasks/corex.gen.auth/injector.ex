@@ -145,6 +145,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
     case app_layout_menu_inject_at_end_of_nav_tag(binding, template_str) do
       {:error, :unable_to_inject} ->
         app_layout_menu_inject_after_opening_body_tag(binding, template_str)
+
       result ->
         result
     end
@@ -172,26 +173,28 @@ defmodule Mix.Tasks.Corex.Gen.Auth.Injector do
     already_injected_str = "#{schema.route_prefix}/log-in"
 
     template = """
-    <ul class="menu menu-horizontal w-full relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
-      <%= if @#{scope_config.scope.assign_key} do %>
-        <li>
-          {@#{scope_config.scope.assign_key}.#{schema.singular}.email}
-        </li>
-        <li>
-          <.link href={~p"#{schema.route_prefix}/settings"}>Settings</.link>
-        </li>
-        <li>
-          <.link href={~p"#{schema.route_prefix}/log-out"} method="delete">Log out</.link>
-        </li>
-      <% else %>
-        <li>
-          <.link href={~p"#{schema.route_prefix}/register"}>Register</.link>
-        </li>
-        <li>
-          <.link href={~p"#{schema.route_prefix}/log-in"}>Log in</.link>
-        </li>
-      <% end %>
-    </ul>\
+    <nav aria-label="Main">
+      <ul class="menu menu-horizontal w-full relative z-10 flex items-center gap-4 px-4 sm:px-6 lg:px-8 justify-end">
+        <%= if @#{scope_config.scope.assign_key} do %>
+          <li>
+            {@#{scope_config.scope.assign_key}.#{schema.singular}.email}
+          </li>
+          <li>
+            <.navigate to={~p"#{schema.route_prefix}/settings"} type="href">Settings</.navigate>
+          </li>
+          <li>
+            <.navigate to={~p"#{schema.route_prefix}/log-out"} type="href" method="delete">Log out</.navigate>
+          </li>
+        <% else %>
+          <li>
+            <.navigate to={~p"#{schema.route_prefix}/register"} type="href">Register</.navigate>
+          </li>
+          <li>
+            <.navigate to={~p"#{schema.route_prefix}/log-in"} type="href">Log in</.navigate>
+          </li>
+        <% end %>
+      </ul>
+    </nav>\
     """
 
     {already_injected_str, indent_spaces(template, padding, newline)}

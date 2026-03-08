@@ -262,7 +262,10 @@ defmodule E2eWeb.PageController do
     tags = profile["tags"] || []
 
     conn
-    |> put_flash(:info, "Submitted: name=#{profile["name"]}, agree=#{profile["agree"]}, tags=#{inspect(tags)}")
+    |> put_flash(
+      :info,
+      "Submitted: name=#{profile["name"]}, agree=#{profile["agree"]}, tags=#{inspect(tags)}"
+    )
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/native-input/form")
   end
 

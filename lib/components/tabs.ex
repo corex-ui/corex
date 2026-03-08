@@ -226,7 +226,13 @@ defmodule Corex.Tabs do
   alias Corex.Tabs.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_tabs_value!: 1, validate_content_items_required!: 2, content_items_data_json: 1]
+
+  import Corex.Helpers,
+    only: [
+      validate_tabs_value!: 1,
+      validate_content_items_required!: 2,
+      content_items_data_json: 1
+    ]
 
   @doc """
   Renders a tabs component.
@@ -328,6 +334,7 @@ defmodule Corex.Tabs do
 
   def tabs(assigns) do
     values = if is_binary(assigns[:value]), do: [assigns.value], else: []
+
     assigns =
       assign_new(assigns, :id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
       |> validate_content_items_required!("Tabs")
@@ -515,6 +522,7 @@ defmodule Corex.Tabs do
   """
   attr(:count, :integer, default: 3)
   attr(:rest, :global)
+
   slot :trigger do
     attr(:class, :string, required: false)
   end

@@ -44,7 +44,10 @@ defmodule E2eWeb.CheckboxFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(Terms.changeset(%Terms{}, params), as: :terms))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(Terms.changeset(%Terms{}, params), as: :terms)
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,

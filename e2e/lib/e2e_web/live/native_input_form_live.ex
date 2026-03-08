@@ -6,10 +6,10 @@ defmodule E2eWeb.NativeInputFormLive do
 
   @tag_options [
     "Elixir": "elixir",
-    "Phoenix": "phoenix",
-    "LiveView": "liveview",
-    "Ecto": "ecto",
-    "OTP": "otp"
+    Phoenix: "phoenix",
+    LiveView: "liveview",
+    Ecto: "ecto",
+    OTP: "otp"
   ]
 
   @impl true
@@ -62,7 +62,10 @@ defmodule E2eWeb.NativeInputFormLive do
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :profile, id: "profile"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset, action: :insert, as: :profile, id: "profile")
+         )}
     end
   end
 

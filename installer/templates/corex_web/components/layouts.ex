@@ -192,7 +192,7 @@ defmodule <%= @web_namespace %>.Layouts do
   def locale_switcher(assigns) do
     locales = Application.get_env(:<%= @app_name %>, :locales, ["en"])
 
-    collection =
+    items =
       Enum.map(locales, fn loc ->
         label =
           case <%= @app_module %>.Cldr.Language.to_string(loc, locale: loc) do
@@ -203,13 +203,13 @@ defmodule <%= @web_namespace %>.Layouts do
         %{id: "/#{loc}#{assigns.current_path}", label: label}
       end)
 
-    assigns = assign(assigns, :collection, collection)
+    assigns = assign(assigns, :items, items)
 
     ~H"""
     <.select
       id="locale-select"
       class="select select--sm select--micro"
-      collection={@collection}
+      items={@items}
       value={["/#{@locale}#{@current_path}"]}
       redirect
       on_value_change="locale_change"
@@ -238,7 +238,7 @@ defmodule <%= @web_namespace %>.Layouts do
     <.select
       id="theme-select"
       class="select select--sm select--micro"
-      collection={Enum.map(@themes, fn t -> %{id: t, label: String.capitalize(t)} end)}
+      items={Enum.map(@themes, fn t -> %{id: t, label: String.capitalize(t)} end)}
       value={[@theme]}
       on_value_change_client="phx:set-theme"
     >

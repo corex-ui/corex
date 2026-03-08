@@ -25,6 +25,7 @@ defmodule E2eWeb.DatePickerFormLive do
   @impl true
   def handle_event("validate", event_params, socket) do
     params = Map.get(event_params, "date_picker_form", %{})
+
     changeset =
       %DatePickerForm{}
       |> DatePickerForm.changeset(params)
@@ -32,12 +33,20 @@ defmodule E2eWeb.DatePickerFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :date_picker_form, id: "date-picker-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :date_picker_form,
+         id: "date-picker-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("date_changed", %{"value" => value}, socket) do
     params = %{"date" => value}
+
     changeset =
       %DatePickerForm{}
       |> DatePickerForm.changeset(params)
@@ -45,12 +54,20 @@ defmodule E2eWeb.DatePickerFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :date_picker_form, id: "date-picker-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :date_picker_form,
+         id: "date-picker-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("save", event_params, socket) do
     params = Map.get(event_params, "date_picker_form", %{})
+
     case DatePickerForm.changeset(%DatePickerForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
@@ -59,12 +76,25 @@ defmodule E2eWeb.DatePickerFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(DatePickerForm.changeset(%DatePickerForm{}, params), as: :date_picker_form, id: "date-picker-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(DatePickerForm.changeset(%DatePickerForm{}, params),
+             as: :date_picker_form,
+             id: "date-picker-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :date_picker_form, id: "date-picker-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :date_picker_form,
+             id: "date-picker-form"
+           )
+         )}
     end
   end
 

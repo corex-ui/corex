@@ -31,13 +31,21 @@ defmodule E2eWeb.SignatureFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :signature_form, id: "signature-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :signature_form,
+         id: "signature-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("signature_drawn", %{"paths" => paths} = payload, socket) do
     value = (paths && Corex.Json.encode!(paths)) || Map.get(payload, "url", "") || ""
     params = %{"signature" => value}
+
     changeset =
       %SignatureForm{}
       |> SignatureForm.changeset(params)
@@ -45,7 +53,14 @@ defmodule E2eWeb.SignatureFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :signature_form, id: "signature-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :signature_form,
+         id: "signature-form"
+       )
+     )}
   end
 
   @impl true
@@ -53,18 +68,34 @@ defmodule E2eWeb.SignatureFormLive do
     case SignatureForm.changeset(%SignatureForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        sig_preview = if data.signature, do: String.slice(data.signature, 0, 50) <> "...", else: ""
+
+        sig_preview =
+          if data.signature, do: String.slice(data.signature, 0, 50) <> "...", else: ""
+
         message = "Submitted: signature=#{sig_preview}"
 
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(SignatureForm.changeset(%SignatureForm{}, %{}), as: :signature_form, id: "signature-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(SignatureForm.changeset(%SignatureForm{}, %{}),
+             as: :signature_form,
+             id: "signature-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :signature_form, id: "signature-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :signature_form,
+             id: "signature-form"
+           )
+         )}
     end
   end
 

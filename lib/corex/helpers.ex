@@ -35,7 +35,9 @@ defmodule Corex.Helpers do
 
   def validate_tabs_value!(nil), do: nil
   def validate_tabs_value!(value) when is_binary(value), do: value
-  def validate_tabs_value!(value), do: raise(ArgumentError, "value must be a string or nil, got: #{inspect(value)}")
+
+  def validate_tabs_value!(value),
+    do: raise(ArgumentError, "value must be a string or nil, got: #{inspect(value)}")
 
   def validate_content_items_required!(%{items: nil} = _assigns, component) do
     raise ArgumentError, """
@@ -51,7 +53,8 @@ defmodule Corex.Helpers do
     """
   end
 
-  def validate_content_items_required!(%{items: items} = assigns, _component) when is_list(items) do
+  def validate_content_items_required!(%{items: items} = assigns, _component)
+      when is_list(items) do
     Enum.each(items, fn item ->
       unless is_struct(item, Corex.Content.Item) do
         raise ArgumentError, """
@@ -94,18 +97,21 @@ defmodule Corex.Helpers do
   def normalize_groups(items) when is_list(items) do
     if has_groups?(items) do
       items
-      |> Enum.reduce({[], MapSet.new()}, fn item, {acc, seen} ->
-        g = Map.get(item, :group)
-        cond do
-          is_nil(g) -> {acc, seen}
-          MapSet.member?(seen, g) -> {acc, seen}
-          true -> {[g | acc], MapSet.put(seen, g)}
-        end
-      end)
+      |> Enum.reduce({[], MapSet.new()}, &reduce_group/2)
       |> elem(0)
       |> Enum.reverse()
     else
       []
+    end
+  end
+
+  defp reduce_group(item, {acc, seen}) do
+    g = Map.get(item, :group)
+
+    cond do
+      is_nil(g) -> {acc, seen}
+      MapSet.member?(seen, g) -> {acc, seen}
+      true -> {[g | acc], MapSet.put(seen, g)}
     end
   end
 

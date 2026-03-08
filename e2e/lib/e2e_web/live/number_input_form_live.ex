@@ -31,12 +31,20 @@ defmodule E2eWeb.NumberInputFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :number_input_form, id: "number-input-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :number_input_form,
+         id: "number-input-form"
+       )
+     )}
   end
 
   @impl true
   def handle_event("value_changed", %{"value" => value}, socket) do
     params = %{"value" => value}
+
     changeset =
       %NumberInputForm{}
       |> NumberInputForm.changeset(params)
@@ -44,7 +52,14 @@ defmodule E2eWeb.NumberInputFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :number_input_form, id: "number-input-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :number_input_form,
+         id: "number-input-form"
+       )
+     )}
   end
 
   @impl true
@@ -57,12 +72,25 @@ defmodule E2eWeb.NumberInputFormLive do
         {:noreply,
          socket
          |> Toast.push_toast("layout-toast", "Submitted", message, :info, 5000)
-         |> assign(:form, Phoenix.Component.to_form(NumberInputForm.changeset(%NumberInputForm{}, params), as: :number_input_form, id: "number-input-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(NumberInputForm.changeset(%NumberInputForm{}, params),
+             as: :number_input_form,
+             id: "number-input-form"
+           )
+         )}
 
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :number_input_form, id: "number-input-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :number_input_form,
+             id: "number-input-form"
+           )
+         )}
     end
   end
 

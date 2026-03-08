@@ -41,7 +41,14 @@ defmodule E2eWeb.SelectFormLive do
 
     {:noreply,
      socket
-     |> assign(:form, Phoenix.Component.to_form(changeset, action: :validate, as: :select_form, id: "select-form"))}
+     |> assign(
+       :form,
+       Phoenix.Component.to_form(changeset,
+         action: :validate,
+         as: :select_form,
+         id: "select-form"
+       )
+     )}
   end
 
   @impl true
@@ -65,7 +72,14 @@ defmodule E2eWeb.SelectFormLive do
       %Ecto.Changeset{} = changeset ->
         {:noreply,
          socket
-         |> assign(:form, Phoenix.Component.to_form(changeset, action: :insert, as: :select_form, id: "select-form"))}
+         |> assign(
+           :form,
+           Phoenix.Component.to_form(changeset,
+             action: :insert,
+             as: :select_form,
+             id: "select-form"
+           )
+         )}
     end
   end
 

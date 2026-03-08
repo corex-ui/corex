@@ -130,8 +130,17 @@ defmodule Corex.FloatingPanel do
   attr(:on_open_change_client, :string, default: nil, doc: "Client event when open state changes")
   attr(:on_position_change, :string, default: nil, doc: "Server event when position changes")
   attr(:on_size_change, :string, default: nil, doc: "Server event when size changes")
-  attr(:on_stage_change, :string, default: nil, doc: "Server event when stage (minimized/maximized) changes")
-  attr(:translation, Corex.FloatingPanel.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:on_stage_change, :string,
+    default: nil,
+    doc: "Server event when stage (minimized/maximized) changes"
+  )
+
+  attr(:translation, Corex.FloatingPanel.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
   slot :open_trigger, required: true do

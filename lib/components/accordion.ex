@@ -294,7 +294,9 @@ defmodule Corex.Accordion do
   alias Corex.Accordion.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
-  import Corex.Helpers, only: [validate_value!: 1, validate_content_items_required!: 2, content_items_data_json: 1]
+
+  import Corex.Helpers,
+    only: [validate_value!: 1, validate_content_items_required!: 2, content_items_data_json: 1]
 
   @doc """
   Renders an accordion component.
@@ -574,6 +576,7 @@ defmodule Corex.Accordion do
   """
   attr(:count, :integer, default: 3)
   attr(:rest, :global)
+
   slot :trigger do
     attr(:class, :string, required: false)
   end

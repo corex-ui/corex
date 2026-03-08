@@ -34,6 +34,7 @@ defmodule E2eWeb.ListboxStreamLive do
     Process.send_after(self(), :add_timestamp_item, 10000)
 
     id = to_string(socket.assigns.next_id)
+
     time =
       DateTime.utc_now()
       |> DateTime.truncate(:second)
@@ -63,11 +64,11 @@ defmodule E2eWeb.ListboxStreamLive do
         <h2>Stream</h2>
       </div>
       <p>
-       Phoenix Stream: items_list is kept in sync with the stream. Add or remove items to test.
+        Phoenix Stream: items_list is kept in sync with the stream. Add or remove items to test.
       </p>
       <p>
-     Every 10 seconds a new item is added with a timestamp.
-     </p>
+        Every 10 seconds a new item is added with a timestamp.
+      </p>
       <div class="flex gap-2 mb-4">
         <.action phx-click="add_item" class="button button--sm button--accent">
           <.icon name="hero-plus" /> Add item
@@ -86,12 +87,12 @@ defmodule E2eWeb.ListboxStreamLive do
         <:item :let={%{item: entry}}>
           <span class="flex items-center justify-between gap-2 w-full">
             <span class="flex items-center gap-2">
-            <.action
-              phx-click={JS.push("remove_item", value: %{id: entry.id})}
-              data-phx-push="remove_item"
-              data-phx-push-id={entry.id}
-              class="button button--sm button--alert button--sm"
-            >
+              <.action
+                phx-click={JS.push("remove_item", value: %{id: entry.id})}
+                data-phx-push="remove_item"
+                data-phx-push-id={entry.id}
+                class="button button--sm button--alert button--sm"
+              >
                 <.heroicon name="hero-trash" class="icon" />
               </.action>
               <span>{entry.label}</span>
@@ -106,10 +107,18 @@ defmodule E2eWeb.ListboxStreamLive do
       <h3>Stream with Groups</h3>
       <p>Add items to Europe or Asia.</p>
       <div class="flex gap-2 mb-4">
-        <.action phx-click="add_to_group" phx-value-group="Europe" class="button button--sm button--accent">
+        <.action
+          phx-click="add_to_group"
+          phx-value-group="Europe"
+          class="button button--sm button--accent"
+        >
           <.icon name="hero-plus" /> Add to Europe
         </.action>
-        <.action phx-click="add_to_group" phx-value-group="Asia" class="button button--sm button--accent">
+        <.action
+          phx-click="add_to_group"
+          phx-value-group="Asia"
+          class="button button--sm button--accent"
+        >
           <.icon name="hero-plus" /> Add to Asia
         </.action>
         <.action phx-click="reset_grouped" class="button button--sm button--alert">

@@ -17,8 +17,8 @@ defmodule <%= @web_namespace %>.ExampleLive do
 <% end %><%= if @language_switcher do %>      locale={@locale}
       current_path={@current_path}
 <% end %>    >
-<% else %>    <Layouts.app flash={@flash}><% end %>
-      <section>
+<% else %>    <Layouts.app flash={@flash}>
+<% end %>      <section>
         <h1>Live View</h1>
       </section>
     </Layouts.app>

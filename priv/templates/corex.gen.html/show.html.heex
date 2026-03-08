@@ -1,4 +1,4 @@
-<Layouts.app flash={@flash}<%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme_switcher do %> themes={@themes}<% end %><%= if layout_language_switcher do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
   <div class="flex items-center justify-between gap-4">
     <div>
       <h1 class="text-lg font-semibold"><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</h1>

@@ -523,14 +523,14 @@ defmodule Corex.Integration.CodeGeneration.AppWithScopesTest do
         # Test LiveView generator (Posts)
         assert_file(Path.join(app_root_path, "lib/scopes_web/live/post_live/index.ex"), fn file ->
           assert file =~
-                   ~s|navigate={~p"/orgs/\#{@current_scope.organization}/posts/new"|
+                   ~s|to={~p"/orgs/\#{@current_scope.organization}/posts/new"|
 
           assert file =~
                    ~s|JS.navigate(~p"/orgs/\#{@current_scope.organization}/posts/\#{post}")|
         end)
 
         assert_file(Path.join(app_root_path, "lib/scopes_web/live/post_live/show.ex"), fn file ->
-          assert file =~ ~s|navigate={~p"/orgs/\#{@current_scope.organization}/posts"|
+          assert file =~ ~s|to={~p"/orgs/\#{@current_scope.organization}/posts"|
         end)
 
         assert_file(

@@ -186,7 +186,7 @@ defmodule Mix.Corex do
   end
 
   defp beam_to_module(path) do
-    path |> Path.basename(".beam") |> String.to_atom()
+    path |> Path.basename(".beam") |> String.to_existing_atom()
   end
 
   @doc """

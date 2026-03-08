@@ -139,7 +139,13 @@ defmodule E2eWeb.NativeInputLive do
           multiple
           id="select-multiple"
           name="user[tags][]"
-          options={[{"Elixir", "elixir"}, {"Phoenix", "phoenix"}, {"LiveView", "liveview"}, {"Ecto", "ecto"}, {"OTP", "otp"}]}
+          options={[
+            {"Elixir", "elixir"},
+            {"Phoenix", "phoenix"},
+            {"LiveView", "liveview"},
+            {"Ecto", "ecto"},
+            {"OTP", "otp"}
+          ]}
           prompt="Choose tags..."
           class="native-input"
         >

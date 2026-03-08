@@ -18,7 +18,11 @@ defmodule Corex.DataTable do
   use Phoenix.Component
   import Corex.Gettext, only: [gettext: 1]
 
-  attr(:translation, Corex.DataTable.Translation, default: nil, doc: "Override translatable strings")
+  attr(:translation, Corex.DataTable.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
   @doc """

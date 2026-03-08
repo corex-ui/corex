@@ -124,7 +124,12 @@ defmodule Corex.ColorPicker do
   attr(:on_pointer_down_outside, :string, default: nil)
   attr(:on_focus_outside, :string, default: nil)
   attr(:on_interact_outside, :string, default: nil)
-  attr(:translation, Corex.ColorPicker.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:translation, Corex.ColorPicker.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
   def color_picker(assigns) do

@@ -6,8 +6,8 @@
 <% end %><%= if @language_switcher do %>  locale={@locale}
   current_path={@current_path}
 <% end %>>
-<% else %><Layouts.app flash={@flash}><% end %>
-  <section>
+<% else %><Layouts.app flash={@flash}>
+<% end %>  <section>
     <h1>{gettext("Corex")}</h1>
     <p>
       {gettext(

@@ -12,7 +12,9 @@ defmodule E2eWeb.PasswordInputModel do
   end
 
   def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "password-input-form-live-submit", else: "password-input-form-submit"
+    id =
+      if mode == :live, do: "password-input-form-live-submit", else: "password-input-form-submit"
+
     click(session, css("##{id}"))
   end
 

@@ -14,8 +14,8 @@ defmodule E2eWeb.ColorPickerLive do
     {:noreply, Corex.ColorPicker.set_open(socket, "my-color-picker", open?)}
   end
 
-  def handle_event("set_value", %{"value" => value}, socket) do
-    {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", value)}
+  def handle_event("set_value", %{"color" => color}, socket) do
+    {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", color)}
   end
 
   def handle_event("on_value_change", %{"id" => _id, "valueAsString" => value}, socket) do
@@ -74,10 +74,10 @@ defmodule E2eWeb.ColorPickerLive do
         <.action phx-click="set_open" phx-value-open="false" class="button button--sm">
           Close
         </.action>
-        <.action phx-click="set_value" phx-value-value="#FF0000" class="button button--sm">
+        <.action phx-click="set_value" phx-value-color="#FF0000" class="button button--sm">
           Set Red
         </.action>
-        <.action phx-click="set_value" phx-value-value="#00FF00" class="button button--sm">
+        <.action phx-click="set_value" phx-value-color="#00FF00" class="button button--sm">
           Set Green
         </.action>
       </div>

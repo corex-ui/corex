@@ -149,11 +149,17 @@ defmodule Mix.Tasks.Corex.Gen.Html do
         {"", ""}
       end
 
+    layout_opts = layout_generators_opts(context, web_app_name(context))
+
     binding = [
       context: context,
       schema: schema,
       primary_key: schema.opts[:primary_key] || :id,
       scope: schema.scope,
+      layout_mode: layout_opts[:mode],
+      layout_theme: layout_opts[:theme],
+      layout_theme_switcher: layout_opts[:theme_switcher],
+      layout_language_switcher: layout_opts[:language_switcher],
       inputs: inputs(schema),
       conn_scope: conn_scope,
       context_scope_prefix: context_scope_prefix,
@@ -347,6 +353,24 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   end
 
   defp scope_assign_route_prefix(_), do: ""
+
+  defp web_app_name(%Context{} = context) do
+    context.web_module
+    |> inspect()
+    |> Phoenix.Naming.underscore()
+  end
+
+  defp layout_generators_opts(%Context{context_app: context_app}, web_app_name) do
+    generators =
+      Application.get_env(context_app, :generators, [])[:layout] ||
+        try do
+          Application.get_env(String.to_existing_atom(web_app_name), :generators, [])[:layout]
+        rescue
+          ArgumentError -> []
+        end
+
+    generators || []
+  end
 
   @doc false
   def indent_inputs(inputs, column_padding) do

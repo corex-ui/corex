@@ -19,6 +19,7 @@ defmodule E2eWeb.NativeInputModel do
   def fill_input_via_script(session, id, value) when is_binary(value) do
     input_id = if String.ends_with?(id, "-input"), do: id, else: "#{id}-input"
     escaped = String.replace(value, "'", "\\'")
+
     script = """
     (function() {
       var el = document.getElementById('#{input_id}');
@@ -29,6 +30,7 @@ defmodule E2eWeb.NativeInputModel do
       return 'ok';
     })()
     """
+
     Wallaby.Browser.execute_script(session, script)
     session
   end
