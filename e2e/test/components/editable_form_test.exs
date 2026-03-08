@@ -4,7 +4,7 @@ defmodule E2eWeb.EditableFormTest do
 
   alias E2eWeb.EditableModel, as: Editable
 
-  feature "static form - submit includes text", %{session: session} do
+  feature "static form - submit empty/default includes text", %{session: session} do
     session
     |> Editable.goto_form(:static)
     |> Editable.wait(500)
@@ -20,7 +20,7 @@ defmodule E2eWeb.EditableFormTest do
     |> Editable.check_accessibility()
   end
 
-  feature "live form - submit includes text", %{session: session} do
+  feature "live form - submit default text", %{session: session} do
     session
     |> Editable.goto_form(:live)
     |> Editable.wait(500)

@@ -259,13 +259,9 @@ defmodule E2eWeb.PageController do
 
   def native_input_form_submit(conn, params) do
     profile = params["profile"] || %{}
-    tags = profile["tags"] || []
 
     conn
-    |> put_flash(
-      :info,
-      "Submitted: name=#{profile["name"]}, agree=#{profile["agree"]}, tags=#{inspect(tags)}"
-    )
+    |> put_flash(:info, "Submitted: #{E2e.Form.NativeInputProfile.format_for_toast(profile)}")
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/native-input/form")
   end
 

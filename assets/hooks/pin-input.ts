@@ -5,6 +5,16 @@ import type { Props, ValueChangeDetails } from "@zag-js/pin-input";
 import type { Direction } from "@zag-js/types";
 import { getString, getBoolean, getStringList, getNumber } from "../lib/util";
 
+function parseValueWithEmpties(raw: string): string[] {
+  return raw.split(",").map((v) => v.trim());
+}
+
+function padToCount(arr: string[], count: number): string[] {
+  const copy = [...arr];
+  while (copy.length < count) copy.push("");
+  return copy.slice(0, count);
+}
+
 type PinInputHookState = {
   pinInput?: PinInput;
   handlers?: Array<CallbackRef>;
@@ -13,12 +23,14 @@ type PinInputHookState = {
 const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & PinInputHookState) {
     const el = this.el;
-    const valueList = getStringList(el, "value");
+    const count = getNumber(el, "count") ?? 4;
+    const rawValue = el.dataset.value;
+    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : undefined;
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
     const zag = new PinInput(el, {
       id: el.id,
-      count: getNumber(el, "count") ?? 4,
+      count,
       ...(controlled && valueList
         ? { value: valueList }
         : { defaultValue: defaultValueList ?? [] }),
@@ -83,11 +95,13 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & PinInputHookState) {
-    const valueList = getStringList(this.el, "value");
+    const count = getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4;
+    const rawValue = this.el.dataset.value;
+    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : undefined;
     const controlled = getBoolean(this.el, "controlled");
     this.pinInput?.updateProps({
       id: this.el.id,
-      count: getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4,
+      count,
       ...(controlled && valueList ? { value: valueList } : {}),
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),

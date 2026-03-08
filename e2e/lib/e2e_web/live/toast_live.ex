@@ -188,16 +188,16 @@ defmodule E2eWeb.ToastLive do
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <.action phx-click="create_toast" value={:info} class="button button--sm">
+        <.action phx-click="create_toast" value="info" class="button button--sm">
           Create info
         </.action>
-        <.action phx-click="create_toast" value={:success} class="button button--sm">
+        <.action phx-click="create_toast" value="success" class="button button--sm">
           Create success
         </.action>
-        <.action phx-click="create_toast" value={:error} class="button button--sm">
+        <.action phx-click="create_toast" value="error" class="button button--sm">
           Create error
         </.action>
-        <.action phx-click="create_toast" value={:loading} class="button button--sm">
+        <.action phx-click="create_toast" value="loading" class="button button--sm">
           Create loading
         </.action>
       </div>

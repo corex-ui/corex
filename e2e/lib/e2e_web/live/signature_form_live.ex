@@ -123,9 +123,7 @@ defmodule E2eWeb.SignatureFormLive do
         <.signature_pad
           id="signature-form-signature"
           field={@form[:signature]}
-          controlled
           paths={@signature_value}
-          on_draw_end="signature_drawn"
         >
           <:label>Sign here</:label>
           <:clear_trigger>

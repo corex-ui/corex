@@ -864,9 +864,7 @@ var Listbox = class extends Component {
       '[data-scope="listbox"][data-part="content"]'
     );
     if (!contentEl) return;
-    const templatesContainer = this.el.querySelector(
-      '[data-templates="listbox"]'
-    );
+    const templatesContainer = this.el.querySelector('[data-templates="listbox"]');
     if (!templatesContainer) return;
     contentEl.querySelectorAll(
       '[data-scope="listbox"][data-part="empty"]:not([data-template])'

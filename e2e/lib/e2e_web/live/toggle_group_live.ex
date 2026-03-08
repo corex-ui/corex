@@ -54,7 +54,7 @@ defmodule E2eWeb.ToggleGroupLive do
         >
           Set Lorem and Donec
         </.action>
-        <.action phx-click="set_value" value={nil} class="button button--sm">
+        <.action phx-click="set_value" class="button button--sm">
           Set no items
         </.action>
       </div>

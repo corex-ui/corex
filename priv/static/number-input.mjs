@@ -18,6 +18,7 @@ import {
   addDomEvent,
   ariaAttr,
   callAll,
+  canPushEvent,
   createAnatomy,
   dataAttr,
   getBoolean,
@@ -1361,16 +1362,8 @@ var NumberInputHook = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       onValueChange: (details) => {
-        const inputEl = el.querySelector(
-          '[data-scope="number-input"][data-part="input"]'
-        );
-        if (inputEl) {
-          inputEl.value = details.value;
-          inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-          inputEl.dispatchEvent(new Event("change", { bubbles: true }));
-        }
         const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           this.pushEvent(eventName, {
             value: details.value,
             valueAsNumber: details.valueAsNumber,

@@ -46,7 +46,7 @@ defmodule E2eWeb.SelectModel do
     wait_for_text(session, "#{key}=#{value}")
   end
 
-  def see_flash(session, flash_text) do
-    wait_for_text(session, flash_text)
+  def see_flash(session, flash_text, opts \\ []) do
+    wait_for_text(session, flash_text, opts)
   end
 end

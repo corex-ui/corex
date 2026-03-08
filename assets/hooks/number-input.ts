@@ -2,7 +2,7 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { NumberInput } from "../components/number-input";
 import type { Props, ValueChangeDetails } from "@zag-js/number-input";
-import { getString, getBoolean, getNumber } from "../lib/util";
+import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
 
 type NumberInputHookState = {
   numberInput?: NumberInput;
@@ -31,16 +31,8 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       onValueChange: (details: ValueChangeDetails) => {
-        const inputEl = el.querySelector<HTMLInputElement>(
-          '[data-scope="number-input"][data-part="input"]'
-        );
-        if (inputEl) {
-          inputEl.value = details.value;
-          inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-          inputEl.dispatchEvent(new Event("change", { bubbles: true }));
-        }
         const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           this.pushEvent(eventName, {
             value: details.value,
             valueAsNumber: details.valueAsNumber,

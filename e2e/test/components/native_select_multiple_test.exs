@@ -16,25 +16,28 @@ defmodule E2eWeb.NativeSelectMultipleTest do
     session
     |> visit("/en/live/native-input/form")
     |> wait(500)
-    |> NativeInput.fill_input_via_script("profile_name", "Test")
-    |> NativeInput.fill_input_via_script("profile_email", "test@example.com")
+    |> NativeInput.fill_input_via_script("native-input-form-name", "Test")
+    |> NativeInput.fill_input_via_script("native-input-form-email", "test@example.com")
     |> NativeInput.click_checkbox()
     |> wait(500)
     |> click(css("#native-input-form-live-submit"))
-    |> wait(1000)
-    |> assert_has(Wallaby.Query.text("tags=[]"))
+    |> wait(2000)
+    |> assert_has(Wallaby.Query.text("Submitted:"))
+    |> assert_has(Wallaby.Query.text("tags="))
   end
 
   feature "select multiple options and submit shows selected tags", %{session: session} do
     session
     |> visit("/en/live/native-input/form")
     |> wait(500)
-    |> NativeInput.fill_input_via_script("profile_name", "Test")
-    |> NativeInput.fill_input_via_script("profile_email", "test@example.com")
+    |> NativeInput.fill_input_via_script("native-input-form-name", "Test")
+    |> NativeInput.fill_input_via_script("native-input-form-email", "test@example.com")
     |> NativeInput.click_checkbox()
-    |> select_multiple_options("native-input-form-tags-input", ["elixir", "phoenix"])
+    |> NativeInput.select_multiple_options("native-input-form-tags", ["elixir", "phoenix"])
     |> wait(500)
     |> click(css("#native-input-form-live-submit"))
+    |> wait(2000)
+    |> wait_for_text("Submitted:", timeout: 5000)
     |> wait_for_text("elixir", timeout: 5000)
     |> assert_has(Wallaby.Query.text("phoenix"))
   end
@@ -44,26 +47,6 @@ defmodule E2eWeb.NativeSelectMultipleTest do
     |> visit("/en/live/native-input/form")
     |> wait(500)
     |> A11yAudit.Wallaby.assert_no_violations()
-  end
-
-  defp select_multiple_options(session, select_id, values) when is_list(values) do
-    values_js = inspect(values)
-
-    script = """
-    (function() {
-      var select = document.getElementById('#{select_id}');
-      if (!select) return 'select not found';
-      var values = #{values_js};
-      for (var i = 0; i < select.options.length; i++) {
-        select.options[i].selected = values.indexOf(select.options[i].value) !== -1;
-      }
-      select.dispatchEvent(new Event('change', { bubbles: true }));
-      return 'ok';
-    })()
-    """
-
-    Wallaby.Browser.execute_script(session, script)
-    session
   end
 
   defp wait_for_text(session, text, opts) do

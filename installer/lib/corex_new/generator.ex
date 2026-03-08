@@ -321,7 +321,7 @@ defmodule Corex.New.Generator do
       signing_salt: random_string(8),
       lv_signing_salt: random_string(8),
       in_umbrella: project.in_umbrella?,
-      asset_builders: Enum.filter([tailwind && :tailwind, esbuild && :esbuild], & &1),
+      asset_builders: Enum.filter([tailwind && :tailwind, :esbuild], & &1),
       javascript: esbuild,
       css: css,
       tailwind: tailwind,

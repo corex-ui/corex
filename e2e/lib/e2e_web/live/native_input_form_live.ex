@@ -47,7 +47,7 @@ defmodule E2eWeb.NativeInputFormLive do
     case NativeInputProfile.changeset(%NativeInputProfile{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: name=#{data.name}, agree=#{data.agree}, tags=#{inspect(data.tags)}"
+        message = "Submitted: #{NativeInputProfile.format_for_toast(data)}"
 
         {:noreply,
          socket
@@ -87,13 +87,20 @@ defmodule E2eWeb.NativeInputFormLive do
         phx-change="validate"
         phx-submit="save"
       >
-        <.native_input field={@form[:name]} type="text" placeholder="Your name" class="native-input">
+        <.native_input
+          field={@form[:name]}
+          type="text"
+          id="native-input-form-name"
+          placeholder="Your name"
+          class="native-input"
+        >
           <:label>Name</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
         <.native_input
           field={@form[:email]}
           type="email"
+          id="native-input-form-email"
           placeholder="you@example.com"
           class="native-input"
         >
@@ -101,8 +108,19 @@ defmodule E2eWeb.NativeInputFormLive do
           <:error :let={msg}>{msg}</:error>
         </.native_input>
         <.native_input
+          field={@form[:bio]}
+          type="textarea"
+          id="native-input-form-bio"
+          placeholder="Short bio"
+          class="native-input"
+        >
+          <:label>Bio</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
           field={@form[:birth_date]}
           type="date"
+          id="native-input-form-birth-date"
           placeholder="Choose date"
           class="native-input"
         >
@@ -110,12 +128,101 @@ defmodule E2eWeb.NativeInputFormLive do
           <:error :let={msg}>{msg}</:error>
         </.native_input>
         <.native_input
+          field={@form[:datetime]}
+          type="datetime-local"
+          id="native-input-form-datetime"
+          class="native-input"
+        >
+          <:label>Date and time</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
           field={@form[:reminder_time]}
           type="time"
+          id="native-input-form-reminder-time"
           placeholder="Choose time"
           class="native-input"
         >
           <:label>Reminder time</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:month]}
+          type="month"
+          id="native-input-form-month"
+          class="native-input"
+        >
+          <:label>Month</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:week]}
+          type="week"
+          id="native-input-form-week"
+          class="native-input"
+        >
+          <:label>Week</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:website]}
+          type="url"
+          id="native-input-form-website"
+          placeholder="https://example.com"
+          class="native-input"
+        >
+          <:label>Website</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:phone]}
+          type="tel"
+          id="native-input-form-phone"
+          placeholder="+1 234 567 8900"
+          class="native-input"
+        >
+          <:label>Phone</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:q]}
+          type="search"
+          id="native-input-form-q"
+          placeholder="Search"
+          class="native-input"
+        >
+          <:label>Search</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:color]}
+          type="color"
+          id="native-input-form-color"
+          value="#3b82f6"
+          class="native-input"
+        >
+          <:label>Color</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:count]}
+          type="number"
+          id="native-input-form-count"
+          min={0}
+          max={100}
+          step={1}
+          class="native-input"
+        >
+          <:label>Count</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:password]}
+          type="password"
+          id="native-input-form-password"
+          class="native-input"
+        >
+          <:label>Password</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
         <.native_input
@@ -141,7 +248,23 @@ defmodule E2eWeb.NativeInputFormLive do
           <:label>Tags</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>
-        <.native_input field={@form[:agree]} type="checkbox" class="native-input">
+        <.native_input
+          field={@form[:size]}
+          type="radio"
+          id="native-input-form-size"
+          value="m"
+          options={[Small: "s", Medium: "m", Large: "l"]}
+          class="native-input"
+        >
+          <:label>Size</:label>
+          <:error :let={msg}>{msg}</:error>
+        </.native_input>
+        <.native_input
+          field={@form[:agree]}
+          type="checkbox"
+          id="native-input-form-agree"
+          class="native-input"
+        >
           <:label>I agree</:label>
           <:error :let={msg}>{msg}</:error>
         </.native_input>

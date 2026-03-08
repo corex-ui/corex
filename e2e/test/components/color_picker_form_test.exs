@@ -4,7 +4,7 @@ defmodule E2eWeb.ColorPickerFormTest do
 
   alias E2eWeb.ColorPickerModel, as: ColorPicker
 
-  feature "static form - submit includes color", %{session: session} do
+  feature "static form - submit empty/default includes color", %{session: session} do
     session
     |> ColorPicker.goto_form(:static)
     |> ColorPicker.wait(500)
@@ -20,7 +20,7 @@ defmodule E2eWeb.ColorPickerFormTest do
     |> ColorPicker.check_accessibility()
   end
 
-  feature "live form - submit includes color", %{session: session} do
+  feature "live form - submit default color", %{session: session} do
     session
     |> ColorPicker.goto_form(:live)
     |> ColorPicker.wait(500)

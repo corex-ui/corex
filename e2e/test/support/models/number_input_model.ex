@@ -11,6 +11,29 @@ defmodule E2eWeb.NumberInputModel do
     visit(session, path)
   end
 
+  def fill_number_input(session, value) when is_number(value) do
+    fill_number_input(session, to_string(value))
+  end
+
+  def fill_number_input(session, value) when is_binary(value) do
+    input_id = "number-input:number-input-form-value:input"
+    escaped = String.replace(value, "'", "\\'")
+
+    script = """
+    (function() {
+      var el = document.getElementById('#{input_id}');
+      if (!el) return 'not found';
+      el.value = '#{escaped}';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+      return 'ok';
+    })()
+    """
+
+    Wallaby.Browser.execute_script(session, script)
+    session
+  end
+
   def submit_form(session, mode \\ :static) do
     id = if mode == :live, do: "number-input-form-live-submit", else: "number-input-form-submit"
     click(session, css("##{id}"))

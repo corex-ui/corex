@@ -52,7 +52,7 @@ defmodule E2eWeb.TabsLive do
         >
           Open Item 1 and 2
         </.action>
-        <.action phx-click="set_value" value={nil} class="button button--sm">
+        <.action phx-click="set_value" class="button button--sm">
           Close all Items
         </.action>
       </div>

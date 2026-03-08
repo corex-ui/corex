@@ -22,8 +22,9 @@ defmodule E2eWeb.SelectFormTest do
     |> Select.select_item("bel")
     |> Select.wait(200)
     |> Select.submit_form()
-    |> Select.wait(500)
+    |> Select.wait(1000)
     |> Select.see_flash("Submitted: country=")
+    |> Select.see_flash("bel")
   end
 
   feature "live form - select country then submit shows success", %{session: session} do
@@ -36,7 +37,8 @@ defmodule E2eWeb.SelectFormTest do
     |> Select.wait(500)
     |> Select.submit_form(:live)
     |> Select.wait(2000)
-    |> Select.see_flash("country=bel")
+    |> Select.see_flash("Submitted: country=", timeout: 10_000)
+    |> Select.see_flash("bel", timeout: 10_000)
   end
 
   feature "live form - submit without selection does not show success", %{

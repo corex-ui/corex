@@ -573,15 +573,25 @@ var PinInput = class extends Component {
 };
 
 // hooks/pin-input.ts
+function parseValueWithEmpties(raw) {
+  return raw.split(",").map((v) => v.trim());
+}
+function padToCount(arr, count) {
+  const copy = [...arr];
+  while (copy.length < count) copy.push("");
+  return copy.slice(0, count);
+}
 var PinInputHook = {
   mounted() {
     const el = this.el;
-    const valueList = getStringList(el, "value");
+    const count = getNumber(el, "count") ?? 4;
+    const rawValue = el.dataset.value;
+    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
     const zag = new PinInput(el, {
       id: el.id,
-      count: getNumber(el, "count") ?? 4,
+      count,
       ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
@@ -643,11 +653,13 @@ var PinInputHook = {
     this.handlers = [];
   },
   updated() {
-    const valueList = getStringList(this.el, "value");
+    const count = getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4;
+    const rawValue = this.el.dataset.value;
+    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
     const controlled = getBoolean(this.el, "controlled");
     this.pinInput?.updateProps({
       id: this.el.id,
-      count: getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4,
+      count,
       ...controlled && valueList ? { value: valueList } : {},
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),

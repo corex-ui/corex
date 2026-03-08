@@ -102,7 +102,7 @@ defmodule E2eWeb.PinInputFormLive do
   @impl true
   def render(assigns) do
     pin = get_pin_from_form(assigns.form)
-    assigns = assign(assigns, :pin_value, if(pin == "", do: [], else: String.graphemes(pin)))
+    assigns = assign(assigns, :pin_value, pin_to_value_list(pin, 4))
 
     ~H"""
     <Layouts.app
@@ -145,5 +145,13 @@ defmodule E2eWeb.PinInputFormLive do
       Ecto.Changeset.get_change(form.source, :pin) ||
       Ecto.Changeset.get_field(form.source, :pin) ||
       ""
+  end
+
+  defp pin_to_value_list("", count), do: List.duplicate("", count)
+
+  defp pin_to_value_list(pin, count) do
+    graphemes = String.graphemes(pin)
+    padded = graphemes ++ List.duplicate("", max(0, count - length(graphemes)))
+    Enum.take(padded, count)
   end
 end

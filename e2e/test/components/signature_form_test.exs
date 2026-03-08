@@ -4,7 +4,7 @@ defmodule E2eWeb.SignatureFormTest do
 
   alias E2eWeb.SignatureModel, as: Signature
 
-  feature "static form - submit includes signature", %{session: session} do
+  feature "static form - submit empty/default includes signature", %{session: session} do
     session
     |> Signature.goto_form(:static)
     |> Signature.wait(500)
@@ -20,7 +20,7 @@ defmodule E2eWeb.SignatureFormTest do
     |> Signature.check_accessibility()
   end
 
-  feature "live form - submit includes signature", %{session: session} do
+  feature "live form - submit default signature", %{session: session} do
     session
     |> Signature.goto_form(:live)
     |> Signature.wait(500)

@@ -4,7 +4,7 @@ defmodule E2eWeb.DatePickerFormTest do
 
   alias E2eWeb.DatePickerModel, as: DatePicker
 
-  feature "static form - submit includes date", %{session: session} do
+  feature "static form - submit empty/default includes date", %{session: session} do
     session
     |> DatePicker.goto_form(:static)
     |> DatePicker.wait(500)
@@ -20,7 +20,7 @@ defmodule E2eWeb.DatePickerFormTest do
     |> DatePicker.check_accessibility()
   end
 
-  feature "live form - submit includes date", %{session: session} do
+  feature "live form - submit default date", %{session: session} do
     session
     |> DatePicker.goto_form(:live)
     |> DatePicker.wait(500)

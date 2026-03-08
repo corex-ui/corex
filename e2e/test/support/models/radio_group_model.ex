@@ -11,6 +11,14 @@ defmodule E2eWeb.RadioGroupModel do
     visit(session, path)
   end
 
+  def click_radio_item(session, value) do
+    click(session, css("[data-scope='radio-group'][data-part='item'][data-value='#{value}']"))
+  end
+
+  def wait_for_redirect(session) do
+    wait_for_text(session, "Radio Group form")
+  end
+
   def submit_form(session, mode \\ :static) do
     id = if mode == :live, do: "radio-group-form-live-submit", else: "radio-group-form-submit"
     click(session, css("##{id}"))

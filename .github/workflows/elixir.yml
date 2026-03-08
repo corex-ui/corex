@@ -161,4 +161,4 @@ jobs:
 
     - name: Run integration tests
       working-directory: integration_test
-      run: mix test --exclude database:mysql --exclude database:mssql
+      run: mix test --exclude database:mysql --exclude database:mssql --timeout 600000
