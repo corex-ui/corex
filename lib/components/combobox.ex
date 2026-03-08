@@ -436,7 +436,7 @@ defmodule Corex.Combobox do
         </div>
         <div phx-update="ignore" {Connect.control(%Control{id: @id, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
           <input {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
-          <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
+          <button :if={!Enum.empty?(@clear_trigger) and !Enum.empty?(@value)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
           </button>
           <button data-scope="combobox" data-part="trigger">

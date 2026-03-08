@@ -80,34 +80,38 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "app with --mode" do
-    test "compiles and format check passes" do
+    test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_mode", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
   end
 
   describe "app with --theme uno:leo" do
-    test "compiles and format check passes" do
+    test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_theme", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo"])
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
   end
 
   describe "app with --lang en:fr" do
-    test "compiles and format check passes" do
+    test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_lang", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--lang", "en:fr"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--lang", "en:fr", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
   end
@@ -125,55 +129,62 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "app with --designex" do
-    test "keeps design folder, compiles, and format check passes" do
+    test "keeps design folder, compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_designex", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--designex"])
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--designex", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_dir(Path.join(app_root_path, "assets/corex/design"))
+        assert_tests_pass(app_root_path)
       end)
     end
   end
 
   describe "app with --no-tidewave" do
-    test "compiles and format check passes" do
+    test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_no_tidewave", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-tidewave"])
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--no-tidewave", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
   end
 
   describe "app with --lang and --rtl" do
-    test "generates locale and RTL files, compiles, and format check passes" do
+    test "generates locale and RTL files, compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_lang_rtl", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--lang", "en:ar", "--rtl", "ar"])
+          generate_corex_app(tmp_dir, "my_app", ["--lang", "en:ar", "--rtl", "ar", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_file(Path.join(app_root_path, "priv/gettext/ar/LC_MESSAGES/errors.po"))
         assert_file(Path.join(app_root_path, "lib/my_app_web/plugs/locale.ex"))
         assert_file(Path.join(app_root_path, "lib/my_app_web/shared_events.ex"))
+        assert_tests_pass(app_root_path)
       end)
     end
   end
 
   describe "app with --mode, --theme, and --lang (combined)" do
-    test "compiles and format check passes" do
+    test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_mode_theme_lang", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "my_app", [
             "--mode",
             "--theme", "neo:uno",
-            "--lang", "en:fr"
+            "--lang", "en:fr",
+            "--no-ecto"
           ])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
 

@@ -83,6 +83,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
   end
 
   describe "corex.gen.auth + pbkdf2 + existing context" do
+    @tag database: :mssql
     test "has no compilation or formatter warnings (--live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
@@ -104,9 +105,12 @@ defmodule Corex.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        drop_test_database(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
 
+    @tag database: :mssql
     test "has no compilation or formatter warnings (--no-live)" do
       with_installer_tmp("new with defaults", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--database", "mssql", "--live"])
@@ -128,6 +132,8 @@ defmodule Corex.Integration.CodeGeneration.AppWithMSSQLAdapterTest do
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
+        drop_test_database(app_root_path)
+        assert_tests_pass(app_root_path)
       end)
     end
 

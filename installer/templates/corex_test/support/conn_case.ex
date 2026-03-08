@@ -20,6 +20,8 @@ defmodule <%= @web_namespace %>.ConnCase do
 
   use ExUnit.CaseTemplate
 
+  require Phoenix.ConnTest
+
   def follow_redirect(conn, status \\ 302) do
     Phoenix.ConnTest.get(conn, Phoenix.ConnTest.redirected_to(conn, status))
   end

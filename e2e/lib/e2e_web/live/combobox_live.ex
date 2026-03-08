@@ -44,6 +44,9 @@ defmodule E2eWeb.ComboboxLive do
         <:trigger>
           <.icon name="hero-chevron-down" />
         </:trigger>
+        <:clear_trigger>
+        <.icon name="hero-backspace" />
+        </:clear_trigger>
       </.combobox>
 
       <h3>Grouped</h3>
@@ -70,6 +73,9 @@ defmodule E2eWeb.ComboboxLive do
         <:trigger>
           <.icon name="hero-chevron-down" />
         </:trigger>
+        <:item_indicator>
+        <.icon name="hero-check" />
+      </:item_indicator>
       </.combobox>
 
       <h3>Extended</h3>
