@@ -23,14 +23,14 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/X!/
     end
 
-    test "renders with clear_trigger and item_indicator slots" do
+    test "renders with clear_trigger and item_indicator slots - clear trigger hidden when input empty" do
       html =
         render_component(
           &CorexTest.ComponentHelpers.render_combobox_with_clear_and_indicator/1,
           []
         )
 
-      assert html =~ ~r/data-part="clear-trigger"/
+      refute html =~ ~r/data-part="clear-trigger"/
       assert html =~ ~r/data-part="item-indicator"/
     end
 
