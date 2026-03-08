@@ -9,6 +9,5 @@ defmodule E2e.Form.RadioGroupForm do
   def changeset(form, attrs \\ %{}) do
     form
     |> cast(attrs, [:choice])
-    |> validate_required([:choice])
   end
 end

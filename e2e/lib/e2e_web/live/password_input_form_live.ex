@@ -23,7 +23,8 @@ defmodule E2eWeb.PasswordInputFormLive do
   end
 
   @impl true
-  def handle_event("validate", %{"password_input_form" => params}, socket) do
+  def handle_event("validate", event_params, socket) do
+    params = Map.get(event_params, "password_input_form", %{})
     changeset =
       %PasswordInputForm{}
       |> PasswordInputForm.changeset(params)
@@ -35,7 +36,8 @@ defmodule E2eWeb.PasswordInputFormLive do
   end
 
   @impl true
-  def handle_event("save", %{"password_input_form" => params}, socket) do
+  def handle_event("save", event_params, socket) do
+    params = Map.get(event_params, "password_input_form", %{})
     case PasswordInputForm.changeset(%PasswordInputForm{}, params) do
       %Ecto.Changeset{valid?: true} ->
         message = "Submitted: password=***"

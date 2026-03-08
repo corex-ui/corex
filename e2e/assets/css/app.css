@@ -56,8 +56,6 @@
 
 @import "./navigation.css";
 
-
-
 #locale-select.select,
 #locale-select.select [data-scope="select"][data-part="root"],
 #locale-select.select [data-scope="select"][data-part="trigger"],

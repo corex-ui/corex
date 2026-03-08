@@ -23,7 +23,8 @@ defmodule E2eWeb.DatePickerFormLive do
   end
 
   @impl true
-  def handle_event("validate", %{"date_picker_form" => params}, socket) do
+  def handle_event("validate", event_params, socket) do
+    params = Map.get(event_params, "date_picker_form", %{})
     changeset =
       %DatePickerForm{}
       |> DatePickerForm.changeset(params)
@@ -48,7 +49,8 @@ defmodule E2eWeb.DatePickerFormLive do
   end
 
   @impl true
-  def handle_event("save", %{"date_picker_form" => params}, socket) do
+  def handle_event("save", event_params, socket) do
+    params = Map.get(event_params, "date_picker_form", %{})
     case DatePickerForm.changeset(%DatePickerForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)

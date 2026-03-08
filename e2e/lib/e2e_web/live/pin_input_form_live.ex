@@ -23,7 +23,8 @@ defmodule E2eWeb.PinInputFormLive do
   end
 
   @impl true
-  def handle_event("validate", %{"pin_input_form" => params}, socket) do
+  def handle_event("validate", event_params, socket) do
+    params = Map.get(event_params, "pin_input_form", %{})
     changeset =
       %PinInputForm{}
       |> PinInputForm.changeset(params)
@@ -49,7 +50,8 @@ defmodule E2eWeb.PinInputFormLive do
   end
 
   @impl true
-  def handle_event("save", %{"pin_input_form" => params}, socket) do
+  def handle_event("save", event_params, socket) do
+    params = Map.get(event_params, "pin_input_form", %{})
     case PinInputForm.changeset(%PinInputForm{}, params) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)

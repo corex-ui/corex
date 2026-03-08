@@ -9,6 +9,5 @@ defmodule E2e.Form.PinInputForm do
   def changeset(form, attrs \\ %{}) do
     form
     |> cast(attrs, [:pin])
-    |> validate_required([:pin])
   end
 end

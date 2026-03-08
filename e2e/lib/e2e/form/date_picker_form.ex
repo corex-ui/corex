@@ -9,6 +9,5 @@ defmodule E2e.Form.DatePickerForm do
   def changeset(form, attrs \\ %{}) do
     form
     |> cast(attrs, [:date])
-    |> validate_required([:date])
   end
 end

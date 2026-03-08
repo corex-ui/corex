@@ -9,6 +9,5 @@ defmodule E2e.Form.PasswordInputForm do
   def changeset(form, attrs \\ %{}) do
     form
     |> cast(attrs, [:password])
-    |> validate_required([:password])
   end
 end
