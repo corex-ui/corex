@@ -41,7 +41,6 @@ defmodule E2eWeb.EditableFormLive do
      )}
   end
 
-
   @impl true
   def handle_event("save", %{"editable_form" => params}, socket) do
     case EditableForm.changeset(%EditableForm{}, params) do

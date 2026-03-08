@@ -63,10 +63,7 @@ defmodule Corex.MixProject do
 
   defp aliases do
     [
-      compile: [&copy_design/1, &copy_design_to_installer/1, "compile"],
       "assets.build": [
-        &clean_static_assets/1,
-        &copy_design/1,
         &copy_design_to_installer/1,
         "esbuild module",
         "esbuild cdn",
@@ -84,29 +81,6 @@ defmodule Corex.MixProject do
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
-  end
-
-  defp clean_static_assets(_) do
-    static = Path.join([__DIR__, "priv", "static"])
-    design_dest = Path.join([__DIR__, "priv", "design"])
-    File.rm_rf(Path.join(static, "cache_manifest.json"))
-    File.rm_rf(design_dest)
-  end
-
-  defp copy_design(_) do
-    source = Path.join([__DIR__, "design"])
-    destination = Path.join([__DIR__, "priv", "design"])
-
-    if File.exists?(source) and File.dir?(source) do
-      File.mkdir_p!(Path.dirname(destination))
-      File.cp_r!(source, destination, force: true)
-
-      e2e_corex = Path.join([__DIR__, "e2e", "assets", "corex"])
-      if File.exists?(Path.dirname(e2e_corex)) do
-        File.rm_rf(e2e_corex)
-        File.cp_r!(source, e2e_corex, force: true)
-      end
-    end
   end
 
   defp copy_design_to_installer(_) do
