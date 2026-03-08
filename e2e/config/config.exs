@@ -53,7 +53,15 @@ config :esbuild,
     env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
   ]
 
-# Configure tailwind (the version is required)
+config :designex,
+  version: "1.0.2",
+  commit: "1da4b31",
+  cd: Path.expand("../assets", __DIR__),
+  dir: "corex",
+  corex: [
+    build_args: ~w(--dir=design --script=build.mjs --tokens=tokens)
+  ]
+
 config :tailwind,
   version: "4.1.12",
   e2e: [

@@ -187,7 +187,8 @@
   [data-scope="carousel"][data-part="next-trigger"]:focus-visible,
   [data-scope="carousel"][data-part="prev-trigger"]:focus-visible,
   [data-scope="carousel"][data-part="autoplay-trigger"]:focus-visible {
-    outline-color: --value(--color-ui-* --text, [color]);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
   }
 
   [data-scope="carousel"][data-part="indicator"] {

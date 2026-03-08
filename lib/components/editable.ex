@@ -197,7 +197,7 @@ defmodule Corex.Editable do
         {render_slot(@label)}
       </label>
         <div data-scope="editable" data-part="control">
-          <div {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: true})}>
+          <div {Connect.area(%Area{id: @id, dir: @dir, empty: @empty, editing: @editing, auto_resize: false})}>
             <input type="text" {Connect.input(%Input{id: @id, disabled: @disabled, value: @value, placeholder: @placeholder, name: @name, form: @form, required: @required, read_only: @read_only, editing: @editing, aria_label: @translation.input})} />
             <span {Connect.preview(%Preview{id: @id, dir: @dir, value_text: @value_text, empty: @empty, editing: @editing, aria_label: @translation.edit})}>
               {@value_text}

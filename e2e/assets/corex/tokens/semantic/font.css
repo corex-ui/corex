@@ -3,11 +3,11 @@
  */
 
 @theme inline {
-  --font-ui: system-ui, sans-serif;
-  --font-code: ui-monospace, monospace;
-  --font-weight-ui-sm: 200;
-  --font-weight-ui-md: 400;
-  --font-weight-ui-lg: 600;
-  --font-weight-ui-xl: 800;
-  --font-weight-ui: var(--font-weight-ui-md);
+  --font-ui: var(--theme-font-ui);
+  --font-code: var(--theme-font-code);
+  --font-weight-ui-sm: var(--theme-font-weight-ui-sm);
+  --font-weight-ui: var(--theme-font-weight-ui-md);
+  --font-weight-ui-md: var(--theme-font-weight-ui-md);
+  --font-weight-ui-lg: var(--theme-font-weight-ui-lg);
+  --font-weight-ui-xl: var(--theme-font-weight-ui-xl);
 }

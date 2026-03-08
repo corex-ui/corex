@@ -1,0 +1,46 @@
+{
+  "text": {
+    "ui": {
+      "default": {
+        "value": "{theme.text.ui.md}",
+        "type": "fontSizes"
+      },
+      "-line-height": {
+        "value": "{theme.text.ui.md--line-height}",
+        "type": "dimension"
+      },
+      "sm": {
+        "value": "{theme.text.ui.sm}",
+        "type": "fontSizes"
+      },
+      "sm--line-height": {
+        "value": "{theme.text.ui.sm--line-height}",
+        "type": "dimension"
+      },
+      "md": {
+        "value": "{theme.text.ui.md}",
+        "type": "fontSizes"
+      },
+      "md--line-height": {
+        "value": "{theme.text.ui.md--line-height}",
+        "type": "dimension"
+      },
+      "lg": {
+        "value": "{theme.text.ui.lg}",
+        "type": "fontSizes"
+      },
+      "lg--line-height": {
+        "value": "{theme.text.ui.lg--line-height}",
+        "type": "dimension"
+      },
+      "xl": {
+        "value": "{theme.text.ui.xl}",
+        "type": "fontSizes"
+      },
+      "xl--line-height": {
+        "value": "{theme.text.ui.xl--line-height}",
+        "type": "dimension"
+      }
+    }
+  }
+}

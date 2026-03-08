@@ -1,0 +1,38 @@
+{
+  "font": {
+    "ui": {
+      "default": {
+        "value": "{theme.font.ui.default}",
+        "type": "fontFamily"
+      }
+    },
+    "code": {
+      "value": "{theme.font.code}",
+      "type": "fontFamily"
+    }
+  },
+  "font-weight": {
+    "ui": {
+      "sm": {
+        "value": "{theme.font-weight.ui.sm}",
+        "type": "fontWeights"
+      },
+      "default": {
+        "value": "{theme.font-weight.ui.md}",
+        "type": "fontWeights"
+      },
+      "md": {
+        "value": "{theme.font-weight.ui.md}",
+        "type": "fontWeights"
+      },
+      "lg": {
+        "value": "{theme.font-weight.ui.lg}",
+        "type": "fontWeights"
+      },
+      "xl": {
+        "value": "{theme.font-weight.ui.xl}",
+        "type": "fontWeights"
+      }
+    }
+  }
+}

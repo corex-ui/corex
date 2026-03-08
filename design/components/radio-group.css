@@ -68,8 +68,8 @@
 
     &:focus-visible,
     &[data-focus] {
-      outline: 2px solid var(--color-ui--text);
-      outline-offset: -3px;
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ui--text);
     }
 
     &:disabled,

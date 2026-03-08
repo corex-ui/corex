@@ -116,8 +116,8 @@
     border-radius: var(--radius-full);
     box-sizing: border-box;
     transform: translate(-50%, -50%);
-    outline: 2px solid var(--color-ui-accent--text);
-    outline-offset: -3px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ui-accent--text);
     width: var(--spacing-mini);
     height: var(--spacing-mini);
   }

@@ -68,8 +68,8 @@
 
   .angle-slider
     [data-scope="angle-slider"][data-part="thumb"]:focus-visible::before {
-    outline: 1px solid var(--color-ui--text);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-ui--text);
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="marker-group"] {

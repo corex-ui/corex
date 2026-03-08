@@ -114,14 +114,16 @@
   }
 
   [data-scope="toggle-group"][data-part="item"][data-highlighted] {
-    outline: 2px solid --value(--color-ui-* --text, [color]);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
     background-color: --value(--color-ui-* -hover, [color]);
     color: --value(--color-ui-* --text, [color]);
   }
 
   [data-scope="toggle-group"][data-part="item"][data-toggle-grouped][data-highlighted],
   [data-scope="toggle-group"][data-part="item"][data-state="checked"][data-highlighted] {
-    outline: 2px solid var(--color-ui-accent--text);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
     background-color: --value(--color-ui-* -hover, [color]);
     color: --value(--color-ui-* --text, [color]);
   }

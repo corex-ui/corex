@@ -41,26 +41,6 @@ defmodule E2eWeb.EditableFormLive do
      )}
   end
 
-  @impl true
-  def handle_event("text_changed", %{"value" => value}, socket) do
-    params = %{"text" => value}
-
-    changeset =
-      %EditableForm{}
-      |> EditableForm.changeset(params)
-      |> Map.put(:action, :validate)
-
-    {:noreply,
-     socket
-     |> assign(
-       :form,
-       Phoenix.Component.to_form(changeset,
-         action: :validate,
-         as: :editable_form,
-         id: "editable-form"
-       )
-     )}
-  end
 
   @impl true
   def handle_event("save", %{"editable_form" => params}, socket) do
@@ -119,11 +99,9 @@ defmodule E2eWeb.EditableFormLive do
           id="editable-form-text"
           name="editable_form[text]"
           value={@text_value}
-          controlled
           placeholder="Enter text"
           activation_mode="dblclick"
           select_on_focus
-          on_value_change="text_changed"
           class="editable"
         >
           <:label>Text</:label>

@@ -28188,6 +28188,14 @@ var Corex = (() => {
   function fill(value, count) {
     return Array.from({ length: count }).fill("").map((v2, i2) => value[i2] || v2);
   }
+  function parseValueWithEmpties(raw) {
+    return raw.split(",").map((v2) => v2.trim());
+  }
+  function padToCount(arr, count) {
+    const copy = [...arr];
+    while (copy.length < count) copy.push("");
+    return copy.slice(0, count);
+  }
   var anatomy19, parts19, getRootId14, getInputId7, getHiddenInputId4, getLabelId10, getControlId7, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl4, setInputValue, REGEX, choose3, createMachine5, machine19, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
@@ -28539,12 +28547,14 @@ var Corex = (() => {
         mounted() {
           var _a;
           const el = this.el;
-          const valueList = getStringList(el, "value");
+          const count = (_a = getNumber(el, "count")) != null ? _a : 4;
+          const rawValue = el.dataset.value;
+          const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
           const defaultValueList = getStringList(el, "defaultValue");
           const controlled = getBoolean(el, "controlled");
           const zag = new PinInput(el, __spreadProps(__spreadValues({
             id: el.id,
-            count: (_a = getNumber(el, "count")) != null ? _a : 4
+            count
           }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
@@ -28607,11 +28617,13 @@ var Corex = (() => {
         },
         updated() {
           var _a, _b, _c, _d;
-          const valueList = getStringList(this.el, "value");
+          const count = (_c = (_b = getNumber(this.el, "count")) != null ? _b : (_a = this.pinInput) == null ? void 0 : _a.api.count) != null ? _c : 4;
+          const rawValue = this.el.dataset.value;
+          const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
           const controlled = getBoolean(this.el, "controlled");
           (_d = this.pinInput) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
             id: this.el.id,
-            count: (_c = (_b = getNumber(this.el, "count")) != null ? _b : (_a = this.pinInput) == null ? void 0 : _a.api.count) != null ? _c : 4
+            count
           }, controlled && valueList ? { value: valueList } : {}), {
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),

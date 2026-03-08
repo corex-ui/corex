@@ -139,7 +139,8 @@
   }
 
   [data-scope="accordion"][data-part="item-trigger"][data-highlighted]:not( :hover) {
-    outline: 2px solid --value(--color-ui-* --text, [color]);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
   }
 
   [data-scope="accordion"][data-part="item-content"] {
