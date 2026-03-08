@@ -355,6 +355,39 @@
           "description": "1:1 contrast against ui-success-active (#3d7d5f)"
         }
       }
+    },
+    "radius": {
+      "ui": { "value": "0.125rem", "type": "borderRadius" },
+      "full": { "value": "9999px", "type": "borderRadius" }
+    },
+    "spacing": {
+      "default": { "value": "0.25rem", "type": "dimension" }
+    },
+    "text": {
+      "ui": {
+        "sm": { "value": "1rem", "type": "fontSizes" },
+        "sm--line-height": { "value": "1.7", "type": "dimension" },
+        "md": { "value": "1.125rem", "type": "fontSizes" },
+        "md--line-height": { "value": "1.8", "type": "dimension" },
+        "lg": { "value": "1.25rem", "type": "fontSizes" },
+        "lg--line-height": { "value": "1.9", "type": "dimension" },
+        "xl": { "value": "1.8rem", "type": "fontSizes" },
+        "xl--line-height": { "value": "2", "type": "dimension" }
+      }
+    },
+    "font": {
+      "ui": {
+        "default": { "value": ["Seravek", "Gill Sans Nova", "Ubuntu", "Calibri", "DejaVu Sans", "sans-serif"], "type": "fontFamily" }
+      },
+      "code": { "value": ["ui-monospace", "monospace"], "type": "fontFamily" }
+    },
+    "font-weight": {
+      "ui": {
+        "sm": { "value": 200, "type": "fontWeights" },
+        "md": { "value": 400, "type": "fontWeights" },
+        "lg": { "value": 600, "type": "fontWeights" },
+        "xl": { "value": 800, "type": "fontWeights" }
+      }
     }
   }
 }

@@ -2,41 +2,35 @@
   "font": {
     "ui": {
       "default": {
-        "value": [
-          "system-ui",
-          "sans-serif"
-        ],
+        "value": "{theme.font.ui.default}",
         "type": "fontFamily"
       }
     },
     "code": {
-      "value": [
-        "ui-monospace",
-        "monospace"
-      ],
+      "value": "{theme.font.code}",
       "type": "fontFamily"
     }
   },
   "font-weight": {
     "ui": {
       "sm": {
-        "value": 200,
+        "value": "{theme.font-weight.ui.sm}",
         "type": "fontWeights"
       },
       "default": {
-        "value": "{font-weight.ui.md}",
+        "value": "{theme.font-weight.ui.md}",
         "type": "fontWeights"
       },
       "md": {
-        "value": 400,
+        "value": "{theme.font-weight.ui.md}",
         "type": "fontWeights"
       },
       "lg": {
-        "value": 600,
+        "value": "{theme.font-weight.ui.lg}",
         "type": "fontWeights"
       },
       "xl": {
-        "value": 800,
+        "value": "{theme.font-weight.ui.xl}",
         "type": "fontWeights"
       }
     }

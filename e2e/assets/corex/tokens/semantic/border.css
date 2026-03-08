@@ -3,6 +3,6 @@
  */
 
 @theme inline {
-  --radius-ui: var(--theme-radius-ui);
-  --radius-full: var(--theme-radius-full);
+  --radius-ui: 0.375rem;
+  --radius-full: 9999px;
 }

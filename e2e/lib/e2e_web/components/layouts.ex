@@ -95,7 +95,7 @@ defmodule E2eWeb.Layouts do
                   </div>
                 </div>
               </div>
-              <div class="scrollbar scrollbar--sm overflow-y-auto">
+              <div class="scrollbar scrollbar--sm overflow-y-auto pb-ui">
                 <.tree_view
                   id="form-menu"
                   class="tree-view navigation px-ui-padding"
@@ -163,7 +163,7 @@ defmodule E2eWeb.Layouts do
       </div>
     </header>
     <div class="layout__wrapper">
-      <aside class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto">
+      <aside class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto pb-ui">
         <.tree_view
           id="form-menu-side"
           class="tree-view navigation px-ui-padding"

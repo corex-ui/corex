@@ -1,11 +1,11 @@
 {
   "radius": {
     "ui": {
-      "value": "0.375rem",
+      "value": "{theme.radius.ui}",
       "type": "borderRadius"
     },
     "full": {
-      "value": "9999px",
+      "value": "{theme.radius.full}",
       "type": "borderRadius"
     }
   }

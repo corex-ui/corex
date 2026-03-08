@@ -1,7 +1,7 @@
 {
   "spacing": {
     "default": {
-      "value": "0.25rem",
+      "value": "{theme.spacing.default}",
       "type": "dimension"
     },
     "ui": {

@@ -100,6 +100,12 @@ defmodule Corex.MixProject do
     if File.exists?(source) and File.dir?(source) do
       File.mkdir_p!(Path.dirname(destination))
       File.cp_r!(source, destination, force: true)
+
+      e2e_corex = Path.join([__DIR__, "e2e", "assets", "corex"])
+      if File.exists?(Path.dirname(e2e_corex)) do
+        File.rm_rf(e2e_corex)
+        File.cp_r!(source, e2e_corex, force: true)
+      end
     end
   end
 
