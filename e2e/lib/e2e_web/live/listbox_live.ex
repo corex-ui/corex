@@ -33,7 +33,7 @@ defmodule E2eWeb.ListboxLive do
       >
         <:label>Choose a country</:label>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
@@ -58,7 +58,7 @@ defmodule E2eWeb.ListboxLive do
       >
         <:label>Choose a country</:label>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
@@ -82,7 +82,7 @@ defmodule E2eWeb.ListboxLive do
           {entry.label}
         </:item>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
@@ -104,7 +104,7 @@ defmodule E2eWeb.ListboxLive do
           {entry.label}
         </:item>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
     </Layouts.app>

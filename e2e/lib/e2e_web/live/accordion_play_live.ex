@@ -146,11 +146,11 @@ defmodule E2eWeb.AccordionPlayLive do
           value={["vertical"]}
         >
           <:item value="horizontal">
-            <.icon name="hero-arrows-right-left" />
+            <.heroicon name="hero-arrows-right-left" />
           </:item>
 
           <:item value="vertical">
-            <.icon name="hero-arrows-up-down" />
+            <.heroicon name="hero-arrows-up-down" />
           </:item>
         </.toggle_group>
       </div>
@@ -164,7 +164,7 @@ defmodule E2eWeb.AccordionPlayLive do
         dir={@controls.dir}
       >
         <:indicator :let={_item}>
-          <.icon name="hero-chevron-right" />
+          <.heroicon name="hero-chevron-right" />
         </:indicator>
       </.accordion>
     </Layouts.app>

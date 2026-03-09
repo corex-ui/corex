@@ -39,6 +39,7 @@ defmodule E2eWeb.Router do
       live "/async/accordion", AccordionAsyncLive
       live "/live/checkbox", CheckboxLive
       live "/live/checkbox/form", CheckboxFormLive
+      live "/live/checkbox/controlled", CheckboxControlledLive
       live "/live/switch/form", SwitchFormLive
       live "/live/clipboard", ClipboardLive
       live "/live/code", CodeLive
@@ -72,6 +73,8 @@ defmodule E2eWeb.Router do
       live "/live/data-table", DataTableLive
       live "/live/data-table/stream", DataTableStreamLive
       live "/live/data-table/sorting", DataTableSortingLive
+      live "/live/data-table/selection", DataTableSelectionLive
+      live "/live/data-table/full", DataTableFullLive
       live "/live/editable", EditableLive
       live "/live/editable/form", EditableFormLive
       live "/live/floating-panel", FloatingPanelLive

@@ -40,8 +40,8 @@ defmodule E2eWeb.CodeLive do
             trigger_aria_label="Copy code"
           >
             <:trigger>
-              <.icon name="hero-clipboard" class="icon data-copy" />
-              <.icon name="hero-check" class="icon data-copied" />
+              <.heroicon name="hero-clipboard" class="icon data-copy" />
+              <.heroicon name="hero-check" class="icon data-copied" />
             </:trigger>
           </.clipboard>
           <.code code={@code_examples.elixir} language={:elixir} class="code" />
@@ -59,8 +59,8 @@ defmodule E2eWeb.CodeLive do
             trigger_aria_label="Copy code"
           >
             <:trigger>
-              <.icon name="hero-clipboard" class="icon data-copy" />
-              <.icon name="hero-check" class="icon data-copied" />
+              <.heroicon name="hero-clipboard" class="icon data-copy" />
+              <.heroicon name="hero-check" class="icon data-copied" />
             </:trigger>
           </.clipboard>
           <.code code={@code_examples.html} language={:html} class="code" />
@@ -78,8 +78,8 @@ defmodule E2eWeb.CodeLive do
             trigger_aria_label="Copy code"
           >
             <:trigger>
-              <.icon name="hero-clipboard" class="icon data-copy" />
-              <.icon name="hero-check" class="icon data-copied" />
+              <.heroicon name="hero-clipboard" class="icon data-copy" />
+              <.heroicon name="hero-check" class="icon data-copied" />
             </:trigger>
           </.clipboard>
           <.code code={@code_examples.css} language={:css} class="code" />
@@ -97,8 +97,8 @@ defmodule E2eWeb.CodeLive do
             trigger_aria_label="Copy code"
           >
             <:trigger>
-              <.icon name="hero-clipboard" class="icon data-copy" />
-              <.icon name="hero-check" class="icon data-copied" />
+              <.heroicon name="hero-clipboard" class="icon data-copy" />
+              <.heroicon name="hero-check" class="icon data-copied" />
             </:trigger>
           </.clipboard>
           <.code code={@code_examples.js} language={:js} class="code" />
@@ -116,8 +116,8 @@ defmodule E2eWeb.CodeLive do
             trigger_aria_label="Copy code"
           >
             <:trigger>
-              <.icon name="hero-clipboard" class="icon data-copy" />
-              <.icon name="hero-check" class="icon data-copied" />
+              <.heroicon name="hero-clipboard" class="icon data-copy" />
+              <.heroicon name="hero-check" class="icon data-copied" />
             </:trigger>
           </.clipboard>
           <.code language={:elixir} class="code" code={@heredoc_example} />

@@ -54,13 +54,13 @@ defmodule E2eWeb.DatePickerLive do
       >
         <:label>Select a date</:label>
         <:trigger>
-          <.icon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" class="icon" />
         </:trigger>
         <:prev_trigger>
-          <.icon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" class="icon" />
         </:prev_trigger>
         <:next_trigger>
-          <.icon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
       </.date_picker>
     </Layouts.app>

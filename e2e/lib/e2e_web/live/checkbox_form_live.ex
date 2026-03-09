@@ -78,7 +78,7 @@ defmodule E2eWeb.CheckboxFormLive do
         <.checkbox field={@form[:terms]} class="checkbox" controlled id="checkbox-form-terms">
           <:label>Accept terms</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>

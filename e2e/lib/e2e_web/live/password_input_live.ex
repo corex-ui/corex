@@ -21,8 +21,8 @@ defmodule E2eWeb.PasswordInputLive do
       <div class="layout__row flex flex-col gap-ui">
         <.password_input id="password-with-visibility" name="user[password]" class="password-input">
           <:label>Password</:label>
-          <:visible_indicator><.icon name="hero-eye" class="icon" /></:visible_indicator>
-          <:hidden_indicator><.icon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+          <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+          <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
         </.password_input>
         <.password_input id="password-basic" name="user[password]" class="password-input">
           <:label>Password</:label>

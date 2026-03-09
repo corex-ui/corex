@@ -73,8 +73,8 @@ defmodule E2eWeb.ClipboardLive do
       >
         <:label>Contact Netoum</:label>
         <:trigger>
-          <.icon name="hero-clipboard" class="icon data-copy" />
-          <.icon name="hero-check" class="icon data-copied" />
+          <.heroicon name="hero-clipboard" class="icon data-copy" />
+          <.heroicon name="hero-check" class="icon data-copied" />
         </:trigger>
       </.clipboard>
     </Layouts.app>

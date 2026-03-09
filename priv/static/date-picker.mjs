@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunk-V4EFVTXH.mjs";
+} from "./chunk-O7RPVRVA.mjs";
 import {
   clampValue,
   isValueWithinRange
@@ -8,11 +8,11 @@ import {
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-YGFRHRLH.mjs";
+} from "./chunk-FWBO7OZW.mjs";
 import {
   trackDismissableElement
-} from "./chunk-ZTVKZLPW.mjs";
-import "./chunk-YEKBDBKP.mjs";
+} from "./chunk-6EX3NMK5.mjs";
+import "./chunk-HWQDHESJ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -37,9 +37,9 @@ import {
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunk-UK7T6PHM.mjs";
+} from "./chunk-VYU2VXER.mjs";
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
   "clearTrigger",
   "content",
@@ -68,12 +68,12 @@ var anatomy = createAnatomy("date-picker").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/utils.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/utils.mjs
 function $2b4dce13dd5a17fa$export$842a2cf37af977e1(amount, numerator) {
   return amount - numerator * Math.floor(amount / numerator);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs
 var $3b62074eb05584b2$var$EPOCH = 1721426;
 function $3b62074eb05584b2$export$f297eb839006d339(era, year, month, day) {
   year = $3b62074eb05584b2$export$c36e0ecb2d4fa69d(era, year);
@@ -194,7 +194,7 @@ var $3b62074eb05584b2$export$80ee6245ec4f29ec = class {
   }
 };
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/weekStartData.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/weekStartData.mjs
 var $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
   "001": 1,
   AD: 1,
@@ -293,7 +293,7 @@ var $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
   XK: 1
 };
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/queries.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/queries.mjs
 function $14e0f24ef4ac5c92$export$ea39ec197993aef0(a, b) {
   b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
   return a.era === b.era && a.year === b.year && a.month === b.month && a.day === b.day;
@@ -359,9 +359,13 @@ function $14e0f24ef4ac5c92$var$timeToMs(a) {
   return a.hour * 36e5 + a.minute * 6e4 + a.second * 1e3 + a.millisecond;
 }
 var $14e0f24ef4ac5c92$var$localTimeZone = null;
+var $14e0f24ef4ac5c92$var$localTimeZoneOverride = false;
 function $14e0f24ef4ac5c92$export$aa8b41735afcabd2() {
   if ($14e0f24ef4ac5c92$var$localTimeZone == null) $14e0f24ef4ac5c92$var$localTimeZone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
   return $14e0f24ef4ac5c92$var$localTimeZone;
+}
+function $14e0f24ef4ac5c92$export$6ab69b273755230b() {
+  return $14e0f24ef4ac5c92$var$localTimeZoneOverride;
 }
 function $14e0f24ef4ac5c92$export$a5a3b454ada2268e(date) {
   return date.subtract({
@@ -549,7 +553,7 @@ function $14e0f24ef4ac5c92$export$618d60ea299da42(date, locale) {
   return dayOfWeek === start || dayOfWeek === end;
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/conversion.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/conversion.mjs
 function $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) {
   date = $11d87f3f76e88657$export$b4a036af3fc0b032(date, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
   let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(date.era, date.year);
@@ -563,7 +567,7 @@ function $11d87f3f76e88657$var$epochFromParts(year, month, day, hour, minute, se
 }
 function $11d87f3f76e88657$export$59c99f3515d3493f(ms, timeZone) {
   if (timeZone === "UTC") return 0;
-  if (ms > 0 && timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)()) return new Date(ms).getTimezoneOffset() * -6e4;
+  if (ms > 0 && timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && !(0, $14e0f24ef4ac5c92$export$6ab69b273755230b)()) return new Date(ms).getTimezoneOffset() * -6e4;
   let { year, month, day, hour, minute, second } = $11d87f3f76e88657$var$getTimeZoneParts(ms, timeZone);
   let utc = $11d87f3f76e88657$var$epochFromParts(year, month, day, hour, minute, second, 0);
   return utc - Math.floor(ms / 1e3) * 1e3;
@@ -615,7 +619,7 @@ function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
 function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
   let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
   if (timeZone === "UTC") return $11d87f3f76e88657$export$bd4fb2bc8bb06fb(dateTime);
-  if (timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && disambiguation === "compatible") {
+  if (timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && disambiguation === "compatible" && !(0, $14e0f24ef4ac5c92$export$6ab69b273755230b)()) {
     dateTime = $11d87f3f76e88657$export$b4a036af3fc0b032(dateTime, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
     let date2 = /* @__PURE__ */ new Date();
     let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(dateTime.era, dateTime.year);
@@ -703,7 +707,7 @@ function $11d87f3f76e88657$export$538b00033cc11c75(date, timeZone) {
   return $11d87f3f76e88657$export$b4a036af3fc0b032($11d87f3f76e88657$export$1b96692a1ba042ac(ms, timeZone), date.calendar);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/manipulation.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/manipulation.mjs
 var $735220c2d4774dd3$var$ONE_HOUR = 36e5;
 function $735220c2d4774dd3$export$e16d8520af44a096(date, duration) {
   let mutableDate = date.copy();
@@ -988,7 +992,7 @@ function $735220c2d4774dd3$export$31b5430eb18be4f8(dateTime, fields, disambiguat
   return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)((0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone), dateTime.calendar);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/string.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/string.mjs
 var $fae977aafc393c5c$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
 var $fae977aafc393c5c$var$ABSOLUTE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:(?:([+-]\d{2})(?::?(\d{2}))?)|Z)$/;
 var $fae977aafc393c5c$var$requiredDurationTimeGroups = [
@@ -1058,7 +1062,7 @@ function _class_private_field_init(obj, privateMap, value) {
   privateMap.set(obj, value);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/CalendarDate.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/CalendarDate.mjs
 function $35ea8db9cb2ccb90$var$shiftArgs(args) {
   let calendar = typeof args[0] === "object" ? args.shift() : new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)();
   let era;
@@ -1261,7 +1265,7 @@ var $35ea8db9cb2ccb90$export$d3b7288e7994edea = class _$35ea8db9cb2ccb90$export$
   }
 };
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/DateFormatter.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/DateFormatter.mjs
 var $fb18d541ea1ad717$var$formatterCache = /* @__PURE__ */ new Map();
 var $fb18d541ea1ad717$export$ad991b66133851cf = class {
   /** Formats a date as a string according to the locale and format options passed to the constructor. */
@@ -1375,7 +1379,7 @@ function $fb18d541ea1ad717$var$getResolvedHourCycle(locale, options) {
   throw new Error("Unexpected hour cycle result");
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/constrain.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/constrain.mjs
 function alignCenter(date, duration, locale, min, max) {
   const halfDuration = {};
   for (let prop in duration) {
@@ -1448,7 +1452,7 @@ function constrainValue(date, minValue, maxValue) {
   return constrainedDateOnly;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/align.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/align.mjs
 function alignDate(date, alignment, duration, locale, min, max) {
   switch (alignment) {
     case "start":
@@ -1461,7 +1465,7 @@ function alignDate(date, alignment, duration, locale, min, max) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/assertion.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/assertion.mjs
 function isDateEqual(dateA, dateB) {
   if (dateA == null || dateB == null) return dateA === dateB;
   return $14e0f24ef4ac5c92$export$ea39ec197993aef0(dateA, dateB);
@@ -1483,7 +1487,7 @@ function isNextRangeInvalid(endDate, minValue, maxValue) {
   return $14e0f24ef4ac5c92$export$ea39ec197993aef0(nextDate, endDate) || isDateOutsideRange(nextDate, minValue, maxValue);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/duration.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/duration.mjs
 function getUnitDuration(duration) {
   let clone = { ...duration };
   for (let key in clone) clone[key] = 1;
@@ -1496,7 +1500,7 @@ function getEndDate(startDate, duration) {
   return startDate.add(clone);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
 function getEraFormat(date) {
   if (!date) return void 0;
   const id = date.calendar.identifier;
@@ -1506,7 +1510,7 @@ function getEraFormat(date) {
   return "short";
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/formatter.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/formatter.mjs
 function getDayFormatter(locale, timeZone, referenceDate) {
   const date = referenceDate ?? $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
   return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
@@ -1530,7 +1534,7 @@ function getMonthFormatter(locale, timeZone, referenceDate) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/format.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/format.mjs
 function formatRange(startDate, endDate, formatter, toString, timeZone) {
   let parts2 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
   let separatorIndex = -1;
@@ -1564,7 +1568,7 @@ function formatSelectedDate(startDate, endDate, locale, timeZone) {
   return formatRange(start, end, formatter, (start2, end2) => `${start2} \u2013 ${end2}`, timeZone);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/date-month.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-month.mjs
 var daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 function normalizeFirstDayOfWeek(firstDayOfWeek) {
   return firstDayOfWeek != null ? daysOfTheWeek[firstDayOfWeek] : void 0;
@@ -1649,7 +1653,7 @@ function getWeekOfYear(date, locale) {
   return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/date-year.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-year.mjs
 function getYearsRange(range) {
   const years = [];
   for (let year = range.from; year <= range.to; year += 1) years.push(year);
@@ -1687,14 +1691,14 @@ function getDecadeRange(year, opts) {
   return years;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/mutation.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/mutation.mjs
 function getTodayDate(timeZone, calendar) {
   const tod = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone ?? $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
   if (calendar) return $11d87f3f76e88657$export$b4a036af3fc0b032(tod, calendar);
   return tod;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/pagination.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/pagination.mjs
 function getAdjustedDateFn(visibleDuration, locale, minValue, maxValue) {
   return function getDate(options) {
     const { startDate, focusedDate } = options;
@@ -1800,7 +1804,7 @@ function getPreviousSection(focusedDate, startDate, larger, visibleDuration, loc
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/parse-date.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/parse-date.mjs
 var isValidYear = (year) => year != null && year.length === 4;
 var isValidMonth = (month) => month != null && parseFloat(month) <= 12;
 var isValidDay = (day) => day != null && parseFloat(day) <= 31;
@@ -1850,7 +1854,7 @@ function extract(pattern, str) {
   }, {});
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/preset.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/preset.mjs
 function getDateRangePreset(preset, locale, timeZone) {
   const today = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
   switch (preset) {
@@ -1888,7 +1892,7 @@ function getDateRangePreset(preset, locale, timeZone) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
 var getLabelId = (ctx, index) => ctx.ids?.label?.(index) ?? `datepicker:${ctx.id}:label:${index}`;
 var getRootId = (ctx) => ctx.ids?.root ?? `datepicker:${ctx.id}`;
 var getTableId = (ctx, id) => ctx.ids?.table?.(id) ?? `datepicker:${ctx.id}:table:${id}`;
@@ -1914,7 +1918,7 @@ var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
 var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
 function adjustStartAndEndDate(value) {
   const [startDate, endDate] = value;
   let result;
@@ -2072,7 +2076,7 @@ var getVisibleRangeText = memo(
   }
 );
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
 function connect(service, normalize) {
   const { state, context, prop, send, computed, scope } = service;
   const startValue = context.get("startValue");
@@ -2942,7 +2946,7 @@ function createLiveRegion(opts = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
 var { and } = createGuards();
 function isDateArrayEqual(a, b) {
   if (a?.length !== b?.length) return false;
@@ -4081,7 +4085,7 @@ function setAdjustedValue(ctx, value) {
   context.set("focusedValue", value.focusedDate);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.35.3_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
 function parse(value) {
   if (Array.isArray(value)) {
     return value.map((v) => parse(v));

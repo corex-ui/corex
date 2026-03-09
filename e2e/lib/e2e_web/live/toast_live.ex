@@ -82,20 +82,22 @@ defmodule E2eWeb.ToastLive do
         phx-submit="create_flash"
         id={get_form_id(@form)}
       >
-        <.input
+        <.native_input
           field={@form[:title]}
           type="text"
-          label="Title"
           placeholder="Enter flash title"
           required
-        />
-        <.input
+        >
+          <:label>Title</:label>
+        </.native_input>
+        <.native_input
           field={@form[:message]}
           type="text"
-          label="Message"
           placeholder="Enter flash message"
           required
-        />
+        >
+          <:label>Message</:label>
+        </.native_input>
 
         <.select
           class="select"
@@ -109,18 +111,19 @@ defmodule E2eWeb.ToastLive do
         >
           <:label>Type</:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
         </.select>
 
-        <.input
+        <.native_input
           field={@form[:duration]}
           type="number"
-          label="Duration"
           placeholder="Enter flash duration"
           required
           value={5000}
-        />
+        >
+          <:label>Duration</:label>
+        </.native_input>
 
         <footer class="flex w-full justify-end gap-ui-gap">
           <.action type="submit" class="button button--accent">Create Flash Message</.action>

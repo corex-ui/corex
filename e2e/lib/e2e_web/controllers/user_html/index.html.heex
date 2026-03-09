@@ -5,14 +5,14 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <.header>
+  <h1>
     Listing Users
-    <:actions>
-      <.navigate to={~p"/#{@locale}/users/new"} type="href" class="button button--accent">
-        <.icon name="hero-plus" /> New User
-      </.navigate>
-    </:actions>
-  </.header>
+  </h1>
+  <h2>
+    <.navigate to={~p"/#{@locale}/users/new"} type="href" class="button button--accent">
+      <.heroicon name="hero-plus" /> New User
+    </.navigate>
+  </h2>
 
   <.data_table
     id="users"

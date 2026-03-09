@@ -133,7 +133,7 @@ defmodule E2eWeb.RadioGroupFormLive do
           class="radio-group"
         >
           <:label>Choose one</:label>
-          <:item_control><.icon name="hero-check" class="data-checked" /></:item_control>
+          <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         </.radio_group>
         <.action type="submit" id="radio-group-form-live-submit" class="button button--accent">
           Submit

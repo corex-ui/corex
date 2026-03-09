@@ -22,10 +22,10 @@ defmodule E2eWeb.ActionLive do
           <.action class="button">Text</.action>
           <.action class="button">
             Text and SVG
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
           <.action class="button button--square" aria_label="Button text">
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
           <.action class="button button--square" aria_label="Button text">B</.action>
         </div>
@@ -57,11 +57,11 @@ defmodule E2eWeb.ActionLive do
       <section class="layout__section">
         <div class="layout__row gap-ui-gap items-center">
           <.action class="button button--square" aria_label="Square button">
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
           <.action class="button button--square" aria_label="Square button">B</.action>
           <.action class="button button--circle" aria_label="Circle button">
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
           <.action class="button button--circle" aria_label="Circle button">B</.action>
         </div>
@@ -73,7 +73,7 @@ defmodule E2eWeb.ActionLive do
           <.action class="button" disabled>Text</.action>
           <.action class="button button--accent" disabled>Text</.action>
           <.action class="button button--square" aria_label="Disabled" disabled>
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.action>
         </div>
       </section>

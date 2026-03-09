@@ -21,7 +21,7 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunk-UK7T6PHM.mjs";
+} from "./chunk-VYU2VXER.mjs";
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");

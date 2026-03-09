@@ -46,7 +46,7 @@ defmodule E2eWeb.RadioGroupLive do
           class="radio-group"
         >
           <:label>Choose one</:label>
-          <:item_control><.icon name="hero-check" class="data-checked" /></:item_control>
+          <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         </.radio_group>
       </div>
     </Layouts.app>

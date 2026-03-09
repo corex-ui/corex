@@ -76,7 +76,7 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>File</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
       </.menu>
       <.menu
@@ -112,10 +112,10 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>Menu</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
         <:nested_indicator>
-          <.icon name="hero-chevron-right" />
+          <.heroicon name="hero-chevron-right" />
         </:nested_indicator>
       </.menu>
 
@@ -146,7 +146,7 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>Actions</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
       </.menu>
 
@@ -158,10 +158,10 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>Corex</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
         <:nested_indicator>
-          <.icon name="hero-chevron-right" />
+          <.heroicon name="hero-chevron-right" />
         </:nested_indicator>
         <:item :let={item}>
           {item.label}

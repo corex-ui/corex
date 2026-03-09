@@ -9,7 +9,7 @@ import {
   getNumber,
   getString,
   normalizeProps
-} from "./chunk-UK7T6PHM.mjs";
+} from "./chunk-VYU2VXER.mjs";
 
 // ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");

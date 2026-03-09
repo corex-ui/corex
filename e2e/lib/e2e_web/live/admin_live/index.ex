@@ -13,15 +13,14 @@ defmodule E2eWeb.AdminLive.Index do
       locale={@locale}
       current_path={@current_path}
     >
-      <.header>
+      <h1>
         Listing Admins
-        <:actions>
-          <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
-            <.icon name="hero-plus" /> New Admin
-          </.navigate>
-        </:actions>
-      </.header>
-
+      </h1>
+      <h2>
+        <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
+          <.heroicon name="hero-plus" /> New Admin
+        </.navigate>
+      </h2>
       <.data_table
         id="admins"
         class="data-table"
@@ -37,9 +36,9 @@ defmodule E2eWeb.AdminLive.Index do
           </div>
           <.link navigate={~p"/#{@locale}/admins/#{admin}/edit"} class="link">Edit</.link>
         </:action>
-        <:action :let={{id, admin}}>
+        <:action :let={{_id, admin}}>
           <.link
-            phx-click={JS.push("delete", value: %{id: admin.id}) |> hide("##{id}")}
+            phx-click={JS.push("delete", value: %{id: admin.id})}
             data-confirm="Are you sure?"
             class="link link--alert"
           >

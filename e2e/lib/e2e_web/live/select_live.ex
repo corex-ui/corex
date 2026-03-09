@@ -32,7 +32,7 @@ defmodule E2eWeb.SelectLive do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
 
@@ -57,7 +57,7 @@ defmodule E2eWeb.SelectLive do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
 
@@ -82,10 +82,10 @@ defmodule E2eWeb.SelectLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.select>
 
@@ -107,10 +107,10 @@ defmodule E2eWeb.SelectLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.select>
     </Layouts.app>

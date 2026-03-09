@@ -34,7 +34,7 @@ import {
   resizeObserverBorderBox,
   subscribe,
   trackPointerMove
-} from "./chunk-UK7T6PHM.mjs";
+} from "./chunk-VYU2VXER.mjs";
 
 // ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(

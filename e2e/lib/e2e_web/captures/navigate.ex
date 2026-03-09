@@ -3,6 +3,7 @@ defmodule CorexWeb.Navigate do
   use E2eWeb.LiveCapture
 
   alias Corex.Navigate
+  alias Corex.Heroicon
 
   capture variants: [
             basic: %{
@@ -16,7 +17,7 @@ defmodule CorexWeb.Navigate do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(Internal Link <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                    ~s(Internal Link <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -27,7 +28,7 @@ defmodule CorexWeb.Navigate do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -101,5 +102,5 @@ defmodule CorexWeb.Navigate do
           ]
 
   defdelegate navigate(assigns), to: Navigate
-  defdelegate icon(assigns), to: E2eWeb.CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

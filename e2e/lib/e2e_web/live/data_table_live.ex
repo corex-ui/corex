@@ -33,7 +33,7 @@ defmodule E2eWeb.DataTableLive do
         <:col :let={row} label="Email">{row.email}</:col>
         <:action :let={row}>
           <.action class="button button--sm button--ghost" aria-label={"Edit #{row.name}"}>
-            <.icon name="hero-pencil-square" />
+            <.heroicon name="hero-pencil-square" />
           </.action>
         </:action>
         <:action :let={row}>
@@ -41,7 +41,7 @@ defmodule E2eWeb.DataTableLive do
             class="button button--sm button--ghost text-red-600"
             aria-label={"Delete #{row.name}"}
           >
-            <.icon name="hero-trash" />
+            <.heroicon name="hero-trash" />
           </.action>
         </:action>
       </.data_table>

@@ -71,7 +71,7 @@ defmodule E2eWeb.DialogLive do
           </div>
         </:content>
         <:close_trigger>
-          <.icon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" class="icon" />
         </:close_trigger>
       </.dialog>
     </Layouts.app>

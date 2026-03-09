@@ -133,10 +133,10 @@ defmodule E2eWeb.NumberInputFormLive do
         >
           <:label>Value</:label>
           <:decrement_trigger>
-            <.icon name="hero-chevron-down" class="icon" />
+            <.heroicon name="hero-chevron-down" class="icon" />
           </:decrement_trigger>
           <:increment_trigger>
-            <.icon name="hero-chevron-up" class="icon" />
+            <.heroicon name="hero-chevron-up" class="icon" />
           </:increment_trigger>
         </.number_input>
         <.action type="submit" id="number-input-form-live-submit" class="button button--accent">

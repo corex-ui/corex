@@ -15,7 +15,7 @@ import {
   normalizeProps,
   query,
   trackPointerMove
-} from "./chunk-UK7T6PHM.mjs";
+} from "./chunk-VYU2VXER.mjs";
 
 // ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(

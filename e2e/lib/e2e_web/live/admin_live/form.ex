@@ -14,10 +14,10 @@ defmodule E2eWeb.AdminLive.Form do
       locale={@locale}
       current_path={@current_path}
     >
-      <.header>
+      <h1>
         {@page_title}
-        <:subtitle>Use this form to manage admin records in your database.</:subtitle>
-      </.header>
+      </h1>
+      <h2>Use this form to manage admin records in your database.</h2>
 
       <.form
         for={@form}
@@ -25,7 +25,9 @@ defmodule E2eWeb.AdminLive.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.native_input field={@form[:name]} type="text">
+          <:label>Name</:label>
+        </.native_input>
 
         <.select
           class="select"
@@ -41,10 +43,10 @@ defmodule E2eWeb.AdminLive.Form do
             Your country of residence
           </:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.select>
@@ -52,26 +54,26 @@ defmodule E2eWeb.AdminLive.Form do
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Select a date</:label>
           <:trigger>
-            <.icon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" class="icon" />
           </:trigger>
           <:prev_trigger>
-            <.icon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" class="icon" />
           </:prev_trigger>
           <:next_trigger>
-            <.icon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" class="icon" />
           </:next_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.date_picker>
         <.signature_pad field={@form[:signature]} class="signature-pad">
           <:label>Sign here</:label>
           <:clear_trigger>
-            <.icon name="hero-x-mark" />
+            <.heroicon name="hero-x-mark" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.signature_pad>
@@ -79,11 +81,11 @@ defmodule E2eWeb.AdminLive.Form do
           <:label>
             Accept the terms
           </:label>
-          <:control>
-            <.icon name="hero-check" class="data-checked" />
-          </:control>
+          <:indicator>
+            <.heroicon name="hero-check" class="data-checked" />
+          </:indicator>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>

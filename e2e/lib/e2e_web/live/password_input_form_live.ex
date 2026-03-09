@@ -101,8 +101,8 @@ defmodule E2eWeb.PasswordInputFormLive do
           class="password-input"
         >
           <:label>Password</:label>
-          <:visible_indicator><.icon name="hero-eye" class="icon" /></:visible_indicator>
-          <:hidden_indicator><.icon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+          <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+          <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
         </.password_input>
         <.action type="submit" id="password-input-form-live-submit" class="button button--accent">
           Submit

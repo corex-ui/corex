@@ -127,7 +127,7 @@ defmodule E2eWeb.SignatureFormLive do
         >
           <:label>Sign here</:label>
           <:clear_trigger>
-            <.icon name="hero-x-mark" />
+            <.heroicon name="hero-x-mark" />
           </:clear_trigger>
         </.signature_pad>
         <.action type="submit" id="signature-form-live-submit" class="button button--accent">

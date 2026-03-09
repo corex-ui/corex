@@ -163,12 +163,12 @@ defmodule E2eWeb.ComboboxForm do
         <h2>Form with validation</h2>
       </div>
 
-      <.header>
+      <h1>
         Combobox form
-        <:subtitle>
-          Phoenix form with Ecto validation, database fetching and server side fitlering combobox.
-        </:subtitle>
-      </.header>
+      </h1>
+      <h2>
+        Phoenix form with Ecto validation, database fetching and server side fitlering combobox.
+      </h2>
 
       <.form
         for={@form}
@@ -177,7 +177,9 @@ defmodule E2eWeb.ComboboxForm do
         phx-submit="save"
         class="flex flex-col gap-4 max-w-md"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.native_input field={@form[:name]} type="text">
+          <:label>Name</:label>
+        </.native_input>
 
         <.combobox
           field={@form[:airport]}
@@ -191,13 +193,13 @@ defmodule E2eWeb.ComboboxForm do
           <:label>Airport</:label>
           <:empty>No results</:empty>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:clear_trigger>
-            <.icon name="hero-backspace" />
+            <.heroicon name="hero-backspace" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.combobox>

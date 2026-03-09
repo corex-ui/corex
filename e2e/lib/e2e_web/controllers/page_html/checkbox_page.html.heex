@@ -36,11 +36,11 @@
     <:label>
       Accept the terms
     </:label>
-    <:control>
-      <.icon name="hero-check" class="data-checked" />
-    </:control>
+    <:indicator>
+      <.heroicon name="hero-check" class="data-checked" />
+    </:indicator>
     <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
   </.checkbox>

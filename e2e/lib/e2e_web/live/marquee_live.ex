@@ -107,7 +107,7 @@ defmodule E2eWeb.MarqueeLive do
         pause_on_interaction
       >
         <:item :let={%{item: item}}>
-          <.icon name={item.icon} />
+          <.heroicon name={item.icon} />
           <span>{item.name}</span>
         </:item>
       </.marquee>

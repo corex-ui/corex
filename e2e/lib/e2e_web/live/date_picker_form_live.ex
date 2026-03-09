@@ -128,13 +128,13 @@ defmodule E2eWeb.DatePickerFormLive do
         >
           <:label>Date</:label>
           <:trigger>
-            <.icon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" class="icon" />
           </:trigger>
           <:prev_trigger>
-            <.icon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" class="icon" />
           </:prev_trigger>
           <:next_trigger>
-            <.icon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" class="icon" />
           </:next_trigger>
         </.date_picker>
         <.action type="submit" id="date-picker-form-live-submit" class="button button--accent">

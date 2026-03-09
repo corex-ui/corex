@@ -111,7 +111,7 @@ defmodule E2eWeb.AccordionLive do
         }
       >
         <:indicator :let={item}>
-          <.icon name={item.data.meta.indicator} />
+          <.heroicon name={item.data.meta.indicator} />
         </:indicator>
       </.accordion>
     </Layouts.app>

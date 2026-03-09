@@ -3,7 +3,7 @@ defmodule CorexWeb.NumberInput do
   use E2eWeb.LiveCapture
 
   alias Corex.NumberInput
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   capture variants: [
             basic: %{
@@ -11,10 +11,10 @@ defmodule CorexWeb.NumberInput do
               class: "number-input",
               label: [%{inner_block: "Quantity"}],
               decrement_trigger: [
-                %{inner_block: ~s(<.icon name="hero-chevron-down" class="icon" />)}
+                %{inner_block: ~s(<.heroicon name="hero-chevron-down" class="icon" />)}
               ],
               increment_trigger: [
-                %{inner_block: ~s(<.icon name="hero-chevron-up" class="icon" />)}
+                %{inner_block: ~s(<.heroicon name="hero-chevron-up" class="icon" />)}
               ]
             },
             scrubber: %{
@@ -23,11 +23,13 @@ defmodule CorexWeb.NumberInput do
               class: "number-input",
               label: [%{inner_block: "Enter Number"}],
               scrubber_trigger: [
-                %{inner_block: ~s(<.icon name="hero-arrows-up-down" class="icon rotate-90" />)}
+                %{
+                  inner_block: ~s(<.heroicon name="hero-arrows-up-down" class="icon rotate-90" />)
+                }
               ]
             }
           ]
 
   defdelegate number_input(assigns), to: NumberInput
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

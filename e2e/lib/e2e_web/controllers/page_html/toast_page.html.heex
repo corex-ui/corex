@@ -17,13 +17,14 @@
     method="post"
     id="toast-form"
   >
-    <.input
+    <.native_input
       field={f[:message]}
       type="text"
-      label="Message"
       placeholder="Enter flash message"
       required
-    />
+    >
+      <:label>Message</:label>
+    </.native_input>
 
     <.select
       class="select"
@@ -36,7 +37,7 @@
     >
       <:label>Type</:label>
       <:trigger>
-        <.icon name="hero-chevron-down" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
     </.select>
 

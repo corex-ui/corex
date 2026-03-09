@@ -96,13 +96,13 @@ defmodule E2eWeb.ComboboxFetch do
         <h2>Server-side Filtering</h2>
       </div>
 
-      <.header>
+      <h1>
         Server-side filtering
-        <:subtitle>
-          Use on_input_value_change to filter on the server. Useful for large item lists.
-          <p>Can be used with a database query to filter the items or a local list.</p>
-        </:subtitle>
-      </.header>
+      </h1>
+      <h2>
+        Use on_input_value_change to filter on the server. Useful for large item lists.
+        <p>Can be used with a database query to filter the items or a local list.</p>
+      </h2>
 
       <.combobox
         id="country-combobox"
@@ -114,10 +114,10 @@ defmodule E2eWeb.ComboboxFetch do
       >
         <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
       </.combobox>
     </Layouts.app>

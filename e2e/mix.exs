@@ -108,6 +108,7 @@ defmodule E2e.MixProject do
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
       "assets.build": [
         "compile",
+        "designex corex",
         "tailwind e2e --minify",
         "esbuild e2e"
       ],

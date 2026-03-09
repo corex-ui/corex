@@ -21,7 +21,7 @@ defmodule E2eWeb.NativeInputLive do
       <div class="layout__row flex flex-col gap-ui">
         <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
           <:label>Text</:label>
-          <:icon><.icon name="hero-pencil-square" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-pencil-square" class="icon" /></:icon>
         </.native_input>
         <.native_input type="text" id="text-basic" name="user[name]" class="native-input">
           <:label>Text</:label>
@@ -46,21 +46,21 @@ defmodule E2eWeb.NativeInputLive do
         </.native_input>
         <.native_input type="email" id="email-with-icon" name="user[email]" class="native-input">
           <:label>Email</:label>
-          <:icon><.icon name="hero-envelope" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
         </.native_input>
         <.native_input type="email" id="email-basic" name="user[email]" class="native-input">
           <:label>Email</:label>
         </.native_input>
         <.native_input type="url" id="url-with-icon" name="user[website]" class="native-input">
           <:label>Website</:label>
-          <:icon><.icon name="hero-link" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-link" class="icon" /></:icon>
         </.native_input>
         <.native_input type="url" id="url-basic" name="user[website]" class="native-input">
           <:label>Website</:label>
         </.native_input>
         <.native_input type="tel" id="tel-with-icon" name="user[phone]" class="native-input">
           <:label>Phone</:label>
-          <:icon><.icon name="hero-phone" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-phone" class="icon" /></:icon>
         </.native_input>
         <.native_input type="tel" id="tel-basic" name="user[phone]" class="native-input">
           <:label>Phone</:label>
@@ -73,7 +73,7 @@ defmodule E2eWeb.NativeInputLive do
           placeholder="Search"
         >
           <:label>Search</:label>
-          <:icon><.icon name="hero-magnifying-glass" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-magnifying-glass" class="icon" /></:icon>
         </.native_input>
         <.native_input
           type="search"
@@ -106,7 +106,7 @@ defmodule E2eWeb.NativeInputLive do
           class="native-input"
         >
           <:label>Password</:label>
-          <:icon><.icon name="hero-lock-closed" class="icon" /></:icon>
+          <:icon><.heroicon name="hero-lock-closed" class="icon" /></:icon>
         </.native_input>
         <.native_input type="password" id="password-basic" name="user[password]" class="native-input">
           <:label>Password</:label>

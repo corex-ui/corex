@@ -22,9 +22,9 @@ defmodule Corex.Checkbox do
     <:label>
       Accept the terms
     </:label>
-    <:control>
+    <:indicator>
       <.icon name="hero-check" class="data-checked" />
-    </:control>
+    </:indicator>
   </.checkbox>
   ```
 
@@ -323,7 +323,7 @@ defmodule Corex.Checkbox do
     attr(:class, :string, required: false)
   end
 
-  slot :control, required: false do
+  slot :indicator, required: false do
     attr(:class, :string, required: false)
   end
 
@@ -383,7 +383,7 @@ defmodule Corex.Checkbox do
       <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
       <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
           <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-          {render_slot(@control)}
+          {render_slot(@indicator)}
           </span>
       </div>
       <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>

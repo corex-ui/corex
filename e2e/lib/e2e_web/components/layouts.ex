@@ -70,7 +70,7 @@ defmodule E2eWeb.Layouts do
         <div class="layout__row gap-0 sm:gap-1">
           <.dialog id="menu-dialog" class="dialog dialog--side lg:hidden">
             <:trigger class="button button--sm button--circle rounded-full" aria_label="Open menu">
-              <.icon name="hero-bars-3" class="icon" />
+              <.heroicon name="hero-bars-3" class="icon" />
             </:trigger>
 
             <:content>
@@ -78,7 +78,7 @@ defmodule E2eWeb.Layouts do
                 <div class="layout__header__content">
                   <div class="layout__row">
                     <.dialog_close_trigger id="menu-dialog">
-                      <.icon name="hero-x-mark" class="icon" />
+                      <.heroicon name="hero-x-mark" class="icon" />
                     </.dialog_close_trigger>
                     <a
                       href="/"
@@ -107,7 +107,7 @@ defmodule E2eWeb.Layouts do
                 >
                   <:label>Phoenix Form</:label>
                   <:indicator>
-                    <.icon name="hero-chevron-right" />
+                    <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
                 <.tree_view
@@ -121,7 +121,7 @@ defmodule E2eWeb.Layouts do
                 >
                   <:label>Corex Components</:label>
                   <:indicator>
-                    <.icon name="hero-chevron-right" />
+                    <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
                 <.tree_view
@@ -135,7 +135,7 @@ defmodule E2eWeb.Layouts do
                 >
                   <:label>Form Components</:label>
                   <:indicator>
-                    <.icon name="hero-chevron-right" />
+                    <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
               </div>
@@ -175,7 +175,7 @@ defmodule E2eWeb.Layouts do
         >
           <:label>Phoenix Form</:label>
           <:indicator>
-            <.icon name="hero-chevron-right" />
+            <.heroicon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
         <.tree_view
@@ -189,7 +189,7 @@ defmodule E2eWeb.Layouts do
         >
           <:label>Corex Components</:label>
           <:indicator>
-            <.icon name="hero-chevron-right" />
+            <.heroicon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
         <.tree_view
@@ -203,7 +203,7 @@ defmodule E2eWeb.Layouts do
         >
           <:label>Form Components</:label>
           <:indicator>
-            <.icon name="hero-chevron-right" />
+            <.heroicon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
       </aside>
@@ -215,12 +215,12 @@ defmodule E2eWeb.Layouts do
         >
           <div>
             <.link :if={@prev_path} navigate={@prev_path} class="button button--sm gap-mini-gap">
-              <.icon name="hero-chevron-left" /> Previous
+              <.heroicon name="hero-chevron-left" /> Previous
             </.link>
           </div>
           <div>
             <.link :if={@next_path} navigate={@next_path} class="button button--sm gap-mini-gap">
-              Next <.icon name="hero-chevron-right" />
+              Next <.heroicon name="hero-chevron-right" />
             </.link>
           </div>
         </nav>
@@ -235,7 +235,7 @@ defmodule E2eWeb.Layouts do
 
     <.toast_group id="layout-toast" class="toast" flash={@flash}>
       <:loading>
-        <.icon name="hero-arrow-path" />
+        <.heroicon name="hero-arrow-path" />
       </:loading>
     </.toast_group>
     <.toast_client_error
@@ -301,10 +301,10 @@ defmodule E2eWeb.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.icon name="hero-language" />
+        <.heroicon name="hero-language" class="icon" />
       </:trigger>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" class="icon" />
       </:item_indicator>
     </.select>
     """
@@ -339,10 +339,10 @@ defmodule E2eWeb.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.icon name="hero-swatch" />
+        <.heroicon name="hero-swatch" class="icon" />
       </:trigger>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" class="icon" />
       </:item_indicator>
     </.select>
     """
@@ -365,8 +365,8 @@ defmodule E2eWeb.Layouts do
       on_value_change_client="phx:set-mode"
     >
       <:item value="dark">
-        <.icon name="hero-sun" class="icon state-on" />
-        <.icon name="hero-moon" class="icon state-off" />
+        <.heroicon name="hero-sun" class="icon state-on" />
+        <.heroicon name="hero-moon" class="icon state-off" />
       </:item>
     </.toggle_group>
     """
@@ -458,7 +458,9 @@ defmodule E2eWeb.Layouts do
       component_item("Data Table", "data-table", locale,
         extra: [
           [label: "Stream", id: "/#{locale}/live/data-table/stream"],
-          [label: "Sorting", id: "/#{locale}/live/data-table/sorting"]
+          [label: "Sorting", id: "/#{locale}/live/data-table/sorting"],
+          [label: "Selection", id: "/#{locale}/live/data-table/selection"],
+          [label: "Full", id: "/#{locale}/live/data-table/full"]
         ]
       ),
       component_item("Dialog", "dialog", locale),
@@ -490,7 +492,8 @@ defmodule E2eWeb.Layouts do
       component_item("Checkbox", "checkbox", locale,
         extra: [
           [label: "Form", id: "/#{locale}/checkbox/form"],
-          [label: "Form Live", id: "/#{locale}/live/checkbox/form"]
+          [label: "Form Live", id: "/#{locale}/live/checkbox/form"],
+          [label: "Controlled", id: "/#{locale}/live/checkbox/controlled"]
         ]
       ),
       component_item("Color Picker", "color-picker", locale,

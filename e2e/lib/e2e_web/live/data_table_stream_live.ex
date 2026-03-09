@@ -66,7 +66,7 @@ defmodule E2eWeb.DataTableStreamLive do
       </p>
       <div class="flex gap-2 mb-4">
         <.action phx-click="add_item" class="button button--sm button--accent">
-          <.icon name="hero-plus" /> Add item
+          <.heroicon name="hero-plus" /> Add item
         </.action>
         <.action phx-click="reset" class="button button--sm button--alert">
           Reset
@@ -92,7 +92,7 @@ defmodule E2eWeb.DataTableStreamLive do
             class="button button--sm button--alert button--sm"
             aria-label={"Delete #{row.name}"}
           >
-            <.icon name="hero-trash" class="icon" />
+            <.heroicon name="hero-trash" class="icon" />
           </.action>
         </:action>
       </.data_table>

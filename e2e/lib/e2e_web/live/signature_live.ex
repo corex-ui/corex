@@ -46,7 +46,7 @@ defmodule E2eWeb.SignatureLive do
       <.signature_pad id="my-signature-pad" on_draw_end="signature_drawn">
         <:label>Sign here</:label>
         <:clear_trigger>
-          <.icon name="hero-x-mark" />
+          <.heroicon name="hero-x-mark" />
         </:clear_trigger>
       </.signature_pad>
 

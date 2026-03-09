@@ -3,7 +3,7 @@ defmodule CorexWeb.Select do
   use E2eWeb.LiveCapture
 
   alias Corex.Select
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   @collection [
     %{label: "France", id: "fra", disabled: true},
@@ -34,23 +34,23 @@ defmodule CorexWeb.Select do
               class: "select",
               placeholder: "Select a country",
               items: @collection,
-              trigger: [%{inner_block: "<.icon name=\"hero-chevron-down\" />"}]
+              trigger: [%{inner_block: "<.heroicon name=\"hero-chevron-down\" />"}]
             },
             grouped: %{
               class: "select",
               placeholder: "Select a country",
               items: @grouped_collection,
-              trigger: [%{inner_block: "<.icon name=\"hero-chevron-down\" />"}]
+              trigger: [%{inner_block: "<.heroicon name=\"hero-chevron-down\" />"}]
             },
             with_value: %{
               class: "select",
               placeholder: "Select a country",
               items: @collection,
               value: ["bel"],
-              trigger: [%{inner_block: "<.icon name=\"hero-chevron-down\" />"}]
+              trigger: [%{inner_block: "<.heroicon name=\"hero-chevron-down\" />"}]
             }
           ]
 
   defdelegate select(assigns), to: Select
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

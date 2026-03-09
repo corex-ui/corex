@@ -42,10 +42,10 @@ defmodule E2eWeb.ComboboxLive do
       >
         <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
       </.combobox>
 
@@ -71,10 +71,10 @@ defmodule E2eWeb.ComboboxLive do
       >
         <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
 
@@ -97,13 +97,13 @@ defmodule E2eWeb.ComboboxLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
 
@@ -126,13 +126,13 @@ defmodule E2eWeb.ComboboxLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
     </Layouts.app>

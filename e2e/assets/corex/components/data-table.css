@@ -32,7 +32,8 @@
   }
 
   .data-table [data-scope="data-table"][data-part="thead"] th,
-  .data-table [data-scope="data-table"][data-part="action-header"] {
+  .data-table [data-scope="data-table"][data-part="action-header"],
+  .data-table [data-scope="data-table"][data-part="selection-header"] {
     text-align: left;
     padding: var(--spacing-ui-padding) var(--spacing-ui-padding);
     font-weight: var(--font-weight-ui-bold);
@@ -83,7 +84,8 @@
     border-bottom: none;
   }
 
-  .data-table [data-scope="data-table"][data-part="cell"] {
+  .data-table [data-scope="data-table"][data-part="cell"],
+  .data-table [data-scope="data-table"][data-part="selection-cell"] {
     padding: var(--spacing-ui-padding) var(--spacing-ui-padding);
     vertical-align: middle;
     white-space: nowrap;
@@ -112,6 +114,8 @@
   }
 
   [data-scope="data-table"][data-part="cell"],
+  [data-scope="data-table"][data-part="selection-cell"],
+  [data-scope="data-table"][data-part="selection-header"],
   [data-scope="data-table"][data-part="action-header"],
   [data-scope="data-table"][data-part="thead"] th {
     padding: --value(--spacing-ui-padding-*, [length]);

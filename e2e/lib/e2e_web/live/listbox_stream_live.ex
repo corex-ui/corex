@@ -71,7 +71,7 @@ defmodule E2eWeb.ListboxStreamLive do
       </p>
       <div class="flex gap-2 mb-4">
         <.action phx-click="add_item" class="button button--sm button--accent">
-          <.icon name="hero-plus" /> Add item
+          <.heroicon name="hero-plus" /> Add item
         </.action>
         <.action phx-click="reset" class="button button--sm button--alert">
           Reset
@@ -85,7 +85,7 @@ defmodule E2eWeb.ListboxStreamLive do
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
@@ -97,14 +97,14 @@ defmodule E2eWeb.ListboxStreamLive do
           phx-value-group="Europe"
           class="button button--sm button--accent"
         >
-          <.icon name="hero-plus" /> Add to Europe
+          <.heroicon name="hero-plus" /> Add to Europe
         </.action>
         <.action
           phx-click="add_to_group"
           phx-value-group="Asia"
           class="button button--sm button--accent"
         >
-          <.icon name="hero-plus" /> Add to Asia
+          <.heroicon name="hero-plus" /> Add to Asia
         </.action>
         <.action phx-click="reset_grouped" class="button button--sm button--alert">
           Reset
@@ -118,7 +118,7 @@ defmodule E2eWeb.ListboxStreamLive do
         <:label>Choose a country</:label>
         <:empty>No items</:empty>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
     </Layouts.app>

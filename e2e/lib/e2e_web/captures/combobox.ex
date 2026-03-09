@@ -3,7 +3,7 @@ defmodule CorexWeb.Combobox do
   use E2eWeb.LiveCapture
 
   alias Corex.Combobox
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   @collection [
     %{label: "France", id: "fra"},
@@ -19,7 +19,7 @@ defmodule CorexWeb.Combobox do
               placeholder: "Select a country",
               collection: @collection,
               empty: [%{inner_block: "No results"}],
-              trigger: [%{inner_block: ~s(<.icon name="hero-chevron-down" />)}]
+              trigger: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
             },
             with_value: %{
               class: "combobox",
@@ -27,10 +27,10 @@ defmodule CorexWeb.Combobox do
               collection: @collection,
               value: ["bel"],
               empty: [%{inner_block: "No results"}],
-              trigger: [%{inner_block: ~s(<.icon name="hero-chevron-down" />)}]
+              trigger: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
             }
           ]
 
   defdelegate combobox(assigns), to: Combobox
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

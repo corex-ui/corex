@@ -3,7 +3,7 @@ defmodule CorexWeb.NativeInput do
   use E2eWeb.LiveCapture
 
   alias Corex.NativeInput
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   capture variants: [
             text_with_icon: %{
@@ -11,7 +11,7 @@ defmodule CorexWeb.NativeInput do
               class: "native-input",
               name: "name",
               label: [%{inner_block: "Text"}],
-              icon: [%{inner_block: ~s(<.icon name="hero-pencil-square" class="icon" />)}]
+              icon: [%{inner_block: ~s(<.heroicon name="hero-pencil-square" class="icon" />)}]
             },
             text_basic: %{
               type: "text",
@@ -67,7 +67,7 @@ defmodule CorexWeb.NativeInput do
               class: "native-input",
               name: "email",
               label: [%{inner_block: "Email"}],
-              icon: [%{inner_block: ~s(<.icon name="hero-envelope" class="icon" />)}]
+              icon: [%{inner_block: ~s(<.heroicon name="hero-envelope" class="icon" />)}]
             },
             email_basic: %{
               type: "email",
@@ -81,7 +81,7 @@ defmodule CorexWeb.NativeInput do
               class: "native-input",
               name: "website",
               label: [%{inner_block: "Website"}],
-              icon: [%{inner_block: ~s(<.icon name="hero-link" class="icon" />)}]
+              icon: [%{inner_block: ~s(<.heroicon name="hero-link" class="icon" />)}]
             },
             url_basic: %{
               type: "url",
@@ -95,7 +95,7 @@ defmodule CorexWeb.NativeInput do
               class: "native-input",
               name: "phone",
               label: [%{inner_block: "Phone"}],
-              icon: [%{inner_block: ~s(<.icon name="hero-phone" class="icon" />)}]
+              icon: [%{inner_block: ~s(<.heroicon name="hero-phone" class="icon" />)}]
             },
             tel_basic: %{
               type: "tel",
@@ -110,7 +110,7 @@ defmodule CorexWeb.NativeInput do
               name: "q",
               placeholder: "Search",
               label: [%{inner_block: "Search"}],
-              icon: [%{inner_block: ~s(<.icon name="hero-magnifying-glass" class="icon" />)}]
+              icon: [%{inner_block: ~s(<.heroicon name="hero-magnifying-glass" class="icon" />)}]
             },
             search_basic: %{
               type: "search",
@@ -144,7 +144,7 @@ defmodule CorexWeb.NativeInput do
               class: "native-input",
               name: "password",
               label: [%{inner_block: "Password"}],
-              icon: [%{inner_block: ~s(<.icon name="hero-lock-closed" class="icon" />)}]
+              icon: [%{inner_block: ~s(<.heroicon name="hero-lock-closed" class="icon" />)}]
             },
             password_basic: %{
               type: "password",
@@ -181,5 +181,5 @@ defmodule CorexWeb.NativeInput do
           ]
 
   defdelegate native_input(assigns), to: NativeInput
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

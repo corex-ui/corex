@@ -80,7 +80,7 @@ defmodule E2eWeb.SwitchFormLive do
         <.switch field={@form[:notifications]} class="switch" controlled>
           <:label>Enable notifications</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.switch>

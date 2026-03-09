@@ -104,9 +104,9 @@ defmodule E2eWeb.EditableFormLive do
           class="editable"
         >
           <:label>Text</:label>
-          <:edit_trigger><.icon name="hero-pencil-square" class="icon" /></:edit_trigger>
-          <:submit_trigger><.icon name="hero-check" class="icon" /></:submit_trigger>
-          <:cancel_trigger><.icon name="hero-x-mark" class="icon" /></:cancel_trigger>
+          <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+          <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+          <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
         </.editable>
         <.action type="submit" id="editable-form-live-submit" class="button button--accent">
           Submit

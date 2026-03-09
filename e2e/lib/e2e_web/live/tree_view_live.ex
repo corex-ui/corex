@@ -164,7 +164,7 @@ defmodule E2eWeb.TreeViewLive do
       >
         <:label>Corex Components</:label>
         <:indicator>
-          <.icon name="hero-chevron-right" />
+          <.heroicon name="hero-chevron-right" />
         </:indicator>
       </.tree_view>
     </Layouts.app>

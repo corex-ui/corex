@@ -119,10 +119,10 @@ defmodule E2eWeb.SelectFormLive do
         >
           <:label>Country</:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.select>
