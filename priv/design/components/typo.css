@@ -171,7 +171,7 @@
     margin-top: 1em;
   }
 
-  .table-scroll {
+  /* .table-scroll {
     margin-block: 2em;
     width: 100%;
     min-width: 0;
@@ -248,7 +248,7 @@
 
   .typo table a {
     white-space: wrap;
-  }
+  } */
 
   .typo .list {
     width: 100%;

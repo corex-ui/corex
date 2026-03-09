@@ -61,6 +61,7 @@
   }
 
   & .icon,
+  & [class^="hero-"],
   & svg,
   & img {
     @apply ui-icon;
@@ -215,6 +216,7 @@
   }
 
   & .icon,
+  & [class^="hero-"],
   & svg,
   & img {
     @apply ui-icon;
