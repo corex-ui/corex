@@ -53,6 +53,8 @@
 @import "../corex/components/radio-group.css";
 @import "../corex/components/timer.css";
 @import "../corex/components/code.css";
+@import "../corex/components/data-table.css";
+@import "../corex/components/data-list.css";
 
 @import "./navigation.css";
 

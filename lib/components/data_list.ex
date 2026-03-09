@@ -25,14 +25,16 @@ defmodule Corex.DataList do
 
   def data_list(assigns) do
     ~H"""
-    <ul data-scope="data-list" data-part="root" {@rest}>
-      <li :for={item <- @item} data-scope="data-list" data-part="item">
-        <div data-scope="data-list" data-part="content">
-          <div data-scope="data-list" data-part="title">{item.title}</div>
-          <div>{render_slot(item)}</div>
-        </div>
-      </li>
-    </ul>
+    <div {@rest}>
+      <ul data-scope="data-list" data-part="root">
+        <li :for={item <- @item} data-scope="data-list" data-part="item">
+          <div data-scope="data-list" data-part="content">
+            <div data-scope="data-list" data-part="title">{item.title}</div>
+            <div>{render_slot(item)}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
     """
   end
 end

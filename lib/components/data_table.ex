@@ -18,13 +18,6 @@ defmodule Corex.DataTable do
   use Phoenix.Component
   import Corex.Gettext, only: [gettext: 1]
 
-  attr(:translation, Corex.DataTable.Translation,
-    default: nil,
-    doc: "Override translatable strings"
-  )
-
-  attr(:rest, :global)
-
   @doc """
   Renders a table with data.
 
@@ -45,6 +38,12 @@ defmodule Corex.DataTable do
     doc: "the function for mapping each row before calling the :col and :action slots"
   )
 
+  attr(:translation, Corex.DataTable.Translation,
+    doc: "Override translatable strings"
+  )
+
+attr(:rest, :global)
+
   slot :col, required: true do
     attr(:label, :string)
     attr(:class, :string, required: false)
@@ -55,45 +54,44 @@ defmodule Corex.DataTable do
   end
 
   def data_table(assigns) do
-    default_translation = %Translation{actions: gettext("Actions")}
-    translation = merge_translation(assigns[:translation], default_translation)
-
     assigns =
       assigns
-      |> assign(:translation, translation)
+      |> assign_new(:translation, fn -> %Translation{actions: gettext("Actions")} end)
       |> resolve_row_id()
 
     ~H"""
-    <table data-scope="data-table" data-part="root" {@rest}>
-      <thead data-scope="data-table" data-part="thead">
-        <tr>
-          <th :for={col <- @col} data-scope="data-table" data-part="cell">{col[:label]}</th>
-          <th :if={@action != []} data-scope="data-table" data-part="cell">
-            <span class="sr-only">{@translation.actions}</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-        <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row">
-          <td
-            :for={col <- @col}
-            phx-click={@row_click && @row_click.(row)}
-            class={@row_click && "hover:cursor-pointer"}
-            data-scope="data-table"
-            data-part="cell"
-          >
-            {render_slot(col, @row_item.(row))}
-          </td>
-          <td :if={@action != []} class="w-0 font-semibold" data-scope="data-table" data-part="cell">
-            <div class="flex gap-4">
-              <%= for action <- @action do %>
-                {render_slot(action, @row_item.(row))}
-              <% end %>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div {@rest}>
+      <table data-scope="data-table" data-part="root">
+        <thead data-scope="data-table" data-part="thead">
+          <tr>
+            <th :for={col <- @col} data-scope="data-table" data-part="cell">{col[:label]}</th>
+            <th :if={@action != []} data-scope="data-table" data-part="cell">
+              <span class="sr-only">{@translation.actions}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row">
+            <td
+              :for={col <- @col}
+              phx-click={@row_click && @row_click.(row)}
+              class={@row_click}
+              data-scope="data-table"
+              data-part="cell"
+            >
+              {render_slot(col, @row_item.(row))}
+            </td>
+            <td :if={@action != []} data-scope="data-table" data-part="cell">
+              <div data-scope="data-table" data-part="actions">
+                <%= for action <- @action do %>
+                  {render_slot(action, @row_item.(row))}
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     """
   end
 
@@ -102,12 +100,4 @@ defmodule Corex.DataTable do
   end
 
   defp resolve_row_id(assigns), do: assigns
-
-  defp merge_translation(nil, default), do: default
-
-  defp merge_translation(partial, default) do
-    %Translation{
-      actions: partial.actions || default.actions
-    }
-  end
 end

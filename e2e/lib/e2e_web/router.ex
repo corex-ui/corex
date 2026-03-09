@@ -68,7 +68,9 @@ defmodule E2eWeb.Router do
       live "/controlled/angle-slider", AngleSliderControlledLive
       live "/live/avatar", AvatarLive
       live "/live/carousel", CarouselLive
+      live "/live/data-list", DataListLive
       live "/live/data-table", DataTableLive
+      live "/live/data-table/stream", DataTableStreamLive
       live "/live/editable", EditableLive
       live "/live/editable/form", EditableFormLive
       live "/live/floating-panel", FloatingPanelLive
@@ -143,6 +145,8 @@ defmodule E2eWeb.Router do
     post "/angle-slider/form", PageController, :angle_slider_form_submit
     get "/avatar", PageController, :avatar_page
     get "/carousel", PageController, :carousel_page
+    get "/data-list", PageController, :data_list_page
+    get "/data-table", PageController, :data_table_page
     get "/editable", PageController, :editable_page
     get "/editable/form", PageController, :editable_form_page
     post "/editable/form", PageController, :editable_form_submit

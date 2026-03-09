@@ -12,17 +12,20 @@ defmodule E2eWeb.DataTableTest do
       assert html =~ "ID"
       assert html =~ "Name"
       assert html =~ "Role"
+      assert html =~ "Email"
       assert html =~ "Alice"
       assert html =~ "Bob"
+      assert html =~ "Charlie"
       assert html =~ "Admin"
       assert html =~ "User"
+      assert html =~ "Editor"
     end
 
     test "renders action slot", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
 
-      assert html =~ ~r/data-action="list-1"/
-      assert html =~ ~r/data-action="list-2"/
+      assert html =~ "Edit Alice"
+      assert html =~ "Delete Alice"
     end
 
     test "uses data-table data attributes", %{conn: conn} do
@@ -35,31 +38,32 @@ defmodule E2eWeb.DataTableTest do
 
   describe "data_table with stream" do
     test "renders streamed rows", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table/stream")
 
-      assert html =~ "Stream A"
-      assert html =~ "Stream B"
+      assert html =~ "Apple"
+      assert html =~ "Banana"
+      assert html =~ "Carrot"
     end
 
     test "uses phx-update stream on tbody", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table/stream")
 
       assert html =~ ~r/id="stream-table"/
       assert html =~ ~r/phx-update="stream"/
     end
 
     test "renders action slot for stream rows", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table/stream")
 
-      assert html =~ ~r/data-action="stream-10"/
-      assert html =~ ~r/data-action="stream-11"/
+      assert html =~ "Delete Apple"
+      assert html =~ "Delete Banana"
     end
 
     test "has row ids for stream", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
+      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table/stream")
 
-      assert html =~ ~r/id="stream_rows-10"/
-      assert html =~ ~r/id="stream_rows-11"/
+      assert html =~ ~r/id="data-table:stream-table:item:1"/
+      assert html =~ ~r/id="data-table:stream-table:item:2"/
     end
   end
 end

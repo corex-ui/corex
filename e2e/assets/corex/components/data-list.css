@@ -1,28 +1,57 @@
 @import "../main.css";
 
 @layer components {
-  [data-scope="data-list"] {
+  .data-list {
+    @apply ui-root;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .data-list [data-scope="data-list"][data-part="root"] {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
 
-  [data-scope="data-list"][data-part="item"] {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid var(--color-ui-border, currentColor);
+  .data-list [data-scope="data-list"][data-part="item"] {
+    padding: var(--spacing-ui-padding) 0;
+    border-bottom: 1px solid var(--color-ui--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
-  [data-scope="data-list"][data-part="item"]:last-child {
+  .data-list [data-scope="data-list"][data-part="item"]:last-child {
     border-bottom: none;
   }
 
-  [data-scope="data-list"][data-part="title"] {
-    font-weight: 600;
-    margin-bottom: 0.25rem;
+  .data-list [data-scope="data-list"][data-part="title"] {
+    font-weight: var(--font-weight-ui-bold);
+    color: var(--color-ui--muted);
+    font-size: calc(var(--text-ui) * 0.85);
+    margin-bottom: var(--spacing-mini-gap);
   }
 
-  [data-scope="data-list"][data-part="content"] {
+  .data-list [data-scope="data-list"][data-part="content"] {
     display: flex;
     flex-direction: column;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+  }
+}
+
+@utility data-list--* {
+  font-size: --value(--text-ui-*, [length]);
+  line-height: --value(--text-ui-* --line-height, [length]);
+  
+  [data-scope="data-list"][data-part="item"] {
+    padding: --value(--spacing-ui-padding-*, [length]) 0;
+  }
+  
+  [data-scope="data-list"][data-part="title"] {
+    font-size: calc(--value(--text-ui-*, [length]) * 0.85);
   }
 }

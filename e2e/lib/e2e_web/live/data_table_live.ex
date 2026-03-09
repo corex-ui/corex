@@ -2,18 +2,13 @@ defmodule E2eWeb.DataTableLive do
   use E2eWeb, :live_view
 
   @list_rows [
-    %{id: 1, name: "Alice", role: "Admin"},
-    %{id: 2, name: "Bob", role: "User"}
+    %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
+    %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
+    %{id: 3, name: "Charlie", role: "Editor", email: "charlie@example.com"}
   ]
 
   def mount(_params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(:list_rows, @list_rows)
-     |> stream(:stream_rows, [
-       %{id: 10, name: "Stream A", role: "Admin"},
-       %{id: 11, name: "Stream B", role: "User"}
-     ])}
+    {:ok, assign(socket, :list_rows, @list_rows)}
   end
 
   def render(assigns) do
@@ -25,23 +20,29 @@ defmodule E2eWeb.DataTableLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>DataTable</h1>
-      <h2>List</h2>
-      <.data_table id="list-table" rows={@list_rows}>
+      <div class="layout__row">
+        <h1>Data Table</h1>
+        <h2>Live View</h2>
+      </div>
+
+      <h3>Basic Example</h3>
+      <.data_table id="basic-table" class="data-table" rows={@list_rows}>
         <:col :let={row} label="ID">{row.id}</:col>
         <:col :let={row} label="Name">{row.name}</:col>
         <:col :let={row} label="Role">{row.role}</:col>
+        <:col :let={row} label="Email">{row.email}</:col>
         <:action :let={row}>
-          <span data-action={"list-#{row.id}"}>Action</span>
+          <.action class="button button--sm button--ghost" aria-label={"Edit #{row.name}"}>
+            <.icon name="hero-pencil-square" />
+          </.action>
         </:action>
-      </.data_table>
-      <h2>Stream</h2>
-      <.data_table id="stream-table" rows={@streams.stream_rows}>
-        <:col :let={{_id, row}} label="ID">{row.id}</:col>
-        <:col :let={{_id, row}} label="Name">{row.name}</:col>
-        <:col :let={{_id, row}} label="Role">{row.role}</:col>
-        <:action :let={{_id, row}}>
-          <span data-action={"stream-#{row.id}"}>Action</span>
+        <:action :let={row}>
+          <.action
+            class="button button--sm button--ghost text-red-600"
+            aria-label={"Delete #{row.name}"}
+          >
+            <.icon name="hero-trash" />
+          </.action>
         </:action>
       </.data_table>
     </Layouts.app>

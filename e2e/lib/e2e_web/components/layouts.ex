@@ -454,6 +454,10 @@ defmodule E2eWeb.Layouts do
       component_item("Clipboard", "clipboard", locale),
       component_item("Code", "code", locale),
       component_item("Collapsible", "collapsible", locale),
+      component_item("Data List", "data-list", locale),
+      component_item("Data Table", "data-table", locale,
+        extra: [[label: "Stream", id: "/#{locale}/live/data-table/stream"]]
+      ),
       component_item("Dialog", "dialog", locale),
       component_item("Floating Panel", "floating-panel", locale),
       component_item("Listbox", "listbox", locale,

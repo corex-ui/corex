@@ -233,6 +233,14 @@ defmodule E2eWeb.PageController do
     render(conn, :carousel_page)
   end
 
+  def data_list_page(conn, _params) do
+    render(conn, :data_list_page)
+  end
+
+  def data_table_page(conn, _params) do
+    render(conn, :data_table_page)
+  end
+
   def editable_page(conn, _params) do
     render(conn, :editable_page, value_text: "My custom value")
   end

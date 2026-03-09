@@ -512,16 +512,16 @@
   .button--brand {
     background-color: var(--theme-color-ui-brand);
     color: var(--theme-color-ui-brand--text);
-    :hover {
+    &:hover {
       background-color: var(--theme-color-ui-brand-hover);
     }
-    :active {
+    &:active {
       background-color: var(--theme-color-ui-brand-active);
     }
-    :focus-visible {
+    &:focus-visible {
       outline-color: var(--theme-color-ui-brand--text);
     }
-    :disabled, [data-disabled] {
+    &:disabled, &[data-disabled] {
       color: var(--theme-color-ui-brand--muted);
       background-color: var(--theme-color-ui-brand);
       @supports (color: color-mix(in lab, red, red)) {

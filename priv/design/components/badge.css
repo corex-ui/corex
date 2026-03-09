@@ -63,8 +63,8 @@
   padding-inline: calc(--value(--spacing-mini-padding-*, [length]) * 0.8);
   gap: calc(--value(--spacing-mini-gap-*, [length]) * 0.8);
 
-  :disabled,
-  [data-disabled] {
+  &:disabled,
+  &[data-disabled] {
     color: --value(--color-ui-* --muted, [color]);
     background-color: --alpha(--value(--color-ui-*, [color]) / 60%);
   }
