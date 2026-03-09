@@ -79,7 +79,13 @@ defmodule E2eWeb.DataTableSortingLive do
           on_sort="sort"
         >
           <:sort_icon :let={%{direction: direction}}>
-            <.icon name={if direction == :asc, do: "hero-chevron-up", else: "hero-chevron-down"} />
+            <.icon name={
+              case direction do
+                :asc -> "hero-chevron-up"
+                :desc -> "hero-chevron-down"
+                :none -> "hero-chevron-up-down"
+              end
+            } />
           </:sort_icon>
           <:col :let={user} label="ID" name={:id}>{user.id}</:col>
           <:col :let={user} label="Name" name={:name}>{user.name}</:col>

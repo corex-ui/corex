@@ -63,6 +63,16 @@
     width: 1rem;
     height: 1rem;
     flex-shrink: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .data-table [data-scope="data-table"][data-part="sort-trigger"][data-active="true"] {
+    opacity: 1;
+  }
+  
+  .data-table [data-scope="data-table"][data-part="sort-header"]:hover [data-scope="data-table"][data-part="sort-trigger"] {
+    opacity: 1;
   }
   
   .data-table [data-scope="data-table"][data-part="sort-trigger"]:hover {

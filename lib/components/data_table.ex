@@ -83,18 +83,21 @@ defmodule Corex.DataTable do
             <th :for={col <- @col} data-scope="data-table" data-part="cell">
               <div :if={@on_sort != nil && col[:name]} data-scope="data-table" data-part="sort-header">
                 <span data-scope="data-table" data-part="sort-text">{col[:label]}</span>
-                <button
-                  phx-click={@on_sort}
-                  phx-value-sort_by={col[:name]}
-                  data-scope="data-table"
-                  data-part="sort-trigger"
-                >
-                  <%= if @sort_by == col[:name] && @sort_icon != [] do %>
-                    <%= for icon <- @sort_icon do %>
-                      {render_slot(icon, %{direction: @sort_order})}
+                <span data-scope="data-table" data-part="sort-icon-container">
+                  <button
+                    phx-click={@on_sort}
+                    phx-value-sort_by={col[:name]}
+                    data-scope="data-table"
+                    data-part="sort-trigger"
+                    data-active={to_string(@sort_by == col[:name])}
+                  >
+                    <%= if @sort_icon != [] do %>
+                      <%= for icon <- @sort_icon do %>
+                        {render_slot(icon, %{direction: if(@sort_by == col[:name], do: @sort_order, else: :none)})}
+                      <% end %>
                     <% end %>
-                  <% end %>
-                </button>
+                  </button>
+                </span>
               </div>
               <span :if={@on_sort == nil || is_nil(col[:name])}>
                 {col[:label]}

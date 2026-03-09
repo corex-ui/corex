@@ -53,6 +53,20 @@
 
   .data-table [data-scope="data-table"][data-part="sort-trigger"] {
     @apply ui-trigger ui-trigger--sm ui-trigger--circle;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .data-table [data-scope="data-table"][data-part="sort-trigger"][data-active="true"] {
+    opacity: 1;
+  }
+  
+  .data-table [data-scope="data-table"][data-part="sort-header"]:hover [data-scope="data-table"][data-part="sort-trigger"] {
+    opacity: 1;
+  }
+  
+  .data-table [data-scope="data-table"][data-part="sort-trigger"]:hover {
+    color: var(--color-ui--text);
   }
 
   .data-table [data-scope="data-table"][data-part="sort-text"] {
