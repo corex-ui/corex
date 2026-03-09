@@ -1,5 +1,6 @@
 defmodule Corex.AccordionTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Accordion
   alias Corex.Accordion.Connect
@@ -61,6 +62,37 @@ defmodule Corex.AccordionTest do
       html = render_component(&Accordion.accordion_skeleton/1, [])
       assert html =~ ~r/data-scope="accordion"/
       assert html =~ ~r/data-part="root"/
+    end
+    test "renders with all attributes and custom slots and indicator" do
+      items = Corex.Content.new([[trigger: "T1", content: "C1"]])
+      html = render_component(fn assigns ->
+        _ = assigns
+        ~H"""
+        <Corex.Accordion.accordion
+          id="acc1"
+          items={@items}
+          controlled={true}
+          value={["item-0"]}
+          collapsible={false}
+          multiple={true}
+          orientation="horizontal"
+          dir="rtl"
+          on_value_change="vchange"
+          on_value_change_client="vcclient"
+          on_focus_change="fchange"
+          on_focus_change_client="fcclient"
+        >
+          <:trigger :let={item}>Custom Trigger {item.data.trigger}</:trigger>
+          <:content :let={item}>Custom Content {item.data.content}</:content>
+          <:indicator :let={_item}>Icon</:indicator>
+        </Corex.Accordion.accordion>
+        """
+      end, %{items: items})
+
+      assert html =~ "Custom Trigger T1"
+      assert html =~ "Custom Content C1"
+      assert html =~ "Icon"
+      assert html =~ "data-controlled"
     end
   end
 

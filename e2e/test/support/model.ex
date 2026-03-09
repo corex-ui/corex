@@ -1,6 +1,11 @@
 defmodule E2eWeb.Model do
   @moduledoc "Base model with shared test utilities"
 
+  def wait(session, time) do
+    Process.sleep(time)
+    session
+  end
+
   defmacro __using__(opts) do
     component = Keyword.get(opts, :component)
 

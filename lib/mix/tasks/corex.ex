@@ -1,16 +1,16 @@
 defmodule Mix.Tasks.Corex do
   use Mix.Task
 
-  @shortdoc "Prints Phoenix help information"
+  @shortdoc "Prints Corex help information"
 
   @moduledoc """
-  Prints Phoenix tasks and their information.
+  Prints Corex tasks and their information.
 
-      $ mix phx
+      $ mix corex
 
-  To print the Phoenix version, pass `-v` or `--version`, for example:
+  To print the Corex version, pass `-v` or `--version`, for example:
 
-      $ mix phx --version
+      $ mix corex --version
 
   """
 
@@ -21,22 +21,22 @@ defmodule Mix.Tasks.Corex do
   @impl true
   @doc false
   def run([version]) when version in ~w(-v --version) do
-    Mix.shell().info("Phoenix v#{@version}")
+    Mix.shell().info("Corex v#{@version}")
   end
 
   def run(args) do
     case args do
       [] -> general()
-      _ -> Mix.raise("Invalid arguments, expected: mix phx")
+      _ -> Mix.raise("Invalid arguments, expected: mix corex")
     end
   end
 
   defp general do
-    Application.ensure_all_started(:phoenix)
-    Mix.shell().info("Phoenix v#{Application.spec(:phoenix, :vsn)}")
-    Mix.shell().info("Peace of mind from prototype to production")
+    Application.ensure_all_started(:corex)
+    Mix.shell().info("Corex v#{Application.spec(:corex, :vsn)}")
+    Mix.shell().info("Accessible and unstyled UI components library")
     Mix.shell().info("\n## Options\n")
-    Mix.shell().info("-v, --version        # Prints Phoenix version\n")
+    Mix.shell().info("-v, --version        # Prints Corex version\n")
     Help.run(["--search", "corex."])
   end
 end

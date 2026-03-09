@@ -4,11 +4,18 @@ defmodule Corex.AvatarTest do
   alias Corex.Avatar.Connect
 
   describe "avatar/1" do
-    test "renders" do
+    test "renders without src" do
       html = render_component(&CorexTest.ComponentHelpers.render_avatar/1, [])
       assert html =~ ~r/data-scope="avatar"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r/JD/
+    end
+
+    test "renders with src" do
+      html = render_component(&Corex.Avatar.avatar/1, src: "image.png", fallback: [%{inner_block: fn _, _ -> "JD" end}])
+      assert html =~ "image.png"
+      assert html =~ ~s(data-state="visible") # skeleton is visible
+      assert html =~ ~s(data-state="hidden") # fallback is hidden
     end
   end
 

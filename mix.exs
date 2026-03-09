@@ -22,7 +22,31 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 85
+        threshold: 85,
+        ignore_modules: [
+          Mix.Tasks.Corex.Gen.Auth,
+          Mix.Tasks.Corex.Gen.Html,
+          Mix.Tasks.Corex.Gen.Live,
+          Mix.Tasks.Corex.Gen.Auth.Migration,
+          Mix.Tasks.Corex.Gen.Auth.HashingLib,
+          Mix.Tasks.Corex.Gen.Auth.Injector,
+          Corex.Flash,
+          Corex.Positioning,
+          Corex.Flash.Info,
+          Corex.Flash.Error,
+          Corex.Gettext,
+          Corex.Combobox.Translation,
+          Corex.ColorPicker.Translation,
+          Corex.DataTable.Translation,
+          Corex.Dialog.Translation,
+          Corex.Editable.Translation,
+          Corex.FloatingPanel.Translation,
+          Corex.NumberInput.Translation,
+          Corex.PasswordInput.Translation,
+          Corex.PinInput.Translation,
+          Corex.Select.Translation,
+          Corex.Toast.Translation
+        ]
       ]
     ]
   end

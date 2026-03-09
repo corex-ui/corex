@@ -1,5 +1,6 @@
 defmodule Corex.ComboboxTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Combobox.Connect
 
@@ -73,6 +74,93 @@ defmodule Corex.ComboboxTest do
 
       result = Connect.props(assigns)
       assert result["data-filter"] == nil
+    end
+
+    test "renders with field as string value matching label" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "France",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} collection={[%{id: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-default-value="fra"/
+    end
+
+    test "renders with field as string value without matching collection" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "unknown_id",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} collection={[%{id: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-default-value="unknown_id"/
+    end
+
+    test "renders with field as multiple values" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: ["fra", "bel"],
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox multiple={true} field={@field} collection={[%{id: "fra", label: "France"}, %{id: "bel", label: "Belgium"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-default-value="fra,bel"/
     end
   end
 

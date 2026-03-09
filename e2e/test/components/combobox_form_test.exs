@@ -1,13 +1,13 @@
-defmodule E2eWeb.ComboboxTest do
+defmodule E2eWeb.ComboboxFormTest do
   use ExUnit.Case, async: true
   use Wallaby.Feature
 
   alias E2eWeb.ComboboxModel, as: Combobox
 
-  for mode <- [:static, :live, "/en/live/combobox-fetch"] do
+  for mode <- ["/en/combobox/form", "/en/live/combobox-form"] do
     @mode mode
 
-    feature "#{@mode} - Combobox has no A11y violations", %{session: session} do
+    feature "#{@mode} - Combobox form has no A11y violations", %{session: session} do
       session
       |> Combobox.goto(@mode)
       |> Combobox.wait(500)

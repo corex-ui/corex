@@ -25,7 +25,7 @@ defmodule E2eWeb.AdminLive.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.native_input field={@form[:name]} type="text">
+        <.native_input field={@form[:name]} type="text" class="native-input">
           <:label>Name</:label>
         </.native_input>
 
