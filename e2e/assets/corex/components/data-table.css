@@ -7,6 +7,7 @@
     width: 100%;
     max-width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
     border: 1px solid var(--color-ui--border);
     border-radius: var(--radius-ui);
     background-color: var(--color-layer);
@@ -30,10 +31,33 @@
     letter-spacing: 0.05em;
   }
 
-  .data-table [data-scope="data-table"][data-part="thead"] th {
+  .data-table [data-scope="data-table"][data-part="thead"] th,
+  .data-table [data-scope="data-table"][data-part="action-header"] {
     text-align: left;
     padding: var(--spacing-ui-padding) var(--spacing-ui-padding);
     font-weight: var(--font-weight-ui-bold);
+    white-space: nowrap;
+    width: 1%;
+  }
+
+  .data-table [data-scope="data-table"][data-part="action-header"] {
+    text-align: right;
+  }
+
+  .data-table [data-scope="data-table"][data-part="sort-header"] {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-ui-mini-gap);
+    width: 100%;
+  }
+
+  .data-table [data-scope="data-table"][data-part="sort-trigger"] {
+    @apply ui-trigger ui-trigger--sm ui-trigger--circle;
+  }
+
+  .data-table [data-scope="data-table"][data-part="sort-text"] {
+    flex: 1;
+    text-align: left;
   }
 
   .data-table [data-scope="data-table"][data-part="tbody"] tr {
@@ -48,6 +72,8 @@
   .data-table [data-scope="data-table"][data-part="cell"] {
     padding: var(--spacing-ui-padding) var(--spacing-ui-padding);
     vertical-align: middle;
+    white-space: nowrap;
+    width: 1%;
   }
 
   .data-table [data-scope="data-table"][data-part="row"]:hover {
@@ -72,6 +98,7 @@
   }
 
   [data-scope="data-table"][data-part="cell"],
+  [data-scope="data-table"][data-part="action-header"],
   [data-scope="data-table"][data-part="thead"] th {
     padding: --value(--spacing-ui-padding-*, [length]);
   }

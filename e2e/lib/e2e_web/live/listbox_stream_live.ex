@@ -46,7 +46,7 @@ defmodule E2eWeb.ListboxStreamLive do
     {:noreply,
      socket
      |> stream_insert(:items, item)
-     |> assign(:items_list, [item | socket.assigns.items_list])
+     |> assign(:items_list, socket.assigns.items_list ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
   end
 
@@ -84,21 +84,6 @@ defmodule E2eWeb.ListboxStreamLive do
       >
         <:label>Choose an item</:label>
         <:empty>No items</:empty>
-        <:item :let={%{item: entry}}>
-          <span class="flex items-center justify-between gap-2 w-full">
-            <span class="flex items-center gap-2">
-              <.action
-                phx-click={JS.push("remove_item", value: %{id: entry.id})}
-                data-phx-push="remove_item"
-                data-phx-push-id={entry.id}
-                class="button button--sm button--alert button--sm"
-              >
-                <.heroicon name="hero-trash" class="icon" />
-              </.action>
-              <span>{entry.label}</span>
-            </span>
-          </span>
-        </:item>
         <:item_indicator>
           <.icon name="hero-check" />
         </:item_indicator>
@@ -132,17 +117,6 @@ defmodule E2eWeb.ListboxStreamLive do
       >
         <:label>Choose a country</:label>
         <:empty>No items</:empty>
-        <:item :let={%{item: entry}}>
-          <.action
-            phx-click={JS.push("remove_grouped_item", value: %{id: entry.id})}
-            data-phx-push="remove_grouped_item"
-            data-phx-push-id={entry.id}
-            class="button button--sm button--alert"
-          >
-            <.heroicon name="hero-trash" class="icon" />
-          </.action>
-          <span>{entry.label}</span>
-        </:item>
         <:item_indicator>
           <.icon name="hero-check" />
         </:item_indicator>
@@ -158,21 +132,8 @@ defmodule E2eWeb.ListboxStreamLive do
     {:noreply,
      socket
      |> stream_insert(:items, item)
-     |> assign(:items_list, [item | socket.assigns.items_list])
+     |> assign(:items_list, socket.assigns.items_list ++ [item])
      |> assign(:next_id, socket.assigns.next_id + 1)}
-  end
-
-  def handle_event("remove_item", %{"id" => id}, socket) do
-    case Enum.find(socket.assigns.items_list, &(&1.id == id)) do
-      nil ->
-        {:noreply, socket}
-
-      item ->
-        {:noreply,
-         socket
-         |> stream_delete(:items, item)
-         |> assign(:items_list, List.delete(socket.assigns.items_list, item))}
-    end
   end
 
   def handle_event("reset", _params, socket) do
@@ -190,21 +151,8 @@ defmodule E2eWeb.ListboxStreamLive do
     {:noreply,
      socket
      |> stream_insert(:grouped_items, item)
-     |> assign(:grouped_items_list, [item | socket.assigns.grouped_items_list])
+     |> assign(:grouped_items_list, socket.assigns.grouped_items_list ++ [item])
      |> assign(:next_grouped_id, socket.assigns.next_grouped_id + 1)}
-  end
-
-  def handle_event("remove_grouped_item", %{"id" => id}, socket) do
-    case Enum.find(socket.assigns.grouped_items_list, &(&1.id == id)) do
-      nil ->
-        {:noreply, socket}
-
-      item ->
-        {:noreply,
-         socket
-         |> stream_delete(:grouped_items, item)
-         |> assign(:grouped_items_list, List.delete(socket.assigns.grouped_items_list, item))}
-    end
   end
 
   def handle_event("reset_grouped", _params, socket) do

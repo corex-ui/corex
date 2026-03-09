@@ -71,6 +71,7 @@ defmodule E2eWeb.Router do
       live "/live/data-list", DataListLive
       live "/live/data-table", DataTableLive
       live "/live/data-table/stream", DataTableStreamLive
+      live "/live/data-table/sorting", DataTableSortingLive
       live "/live/editable", EditableLive
       live "/live/editable/form", EditableFormLive
       live "/live/floating-panel", FloatingPanelLive

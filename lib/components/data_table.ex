@@ -38,15 +38,31 @@ defmodule Corex.DataTable do
     doc: "the function for mapping each row before calling the :col and :action slots"
   )
 
-  attr(:translation, Corex.DataTable.Translation,
-    doc: "Override translatable strings"
+  attr(:translation, Corex.DataTable.Translation, doc: "Override translatable strings")
+
+  attr(:sort_by, :atom, default: nil, doc: "The currently sorted column name")
+
+  attr(:sort_order, :atom,
+    default: :asc,
+    values: [:asc, :desc],
+    doc: "The current sort direction"
   )
 
-attr(:rest, :global)
+  attr(:on_sort, :any,
+    default: nil,
+    doc: "The event to trigger when a sortable header is clicked"
+  )
+
+  attr(:rest, :global)
 
   slot :col, required: true do
     attr(:label, :string)
     attr(:class, :string, required: false)
+    attr(:name, :atom, required: false, doc: "The field name used for sorting")
+  end
+
+  slot :sort_icon, doc: "the slot for showing the sort icon" do
+    attr(:direction, :atom, doc: "the current sort direction (:asc or :desc)")
   end
 
   slot :action, doc: "the slot for showing user actions in the last table column" do
@@ -64,9 +80,28 @@ attr(:rest, :global)
       <table data-scope="data-table" data-part="root">
         <thead data-scope="data-table" data-part="thead">
           <tr>
-            <th :for={col <- @col} data-scope="data-table" data-part="cell">{col[:label]}</th>
-            <th :if={@action != []} data-scope="data-table" data-part="cell">
-              <span class="sr-only">{@translation.actions}</span>
+            <th :for={col <- @col} data-scope="data-table" data-part="cell">
+              <div :if={@on_sort != nil && col[:name]} data-scope="data-table" data-part="sort-header">
+                <span data-scope="data-table" data-part="sort-text">{col[:label]}</span>
+                <button
+                  phx-click={@on_sort}
+                  phx-value-sort_by={col[:name]}
+                  data-scope="data-table"
+                  data-part="sort-trigger"
+                >
+                  <%= if @sort_by == col[:name] && @sort_icon != [] do %>
+                    <%= for icon <- @sort_icon do %>
+                      {render_slot(icon, %{direction: @sort_order})}
+                    <% end %>
+                  <% end %>
+                </button>
+              </div>
+              <span :if={@on_sort == nil || is_nil(col[:name])}>
+                {col[:label]}
+              </span>
+            </th>
+            <th :if={@action != []} data-scope="data-table" data-part="action-header">
+              {@translation.actions}
             </th>
           </tr>
         </thead>
@@ -75,7 +110,6 @@ attr(:rest, :global)
             <td
               :for={col <- @col}
               phx-click={@row_click && @row_click.(row)}
-              class={@row_click}
               data-scope="data-table"
               data-part="cell"
             >
