@@ -104,32 +104,37 @@ defmodule Corex.SignaturePadTest do
 
   describe "signature_pad/1 direct render" do
     test "renders directly with all attributes and slots" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.SignaturePad.signature_pad
-          id="sig1"
-          name="sig1_name"
-          controlled={true}
-          drawing_fill="red"
-          drawing_size={3}
-          drawing_simulate_pressure={true}
-          drawing_smoothing={0.5}
-          drawing_easing="ease"
-          drawing_thinning={0.3}
-          drawing_streamline={0.6}
-          dir="rtl"
-          on_draw_end="draw_end"
-          on_draw_end_client="draw_end_client"
-          paths={["path1", "path2"]}
-          errors={["Error 1"]}
-        >
-          <:label>Sign Here</:label>
-          <:clear_trigger aria_label="Clear">Clear</:clear_trigger>
-          <:error :let={msg}>{msg}</:error>
-        </Corex.SignaturePad.signature_pad>
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad
+              id="sig1"
+              name="sig1_name"
+              controlled={true}
+              drawing_fill="red"
+              drawing_size={3}
+              drawing_simulate_pressure={true}
+              drawing_smoothing={0.5}
+              drawing_easing="ease"
+              drawing_thinning={0.3}
+              drawing_streamline={0.6}
+              dir="rtl"
+              on_draw_end="draw_end"
+              on_draw_end_client="draw_end_client"
+              paths={["path1", "path2"]}
+              errors={["Error 1"]}
+            >
+              <:label>Sign Here</:label>
+              <:clear_trigger aria_label="Clear">Clear</:clear_trigger>
+              <:error :let={msg}>{msg}</:error>
+            </Corex.SignaturePad.signature_pad>
+            """
+          end,
+          %{}
+        )
 
       assert html =~ "Sign Here"
       assert html =~ "Clear"
@@ -141,36 +146,60 @@ defmodule Corex.SignaturePadTest do
     end
 
     test "renders empty paths and unknown paths gracefully" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.SignaturePad.signature_pad paths={nil} />
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad paths={nil} />
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "data-scope=\"signature-pad\""
 
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.SignaturePad.signature_pad paths={""} />
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad paths={""} />
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "data-scope=\"signature-pad\""
 
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.SignaturePad.signature_pad paths={"invalid_json"} />
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad paths={"invalid_json"} />
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "data-scope=\"signature-pad\""
-      
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.SignaturePad.signature_pad paths={%{not: "a list"}} />
-        """
-      end, %{})
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.SignaturePad.signature_pad paths={%{not: "a list"}} />
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "data-scope=\"signature-pad\""
     end
   end

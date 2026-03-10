@@ -71,6 +71,7 @@ defmodule Corex.ToggleGroupTest do
         on_value_change: nil,
         on_value_change_client: nil
       }
+
       props_unc = Connect.props(assigns_unc)
       assert props_unc["data-default-value"] == "a,b"
       assert props_unc["data-value"] == nil
@@ -92,6 +93,7 @@ defmodule Corex.ToggleGroupTest do
         on_value_change: "vc",
         on_value_change_client: "vcc"
       }
+
       props_ctrl = Connect.props(assigns_ctrl)
       assert props_ctrl["data-default-value"] == nil
       assert props_ctrl["data-value"] == "c"

@@ -75,7 +75,7 @@ const CheckboxHook: Hook<object & CheckboxHookState, HTMLElement> = {
       this.handleEvent("checkbox_set_checked", (payload: { id?: string; checked: boolean }) => {
         const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
-          zagCheckbox.api.setChecked(payload.checked);
+        zagCheckbox.api.setChecked(payload.checked);
       })
     );
 

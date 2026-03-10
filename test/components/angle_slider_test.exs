@@ -30,30 +30,35 @@ defmodule Corex.AngleSliderTest do
 
   describe "angle_slider/1 direct rendering" do
     test "renders with all attributes and markers" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.AngleSlider.angle_slider
-          id="test-slider-full"
-          value={45}
-          name="angle"
-          step={15}
-          controlled={true}
-          disabled={true}
-          invalid={true}
-          read_only={true}
-          dir="rtl"
-          on_value_change="change"
-          on_value_change_end="change_end"
-          on_value_change_client="change_client"
-          on_value_change_end_client="change_end_client"
-          marker_values={[0, 90, 180]}
-        >
-          <:label>Angle</:label>
-        </Corex.AngleSlider.angle_slider>
-        """
-      end, %{})
-      
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.AngleSlider.angle_slider
+              id="test-slider-full"
+              value={45}
+              name="angle"
+              step={15}
+              controlled={true}
+              disabled={true}
+              invalid={true}
+              read_only={true}
+              dir="rtl"
+              on_value_change="change"
+              on_value_change_end="change_end"
+              on_value_change_client="change_client"
+              on_value_change_end_client="change_end_client"
+              marker_values={[0, 90, 180]}
+            >
+              <:label>Angle</:label>
+            </Corex.AngleSlider.angle_slider>
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "Angle"
       assert html =~ "45"
       assert html =~ "data-disabled"

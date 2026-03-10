@@ -12,10 +12,17 @@ defmodule Corex.AvatarTest do
     end
 
     test "renders with src" do
-      html = render_component(&Corex.Avatar.avatar/1, src: "image.png", fallback: [%{inner_block: fn _, _ -> "JD" end}])
+      html =
+        render_component(&Corex.Avatar.avatar/1,
+          src: "image.png",
+          fallback: [%{inner_block: fn _, _ -> "JD" end}]
+        )
+
       assert html =~ "image.png"
-      assert html =~ ~s(data-state="visible") # skeleton is visible
-      assert html =~ ~s(data-state="hidden") # fallback is hidden
+      # skeleton is visible
+      assert html =~ ~s(data-state="visible")
+      # fallback is hidden
+      assert html =~ ~s(data-state="hidden")
     end
   end
 

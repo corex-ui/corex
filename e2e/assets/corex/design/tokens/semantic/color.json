@@ -15,6 +15,10 @@
         "default": {
           "value": "{theme.color.root.-text.default}",
           "type": "color"
+        },
+        "disabled": {
+          "value": "{theme.color.root.-text.disabled}",
+          "type": "color"
         }
       },
       "-muted": {
@@ -130,6 +134,10 @@
       "-text": {
         "default": {
           "value": "{theme.color.ui.-text.default}",
+          "type": "color"
+        },
+        "disabled": {
+          "value": "{theme.color.ui.-text.disabled}",
           "type": "color"
         }
       },

@@ -12,48 +12,59 @@ defmodule Corex.ListboxTest do
     end
 
     test "renders with all attributes and slots" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.Listbox.listbox 
-          items={[%{id: "1", label: "One", disabled: true, group: "G"}, %{id: "2", label: "Two", group: "G"}]}
-          controlled={true}
-          disabled={true}
-          dir="rtl"
-          orientation="horizontal"
-          loop_focus={true}
-          selection_mode="multiple"
-          select_on_highlight={true}
-          deselectable={true}
-          typeahead={true}
-          on_value_change="change"
-          on_value_change_client="change_client"
-          aria_label="Listbox"
-        >
-          <:label>Label</:label>
-          <:item :let={%{label: label}}>Item {label}</:item>
-          <:item_indicator>Selected</:item_indicator>
-          <:empty>No items</:empty>
-        </Corex.Listbox.listbox>
-        """
-      end, %{})
-      
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox 
+              items={[%{id: "1", label: "One", disabled: true, group: "G"}, %{id: "2", label: "Two", group: "G"}]}
+              controlled={true}
+              disabled={true}
+              dir="rtl"
+              orientation="horizontal"
+              loop_focus={true}
+              selection_mode="multiple"
+              select_on_highlight={true}
+              deselectable={true}
+              typeahead={true}
+              on_value_change="change"
+              on_value_change_client="change_client"
+              aria_label="Listbox"
+            >
+              <:label>Label</:label>
+              <:item :let={%{label: label}}>Item {label}</:item>
+              <:item_indicator>Selected</:item_indicator>
+              <:empty>No items</:empty>
+            </Corex.Listbox.listbox>
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "Label"
       assert html =~ "Item One"
       assert html =~ "Selected"
       assert html =~ "data-disabled"
       assert html =~ "data-orientation=\"horizontal\""
     end
-    
+
     test "renders empty slot" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.Listbox.listbox items={[]}>
-          <:empty>Empty state</:empty>
-        </Corex.Listbox.listbox>
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox items={[]}>
+              <:empty>Empty state</:empty>
+            </Corex.Listbox.listbox>
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "Empty state"
       assert html =~ "data-part=\"empty\""
     end

@@ -82,7 +82,7 @@ defmodule Corex.MarqueeTest do
         on_complete: "c",
         on_complete_client: "cc"
       }
-      
+
       result = Connect.props(assigns)
       assert result["data-orientation"] == "vertical"
       assert result["data-on-pause-change"] == "pc"
@@ -126,6 +126,7 @@ defmodule Corex.MarqueeTest do
         translate: "0px",
         respect_reduced_motion: false
       }
+
       result = Connect.root(assigns)
       assert result["data-respect-reduced-motion"] == "false"
       assert result["style"] =~ "flex-direction:column"
@@ -200,7 +201,9 @@ defmodule Corex.MarqueeTest do
     end
 
     test "returns edge attributes for other sides" do
-      assert Connect.edge(%{side: "start", orientation: "horizontal"})["style"] =~ "inset-inline-start:0"
+      assert Connect.edge(%{side: "start", orientation: "horizontal"})["style"] =~
+               "inset-inline-start:0"
+
       assert Connect.edge(%{side: "top", orientation: "vertical"})["style"] =~ "top:0"
       assert Connect.edge(%{side: "bottom", orientation: "vertical"})["style"] =~ "bottom:0"
     end
@@ -212,7 +215,7 @@ defmodule Corex.MarqueeTest do
       result = Connect.item(assigns)
       assert result["data-scope"] == "marquee"
       assert result["data-part"] == "item"
-      
+
       assigns = %{orientation: "vertical"}
       result = Connect.item(assigns)
       assert result["style"] =~ "margin-block"
@@ -244,6 +247,7 @@ defmodule Corex.MarqueeTest do
         clone: true,
         reverse: true
       }
+
       result = Connect.content(assigns)
       assert result["data-reverse"] == ""
       assert result["role"] == "presentation"

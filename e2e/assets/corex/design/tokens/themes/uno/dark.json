@@ -14,6 +14,11 @@
             "value": "#b7b5bc",
             "type": "color",
             "description": "9:1 contrast against root-default (#17141c)"
+          },
+          "disabled": {
+            "value": "#9791a4",
+            "type": "color",
+            "description": "6:1 contrast against root-default (#17141c)"
           }
         },
         "-muted": {
@@ -140,6 +145,11 @@
             "value": "#c3c0c8",
             "type": "color",
             "description": "9:1 contrast against ui-active (#23202d)"
+          },
+          "disabled": {
+            "value": "#a19bad",
+            "type": "color",
+            "description": "6:1 contrast against ui-active (#23202d)"
           }
         },
         "-muted": {

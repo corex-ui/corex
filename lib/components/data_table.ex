@@ -19,139 +19,139 @@ defmodule Corex.DataTable do
   import Corex.Gettext, only: [gettext: 1]
 
   @doc ~S'''
-  Renders a table with data.
+   Renders a table with data.
 
-  ## Examples
+   ## Examples
 
-  <!-- tabs-open -->
+   <!-- tabs-open -->
 
-  ### Basic
+   ### Basic
 
-  ```heex
-  <.data_table id="users-table" class="data-table" rows={@users}>
-    <:col :let={user} label="ID">{user.id}</:col>
-    <:col :let={user} label="Name">{user.name}</:col>
-  </.data_table>
-  ```
+   ```heex
+   <.data_table id="users-table" class="data-table" rows={@users}>
+     <:col :let={user} label="ID">{user.id}</:col>
+     <:col :let={user} label="Name">{user.name}</:col>
+   </.data_table>
+   ```
 
-  ### Sortable
+   ### Sortable
 
-  You can add sorting functionality to your table by using the `on_sort`, `sort_by`, and `sort_order` attributes. Pass the field name to sort on via the `:col`'s `name` attribute. Use the `:sort_icon` slot to render custom icons.
+   You can add sorting functionality to your table by using the `on_sort`, `sort_by`, and `sort_order` attributes. Pass the field name to sort on via the `:col`'s `name` attribute. Use the `:sort_icon` slot to render custom icons.
 
-  ```heex
-  <.data_table
-    id="users-sortable"
-    class="data-table"
-    rows={@users}
-    sort_by={@sort_by}
-    sort_order={@sort_order}
-    on_sort="sort"
-  >
-    <:col :let={user} label="ID" name={:id}>{user.id}</:col>
-    <:col :let={user} label="Name" name={:name}>{user.name}</:col>
+   ```heex
+   <.data_table
+     id="users-sortable"
+     class="data-table"
+     rows={@users}
+     sort_by={@sort_by}
+     sort_order={@sort_order}
+     on_sort="sort"
+   >
+     <:col :let={user} label="ID" name={:id}>{user.id}</:col>
+     <:col :let={user} label="Name" name={:name}>{user.name}</:col>
 
-    <:sort_icon :let={%{direction: direction}}>
-      <.icon name={
-        case direction do
-          :asc -> "hero-chevron-up"
-          :desc -> "hero-chevron-down"
-          :none -> "hero-chevron-up-down"
-        end
-      } />
-    </:sort_icon>
-  </.data_table>
-  ```
+     <:sort_icon :let={%{direction: direction}}>
+       <.icon name={
+         case direction do
+           :asc -> "hero-chevron-up"
+           :desc -> "hero-chevron-down"
+           :none -> "hero-chevron-up-down"
+         end
+       } />
+     </:sort_icon>
+   </.data_table>
+   ```
 
-  ### Selectable
+   ### Selectable
 
-  You can make rows selectable by providing the `selectable` attribute. Add the optional `<:checkbox_indicator>` slot to customize the checkbox style.
+   You can make rows selectable by providing the `selectable` attribute. Add the optional `<:checkbox_indicator>` slot to customize the checkbox style.
 
-  ```heex
-  <.data_table
-    id="users-selectable"
-    class="data-table"
-    rows={@users}
-    row_id={&"user-#{&1.id}"}
-    selectable={true}
-    selected={@selected}
-    on_select="select"
-    on_select_all="select_all"
-    checkbox_class="checkbox"
-  >
-    <:checkbox_indicator>
-      <.icon name="hero-check" class="data-checked" />
-    </:checkbox_indicator>
+   ```heex
+   <.data_table
+     id="users-selectable"
+     class="data-table"
+     rows={@users}
+     row_id={&"user-#{&1.id}"}
+     selectable={true}
+     selected={@selected}
+     on_select="select"
+     on_select_all="select_all"
+     checkbox_class="checkbox"
+   >
+     <:checkbox_indicator>
+       <.icon name="hero-check" class="data-checked" />
+     </:checkbox_indicator>
 
-    <:col :let={user} label="ID">{user.id}</:col>
-    <:col :let={user} label="Name">{user.name}</:col>
-  </.data_table>
-  ```
+     <:col :let={user} label="ID">{user.id}</:col>
+     <:col :let={user} label="Name">{user.name}</:col>
+   </.data_table>
+   ```
 
-  ### Actions
+   ### Actions
 
-  Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
+   Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
 
-  ```heex
-  <.data_table id="users-actions" class="data-table" rows={@users}>
-    <:col :let={user} label="Name">{user.name}</:col>
+   ```heex
+   <.data_table id="users-actions" class="data-table" rows={@users}>
+     <:col :let={user} label="Name">{user.name}</:col>
 
-    <:action :let={user}>
-      <.action phx-click="edit" phx-value-id={user.id}>Edit</.action>
-      <.action phx-click="delete" phx-value-id={user.id}>Delete</.action>
-    </:action>
-  </.data_table>
-  ```
+     <:action :let={user}>
+       <.action phx-click="edit" phx-value-id={user.id}>Edit</.action>
+       <.action phx-click="delete" phx-value-id={user.id}>Delete</.action>
+     </:action>
+   </.data_table>
+   ```
 
-  ### Streaming
+   ### Streaming
 
-  Use Phoenix LiveView streams to update rows efficiently. Pass the stream directly to the `rows` attribute.
+   Use Phoenix LiveView streams to update rows efficiently. Pass the stream directly to the `rows` attribute.
 
-  ```heex
-  <.data_table
-    id="users-stream"
-    class="data-table"
-    rows={@streams.users}
-  >
-    <:col :let={{_id, user}} label="Name">{user.name}</:col>
-    <:action :let={{id, user}}>
-      <.action phx-click={JS.push("delete", value: %{id: user.id}) |> hide("##{id}")}>
-        Delete
-      </.action>
-    </:action>
-  </.data_table>
-  ```
+   ```heex
+   <.data_table
+     id="users-stream"
+     class="data-table"
+     rows={@streams.users}
+   >
+     <:col :let={{_id, user}} label="Name">{user.name}</:col>
+     <:action :let={{id, user}}>
+       <.action phx-click={JS.push("delete", value: %{id: user.id}) |> hide("##{id}")}>
+         Delete
+       </.action>
+     </:action>
+   </.data_table>
+   ```
 
-  <!-- tabs-close -->
+   <!-- tabs-close -->
 
-  ## Styling
+   ## Styling
 
-  Use data attributes to target elements:
+   Use data attributes to target elements:
 
-  ```css
-  [data-scope="data-table"][data-part="root"] {}
-  [data-scope="data-table"][data-part="thead"] {}
-  [data-scope="data-table"][data-part="tbody"] {}
-  [data-scope="data-table"][data-part="row"] {}
-  [data-scope="data-table"][data-part="cell"] {}
-  [data-scope="data-table"][data-part="sort-header"] {}
-  [data-scope="data-table"][data-part="sort-text"] {}
-  [data-scope="data-table"][data-part="sort-icon-container"] {}
-  [data-scope="data-table"][data-part="sort-trigger"] {}
-  [data-scope="data-table"][data-part="selection-header"] {}
-  [data-scope="data-table"][data-part="selection-cell"] {}
-  [data-scope="data-table"][data-part="action-header"] {}
-  [data-scope="data-table"][data-part="actions"] {}
-  ```
+   ```css
+   [data-scope="data-table"][data-part="root"] {}
+   [data-scope="data-table"][data-part="thead"] {}
+   [data-scope="data-table"][data-part="tbody"] {}
+   [data-scope="data-table"][data-part="row"] {}
+   [data-scope="data-table"][data-part="cell"] {}
+   [data-scope="data-table"][data-part="sort-header"] {}
+   [data-scope="data-table"][data-part="sort-text"] {}
+   [data-scope="data-table"][data-part="sort-icon-container"] {}
+   [data-scope="data-table"][data-part="sort-trigger"] {}
+   [data-scope="data-table"][data-part="selection-header"] {}
+   [data-scope="data-table"][data-part="selection-cell"] {}
+   [data-scope="data-table"][data-part="action-header"] {}
+   [data-scope="data-table"][data-part="actions"] {}
+   ```
 
-  If you wish to use the default Corex styling, you can use the class `data-table` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+   If you wish to use the default Corex styling, you can use the class `data-table` on the component.
+   This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
-  ```css
-  @import "../corex/main.css";
-  @import "../corex/tokens/themes/neo/light.css";
-  @import "../corex/components/data-table.css";
-  ```
- '''
+   ```css
+   @import "../corex/main.css";
+   @import "../corex/tokens/themes/neo/light.css";
+   @import "../corex/components/data-table.css";
+   ```
+  '''
 
   attr(:id, :string, required: true, doc: "The id of the table, used for LiveStream updates")
   attr(:rows, :list, required: true, doc: "The list of row data to render")
@@ -181,8 +181,16 @@ defmodule Corex.DataTable do
   attr(:selectable, :boolean, default: false, doc: "Whether the rows are selectable")
   attr(:selected, :list, default: [], doc: "The list of currently selected row IDs")
   attr(:on_select, :any, default: nil, doc: "The event to trigger when a single row is selected")
-  attr(:on_select_all, :any, default: nil, doc: "The event to trigger when the select all checkbox is toggled")
-  attr(:checkbox_class, :string, default: nil, doc: "The class applied to the internal checkboxes")
+
+  attr(:on_select_all, :any,
+    default: nil,
+    doc: "The event to trigger when the select all checkbox is toggled"
+  )
+
+  attr(:checkbox_class, :string,
+    default: nil,
+    doc: "The class applied to the internal checkboxes"
+  )
 
   attr(:rest, :global)
 
@@ -200,7 +208,7 @@ defmodule Corex.DataTable do
     attr(:class, :string, required: false)
   end
 
-  slot :checkbox_indicator, doc: "the slot for showing the checkbox indicator icon"
+  slot(:checkbox_indicator, doc: "the slot for showing the checkbox indicator icon")
 
   def data_table(assigns) do
     assigns =
@@ -219,7 +227,7 @@ defmodule Corex.DataTable do
       <table data-scope="data-table" data-part="root">
         <thead data-scope="data-table" data-part="thead">
           <tr>
-            <th :if={@selectable} data-scope="data-table" data-part="selection-header">
+            <th :if={@selectable} data-scope="data-table" data-part="selection-header" scope="col" aria-label={@translation.select_all}>
               <Corex.Checkbox.checkbox
                 id={"#{@id}-select-all"}
                 class={@checkbox_class}
@@ -240,6 +248,7 @@ defmodule Corex.DataTable do
                   <button
                     phx-click={@on_sort}
                     phx-value-sort_by={col[:name]}
+                    aria-label={"Sort by #{col[:label]}"}
                     data-scope="data-table"
                     data-part="sort-trigger"
                     data-active={to_string(@sort_by == col[:name])}

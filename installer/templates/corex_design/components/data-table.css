@@ -53,17 +53,7 @@
   }
 
   .data-table [data-scope="data-table"][data-part="sort-trigger"] {
-    @apply ui-trigger;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    padding: 0;
-    color: inherit;
-    width: 1rem;
-    height: 1rem;
-    flex-shrink: 0;
+    @apply ui-trigger ui-trigger--sm ui-trigger--circle;
     opacity: 1;
   }
   

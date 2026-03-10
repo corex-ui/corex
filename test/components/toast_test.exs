@@ -101,13 +101,31 @@ defmodule Corex.ToastTest do
     end
 
     test "handles explicit types" do
-      result = render_component(&Corex.Toast.toast_client_error/1, toast_group_id: "layout-toast", title: "Error", type: :success)
+      result =
+        render_component(&Corex.Toast.toast_client_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :success
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
 
-      result = render_component(&Corex.Toast.toast_client_error/1, toast_group_id: "layout-toast", title: "Error", type: :error)
+      result =
+        render_component(&Corex.Toast.toast_client_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :error
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
 
-      result = render_component(&Corex.Toast.toast_client_error/1, toast_group_id: "layout-toast", title: "Error", type: :unknown_type)
+      result =
+        render_component(&Corex.Toast.toast_client_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
     end
   end
@@ -125,13 +143,31 @@ defmodule Corex.ToastTest do
     end
 
     test "handles explicit types" do
-      result = render_component(&Corex.Toast.toast_server_error/1, toast_group_id: "layout-toast", title: "Error", type: :success)
+      result =
+        render_component(&Corex.Toast.toast_server_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :success
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
 
-      result = render_component(&Corex.Toast.toast_server_error/1, toast_group_id: "layout-toast", title: "Error", type: :info)
+      result =
+        render_component(&Corex.Toast.toast_server_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :info
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
 
-      result = render_component(&Corex.Toast.toast_server_error/1, toast_group_id: "layout-toast", title: "Error", type: :unknown_type)
+      result =
+        render_component(&Corex.Toast.toast_server_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
     end
   end
@@ -149,13 +185,31 @@ defmodule Corex.ToastTest do
     end
 
     test "handles explicit types" do
-      result = render_component(&Corex.Toast.toast_connected/1, toast_group_id: "layout-toast", title: "Error", type: :error)
+      result =
+        render_component(&Corex.Toast.toast_connected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :error
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
 
-      result = render_component(&Corex.Toast.toast_connected/1, toast_group_id: "layout-toast", title: "Error", type: :info)
+      result =
+        render_component(&Corex.Toast.toast_connected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :info
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
 
-      result = render_component(&Corex.Toast.toast_connected/1, toast_group_id: "layout-toast", title: "Error", type: :unknown_type)
+      result =
+        render_component(&Corex.Toast.toast_connected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
     end
   end
@@ -173,13 +227,31 @@ defmodule Corex.ToastTest do
     end
 
     test "handles explicit types" do
-      result = render_component(&Corex.Toast.toast_disconnected/1, toast_group_id: "layout-toast", title: "Error", type: :success)
+      result =
+        render_component(&Corex.Toast.toast_disconnected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :success
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
 
-      result = render_component(&Corex.Toast.toast_disconnected/1, toast_group_id: "layout-toast", title: "Error", type: :error)
+      result =
+        render_component(&Corex.Toast.toast_disconnected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :error
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
 
-      result = render_component(&Corex.Toast.toast_disconnected/1, toast_group_id: "layout-toast", title: "Error", type: :unknown_type)
+      result =
+        render_component(&Corex.Toast.toast_disconnected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
     end
   end

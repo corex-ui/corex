@@ -31,7 +31,7 @@ defmodule Mix.CorexTest do
 
     target_text = Path.join(@tmp_path, "target.txt")
     target_eex = Path.join(@tmp_path, "target.ex")
-    
+
     mapping = [
       {:text, "source.txt", target_text},
       {:eex, "source.eex", target_eex}

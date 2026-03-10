@@ -13,14 +13,20 @@ defmodule Corex.NumberInputTest do
     end
 
     test "renders with label, min, max, step, disabled, invalid" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.NumberInput.number_input min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
-          <:label>Number</:label>
-        </Corex.NumberInput.number_input>
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input min={0} max={10} step={2} disabled invalid allow_mouse_wheel={false} required>
+              <:label>Number</:label>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "Number"
       assert html =~ "data-min=\"0\""
       assert html =~ "data-max=\"10\""
@@ -28,29 +34,46 @@ defmodule Corex.NumberInputTest do
     end
 
     test "renders with scrubber" do
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.NumberInput.number_input scrubber={true}>
-          <:scrubber_trigger>Scrub here</:scrubber_trigger>
-        </Corex.NumberInput.number_input>
-        """
-      end, %{})
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input scrubber={true}>
+              <:scrubber_trigger>Scrub here</:scrubber_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{}
+        )
+
       assert html =~ "Scrub here"
       assert html =~ "data-part=\"scrubber\""
     end
 
     test "renders with translation and buttons" do
-      translation = %Corex.NumberInput.Translation{increase: "Plus", decrease: "Minus", scrub: "Scrub"}
-      html = render_component(fn assigns ->
-        _ = assigns
-        ~H"""
-        <Corex.NumberInput.number_input translation={@translation}>
-          <:increment_trigger>+</:increment_trigger>
-          <:decrement_trigger>-</:decrement_trigger>
-        </Corex.NumberInput.number_input>
-        """
-      end, %{translation: translation})
+      translation = %Corex.NumberInput.Translation{
+        increase: "Plus",
+        decrease: "Minus",
+        scrub: "Scrub"
+      }
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.NumberInput.number_input translation={@translation}>
+              <:increment_trigger>+</:increment_trigger>
+              <:decrement_trigger>-</:decrement_trigger>
+            </Corex.NumberInput.number_input>
+            """
+          end,
+          %{translation: translation}
+        )
+
       assert html =~ "Plus"
       assert html =~ "Minus"
       assert html =~ "+"

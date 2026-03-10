@@ -16,13 +16,38 @@
 
   .angle-slider
     [data-scope="angle-slider"][data-part="root"][data-disabled] {
-    opacity: 0.6;
+    color: var(--color-root--muted);
     cursor: not-allowed;
   }
 
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-disabled]
+    [data-scope="angle-slider"][data-part="label"],
+  [data-scope="angle-slider"][data-part="root"][data-disabled]
+    [data-scope="angle-slider"][data-part="label"] {
+    color: var(--color-root--muted);
+  }
 
   .angle-slider [data-scope="angle-slider"][data-part="label"] {
     @apply ui-label;
+    color: var(--color-root--text);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-disabled]
+    [data-scope="angle-slider"][data-part="thumb"]::before {
+    background-color: var(--color-ui--muted);
+  }
+
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-disabled]
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="text"],
+  .angle-slider
+    [data-scope="angle-slider"][data-part="root"][data-disabled]
+    [data-scope="angle-slider"][data-part="value-text"]
+    [data-part="value"] {
+    color: var(--color-root--muted);
   }
 
   .angle-slider [data-scope="angle-slider"][data-part="control"] {

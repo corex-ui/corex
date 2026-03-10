@@ -1,8 +1,8 @@
 defmodule Mix.Tasks.Corex.Gen.LiveTest do
   use ExUnit.Case
 
-  alias Mix.Tasks.Corex.Gen.Live
   alias Mix.Phoenix.Schema
+  alias Mix.Tasks.Corex.Gen.Live
 
   test "inputs/1 generates proper native_input blocks" do
     schema = %Schema{
@@ -29,14 +29,33 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
 
     assert Enum.any?(inputs, &(&1 =~ ~s(type="text") and &1 =~ ~s(<:label>Name</:label>)))
     assert Enum.any?(inputs, &(&1 =~ ~s(type="number") and &1 =~ ~s(<:label>Age</:label>)))
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="number") and &1 =~ ~s(step="any") and &1 =~ ~s(<:label>Price</:label>)))
+
+    assert Enum.any?(
+             inputs,
+             &(&1 =~ ~s(type="number") and &1 =~ ~s(step="any") and
+                 &1 =~ ~s(<:label>Price</:label>))
+           )
+
     assert Enum.any?(inputs, &(&1 =~ ~s(type="checkbox") and &1 =~ ~s(<:label>Active</:label>)))
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="textarea") and &1 =~ ~s(<:label>Description</:label>)))
+
+    assert Enum.any?(
+             inputs,
+             &(&1 =~ ~s(type="textarea") and &1 =~ ~s(<:label>Description</:label>))
+           )
+
     assert Enum.any?(inputs, &(&1 =~ ~s(type="date") and &1 =~ ~s(<:label>Birthdate</:label>)))
-    
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="select") and &1 =~ ~s(multiple) and &1 =~ ~s(<:label>Roles</:label>)))
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="select") and &1 =~ ~s(prompt="Choose a value") and &1 =~ ~s(<:label>Status</:label>)))
-    
+
+    assert Enum.any?(
+             inputs,
+             &(&1 =~ ~s(type="select") and &1 =~ ~s(multiple) and &1 =~ ~s(<:label>Roles</:label>))
+           )
+
+    assert Enum.any?(
+             inputs,
+             &(&1 =~ ~s(type="select") and &1 =~ ~s(prompt="Choose a value") and
+                 &1 =~ ~s(<:label>Status</:label>))
+           )
+
     # Map and references are ignored/nil
     refute Enum.any?(inputs, &(&1 =~ "Data"))
     refute Enum.any?(inputs, &(&1 =~ "User"))

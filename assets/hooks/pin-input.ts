@@ -25,7 +25,8 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
     const el = this.el;
     const count = getNumber(el, "count") ?? 4;
     const rawValue = el.dataset.value;
-    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : undefined;
+    const valueList =
+      rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : undefined;
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
     const zag = new PinInput(el, {
@@ -97,7 +98,8 @@ const PinInputHook: Hook<object & PinInputHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & PinInputHookState) {
     const count = getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4;
     const rawValue = this.el.dataset.value;
-    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : undefined;
+    const valueList =
+      rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : undefined;
     const controlled = getBoolean(this.el, "controlled");
     this.pinInput?.updateProps({
       id: this.el.id,

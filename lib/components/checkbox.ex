@@ -386,8 +386,11 @@ defmodule Corex.Checkbox do
           {render_slot(@indicator)}
           </span>
       </div>
-      <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <span :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
       {render_slot(@label)}
+      </span>
+      <span :if={@label == [] && @aria_label} class="sr-only" {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      {@aria_label}
       </span>
       </label>
       <div :if={@error} :for={msg <- @errors} data-scope="checkbox" data-part="error">
