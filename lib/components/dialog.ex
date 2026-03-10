@@ -21,7 +21,7 @@ defmodule Corex.Dialog do
       <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
     </:content>
     <:close_trigger>
-      <.icon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" class="icon" />
     </:close_trigger>
   </.dialog>
   ```
@@ -38,7 +38,7 @@ defmodule Corex.Dialog do
       </.dialog_description>
       <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
       <.dialog_close_trigger id="my-dialog">
-        <.icon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" class="icon" />
       </.dialog_close_trigger>
     </:content>
   </.dialog>

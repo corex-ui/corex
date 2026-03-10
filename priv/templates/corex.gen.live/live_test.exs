@@ -8,7 +8,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @update_attrs <%= Mix.Phoenix.to_text for {key, value} <- schema.params.update, into: %{}, do: {key, Mix.Phoenix.Schema.live_form_value(value)} %>
   @invalid_attrs <%= Mix.Phoenix.to_text for {key, value} <- schema.params.create, into: %{}, do: {key, value |> Mix.Phoenix.Schema.live_form_value() |> Mix.Phoenix.Schema.invalid_form_value()} %><%= if layout_locale do %>
 
-  @locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())<% end %><%= if scope do %>
+  @locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()<% end %><%= if scope do %>
 
   setup :<%= scope.test_setup_helper %>
 

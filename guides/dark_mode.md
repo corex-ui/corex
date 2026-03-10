@@ -243,8 +243,8 @@ defmodule MyAppWeb.Layouts do
       on_value_change_client="phx:set-mode"
     >
       <:item value="dark">
-        <.icon name="hero-sun" class="icon state-on" />
-        <.icon name="hero-moon" class="icon state-off" />
+        <.heroicon name="hero-sun" class="icon state-on" />
+        <.heroicon name="hero-moon" class="icon state-off" />
       </:item>
     </.toggle_group>
     """

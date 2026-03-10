@@ -3,7 +3,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
-  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <%= if layout_locale do %>@locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()
   <% end %>describe "Registration page" do
     test "renders registration page", %{conn: conn} do
       {:ok, _lv, html} = live(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")

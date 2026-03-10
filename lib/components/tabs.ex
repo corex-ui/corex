@@ -39,7 +39,7 @@ defmodule Corex.Tabs do
     ])}
   >
     <:indicator>
-      <.icon name="hero-chevron-right" />
+      <.heroicon name="hero-chevron-right" />
     </:indicator>
   </.tabs>
   ```
@@ -65,7 +65,7 @@ defmodule Corex.Tabs do
       {item.data.content}
     </:content>
     <:indicator :let={item}>
-      <.icon name={item.data.meta.indicator} />
+      <.heroicon name={item.data.meta.indicator} />
     </:indicator>
   </.tabs>
   ```

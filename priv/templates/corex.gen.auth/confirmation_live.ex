@@ -6,13 +6,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
-      <div class="mx-auto max-w-sm">
-        <div class="text-center">
-          <h1 class="text-lg font-semibold">Welcome {@<%= schema.singular %>.email}</h1>
-        </div>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+      <.layout_heading>
+        <:title>Welcome {@<%= schema.singular %>.email}</:title>
+      </.layout_heading>
 
-        <.form
+      <.form
           :if={!@<%= schema.singular %>.confirmed_at}
           for={@form}
           id="confirmation_form"
@@ -26,14 +25,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             name={@form[:remember_me].name}
             value="true"
             phx-disable-with="Confirming..."
-            class="button button--brand button--sm w-full"
+            class="button button--brand button--sm"
             type="submit"
           >
             Confirm and stay logged in
           </.action>
           <.action
             phx-disable-with="Confirming..."
-            class="button button--accent button--sm w-full mt-2"
+            class="button button--accent button--sm"
             type="submit"
           >
             Confirm and log in only this time
@@ -53,7 +52,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%%= if @<%= scope_config.scope.assign_key %> do %>
             <.action
               phx-disable-with="Logging in..."
-              class="button button--brand button--sm w-full"
+              class="button button--brand button--sm"
               type="submit"
             >
               Log in
@@ -63,14 +62,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
               name={@form[:remember_me].name}
               value="true"
               phx-disable-with="Logging in..."
-              class="button button--brand button--sm w-full"
+              class="button button--brand button--sm"
               type="submit"
             >
               Keep me logged in on this device
             </.action>
             <.action
               phx-disable-with="Logging in..."
-              class="button button--accent button--sm w-full mt-2"
+              class="button button--accent button--sm"
               type="submit"
             >
               Log me in only this time
@@ -78,10 +77,9 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <%% end %>
         </.form>
 
-        <p :if={!@<%= schema.singular %>.confirmed_at} class="alert alert-outline mt-8">
-          Tip: If you prefer passwords, you can enable them in the <%= schema.singular %> settings.
-        </p>
-      </div>
+      <p :if={!@<%= schema.singular %>.confirmed_at} class="alert alert-outline">
+        Tip: If you prefer passwords, you can enable them in the <%= schema.singular %> settings.
+      </p>
     </Layouts.app>
     """
   end

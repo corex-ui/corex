@@ -17,7 +17,7 @@ defmodule Corex.RadioGroup do
   ```heex
   <.radio_group id="rg" name="choice" items={[["1", "Option A"], ["2", "Option B"]]} class="radio-group">
     <:label>Choose one</:label>
-    <:item_control><.icon name="hero-check" class="data-checked" /></:item_control>
+    <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
   </.radio_group>
   ```
 

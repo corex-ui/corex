@@ -1,12 +1,8 @@
-<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
-  <div class="text-center">
-    <div>
-      <h1 class="text-lg font-semibold">Account Settings</h1>
-      <p class="mt-1 text-sm text-zinc-500">
-        Manage your account email address and password settings
-      </p>
-    </div>
-  </div>
+<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+  <.layout_heading>
+    <:title>Account Settings</:title>
+    <:subtitle>Manage your account email address and password settings</:subtitle>
+  </.layout_heading>
 
   <.form :let={f} for={@email_changeset} action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/settings"} id="update_email">
     <input type="hidden" name="action" value="update_email" />

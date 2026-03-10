@@ -294,11 +294,16 @@ defmodule E2eWeb.PageController do
   end
 
   def number_input_form_page(conn, _params) do
-    render(conn, :number_input_form_page)
+    form =
+      %E2e.Form.NumberInputForm{}
+      |> E2e.Form.NumberInputForm.changeset(%{"value" => "1234"})
+      |> Phoenix.Component.to_form(as: :number_input_form, id: "number-input-form")
+
+    render(conn, :number_input_form_page, form: form)
   end
 
   def number_input_form_submit(conn, params) do
-    value = get_in(params, ["number_input_form", "value"]) || "0"
+    value = params["value"] || get_in(params, ["number_input_form", "value"]) || "0"
 
     conn
     |> put_flash(:info, "Submitted: value=#{value}")

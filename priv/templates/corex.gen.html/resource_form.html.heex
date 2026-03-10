@@ -1,7 +1,12 @@
-<.form :let={f} for={@changeset} action={@action}>
+<.form
+  :let={f}
+  for={@changeset}
+  action={@action}
+  id={get_form_id(@changeset)}
+>
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 2) %>
-  <footer>
-    <.action class="button button--primary" type="submit">Save <%= schema.human_singular %></.action>
+  <div class="layout__row justify-between">
     <.navigate :if={@return_to} to={@return_to} type="href" class="button">Cancel</.navigate>
-  </footer>
+    <.action class="button button--accent" type="submit">Save <%= schema.human_singular %></.action>
+  </div>
 </.form>

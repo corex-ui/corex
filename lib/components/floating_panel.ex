@@ -11,16 +11,16 @@ defmodule Corex.FloatingPanel do
     <:open_trigger>Close panel</:open_trigger>
     <:closed_trigger>Open panel</:closed_trigger>
     <:minimize_trigger>
-      <.icon name="hero-arrow-down-left" class="icon" />
+      <.heroicon name="hero-arrow-down-left" class="icon" />
     </:minimize_trigger>
     <:maximize_trigger>
-      <.icon name="hero-arrows-pointing-out" class="icon" />
+      <.heroicon name="hero-arrows-pointing-out" class="icon" />
     </:maximize_trigger>
     <:default_trigger>
-      <.icon name="hero-rectangle-stack" class="icon" />
+      <.heroicon name="hero-rectangle-stack" class="icon" />
     </:default_trigger>
     <:close_trigger>
-      <.icon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" class="icon" />
     </:close_trigger>
     <:content>
       <p>

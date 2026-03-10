@@ -7,22 +7,19 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
-      <div class="mx-auto max-w-sm">
-        <div class="text-center">
-          <div>
-            <h1 class="text-lg font-semibold">Register for an account</h1>
-            <p class="mt-1 text-sm text-zinc-500">
-              Already registered?
-              <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"} class="link link--brand">
-                Log in
-              </.navigate>
-              to your account now.
-            </p>
-          </div>
-        </div>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+      <.layout_heading>
+        <:title>Register for an account</:title>
+        <:subtitle>
+          Already registered?
+          <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/log-in"} class="link link--brand">
+            Log in
+          </.navigate>
+          to your account now.
+        </:subtitle>
+      </.layout_heading>
 
-        <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
+      <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.native_input
             field={@form[:email]}
             type="email"
@@ -38,13 +35,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
           <.action
             phx-disable-with="Creating account..."
-            class="button button--brand button--sm w-full"
+            class="button button--brand button--sm"
             type="submit"
           >
             Create an account
           </.action>
         </.form>
-      </div>
     </Layouts.app>
     """
   end

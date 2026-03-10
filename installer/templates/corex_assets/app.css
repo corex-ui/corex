@@ -32,9 +32,14 @@
 @import "../corex/components/button.css";
 @import "../corex/components/link.css";
 @import "../corex/components/toast.css";
+@import "../corex/components/select.css";
+/* The following components are used by `mix corex.gen.*` generators. You can safely remove them if not in use */
 @import "../corex/components/data-table.css";
 @import "../corex/components/data-list.css";
 @import "../corex/components/native-input.css";
+@import "../corex/components/number-input.css";
+@import "../corex/components/checkbox.css";
+@import "../corex/components/date-picker.css";
 <%= if @mode do %>@import "../corex/components/toggle-group.css";
 <% end %><%= if @theme or @locale do %>@import "../corex/components/select.css";
 <% end %>

@@ -8,15 +8,11 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
-      <div class="text-center">
-        <div>
-          <h1 class="text-lg font-semibold">Account Settings</h1>
-          <p class="mt-1 text-sm text-zinc-500">
-            Manage your account email address and password settings
-          </p>
-        </div>
-      </div>
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %> <%= scope_config.scope.assign_key %>={@<%= scope_config.scope.assign_key %>}>
+      <.layout_heading>
+        <:title>Account Settings</:title>
+        <:subtitle>Manage your account email address and password settings</:subtitle>
+      </.layout_heading>
 
       <.form for={@email_form} id="email_form" phx-submit="update_email" phx-change="validate_email">
         <.native_input

@@ -21,10 +21,13 @@ defmodule Corex.NumberInput.Connect do
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
+    default_value =
+      if(assigns.controlled, do: nil, else: (assigns.default_value || assigns.value))
+
     %{
       "id" => assigns.id,
       "data-value" => if(assigns.controlled, do: assigns.value, else: nil),
-      "data-default-value" => if(assigns.controlled, do: nil, else: assigns.default_value),
+      "data-default-value" => default_value,
       "data-controlled" => data_attr(assigns.controlled),
       "data-min" => num_attr(assigns.min),
       "data-max" => num_attr(assigns.max),

@@ -51,7 +51,7 @@ defmodule Corex.DataTable do
      <:col :let={user} label="Name" name={:name}>{user.name}</:col>
 
      <:sort_icon :let={%{direction: direction}}>
-       <.icon name={
+       <.heroicon name={
          case direction do
            :asc -> "hero-chevron-up"
            :desc -> "hero-chevron-down"
@@ -79,7 +79,7 @@ defmodule Corex.DataTable do
      checkbox_class="checkbox"
    >
      <:checkbox_indicator>
-       <.icon name="hero-check" class="data-checked" />
+       <.heroicon name="hero-check" class="data-checked" />
      </:checkbox_indicator>
 
      <:col :let={user} label="ID">{user.id}</:col>

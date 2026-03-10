@@ -7,7 +7,7 @@ defmodule <%= inspect auth_module %>Test do
   alias <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web_namespace, schema.alias) %>Auth
 
   import <%= inspect context.module %>Fixtures
-  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <%= if layout_locale do %>@locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()
   <% end %>@remember_me_cookie "_<%= web_app_name %>_<%= schema.singular %>_remember_me"
   @remember_me_cookie_max_age 60 * 60 * 24 * 14
 

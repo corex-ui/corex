@@ -28,22 +28,21 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
     inputs = Live.inputs(schema) |> Enum.reject(&is_nil/1)
 
     assert Enum.any?(inputs, &(&1 =~ ~s(type="text") and &1 =~ ~s(<:label>Name</:label>)))
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="number") and &1 =~ ~s(<:label>Age</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ "number_input" and &1 =~ ~s(<:label>Age</:label>)))
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ ~s(type="number") and &1 =~ ~s(step="any") and
-                 &1 =~ ~s(<:label>Price</:label>))
+             &(&1 =~ "number_input" and &1 =~ ~s(step=) and &1 =~ ~s(<:label>Price</:label>))
            )
 
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="checkbox") and &1 =~ ~s(<:label>Active</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ "checkbox" and &1 =~ ~s(<:label>Active</:label>)))
 
     assert Enum.any?(
              inputs,
              &(&1 =~ ~s(type="textarea") and &1 =~ ~s(<:label>Description</:label>))
            )
 
-    assert Enum.any?(inputs, &(&1 =~ ~s(type="date") and &1 =~ ~s(<:label>Birthdate</:label>)))
+    assert Enum.any?(inputs, &(&1 =~ "date_picker" and &1 =~ ~s(<:label>Birthdate</:label>)))
 
     assert Enum.any?(
              inputs,
@@ -52,7 +51,7 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
 
     assert Enum.any?(
              inputs,
-             &(&1 =~ ~s(type="select") and &1 =~ ~s(prompt="Choose a value") and
+             &(&1 =~ "select" and &1 =~ ~s(placeholder: "Choose a value") and
                  &1 =~ ~s(<:label>Status</:label>))
            )
 

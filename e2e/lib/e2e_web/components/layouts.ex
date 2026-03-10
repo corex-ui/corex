@@ -573,7 +573,8 @@ defmodule E2eWeb.Layouts do
       component_item("Number Input", "number-input", locale,
         extra: [
           [label: "Form", id: "/#{locale}/number-input/form"],
-          [label: "Form Live", id: "/#{locale}/live/number-input/form"]
+          [label: "Form Live", id: "/#{locale}/live/number-input/form"],
+          [label: "Controlled", id: "/#{locale}/live/number-input/controlled"]
         ]
       ),
       component_item("Password Input", "password-input", locale,

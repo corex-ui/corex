@@ -10,8 +10,8 @@ defmodule Corex.PasswordInput do
   ```heex
   <.password_input class="password-input">
     <:label>Password</:label>
-    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
   ```
 
@@ -23,11 +23,11 @@ defmodule Corex.PasswordInput do
   <.password_input field={@form[:password]} class="password-input">
     <:label>Password</:label>
     <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
-    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
   ```
 
@@ -55,11 +55,11 @@ defmodule Corex.PasswordInput do
     <.password_input field={f[:password]} class="password-input">
       <:label>Password</:label>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
-      <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-      <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+      <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
     </.password_input>
     <button type="submit">Submit</button>
   </.form>
@@ -82,11 +82,11 @@ defmodule Corex.PasswordInput do
         <.password_input field={@form[:password]} class="password-input">
           <:label>Password</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
-          <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-          <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+          <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+          <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
         </.password_input>
         <button type="submit">Submit</button>
       </.form>
@@ -139,11 +139,11 @@ defmodule Corex.PasswordInput do
         <.password_input field={@form[:password]} class="password-input">
           <:label>Password</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
-          <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-          <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+          <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+          <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
         </.password_input>
       </.form>
       """
@@ -177,8 +177,8 @@ defmodule Corex.PasswordInput do
 
   ```heex
   <.password_input class="password-input password-input--accent password-input--lg">
-    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
   ```
 

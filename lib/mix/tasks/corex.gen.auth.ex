@@ -236,6 +236,7 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
       agents_md: Keyword.get(opts, :agents_md, true),
       layout_mode: layout_mode?(layout_opts),
       layout_theme: layout_theme?(layout_opts),
+      layout_themes: layout_themes?(layout_opts),
       layout_locale: layout_locale?(layout_opts)
     ]
 
@@ -271,6 +272,24 @@ defmodule Mix.Tasks.Corex.Gen.Auth do
   defp layout_locale?(opts), do: Keyword.has_key?(opts, :locale)
   defp layout_theme?(opts), do: Keyword.has_key?(opts, :theme)
   defp layout_mode?(opts), do: Keyword.has_key?(opts, :mode)
+
+  defp layout_themes?(opts) do
+    layout_theme?(opts) and app_has_themes?()
+  end
+
+  defp app_has_themes? do
+    app = Mix.Project.config()[:app]
+    str = to_string(app)
+    root_app =
+      if String.ends_with?(str, "_web") do
+        String.to_atom(String.replace_suffix(str, "_web", ""))
+      else
+        app
+      end
+
+    themes = Application.get_env(app, :themes) || Application.get_env(root_app, :themes)
+    is_list(themes)
+  end
 
   defp validate_args!([_, _, _]), do: :ok
 

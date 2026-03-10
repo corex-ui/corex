@@ -16,12 +16,11 @@ defmodule E2eWeb.NumberInputModel do
   end
 
   def fill_number_input(session, value) when is_binary(value) do
-    input_id = "number-input:number-input-form-value:input"
     escaped = String.replace(value, "'", "\\'")
 
     script = """
     (function() {
-      var el = document.getElementById('#{input_id}');
+      var el = document.querySelector('[data-scope="number-input"][data-part="input"]');
       if (!el) return 'not found';
       el.value = '#{escaped}';
       el.dispatchEvent(new Event('input', { bubbles: true }));

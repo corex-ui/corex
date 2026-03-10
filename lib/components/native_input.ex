@@ -24,7 +24,7 @@ defmodule Corex.NativeInput do
   ```heex
   <.native_input type="email" id="email" name="user[email]" class="native-input">
     <:label>Email</:label>
-    <:icon><.icon name="hero-envelope" class="icon" /></:icon>
+    <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
   </.native_input>
   ```
 

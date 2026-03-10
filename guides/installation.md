@@ -273,7 +273,7 @@ Add the following Accordion examples to your application.
     ])}
   >
     <:indicator>
-      <.icon name="hero-chevron-right" />
+      <.heroicon name="hero-chevron-right" />
     </:indicator>
   </.accordion>
   ```
@@ -309,11 +309,11 @@ Add the following Accordion examples to your application.
     }
   >
     <:trigger :let={item}>
-      <.icon name={item.data.meta.icon} />{item.data.trigger}
+      <.heroicon name={item.data.meta.icon} />{item.data.trigger}
     </:trigger>
     <:content :let={item}>{item.data.content}</:content>
     <:indicator :let={item}>
-      <.icon name={item.data.meta.indicator} />
+      <.heroicon name={item.data.meta.indicator} />
     </:indicator>
   </.accordion>
   ```

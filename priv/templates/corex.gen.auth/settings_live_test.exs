@@ -4,7 +4,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   alias <%= inspect context.module %>
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
-  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <%= if layout_locale do %>@locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()
   <% end %>describe "Settings page" do
     test "renders settings page", %{conn: conn} do
       {:ok, _lv, html} =

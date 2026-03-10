@@ -6,14 +6,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <h1 class="text-lg font-semibold"><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</h1>
-          <p class="mt-1 text-sm text-zinc-500">This is a <%= schema.singular %> record from your database.</p>
-        </div>
-        <div class="flex gap-2">
-          <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"} type="navigate" aria_label="Back to list">
+    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+      <.layout_heading>
+        <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
+        <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
+        <:actions>
+          <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"} type="navigate" class="button" aria_label="Back to list">
             <.heroicon name="hero-arrow-left" />
           </.navigate>
           <.navigate
@@ -21,17 +19,14 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
             type="navigate"
             class="button button--primary"
           >
-            <.heroicon name="hero-pencil-square" /> Edit <%= schema.singular %>
+            <.heroicon name="hero-pencil-square" /> Edit <%= schema.human_singular %>
           </.navigate>
-        </div>
-      </div>
+        </:actions>
+      </.layout_heading>
 
-      <dl class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"><%= for {k, _} <- schema.attrs do %>
-        <div class="border-t border-zinc-100 pt-4 dark:border-zinc-700">
-          <dt class="text-sm font-medium text-zinc-500"><%= Phoenix.Naming.humanize(Atom.to_string(k)) %></dt>
-          <dd class="mt-1 text-sm text-zinc-900 dark:text-zinc-100">{@<%= schema.singular %>.<%= k %>}</dd>
-        </div><% end %>
-      </dl>
+      <.data_list class="data-list"><%= for {k, _} <- schema.attrs do %>
+        <:item title="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{@<%= schema.singular %>.<%= k %>}</:item><% end %>
+      </.data_list>
     </Layouts.app>
     """
   end

@@ -27609,6 +27609,15 @@ var Corex = (() => {
             name: getString(el, "name"),
             form: getString(el, "form"),
             onValueChange: (details) => {
+              var _a;
+              if (details.value !== void 0) {
+                const valueInput = el.querySelector(
+                  '[data-scope="number-input"][data-part="value-input"]'
+                );
+                if (valueInput) {
+                  valueInput.value = (_a = details.value) != null ? _a : "";
+                }
+              }
               const eventName = getString(el, "onValueChange");
               if (eventName && canPushEvent(this.liveSocket)) {
                 this.pushEvent(eventName, {
@@ -27636,9 +27645,10 @@ var Corex = (() => {
           var _a;
           const valueStr = getString(this.el, "value");
           const controlled = getBoolean(this.el, "controlled");
+          const defaultValueStr = getString(this.el, "defaultValue");
           (_a = this.numberInput) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled && valueStr !== void 0 ? { value: valueStr } : {}), {
+          }, controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr }), {
             min: getNumber(this.el, "min"),
             max: getNumber(this.el, "max"),
             step: getNumber(this.el, "step"),

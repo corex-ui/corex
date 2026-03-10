@@ -12,7 +12,7 @@ defmodule Corex.SignaturePad do
   <.signature_pad id="my-signature-pad" class="signature-pad">
     <:label>Sign here</:label>
     <:clear_trigger>
-      <.icon name="hero-x-mark" />
+      <.heroicon name="hero-x-mark" />
     </:clear_trigger>
   </.signature_pad>
   ```
@@ -26,7 +26,7 @@ defmodule Corex.SignaturePad do
     class="signature-pad">
     <:label>Sign here</:label>
     <:clear_trigger>
-      <.icon name="hero-x-mark" />
+      <.heroicon name="hero-x-mark" />
     </:clear_trigger>
   </.signature_pad>
   ```
@@ -48,7 +48,7 @@ defmodule Corex.SignaturePad do
     class="signature-pad">
     <:label>Sign here</:label>
     <:clear_trigger>
-      <.icon name="hero-x-mark" />
+      <.heroicon name="hero-x-mark" />
     </:clear_trigger>
   </.signature_pad>
   ```
@@ -77,10 +77,10 @@ defmodule Corex.SignaturePad do
     <.signature_pad field={f[:signature]} id="my-signature-pad" class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger>
-        <.icon name="hero-x-mark" />
+        <.heroicon name="hero-x-mark" />
       </:clear_trigger>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.signature_pad>
@@ -112,10 +112,10 @@ defmodule Corex.SignaturePad do
         >
           <:label>Sign here</:label>
           <:clear_trigger>
-            <.icon name="hero-x-mark" />
+            <.heroicon name="hero-x-mark" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.signature_pad>
@@ -173,10 +173,10 @@ defmodule Corex.SignaturePad do
         >
           <:label>Sign here</:label>
           <:clear_trigger>
-            <.icon name="hero-x-mark" />
+            <.heroicon name="hero-x-mark" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.signature_pad>

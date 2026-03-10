@@ -34,7 +34,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Actions</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   ```
@@ -98,7 +98,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Click me</:trigger>
     <:nested_indicator>
-      <.icon name="hero-arrow-right" />
+      <.heroicon name="hero-arrow-right" />
     </:nested_indicator>
   </.menu>
   ```
@@ -135,7 +135,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Actions</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   ```
@@ -180,7 +180,7 @@ defmodule Corex.Menu do
     >
       <:trigger>Actions</:trigger>
           <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
     </.menu>
     """
@@ -210,7 +210,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Navigate</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   ```
@@ -240,7 +240,7 @@ defmodule Corex.Menu do
       >
         <:trigger>Navigate</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
       </.menu>
       """

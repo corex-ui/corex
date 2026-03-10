@@ -1362,6 +1362,14 @@ var NumberInputHook = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       onValueChange: (details) => {
+        if (details.value !== void 0) {
+          const valueInput = el.querySelector(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            valueInput.value = details.value ?? "";
+          }
+        }
         const eventName = getString(el, "onValueChange");
         if (eventName && canPushEvent(this.liveSocket)) {
           this.pushEvent(eventName, {
@@ -1388,9 +1396,10 @@ var NumberInputHook = {
   updated() {
     const valueStr = getString(this.el, "value");
     const controlled = getBoolean(this.el, "controlled");
+    const defaultValueStr = getString(this.el, "defaultValue");
     this.numberInput?.updateProps({
       id: this.el.id,
-      ...controlled && valueStr !== void 0 ? { value: valueStr } : {},
+      ...controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr },
       min: getNumber(this.el, "min"),
       max: getNumber(this.el, "max"),
       step: getNumber(this.el, "step"),

@@ -2,7 +2,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   use <%= inspect context.web_module %>.ConnCase<%= test_case_options %>
 
   import <%= inspect context.module %>Fixtures
-  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <%= if layout_locale do %>@locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()
   <% end %>describe "GET <%= schema.route_prefix %>/register" do
     test "renders registration page", %{conn: conn} do
       conn = get(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= schema.route_prefix %>/register")

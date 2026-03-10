@@ -44,7 +44,7 @@ defmodule Corex.Form do
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>I accept the terms</:label>
       <:error :let={msg}>
-    <.icon name="hero-exclamation-circle" class="icon" />
+    <.heroicon name="hero-exclamation-circle" class="icon" />
     {msg}
   </:error>
   </.checkbox>
@@ -73,7 +73,7 @@ defmodule Corex.Form do
     <.checkbox field={@form[:terms]} class="checkbox">
       <:label>I accept the terms</:label>
         <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
     </.checkbox>
@@ -137,7 +137,7 @@ defmodule Corex.Form do
       <.checkbox field={@form[:terms]} class="checkbox" controlled>
         <:label>I accept the terms</:label>
         <:error :let={msg}>
-          <.icon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.checkbox>

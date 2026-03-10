@@ -7,21 +7,38 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-      <div>
-        <h1 class="text-lg font-semibold">{@page_title}</h1>
-        <p class="mt-1 text-sm text-zinc-500">
-          Use this form to manage <%= schema.singular %> records in your database.
-        </p>
-      </div>
+    <Layouts.app
+      flash={@flash}
+<%= if layout_mode do %>
+      mode={@mode}
+<% end %><%= if layout_theme do %>
+      theme={@theme}
+<% end %><%= if layout_themes do %>
+      themes={@themes}
+<% end %><%= if layout_locale do %>
+      locale={@locale}
+      current_path={@current_path}
+<% end %><%= if scope do %>
+      <%= scope.assign_key %>={@<%= scope.assign_key %>}
+<% end %>
+    >
+      <.layout_heading>
+        <:title>{@page_title}</:title>
+        <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
+      </.layout_heading>
 
-      <.form for={@form} id="<%= schema.singular %>-form" phx-change="validate" phx-submit="save">
+      <.form
+        for={@form}
+        id={get_form_id(@form)}
+        phx-change="validate"
+        phx-submit="save"
+      >
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 8) %>
         <footer>
-          <.action phx-disable-with="Saving..." class="button button--primary" type="submit">
+          <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate" class="button">Cancel</.navigate>
+          <.action phx-disable-with="Saving..." class="button button--accent" type="submit">
             Save <%= schema.human_singular %>
           </.action>
-          <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate">Cancel</.navigate>
         </footer>
       </.form>
     </Layouts.app>

@@ -3,7 +3,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   alias <%= inspect context.module %>
   import <%= inspect context.module %>Fixtures
-  <%= if layout_locale do %>@locale (Application.get_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first())
+  <%= if layout_locale do %>@locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()
   <% end %>setup :register_and_log_in_<%= schema.singular %>
 
   describe "GET <%= schema.route_prefix %>/settings" do

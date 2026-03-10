@@ -12,13 +12,13 @@ defmodule Corex.DatePicker do
   <.date_picker id="my-date-picker">
     <:label>Select a date</:label>
     <:trigger>
-      <.icon name="hero-calendar" />
+      <.heroicon name="hero-calendar" />
     </:trigger>
            <:prev_trigger>
-          <.icon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" class="icon" />
         </:prev_trigger>
         <:next_trigger>
-          <.icon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
   </.date_picker>
   ```
@@ -35,13 +35,13 @@ defmodule Corex.DatePicker do
     on_value_change="date_changed">
     <:label>Select a date</:label>
     <:trigger>
-      <.icon name="hero-calendar" />
+      <.heroicon name="hero-calendar" />
     </:trigger>
            <:prev_trigger>
-          <.icon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" class="icon" />
         </:prev_trigger>
         <:next_trigger>
-          <.icon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
   </.date_picker>
   ```
@@ -74,16 +74,16 @@ defmodule Corex.DatePicker do
     <.date_picker field={f[:birth_date]} class="date-picker">
       <:label>Birth date</:label>
       <:trigger>
-        <.icon name="hero-calendar" class="icon" />
+        <.heroicon name="hero-calendar" class="icon" />
       </:trigger>
       <:prev_trigger>
-        <.icon name="hero-chevron-left" class="icon" />
+        <.heroicon name="hero-chevron-left" class="icon" />
       </:prev_trigger>
       <:next_trigger>
-        <.icon name="hero-chevron-right" class="icon" />
+        <.heroicon name="hero-chevron-right" class="icon" />
       </:next_trigger>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.date_picker>
@@ -110,16 +110,16 @@ defmodule Corex.DatePicker do
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Birth date</:label>
           <:trigger>
-            <.icon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" class="icon" />
           </:trigger>
           <:prev_trigger>
-            <.icon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" class="icon" />
           </:prev_trigger>
           <:next_trigger>
-            <.icon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" class="icon" />
           </:next_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.date_picker>
@@ -177,16 +177,16 @@ defmodule Corex.DatePicker do
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Birth date</:label>
           <:trigger>
-            <.icon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" class="icon" />
           </:trigger>
           <:prev_trigger>
-            <.icon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" class="icon" />
           </:prev_trigger>
           <:next_trigger>
-            <.icon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" class="icon" />
           </:next_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.date_picker>

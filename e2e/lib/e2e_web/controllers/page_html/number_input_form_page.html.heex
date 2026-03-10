@@ -9,15 +9,15 @@
     <:title>Number Input form</:title>
     <:subtitle>Controller Form</:subtitle>
   </.layout_heading>
-  <p>Controller Form</p>
-  <form action={~p"/#{@locale}/number-input/form"} method="post" id="number-input-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-    <.number_input
-      name="number_input_form[value]"
-      id="number-input-form-value"
-      default_value="0"
-      class="number-input"
-    >
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/number-input/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.number_input field={f[:value]} class="number-input">
       <:label>Value</:label>
       <:decrement_trigger>
         <.heroicon name="hero-chevron-down" class="icon" />
@@ -25,9 +25,13 @@
       <:increment_trigger>
         <.heroicon name="hero-chevron-up" class="icon" />
       </:increment_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.number_input>
     <.action type="submit" id="number-input-form-submit" class="button button--accent">
       Submit
     </.action>
-  </form>
+  </.form>
 </Layouts.app>

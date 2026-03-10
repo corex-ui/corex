@@ -1,10 +1,26 @@
-<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_theme do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
-  <div>
-    <h1 class="text-lg font-semibold">New <%= schema.human_singular %></h1>
-    <p class="mt-1 text-sm text-zinc-500">
-      Use this form to manage <%= schema.singular %> records in your database.
-    </p>
-  </div>
+<Layouts.app
+  flash={@flash}
+<%= if layout_mode do %>
+  mode={@mode}
+<% end %><%= if layout_theme do %>
+  theme={@theme}
+<% end %><%= if layout_themes do %>
+  themes={@themes}
+<% end %><%= if layout_locale do %>
+  locale={@locale}
+  current_path={@current_path}
+<% end %><%= if scope do %>
+  <%= scope.assign_key %>={@<%= scope.assign_key %>}
+<% end %>
+>
+  <.layout_heading>
+    <:title>New <%= schema.human_singular %></:title>
+    <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
+  </.layout_heading>
 
-  <.<%= schema.singular %>_form changeset={@changeset} action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"} return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"} />
+  <.<%= schema.singular %>_form
+    changeset={@changeset}
+    action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+    return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+  />
 </Layouts.app>

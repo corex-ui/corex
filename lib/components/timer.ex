@@ -8,10 +8,10 @@ defmodule Corex.Timer do
 
   ```heex
   <.timer id="t" start_ms={60_000} class="timer">
-    <:start_trigger><.icon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.icon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.icon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.icon name="hero-arrow-path" class="icon" /></:reset_trigger>
+    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
   </.timer>
   ```
 
@@ -19,10 +19,10 @@ defmodule Corex.Timer do
 
   ```heex
   <.timer id="t" countdown start_ms={90_000} target_ms={0} auto_start class="timer">
-    <:start_trigger><.icon name="hero-play" class="icon" /></:start_trigger>
-    <:pause_trigger><.icon name="hero-pause" class="icon" /></:pause_trigger>
-    <:resume_trigger><.icon name="hero-play" class="icon" /></:resume_trigger>
-    <:reset_trigger><.icon name="hero-arrow-path" class="icon" /></:reset_trigger>
+    <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
+    <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>
+    <:resume_trigger><.heroicon name="hero-play" class="icon" /></:resume_trigger>
+    <:reset_trigger><.heroicon name="hero-arrow-path" class="icon" /></:reset_trigger>
   </.timer>
   ```
 

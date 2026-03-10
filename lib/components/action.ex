@@ -10,7 +10,7 @@ defmodule Corex.Action do
     <.action phx-click="go">Send!</.action>
     <.action type="submit">Save</.action>
     <.action aria_label="Close dialog">
-      <.icon name="hero-x-mark" aria-hidden="true" />
+      <.heroicon name="hero-x-mark" aria-hidden="true" />
     </.action>
     ```
 

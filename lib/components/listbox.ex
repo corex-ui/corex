@@ -23,7 +23,7 @@ defmodule Corex.Listbox do
   >
     <:label>Choose a country</:label>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.listbox>
   ```
@@ -51,7 +51,7 @@ defmodule Corex.Listbox do
   >
     <:label>Choose a country</:label>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.listbox>
   ```
@@ -81,7 +81,7 @@ defmodule Corex.Listbox do
       {entry.label}
     </:item>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.listbox>
   ```
@@ -105,7 +105,7 @@ defmodule Corex.Listbox do
       {entry.label}
     </:item>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.listbox>
   ```
@@ -139,14 +139,14 @@ defmodule Corex.Listbox do
               data-phx-push-id={entry.id}
               class="button button--sm"
             >
-              <.icon name="hero-trash" />
+              <.heroicon name="hero-trash" />
             </.action>
             <span>{entry.label}</span>
           </span>
         </span>
       </:item>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" />
       </:item_indicator>
     </.listbox>
     """

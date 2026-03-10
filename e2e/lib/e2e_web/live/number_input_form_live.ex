@@ -16,7 +16,7 @@ defmodule E2eWeb.NumberInputFormLive do
   defp assign_form(socket) do
     form =
       %NumberInputForm{}
-      |> NumberInputForm.changeset(%{"value" => "0"})
+      |> NumberInputForm.changeset(%{"value" => "1234"})
       |> Phoenix.Component.to_form(as: :number_input_form, id: "number-input-form")
 
     assign(socket, :form, form)
@@ -104,8 +104,6 @@ defmodule E2eWeb.NumberInputFormLive do
 
   @impl true
   def render(assigns) do
-    assigns = assign(assigns, :number_value, get_value_from_form(assigns.form))
-
     ~H"""
     <Layouts.app
       flash={@flash}
@@ -118,7 +116,7 @@ defmodule E2eWeb.NumberInputFormLive do
         <:title>Number Input form</:title>
         <:subtitle>Live View Form</:subtitle>
       </.layout_heading>
-      <p>Phoenix form with Ecto changeset and controlled number input</p>
+      <p>Phoenix form with Ecto changeset and controlled number input (field=)</p>
 
       <.form
         for={@form}
@@ -127,9 +125,8 @@ defmodule E2eWeb.NumberInputFormLive do
         phx-submit="save"
       >
         <.number_input
+          field={@form[:value]}
           id="number-input-form-value"
-          name="number_input_form[value]"
-          value={@number_value}
           controlled
           on_value_change="value_changed"
           class="number-input"
@@ -141,6 +138,10 @@ defmodule E2eWeb.NumberInputFormLive do
           <:increment_trigger>
             <.heroicon name="hero-chevron-up" class="icon" />
           </:increment_trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
         </.number_input>
         <.action type="submit" id="number-input-form-live-submit" class="button button--accent">
           Submit
@@ -148,19 +149,5 @@ defmodule E2eWeb.NumberInputFormLive do
       </.form>
     </Layouts.app>
     """
-  end
-
-  defp get_value_from_form(form) do
-    raw =
-      form.params["value"] ||
-        Ecto.Changeset.get_change(form.source, :value) ||
-        Ecto.Changeset.get_field(form.source, :value)
-
-    case raw do
-      nil -> "0"
-      "" -> "0"
-      val when is_number(val) -> to_string(val)
-      val when is_binary(val) -> val
-    end
   end
 end

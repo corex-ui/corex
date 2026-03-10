@@ -13,7 +13,7 @@ defmodule Corex.Toast do
   ```heex
     <.toast_group id="layout-toast" flash={@flash} class="toast">
       <:loading>
-        <.icon name="hero-arrow-path" />
+        <.heroicon name="hero-arrow-path" />
       </:loading>
     </.toast_group>
   ```
@@ -105,7 +105,7 @@ defmodule Corex.Toast do
   ```heex
    <.toast_group id="layout-toast" class="toast" flash={@flash}>
     <:loading>
-      <.icon name="hero-arrow-path" />
+      <.heroicon name="hero-arrow-path" />
     </:loading>
   </.toast_group>
   ```

@@ -86,6 +86,7 @@ defmodule E2eWeb.Router do
       live "/live/color-picker/form", ColorPickerFormLive
       live "/live/number-input", NumberInputLive
       live "/live/number-input/form", NumberInputFormLive
+      live "/live/number-input/controlled", NumberInputControlledLive
       live "/live/password-input", PasswordInputLive
       live "/live/password-input/form", PasswordInputFormLive
       live "/live/pin-input", PinInputLive

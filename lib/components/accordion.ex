@@ -52,7 +52,7 @@ defmodule Corex.Accordion do
     ])}
   >
     <:indicator>
-      <.icon name="hero-chevron-right" />
+      <.heroicon name="hero-chevron-right" />
     </:indicator>
   </.accordion>
   ```
@@ -83,8 +83,8 @@ defmodule Corex.Accordion do
     }
   >
     <:indicator>
-      <.icon name="hero-plus" class="state-closed"/>
-      <.icon name="hero-minus" class="state-open"/>
+      <.heroicon name="hero-plus" class="state-closed"/>
+      <.heroicon name="hero-minus" class="state-open"/>
     </:indicator>
   </.accordion>
   ```
@@ -120,11 +120,11 @@ defmodule Corex.Accordion do
     }
   >
     <:trigger :let={item}>
-      <.icon name={item.data.meta.icon} />{item.data.trigger}
+      <.heroicon name={item.data.meta.icon} />{item.data.trigger}
     </:trigger>
     <:content :let={item}>{item.data.content}</:content>
     <:indicator :let={item}>
-      <.icon name={item.data.meta.indicator} />
+      <.heroicon name={item.data.meta.indicator} />
     </:indicator>
   </.accordion>
   ```

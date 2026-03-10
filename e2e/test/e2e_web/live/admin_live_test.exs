@@ -79,7 +79,7 @@ defmodule E2eWeb.AdminLiveTest do
 
       assert {:ok, form_live, _html} =
                index_live
-               |> element("#admins-#{admin.id} a", "Edit")
+               |> element("#admins-#{admin.id} [aria-label^='Edit']")
                |> render_click()
                |> follow_redirect(conn, ~p"/#{@locale}/admins/#{admin}/edit")
 
@@ -106,7 +106,7 @@ defmodule E2eWeb.AdminLiveTest do
     test "deletes admin in listing", %{conn: conn, admin: admin} do
       {:ok, index_live, _html} = live(conn, ~p"/#{@locale}/admins")
 
-      assert index_live |> element("#admins-#{admin.id} a", "Delete") |> render_click()
+      assert index_live |> element("#admins-#{admin.id} [aria-label^='Delete']") |> render_click()
       refute has_element?(index_live, "#admins-#{admin.id}")
     end
   end

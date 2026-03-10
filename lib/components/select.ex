@@ -27,7 +27,7 @@ defmodule Corex.Select do
     ]}
   >
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
@@ -56,7 +56,7 @@ defmodule Corex.Select do
     ]}
   >
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
@@ -86,10 +86,10 @@ defmodule Corex.Select do
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   ```
@@ -116,10 +116,10 @@ defmodule Corex.Select do
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   ```
@@ -146,7 +146,7 @@ defmodule Corex.Select do
     ]}
   >
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
@@ -178,7 +178,7 @@ defmodule Corex.Select do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
       """
@@ -220,10 +220,10 @@ defmodule Corex.Select do
     >
       <:label>Your country of residence</:label>
       <:trigger>
-        <.icon name="hero-chevron-down" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.select>
@@ -261,10 +261,10 @@ defmodule Corex.Select do
         >
           <:label>Your country of residence</:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.select>
@@ -332,10 +332,10 @@ defmodule Corex.Select do
         >
           <:label>Your country of residence</:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.select>

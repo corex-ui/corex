@@ -22,7 +22,7 @@ defmodule Corex.Combobox do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.combobox>
   ```
@@ -50,7 +50,7 @@ defmodule Corex.Combobox do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.combobox>
   ```
@@ -79,13 +79,13 @@ defmodule Corex.Combobox do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
   ```
@@ -114,13 +114,13 @@ defmodule Corex.Combobox do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
   ```
@@ -167,7 +167,7 @@ defmodule Corex.Combobox do
         filter={false}
         on_input_value_change="search"
       >
-        <:trigger><.icon name="hero-chevron-down" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.combobox>
       """
     end
@@ -210,7 +210,7 @@ defmodule Corex.Combobox do
   <.combobox class="combobox combobox--accent combobox--lg" collection={[]}>
     <:empty>No results</:empty>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.combobox>
   ```

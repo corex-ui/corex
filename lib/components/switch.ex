@@ -55,7 +55,7 @@ defmodule Corex.Switch do
     <.switch field={f[:notifications_enabled]} class="switch">
       <:label>Enable notifications</:label>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.switch>
@@ -82,7 +82,7 @@ defmodule Corex.Switch do
         <.switch field={@form[:notifications_enabled]} class="switch">
           <:label>Enable notifications</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.switch>
@@ -138,7 +138,7 @@ defmodule Corex.Switch do
         <.switch field={@form[:notifications_enabled]} class="switch" controlled>
           <:label>Enable notifications</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.switch>

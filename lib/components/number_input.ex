@@ -19,8 +19,8 @@ defmodule Corex.NumberInput do
   ```heex
   <.number_input id="num" class="number-input">
     <:label>Quantity</:label>
-    <:decrement_trigger><.icon name="hero-chevron-down" class="icon" /></:decrement_trigger>
-    <:increment_trigger><.icon name="hero-chevron-up" class="icon" /></:increment_trigger>
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
   </.number_input>
   ```
 
@@ -29,7 +29,7 @@ defmodule Corex.NumberInput do
   ```heex
   <.number_input id="num" scrubber class="number-input">
     <:label>Quantity</:label>
-    <:scrubber_trigger><.icon name="hero-arrows-up-down" class="icon rotate-90" /></:scrubber_trigger>
+    <:scrubber_trigger><.heroicon name="hero-arrows-up-down" class="icon rotate-90" /></:scrubber_trigger>
   </.number_input>
   ```
 
@@ -85,6 +85,7 @@ defmodule Corex.NumberInput do
 
   import Corex.Gettext, only: [gettext: 1]
 
+  alias Phoenix.HTML.Form
   alias Corex.NumberInput.Anatomy.{
     Control,
     DecrementTrigger,
@@ -126,6 +127,8 @@ defmodule Corex.NumberInput do
     doc: "Override translatable strings"
   )
 
+  attr(:errors, :list, default: [], doc: "List of error messages to display")
+  attr(:field, Phoenix.HTML.FormField, doc: "A form field struct, e.g. f[:age] or @form[:age]")
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -144,6 +147,24 @@ defmodule Corex.NumberInput do
     attr(:class, :string, required: false)
   end
 
+  slot :error, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  def number_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+
+    assigns
+    |> assign(field: nil)
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+    |> assign(:id, field.id)
+    |> assign(:name, field.name)
+    |> assign(:form, field.form.id)
+    |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
+    |> assign(:invalid, length(errors) > 0)
+    |> number_input()
+  end
+
   def number_input(assigns) do
     default_translation = %Translation{
       decrease: gettext("Decrease value"),
@@ -156,11 +177,15 @@ defmodule Corex.NumberInput do
       |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
+      |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
+      |> assign(:default_value, value_to_string(Form.normalize_value("number", assigns[:default_value])))
 
     ~H"""
     <div
       id={@id}
       phx-hook="NumberInput"
+      data-value={if @controlled, do: @value, else: nil}
+      data-default-value={unless @controlled, do: (@default_value || @value), else: nil}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -181,6 +206,15 @@ defmodule Corex.NumberInput do
         on_value_change_client: @on_value_change_client
       })}
     >
+      <input
+        :if={@name}
+        type="hidden"
+        name={@name}
+        form={@form}
+        value={@value || ""}
+        data-scope="number-input"
+        data-part="value-input"
+      />
       <div phx-update="ignore" {Connect.root(%Root{id: @id})}>
         <label :if={@label != []} {Connect.label(%Label{id: @id})}>
           {render_slot(@label)}
@@ -200,9 +234,15 @@ defmodule Corex.NumberInput do
           </div>
         </div>
       </div>
+      <div :if={@error} :for={msg <- @errors} data-scope="number-input" data-part="error">
+        {render_slot(@error, msg)}
+      </div>
     </div>
     """
   end
+
+  defp value_to_string(nil), do: nil
+  defp value_to_string(value), do: to_string(value)
 
   defp merge_translation(nil, default), do: default
 
