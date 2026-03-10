@@ -53,13 +53,9 @@
   }
 
   .data-table [data-scope="data-table"][data-part="sort-trigger"] {
-    @apply ui-trigger ui-trigger--sm ui-trigger--circle;
-    opacity: 1;
+    @apply ui-trigger ui-trigger--sm;
   }
-  
-  .data-table [data-scope="data-table"][data-part="sort-trigger"]:hover {
-    color: var(--color-ui--text);
-  }
+
 
   .data-table [data-scope="data-table"][data-part="sort-text"] {
     flex: 1;
@@ -93,6 +89,13 @@
     gap: var(--spacing-ui-gap);
     justify-content: flex-end;
     padding-inline: var(--spacing-ui-padding);
+  }
+
+  .data-table [data-scope="data-table"][data-part="selection-cell"] [data-scope="checkbox"][data-part="control"] [class^="hero-"],
+  .data-table [data-scope="data-table"][data-part="selection-cell"] [data-scope="checkbox"][data-part="control"] .data-checked,
+  .data-table [data-scope="data-table"][data-part="selection-header"] [data-scope="checkbox"][data-part="control"] [class^="hero-"],
+  .data-table [data-scope="data-table"][data-part="selection-header"] [data-scope="checkbox"][data-part="control"] .data-checked {
+    @apply ui-icon ui-icon--sm;
   }
 }
 

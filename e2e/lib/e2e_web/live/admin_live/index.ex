@@ -13,14 +13,17 @@ defmodule E2eWeb.AdminLive.Index do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>
-        Listing Admins
-      </h1>
-      <h2>
-        <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
-          <.heroicon name="hero-plus" /> New Admin
-        </.navigate>
-      </h2>
+      <div class="layout__heading">
+        <div class="layout__heading__content">
+          <h1>Listing Admins</h1>
+          <h2>Add and manage admin records</h2>
+        </div>
+        <div class="layout__heading__actions">
+          <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
+            <.heroicon name="hero-plus" /> New Admin
+          </.navigate>
+        </div>
+      </div>
       <.data_table
         id="admins"
         class="data-table"
@@ -34,16 +37,23 @@ defmodule E2eWeb.AdminLive.Index do
           <div class="sr-only">
             <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
           </div>
-          <.link navigate={~p"/#{@locale}/admins/#{admin}/edit"} class="link">Edit</.link>
+          <.link
+            navigate={~p"/#{@locale}/admins/#{admin}/edit"}
+            class="button button--sm"
+            aria-label={"Edit #{admin.name}"}
+          >
+            <.heroicon name="hero-pencil-square" />
+          </.link>
         </:action>
         <:action :let={{_id, admin}}>
-          <.link
+          <.action
             phx-click={JS.push("delete", value: %{id: admin.id})}
             data-confirm="Are you sure?"
-            class="link link--alert"
+            class="button button--sm button--alert"
+            aria-label={"Delete #{admin.name}"}
           >
-            Delete
-          </.link>
+            <.heroicon name="hero-trash" />
+          </.action>
         </:action>
       </.data_table>
     </Layouts.app>

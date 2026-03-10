@@ -153,6 +153,9 @@ defmodule E2eWeb.DataTableFullLive do
           on_select_all="select_all"
           checkbox_class="checkbox"
         >
+          <:checkbox_indicator>
+            <.heroicon name="hero-check" class="data-checked" />
+          </:checkbox_indicator>
           <:sort_icon :let={%{direction: direction}}>
             <.heroicon name={
               case direction do

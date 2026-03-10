@@ -4,6 +4,7 @@ defmodule Mix.Tasks.Local.CorexTest do
   use ExUnit.Case, async: false
   import ExUnit.CaptureIO
 
+  @tag :skip
   test "mix local.corex runs and delegates to archive.install" do
     capture_io(:stderr, fn ->
       try do

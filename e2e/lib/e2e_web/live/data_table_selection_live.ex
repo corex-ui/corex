@@ -115,6 +115,9 @@ defmodule E2eWeb.DataTableSelectionLive do
           on_select_all="select_all"
           checkbox_class="checkbox"
         >
+          <:checkbox_indicator>
+            <.heroicon name="hero-check" class="data-checked" />
+          </:checkbox_indicator>
           <:col :let={user} label="ID" name={:id}>{user.id}</:col>
           <:col :let={user} label="Name" name={:name}>{user.name}</:col>
           <:col :let={user} label="Email" name={:email}>{user.email}</:col>

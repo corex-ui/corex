@@ -139,6 +139,28 @@
     flex-direction: column;
   }
 
+  .layout__heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--spacing-ui-gap);
+    width: 100%;
+  }
+
+  .layout__heading__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-ui-gap-sm);
+  }
+
+  .layout__heading__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-ui-gap);
+  }
+
   .layout .layout__row {
     display: flex;
     flex-wrap: wrap;

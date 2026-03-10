@@ -87,12 +87,10 @@ defmodule E2eWeb.DataTableStreamLive do
         <:action :let={{_id, row}}>
           <.action
             phx-click={JS.push("remove_item", value: %{id: row.id})}
-            data-phx-push="remove_item"
-            data-phx-push-id={row.id}
-            class="button button--sm button--alert button--sm"
+            class="button button--sm button--alert"
             aria-label={"Delete #{row.name}"}
           >
-            <.heroicon name="hero-trash" class="icon" />
+            <.heroicon name="hero-trash" />
           </.action>
         </:action>
       </.data_table>
