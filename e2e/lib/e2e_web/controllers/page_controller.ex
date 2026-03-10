@@ -30,7 +30,12 @@ defmodule E2eWeb.PageController do
   end
 
   def combobox_form_page(conn, _params) do
-    render(conn, :combobox_form_page)
+    form =
+      %E2e.Form.Combobox{}
+      |> E2e.Form.Combobox.changeset(%{"name" => "", "airport" => ""})
+      |> Phoenix.Component.to_form(as: :combobox, id: "combobox-form")
+
+    render(conn, :combobox_form_page, form: form)
   end
 
   def combobox_form_submit(conn, params) do
@@ -52,11 +57,16 @@ defmodule E2eWeb.PageController do
   end
 
   def checkbox_form_page(conn, _params) do
-    render(conn, :checkbox_form_page)
+    form =
+      %E2e.Form.Terms{}
+      |> E2e.Form.Terms.changeset(%{})
+      |> Phoenix.Component.to_form(as: :terms, id: "checkbox-form")
+
+    render(conn, :checkbox_form_page, form: form)
   end
 
   def checkbox_form_submit(conn, params) do
-    terms = params["terms"] || params["user"]["terms"]
+    terms = get_in(params, ["terms", "terms"]) || params["terms"] || params["user"]["terms"]
 
     conn
     |> put_flash(:info, "Submitted: terms=#{inspect(terms)}")
@@ -64,11 +74,19 @@ defmodule E2eWeb.PageController do
   end
 
   def switch_form_page(conn, _params) do
-    render(conn, :switch_form_page)
+    form =
+      %E2e.Form.Preferences{}
+      |> E2e.Form.Preferences.changeset(%{})
+      |> Phoenix.Component.to_form(as: :preferences, id: "switch-form")
+
+    render(conn, :switch_form_page, form: form)
   end
 
   def switch_form_submit(conn, params) do
-    notifications = params["notifications"] || params["user"]["notifications"]
+    notifications =
+      get_in(params, ["preferences", "notifications"]) ||
+        params["notifications"] ||
+        params["user"]["notifications"]
 
     conn
     |> put_flash(:info, "Submitted: notifications=#{inspect(notifications)}")
@@ -114,11 +132,18 @@ defmodule E2eWeb.PageController do
   end
 
   def select_form_page(conn, _params) do
-    render(conn, :select_form_page)
+    form =
+      %E2e.Form.SelectForm{}
+      |> E2e.Form.SelectForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :select_form, id: "select-form")
+
+    render(conn, :select_form_page, form: form)
   end
 
   def select_form_submit(conn, params) do
-    country = params["country"] || params["select_form"]["country"]
+    country =
+      get_in(params, ["select_form", "country"]) ||
+        params["country"]
 
     conn
     |> put_flash(:info, "Submitted: country=#{inspect(country)}")
@@ -185,7 +210,12 @@ defmodule E2eWeb.PageController do
   end
 
   def date_picker_form_page(conn, _params) do
-    render(conn, :date_picker_form_page)
+    form =
+      %E2e.Form.DatePickerForm{}
+      |> E2e.Form.DatePickerForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :date_picker_form, id: "date-picker-form")
+
+    render(conn, :date_picker_form_page, form: form)
   end
 
   def date_picker_form_submit(conn, params) do
@@ -201,7 +231,12 @@ defmodule E2eWeb.PageController do
   end
 
   def signature_form_page(conn, _params) do
-    render(conn, :signature_form_page)
+    form =
+      %E2e.Form.SignatureForm{}
+      |> E2e.Form.SignatureForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :signature_form, id: "signature-form")
+
+    render(conn, :signature_form_page, form: form)
   end
 
   def signature_form_submit(conn, params) do
@@ -315,10 +350,17 @@ defmodule E2eWeb.PageController do
   end
 
   def password_input_form_page(conn, _params) do
-    render(conn, :password_input_form_page)
+    form =
+      %E2e.Form.PasswordInputForm{}
+      |> E2e.Form.PasswordInputForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :password_input_form, id: "password-input-form")
+
+    render(conn, :password_input_form_page, form: form)
   end
 
-  def password_input_form_submit(conn, _params) do
+  def password_input_form_submit(conn, params) do
+    _password = get_in(params, ["password_input_form", "password"])
+
     conn
     |> put_flash(:info, "Submitted: password=***")
     |> redirect(to: ~p"/#{conn.assigns[:locale]}/password-input/form")

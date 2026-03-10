@@ -37,6 +37,72 @@ defmodule Corex.NumberInput do
 
   Optional slots `:decrement_trigger`, `:increment_trigger`, and `:scrubber_trigger` render the button content (e.g. icons). When omitted, no content is shown.
 
+  ## Phoenix Form Integration
+
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`.
+
+  ### Controller
+
+  Build the form from a changeset and pass it to the template:
+
+  ```elixir
+  def form_page(conn, _params) do
+    form =
+      %MyApp.Form.Quantity{}
+      |> MyApp.Form.Quantity.changeset(%{})
+      |> Phoenix.Component.to_form(as: :quantity, id: "quantity-form")
+    render(conn, :form_page, form: form)
+  end
+  ```
+
+  ```heex
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+    <.number_input field={f[:value]} class="number-input">
+      <:label>Quantity</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.number_input>
+    <button type="submit">Submit</button>
+  </.form>
+  ```
+
+  ### Live View with Ecto changeset
+
+  Use a changeset and enable controlled mode so the LiveView stays in sync:
+
+  ```elixir
+  def mount(_params, _session, socket) do
+    form =
+      %MyApp.Form.Quantity{}
+      |> MyApp.Form.Quantity.changeset(%{})
+      |> Phoenix.Component.to_form(as: :quantity, id: "quantity-form")
+    {:ok, assign(socket, :form, form)}
+  end
+
+  def handle_event("validate", %{"quantity" => params}, socket) do
+    changeset =
+      %MyApp.Form.Quantity{}
+      |> MyApp.Form.Quantity.changeset(params)
+      |> Map.put(:action, :validate)
+    {:noreply, assign(socket, :form, Phoenix.Component.to_form(changeset, as: :quantity, id: "quantity-form"))}
+  end
+  ```
+
+  ```heex
+  <.form for={@form} id={Corex.Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+    <.number_input field={@form[:value]} class="number-input" controlled on_value_change="value_changed">
+      <:label>Quantity</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.number_input>
+    <button type="submit">Submit</button>
+  </.form>
+  ```
+
   ## Styling
 
   Use data attributes to target elements:
@@ -86,6 +152,7 @@ defmodule Corex.NumberInput do
   import Corex.Gettext, only: [gettext: 1]
 
   alias Phoenix.HTML.Form
+
   alias Corex.NumberInput.Anatomy.{
     Control,
     DecrementTrigger,
@@ -161,7 +228,7 @@ defmodule Corex.NumberInput do
     |> assign(:name, field.name)
     |> assign(:form, field.form.id)
     |> assign(:value, value_to_string(Form.normalize_value("number", field.value)))
-    |> assign(:invalid, length(errors) > 0)
+    |> assign(:invalid, errors != [])
     |> number_input()
   end
 
@@ -178,7 +245,10 @@ defmodule Corex.NumberInput do
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
-      |> assign(:default_value, value_to_string(Form.normalize_value("number", assigns[:default_value])))
+      |> assign(
+        :default_value,
+        value_to_string(Form.normalize_value("number", assigns[:default_value]))
+      )
 
     ~H"""
     <div

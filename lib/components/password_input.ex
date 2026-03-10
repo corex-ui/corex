@@ -39,19 +39,20 @@ defmodule Corex.PasswordInput do
 
   ### Controller
 
-  ```elixir
-  defmodule MyAppWeb.PageController do
-    use MyAppWeb, :controller
+  Build the form from an Ecto changeset:
 
-    def home(conn, params) do
-      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-      render(conn, :home, form: form)
-    end
+  ```elixir
+  def form_page(conn, _params) do
+    form =
+      %MyApp.Form.PasswordForm{}
+      |> MyApp.Form.PasswordForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :password_form, id: "password-form")
+    render(conn, :form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="post">
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
     <.password_input field={f[:password]} class="password-input">
       <:label>Password</:label>
       <:error :let={msg}>
@@ -65,35 +66,9 @@ defmodule Corex.PasswordInput do
   </.form>
   ```
 
-  ### LiveView
+  ### Live View
 
-  ```elixir
-  defmodule MyAppWeb.LoginLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      form = to_form(%{"password" => ""}, as: :user)
-      {:ok, assign(socket, :form, form)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.form as={:user} for={@form} id={get_form_id(@form)}>
-        <.password_input field={@form[:password]} class="password-input">
-          <:label>Password</:label>
-          <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-          <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
-          <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
-        </.password_input>
-        <button type="submit">Submit</button>
-      </.form>
-      """
-    end
-  end
-  ```
+  When using in a Live view add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 

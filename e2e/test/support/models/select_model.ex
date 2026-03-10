@@ -12,7 +12,7 @@ defmodule E2eWeb.SelectModel do
   end
 
   def click_select_trigger(session) do
-    click(session, css("#select-form-country [data-part='trigger']"))
+    click(session, css("[data-scope='select'][data-part='trigger']"))
   end
 
   def select_item(session, value) when is_binary(value) do

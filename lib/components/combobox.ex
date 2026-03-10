@@ -125,6 +125,10 @@ defmodule Corex.Combobox do
       </.combobox>
   ```
 
+  ## Phoenix Form Integration
+
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. In Live view add controlled mode and use the same changeset pattern. See the Select or NumberInput component docs for the full Controller and Live View examples.
+
   ### Server-side Filtering
 
   Disable client filtering with `disabled={false}` and use `on_input_value_change` to filter on the server. This example uses a local list; replace with a database query for real apps.

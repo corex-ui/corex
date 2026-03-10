@@ -423,6 +423,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
 
   defp native_input_block(type, key, opts) do
     error = if Keyword.get(opts, :error_slot, false), do: "\n  " <> error_slot(), else: ""
+
     ~s"""
     <.native_input
       field={f[#{inspect(key)}]}
@@ -437,9 +438,9 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   defp error_slot do
     ~s"""
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     """
   end
 
@@ -483,6 +484,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
   defp app_has_themes? do
     app = Mix.Project.config()[:app]
     str = to_string(app)
+
     root_app =
       if String.ends_with?(str, "_web") do
         String.to_atom(String.replace_suffix(str, "_web", ""))

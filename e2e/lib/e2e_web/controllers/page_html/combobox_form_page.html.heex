@@ -9,20 +9,27 @@
     <:title>Combobox form</:title>
     <:subtitle>Controller Form</:subtitle>
   </.layout_heading>
-  <form action={~p"/#{@locale}/combobox/form"} method="post" id="combobox-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/combobox/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
     <.native_input
+      field={f[:name]}
       type="text"
-      name="combobox[name]"
-      id="combobox-form-name"
-      placeholder="Your name"
       class="native-input"
     >
       <:label>Name</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.native_input>
     <.combobox
-      name="combobox[country]"
-      id="combobox-form-country"
+      field={f[:airport]}
       class="combobox"
       placeholder="Select a country"
       collection={[
@@ -45,9 +52,13 @@
       <:item_indicator>
         <.heroicon name="hero-check" />
       </:item_indicator>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.combobox>
     <.action type="submit" id="combobox-form-submit" class="button button--accent">
       Submit
     </.action>
-  </form>
+  </.form>
 </Layouts.app>

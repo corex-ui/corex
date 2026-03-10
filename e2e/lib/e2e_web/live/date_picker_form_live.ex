@@ -139,6 +139,10 @@ defmodule E2eWeb.DatePickerFormLive do
           <:next_trigger>
             <.heroicon name="hero-chevron-right" class="icon" />
           </:next_trigger>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
         </.date_picker>
         <.action type="submit" id="date-picker-form-live-submit" class="button button--accent">
           Submit

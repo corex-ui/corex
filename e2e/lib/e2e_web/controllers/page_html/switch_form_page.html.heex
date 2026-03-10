@@ -9,12 +9,23 @@
     <:title>Switch form</:title>
     <:subtitle>Controller Form</:subtitle>
   </.layout_heading>
-  <p>Controller Form</p>
-  <form action={~p"/#{@locale}/switch/form"} method="post" id="switch-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-    <.switch name="notifications" id="switch-form-notifications" class="switch">
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/switch/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.switch field={f[:notifications]} class="switch">
       <:label>Enable notifications</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.switch>
-    <.action type="submit" id="switch-form-submit" class="button button--accent">Submit</.action>
-  </form>
+    <.action type="submit" id="switch-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
 </Layouts.app>

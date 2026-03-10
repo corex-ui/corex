@@ -52,11 +52,15 @@ defmodule Corex.NativeInput do
 
   ### With form field
 
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. See the Checkbox or NumberInput component docs for the full Controller and Live View pattern.
+
   ```heex
-  <.native_input type="email" field={@form[:email]} class="native-input">
-    <:label>Email</:label>
-    <:error :let={msg}>{msg}</:error>
-  </.native_input>
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)}>
+    <.native_input type="email" field={f[:email]} class="native-input">
+      <:label>Email</:label>
+      <:error :let={msg}>{msg}</:error>
+    </.native_input>
+  </.form>
   ```
 
   ## Styling

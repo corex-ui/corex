@@ -58,21 +58,22 @@ defmodule Corex.DatePicker do
 
   ### Controller
 
-  ```elixir
-  defmodule MyAppWeb.PageController do
-    use MyAppWeb, :controller
+  Build the form from an Ecto changeset:
 
-    def home(conn, params) do
-      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-      render(conn, :home, form: form)
-    end
+  ```elixir
+  def form_page(conn, _params) do
+    form =
+      %MyApp.Form.DateForm{}
+      |> MyApp.Form.DateForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :date_form, id: "date-form")
+    render(conn, :form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
-    <.date_picker field={f[:birth_date]} class="date-picker">
-      <:label>Birth date</:label>
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+    <.date_picker field={f[:date]} class="date-picker" trigger_aria_label="Select date" input_aria_label="Select date">
+      <:label>Date</:label>
       <:trigger>
         <.heroicon name="hero-calendar" class="icon" />
       </:trigger>
@@ -93,42 +94,7 @@ defmodule Corex.DatePicker do
 
   ### Live View
 
-  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly.
-
-  ```elixir
-  defmodule MyAppWeb.DatePickerLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      form = to_form(%{"birth_date" => nil}, as: :user)
-      {:ok, assign(socket, :form, form)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.form as={:user} for={@form} id={get_form_id(@form)}>
-        <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
-          <:label>Birth date</:label>
-          <:trigger>
-            <.heroicon name="hero-calendar" class="icon" />
-          </:trigger>
-          <:prev_trigger>
-            <.heroicon name="hero-chevron-left" class="icon" />
-          </:prev_trigger>
-          <:next_trigger>
-            <.heroicon name="hero-chevron-right" class="icon" />
-          </:next_trigger>
-          <:error :let={msg}>
-            <.heroicon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.date_picker>
-        <button type="submit">Submit</button>
-      </.form>
-      """
-    end
-  end
-  ```
+  When using in a Live view you must add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 

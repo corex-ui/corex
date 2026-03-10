@@ -14,15 +14,14 @@ shell! = fn command, opts ->
     )
 end
 
-shell_in_daisy! = fn command -> shell!.(command, cd: Path.expand("corex_design")) end
+shell_in_corex! = fn command -> shell!.(command, cd: Path.expand("corex_design")) end
 
 File.cd!("installer", fn ->
   shell!.("mix corex.new corex_design --dev --database sqlite3 --install", [])
 
-  shell_in_daisy!.("mix corex.gen.auth Accounts User users --live")
-  shell_in_daisy!.("mix deps.get")
-  shell_in_daisy!.("mix corex.gen.live Blog Post posts title:string body:text")
-  shell_in_daisy!.("mix tailwind corex_design")
+  shell_in_corex!.("mix deps.get")
+  shell_in_corex!.("mix corex.gen.live Blog Post posts title:string body:text")
+  shell_in_corex!.("mix tailwind corex_design")
 
   content = File.read!("corex_design/priv/static/assets/css/app.css")
 

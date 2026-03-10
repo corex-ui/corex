@@ -30,13 +30,13 @@ defmodule E2eWeb.NumberInputControlledLive do
       <h3>Controlled State: {@value}</h3>
 
       <div class="layout__row">
-        <.action phx-click="set_value" phx-value-value="10" class="button button--sm">
+        <.action phx-click={JS.push("set_value", value: %{value: "10"})} class="button button--sm">
           Set to 10
         </.action>
-        <.action phx-click="set_value" phx-value-value="0" class="button button--sm">
+        <.action phx-click={JS.push("set_value", value: %{value: "0"})} class="button button--sm">
           Set to 0
         </.action>
-        <.action phx-click="set_value" phx-value-value="-5" class="button button--sm">
+        <.action phx-click={JS.push("set_value", value: %{value: "-5"})} class="button button--sm">
           Set to -5
         </.action>
       </div>

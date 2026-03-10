@@ -45,7 +45,6 @@
     &[data-state="unchecked"] {
       background: var(--color-ui);
       color: var(--color-ui--text);
-      border-color: var(--color-ui--border);
     }
 
     &:hover {

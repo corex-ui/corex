@@ -9,12 +9,16 @@
     <:title>Date Picker form</:title>
     <:subtitle>Controller Form</:subtitle>
   </.layout_heading>
-  <p>Controller Form</p>
-  <form action={~p"/#{@locale}/date-picker/form"} method="post" id="date-picker-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/date-picker/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
     <.date_picker
-      name="date_picker_form[date]"
-      id="date-picker-form-date"
+      field={f[:date]}
       trigger_aria_label="Select date"
       input_aria_label="Select date"
       class="date-picker"
@@ -29,9 +33,13 @@
       <:next_trigger>
         <.heroicon name="hero-chevron-right" class="icon" />
       </:next_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.date_picker>
     <.action type="submit" id="date-picker-form-submit" class="button button--accent">
       Submit
     </.action>
-  </form>
+  </.form>
 </Layouts.app>

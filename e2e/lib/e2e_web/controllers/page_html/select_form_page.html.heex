@@ -9,14 +9,18 @@
     <:title>Select form</:title>
     <:subtitle>Controller Form</:subtitle>
   </.layout_heading>
-  <p>Controller Form</p>
-  <form action={~p"/#{@locale}/select/form"} method="post" id="select-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/select/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
     <.select
-      name="country"
-      id="select-form-country"
+      field={f[:country]}
       class="select"
-      placeholder="Select a country"
+      translation={%Corex.Select.Translation{placeholder: "Select a country"}}
       items={[
         %{label: "France", id: "fra"},
         %{label: "Belgium", id: "bel"},
@@ -30,7 +34,13 @@
       <:trigger>
         <.heroicon name="hero-chevron-down" />
       </:trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.select>
-    <.action type="submit" id="select-form-submit" class="button button--accent">Submit</.action>
-  </form>
+    <.action type="submit" id="select-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
 </Layouts.app>

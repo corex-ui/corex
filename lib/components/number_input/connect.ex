@@ -22,7 +22,7 @@ defmodule Corex.NumberInput.Connect do
   @spec props(Props.t()) :: map()
   def props(assigns) do
     default_value =
-      if(assigns.controlled, do: nil, else: (assigns.default_value || assigns.value))
+      if(assigns.controlled, do: nil, else: assigns.default_value || assigns.value)
 
     %{
       "id" => assigns.id,

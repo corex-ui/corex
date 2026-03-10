@@ -6,8 +6,6 @@
     "lib/corex/flash\\.ex",
     "lib/corex/positoning\\.ex",
     "lib/mix/tasks/corex.gen.schema.ex",
-    "lib/mix/tasks/corex.gen.auth.ex",
-    "lib/mix/tasks/corex.gen.auth/.*",
     "lib/mix/tasks/corex.gen.html.ex",
     "lib/mix/tasks/corex.gen.live.ex"
   ]

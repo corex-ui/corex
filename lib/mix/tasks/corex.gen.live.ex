@@ -546,6 +546,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp app_has_themes? do
     app = Mix.Project.config()[:app]
     str = to_string(app)
+
     root_app =
       if String.ends_with?(str, "_web") do
         String.to_atom(String.replace_suffix(str, "_web", ""))

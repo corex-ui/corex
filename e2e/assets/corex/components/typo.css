@@ -206,8 +206,9 @@
     flex-direction: column;
     gap: var(--spacing-ui);
     padding: var(--spacing-ui-sm);
-    background: var(--color-root);
-    border: 1px solid var(--color-root--border);
+    background: var(--color-layer);
+    border: 1px solid var(--color-layer--border);
+    color: var(--color-layer--text);
     border-radius: var(--radius-ui);
   }
 }

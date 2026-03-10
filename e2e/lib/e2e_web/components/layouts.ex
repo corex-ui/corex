@@ -512,13 +512,7 @@ defmodule E2eWeb.Layouts do
 
   defp layout_components_menu_items(locale) do
     Corex.Tree.new([
-      [
-        label: "Layout Components",
-        id: "layout-components",
-        children: [
-          component_item("Heading", "layout-heading", locale)
-        ]
-      ]
+      component_item("Heading", "layout-heading", locale)
     ])
   end
 
@@ -555,7 +549,8 @@ defmodule E2eWeb.Layouts do
       component_item("Date Picker", "date-picker", locale,
         extra: [
           [label: "Form", id: "/#{locale}/date-picker/form"],
-          [label: "Form Live", id: "/#{locale}/live/date-picker/form"]
+          [label: "Form Live", id: "/#{locale}/live/date-picker/form"],
+          [label: "Controlled", id: "/#{locale}/live/date-picker/controlled"]
         ]
       ),
       component_item("Editable", "editable", locale,
@@ -598,7 +593,8 @@ defmodule E2eWeb.Layouts do
       component_item("Select", "select", locale,
         extra: [
           [label: "Form", id: "/#{locale}/select/form"],
-          [label: "Form Live", id: "/#{locale}/live/select/form"]
+          [label: "Form Live", id: "/#{locale}/live/select/form"],
+          [label: "Controlled", id: "/#{locale}/live/select/controlled"]
         ]
       ),
       component_item("Signature", "signature", locale,
@@ -610,7 +606,8 @@ defmodule E2eWeb.Layouts do
       component_item("Switch", "switch", locale,
         extra: [
           [label: "Form", id: "/#{locale}/switch/form"],
-          [label: "Form Live", id: "/#{locale}/live/switch/form"]
+          [label: "Form Live", id: "/#{locale}/live/switch/form"],
+          [label: "Controlled", id: "/#{locale}/live/switch/controlled"]
         ]
       )
     ])

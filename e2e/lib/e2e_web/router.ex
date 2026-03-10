@@ -41,6 +41,7 @@ defmodule E2eWeb.Router do
       live "/live/checkbox/form", CheckboxFormLive
       live "/live/checkbox/controlled", CheckboxControlledLive
       live "/live/switch/form", SwitchFormLive
+      live "/live/switch/controlled", SwitchControlledLive
       live "/live/clipboard", ClipboardLive
       live "/live/code", CodeLive
       live "/live/action", ActionLive
@@ -52,6 +53,7 @@ defmodule E2eWeb.Router do
       live "/live/combobox-form", ComboboxForm
       live "/live/date-picker", DatePickerLive
       live "/live/date-picker/form", DatePickerFormLive
+      live "/live/date-picker/controlled", DatePickerControlledLive
       live "/live/dialog", DialogLive
       live "/live/menu", MenuLive
       live "/live/switch", SwitchLive
@@ -59,6 +61,7 @@ defmodule E2eWeb.Router do
 
       live "/live/select", SelectLive
       live "/live/select/form", SelectFormLive
+      live "/live/select/controlled", SelectControlledLive
       live "/live/signature", SignatureLive
       live "/live/signature/form", SignatureFormLive
       live "/live/toast", ToastLive

@@ -17,7 +17,7 @@ defmodule E2eWeb.CheckboxModel do
 
   def press_space_on_checkbox(session) do
     session
-    |> focus_element("#checkbox-form-terms [data-scope='checkbox'][data-part='control']")
+    |> focus_element("[data-scope='checkbox'][data-part='control']")
     |> then(&Wallaby.Browser.send_keys(&1, [:space]))
   end
 

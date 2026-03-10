@@ -24,12 +24,8 @@ defmodule Corex.MixProject do
         tool: ExCoveralls,
         threshold: 85,
         ignore_modules: [
-          Mix.Tasks.Corex.Gen.Auth,
           Mix.Tasks.Corex.Gen.Html,
           Mix.Tasks.Corex.Gen.Live,
-          Mix.Tasks.Corex.Gen.Auth.Migration,
-          Mix.Tasks.Corex.Gen.Auth.HashingLib,
-          Mix.Tasks.Corex.Gen.Auth.Injector,
           Corex.Flash,
           Corex.Positioning,
           Corex.Flash.Info,

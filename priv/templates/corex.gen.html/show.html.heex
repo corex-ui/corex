@@ -1,6 +1,5 @@
 <Layouts.app
-  flash={@flash}
-<%= if layout_mode do %>
+  flash={@flash}<%= if layout_mode do %>
   mode={@mode}
 <% end %><%= if layout_theme do %>
   theme={@theme}
@@ -11,8 +10,7 @@
   current_path={@current_path}
 <% end %><%= if scope do %>
   <%= scope.assign_key %>={@<%= scope.assign_key %>}
-<% end %>
->
+<% end %>>
   <.layout_heading>
     <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
     <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
