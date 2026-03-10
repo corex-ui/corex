@@ -14,10 +14,10 @@ defmodule E2eWeb.PasswordInputLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Password Input</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Password Input</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <div class="layout__row flex flex-col gap-ui">
         <.password_input id="password-with-visibility" name="user[password]" class="password-input">
           <:label>Password</:label>

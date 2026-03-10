@@ -62,10 +62,10 @@ defmodule E2eWeb.DataTableSortingLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Data Table</h1>
-        <h2>Sorting Example</h2>
-      </div>
+      <.layout_heading>
+        <:title>Data Table</:title>
+        <:subtitle>Sorting Example</:subtitle>
+      </.layout_heading>
 
       <div class="space-y-4">
         <p>This example demonstrates how to implement sorting with the `data-table` component.</p>

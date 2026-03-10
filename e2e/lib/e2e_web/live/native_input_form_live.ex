@@ -79,7 +79,10 @@ defmodule E2eWeb.NativeInputFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>NativeInput form (LiveView)</h1>
+      <.layout_heading>
+        <:title>NativeInput form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and native inputs</p>
 
       <.form

@@ -101,6 +101,7 @@ defmodule E2e.MixProject do
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
+        "run priv/repo/seeds/user_admin_seed.exs",
         "test"
       ],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],

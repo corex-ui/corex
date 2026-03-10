@@ -114,7 +114,10 @@ defmodule E2eWeb.NumberInputFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Number Input form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Number Input form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and controlled number input</p>
 
       <.form

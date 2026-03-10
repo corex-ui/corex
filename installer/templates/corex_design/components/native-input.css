@@ -17,7 +17,6 @@
     flex-flow: row nowrap;
     align-items: stretch;
     position: relative;
-    margin-inline: auto;
     max-width: var(--container-mini);
   }
 

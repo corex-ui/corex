@@ -112,7 +112,10 @@ defmodule E2eWeb.PinInputFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Pin Input form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Pin Input form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and controlled pin input</p>
 
       <.form

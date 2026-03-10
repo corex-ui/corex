@@ -5,8 +5,10 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Combobox form</h1>
-  <p>Plain HTML form (no LiveView)</p>
+  <.layout_heading>
+    <:title>Combobox form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
   <form action={~p"/#{@locale}/combobox/form"} method="post" id="combobox-plain-form">
     <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
     <.native_input

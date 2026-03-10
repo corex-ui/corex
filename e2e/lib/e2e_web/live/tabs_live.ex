@@ -18,10 +18,11 @@ defmodule E2eWeb.TabsLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Tabs</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Tabs</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
+
       <h3>Client Api</h3>
       <div class="layout__row">
         <.action

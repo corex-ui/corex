@@ -111,7 +111,10 @@ defmodule E2eWeb.SignatureFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Signature form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Signature form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and controlled signature pad</p>
 
       <.form

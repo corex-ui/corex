@@ -25,6 +25,7 @@ defmodule Corex do
     form: {Corex.Form, [get_form_id: 1]},
     hidden_input: {Corex.HiddenInput, [hidden_input: 1]},
     listbox: {Corex.Listbox, [listbox: 1]},
+    layout_heading: {Corex.Layout.Heading, [layout_heading: 1]},
     marquee: {Corex.Marquee, [marquee: 1]},
     menu: {Corex.Menu, [menu: 1]},
     navigate: {Corex.Navigate, [navigate: 1]},

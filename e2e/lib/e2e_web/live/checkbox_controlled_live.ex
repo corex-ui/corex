@@ -27,10 +27,10 @@ defmodule E2eWeb.CheckboxControlledLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Checkbox</h1>
-        <h2>Controlled Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Checkbox</:title>
+        <:subtitle>Controlled Live View</:subtitle>
+      </.layout_heading>
 
       <h3>Controlled State: {inspect(@checked)}</h3>
 

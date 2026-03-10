@@ -53,6 +53,7 @@ defmodule E2eWeb.Layouts do
     form_menu = form_menu_items(locale)
     corex_menu = corex_menu_items(locale)
     form_components_menu = form_components_menu_items(locale)
+    layout_components_menu = layout_components_menu_items(locale)
     full_path = "/#{locale}#{current_path}"
 
     assigns =
@@ -60,6 +61,7 @@ defmodule E2eWeb.Layouts do
       |> assign(:form_menu, form_menu)
       |> assign(:corex_menu, corex_menu)
       |> assign(:form_components_menu, form_components_menu)
+      |> assign(:layout_components_menu, layout_components_menu)
       |> assign(:full_path, full_path)
       |> assign(:prev_path, prev_next_paths(locale, current_path, :prev))
       |> assign(:next_path, prev_next_paths(locale, current_path, :next))
@@ -138,6 +140,20 @@ defmodule E2eWeb.Layouts do
                     <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
+                <.tree_view
+                  id="layout-components-menu"
+                  on_selection_change="handle_menu"
+                  class="tree-view navigation px-ui-padding"
+                  redirect
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@layout_components_menu, @full_path)}
+                  items={@layout_components_menu}
+                >
+                  <:label>Layout Components</:label>
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.tree_view>
               </div>
             </:content>
           </.dialog>
@@ -202,6 +218,20 @@ defmodule E2eWeb.Layouts do
           items={@form_components_menu}
         >
           <:label>Form Components</:label>
+          <:indicator>
+            <.heroicon name="hero-chevron-right" />
+          </:indicator>
+        </.tree_view>
+        <.tree_view
+          id="layout-components-menu-side"
+          on_selection_change="handle_menu"
+          class="tree-view navigation px-ui-padding"
+          redirect
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@layout_components_menu, @full_path)}
+          items={@layout_components_menu}
+        >
+          <:label>Layout Components</:label>
           <:indicator>
             <.heroicon name="hero-chevron-right" />
           </:indicator>
@@ -376,8 +406,9 @@ defmodule E2eWeb.Layouts do
     form_paths = form_menu_items(locale) |> flatten_tree_ids()
     corex_paths = corex_menu_items(locale) |> flatten_tree_ids()
     form_components_paths = form_components_menu_items(locale) |> flatten_tree_ids()
+    layout_components_paths = layout_components_menu_items(locale) |> flatten_tree_ids()
 
-    form_paths ++ corex_paths ++ form_components_paths
+    form_paths ++ corex_paths ++ form_components_paths ++ layout_components_paths
   end
 
   defp flatten_tree_ids(items) when is_list(items) do
@@ -476,6 +507,18 @@ defmodule E2eWeb.Layouts do
       component_item("Toast", "toast", locale),
       component_item("Toggle Group", "toggle-group", locale),
       component_item("Tree view", "tree-view", locale)
+    ])
+  end
+
+  defp layout_components_menu_items(locale) do
+    Corex.Tree.new([
+      [
+        label: "Layout Components",
+        id: "layout-components",
+        children: [
+          component_item("Heading", "layout-heading", locale)
+        ]
+      ]
     ])
   end
 

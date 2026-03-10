@@ -5,10 +5,10 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <div class="layout__row">
-    <h1>Number Input</h1>
-    <h2>Controller View</h2>
-  </div>
+  <.layout_heading>
+    <:title>Number Input</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
   <.number_input id="my-number-input" class="number-input">
     <:label>Quantity</:label>
     <:decrement_trigger>

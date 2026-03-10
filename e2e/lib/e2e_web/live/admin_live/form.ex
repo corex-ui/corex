@@ -14,10 +14,15 @@ defmodule E2eWeb.AdminLive.Form do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>
-        {@page_title}
-      </h1>
-      <h2>Use this form to manage admin records in your database.</h2>
+      <.layout_heading>
+        <:title>{@page_title}</:title>
+        <:subtitle>Use this form to manage admin records in your database.</:subtitle>
+        <:actions>
+          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">
+            <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+          </.navigate>
+        </:actions>
+      </.layout_heading>
 
       <.form
         for={@form}
@@ -27,6 +32,10 @@ defmodule E2eWeb.AdminLive.Form do
       >
         <.native_input field={@form[:name]} type="text" class="native-input">
           <:label>Name</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
         </.native_input>
 
         <.select

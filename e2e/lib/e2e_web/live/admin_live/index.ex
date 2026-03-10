@@ -13,17 +13,15 @@ defmodule E2eWeb.AdminLive.Index do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__heading">
-        <div class="layout__heading__content">
-          <h1>Listing Admins</h1>
-          <h2>Add and manage admin records</h2>
-        </div>
-        <div class="layout__heading__actions">
+      <.layout_heading>
+        <:title>Listing Admins</:title>
+        <:subtitle>Add and manage admin records</:subtitle>
+        <:actions>
           <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
             <.heroicon name="hero-plus" /> New Admin
           </.navigate>
-        </div>
-      </div>
+        </:actions>
+      </.layout_heading>
       <.data_table
         id="admins"
         class="data-table"

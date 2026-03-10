@@ -5,8 +5,11 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Date Picker form</h1>
-  <p>Plain HTML form (no LiveView)</p>
+  <.layout_heading>
+    <:title>Date Picker form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form</p>
   <form action={~p"/#{@locale}/date-picker/form"} method="post" id="date-picker-plain-form">
     <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
     <.date_picker

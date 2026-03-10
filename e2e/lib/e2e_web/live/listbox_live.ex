@@ -14,10 +14,10 @@ defmodule E2eWeb.ListboxLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Listbox</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Listbox</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Minimal</h3>
       <.listbox
         id="my-listbox"

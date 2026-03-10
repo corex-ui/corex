@@ -203,6 +203,9 @@ defmodule Corex.MixProject do
         Corex.SignaturePad,
         Corex.Switch
       ],
+      Layout: [
+        Corex.Layout.Heading
+      ],
       Content: [
         Corex.Content,
         Corex.Content.Item

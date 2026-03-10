@@ -54,10 +54,10 @@ defmodule E2eWeb.DataTableStreamLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Data Table</h1>
-        <h2>Stream</h2>
-      </div>
+      <.layout_heading>
+        <:title>Data Table</:title>
+        <:subtitle>Stream</:subtitle>
+      </.layout_heading>
       <p>
         Phoenix Stream: table rows are kept in sync with the stream. Add or remove items to test.
       </p>

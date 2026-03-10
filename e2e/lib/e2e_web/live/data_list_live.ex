@@ -14,10 +14,10 @@ defmodule E2eWeb.DataListLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Data List</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Data List</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
 
       <h3>Basic Example</h3>
       <.data_list class="data-list">

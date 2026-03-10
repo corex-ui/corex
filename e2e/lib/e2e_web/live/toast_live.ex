@@ -70,10 +70,10 @@ defmodule E2eWeb.ToastLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Toast</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Toast</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
 
       <h3>Create Toast</h3>
       <.form

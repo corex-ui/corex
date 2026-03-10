@@ -14,8 +14,10 @@ defmodule E2eWeb.SwitchLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Switch</h1>
-      <h2>Live View</h2>
+      <.layout_heading>
+        <:title>Switch</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.switch class="switch">
         <:label>Enable notifications</:label>
       </.switch>

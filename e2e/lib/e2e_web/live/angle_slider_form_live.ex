@@ -116,7 +116,10 @@ defmodule E2eWeb.AngleSliderFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Angle Slider form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Angle Slider form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and controlled angle slider</p>
 
       <.form

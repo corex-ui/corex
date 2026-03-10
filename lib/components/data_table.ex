@@ -271,7 +271,7 @@ defmodule Corex.DataTable do
           </tr>
         </thead>
         <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row">
+          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
             <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
               <Corex.Checkbox.checkbox
                 id={"#{@id}-select-#{if @row_id, do: @row_id.(row), else: inspect(row)}"}

@@ -14,8 +14,10 @@ defmodule E2eWeb.ActionLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Action</h1>
-      <h2>Live View</h2>
+      <.layout_heading>
+        <:title>Action</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Anatomy</h3>
       <section class="layout__section">
         <div class="layout__row gap-ui-gap">

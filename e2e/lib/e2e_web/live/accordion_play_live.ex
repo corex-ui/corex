@@ -98,10 +98,10 @@ defmodule E2eWeb.AccordionPlayLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Playground</h2>
-      </div>
+      <.layout_heading>
+        <:title>Accordion</:title>
+        <:subtitle>Playground</:subtitle>
+      </.layout_heading>
 
       <div class="flex flex-col gap-ui-gap">
         <.switch

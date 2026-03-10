@@ -19,10 +19,10 @@ defmodule E2eWeb.ComboboxLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Combobox</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Combobox</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Minimal</h3>
       <.combobox
         id="my-combobox"

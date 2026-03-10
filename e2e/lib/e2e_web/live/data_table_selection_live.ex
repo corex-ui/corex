@@ -90,10 +90,10 @@ defmodule E2eWeb.DataTableSelectionLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Data Table</h1>
-        <h2>Selection Example</h2>
-      </div>
+      <.layout_heading>
+        <:title>Data Table</:title>
+        <:subtitle>Selection Example</:subtitle>
+      </.layout_heading>
 
       <div class="space-y-4">
         <p>

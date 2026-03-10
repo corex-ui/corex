@@ -5,14 +5,15 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>
-    Listing Users
-  </h1>
-  <h2>
-    <.navigate to={~p"/#{@locale}/users/new"} type="href" class="button button--accent">
-      <.heroicon name="hero-plus" /> New User
-    </.navigate>
-  </h2>
+  <.layout_heading>
+    <:title>Listing Users</:title>
+    <:subtitle>Add and manage user records</:subtitle>
+    <:actions>
+      <.navigate to={~p"/#{@locale}/users/new"} type="href" class="button button--accent">
+        <.heroicon name="hero-plus" /> New User
+      </.navigate>
+    </:actions>
+  </.layout_heading>
 
   <.data_table
     id="users"

@@ -14,10 +14,10 @@ defmodule E2eWeb.FloatingPanelLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Floating Panel</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Floating Panel</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.floating_panel id="my-floating-panel" default_open={false} class="floating-panel">
         <:open_trigger>Close panel</:open_trigger>
         <:closed_trigger>Open panel</:closed_trigger>

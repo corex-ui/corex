@@ -22,7 +22,11 @@ defmodule E2eWeb.DataTableFeatureTest do
     end
   end
 
-  for {name, path} <- [{:sorting, "/en/live/data-table/sorting"}, {:selection, "/en/live/data-table/selection"}, {:full, "/en/live/data-table/full"}] do
+  for {name, path} <- [
+        {:sorting, "/en/live/data-table/sorting"},
+        {:selection, "/en/live/data-table/selection"},
+        {:full, "/en/live/data-table/full"}
+      ] do
     @name name
     @path path
 

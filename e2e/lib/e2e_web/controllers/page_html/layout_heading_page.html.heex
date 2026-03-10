@@ -1,0 +1,34 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Layout Heading</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
+  <h3>Title only</h3>
+  <.layout_heading>
+    <:title>Page Title</:title>
+  </.layout_heading>
+
+  <h3>Title and subtitle</h3>
+  <.layout_heading>
+    <:title>Page Title</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
+  <h3>Title, subtitle and actions</h3>
+  <.layout_heading>
+    <:title>Page Title</:title>
+    <:subtitle>Controller View</:subtitle>
+    <:actions>
+      <.navigate to={~p"/#{@locale}"} type="href" class="button">
+        <.heroicon name="hero-arrow-left" class="icon" /> Back
+      </.navigate>
+    </:actions>
+  </.layout_heading>
+</Layouts.app>

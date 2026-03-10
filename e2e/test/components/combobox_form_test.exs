@@ -11,6 +11,7 @@ defmodule E2eWeb.ComboboxFormTest do
       session
       |> Combobox.goto(@mode)
       |> Combobox.wait(500)
+
       # |> Combobox.check_accessibility()
     end
   end

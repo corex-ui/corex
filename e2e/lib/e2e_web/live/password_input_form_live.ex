@@ -86,7 +86,10 @@ defmodule E2eWeb.PasswordInputFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Password Input form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Password Input form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset</p>
 
       <.form

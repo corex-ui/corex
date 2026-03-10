@@ -14,10 +14,10 @@ defmodule E2eWeb.EditableLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Editable</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Editable</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.editable
         id="my-editable"
         value="My custom value"

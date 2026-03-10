@@ -101,7 +101,10 @@ defmodule E2eWeb.SelectFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Select form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Select form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and select</p>
 
       <.form

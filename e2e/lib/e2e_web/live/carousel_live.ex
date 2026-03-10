@@ -21,10 +21,10 @@ defmodule E2eWeb.CarouselLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Carousel</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Carousel</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <div class="layout__row flex flex-col gap-ui">
         <section>
           <h3 class="font-ui-lg mb-micro">Basic</h3>

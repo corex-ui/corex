@@ -18,10 +18,12 @@ defmodule E2eWeb.ToggleGroupLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Toggle Group</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Toggle Group</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
+
+      <h3>Client Api</h3>
       <div class="layout__row">
         <.action
           phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem"])}

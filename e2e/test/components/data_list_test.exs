@@ -15,6 +15,7 @@ defmodule E2eWeb.DataListTest do
 
     feature "#{@mode} - DataList renders content", %{session: session} do
       content = if @mode == :live, do: "Bob", else: "Alice"
+
       session
       |> DataList.goto(@mode)
       |> DataList.see_content(content)

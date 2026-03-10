@@ -14,10 +14,10 @@ defmodule E2eWeb.TimerLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Timer</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Timer</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.timer id="my-timer" countdown start_ms={60_000} target_ms={0} class="timer">
         <:start_trigger><.heroicon name="hero-play" class="icon" /></:start_trigger>
         <:pause_trigger><.heroicon name="hero-pause" class="icon" /></:pause_trigger>

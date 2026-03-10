@@ -158,17 +158,14 @@ defmodule E2eWeb.ComboboxForm do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Combobox</h1>
-        <h2>Form with validation</h2>
-      </div>
+      <.layout_heading>
+        <:title>Combobox</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
 
-      <h1>
-        Combobox form
-      </h1>
-      <h2>
-        Phoenix form with Ecto validation, database fetching and server side fitlering combobox.
-      </h2>
+      <p>
+        Phoenix form with Ecto validation, database fetching and server side filtering combobox.
+      </p>
 
       <.form
         for={@form}

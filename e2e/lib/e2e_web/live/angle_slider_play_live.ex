@@ -97,10 +97,10 @@ defmodule E2eWeb.AngleSliderPlayLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Angle Slider</h1>
-        <h2>Playground</h2>
-      </div>
+      <.layout_heading>
+        <:title>Angle Slider</:title>
+        <:subtitle>Playground</:subtitle>
+      </.layout_heading>
 
       <div class="flex flex-col gap-ui-gap">
         <.switch

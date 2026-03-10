@@ -134,7 +134,7 @@
     margin-inline: auto;
     justify-items: center;
     align-items: center;
-    gap: var(--spacing-ui-gap);
+    gap: var(--spacing-ui);
     display: flex;
     flex-direction: column;
   }

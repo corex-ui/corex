@@ -5,10 +5,10 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <div class="layout__row">
-    <h1>Native Input</h1>
-    <h2>Controller View</h2>
-  </div>
+  <.layout_heading>
+    <:title>Native Input</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
   <div class="layout__row flex flex-col gap-ui">
     <.native_input type="text" id="text-with-icon" name="user[name]" class="native-input">
       <:label>Text</:label>

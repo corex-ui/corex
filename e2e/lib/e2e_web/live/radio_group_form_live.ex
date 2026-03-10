@@ -110,7 +110,10 @@ defmodule E2eWeb.RadioGroupFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Radio Group form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Radio Group form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and controlled radio group</p>
 
       <.form

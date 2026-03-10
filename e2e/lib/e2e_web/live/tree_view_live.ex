@@ -84,10 +84,10 @@ defmodule E2eWeb.TreeViewLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Tree View</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Tree View</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <section class="layout__section">
         <div class="layout__row">

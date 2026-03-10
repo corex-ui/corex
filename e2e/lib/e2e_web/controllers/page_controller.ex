@@ -221,6 +221,10 @@ defmodule E2eWeb.PageController do
     render(conn, :tree_view_page)
   end
 
+  def layout_heading_page(conn, _params) do
+    render(conn, :layout_heading_page)
+  end
+
   def angle_slider_page(conn, _params) do
     render(conn, :angle_slider_page)
   end

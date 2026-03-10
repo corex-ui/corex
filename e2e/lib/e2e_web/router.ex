@@ -45,6 +45,7 @@ defmodule E2eWeb.Router do
       live "/live/code", CodeLive
       live "/live/action", ActionLive
       live "/live/navigate", NavigateLive
+      live "/live/layout-heading", LayoutHeadingLive
       live "/live/collapsible", CollapsibleLive
       live "/live/combobox", ComboboxLive
       live "/live/combobox-fetch", ComboboxFetch
@@ -110,6 +111,7 @@ defmodule E2eWeb.Router do
     get "/code", PageController, :code_page
 
     get "/navigate", PageController, :navigate_page
+    get "/layout-heading", PageController, :layout_heading_page
 
     get "/collapsible", PageController, :collapsible_page
 

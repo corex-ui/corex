@@ -125,10 +125,10 @@ defmodule E2eWeb.DataTableFullLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Data Table</h1>
-        <h2>Full Example (Sorting & Selection)</h2>
-      </div>
+      <.layout_heading>
+        <:title>Data Table</:title>
+        <:subtitle>Full Example (Sorting & Selection)</:subtitle>
+      </.layout_heading>
 
       <div class="space-y-4">
         <p>

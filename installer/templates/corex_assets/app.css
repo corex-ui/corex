@@ -28,6 +28,7 @@
 <%= if @mode do %>@import "../corex/tokens/themes/<%= @default_theme %>/dark.css";
 <% end %><% end %>@import "../corex/components/typo.css";
 @import "../corex/components/layout.css";
+@import "../corex/components/layout-heading.css";
 @import "../corex/components/button.css";
 @import "../corex/components/link.css";
 @import "../corex/components/toast.css";

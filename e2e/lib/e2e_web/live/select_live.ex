@@ -14,10 +14,10 @@ defmodule E2eWeb.SelectLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Select</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Select</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.select
         id="my-select"
         class="select"

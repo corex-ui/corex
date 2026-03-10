@@ -20,10 +20,10 @@ defmodule E2eWeb.DataTableLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Data Table</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Data Table</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
 
       <h3>Basic Example</h3>
       <.data_table id="basic-table" class="data-table" rows={@list_rows}>
@@ -31,6 +31,10 @@ defmodule E2eWeb.DataTableLive do
         <:col :let={row} label="Name">{row.name}</:col>
         <:col :let={row} label="Role">{row.role}</:col>
         <:col :let={row} label="Email">{row.email}</:col>
+        <:action :let={row}>
+          <.action>Edit {row.name}</.action>
+          <.action>Delete {row.name}</.action>
+        </:action>
       </.data_table>
     </Layouts.app>
     """

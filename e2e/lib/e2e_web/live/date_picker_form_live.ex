@@ -108,7 +108,10 @@ defmodule E2eWeb.DatePickerFormLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Date Picker form (LiveView)</h1>
+      <.layout_heading>
+        <:title>Date Picker form</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
       <p>Phoenix form with Ecto changeset and controlled date picker</p>
 
       <.form

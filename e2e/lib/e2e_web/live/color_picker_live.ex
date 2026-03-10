@@ -35,10 +35,10 @@ defmodule E2eWeb.ColorPickerLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Color Picker</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Color Picker</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
         <.action

@@ -6,6 +6,10 @@
 >
   <.native_input field={f[:name]} type="text" class="native-input">
     <:label>Name</:label>
+    <:error :let={msg}>
+      <.heroicon name="hero-exclamation-circle" class="icon" />
+      {msg}
+    </:error>
   </.native_input>
   <.select
     class="select"

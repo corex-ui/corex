@@ -4,7 +4,13 @@ defmodule E2eWeb.AccordionTest do
 
   alias E2eWeb.AccordionModel, as: Accordion
 
-  for mode <- [:static, :live, "/en/playground/accordion", "/en/controlled/accordion", "/en/async/accordion"] do
+  for mode <- [
+        :static,
+        :live,
+        "/en/playground/accordion",
+        "/en/controlled/accordion",
+        "/en/async/accordion"
+      ] do
     @mode mode
 
     feature "#{@mode} - Accordion has no A11y violations", %{session: session} do
@@ -20,7 +26,8 @@ defmodule E2eWeb.AccordionTest do
         |> Accordion.goto(@mode)
         |> Accordion.wait(300)
 
-      content_initially_visible = Accordion.content_visible?(session, "Consectetur adipiscing elit")
+      content_initially_visible =
+        Accordion.content_visible?(session, "Consectetur adipiscing elit")
 
       session =
         if content_initially_visible do

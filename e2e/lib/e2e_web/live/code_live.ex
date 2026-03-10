@@ -27,8 +27,10 @@ defmodule E2eWeb.CodeLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Code</h1>
-      <h2>Live View</h2>
+      <.layout_heading>
+        <:title>Code</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Elixir</h3>
       <section class="layout__section">
         <div class="relative w-full">

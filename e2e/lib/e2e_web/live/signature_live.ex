@@ -27,10 +27,10 @@ defmodule E2eWeb.SignatureLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Signature Pad</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Signature Pad</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client API</h3>
       <div class="layout__row">
         <.action phx-click={Corex.SignaturePad.clear("my-signature-pad")} class="button button--sm">

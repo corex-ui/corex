@@ -14,10 +14,10 @@ defmodule E2eWeb.NumberInputLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Number Input</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Number Input</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.number_input id="my-number-input" class="number-input">
         <:label>Quantity</:label>
         <:decrement_trigger>

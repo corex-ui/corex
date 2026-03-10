@@ -59,10 +59,10 @@ defmodule E2eWeb.ListboxStreamLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Listbox</h1>
-        <h2>Stream</h2>
-      </div>
+      <.layout_heading>
+        <:title>Listbox</:title>
+        <:subtitle>Stream</:subtitle>
+      </.layout_heading>
       <p>
         Phoenix Stream: items_list is kept in sync with the stream. Add or remove items to test.
       </p>
