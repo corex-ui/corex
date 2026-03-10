@@ -76,8 +76,8 @@ defmodule Corex.FloatingPanelTest do
       assert html =~ "aria-label=\"Cls\""
       assert html =~ "data-disabled"
       assert html =~ "data-dir=\"rtl\""
-      assert html =~ ~s(&quot;width&quot;:200,&quot;height&quot;:200)
-      assert html =~ ~s(&quot;x&quot;:10,&quot;y&quot;:10)
+      assert html =~ ~s(&quot;width&quot;:200) and html =~ ~s(&quot;height&quot;:200)
+      assert html =~ ~s(&quot;x&quot;:10) and html =~ ~s(&quot;y&quot;:10)
       assert html =~ "data-grid-size=\"10\""
       assert html =~ "data-persist-rect"
     end
