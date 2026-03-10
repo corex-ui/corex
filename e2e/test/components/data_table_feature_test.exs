@@ -7,10 +7,7 @@ defmodule E2eWeb.DataTableFeatureTest do
   @variants [
     {:static, "/en/data-table"},
     {:live, "/en/live/data-table"},
-    {:stream, "/en/live/data-table/stream"},
-    {:sorting, "/en/live/data-table/sorting"},
-    {:selection, "/en/live/data-table/selection"},
-    {:full, "/en/live/data-table/full"}
+    {:stream, "/en/live/data-table/stream"}
   ]
 
   for {name, path} <- @variants do
@@ -20,7 +17,18 @@ defmodule E2eWeb.DataTableFeatureTest do
     feature "#{@name} - DataTable has no A11y violations", %{session: session} do
       session
       |> DataTable.goto(@path)
-      # Wait a bit for LV to mount completely if live
+      |> DataTable.wait(500)
+      |> DataTable.check_accessibility()
+    end
+  end
+
+  for {name, path} <- [{:sorting, "/en/live/data-table/sorting"}, {:selection, "/en/live/data-table/selection"}, {:full, "/en/live/data-table/full"}] do
+    @name name
+    @path path
+
+    feature "#{@name} - DataTable has no A11y violations", %{session: session} do
+      session
+      |> DataTable.goto(@path)
       |> DataTable.wait(500)
       |> DataTable.check_accessibility()
     end

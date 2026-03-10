@@ -1,5 +1,5 @@
 defmodule E2eWeb.ComboboxFormTest do
-  use ExUnit.Case, async: true
+  use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
 
   alias E2eWeb.ComboboxModel, as: Combobox

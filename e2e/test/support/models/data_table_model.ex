@@ -2,8 +2,6 @@ defmodule E2eWeb.DataTableModel do
   use E2eWeb.Model, component: "data-table"
 
   def click_sort_header(session, name) do
-    # Find the sort trigger button inside the header for the given name
-    # e.g., <button data-part="sort-trigger" phx-value-sort_by="name">
     click(session, css("[data-part='sort-trigger'][phx-value-sort_by='#{name}']"))
   end
 
