@@ -207,7 +207,18 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def run_phx_server(app_root_path, port \\ nil) do
-    port = port || (45000 + :erlang.unique_integer([:positive]) rem 5000)
+    port =
+      port ||
+        case :gen_tcp.listen(0, []) do
+          {:ok, socket} ->
+            {:ok, port} = :inet.port(socket)
+            :gen_tcp.close(socket)
+            port
+
+          {:error, _} ->
+            45000 + :rand.uniform(5000)
+        end
+
     port_str = to_string(port)
 
     _pid =
