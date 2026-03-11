@@ -3,9 +3,15 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
 
   import <%= inspect context.module %>Fixtures
 
-  @create_attrs <%= Mix.Phoenix.to_text schema.params.create %>
-  @update_attrs <%= Mix.Phoenix.to_text schema.params.update %>
-  @invalid_attrs <%= Mix.Phoenix.to_text (for {key, _} <- schema.params.create, into: %{}, do: {key, nil}) %><%= if layout_locale do %>
+  @create_attrs %{
+<%= for {key, value} <- schema.params.create do %>    <%= key %>: <%= Mix.Phoenix.Schema.value(schema, key, value) %>,
+<% end %>  }
+  @update_attrs %{
+<%= for {key, value} <- schema.params.update do %>    <%= key %>: <%= Mix.Phoenix.Schema.value(schema, key, value) %>,
+<% end %>  }
+  @invalid_attrs %{
+<%= for {key, _} <- schema.params.create do %>    <%= key %>: nil,
+<% end %>  }<%= if layout_locale do %>
 
   @locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()<% end %><%= if scope do %>
 

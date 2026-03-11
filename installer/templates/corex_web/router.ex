@@ -34,7 +34,7 @@ defmodule <%= @web_namespace %>.Router do
       on_mount: [<%= Enum.join(@on_mount_hooks, ", ") %>] do
       live "/live", ExampleLive
     end
-<% else %>    live "/live", ExampleLive
+<% else %>      live "/live", ExampleLive
 <% end %>  end
 <% else %>
   scope "/", <%= @web_namespace %> do

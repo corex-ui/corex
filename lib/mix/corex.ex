@@ -19,6 +19,37 @@ defmodule Mix.Corex do
     EEx.eval_string(content, binding)
   end
 
+  def eval_from_roots(roots, relative_path, binding) when is_list(roots) do
+    path =
+      Enum.find_value(roots, fn root ->
+        full = Path.join(root, relative_path)
+        if File.exists?(full), do: full
+      end) || raise "could not find #{relative_path} in any of the template roots"
+
+    content = File.read!(path)
+    EEx.eval_string(content, binding)
+  end
+
+  def inject_eex_before_final_end(content_to_inject, file_path, binding) do
+    file = File.read!(file_path)
+
+    if String.contains?(file, content_to_inject) do
+      :ok
+    else
+      Mix.shell().info([:green, "* injecting ", :reset, Path.relative_to_cwd(file_path)])
+
+      new_content =
+        file
+        |> String.trim_trailing()
+        |> String.trim_trailing("end")
+        |> EEx.eval_string(binding)
+        |> Kernel.<>(content_to_inject)
+        |> Kernel.<>("end\n")
+
+      File.write!(file_path, new_content)
+    end
+  end
+
   @doc """
   Copies files from source dir to target dir
   according to the given map.
@@ -27,7 +58,12 @@ defmodule Mix.Corex do
   the given binding.
   """
   def copy_from(apps, source_dir, binding, mapping) when is_list(mapping) do
-    roots = Enum.map(apps, &to_app_source(&1, source_dir))
+    roots =
+      if source_dir == "" do
+        apps
+      else
+        Enum.map(apps, &to_app_source(&1, source_dir))
+      end
 
     binding =
       Keyword.merge(binding,
@@ -197,6 +233,30 @@ defmodule Mix.Corex do
   """
   def generator_paths do
     [".", :corex]
+  end
+
+  @doc """
+  Returns the list of template directory paths for a Corex generator, in lookup order.
+
+  Used when copying generator files so that the project can override templates
+  without editing Corex's priv. Order:
+
+    1. `priv/corex_templates/<generator_name>` in the current project
+    2. `priv/templates/<generator_name>` in the current project
+    3. Corex's `priv/templates/<generator_name>`
+
+  Pass the result to `copy_from/4` with `source_dir` set to `""` so files
+  are resolved under each directory.
+  """
+  def generator_template_dirs(generator_name) do
+    cwd = File.cwd!()
+    corex_priv = Application.app_dir(:corex, "priv/templates")
+
+    [
+      Path.join([cwd, "priv", "corex_templates", generator_name]),
+      Path.join([cwd, "priv", "templates", generator_name]),
+      Path.join(corex_priv, generator_name)
+    ]
   end
 
   @doc """

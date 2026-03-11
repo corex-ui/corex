@@ -137,6 +137,49 @@ defmodule Corex.Integration.CodeGeneratorCase do
     |> Kernel.<>("end\n")
   end
 
+  def inject_live_routes(router_path, live_routes, opts \\ []) do
+    content = File.read!(router_path)
+
+    if Keyword.get(opts, :locale_scope) do
+      pattern = "live \"/live\", ExampleLive\n"
+      new_content = String.replace(content, pattern, pattern <> live_routes, global: false)
+      File.write!(router_path, new_content)
+    else
+      new_content = inject_before_final_end(content, live_routes)
+      File.write!(router_path, new_content)
+    end
+  end
+
+  def inject_resources(router_path, resources_routes, opts \\ []) do
+    content = File.read!(router_path)
+
+    if Keyword.get(opts, :locale_scope) do
+      parts = String.split(content, ~r/scope "\/:locale"/, parts: 2)
+
+      if length(parts) == 2 do
+        [head, locale_block] = parts
+        get_pattern = "get \"/\", PageController, :home\n"
+        locale_parts = String.split(locale_block, get_pattern, parts: 2)
+
+        if length(locale_parts) == 2 do
+          [before_get, after_get] = locale_parts
+          new_locale_block = before_get <> get_pattern <> resources_routes <> after_get
+          new_content = head <> "scope \"/:locale\"" <> new_locale_block
+          File.write!(router_path, new_content)
+        else
+          new_content = inject_before_final_end(content, resources_routes)
+          File.write!(router_path, new_content)
+        end
+      else
+        new_content = inject_before_final_end(content, resources_routes)
+        File.write!(router_path, new_content)
+      end
+    else
+      new_content = inject_before_final_end(content, resources_routes)
+      File.write!(router_path, new_content)
+    end
+  end
+
   def modify_file(path, function) when is_binary(path) and is_function(function, 1) do
     path
     |> File.read!()

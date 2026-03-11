@@ -97,6 +97,14 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   Which would generate the LiveViews in `lib/app_web/live/accounts/user_live/`,
   namespaced `AppWeb.Accounts.UserLive` instead of `AppWeb.UserLive`.
 
+  ## Customizing generated output
+
+  To override the default LiveView and test templates, copy the generator
+  templates from Corex into your project at `priv/corex_templates/corex.gen.live/`.
+  The generator looks there first, then `priv/templates/corex.gen.live/`, then
+  Corex's bundled templates. Adjust the copied `.ex` and `.exs` EEx files to
+  match your style; they use the same bindings as the originals.
+
   ## Customizing the context, schema, tables and migrations
 
   In some cases, you may wish to bootstrap HTML templates, LiveViews,
@@ -178,12 +186,10 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         if(schema.scope && schema.scope.route_prefix, do: ", scope: scope", else: "")
     ]
 
-    paths = Mix.Corex.generator_paths()
-
     prompt_for_conflicts(context)
 
     context
-    |> copy_new_files(binding, paths)
+    |> copy_new_files(binding)
     |> print_shell_instructions()
   end
 
@@ -203,7 +209,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp context_files(%Context{generate?: true} = context) do
-    Gen.Context.files_to_be_generated(context)
+    Mix.Corex.Gen.Context.files_to_be_generated(context)
   end
 
   defp context_files(%Context{generate?: false}) do
@@ -226,7 +232,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     ]
   end
 
-  defp copy_new_files(%Context{} = context, binding, paths) do
+  defp copy_new_files(%Context{} = context, binding) do
     files = files_to_be_generated(context)
 
     binding =
@@ -235,16 +241,14 @@ defmodule Mix.Tasks.Corex.Gen.Live do
           web_namespace: inspect(context.web_module),
           gettext: true,
           live: true,
-          # the core components are also generated in corex.new, so we check for
-          # esbuild (@javascript) - here we just assume that it's there
           javascript: true
         }
       )
 
-    Mix.Corex.copy_from(paths, "priv/templates/corex.gen.live", binding, files)
+    template_dirs = Mix.Corex.generator_template_dirs("corex.gen.live")
+    Mix.Corex.copy_from(template_dirs, "", binding, files)
 
-    if context.generate?,
-      do: Gen.Context.copy_new_files(context, Mix.Phoenix.generator_paths(), binding)
+    if context.generate?, do: Mix.Corex.Gen.Context.copy_new_files(context, binding)
 
     context
   end
@@ -290,7 +294,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       )
     end
 
-    if context.generate?, do: Gen.Context.print_shell_instructions(context)
+    if context.generate?, do: Mix.Corex.Gen.Context.print_shell_instructions(context)
     maybe_print_upgrade_info()
   end
 
@@ -366,22 +370,17 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   end
 
   defp number_input_block(key, step) do
-    step_lines =
-      if step do
-        "\n  step={0.1}"
-      else
-        ""
-      end
+    step_attr = if step, do: " step={0.1}", else: ""
 
     ~s"""
-    <.number_input field={@form[#{inspect(key)}]} class="number-input"#{step_lines}>
+    <.number_input field={@form[#{inspect(key)}]} class="number-input"#{step_attr}>
       <:label>#{label(key)}</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.number_input>
     """
   end
@@ -394,9 +393,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         <.heroicon name="hero-check" class="data-checked" />
       </:indicator>
       <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.checkbox>
     """
   end
@@ -415,9 +414,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         <.heroicon name="hero-chevron-right" class="icon" />
       </:next_trigger>
       <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.date_picker>
     """
   end
@@ -436,9 +435,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     >
       <:label>#{label(key)}</:label>
       <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.native_input>
     """
   end
@@ -460,9 +459,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
         <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.select>
     """
   end
@@ -484,9 +483,9 @@ defmodule Mix.Tasks.Corex.Gen.Live do
   defp error_slot do
     ~s"""
     <:error :let={msg}>
-      <.heroicon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     """
   end
 
