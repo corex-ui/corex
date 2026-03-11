@@ -205,4 +205,68 @@ defmodule Corex.Integration.CodeGeneratorCase do
   defp random_string(len) do
     len |> :crypto.strong_rand_bytes() |> Base.url_encode64() |> binary_part(0, len)
   end
+
+  def run_phx_server(app_root_path, port \\ nil) do
+    port = port || (45000 + :erlang.unique_integer([:positive]) rem 5000)
+    port_str = to_string(port)
+
+    _pid =
+      spawn_link(fn ->
+        {_output, _exit} =
+          System.cmd(
+            "elixir",
+            [
+              "--no-halt",
+              "-e",
+              "spawn fn -> IO.gets([]) && System.halt(0) end",
+              "-S",
+              "mix",
+              "phx.server"
+            ],
+            cd: Path.expand(app_root_path),
+            env: [{"PORT", port_str}]
+          )
+      end)
+
+    Process.sleep(3_000)
+    port
+  end
+
+  def request_with_retries(url, retries)
+
+  def request_with_retries(_url, 0), do: {:error, :out_of_retries}
+
+  def request_with_retries(url, retries) do
+    case url |> to_charlist() |> :httpc.request() do
+      {:ok, {{_, status_code, _}, raw_headers, body}} when status_code >= 500 ->
+        if retries > 1 do
+          Process.sleep(2_000)
+          request_with_retries(url, retries - 1)
+        else
+          {:ok,
+           %{
+             status_code: status_code,
+             headers: for({k, v} <- raw_headers, do: {to_string(k), to_string(v)}),
+             body: to_string(body)
+           }}
+        end
+
+      {:ok, httpc_response} ->
+        {{_, status_code, _}, raw_headers, body} = httpc_response
+
+        {:ok,
+         %{
+           status_code: status_code,
+           headers: for({k, v} <- raw_headers, do: {to_string(k), to_string(v)}),
+           body: to_string(body)
+         }}
+
+      {:error, {:failed_connect, _}} ->
+        Process.sleep(2_000)
+        request_with_retries(url, retries - 1)
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
 end

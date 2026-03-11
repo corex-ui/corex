@@ -29,12 +29,10 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
 
       File.touch!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex"), @epoch)
 
-      spawn_link(fn ->
-        run_phx_server(app_root_path)
-      end)
+      port = run_phx_server(app_root_path)
 
       :inets.start()
-      {:ok, response} = request_with_retries("http://localhost:4000", 20)
+      {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
       assert response.status_code == 200
       assert response.body =~ "Corex"
 
@@ -43,44 +41,4 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
     end)
   end
 
-  defp run_phx_server(app_root_path) do
-    {_output, 0} =
-      System.cmd(
-        "elixir",
-        [
-          "--no-halt",
-          "-e",
-          "spawn fn -> IO.gets([]) && System.halt(0) end",
-          "-S",
-          "mix",
-          "phx.server"
-        ],
-        cd: app_root_path
-      )
-  end
-
-  defp request_with_retries(url, retries)
-
-  defp request_with_retries(_url, 0), do: {:error, :out_of_retries}
-
-  defp request_with_retries(url, retries) do
-    case url |> to_charlist() |> :httpc.request() do
-      {:ok, httpc_response} ->
-        {{_, status_code, _}, raw_headers, body} = httpc_response
-
-        {:ok,
-         %{
-           status_code: status_code,
-           headers: for({k, v} <- raw_headers, do: {to_string(k), to_string(v)}),
-           body: to_string(body)
-         }}
-
-      {:error, {:failed_connect, _}} ->
-        Process.sleep(5_000)
-        request_with_retries(url, retries - 1)
-
-      {:error, reason} ->
-        {:error, reason}
-    end
-  end
 end
