@@ -5,7 +5,7 @@
     import <%= inspect context.module %>Fixtures
 
     @invalid_attrs %{
-<% invalid_keys = schema.params.create %><%= for {{key, _}, idx} <- Enum.with_index(invalid_keys) do %>      <%= key %>: nil<%= if idx < length(invalid_keys) - 1 do %>,<% end %>
+<% invalid_keys = schema.params.create %><%= for {{key, _}, idx} <- Enum.with_index(invalid_keys) do %>      <%= key %>: nil<%= if idx < Enum.count(invalid_keys) - 1 do %>,<% end %>
 <% end %>    }
 
     test "list_<%= schema.plural %>/0 returns all <%= schema.plural %>" do
@@ -20,7 +20,7 @@
 
     test "create_<%= schema.singular %>/1 with valid data creates a <%= schema.singular %>" do
       valid_attrs = %{
-<% create_params = schema.params.create %><%= for {{field, value}, idx} <- Enum.with_index(create_params) do %>        <%= field %>: <%= Mix.Phoenix.Schema.value(schema, field, value) %><%= if idx < length(create_params) - 1 do %>,<% end %>
+<% create_params = schema.params.create %><%= for {{field, value}, idx} <- Enum.with_index(create_params) do %>        <%= field %>: <%= Mix.Phoenix.Schema.value(schema, field, value) %><%= if idx < Enum.count(create_params) - 1 do %>,<% end %>
 <% end %>      }
 
       assert {:ok, %<%= inspect schema.alias %>{} = <%= schema.singular %>} = <%= inspect context.alias %>.create_<%= schema.singular %>(valid_attrs)<%= for {field, value} <- schema.params.create do %>
@@ -35,7 +35,7 @@
       <%= schema.singular %> = <%= schema.singular %>_fixture()
 
       update_attrs = %{
-<% update_params = schema.params.update %><%= for {{field, value}, idx} <- Enum.with_index(update_params) do %>        <%= field %>: <%= Mix.Phoenix.Schema.value(schema, field, value) %><%= if idx < length(update_params) - 1 do %>,<% end %>
+<% update_params = schema.params.update %><%= for {{field, value}, idx} <- Enum.with_index(update_params) do %>        <%= field %>: <%= Mix.Phoenix.Schema.value(schema, field, value) %><%= if idx < Enum.count(update_params) - 1 do %>,<% end %>
 <% end %>      }
 
       assert {:ok, %<%= inspect schema.alias %>{} = <%= schema.singular %>} = <%= inspect context.alias %>.update_<%= schema.singular %>(<%= schema.singular %>, update_attrs)<%= for {field, value} <- schema.params.update do %>
