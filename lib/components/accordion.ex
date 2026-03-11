@@ -29,8 +29,6 @@ defmodule Corex.Accordion do
 
   Use the optional `:indicator` slot to add an icon after each trigger.
 
-  This example assumes the import of `.icon` from `Core Components`
-
   ```heex
   <.accordion
     class="accordion"

@@ -6,8 +6,6 @@ defmodule Corex.Combobox do
 
   ### Minimal
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.combobox
         class="combobox"
@@ -59,8 +57,6 @@ defmodule Corex.Combobox do
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
     <.combobox
         class="combobox"
@@ -93,8 +89,6 @@ defmodule Corex.Combobox do
   ### Extended Grouped
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
-
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
 
   ```heex
   <.combobox

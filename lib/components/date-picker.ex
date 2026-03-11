@@ -6,8 +6,6 @@ defmodule Corex.DatePicker do
 
   ### Basic Usage
 
-  This example assumes the import of `.icon` from `Core Components`
-
   ```heex
   <.date_picker id="my-date-picker">
     <:label>Select a date</:label>
@@ -24,8 +22,6 @@ defmodule Corex.DatePicker do
   ```
 
   ### Controlled Mode
-
-  This example assumes the import of `.icon` from `Core Components`
 
   ```heex
   <.date_picker

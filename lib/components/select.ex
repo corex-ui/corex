@@ -11,8 +11,6 @@ defmodule Corex.Select do
 
   ### Minimal
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.select
     id="my-select"
@@ -33,8 +31,6 @@ defmodule Corex.Select do
   ```
 
   ### Grouped
-
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
 
   ```heex
   <.select
@@ -64,8 +60,6 @@ defmodule Corex.Select do
   ### Custom
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.select
     class="select"
@@ -97,8 +91,6 @@ defmodule Corex.Select do
   ### Custom Grouped
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.select
     class="select"

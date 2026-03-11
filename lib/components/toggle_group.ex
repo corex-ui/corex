@@ -23,8 +23,6 @@ defmodule Corex.ToggleGroup do
 
   ### Extended
 
-  This example assumes the import of `.icon` from `Core Components`
-
   ```heex
 
       <.toggle_group multiple={false}

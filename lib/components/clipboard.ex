@@ -8,8 +8,6 @@ defmodule Corex.Clipboard do
 
   ### Basic Usage
 
-  This example assumes the import of `.icon` from `Core Components`
-
   ```heex
   <.clipboard id="my-clipboard" value="Text to copy">
     <:label>Copy to clipboard</:label>
@@ -21,8 +19,6 @@ defmodule Corex.Clipboard do
   ```
 
   ### With Callback
-
-  This example assumes the import of `.icon` from `Core Components`
 
   ```heex
   <.clipboard

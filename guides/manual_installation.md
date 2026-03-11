@@ -1,84 +1,197 @@
-# Installation
+# Manual installation
 
-![Hex.pm License](https://img.shields.io/hexpm/l/corex)
-![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
-[![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=corex-install)](https://coveralls.io/github/corex-ui/corex?branch=corex-install)
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
-![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
+This guide describes how to add Corex to an existing Phoenix application without using the `mix corex.new` generator.
 
-## Introduction
+If you are creating a new project instead, see the [Installation guide](installation.html).
 
-Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
+## Add the dependency
 
-Corex bridges the gap between Phoenix and modern JavaScript UI patterns by leveraging Zag.js: a collection of framework-agnostic UI component state machines. This approach gives you:
+Add `corex` to your `mix.exs` dependencies:
 
-- **Accessible by default** - Built-in ARIA attributes and keyboard navigation
-- **Unstyled components** - Complete control over styling and design
-- **Type-safe state management** - Powered by Zag.js state machines
-- **Works everywhere** - Phoenix Controllers and LiveView
-- **No Node.js required** - Install directly from Hex and connect the Phoenix hooks
-
-> #### Alpha stage {: .neutral}
-> Corex is actively being developed and is currently in alpha stage.
-> It's not recommended for production use at this time.
-> You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
-
-## Live Demo
-
-To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
-
-You can also explore some components via [Live Captures](https://corex.gigalixirapp.com/captures/components/Elixir.CorexWeb.Accordion/accordion), a zero-boilerplate storybook for LiveView components. A big thanks to [@achempion](https://github.com/achempion) for assisting.
-
-This is still in an early stage and will evolve with future stable releases.
-
-Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*.
-
-## Requirements
-
-This guide assumes the use of [asdf](https://asdf-vm.com/) to manage the Erlang and Elixir versions.
-
-Add `.tool-versions` file to the root of your project:
-
-```
-erlang 28.3.1
-elixir 1.19.5-otp-28
+```elixir
+def deps do
+  [
+    {:corex, "~> 0.1.0-alpha.29"}
+  ]
+end
 ```
 
-You can then install the versions:
+Then fetch the dependencies:
 
 ```bash
-asdf install
-```
-
-## New project with Corex
-
-To create a new Phoenix application with Corex preconfigured, install the Corex project generator archive (first time only), then generate the app:
-
-```bash
-mix archive.install hex corex_new
-mix corex.new my_app
-```
-
-To update the generator to the latest version before creating a project:
-
-```bash
-mix local.corex
-mix corex.new my_app
-```
-
-Then in the generated project:
-
-```bash
-cd my_app
 mix deps.get
 ```
 
-The generated app includes the `corex` dependency, configuration, hooks, and layout setup.
+## Configuration
 
-## Existing Project
+Configure Gettext backend and Jason Library in your `config/config.exs`:
 
-To add Corex to an existing Phoenix app instead of using the generator, see [Manual installation](manual_installation.html).
+```elixir
+config :corex,
+  gettext_backend: MyAppWeb.Gettext,
+  json_library: Jason
+```
 
+### Import Corex Hooks
+
+In your `assets/js/app.js`, import Corex and register its hooks on the LiveSocket.
+
+Each hook uses dynamic `import()` so component JavaScript is loaded only when a DOM element with that hook is mounted. If a component never appears on a page, its chunk is never fetched. See the Performance section below for how this works and the required build configuration.
+
+To load all hooks (in dev only):
+
+```javascript
+import corex from "corex"
+```
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: {_csrf_token: csrfToken},
+  hooks: {...colocatedHooks, ...corex}
+})
+```
+
+To register only the hooks you use (recommended for production):
+
+```javascript
+import { hooks } from "corex"
+```
+
+```javascript
+const liveSocket = new LiveSocket("/live", Socket, {
+  longPollFallbackMs: 2500,
+  params: {_csrf_token: csrfToken},
+  hooks: {...colocatedHooks, ...hooks(["Accordion", "Combobox", "Dialog"])}
+})
+```
+
+### Esbuild
+
+Add `--format=esm` and `--splitting` to your esbuild config. ESM is required for dynamic `import()`. Splitting produces separate chunks for each component and shared code, so only the components used on a page are loaded.
+
+```elixir
+config :esbuild,
+  version: "0.25.4",
+  my_app: [
+    args:
+      ~w(js/app.js --bundle --format=esm --splitting --target=es2022 --outdir=../priv/static/assets/js --external:/fonts/* --external:/images/* --alias:@=.),
+    cd: Path.expand("../assets", __DIR__),
+    env: %{"NODE_PATH" => [Path.expand("../deps", __DIR__), Mix.Project.build_path()]}
+  ]
+```
+
+Load your app script with `type="module"` in your root layout in `root.html.heex`:
+
+```heex
+<script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
+```
+
+## Import Components
+
+Add `use Corex` into your `MyAppWeb` `html_helpers`:
+
+```elixir
+defp html_helpers do
+  quote do
+    use Gettext, backend: MyAppWeb.Gettext
+    import Phoenix.HTML
+    import MyAppWeb.CoreComponents
+    use Corex
+    alias Phoenix.LiveView.JS
+    alias MyAppWeb.Layouts
+    unquote(verified_routes())
+  end
+end
+```
+
+By default, this imports and aliases all Corex UI components (such as `accordion/1`, `combobox/1`, etc.), allowing them to be used directly in templates. You can optionally limit which components are imported with `only:` or `except:`, or add a `prefix:` to avoid name collisions:
+
+```elixir
+use Corex, only: [:accordion], prefix: "ui"
+```
+
+```heex
+<.ui_accordion>
+...
+</.ui_accordion>
+```
+
+## Styling
+
+All components are unstyled by default. To use the default styling provided by Corex:
+
+1. Copy the default Corex Design files to your `assets` folder:
+
+```bash
+mix corex.design
+```
+
+2. Add `data-theme="neo" data-mode="light"` to your `html` tag in `root.html.heex`.
+
+3. In your `app.css` add:
+
+```css
+@import "../corex/main.css";
+@import "../corex/tokens/themes/neo/light.css";
+@import "../corex/components/typo.css";
+@import "../corex/components/accordion.css";
+```
+
+4. Remove any Daisy UI related CSS and plugin from `app.css`.
+
+If you don't see the styling, run `mix assets.build`.
+
+For more details see [Mix.Tasks.Corex.Design](Mix.Tasks.Corex.Design.html).
+
+## Phoenix flash with Toast
+
+To show Phoenix flash messages (and LiveView flash) as toasts, wire the Toast component to the layout and ensure the router fetches flash.
+
+In your browser pipeline in `router.ex`, include both plugs:
+
+```elixir
+pipeline :browser do
+  plug :accepts, ["html"]
+  plug :fetch_session
+  plug :fetch_flash
+  plug :fetch_live_flash
+  # ... other plugs
+end
+```
+
+In your app layout (the component that wraps page content and receives `@flash`), render the toast group and pass the flash assign. For example in `layouts.ex`:
+
+```heex
+<.toast_group id="layout-toast" class="toast" flash={@flash}>
+  <:loading>
+    <.heroicon name="hero-arrow-path" />
+  </:loading>
+</.toast_group>
+```
+
+Ensure every LiveView and controller view that uses this layout passes `flash={@flash}` into the layout (e.g. `Layouts.app flash={@flash} ...`).
+
+Optionally, add connection state toasts so users see feedback when the connection drops or recovers:
+
+```heex
+<.toast_client_error
+  toast_group_id="layout-toast"
+  title={gettext("We can't find the internet")}
+  description={gettext("Attempting to reconnect")}
+  type={:error}
+  duration={:infinity}
+/>
+<.toast_server_error
+  toast_group_id="layout-toast"
+  title={gettext("Something went wrong!")}
+  description={gettext("Attempting to reconnect")}
+  type={:error}
+  duration={:infinity}
+/>
+```
+
+See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and customisation options.
 
 ## Add your first component
 

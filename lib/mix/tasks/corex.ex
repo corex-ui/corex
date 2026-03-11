@@ -8,10 +8,15 @@ defmodule Mix.Tasks.Corex do
 
       $ mix corex
 
-  To print the Corex version, pass `-v` or `--version`, for example:
+  To print the Corex version, pass `-v` or `--version`:
 
       $ mix corex --version
 
+  To create a new project with Corex, use the installer (install separately with `mix archive.install hex corex_new`). Example with locale switching, RTL, mode, and themes:
+
+      $ mix corex.new my_app --lang en:fr:ar --rtl ar --mode --theme neo:uno:duo:leo
+
+  See `Mix.Tasks.Corex.New` for all options.
   """
 
   @version Mix.Project.config()[:version]

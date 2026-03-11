@@ -53,7 +53,14 @@ defmodule Corex.MixProject do
     ]
   end
 
+  def cli do
+    [
+      preferred_envs: [docs: :docs]
+    ]
+  end
+
   defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(:docs), do: ["lib", "installer/lib"]
   defp elixirc_paths(_), do: ["lib"]
 
   defp deps do
@@ -64,11 +71,11 @@ defmodule Corex.MixProject do
       {:gettext, "~> 1.0"},
       {:ecto, "~> 3.10"},
       {:esbuild, "~> 0.8", only: :dev},
-      {:ex_doc, "~> 0.40", only: :dev, runtime: false, warn_if_outdated: true},
-      {:makeup, "~> 1.2", only: [:dev, :test], optional: true},
-      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test], optional: true},
-      {:makeup_eex, "~> 2.0", only: [:dev, :test], optional: true},
-      {:makeup_syntect, "~> 0.1.0", only: [:dev, :test], optional: true},
+      {:ex_doc, "~> 0.40", only: :docs},
+      {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
+      {:makeup_elixir, "~> 1.0.1 or ~> 1.1", only: [:dev, :test, :docs], optional: true},
+      {:makeup_eex, "~> 2.0", only: [:dev, :test, :docs], optional: true},
+      {:makeup_syntect, "~> 0.1.0", only: [:dev, :test, :docs], optional: true},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:floki, "~> 0.38.0", only: :test},
       {:phoenix_ecto, "~> 4.0", only: :test},
@@ -83,6 +90,7 @@ defmodule Corex.MixProject do
 
   defp aliases do
     [
+      docs: ["docs"],
       "assets.build": [
         &copy_design_to_installer/1,
         "esbuild module",
@@ -139,11 +147,13 @@ defmodule Corex.MixProject do
       main: "Corex",
       extras: [
         "guides/installation.md",
-        "guides/theming.md",
+        "guides/manual_installation.md",
         "guides/dark_mode.md",
+        "guides/theming.md",
         "guides/locale.md",
         "guides/rtl.md",
-        "guides/production.md"
+        "guides/production.md",
+        "guides/troubleshooting.md"
       ],
       main: "installation",
       formatters: ["html", "epub"],

@@ -15,8 +15,6 @@ defmodule Corex.Checkbox do
 
   ### Custom Control
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.checkbox class="checkbox">
     <:label>
@@ -29,8 +27,6 @@ defmodule Corex.Checkbox do
   ```
 
   ### Custom Error
-
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
 
   ```heex
   <.checkbox class="checkbox">
@@ -52,22 +48,22 @@ defmodule Corex.Checkbox do
 
   ### Controller
 
-  Build the form from an Ecto changeset and pass it to the template:
+  Build the form from an Ecto changeset and pass it to the template. Use `Corex.Form.get_form_id/1` for the form `id`:
 
   ```elixir
-  def form_page(conn, _params) do
+  def checkbox_form_page(conn, _params) do
     form =
       %MyApp.Form.Terms{}
       |> MyApp.Form.Terms.changeset(%{})
-      |> Phoenix.Component.to_form(as: :terms, id: "terms-form")
-    render(conn, :form_page, form: form)
+      |> Phoenix.Component.to_form(as: :terms, id: "checkbox-form")
+    render(conn, :checkbox_form_page, form: form)
   end
   ```
 
   ```heex
   <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
     <.checkbox field={f[:terms]} class="checkbox">
-      <:label>I accept the terms</:label>
+      <:label>Accept terms</:label>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
@@ -82,66 +78,71 @@ defmodule Corex.Checkbox do
 
   When using Phoenix form in a Live view you must also add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
-  ### With Ecto changeset
+  ### With Ecto changeset (LiveView)
 
-  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
+  When using an Ecto changeset for validation in a LiveView, enable the `controlled` attribute on the checkbox so the LiveView remains the source of truth.
 
-  This allows the Live View to be the source of truth and the component to be in sync accordingly
-
-  First lets create an embededed schema and changeset
+  Schema and changeset:
 
   ```elixir
-  defmodule MyApp.Account.User do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias MyApp.Account.User
+  defmodule MyApp.Form.Terms do
+    use Ecto.Schema
+    import Ecto.Changeset
 
-  embedded_schema do
-    field :term, :boolean, default: false
-  end
+    embedded_schema do
+      field :terms, :boolean, default: false
+    end
 
-
-  @doc false
-  def changeset(%User{} = user, attrs) do
-    user
-    |> cast(attrs, [:term])
-    |> validate_required([:term])
-    |> validate_acceptance(:terms)
-  end
+    def changeset(terms, attrs \\ %{}) do
+      terms
+      |> cast(attrs, [:terms])
+      |> validate_required([:terms])
+      |> validate_acceptance(:terms)
+    end
   end
   ```
 
+  LiveView with validate and submit:
+
   ```elixir
-  defmodule MyAppWeb.UserLive do
-  use MyAppWeb, :live_view
-  alias MyApp.Account.User
+  defmodule MyAppWeb.CheckboxFormLive do
+    use MyAppWeb, :live_view
+    alias MyApp.Form.Terms
+    alias Corex.Form
 
-  @impl true
+    def mount(_params, _session, socket) do
+      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms)
+      {:ok, assign(socket, :form, form)}
+    end
 
-  def mount(_params, _session, socket) do
-    {:ok,  assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
-  end
+    def handle_event("validate", %{"terms" => params}, socket) do
+      changeset = Terms.changeset(%Terms{}, params)
+      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms))}
+    end
 
-  @impl true
-  def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = User.changeset(%User{}, user_params)
-    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
-  end
+    def handle_event("save", %{"terms" => params}, socket) do
+      case Terms.changeset(%Terms{}, params) do
+        %Ecto.Changeset{valid?: true} = _ ->
+          {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms))}
+        changeset ->
+          {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms))}
+      end
+    end
 
-  @impl true
-  def render(assigns) do
-    ~H"""
-    <.form for={@form} id={get_form_id(@form)} phx-change="validate">
-      <.checkbox field={@form[:terms]} class="checkbox" controlled>
-        <:label>I accept the terms</:label>
-        <:error :let={msg}>
-          <.heroicon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.checkbox>
-    </.form>
-    """
-  end
+    def render(assigns) do
+      ~H"""
+      <.form for={@form} id={Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+        <.checkbox field={@form[:terms]} class="checkbox" controlled>
+          <:label>Accept terms</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+        <button type="submit">Submit</button>
+      </.form>
+      """
+    end
   end
   ```
 

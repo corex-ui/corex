@@ -17,8 +17,6 @@ defmodule Corex.PasswordInput do
 
   ### Custom Error
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.password_input field={@form[:password]} class="password-input">
     <:label>Password</:label>

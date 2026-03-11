@@ -4,11 +4,11 @@ defmodule Mix.Tasks.Local.Corex do
   @shortdoc "Updates the Corex project generator locally"
 
   @moduledoc """
-  Updates the Corex project generator locally.
+  Updates the Corex project generator used by `mix corex.new`.
+
+  Run this when you want the next `mix corex.new` to use the latest generator templates and options. It delegates to `archive.install hex corex_new` and accepts the same command line options (e.g. `--force` to reinstall without prompting).
 
       $ mix local.corex
-
-  Accepts the same command line options as `archive.install hex corex_new`.
   """
 
   @impl true

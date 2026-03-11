@@ -1,17 +1,15 @@
 defmodule Mix.Tasks.Corex.New.Web do
   @moduledoc """
-  Creates a new Phoenix web project within an umbrella project.
+  Creates a new Phoenix web application inside an existing umbrella project.
 
-  It expects the name of the OTP app as the first argument and
-  for the command to be run inside your umbrella application's
-  apps directory:
+  This task is only for use within an umbrella project. It must be run from the umbrella's `apps` directory. It creates a new web app (with Corex and Phoenix) that can depend on other apps in the umbrella. For a standalone project, use `mix corex.new` instead.
+
+  It expects the name of the OTP app as the first argument:
 
       $ cd my_umbrella/apps
       $ mix corex.new.web APP [--module MODULE] [--app APP]
 
-  This task is intended to create a bare Phoenix project without
-  database integration, which interfaces with your greater
-  umbrella application(s).
+  The generated app is a bare Phoenix web project without database integration by default, which you can then wire to your umbrella's domain app(s).
 
   ## Examples
 
@@ -21,8 +19,7 @@ defmodule Mix.Tasks.Corex.New.Web do
 
       $ mix corex.new.web hello_web --module HelloWeb
 
-  Supports the same options as the `corex.new` task.
-  See `Mix.Tasks.Corex.New` for details.
+  For all available options (e.g. `--umbrella`, `--no-ecto`, `--theme`), see `Mix.Tasks.Corex.New`.
   """
 
   @shortdoc "Creates a new Phoenix web project within an umbrella project"

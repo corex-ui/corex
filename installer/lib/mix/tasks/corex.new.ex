@@ -1,14 +1,14 @@
 defmodule Mix.Tasks.Corex.New do
   @moduledoc """
-  Creates a new Corex project.
+  Creates a new Phoenix application with Corex preconfigured.
 
-  It expects the path of the project as an argument.
+  Use this task when you want to start a new project with Corex, Phoenix, optional Ecto, and default Corex styling and layout. To add Corex to an existing Phoenix app instead, see [Manual installation](https://hexdocs.pm/corex/manual_installation.html).
+
+  It expects the path of the project as an argument:
 
       $ mix corex.new PATH [--module MODULE] [--app APP]
 
-  A project at the given PATH will be created. The
-  application name and module name will be retrieved
-  from the path, unless `--module` or `--app` is given.
+  A project at the given PATH will be created. The application name and module name will be retrieved from the path, unless `--module` or `--app` is given.
 
   ## Options
 
@@ -75,11 +75,17 @@ defmodule Mix.Tasks.Corex.New do
   `--no-context` flag to generate most of the HTML and JSON files
   but skip the context, allowing you to fill in the blanks as desired.
 
-  ## Installation
+  ## Installation of the generator
 
-  `mix corex.new` by default prompts you to fetch and install your
-  dependencies. You can enable this behaviour by passing the
-  `--install` flag or disable it with the `--no-install` flag.
+  To use this task, install the Corex project generator archive:
+
+      $ mix archive.install hex corex_new
+
+  To update the generator to the latest version:
+
+      $ mix local.corex
+
+  When generating a project, `mix corex.new` by default prompts you to fetch and install the new project's dependencies. You can enable this behaviour by passing the `--install` flag or disable it with the `--no-install` flag.
 
   ## Examples
 
@@ -88,6 +94,10 @@ defmodule Mix.Tasks.Corex.New do
   Is equivalent to:
 
       $ mix corex.new hello_world --module HelloWorld
+
+  With locale switching (English, French, Arabic), RTL for Arabic, light/dark mode, and multiple themes:
+
+      $ mix corex.new my_app --lang en:fr:ar --rtl ar --mode --theme neo:uno:duo:leo
 
   As an umbrella:
 

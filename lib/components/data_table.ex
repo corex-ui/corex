@@ -28,15 +28,17 @@ defmodule Corex.DataTable do
    ### Basic
 
    ```heex
-   <.data_table id="users-table" class="data-table" rows={@users}>
-     <:col :let={user} label="ID">{user.id}</:col>
-     <:col :let={user} label="Name">{user.name}</:col>
+   <.data_table id="basic-table" class="data-table" rows={@list_rows}>
+     <:col :let={row} label="ID">{row.id}</:col>
+     <:col :let={row} label="Name">{row.name}</:col>
+     <:col :let={row} label="Role">{row.role}</:col>
+     <:col :let={row} label="Email">{row.email}</:col>
    </.data_table>
    ```
 
    ### Sortable
 
-   You can add sorting functionality to your table by using the `on_sort`, `sort_by`, and `sort_order` attributes. Pass the field name to sort on via the `:col`'s `name` attribute. Use the `:sort_icon` slot to render custom icons.
+   Add sorting by using the `on_sort`, `sort_by`, and `sort_order` attributes. Pass the field name to sort on via the `:col` slot's `name` attribute. Use the `:sort_icon` slot to render custom icons.
 
    ```heex
    <.data_table
@@ -64,11 +66,11 @@ defmodule Corex.DataTable do
 
    ### Selectable
 
-   You can make rows selectable by providing the `selectable` attribute. Add the optional `<:checkbox_indicator>` slot to customize the checkbox style.
+   Make rows selectable with the `selectable` attribute. Provide `row_id` so each row has a stable id for selection. Use the optional `<:checkbox_indicator>` slot to customize the checkbox icon.
 
    ```heex
    <.data_table
-     id="users-selectable"
+     id="users-table"
      class="data-table"
      rows={@users}
      row_id={&"user-#{&1.id}"}
@@ -81,9 +83,9 @@ defmodule Corex.DataTable do
      <:checkbox_indicator>
        <.heroicon name="hero-check" class="data-checked" />
      </:checkbox_indicator>
-
-     <:col :let={user} label="ID">{user.id}</:col>
-     <:col :let={user} label="Name">{user.name}</:col>
+     <:col :let={user} label="ID" name={:id}>{user.id}</:col>
+     <:col :let={user} label="Name" name={:name}>{user.name}</:col>
+     <:col :let={user} label="Email" name={:email}>{user.email}</:col>
    </.data_table>
    ```
 
@@ -92,12 +94,14 @@ defmodule Corex.DataTable do
    Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
 
    ```heex
-   <.data_table id="users-actions" class="data-table" rows={@users}>
-     <:col :let={user} label="Name">{user.name}</:col>
-
-     <:action :let={user}>
-       <.action phx-click="edit" phx-value-id={user.id}>Edit</.action>
-       <.action phx-click="delete" phx-value-id={user.id}>Delete</.action>
+   <.data_table id="basic-table" class="data-table" rows={@list_rows}>
+     <:col :let={row} label="ID">{row.id}</:col>
+     <:col :let={row} label="Name">{row.name}</:col>
+     <:col :let={row} label="Role">{row.role}</:col>
+     <:col :let={row} label="Email">{row.email}</:col>
+     <:action :let={row}>
+       <.action phx-click="edit" phx-value-id={row.id}>Edit</.action>
+       <.action phx-click="delete" phx-value-id={row.id}>Delete</.action>
      </:action>
    </.data_table>
    ```
