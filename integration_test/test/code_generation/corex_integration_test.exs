@@ -25,7 +25,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "default app home page" do
     test "GET / returns 200 and body contains Corex" do
       with_installer_tmp("corex_home", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
 
@@ -42,7 +42,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "default app LiveView" do
     test "GET /live returns 200 and body contains Live View" do
       with_installer_tmp("corex_live", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app")
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
 
@@ -219,7 +219,8 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "app with --theme HTTP check" do
     test "GET / returns theme-related markup" do
       with_installer_tmp("corex_theme_http", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo"])
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
 
@@ -236,7 +237,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   describe "app with --mode HTTP check" do
     test "GET / returns mode-related markup" do
       with_installer_tmp("corex_mode_http", [autoremove?: false], fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--mode", "--no-ecto"])
 
         assert_no_compilation_warnings(app_root_path)
 

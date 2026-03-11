@@ -22,7 +22,8 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
       {app_root_path, _} =
         generate_corex_app(tmp_dir, "phx_blog", [
           "--dev",
-          "--no-dashboard"
+          "--no-dashboard",
+          "--no-ecto"
         ])
 
       assert_no_compilation_warnings(app_root_path)
