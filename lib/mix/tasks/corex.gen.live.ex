@@ -266,7 +266,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     if schema.web_namespace do
       Mix.shell().info("""
 
-      Add the live routes to your #{schema.web_namespace} :browser scope in #{web_path}/router.ex:
+      #{scope_instruction}
 
           scope "/#{schema.web_path}", #{inspect(prefix)} do
             pipe_through :browser
@@ -327,9 +327,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
     schema.attrs
     |> Enum.reject(fn {_key, type} -> type == :map end)
     |> Enum.map(fn
-      {_, {:references, _}} ->
-        nil
-
       {key, :integer} ->
         number_input_block(key, nil)
 
@@ -366,7 +363,6 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       {key, _} ->
         native_input_block("text", key, error_slot: true)
     end)
-    |> Enum.reject(&is_nil/1)
   end
 
   defp number_input_block(key, step) do
@@ -378,7 +374,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
       end
 
     ~s"""
-    <.number_input field={@form[#{inspect(key)}]} controlled class="number-input"#{step_lines}>
+    <.number_input field={@form[#{inspect(key)}]} class="number-input"#{step_lines}>
       <:label>#{label(key)}</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
       <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
@@ -392,7 +388,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   defp checkbox_block(key) do
     ~s"""
-    <.checkbox field={@form[#{inspect(key)}]} class="checkbox" controlled>
+    <.checkbox field={@form[#{inspect(key)}]} class="checkbox">
       <:label>#{label(key)}</:label>
       <:indicator>
         <.heroicon name="hero-check" class="data-checked" />
@@ -407,7 +403,7 @@ defmodule Mix.Tasks.Corex.Gen.Live do
 
   defp date_picker_block(key) do
     ~s"""
-    <.date_picker field={@form[#{inspect(key)}]} class="date-picker" controlled>
+    <.date_picker field={@form[#{inspect(key)}]} class="date-picker">
       <:label>#{label(key)}</:label>
       <:trigger>
         <.heroicon name="hero-calendar" class="icon" />

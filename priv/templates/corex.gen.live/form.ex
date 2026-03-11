@@ -34,12 +34,10 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
         phx-submit="save"
       >
 <%= Mix.Tasks.Corex.Gen.Html.indent_inputs(inputs, 8) %>
-        <footer>
+        <div class="layout__row justify-between">
           <.navigate to={return_path(<%= if layout_locale do %>@locale, <% end %><%= assign_scope_prefix %>@return_to, @<%= schema.singular %>)} type="navigate" class="button">Cancel</.navigate>
-          <.action phx-disable-with="Saving..." class="button button--accent" type="submit">
-            Save <%= schema.human_singular %>
-          </.action>
-        </footer>
+          <.action phx-disable-with="Saving..." class="button button--accent" type="submit">Save <%= schema.human_singular %></.action>
+        </div>
       </.form>
     </Layouts.app>
     """

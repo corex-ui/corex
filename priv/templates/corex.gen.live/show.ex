@@ -6,7 +6,21 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+    <Layouts.app
+      flash={@flash}
+<%= if layout_mode do %>
+      mode={@mode}
+<% end %><%= if layout_theme do %>
+      theme={@theme}
+<% end %><%= if layout_themes do %>
+      themes={@themes}
+<% end %><%= if layout_locale do %>
+      locale={@locale}
+      current_path={@current_path}
+<% end %><%= if scope do %>
+      <%= scope.assign_key %>={@<%= scope.assign_key %>}
+<% end %>
+    >
       <.layout_heading>
         <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
         <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
@@ -17,7 +31,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
           <.navigate
             to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{@<%= schema.singular %>}/edit?return_to=show"}
             type="navigate"
-            class="button button--primary"
+            class="button button--accent"
           >
             <.heroicon name="hero-pencil-square" /> Edit <%= schema.human_singular %>
           </.navigate>

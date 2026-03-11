@@ -64,7 +64,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
                index_live
                |> element("#<%= schema.collection %>-#{<%= schema.singular %>.<%= primary_key %>} a", "Edit")
                |> render_click()
-               |> follow_redirect(conn, ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit")
+               |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit")
 
       assert render(form_live) =~ "Edit <%= schema.human_singular %>"
 

@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
       module: MyApp.StatusEnum
     }
 
-    inputs = Live.inputs(schema) |> Enum.reject(&is_nil/1)
+    inputs = Live.inputs(schema)
 
     assert Enum.any?(inputs, &(&1 =~ ~s(type="text") and &1 =~ ~s(<:label>Name</:label>)))
     assert Enum.any?(inputs, &(&1 =~ "number_input" and &1 =~ ~s(<:label>Age</:label>)))
@@ -55,8 +55,9 @@ defmodule Mix.Tasks.Corex.Gen.LiveTest do
                  &1 =~ ~s(<:label>Status</:label>))
            )
 
-    # Map and references are ignored/nil
+    assert Enum.any?(inputs, &(&1 =~ ~s(type="text") and &1 =~ ~s(<:label>User</:label>)))
+
+    # Map is ignored
     refute Enum.any?(inputs, &(&1 =~ "Data"))
-    refute Enum.any?(inputs, &(&1 =~ "User"))
   end
 end

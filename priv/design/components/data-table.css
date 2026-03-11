@@ -3,9 +3,11 @@
 @layer components {
 
   .data-table {
-    @apply ui-root scrollbar;
+    @apply scrollbar;
+    display: block;
     width: 100%;
     max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
     overflow-y: hidden;
     border-radius: var(--radius-ui);
@@ -13,19 +15,17 @@
     }
 
   .data-table [data-scope="data-table"][data-part="root"] {
-    @apply ui-root;
-    
-    width: 100%;
+    display: table;
+    width: max-content;
+    min-width: 100%;
     max-width: none;
     border-collapse: collapse;
-    gap: 0;
   }
 
   .data-table [data-scope="data-table"][data-part="thead"] {
     border-bottom: 1px solid var(--color-ui--border);
     color: var(--color-ui--text);
     text-transform: uppercase;
-    background-color: var(--color-ui-active);
     font-size: var(--text-ui-sm);
   }
 
@@ -37,6 +37,7 @@
     font-weight: var(--font-weight-ui-bold);
     white-space: nowrap;
     width: 1%;
+    background-color: var(--color-ui-active);
   }
 
   .data-table [data-scope="data-table"][data-part="action-header"] {

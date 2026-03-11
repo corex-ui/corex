@@ -55,6 +55,7 @@
 
   .native-input [data-scope="native-input"][data-part="error"] {
     @apply ui-error;
+    margin-block-start: var(--spacing-ui-gap);
   }
 
   .native-input [data-scope="native-input"][data-part="control"] label[data-part="label"] {
