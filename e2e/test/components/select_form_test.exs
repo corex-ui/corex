@@ -17,7 +17,7 @@ defmodule E2eWeb.SelectFormTest do
     session
     |> Select.goto_form(:static)
     |> Select.wait(500)
-    |> Select.click_select_trigger()
+    |> Select.click_form_select_trigger()
     |> Select.wait(200)
     |> Select.select_item("bel")
     |> Select.wait(200)
@@ -31,7 +31,7 @@ defmodule E2eWeb.SelectFormTest do
     session
     |> Select.goto_form(:live)
     |> Select.wait(500)
-    |> Select.click_select_trigger()
+    |> Select.click_form_select_trigger()
     |> Select.wait(500)
     |> Select.select_item("bel")
     |> Select.wait(500)

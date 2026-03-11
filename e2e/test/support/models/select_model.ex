@@ -15,6 +15,10 @@ defmodule E2eWeb.SelectModel do
     click(session, css("[data-scope='select'][data-part='trigger']"))
   end
 
+  def click_form_select_trigger(session) do
+    click(session, css("#select-form [data-scope='select'][data-part='trigger']"))
+  end
+
   def select_item(session, value) when is_binary(value) do
     click(session, css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
   end
