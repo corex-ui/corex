@@ -1,4 +1,8 @@
 defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
+  @moduledoc """
+  Full-stack code generation: mix corex.new, then mix corex.gen.live and mix corex.gen.html.
+  Each test asserts: compile (no warnings), mix format --check-formatted, mix test.
+  """
   use Corex.Integration.CodeGeneratorCase, async: true
 
   @rich_attrs ~w(name:string age:integer score:float balance:decimal active:boolean bio:text birth_date:date start_time:time published_at:utc_datetime drafted_at:naive_datetime tags:array:string status:enum:draft:published:archived)

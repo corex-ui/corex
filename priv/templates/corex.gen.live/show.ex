@@ -7,25 +7,24 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def render(assigns) do
     ~H"""
     <Layouts.app
-      flash={@flash}
-<%= if layout_mode do %>
-      mode={@mode}
-<% end %><%= if layout_theme do %>
-      theme={@theme}
-<% end %><%= if layout_themes do %>
-      themes={@themes}
-<% end %><%= if layout_locale do %>
+      flash={@flash}<%= if layout_mode do %>
+      mode={@mode}<% end %><%= if layout_theme do %>
+      theme={@theme}<% end %><%= if layout_themes do %>
+      themes={@themes}<% end %><%= if layout_locale do %>
       locale={@locale}
-      current_path={@current_path}
-<% end %><%= if scope do %>
-      <%= scope.assign_key %>={@<%= scope.assign_key %>}
-<% end %>
+      current_path={@current_path}<% end %><%= if scope do %>
+      <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
       <.layout_heading>
         <:title><%= schema.human_singular %> {@<%= schema.singular %>.<%= primary_key %>}</:title>
         <:subtitle>This is a <%= schema.singular %> record from your database.</:subtitle>
         <:actions>
-          <.navigate to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"} type="navigate" class="button" aria_label="Back to list">
+          <.navigate
+            to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+            type="navigate"
+            class="button"
+            aria_label="Back to list"
+          >
             <.heroicon name="hero-arrow-left" />
           </.navigate>
           <.navigate

@@ -1,4 +1,8 @@
 defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
+  @moduledoc """
+  Code generation after mix corex.new: corex.gen.html and corex.gen.live.
+  Tests assert compile, mix format --check-formatted, and mix test pass.
+  """
   use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "new with defaults" do

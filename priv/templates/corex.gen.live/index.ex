@@ -7,19 +7,13 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   def render(assigns) do
     ~H"""
     <Layouts.app
-      flash={@flash}
-<%= if layout_mode do %>
-      mode={@mode}
-<% end %><%= if layout_theme do %>
-      theme={@theme}
-<% end %><%= if layout_themes do %>
-      themes={@themes}
-<% end %><%= if layout_locale do %>
+      flash={@flash}<%= if layout_mode do %>
+      mode={@mode}<% end %><%= if layout_theme do %>
+      theme={@theme}<% end %><%= if layout_themes do %>
+      themes={@themes}<% end %><%= if layout_locale do %>
       locale={@locale}
-      current_path={@current_path}
-<% end %><%= if scope do %>
-      <%= scope.assign_key %>={@<%= scope.assign_key %>}
-<% end %>
+      current_path={@current_path}<% end %><%= if scope do %>
+      <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
     >
       <.layout_heading>
         <:title>Listing <%= schema.human_plural %></:title>
