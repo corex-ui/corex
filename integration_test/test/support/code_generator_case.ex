@@ -94,7 +94,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def assert_tests_pass(app_path) do
-    mix_run!(~w(test), app_path)
+    port = 45000 + :rand.uniform(5000)
+    mix_run!(~w(test), app_path, env: [{"PORT", to_string(port)}])
   end
 
   def assert_passes_formatter_check(app_path) do
