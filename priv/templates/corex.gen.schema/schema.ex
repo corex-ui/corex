@@ -19,10 +19,10 @@ defmodule <%= inspect schema.module %> do
   def changeset(<%= schema.singular %>, attrs<%= if scope do %>, <%= scope.name %>_scope<% end %>) do
     <%= schema.singular %>
     |> cast(attrs, [
-<%= for {attr, _} <- schema.attrs do %>      <%= inspect attr %>,
+<% attrs_list = schema.attrs %><%= for {{attr, _}, idx} <- Enum.with_index(attrs_list) do %>      <%= inspect attr %><%= if idx < length(attrs_list) - 1 do %>,<% end %>
 <% end %>    ])
     |> validate_required([
-<%= for {attr, _} <- Mix.Phoenix.Schema.required_fields(schema) do %>      <%= inspect attr %>,
+<% required_list = Mix.Phoenix.Schema.required_fields(schema) %><%= for {{attr, _}, idx} <- Enum.with_index(required_list) do %>      <%= inspect attr %><%= if idx < length(required_list) - 1 do %>,<% end %>
 <% end %>    ])
 <%= for k <- schema.uniques do %>    |> unique_constraint(<%= inspect k %>)
 <% end %><%= if scope do %>    |> put_change(:<%= scope.schema_key %>, <%= scope.name %>_scope.<%= Enum.join(scope.access_path, ".") %>)

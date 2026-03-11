@@ -4,13 +4,13 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   import <%= inspect context.module %>Fixtures
 
   @create_attrs %{
-<%= for {key, value} <- schema.params.create do %>    <%= key %>: <%= Mix.Phoenix.Schema.value(schema, key, value) %>,
+<% params_create = schema.params.create %><%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= Mix.Phoenix.Schema.value(schema, key, value) %><%= if idx < length(params_create) - 1 do %>,<% end %>
 <% end %>  }
   @update_attrs %{
-<%= for {key, value} <- schema.params.update do %>    <%= key %>: <%= Mix.Phoenix.Schema.value(schema, key, value) %>,
+<% params_update = schema.params.update %><%= for {{key, value}, idx} <- Enum.with_index(params_update) do %>    <%= key %>: <%= Mix.Phoenix.Schema.value(schema, key, value) %><%= if idx < length(params_update) - 1 do %>,<% end %>
 <% end %>  }
   @invalid_attrs %{
-<%= for {key, _} <- schema.params.create do %>    <%= key %>: nil,
+<% params_create_inv = schema.params.create %><%= for {{key, _}, idx} <- Enum.with_index(params_create_inv) do %>    <%= key %>: nil<%= if idx < length(params_create_inv) - 1 do %>,<% end %>
 <% end %>  }<%= if layout_locale do %>
 
   @locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()<% end %><%= if scope do %>

@@ -1,4 +1,12 @@
-<Layouts.app flash={@flash}<%= if layout_mode do %> mode={@mode}<% end %><%= if layout_theme do %> theme={@theme}<% end %><%= if layout_themes do %> themes={@themes}<% end %><%= if layout_locale do %> locale={@locale} current_path={@current_path}<% end %><%= if scope do %> <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>>
+<Layouts.app
+  flash={@flash}<%= if layout_mode do %>
+  mode={@mode}<% end %><%= if layout_theme do %>
+  theme={@theme}<% end %><%= if layout_themes do %>
+  themes={@themes}<% end %><%= if layout_locale do %>
+  locale={@locale}
+  current_path={@current_path}<% end %><%= if scope do %>
+  <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
+>
   <.layout_heading>
     <:title>New <%= schema.human_singular %></:title>
     <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
