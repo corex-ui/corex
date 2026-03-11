@@ -838,7 +838,7 @@ defmodule Mix.Tasks.Corex.NewTest do
   test "new without args" do
     in_tmp("new without args", fn ->
       assert capture_io(fn -> Mix.Tasks.Corex.New.run([]) end) =~
-               "Creates a new Corex project."
+               "Creates a new Phoenix application with Corex preconfigured"
     end)
   end
 
@@ -918,11 +918,11 @@ defmodule Mix.Tasks.Corex.NewTest do
   test "run/3 with empty argv shows help" do
     assert capture_io(fn ->
              Mix.Tasks.Corex.New.run([], Corex.New.Single, :base_path)
-           end) =~ "Creates a new Corex project"
+           end) =~ "Creates a new Phoenix application with Corex preconfigured"
 
     assert capture_io(fn ->
              Mix.Tasks.Corex.New.run([], Corex.New.Umbrella, :project_path)
-           end) =~ "Creates a new Corex project"
+           end) =~ "Creates a new Phoenix application with Corex preconfigured"
   end
 
   test "check_directory_existence aborts when user says no" do
