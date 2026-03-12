@@ -24,5 +24,10 @@
     <:col :let={row} label="Name">{row.name}</:col>
     <:col :let={row} label="Role">{row.role}</:col>
     <:col :let={row} label="Email">{row.email}</:col>
+              <:action :let={user}>
+            <.action class="button button--sm" aria-label={"Edit #{user.name}"}>
+              <.heroicon name="hero-pencil-square" />
+            </.action>
+          </:action>
   </.data_table>
 </Layouts.app>

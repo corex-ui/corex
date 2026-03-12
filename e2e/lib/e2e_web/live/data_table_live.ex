@@ -32,8 +32,9 @@ defmodule E2eWeb.DataTableLive do
         <:col :let={row} label="Role">{row.role}</:col>
         <:col :let={row} label="Email">{row.email}</:col>
         <:action :let={row}>
-          <.action>Edit {row.name}</.action>
-          <.action>Delete {row.name}</.action>
+          <.action class="button button--sm" aria-label={"Edit #{row.name}"}>
+            <.heroicon name="hero-pencil-square" />
+          </.action>
         </:action>
       </.data_table>
     </Layouts.app>

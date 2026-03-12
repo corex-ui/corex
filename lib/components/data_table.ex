@@ -36,37 +36,83 @@ defmodule Corex.DataTable do
    </.data_table>
    ```
 
-   ### Sortable
+   ### Actions
 
-   Add sorting by using the `on_sort`, `sort_by`, and `sort_order` attributes. Pass the field name to sort on via the `:col` slot's `name` attribute. Use the `:sort_icon` slot to render custom icons.
+   Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
 
    ```heex
-   <.data_table
-     id="users-sortable"
-     class="data-table"
-     rows={@users}
-     sort_by={@sort_by}
-     sort_order={@sort_order}
-     on_sort="sort"
-   >
+   <.data_table id="basic-table" class="data-table" rows={@list_rows}>
+     <:col :let={row} label="ID">{row.id}</:col>
+     <:col :let={row} label="Name">{row.name}</:col>
+     <:col :let={row} label="Role">{row.role}</:col>
+     <:col :let={row} label="Email">{row.email}</:col>
+     <:action :let={row}>
+       <.action phx-click="edit" phx-value-id={row.id}>Edit</.action>
+       <.action phx-click="delete" phx-value-id={row.id}>Delete</.action>
+     </:action>
+   </.data_table>
+   ```
+
+   ### Streaming
+
+   Pass the stream to `rows`. Column slot receives `{id, item}`. Items need an `:id` field (or use `stream_configure/3` with `:dom_id`). Add rows with `stream_insert/3`.
+
+   ```elixir
+   # mount
+   socket |> stream(:items, []) |> assign(:next_id, 1)
+   ```
+
+   ```heex
+   <.data_table id="my-table" class="data-table" rows={@streams.items}>
+     <:col :let={{_id, item}} label="Name">{item.name}</:col>
+   </.data_table>
+   ```
+
+   Add a row: `stream_insert(socket, :items, %{id: id, name: "New"})` from `handle_event` or `handle_info`.
+
+
+   ### Sortable
+
+   Set `sort_by`, `sort_order`, `on_sort`; give each sortable column a `name`. You still need `handle_event("sort", ...)` but delegate to the helper. LiveView minimum:
+
+   ```elixir
+   # mount
+   socket
+   |> assign(:users, users)
+   |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+
+   # handle_event("sort", params, socket)
+   {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}
+   ```
+
+   ```heex
+   <.data_table id="users-sortable" class="data-table" rows={@users} sort_by={@sort_by} sort_order={@sort_order} on_sort="sort">
      <:col :let={user} label="ID" name={:id}>{user.id}</:col>
      <:col :let={user} label="Name" name={:name}>{user.name}</:col>
-
      <:sort_icon :let={%{direction: direction}}>
-       <.heroicon name={
-         case direction do
-           :asc -> "hero-chevron-up"
-           :desc -> "hero-chevron-down"
-           :none -> "hero-chevron-up-down"
-         end
-       } />
+       <.heroicon name={%{asc: "hero-chevron-up", desc: "hero-chevron-down", none: "hero-chevron-up-down"}[direction]} />
      </:sort_icon>
    </.data_table>
    ```
 
    ### Selectable
 
-   Make rows selectable with the `selectable` attribute. Provide `row_id` so each row has a stable id for selection. Use the optional `<:checkbox_indicator>` slot to customize the checkbox icon.
+   Set `selectable`, `selected`, `on_select`, `on_select_all`, and `row_id`. Delegate to `Corex.DataTable.Selection` in mount and in the two events. LiveView minimum:
+
+   ```elixir
+   # mount
+   socket
+   |> assign(:users, users)
+   |> Corex.DataTable.Selection.assign_for_selection(:users, table_id: "users-table", row_id: &"user-#{&1.id}")
+
+   def handle_event("select", params, socket) do
+     {:noreply, Corex.DataTable.Selection.handle_select(socket, params, :users)}
+   end
+
+   def handle_event("select_all", params, socket) do
+     {:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :users)}
+   end
+   ```
 
    ```heex
    <.data_table
@@ -89,41 +135,6 @@ defmodule Corex.DataTable do
    </.data_table>
    ```
 
-   ### Actions
-
-   Use the `:action` slot to add actions for each row, like Edit and Delete buttons.
-
-   ```heex
-   <.data_table id="basic-table" class="data-table" rows={@list_rows}>
-     <:col :let={row} label="ID">{row.id}</:col>
-     <:col :let={row} label="Name">{row.name}</:col>
-     <:col :let={row} label="Role">{row.role}</:col>
-     <:col :let={row} label="Email">{row.email}</:col>
-     <:action :let={row}>
-       <.action phx-click="edit" phx-value-id={row.id}>Edit</.action>
-       <.action phx-click="delete" phx-value-id={row.id}>Delete</.action>
-     </:action>
-   </.data_table>
-   ```
-
-   ### Streaming
-
-   Use Phoenix LiveView streams to update rows efficiently. Pass the stream directly to the `rows` attribute.
-
-   ```heex
-   <.data_table
-     id="users-stream"
-     class="data-table"
-     rows={@streams.users}
-   >
-     <:col :let={{_id, user}} label="Name">{user.name}</:col>
-     <:action :let={{id, user}}>
-       <.action phx-click={JS.push("delete", value: %{id: user.id}) |> hide("##{id}")}>
-         Delete
-       </.action>
-     </:action>
-   </.data_table>
-   ```
 
    <!-- tabs-close -->
 

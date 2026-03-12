@@ -13,53 +13,17 @@ defmodule E2eWeb.DataTableSelectionLive do
     socket =
       socket
       |> assign(:users, users)
-      |> assign(:selected, [])
+      |> Corex.DataTable.Selection.assign_for_selection(:users, table_id: "users-table", row_id: &"user-#{&1.id}")
 
     {:ok, socket}
   end
 
-  def handle_event("select", %{"id" => checkbox_id, "checked" => checked}, socket) do
-    # Extract the ID from "users-table-select-user-1", "users-table-select-user-2", etc.
-    # Note: id_str will be just the ID part, e.g. "1" or "2"
-    id_str = String.replace(checkbox_id, "users-table-select-user-", "")
-    id = String.to_integer(id_str)
-
-    selected =
-      if checked do
-        # We need to make sure we store the exact same format that is passed to row_id
-        # In render, row_id is &"user-#{&1.id}", so we must store "user-1", "user-2", etc.
-        ["user-#{id}" | socket.assigns.selected] |> Enum.uniq()
-      else
-        List.delete(socket.assigns.selected, "user-#{id}")
-      end
-
-    all_selected = length(selected) == length(socket.assigns.users)
-
-    socket =
-      socket
-      |> assign(:selected, selected)
-      |> Corex.Checkbox.set_checked("users-table-select-all", all_selected)
-
-    {:noreply, socket}
+  def handle_event("select", params, socket) do
+    {:noreply, Corex.DataTable.Selection.handle_select(socket, params, :users)}
   end
 
-  def handle_event("select_all", %{"checked" => checked}, socket) do
-    selected =
-      if checked do
-        Enum.map(socket.assigns.users, &"user-#{&1.id}")
-      else
-        []
-      end
-
-    socket = assign(socket, :selected, selected)
-
-    # Push check/uncheck to all individual row checkboxes
-    socket =
-      Enum.reduce(socket.assigns.users, socket, fn user, acc ->
-        Corex.Checkbox.set_checked(acc, "users-table-select-user-#{user.id}", checked)
-      end)
-
-    {:noreply, socket}
+  def handle_event("select_all", params, socket) do
+    {:noreply, Corex.DataTable.Selection.handle_select_all(socket, params, :users)}
   end
 
   def handle_event("check_selected", _params, socket) do

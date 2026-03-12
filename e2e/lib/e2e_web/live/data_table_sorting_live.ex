@@ -13,44 +13,13 @@ defmodule E2eWeb.DataTableSortingLive do
     socket =
       socket
       |> assign(:users, users)
-      |> assign(:sort_by, :id)
-      |> assign(:sort_order, :asc)
-      |> sort_users()
+      |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
 
     {:ok, socket}
   end
 
-  def handle_event("sort", %{"sort_by" => sort_by_param}, socket) do
-    sort_by = String.to_existing_atom(sort_by_param)
-
-    socket =
-      if socket.assigns.sort_by == sort_by do
-        update(socket, :sort_order, fn
-          :asc -> :desc
-          :desc -> :asc
-        end)
-      else
-        socket
-        |> assign(:sort_by, sort_by)
-        |> assign(:sort_order, :asc)
-      end
-
-    {:noreply, sort_users(socket)}
-  end
-
-  defp sort_users(socket) do
-    sort_by = socket.assigns.sort_by
-    sort_order = socket.assigns.sort_order
-
-    sorted_users =
-      Enum.sort_by(socket.assigns.users, &Map.get(&1, sort_by), fn a, b ->
-        case sort_order do
-          :asc -> a <= b
-          :desc -> a >= b
-        end
-      end)
-
-    assign(socket, :users, sorted_users)
+  def handle_event("sort", params, socket) do
+    {:noreply, Corex.DataTable.Sort.handle_sort(socket, params, :users)}
   end
 
   def render(assigns) do
@@ -68,7 +37,7 @@ defmodule E2eWeb.DataTableSortingLive do
       </.layout_heading>
 
       <div class="space-y-4">
-        <p>This example demonstrates how to implement sorting with the `data-table` component.</p>
+        <p>This example uses `Corex.DataTable.Sort` helpers so the LiveView stays minimal.</p>
 
         <.data_table
           id="users-table"
