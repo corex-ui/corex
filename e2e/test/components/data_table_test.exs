@@ -24,8 +24,8 @@ defmodule E2eWeb.DataTableTest do
     test "renders action slot", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table")
 
-      assert html =~ "Edit Alice"
-      assert html =~ "Delete Alice"
+      assert html =~ ~r/aria-label="Edit Alice"/
+      assert html =~ ~r/data-part="actions"/
     end
 
     test "uses data-table data attributes", %{conn: conn} do
@@ -55,15 +55,15 @@ defmodule E2eWeb.DataTableTest do
     test "renders action slot for stream rows", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table/stream")
 
-      assert html =~ "Delete Apple"
-      assert html =~ "Delete Banana"
+      assert html =~ ~r/aria-label="Delete Apple"/
+      assert html =~ ~r/aria-label="Delete Banana"/
     end
 
     test "has row ids for stream", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/data-table/stream")
 
-      assert html =~ ~r/id="data-table:stream-table:item:1"/
-      assert html =~ ~r/id="data-table:stream-table:item:2"/
+      assert html =~ ~r/id="items-1"/
+      assert html =~ ~r/id="items-2"/
     end
   end
 end

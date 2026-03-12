@@ -225,6 +225,8 @@ defmodule Corex.DataTable do
 
   slot(:checkbox_indicator, doc: "the slot for showing the checkbox indicator icon")
 
+  slot(:empty, doc: "Optional slot shown when the table has no rows")
+
   def data_table(assigns) do
     assigns =
       assigns
@@ -236,6 +238,13 @@ defmodule Corex.DataTable do
         }
       end)
       |> resolve_row_id()
+
+    col_count =
+      length(assigns.col) +
+        (if assigns.selectable, do: 1, else: 0) +
+        (if assigns.action != [], do: 1, else: 0)
+
+    assigns = assign(assigns, :empty_col_count, col_count)
 
     ~H"""
     <div {@rest}>
@@ -286,6 +295,13 @@ defmodule Corex.DataTable do
           </tr>
         </thead>
         <tbody data-scope="data-table" data-part="tbody" id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
+          <tr :if={@empty != []} id={"#{@id}-empty"} data-scope="data-table" data-part="empty-row">
+            <td colspan={@empty_col_count} data-scope="data-table" data-part="empty-cell">
+              <%= for slot <- @empty do %>
+                {render_slot(slot)}
+              <% end %>
+            </td>
+          </tr>
           <tr :for={row <- @rows} id={@row_id && @row_id.(row)} data-scope="data-table" data-part="row" style={@row_click && "cursor: pointer"}>
             <td :if={@selectable} data-scope="data-table" data-part="selection-cell">
               <Corex.Checkbox.checkbox
