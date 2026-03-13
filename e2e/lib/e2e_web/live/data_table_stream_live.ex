@@ -18,6 +18,7 @@ defmodule E2eWeb.DataTableStreamLive do
 
   def handle_event("add_item", _params, socket) do
     id = to_string(socket.assigns.next_id)
+
     item = %{
       id: id,
       name: "name-#{System.unique_integer([:positive])}",

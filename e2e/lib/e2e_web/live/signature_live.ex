@@ -50,13 +50,15 @@ defmodule E2eWeb.SignatureLive do
         </:clear_trigger>
       </.signature_pad>
 
-      <div :if={@signature_url && @signature_url != ""}>
+      <div :if={@signature_url && @signature_url != ""} class="mt-6 max-w-md space-y-3">
         <h3>On Draw End</h3>
-        <p>Signature URL: <code>{String.slice(@signature_url, 0, 50)}...</code></p>
-        <img src={@signature_url} alt="Signature" class="max-w-xs border" />
-        <.navigate to={@signature_url} download="signature.png" class="button button--sm">
+        <p>Signature URL: <code class="break-all">{String.slice(@signature_url, 0, 50)}...</code></p>
+        <div class="rounded border bg-neutral-50 p-3">
+          <img src={@signature_url} alt="Signature" class="max-h-48 w-auto" />
+        </div>
+        <a href={@signature_url} download="signature.png" class="button button--sm">
           Download Image
-        </.navigate>
+        </a>
       </div>
     </Layouts.app>
     """

@@ -13,7 +13,10 @@ defmodule E2eWeb.DataTableSelectionLive do
     socket =
       socket
       |> assign(:users, users)
-      |> Corex.DataTable.Selection.assign_for_selection(:users, table_id: "users-table", row_id: &"user-#{&1.id}")
+      |> Corex.DataTable.Selection.assign_for_selection(:users,
+        table_id: "users-table",
+        row_id: &"user-#{&1.id}"
+      )
 
     {:ok, socket}
   end

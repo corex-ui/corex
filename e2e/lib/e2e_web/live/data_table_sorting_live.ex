@@ -13,7 +13,10 @@ defmodule E2eWeb.DataTableSortingLive do
     socket =
       socket
       |> assign(:users, users)
-      |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
+      |> Corex.DataTable.Sort.assign_for_sort(:users,
+        default_sort_by: :id,
+        default_sort_order: :asc
+      )
 
     {:ok, socket}
   end

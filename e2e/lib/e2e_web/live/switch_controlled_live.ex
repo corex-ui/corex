@@ -9,10 +9,12 @@ defmodule E2eWeb.SwitchControlledLive do
     {:noreply, assign(socket, :checked, checked)}
   end
 
-  def handle_event("set_checked", params, socket) do
-    value = params["value"] || ""
-    checked = value == "true"
-    {:noreply, assign(socket, :checked, checked)}
+  def handle_event("set_on", _params, socket) do
+    {:noreply, assign(socket, :checked, true)}
+  end
+
+  def handle_event("set_off", _params, socket) do
+    {:noreply, assign(socket, :checked, false)}
   end
 
   def render(assigns) do
@@ -32,10 +34,10 @@ defmodule E2eWeb.SwitchControlledLive do
       <h3>Controlled State: {inspect(@checked)}</h3>
 
       <div class="layout__row">
-        <.action phx-click="set_checked" phx-value-value="true" class="button button--sm">
+        <.action phx-click="set_on" class="button button--sm">
           Set to On
         </.action>
-        <.action phx-click="set_checked" phx-value-value="false" class="button button--sm">
+        <.action phx-click="set_off" class="button button--sm">
           Set to Off
         </.action>
       </div>

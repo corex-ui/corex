@@ -13,8 +13,14 @@ defmodule E2eWeb.DataTableFullLive do
     socket =
       socket
       |> assign(:users, users)
-      |> Corex.DataTable.Sort.assign_for_sort(:users, default_sort_by: :id, default_sort_order: :asc)
-      |> Corex.DataTable.Selection.assign_for_selection(:users, table_id: "users-table", row_id: &"user-#{&1.id}")
+      |> Corex.DataTable.Sort.assign_for_sort(:users,
+        default_sort_by: :id,
+        default_sort_order: :asc
+      )
+      |> Corex.DataTable.Selection.assign_for_selection(:users,
+        table_id: "users-table",
+        row_id: &"user-#{&1.id}"
+      )
 
     {:ok, socket}
   end
