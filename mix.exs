@@ -134,7 +134,7 @@ defmodule Corex.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/corex-ui/corex",
-        "Website" => "https://corex-ui.com"
+        "Website" => "https://corex.gigalixirapp.com/en"
       },
       files: ~w(
         lib priv mix.exs package.json README.md .formatter.exs
