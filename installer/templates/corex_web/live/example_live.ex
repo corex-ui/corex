@@ -71,7 +71,9 @@ defmodule <%= @web_namespace %>.ExampleLive do
               </p>
               <div class="flex flex-wrap gap-ui-gap-sm justify-center md:justify-start pt-ui">
                 <.navigate
-                  to={if @locale, do: "/#{@locale}", else: "/"}
+<%= if @locale do %>                  to={"/#{@locale}"}
+<% else -%>                  to="/"
+<% end -%>
                   type="href"
                   class="button button--brand"
                 >
@@ -109,7 +111,9 @@ defmodule <%= @web_namespace %>.ExampleLive do
                   </span>
                 </div>
                 <.navigate
-                  to={if @locale, do: "/#{@locale}", else: "/"}
+<%= if @locale do %>                  to={"/#{@locale}"}
+<% else -%>                  to="/"
+<% end -%>
                   type="href"
                   class="link link--sm"
                 >

@@ -36,7 +36,9 @@
           </p>
           <div class="flex flex-wrap gap-ui-gap-sm justify-center md:justify-start pt-ui">
             <.navigate
-              to={if @locale, do: "/#{@locale}/live", else: "/live"}
+<%= if @locale do %>              to={"/#{@locale}/live"}
+<% else -%>              to="/live"
+<% end -%>
               type="href"
               class="button button--brand"
             >
@@ -74,7 +76,9 @@
               </span>
             </div>
             <.navigate
-              to={if @locale, do: "/#{@locale}/live", else: "/live"}
+<%= if @locale do %>              to={"/#{@locale}/live"}
+<% else -%>              to="/live"
+<% end -%>
               type="href"
               class="link link--sm"
             >
