@@ -77,7 +77,8 @@ defmodule Mix.Tasks.Corex.Code do
   end
 
   defp generate!(full_path) do
-    stylesheet = Makeup.stylesheet(:default_style)
+    makeup = Module.concat(["Elixir", "Makeup"])
+    stylesheet = makeup.stylesheet(:default_style)
 
     full_path
     |> Path.dirname()

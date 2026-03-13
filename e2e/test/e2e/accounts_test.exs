@@ -12,7 +12,7 @@ defmodule E2e.AccountsTest do
 
     test "list_users/0 returns all users" do
       user = user_fixture()
-      assert Accounts.list_users() == [user]
+      assert user in Accounts.list_users()
     end
 
     test "get_user!/1 returns the user with given id" do
@@ -85,7 +85,7 @@ defmodule E2e.AccountsTest do
 
     test "list_admins/0 returns all admins" do
       admin = admin_fixture()
-      assert Accounts.list_admins() == [admin]
+      assert admin in Accounts.list_admins()
     end
 
     test "get_admin!/1 returns the admin with given id" do

@@ -13,27 +13,33 @@ defmodule E2eWeb.AdminLive.Show do
       locale={@locale}
       current_path={@current_path}
     >
-      <.header>
-        Admin {@admin.id}
+      <.layout_heading>
+        <:title>Admin {@admin.id}</:title>
         <:subtitle>This is a admin record from your database.</:subtitle>
         <:actions>
-          <.button class="button" navigate={~p"/#{@locale}/admins"}>
-            <.icon name="hero-arrow-left" />
-          </.button>
-          <.button
-            class="button button--accent"
-            navigate={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}
+          <.navigate
+            to={~p"/#{@locale}/admins"}
+            type="navigate"
+            class="button"
+            aria_label={gettext("Previous page")}
           >
-            <.icon name="hero-pencil-square" /> Edit admin
-          </.button>
+            <.heroicon name="hero-arrow-left" />
+          </.navigate>
+          <.navigate
+            to={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}
+            type="navigate"
+            class="button button--accent"
+          >
+            <.heroicon name="hero-pencil-square" /> Edit admin
+          </.navigate>
         </:actions>
-      </.header>
+      </.layout_heading>
 
-      <.list>
+      <.data_list class="data-list">
         <:item title="Name">{@admin.name}</:item>
         <:item title="Country">{@admin.country}</:item>
         <:item title="Terms">{@admin.terms}</:item>
-      </.list>
+      </.data_list>
     </Layouts.app>
     """
   end

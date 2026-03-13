@@ -3,13 +3,8 @@
  */
 
 @theme inline {
-  --shadow-layer:
-    0 1px 1px 0 var(--color-layer--border),
-    0 1px 1px 0 var(--color-layer--border);
-  --shadow-ui:
-    0 1px 2px 0 var(--color-ui--border), 0 2px 4px 0 var(--color-ui--border);
-  --shadow-ui-hover:
-    0 3px 4px 0 var(--color-ui--border), 0 2px 4px 0 var(--color-ui--border);
-  --shadow-ui-active:
-    0 1px 2px 0 var(--color-ui--border), 0 1px 1px 0 var(--color-ui--border);
+  --shadow-layer: 0 1px 1px 0 var(--color-layer--border), 0 1px 1px 0 var(--color-layer--border);
+  --shadow-ui: 0 1px 2px 0 var(--color-ui--border), 0 2px 4px 0 var(--color-ui--border);
+  --shadow-ui-hover: 0 3px 4px 0 var(--color-ui--border), 0 2px 4px 0 var(--color-ui--border);
+  --shadow-ui-active: 0 1px 2px 0 var(--color-ui--border), 0 1px 1px 0 var(--color-ui--border);
 }

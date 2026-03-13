@@ -3,7 +3,7 @@ defmodule CorexWeb.Dialog do
   use E2eWeb.LiveCapture
 
   alias Corex.Dialog
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   capture variants: [
             basic: %{
@@ -23,11 +23,11 @@ defmodule CorexWeb.Dialog do
                     ~S|<p>Dialog content goes here. You can add any content you want inside the dialog.</p> <.action phx-click={Corex.Dialog.set_open("my-dialog", false)} class="button button--sm">API Close Dialog</.action>|
                 }
               ],
-              close_trigger: [%{inner_block: ~s(<.icon name="hero-x-mark" class="icon" />)}]
+              close_trigger: [%{inner_block: ~s(<.heroicon name="hero-x-mark" class="icon" />)}]
             }
           ]
 
   defdelegate dialog(assigns), to: Dialog
   defdelegate action(assigns), to: Corex.Action
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

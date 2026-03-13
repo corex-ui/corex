@@ -19,6 +19,7 @@
 @import "../corex/components/typo.css";
 @import "../corex/components/accordion.css";
 @import "../corex/components/layout.css";
+@import "../corex/components/layout-heading.css";
 @import "../corex/components/combobox.css";
 @import "../corex/components/date-picker.css";
 @import "../corex/components/select.css";
@@ -53,10 +54,10 @@
 @import "../corex/components/radio-group.css";
 @import "../corex/components/timer.css";
 @import "../corex/components/code.css";
+@import "../corex/components/data-table.css";
+@import "../corex/components/data-list.css";
 
 @import "./navigation.css";
-
-
 
 #locale-select.select,
 #locale-select.select [data-scope="select"][data-part="root"],

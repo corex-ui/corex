@@ -47,8 +47,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-ui--text);
-    outline-offset: -4px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ui--text);
   }
 
   &:disabled,
@@ -61,6 +61,7 @@
   }
 
   & .icon,
+  & [class^="hero-"],
   & svg,
   & img {
     @apply ui-icon;
@@ -78,14 +79,17 @@
 
   &:hover {
     background-color: --value(--color-ui-* -hover, [color]);
+    color: --value(--color-ui--text, [color]);
   }
 
   &:active {
     background-color: --value(--color-ui-* -active, [color]);
+    color: --value(--color-ui--text, [color]);
   }
 
   &:focus-visible {
-    outline-color: --value(--color-ui-* --text, [color]);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
   }
 
   &:disabled,
@@ -193,8 +197,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-ui--text);
-    outline-offset: -4px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ui--text);
   }
 
   &:focus-within {
@@ -212,6 +216,7 @@
   }
 
   & .icon,
+  & [class^="hero-"],
   & svg,
   & img {
     @apply ui-icon;
@@ -233,7 +238,6 @@
   background-color: var(--color-ui);
   color: var(--color-ui--text);
   border-radius: var(--radius-none);
-  outline-offset: calc(var(--spacing-micro-sm) * -1);
 
   &:disabled,
   &[data-disabled],
@@ -266,7 +270,8 @@
   }
 
   &[data-highlighted]:not(:hover) {
-    outline: 2px solid var(--color-ui--text);
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ui--text);
   }
 
   & [data-part="branch-indicator"][data-state="open"],
@@ -339,7 +344,8 @@
   }
 
   &[data-highlighted]:not(:hover) {
-    outline: 2px solid --value(--color-ui-* --border, [color]);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --border, [color]);
   }
 }
 

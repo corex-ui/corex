@@ -1,0 +1,33 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Editable form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form</p>
+  <form action={~p"/#{@locale}/editable/form"} method="post" id="editable-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.editable
+      name="editable_form[text]"
+      id="editable-form-text"
+      value=""
+      placeholder="Enter text"
+      activation_mode="dblclick"
+      select_on_focus
+      class="editable"
+    >
+      <:label>Text</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    <.action type="submit" id="editable-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

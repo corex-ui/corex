@@ -1,0 +1,32 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Radio Group form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form</p>
+  <form action={~p"/#{@locale}/radio-group/form"} method="post" id="radio-group-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.radio_group
+      name="radio_group_form[choice]"
+      id="radio-group-form-choice"
+      items={[
+        %{value: "a", label: "Option A"},
+        %{value: "b", label: "Option B"},
+        %{value: "c", label: "Option C"}
+      ]}
+      class="radio-group"
+    >
+      <:label>Choose one</:label>
+      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
+    </.radio_group>
+    <.action type="submit" id="radio-group-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

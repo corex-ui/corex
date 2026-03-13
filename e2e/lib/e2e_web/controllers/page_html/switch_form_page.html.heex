@@ -1,0 +1,31 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Switch form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/switch/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.switch field={f[:notifications]} class="switch">
+      <:label>Enable notifications</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.switch>
+    <.action type="submit" id="switch-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
+</Layouts.app>

@@ -1,5 +1,6 @@
 defmodule Corex.NativeInputTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   describe "native_input/1" do
     test "renders text input" do
@@ -62,6 +63,73 @@ defmodule Corex.NativeInputTest do
         )
 
       assert find_in_html(result, ~s(input[type=radio][name="user[size]"])) != []
+    end
+
+    test "renders with form field" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :email,
+        id: "user_email",
+        name: "user[email]",
+        value: "test@example.com",
+        errors: []
+      }
+
+      result =
+        render_component(&Corex.NativeInput.native_input/1,
+          type: "email",
+          field: field
+        )
+
+      assert [_] =
+               find_in_html(
+                 result,
+                 ~s(input[type=email][name="user[email]"][value="test@example.com"])
+               )
+    end
+
+    test "renders with form field with multiple true" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :roles,
+        id: "user_roles",
+        name: "user[roles]",
+        value: [],
+        errors: []
+      }
+
+      result =
+        render_component(&Corex.NativeInput.native_input/1,
+          type: "select",
+          multiple: true,
+          field: field,
+          options: ["Admin", "User"]
+        )
+
+      assert [_] = find_in_html(result, ~s(select[name="user[roles][]"]))
+    end
+
+    test "renders with icon" do
+      assigns = %{}
+
+      result =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.NativeInput.native_input type="email" name="email">
+              <:icon>Icon Content</:icon>
+            </Corex.NativeInput.native_input>
+            """
+          end,
+          assigns
+        )
+
+      assert result =~ "Icon Content"
+      refute result =~ "data-no-icon"
     end
   end
 end

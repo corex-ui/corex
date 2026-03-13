@@ -39,9 +39,8 @@
   }
 
   .link:focus-visible {
-    outline: 2px solid var(--color-ui--focus);
-    outline-offset: 1px;
-    box-shadow: none;
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-ui--focus);
   }
 
   .link:focus-visible::after {
@@ -50,7 +49,8 @@
 
   .link:disabled,
   .link[data-disabled] {
-    opacity: 0.6;
+    color: var(--color-ui--muted);
+    cursor: not-allowed;
     pointer-events: none;
     box-shadow: none;
   }

@@ -18,33 +18,33 @@ defmodule E2eWeb.DatePickerLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Date Picker</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Date Picker</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-01-15")}
           class="button button--sm"
         >
           Set to 2024-01-15
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-12-25")}
           class="button button--sm"
         >
           Set to 2024-12-25
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="2024-01-15" class="button button--sm">
+        <.action phx-click="set_value" value="2024-01-15" class="button button--sm">
           Set to 2024-01-15
-        </button>
-        <button phx-click="set_value" value="2024-12-25" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="2024-12-25" class="button button--sm">
           Set to 2024-12-25
-        </button>
+        </.action>
       </div>
       <.date_picker
         id="my-date-picker"
@@ -54,13 +54,13 @@ defmodule E2eWeb.DatePickerLive do
       >
         <:label>Select a date</:label>
         <:trigger>
-          <.icon name="hero-calendar" class="icon" />
+          <.heroicon name="hero-calendar" class="icon" />
         </:trigger>
         <:prev_trigger>
-          <.icon name="hero-chevron-left" class="icon" />
+          <.heroicon name="hero-chevron-left" class="icon" />
         </:prev_trigger>
         <:next_trigger>
-          <.icon name="hero-chevron-right" class="icon" />
+          <.heroicon name="hero-chevron-right" class="icon" />
         </:next_trigger>
       </.date_picker>
     </Layouts.app>

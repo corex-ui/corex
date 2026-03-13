@@ -83,8 +83,7 @@ defmodule E2eWeb do
 
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components
-      import E2eWeb.CoreComponents
+      # Corex UI components
       use Corex
 
       # Common modules used in templates

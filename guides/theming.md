@@ -151,10 +151,10 @@ def theme_toggle(assigns) do
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-swatch" />
+      <.heroicon name="hero-swatch" />
     </:trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   """

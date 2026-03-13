@@ -4,7 +4,7 @@ defmodule CorexWeb.Toast do
 
   alias Corex.Toast
   alias Corex.Action
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   capture variants: [
             basic: %{
@@ -93,6 +93,6 @@ defmodule CorexWeb.Toast do
     """
   end
 
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
   defdelegate action(assigns), to: Action
 end

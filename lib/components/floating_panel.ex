@@ -11,16 +11,16 @@ defmodule Corex.FloatingPanel do
     <:open_trigger>Close panel</:open_trigger>
     <:closed_trigger>Open panel</:closed_trigger>
     <:minimize_trigger>
-      <.icon name="hero-arrow-down-left" class="icon" />
+      <.heroicon name="hero-arrow-down-left" class="icon" />
     </:minimize_trigger>
     <:maximize_trigger>
-      <.icon name="hero-arrows-pointing-out" class="icon" />
+      <.heroicon name="hero-arrows-pointing-out" class="icon" />
     </:maximize_trigger>
     <:default_trigger>
-      <.icon name="hero-rectangle-stack" class="icon" />
+      <.heroicon name="hero-rectangle-stack" class="icon" />
     </:default_trigger>
     <:close_trigger>
-      <.icon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" class="icon" />
     </:close_trigger>
     <:content>
       <p>
@@ -71,8 +71,21 @@ defmodule Corex.FloatingPanel do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/floating-panel#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for FloatingPanel component strings.
+
+    Without gettext: `translation={%FloatingPanel.Translation{ close: "Close window" }}`
+
+    With gettext: `translation={%FloatingPanel.Translation{ close: gettext("Close window") }}`
+    """
+    defstruct [:minimize, :maximize, :restore, :close]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.FloatingPanel.Anatomy.{
     Body,
@@ -95,47 +108,86 @@ defmodule Corex.FloatingPanel do
   @resize_axes ~w(n e w s ne se sw nw)
   @stages ~w(minimized maximized default)
 
-  attr(:id, :string, required: false)
-  attr(:open, :boolean, default: nil)
-  attr(:default_open, :boolean, default: false)
-  attr(:controlled, :boolean, default: false)
-  attr(:draggable, :boolean, default: true)
-  attr(:resizable, :boolean, default: true)
-  attr(:allow_overflow, :boolean, default: true)
-  attr(:close_on_escape, :boolean, default: true)
-  attr(:disabled, :boolean, default: false)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
-  attr(:size, :map, default: nil)
-  attr(:default_size, :map, default: nil)
-  attr(:position, :map, default: nil)
-  attr(:default_position, :map, default: nil)
-  attr(:min_size, :map, default: nil)
-  attr(:max_size, :map, default: nil)
-  attr(:persist_rect, :boolean, default: false)
-  attr(:grid_size, :integer, default: 1)
-  attr(:on_open_change, :string, default: nil)
-  attr(:on_open_change_client, :string, default: nil)
-  attr(:on_position_change, :string, default: nil)
-  attr(:on_size_change, :string, default: nil)
-  attr(:on_stage_change, :string, default: nil)
+  attr(:id, :string, required: false, doc: "The id of the floating panel")
+  attr(:open, :boolean, default: nil, doc: "Controlled open state when controlled is true")
+  attr(:default_open, :boolean, default: false, doc: "Initial open state when uncontrolled")
+  attr(:controlled, :boolean, default: false, doc: "Whether open state is controlled externally")
+  attr(:draggable, :boolean, default: true, doc: "Whether the panel can be dragged")
+  attr(:resizable, :boolean, default: true, doc: "Whether the panel can be resized")
+  attr(:allow_overflow, :boolean, default: true, doc: "Whether content can overflow")
+  attr(:close_on_escape, :boolean, default: true, doc: "Whether Escape closes the panel")
+  attr(:disabled, :boolean, default: false, doc: "Whether the panel is disabled")
+  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"], doc: "Text direction")
+  attr(:size, :map, default: nil, doc: "Controlled size when controlled")
+  attr(:default_size, :map, default: nil, doc: "Initial size when uncontrolled")
+  attr(:position, :map, default: nil, doc: "Controlled position when controlled")
+  attr(:default_position, :map, default: nil, doc: "Initial position when uncontrolled")
+  attr(:min_size, :map, default: nil, doc: "Minimum size constraints")
+  attr(:max_size, :map, default: nil, doc: "Maximum size constraints")
+  attr(:persist_rect, :boolean, default: false, doc: "Whether to persist position and size")
+  attr(:grid_size, :integer, default: 1, doc: "Grid snapping size for drag and resize")
+  attr(:on_open_change, :string, default: nil, doc: "Server event when open state changes")
+  attr(:on_open_change_client, :string, default: nil, doc: "Client event when open state changes")
+  attr(:on_position_change, :string, default: nil, doc: "Server event when position changes")
+  attr(:on_size_change, :string, default: nil, doc: "Server event when size changes")
+
+  attr(:on_stage_change, :string,
+    default: nil,
+    doc: "Server event when stage (minimized/maximized) changes"
+  )
+
+  attr(:translation, Corex.FloatingPanel.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
-  slot(:open_trigger, required: true)
-  slot(:closed_trigger, required: true)
-  slot(:minimize_trigger, required: true)
-  slot(:maximize_trigger, required: true)
-  slot(:default_trigger, required: true)
-  slot(:close_trigger, required: true)
-  slot(:content, required: true)
+  slot :open_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :closed_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :minimize_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :maximize_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :default_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :close_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :content, required: true do
+    attr(:class, :string, required: false)
+  end
 
   def floating_panel(assigns) do
     initial_open = if assigns[:controlled], do: assigns[:open], else: assigns[:default_open]
+
+    default_translation = %Translation{
+      minimize: gettext("Minimize window"),
+      maximize: gettext("Maximize window"),
+      restore: gettext("Restore window"),
+      close: gettext("Close window")
+    }
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "floating-panel-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:open, fn -> false end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:initial_open, initial_open)
       |> assign(:resize_axes, @resize_axes)
       |> assign(:stages, @stages)
@@ -182,16 +234,16 @@ defmodule Corex.FloatingPanel do
               <div {Connect.header(%Header{id: @id})}>
                 <div {Connect.title(%Title{id: @id})}>Panel</div>
                 <div {Connect.control(%Control{id: @id})}>
-                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized"})} aria-label="Minimize window">
+                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "minimized"})} aria-label={@translation.minimize}>
                     {render_slot(@minimize_trigger)}
                   </button>
-                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized"})} aria-label="Maximize window">
+                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "maximized"})} aria-label={@translation.maximize}>
                     {render_slot(@maximize_trigger)}
                   </button>
-                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default"})} aria-label="Restore window">
+                  <button type="button" {Connect.stage_trigger(%StageTrigger{id: @id, stage: "default"})} aria-label={@translation.restore}>
                     {render_slot(@default_trigger)}
                   </button>
-                  <button type="button" {Connect.close_trigger(%CloseTrigger{id: @id})} aria-label="Close window">
+                  <button type="button" {Connect.close_trigger(%CloseTrigger{id: @id})} aria-label={@translation.close}>
                     {render_slot(@close_trigger)}
                   </button>
                 </div>
@@ -206,5 +258,16 @@ defmodule Corex.FloatingPanel do
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      minimize: partial.minimize || default.minimize,
+      maximize: partial.maximize || default.maximize,
+      restore: partial.restore || default.restore,
+      close: partial.close || default.close
+    }
   end
 end

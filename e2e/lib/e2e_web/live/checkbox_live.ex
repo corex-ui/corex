@@ -22,63 +22,62 @@ defmodule E2eWeb.CheckboxLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Checkbox</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Checkbox</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Checkbox.set_checked("my-checkbox", true)}
           class="button button--sm"
         >
           Set checked
-        </button>
-
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Checkbox.set_checked("my-checkbox", false)}
           class="button button--sm"
         >
           Set unchecked
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Checkbox.toggle_checked("my-checkbox")}
           class="button button--sm"
         >
           Toggle checked
-        </button>
+        </.action>
       </div>
 
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click="set_checked"
           phx-value-checked="true"
           class="button button--sm"
         >
           Set checked
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_checked"
           phx-value-checked="false"
           class="button button--sm"
         >
           Set unchecked
-        </button>
-        <button phx-click="toggle_checked" class="button button--sm">
+        </.action>
+        <.action phx-click="toggle_checked" class="button button--sm">
           Toggle checked
-        </button>
+        </.action>
       </div>
 
       <.checkbox id="my-checkbox" class="checkbox">
         <:label>
           Accept the terms
         </:label>
-        <:control>
-          <.icon name="hero-check" class="data-checked" />
-        </:control>
+        <:indicator>
+          <.heroicon name="hero-check" class="data-checked" />
+        </:indicator>
         <:error :let={msg}>
-          <.icon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
       </.checkbox>

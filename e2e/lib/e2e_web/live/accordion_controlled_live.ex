@@ -54,43 +54,44 @@ defmodule E2eWeb.AccordionControlledLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Accordion</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
+
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Accordion.set_value("my-accordion", ["lorem"])}
           class="button button--sm"
         >
           Open Item 1
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Accordion.set_value("my-accordion", ["lorem", "duis"])}
           class="button button--sm"
         >
           Open Item 1 and 2
-        </button>
-        <button phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
+        </.action>
+        <.action phx-click={Corex.Accordion.set_value("my-accordion", [])} class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
+        <.action phx-click="set_value" value={Enum.join(["lorem"], ",")} class="button button--sm">
           Open Item 1
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value={Enum.join(["lorem", "duis"], ",")}
           class="button button--sm"
         >
           Open Item 1 and 2
-        </button>
-        <button phx-click="set_value" value="" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="" class="button button--sm">
           Close all Items
-        </button>
+        </.action>
       </div>
       <.accordion
         id="my-accordion"

@@ -1,6 +1,6 @@
 import {
   TreeCollection
-} from "./chunk-MWK4GDRX.mjs";
+} from "./chunk-WAY74VD3.mjs";
 import {
   Component,
   VanillaMachine,
@@ -10,8 +10,6 @@ import {
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   diff,
   ensure,
@@ -38,9 +36,9 @@ import {
   setElementValue,
   toArray,
   uniq
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tree-view@1.34.1/node_modules/@zag-js/tree-view/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/tree-view.anatomy.mjs
 var anatomy = createAnatomy("tree-view").parts(
   "branch",
   "branchContent",
@@ -59,12 +57,16 @@ var anatomy = createAnatomy("tree-view").parts(
   "tree"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/tree-view.collection.mjs
 var collection = (options) => {
   return new TreeCollection(options);
 };
 collection.empty = () => {
   return new TreeCollection({ rootNode: { children: [] } });
 };
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/tree-view.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tree:${ctx.id}:root`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `tree:${ctx.id}:label`;
 var getNodeId = (ctx, value) => ctx.ids?.node?.(value) ?? `tree:${ctx.id}:node:${value}`;
@@ -77,6 +79,8 @@ var getRenameInputId = (ctx, value) => `tree:${ctx.id}:rename-input:${value}`;
 var getRenameInputEl = (ctx, value) => {
   return ctx.getById(getRenameInputId(ctx, value));
 };
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/utils/checked-state.mjs
 function getCheckedState(collection2, node, checkedValue) {
   const value = collection2.getNodeValue(node);
   if (!collection2.isBranchNode(node)) {
@@ -107,9 +111,12 @@ function getCheckedValueMap(collection2, checkedValue) {
   });
   return map;
 }
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/tree-view.connect.mjs
 function connect(service, normalize) {
   const { context, scope, computed, prop, send } = service;
   const collection2 = prop("collection");
+  const translations = prop("translations");
   const expandedValue = Array.from(context.get("expandedValue"));
   const selectedValue = Array.from(context.get("selectedValue"));
   const checkedValue = Array.from(context.get("checkedValue"));
@@ -123,8 +130,8 @@ function connect(service, normalize) {
   };
   const firstNode = collection2.getFirstNode(void 0, { skip });
   const firstNodeValue = firstNode ? collection2.getNodeValue(firstNode) : null;
-  function getNodeState(props2) {
-    const { node, indexPath } = props2;
+  function getNodeState(props) {
+    const { node, indexPath } = props;
     const value = collection2.getNodeValue(node);
     return {
       id: getNodeId(scope, value),
@@ -228,7 +235,7 @@ function connect(service, normalize) {
         id: getTreeId(scope),
         dir: prop("dir"),
         role: "tree",
-        "aria-label": "Tree View",
+        "aria-label": translations.treeLabel,
         "aria-labelledby": getLabelId(scope),
         "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
         tabIndex: -1,
@@ -330,14 +337,14 @@ function connect(service, normalize) {
       });
     },
     getNodeState,
-    getItemProps(props2) {
-      const nodeState = getNodeState(props2);
+    getItemProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.item.attrs,
         id: nodeState.id,
         dir: prop("dir"),
         "data-ownedby": getTreeId(scope),
-        "data-path": props2.indexPath.join("/"),
+        "data-path": props.indexPath.join("/"),
         "data-value": nodeState.value,
         tabIndex: nodeState.focused ? 0 : -1,
         "data-focus": dataAttr(nodeState.focused),
@@ -370,8 +377,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getItemTextProps(props2) {
-      const itemState = getNodeState(props2);
+    getItemTextProps(props) {
+      const itemState = getNodeState(props);
       return normalize.element({
         ...parts.itemText.attrs,
         "data-disabled": dataAttr(itemState.disabled),
@@ -379,8 +386,8 @@ function connect(service, normalize) {
         "data-focus": dataAttr(itemState.focused)
       });
     },
-    getItemIndicatorProps(props2) {
-      const itemState = getNodeState(props2);
+    getItemIndicatorProps(props) {
+      const itemState = getNodeState(props);
       return normalize.element({
         ...parts.itemIndicator.attrs,
         "aria-hidden": true,
@@ -390,8 +397,8 @@ function connect(service, normalize) {
         hidden: !itemState.selected
       });
     },
-    getBranchProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branch.attrs,
         "data-depth": nodeState.depth,
@@ -402,7 +409,7 @@ function connect(service, normalize) {
         "data-value": nodeState.value,
         "aria-level": nodeState.depth,
         "aria-selected": nodeState.disabled ? void 0 : nodeState.selected,
-        "data-path": props2.indexPath.join("/"),
+        "data-path": props.indexPath.join("/"),
         "data-selected": dataAttr(nodeState.selected),
         "aria-expanded": nodeState.expanded,
         "data-state": nodeState.expanded ? "open" : "closed",
@@ -415,8 +422,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getBranchIndicatorProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchIndicatorProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branchIndicator.attrs,
         "aria-hidden": true,
@@ -427,8 +434,8 @@ function connect(service, normalize) {
         "data-loading": dataAttr(nodeState.loading)
       });
     },
-    getBranchTriggerProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchTriggerProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branchTrigger.attrs,
         role: "button",
@@ -445,15 +452,15 @@ function connect(service, normalize) {
         }
       });
     },
-    getBranchControlProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchControlProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branchControl.attrs,
         role: "button",
         id: nodeState.id,
         dir: prop("dir"),
         tabIndex: nodeState.focused ? 0 : -1,
-        "data-path": props2.indexPath.join("/"),
+        "data-path": props.indexPath.join("/"),
         "data-state": nodeState.expanded ? "open" : "closed",
         "data-disabled": dataAttr(nodeState.disabled),
         "data-selected": dataAttr(nodeState.selected),
@@ -478,8 +485,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getBranchTextProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchTextProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branchText.attrs,
         dir: prop("dir"),
@@ -488,28 +495,28 @@ function connect(service, normalize) {
         "data-loading": dataAttr(nodeState.loading)
       });
     },
-    getBranchContentProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchContentProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branchContent.attrs,
         role: "group",
         dir: prop("dir"),
         "data-state": nodeState.expanded ? "open" : "closed",
         "data-depth": nodeState.depth,
-        "data-path": props2.indexPath.join("/"),
+        "data-path": props.indexPath.join("/"),
         "data-value": nodeState.value,
         hidden: !nodeState.expanded
       });
     },
-    getBranchIndentGuideProps(props2) {
-      const nodeState = getNodeState(props2);
+    getBranchIndentGuideProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.element({
         ...parts.branchIndentGuide.attrs,
         "data-depth": nodeState.depth
       });
     },
-    getNodeCheckboxProps(props2) {
-      const nodeState = getNodeState(props2);
+    getNodeCheckboxProps(props) {
+      const nodeState = getNodeState(props);
       const checkedState = nodeState.checked;
       return normalize.element({
         ...parts.nodeCheckbox.attrs,
@@ -529,13 +536,13 @@ function connect(service, normalize) {
         }
       });
     },
-    getNodeRenameInputProps(props2) {
-      const nodeState = getNodeState(props2);
+    getNodeRenameInputProps(props) {
+      const nodeState = getNodeState(props);
       return normalize.input({
         ...parts.nodeRenameInput.attrs,
         id: getRenameInputId(scope, nodeState.value),
         type: "text",
-        "aria-label": "Rename tree item",
+        "aria-label": translations.renameInputLabel,
         hidden: !nodeState.renaming,
         onKeyDown(event) {
           if (isComposingEvent(event)) return;
@@ -556,6 +563,8 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/utils/expand-branch.mjs
 function expandBranches(params, values) {
   const { context, prop, refs } = params;
   if (!prop("loadChildren")) {
@@ -609,13 +618,13 @@ function expandBranches(params, values) {
     const loadedValues2 = [];
     const nodeWithErrors = [];
     const nextLoadingStatus = context.get("loadingStatus");
-    let collection3 = prop("collection");
+    let collection22 = prop("collection");
     results.forEach((result, index) => {
       const { id, indexPath, node, valuePath } = nodesToLoad[index];
       if (result.status === "fulfilled") {
         nextLoadingStatus[id] = "loaded";
         loadedValues2.push(id);
-        collection3 = collection3.replace(indexPath, { ...node, children: result.value });
+        collection22 = collection22.replace(indexPath, { ...node, children: result.value });
       } else {
         pendingAborts.delete(id);
         Reflect.deleteProperty(nextLoadingStatus, id);
@@ -625,13 +634,15 @@ function expandBranches(params, values) {
     context.set("loadingStatus", nextLoadingStatus);
     if (loadedValues2.length) {
       context.set("expandedValue", (prev) => uniq(add(prev, ...loadedValues2)));
-      prop("onLoadChildrenComplete")?.({ collection: collection3 });
+      prop("onLoadChildrenComplete")?.({ collection: collection22 });
     }
     if (nodeWithErrors.length) {
       prop("onLoadChildrenError")?.({ nodes: nodeWithErrors });
     }
   });
 }
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/utils/visit-skip.mjs
 function skipFn(params) {
   const { prop, context } = params;
   return function skip({ indexPath }) {
@@ -639,9 +650,11 @@ function skipFn(params) {
     return paths.some((value) => !context.get("expandedValue").includes(value));
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+tree-view@1.36.0/node_modules/@zag-js/tree-view/dist/tree-view.machine.mjs
 var { and } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       selectionMode: "single",
       collection: collection.empty(),
@@ -649,7 +662,12 @@ var machine = createMachine({
       expandOnClick: true,
       defaultExpandedValue: [],
       defaultSelectedValue: [],
-      ...props2
+      ...props,
+      translations: {
+        treeLabel: "Tree View",
+        renameInputLabel: "Rename tree item",
+        ...props.translations
+      }
     };
   },
   initialState() {
@@ -1269,39 +1287,6 @@ function scrollToNode(params, value) {
   }
   return false;
 }
-var props = createProps()([
-  "ids",
-  "collection",
-  "dir",
-  "expandedValue",
-  "expandOnClick",
-  "defaultFocusedValue",
-  "focusedValue",
-  "getRootNode",
-  "id",
-  "onExpandedChange",
-  "onFocusChange",
-  "onSelectionChange",
-  "checkedValue",
-  "selectedValue",
-  "selectionMode",
-  "typeahead",
-  "defaultExpandedValue",
-  "defaultSelectedValue",
-  "defaultCheckedValue",
-  "onCheckedChange",
-  "onLoadChildrenComplete",
-  "onLoadChildrenError",
-  "loadChildren",
-  "canRename",
-  "onRenameStart",
-  "onBeforeRename",
-  "onRenameComplete",
-  "scrollToIndexFn"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["node", "indexPath"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/tree-view.ts
 function buildTreeFromDOM(rootEl) {
@@ -1341,19 +1326,19 @@ function buildTreeFromDOM(rootEl) {
 }
 var TreeView = class extends Component {
   treeCollection;
-  constructor(el, props2) {
-    const treeData = props2.treeData ?? buildTreeFromDOM(el);
+  constructor(el, props) {
+    const treeData = props.treeData ?? buildTreeFromDOM(el);
     const treeCollection = collection({
       nodeToValue: (node) => node.id,
       nodeToString: (node) => node.name,
       rootNode: treeData
     });
-    super(el, { ...props2, collection: treeCollection });
+    super(el, { ...props, collection: treeCollection });
     this.treeCollection = treeCollection;
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, { ...props2 });
+  initMachine(props) {
+    return new VanillaMachine(machine, { ...props });
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

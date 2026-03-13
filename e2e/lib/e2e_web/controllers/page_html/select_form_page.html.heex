@@ -1,0 +1,46 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Select form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/select/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.select
+      field={f[:country]}
+      class="select"
+      translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+      items={[
+        %{label: "France", id: "fra"},
+        %{label: "Belgium", id: "bel"},
+        %{label: "Germany", id: "deu"},
+        %{label: "Netherlands", id: "nld"},
+        %{label: "Switzerland", id: "che"},
+        %{label: "Austria", id: "aut"}
+      ]}
+    >
+      <:label>Country</:label>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.select>
+    <.action type="submit" id="select-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
+</Layouts.app>

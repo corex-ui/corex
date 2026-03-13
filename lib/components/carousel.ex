@@ -102,8 +102,13 @@ defmodule Corex.Carousel do
   attr(:on_page_change_client, :string, default: nil)
   attr(:rest, :global)
 
-  slot(:prev_trigger, required: true)
-  slot(:next_trigger, required: true)
+  slot :prev_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :next_trigger, required: true do
+    attr(:class, :string, required: false)
+  end
 
   def carousel(assigns) do
     items = List.wrap(assigns.items)

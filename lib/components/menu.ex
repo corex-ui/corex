@@ -34,7 +34,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Actions</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   ```
@@ -98,7 +98,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Click me</:trigger>
     <:nested_indicator>
-      <.icon name="hero-arrow-right" />
+      <.heroicon name="hero-arrow-right" />
     </:nested_indicator>
   </.menu>
   ```
@@ -135,7 +135,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Actions</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   ```
@@ -180,7 +180,7 @@ defmodule Corex.Menu do
     >
       <:trigger>Actions</:trigger>
           <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
     </.menu>
     """
@@ -210,7 +210,7 @@ defmodule Corex.Menu do
   >
     <:trigger>Navigate</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   ```
@@ -240,7 +240,7 @@ defmodule Corex.Menu do
       >
         <:trigger>Navigate</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
       </.menu>
       """
@@ -417,19 +417,26 @@ defmodule Corex.Menu do
 
   attr(:rest, :global)
 
-  slot(:trigger, required: true, doc: "The trigger button content")
-  slot(:indicator, required: false, doc: "Optional indicator content (e.g., icon or arrow)")
+  slot :trigger, required: true, doc: "The trigger button content" do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:nested_indicator,
+  slot :indicator, required: false, doc: "Optional indicator content (e.g., icon or arrow)" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :nested_indicator,
     required: false,
-    doc: "Optional indicator content for nested menu triggers (defaults to arrow right)"
-  )
+    doc: "Optional indicator content for nested menu triggers (defaults to arrow right)" do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:item,
+  slot :item,
     required: false,
     doc:
-      "Optional. Custom content for each menu item. Use :let={item} to receive the item (Corex.Tree.Item)."
-  )
+      "Optional. Custom content for each menu item. Use :let={item} to receive the item (Corex.Tree.Item)." do
+    attr(:class, :string, required: false)
+  end
 
   def menu(assigns) do
     assigns =

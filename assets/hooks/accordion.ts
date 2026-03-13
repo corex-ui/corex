@@ -4,7 +4,7 @@ import { Accordion } from "../components/accordion";
 import type { ValueChangeDetails, FocusChangeDetails, Props } from "@zag-js/accordion";
 import type { Orientation } from "@zag-js/types";
 
-import { getString, getBoolean, getStringList, getDir } from "../lib/util";
+import { getString, getBoolean, getStringList, getDir, canPushEvent } from "../lib/util";
 
 type AccordionHookState = {
   accordion?: Accordion;
@@ -28,7 +28,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
       dir: getDir(el),
       onValueChange: (details: ValueChangeDetails) => {
         const eventName = getString(el, "onValueChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             value: details.value ?? null,
@@ -51,7 +51,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
 
       onFocusChange: (details: FocusChangeDetails) => {
         const eventName = getString(el, "onFocusChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             value: details.value ?? null,
@@ -84,17 +84,14 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent(
-        "accordion_set_value",
-        (payload: { accordion_id?: string; value: string[] }) => {
-          const targetId = payload.accordion_id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `accordion:${targetId}`;
-            if (!matches) return;
-          }
-          accordion.api.setValue(payload.value);
+      this.handleEvent("accordion_set_value", (payload: { id?: string; value: string[] }) => {
+        const targetId = payload.id;
+        if (targetId) {
+          const matches = el.id === targetId || el.id === `accordion:${targetId}`;
+          if (!matches) return;
         }
-      )
+        accordion.api.setValue(payload.value);
+      })
     );
 
     this.handlers.push(

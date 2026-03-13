@@ -1,0 +1,33 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Data Table</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
+  <h3>Basic Example</h3>
+  <.data_table
+    id="basic-table"
+    class="data-table"
+    rows={[
+      %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
+      %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
+      %{id: 3, name: "Charlie", role: "Editor", email: "charlie@example.com"}
+    ]}
+  >
+    <:col :let={row} label="ID">{row.id}</:col>
+    <:col :let={row} label="Name">{row.name}</:col>
+    <:col :let={row} label="Role">{row.role}</:col>
+    <:col :let={row} label="Email">{row.email}</:col>
+    <:action :let={user}>
+      <.action class="button button--sm" aria-label={"Edit #{user.name}"}>
+        <.heroicon name="hero-pencil-square" />
+      </.action>
+    </:action>
+  </.data_table>
+</Layouts.app>

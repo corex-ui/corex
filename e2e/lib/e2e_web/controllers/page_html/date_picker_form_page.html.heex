@@ -1,0 +1,45 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Date Picker form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/date-picker/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.date_picker
+      field={f[:date]}
+      trigger_aria_label="Select date"
+      input_aria_label="Select date"
+      class="date-picker"
+    >
+      <:label>Date</:label>
+      <:trigger>
+        <.heroicon name="hero-calendar" class="icon" />
+      </:trigger>
+      <:prev_trigger>
+        <.heroicon name="hero-chevron-left" class="icon" />
+      </:prev_trigger>
+      <:next_trigger>
+        <.heroicon name="hero-chevron-right" class="icon" />
+      </:next_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.date_picker>
+    <.action type="submit" id="date-picker-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
+</Layouts.app>

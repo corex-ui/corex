@@ -33,51 +33,51 @@ defmodule E2eWeb.AngleSliderControlledLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Angle Slider</h1>
-        <h2>Controlled</h2>
-      </div>
+      <.layout_heading>
+        <:title>Angle Slider</:title>
+        <:subtitle>Controlled</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 0)}
           class="button button--sm"
         >
           Set to 0°
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 90)}
           class="button button--sm"
         >
           Set to 90°
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 180)}
           class="button button--sm"
         >
           Set to 180°
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.AngleSlider.set_value("my-angle-slider", 270)}
           class="button button--sm"
         >
           Set to 270°
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="0" class="button button--sm">
+        <.action phx-click="set_value" value="0" class="button button--sm">
           Set to 0°
-        </button>
-        <button phx-click="set_value" value="90" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="90" class="button button--sm">
           Set to 90°
-        </button>
-        <button phx-click="set_value" value="180" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="180" class="button button--sm">
           Set to 180°
-        </button>
-        <button phx-click="set_value" value="270" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" value="270" class="button button--sm">
           Set to 270°
-        </button>
+        </.action>
       </div>
       <p class="layout__row">
         Current value: <code>{@angle}</code>°

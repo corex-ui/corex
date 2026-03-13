@@ -14,18 +14,20 @@ defmodule E2eWeb.NavigateLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <h1>Navigate</h1>
-      <h2>Live View</h2>
+      <.layout_heading>
+        <:title>Navigate</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Anatomy</h3>
       <section class="layout__section">
         <div class="layout__row gap-ui-gap">
           <.navigate to="#" class="link">Internal Link</.navigate>
           <.navigate to="#" class="link">
             Internal Link
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.navigate>
           <.navigate to="#" class="link" aria_label="Internal link icon only">
-            <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>
+            <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>
           </.navigate>
           <.navigate to="https://example.com" class="link" external>
             External Link

@@ -1,0 +1,188 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>NativeInput form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form — all native input types</p>
+  <form action={~p"/#{@locale}/native-input/form"} method="post" id="native-input-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.native_input
+      type="text"
+      name="profile[name]"
+      id="native-input-form-name"
+      placeholder="Your name"
+      class="native-input"
+    >
+      <:label>Name</:label>
+    </.native_input>
+    <.native_input
+      type="email"
+      name="profile[email]"
+      id="native-input-form-email"
+      placeholder="you@example.com"
+      class="native-input"
+    >
+      <:label>Email</:label>
+    </.native_input>
+    <.native_input
+      type="textarea"
+      name="profile[bio]"
+      id="native-input-form-bio"
+      placeholder="Short bio"
+      class="native-input"
+    >
+      <:label>Bio</:label>
+    </.native_input>
+    <.native_input
+      type="date"
+      name="profile[birth_date]"
+      id="native-input-form-birth-date"
+      placeholder="Choose date"
+      class="native-input"
+    >
+      <:label>Birth date</:label>
+    </.native_input>
+    <.native_input
+      type="datetime-local"
+      name="profile[datetime]"
+      id="native-input-form-datetime"
+      class="native-input"
+    >
+      <:label>Date and time</:label>
+    </.native_input>
+    <.native_input
+      type="time"
+      name="profile[reminder_time]"
+      id="native-input-form-reminder-time"
+      placeholder="Choose time"
+      class="native-input"
+    >
+      <:label>Reminder time</:label>
+    </.native_input>
+    <.native_input
+      type="month"
+      name="profile[month]"
+      id="native-input-form-month"
+      class="native-input"
+    >
+      <:label>Month</:label>
+    </.native_input>
+    <.native_input
+      type="week"
+      name="profile[week]"
+      id="native-input-form-week"
+      class="native-input"
+    >
+      <:label>Week</:label>
+    </.native_input>
+    <.native_input
+      type="url"
+      name="profile[website]"
+      id="native-input-form-website"
+      placeholder="https://example.com"
+      class="native-input"
+    >
+      <:label>Website</:label>
+    </.native_input>
+    <.native_input
+      type="tel"
+      name="profile[phone]"
+      id="native-input-form-phone"
+      placeholder="+1 234 567 8900"
+      class="native-input"
+    >
+      <:label>Phone</:label>
+    </.native_input>
+    <.native_input
+      type="search"
+      name="profile[q]"
+      id="native-input-form-q"
+      placeholder="Search"
+      class="native-input"
+    >
+      <:label>Search</:label>
+    </.native_input>
+    <.native_input
+      type="color"
+      name="profile[color]"
+      id="native-input-form-color"
+      value="#3b82f6"
+      class="native-input"
+    >
+      <:label>Color</:label>
+    </.native_input>
+    <.native_input
+      type="number"
+      name="profile[count]"
+      id="native-input-form-count"
+      min={0}
+      max={100}
+      step={1}
+      class="native-input"
+    >
+      <:label>Count</:label>
+    </.native_input>
+    <.native_input
+      type="password"
+      name="profile[password]"
+      id="native-input-form-password"
+      class="native-input"
+    >
+      <:label>Password</:label>
+    </.native_input>
+    <.native_input
+      type="select"
+      name="profile[role]"
+      id="native-input-form-role"
+      options={[Admin: "admin", User: "user"]}
+      prompt="Choose role..."
+      class="native-input"
+    >
+      <:label>Role</:label>
+    </.native_input>
+    <.native_input
+      type="select"
+      multiple
+      name="profile[tags][]"
+      id="native-input-form-tags"
+      options={[
+        "Elixir": "elixir",
+        Phoenix: "phoenix",
+        LiveView: "liveview",
+        Ecto: "ecto",
+        OTP: "otp"
+      ]}
+      prompt="Choose tags..."
+      class="native-input"
+    >
+      <:label>Tags</:label>
+    </.native_input>
+    <.native_input
+      type="radio"
+      name="profile[size]"
+      id="native-input-form-size"
+      value="m"
+      options={[Small: "s", Medium: "m", Large: "l"]}
+      class="native-input"
+    >
+      <:label>Size</:label>
+    </.native_input>
+    <.native_input
+      type="checkbox"
+      name="profile[agree]"
+      id="native-input-form-agree"
+      class="native-input"
+    >
+      <:label>I agree</:label>
+    </.native_input>
+    <.action type="submit" id="native-input-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

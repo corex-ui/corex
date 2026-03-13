@@ -1,5 +1,8 @@
 defmodule Corex.Dialog.Connect do
   @moduledoc false
+
+  import Corex.Gettext, only: [gettext: 1]
+
   alias Corex.Dialog.Anatomy.{
     Backdrop,
     CloseTrigger,
@@ -118,7 +121,7 @@ defmodule Corex.Dialog.Connect do
       "type" => "button",
       "dir" => assigns.dir,
       "id" => "dialog:#{assigns.id}:close-trigger",
-      "aria-label" => "Close"
+      "aria-label" => gettext("Close dialog")
     }
   end
 

@@ -1,0 +1,27 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Data List</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
+  <h3>Basic Example</h3>
+  <.data_list class="data-list">
+    <:item title="Name">Alice</:item>
+    <:item title="Role">Admin</:item>
+    <:item title="Email">alice@example.com</:item>
+    <:item title="Status">Active</:item>
+  </.data_list>
+
+  <h3>Another Example</h3>
+  <.data_list class="data-list mt-4">
+    <:item title="Project">Phoenix Web App</:item>
+    <:item title="Status">In Progress</:item>
+    <:item title="Deadline">Dec 31, 2026</:item>
+  </.data_list>
+</Layouts.app>

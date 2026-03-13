@@ -10,6 +10,18 @@ defmodule E2eWeb.AngleSliderTest do
     feature "#{@mode} - Angle slider has no A11y violations", %{session: session} do
       session
       |> AngleSlider.goto(@mode)
+      |> AngleSlider.wait(500)
+      |> AngleSlider.check_accessibility()
+    end
+  end
+
+  for mode <- ["/en/playground/angle-slider", "/en/controlled/angle-slider"] do
+    @mode mode
+
+    feature "#{@mode} - Angle slider has no A11y violations", %{session: session} do
+      session
+      |> AngleSlider.goto(@mode)
+      |> AngleSlider.wait(500)
       |> AngleSlider.check_accessibility()
     end
   end

@@ -5,10 +5,11 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <div class="layout__row">
-    <h1>Checkbox</h1>
-    <h2>Controller View</h2>
-  </div>
+  <.layout_heading>
+    <:title>Checkbox</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
   <h3>Client Api</h3>
   <div class="layout__row">
     <.action
@@ -36,11 +37,11 @@
     <:label>
       Accept the terms
     </:label>
-    <:control>
-      <.icon name="hero-check" class="data-checked" />
-    </:control>
+    <:indicator>
+      <.heroicon name="hero-check" class="data-checked" />
+    </:indicator>
     <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
   </.checkbox>

@@ -14,15 +14,15 @@ defmodule E2eWeb.ListboxLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Listbox</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Listbox</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Minimal</h3>
       <.listbox
         id="my-listbox"
         class="listbox"
-        collection={[
+        items={[
           %{label: "France", id: "fra", disabled: true},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
@@ -33,14 +33,14 @@ defmodule E2eWeb.ListboxLive do
       >
         <:label>Choose a country</:label>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
       <h3>Grouped</h3>
       <.listbox
         class="listbox"
-        collection={[
+        items={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
@@ -58,14 +58,14 @@ defmodule E2eWeb.ListboxLive do
       >
         <:label>Choose a country</:label>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
       <h3>Extended</h3>
       <.listbox
         class="listbox"
-        collection={[
+        items={[
           %{label: "France", id: "fra"},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
@@ -82,7 +82,7 @@ defmodule E2eWeb.ListboxLive do
           {entry.label}
         </:item>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
 
@@ -90,7 +90,7 @@ defmodule E2eWeb.ListboxLive do
       <.listbox
         class="listbox"
         aria_label="Extended grouped countries"
-        collection={[
+        items={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
@@ -104,7 +104,7 @@ defmodule E2eWeb.ListboxLive do
           {entry.label}
         </:item>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.listbox>
     </Layouts.app>

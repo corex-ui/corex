@@ -1,26 +1,20 @@
 import {
+  __publicField,
   addPoints,
-  clampPoint,
-  clampSize,
-  constrainRect,
   createRect,
-  getElementRect,
-  getWindowRect,
-  isPointEqual,
-  isSizeEqual,
-  resizeRect,
   subtractPoints
-} from "./chunk-QHOSSHQC.mjs";
+} from "./chunk-ZZKFCQSP.mjs";
+import {
+  clampValue,
+  toPx
+} from "./chunk-MV633JPN.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
-  clampValue,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensureProps,
   getBoolean,
@@ -39,11 +33,10 @@ import {
   raf,
   resizeObserverBorderBox,
   subscribe,
-  toPx,
   trackPointerMove
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.34.1/node_modules/@zag-js/floating-panel/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(
   "trigger",
   "positioner",
@@ -58,6 +51,372 @@ var anatomy = createAnatomy("floating-panel").parts(
   "control"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
+var AffineTransform = class _AffineTransform {
+  constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
+    __publicField(this, "m00");
+    __publicField(this, "m01");
+    __publicField(this, "m02");
+    __publicField(this, "m10");
+    __publicField(this, "m11");
+    __publicField(this, "m12");
+    __publicField(this, "rotate", (...args) => {
+      return this.prepend(_AffineTransform.rotate(...args));
+    });
+    __publicField(this, "scale", (...args) => {
+      return this.prepend(_AffineTransform.scale(...args));
+    });
+    __publicField(this, "translate", (...args) => {
+      return this.prepend(_AffineTransform.translate(...args));
+    });
+    this.m00 = m00;
+    this.m01 = m01;
+    this.m02 = m02;
+    this.m10 = m10;
+    this.m11 = m11;
+    this.m12 = m12;
+  }
+  applyTo(point) {
+    const { x, y } = point;
+    const { m00, m01, m02, m10, m11, m12 } = this;
+    return {
+      x: m00 * x + m01 * y + m02,
+      y: m10 * x + m11 * y + m12
+    };
+  }
+  prepend(other) {
+    return new _AffineTransform([
+      this.m00 * other.m00 + this.m01 * other.m10,
+      // m00
+      this.m00 * other.m01 + this.m01 * other.m11,
+      // m01
+      this.m00 * other.m02 + this.m01 * other.m12 + this.m02,
+      // m02
+      this.m10 * other.m00 + this.m11 * other.m10,
+      // m10
+      this.m10 * other.m01 + this.m11 * other.m11,
+      // m11
+      this.m10 * other.m02 + this.m11 * other.m12 + this.m12
+      // m12
+    ]);
+  }
+  append(other) {
+    return new _AffineTransform([
+      other.m00 * this.m00 + other.m01 * this.m10,
+      // m00
+      other.m00 * this.m01 + other.m01 * this.m11,
+      // m01
+      other.m00 * this.m02 + other.m01 * this.m12 + other.m02,
+      // m02
+      other.m10 * this.m00 + other.m11 * this.m10,
+      // m10
+      other.m10 * this.m01 + other.m11 * this.m11,
+      // m11
+      other.m10 * this.m02 + other.m11 * this.m12 + other.m12
+      // m12
+    ]);
+  }
+  get determinant() {
+    return this.m00 * this.m11 - this.m01 * this.m10;
+  }
+  get isInvertible() {
+    const det = this.determinant;
+    return isFinite(det) && isFinite(this.m02) && isFinite(this.m12) && det !== 0;
+  }
+  invert() {
+    const det = this.determinant;
+    return new _AffineTransform([
+      this.m11 / det,
+      // m00
+      -this.m01 / det,
+      // m01
+      (this.m01 * this.m12 - this.m11 * this.m02) / det,
+      // m02
+      -this.m10 / det,
+      // m10
+      this.m00 / det,
+      // m11
+      (this.m10 * this.m02 - this.m00 * this.m12) / det
+      // m12
+    ]);
+  }
+  get array() {
+    return [this.m00, this.m01, this.m02, this.m10, this.m11, this.m12, 0, 0, 1];
+  }
+  get float32Array() {
+    return new Float32Array(this.array);
+  }
+  // Static
+  static get identity() {
+    return new _AffineTransform([1, 0, 0, 0, 1, 0]);
+  }
+  static rotate(theta, origin) {
+    const rotation = new _AffineTransform([Math.cos(theta), -Math.sin(theta), 0, Math.sin(theta), Math.cos(theta), 0]);
+    if (origin && (origin.x !== 0 || origin.y !== 0)) {
+      return _AffineTransform.multiply(
+        _AffineTransform.translate(origin.x, origin.y),
+        rotation,
+        _AffineTransform.translate(-origin.x, -origin.y)
+      );
+    }
+    return rotation;
+  }
+  static scale(sx, sy = sx, origin = { x: 0, y: 0 }) {
+    const scale = new _AffineTransform([sx, 0, 0, 0, sy, 0]);
+    if (origin.x !== 0 || origin.y !== 0) {
+      return _AffineTransform.multiply(
+        _AffineTransform.translate(origin.x, origin.y),
+        scale,
+        _AffineTransform.translate(-origin.x, -origin.y)
+      );
+    }
+    return scale;
+  }
+  static translate(tx, ty) {
+    return new _AffineTransform([1, 0, tx, 0, 1, ty]);
+  }
+  static multiply(...[first, ...rest]) {
+    if (!first) return _AffineTransform.identity;
+    return rest.reduce((result, item) => result.prepend(item), first);
+  }
+  get a() {
+    return this.m00;
+  }
+  get b() {
+    return this.m10;
+  }
+  get c() {
+    return this.m01;
+  }
+  get d() {
+    return this.m11;
+  }
+  get tx() {
+    return this.m02;
+  }
+  get ty() {
+    return this.m12;
+  }
+  get scaleComponents() {
+    return { x: this.a, y: this.d };
+  }
+  get translationComponents() {
+    return { x: this.tx, y: this.ty };
+  }
+  get skewComponents() {
+    return { x: this.c, y: this.b };
+  }
+  toString() {
+    return `matrix(${this.a}, ${this.b}, ${this.c}, ${this.d}, ${this.tx}, ${this.ty})`;
+  }
+};
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/clamp.mjs
+var clamp = (value, min2, max) => Math.min(Math.max(value, min2), max);
+var clampPoint = (position, size, boundaryRect) => {
+  const x = clamp(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size.width);
+  const y = clamp(position.y, boundaryRect.y, boundaryRect.y + boundaryRect.height - size.height);
+  return { x, y };
+};
+var defaultMinSize = {
+  width: 0,
+  height: 0
+};
+var defaultMaxSize = {
+  width: Infinity,
+  height: Infinity
+};
+var clampSize = (size, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
+  return {
+    width: Math.min(Math.max(size.width, minSize.width), maxSize.width),
+    height: Math.min(Math.max(size.height, minSize.height), maxSize.height)
+  };
+};
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/constrain.mjs
+var constrainRect = (rect, boundary) => {
+  const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
+  const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
+  return {
+    x: left,
+    y: top,
+    width: Math.min(rect.width, boundary.width),
+    height: Math.min(rect.height, boundary.height)
+  };
+};
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/equality.mjs
+var isSizeEqual = (a, b) => {
+  return a.width === b?.width && a.height === b?.height;
+};
+var isPointEqual = (a, b) => {
+  return a.x === b?.x && a.y === b?.y;
+};
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/from-element.mjs
+var styleCache = /* @__PURE__ */ new WeakMap();
+function getCacheComputedStyle(el) {
+  if (!styleCache.has(el)) {
+    const win = el.ownerDocument.defaultView || window;
+    styleCache.set(el, win.getComputedStyle(el));
+  }
+  return styleCache.get(el);
+}
+function getElementRect(el, opts = {}) {
+  return createRect(getClientRect(el, opts));
+}
+function getClientRect(el, opts = {}) {
+  const { excludeScrollbar = false, excludeBorders = false } = opts;
+  const { x, y, width, height } = el.getBoundingClientRect();
+  const r = { x, y, width, height };
+  const style = getCacheComputedStyle(el);
+  const { borderLeftWidth, borderTopWidth, borderRightWidth, borderBottomWidth } = style;
+  const borderXWidth = sum(borderLeftWidth, borderRightWidth);
+  const borderYWidth = sum(borderTopWidth, borderBottomWidth);
+  if (excludeBorders) {
+    r.width -= borderXWidth;
+    r.height -= borderYWidth;
+    r.x += px(borderLeftWidth);
+    r.y += px(borderTopWidth);
+  }
+  if (excludeScrollbar) {
+    const scrollbarWidth = el.offsetWidth - el.clientWidth - borderXWidth;
+    const scrollbarHeight = el.offsetHeight - el.clientHeight - borderYWidth;
+    r.width -= scrollbarWidth;
+    r.height -= scrollbarHeight;
+  }
+  return r;
+}
+var px = (v) => parseFloat(v.replace("px", ""));
+var sum = (...vals) => vals.reduce((sum2, v) => sum2 + (v ? px(v) : 0), 0);
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/from-window.mjs
+function getWindowRect(win, opts = {}) {
+  return createRect(getViewportRect(win, opts));
+}
+function getViewportRect(win, opts) {
+  const { excludeScrollbar = false } = opts;
+  const { innerWidth, innerHeight, document: doc, visualViewport } = win;
+  const width = visualViewport?.width || innerWidth;
+  const height = visualViewport?.height || innerHeight;
+  const rect = { x: 0, y: 0, width, height };
+  if (excludeScrollbar) {
+    const scrollbarWidth = innerWidth - doc.documentElement.clientWidth;
+    const scrollbarHeight = innerHeight - doc.documentElement.clientHeight;
+    rect.width -= scrollbarWidth;
+    rect.height -= scrollbarHeight;
+  }
+  return rect;
+}
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/compass.mjs
+var compassDirectionMap = {
+  n: { x: 0.5, y: 0 },
+  ne: { x: 1, y: 0 },
+  e: { x: 1, y: 0.5 },
+  se: { x: 1, y: 1 },
+  s: { x: 0.5, y: 1 },
+  sw: { x: 0, y: 1 },
+  w: { x: 0, y: 0.5 },
+  nw: { x: 0, y: 0 }
+};
+var oppositeDirectionMap = {
+  n: "s",
+  ne: "sw",
+  e: "w",
+  se: "nw",
+  s: "n",
+  sw: "ne",
+  w: "e",
+  nw: "se"
+};
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/resize.mjs
+var { sign, abs, min } = Math;
+function getRectExtentPoint(rect, direction) {
+  const { minX, minY, maxX, maxY, midX, midY } = rect;
+  const x = direction.includes("w") ? minX : direction.includes("e") ? maxX : midX;
+  const y = direction.includes("n") ? minY : direction.includes("s") ? maxY : midY;
+  return { x, y };
+}
+function getOppositeDirection(direction) {
+  return oppositeDirectionMap[direction];
+}
+function resizeRect(rect, offset, direction, opts) {
+  const { scalingOriginMode, lockAspectRatio } = opts;
+  const extent = getRectExtentPoint(rect, direction);
+  const oppositeDirection = getOppositeDirection(direction);
+  const oppositeExtent = getRectExtentPoint(rect, oppositeDirection);
+  if (scalingOriginMode === "center") {
+    offset = { x: offset.x * 2, y: offset.y * 2 };
+  }
+  const newExtent = {
+    x: extent.x + offset.x,
+    y: extent.y + offset.y
+  };
+  const multiplier = {
+    x: compassDirectionMap[direction].x * 2 - 1,
+    y: compassDirectionMap[direction].y * 2 - 1
+  };
+  const newSize = {
+    width: newExtent.x - oppositeExtent.x,
+    height: newExtent.y - oppositeExtent.y
+  };
+  const scaleX = multiplier.x * newSize.width / rect.width;
+  const scaleY = multiplier.y * newSize.height / rect.height;
+  const largestMagnitude = abs(scaleX) > abs(scaleY) ? scaleX : scaleY;
+  const scale = lockAspectRatio ? { x: largestMagnitude, y: largestMagnitude } : {
+    x: extent.x === oppositeExtent.x ? 1 : scaleX,
+    y: extent.y === oppositeExtent.y ? 1 : scaleY
+  };
+  if (extent.y === oppositeExtent.y) {
+    scale.y = abs(scale.y);
+  } else if (sign(scale.y) !== sign(scaleY)) {
+    scale.y *= -1;
+  }
+  if (extent.x === oppositeExtent.x) {
+    scale.x = abs(scale.x);
+  } else if (sign(scale.x) !== sign(scaleX)) {
+    scale.x *= -1;
+  }
+  switch (scalingOriginMode) {
+    case "extent":
+      return transformRect(rect, AffineTransform.scale(scale.x, scale.y, oppositeExtent), false);
+    case "center":
+      return transformRect(
+        rect,
+        AffineTransform.scale(scale.x, scale.y, {
+          x: rect.midX,
+          y: rect.midY
+        }),
+        false
+      );
+  }
+}
+function createRectFromPoints(initialPoint, finalPoint, normalized = true) {
+  if (normalized) {
+    return {
+      x: min(finalPoint.x, initialPoint.x),
+      y: min(finalPoint.y, initialPoint.y),
+      width: abs(finalPoint.x - initialPoint.x),
+      height: abs(finalPoint.y - initialPoint.y)
+    };
+  }
+  return {
+    x: initialPoint.x,
+    y: initialPoint.y,
+    width: finalPoint.x - initialPoint.x,
+    height: finalPoint.y - initialPoint.y
+  };
+}
+function transformRect(rect, transform, normalized = true) {
+  const p1 = transform.applyTo({ x: rect.minX, y: rect.minY });
+  const p2 = transform.applyTo({ x: rect.maxX, y: rect.maxY });
+  return createRectFromPoints(p1, p2, normalized);
+}
+
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `float:${ctx.id}:trigger`;
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `float:${ctx.id}:positioner`;
 var getContentId = (ctx) => ctx.ids?.content ?? `float:${ctx.id}:content`;
@@ -87,6 +446,8 @@ var getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
   }
   return pick(boundaryRect, ["x", "y", "width", "height"]);
 };
+
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
 function getResizeAxisStyle(axis) {
   switch (axis) {
     case "n":
@@ -149,6 +510,8 @@ function getResizeAxisStyle(axis) {
       throw new Error(`Invalid axis: ${axis}`);
   }
 }
+
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
 var validStages = /* @__PURE__ */ new Set(["minimized", "maximized", "default"]);
 function connect(service, normalize) {
   const { state, send, scope, prop, computed, context } = service;
@@ -292,12 +655,12 @@ function connect(service, normalize) {
         }
       });
     },
-    getStageTriggerProps(props2) {
-      if (!validStages.has(props2.stage)) {
-        throw new Error(`[zag-js] Invalid stage: ${props2.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
+    getStageTriggerProps(props) {
+      if (!validStages.has(props.stage)) {
+        throw new Error(`[zag-js] Invalid stage: ${props.stage}. Must be one of: ${Array.from(validStages).join(", ")}`);
       }
       const translations = prop("translations");
-      const actionProps = match(props2.stage, {
+      const actionProps = match(props.stage, {
         minimized: () => ({
           "aria-label": translations.minimize,
           hidden: isStaged
@@ -315,13 +678,13 @@ function connect(service, normalize) {
         ...parts.stageTrigger.attrs,
         dir: prop("dir"),
         disabled: prop("disabled"),
-        "data-stage": props2.stage,
+        "data-stage": props.stage,
         ...actionProps,
         type: "button",
         onClick(event) {
           if (event.defaultPrevented) return;
           if (!prop("resizable")) return;
-          const type = match(props2.stage, {
+          const type = match(props.stage, {
             minimized: () => "MINIMIZE",
             maximized: () => "MAXIMIZE",
             default: () => "RESTORE"
@@ -330,12 +693,12 @@ function connect(service, normalize) {
         }
       });
     },
-    getResizeTriggerProps(props2) {
+    getResizeTriggerProps(props) {
       return normalize.element({
         ...parts.resizeTrigger.attrs,
         dir: prop("dir"),
         "data-disabled": dataAttr(!canResize),
-        "data-axis": props2.axis,
+        "data-axis": props.axis,
         onPointerDown(event) {
           if (!canResize) return;
           if (!isLeftClick(event)) return;
@@ -343,7 +706,7 @@ function connect(service, normalize) {
           event.stopPropagation();
           send({
             type: "RESIZE_START",
-            axis: props2.axis,
+            axis: props.axis,
             position: { x: event.clientX, y: event.clientY }
           });
         },
@@ -357,7 +720,7 @@ function connect(service, normalize) {
         style: {
           position: "absolute",
           touchAction: "none",
-          ...getResizeAxisStyle(props2.axis)
+          ...getResizeAxisStyle(props.axis)
         }
       });
     },
@@ -445,6 +808,8 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
 var panelStack = proxy({
   stack: [],
   count() {
@@ -470,42 +835,42 @@ var panelStack = proxy({
     return this.stack.indexOf(id);
   }
 });
+
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
 var { not, and } = createGuards();
 var defaultTranslations = {
   minimize: "Minimize window",
   maximize: "Maximize window",
   restore: "Restore window"
 };
+var FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
+var FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
 var machine = createMachine({
-  props({ props: props2 }) {
-    ensureProps(props2, ["id"], "floating-panel");
+  props({ props }) {
+    ensureProps(props, ["id"], "floating-panel");
     return {
       strategy: "fixed",
       gridSize: 1,
-      defaultSize: { width: 320, height: 240 },
-      defaultPosition: { x: 300, y: 100 },
       allowOverflow: true,
       resizable: true,
       draggable: true,
-      ...props2,
-      hasSpecifiedPosition: !!props2.defaultPosition || !!props2.position,
+      ...props,
       translations: {
         ...defaultTranslations,
-        ...props2.translations
+        ...props.translations
       }
     };
   },
   initialState({ prop }) {
-    const open = prop("open") || prop("defaultOpen");
+    const open = prop("open") ?? prop("defaultOpen");
     return open ? "open" : "closed";
   },
   context({ prop, bindable }) {
     return {
       size: bindable(() => ({
-        defaultValue: prop("defaultSize"),
+        defaultValue: prop("defaultSize") ?? FALLBACK_SIZE,
         value: prop("size"),
         isEqual: isSizeEqual,
-        sync: true,
         hash(v) {
           return `W:${v.width} H:${v.height}`;
         },
@@ -514,10 +879,9 @@ var machine = createMachine({
         }
       })),
       position: bindable(() => ({
-        defaultValue: prop("defaultPosition"),
+        defaultValue: prop("defaultPosition") ?? FALLBACK_POSITION,
         value: prop("position"),
         isEqual: isPointEqual,
-        sync: true,
         hash(v) {
           return `X:${v.x} Y:${v.y}`;
         },
@@ -549,6 +913,7 @@ var machine = createMachine({
     isMaximized: ({ context }) => context.get("stage") === "maximized",
     isMinimized: ({ context }) => context.get("stage") === "minimized",
     isStaged: ({ context }) => context.get("stage") !== "default",
+    hasSpecifiedPosition: ({ prop }) => prop("defaultPosition") != null || prop("position") != null,
     canResize: ({ context, prop }) => prop("resizable") && !prop("disabled") && context.get("stage") === "default",
     canDrag: ({ prop, computed }) => prop("draggable") && !prop("disabled") && !computed("isMaximized")
   },
@@ -581,7 +946,7 @@ var machine = createMachine({
       on: {
         "CONTROLLED.OPEN": {
           target: "open",
-          actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+          actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "setInitialFocus"]
         },
         OPEN: [
           {
@@ -590,7 +955,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+            actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "setInitialFocus"]
           }
         ]
       }
@@ -598,119 +963,96 @@ var machine = createMachine({
     open: {
       tags: ["open"],
       entry: ["bringToFrontOfPanelStack"],
-      effects: ["trackBoundaryRect"],
+      initial: "idle",
       on: {
-        DRAG_START: {
-          guard: not("isMaximized"),
-          target: "open.dragging",
-          actions: ["setPrevPosition"]
-        },
-        RESIZE_START: {
-          guard: not("isMinimized"),
-          target: "open.resizing",
-          actions: ["setPrevSize"]
-        },
         "CONTROLLED.CLOSE": {
           target: "closed",
-          actions: ["resetRect", "focusTriggerEl"]
+          actions: ["resetRect", "setFinalFocus"]
         },
         CLOSE: [
           {
             guard: "isOpenControlled",
             target: "closed",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "setFinalFocus"]
           },
           {
             target: "closed",
-            actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+            actions: ["invokeOnClose", "resetRect", "setFinalFocus"]
           }
-        ],
-        ESCAPE: [
-          {
-            guard: and("isOpenControlled", "closeOnEsc"),
-            actions: ["invokeOnClose"]
-          },
-          {
-            guard: "closeOnEsc",
-            target: "closed",
-            actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+        ]
+      },
+      states: {
+        idle: {
+          effects: ["trackBoundaryRect"],
+          on: {
+            DRAG_START: {
+              guard: not("isMaximized"),
+              target: "dragging",
+              actions: ["setPrevPosition"]
+            },
+            RESIZE_START: {
+              guard: not("isMinimized"),
+              target: "resizing",
+              actions: ["setPrevSize"]
+            },
+            ESCAPE: [
+              {
+                guard: and("isOpenControlled", "closeOnEsc"),
+                actions: ["invokeOnClose"]
+              },
+              {
+                guard: "closeOnEsc",
+                target: "closed",
+                actions: ["invokeOnClose", "resetRect", "setFinalFocus"]
+              }
+            ],
+            MINIMIZE: {
+              actions: ["setMinimized"]
+            },
+            MAXIMIZE: {
+              actions: ["setMaximized"]
+            },
+            RESTORE: {
+              actions: ["setRestored"]
+            },
+            MOVE: {
+              actions: ["setPositionFromKeyboard"]
+            }
           }
-        ],
-        MINIMIZE: {
-          actions: ["setMinimized"]
         },
-        MAXIMIZE: {
-          actions: ["setMaximized"]
-        },
-        RESTORE: {
-          actions: ["setRestored"]
-        },
-        MOVE: {
-          actions: ["setPositionFromKeyboard"]
-        }
-      }
-    },
-    "open.dragging": {
-      tags: ["open"],
-      effects: ["trackPointerMove"],
-      exit: ["clearPrevPosition"],
-      on: {
-        DRAG: {
-          actions: ["setPosition"]
-        },
-        DRAG_END: {
-          target: "open",
-          actions: ["invokeOnDragEnd"]
-        },
-        "CONTROLLED.CLOSE": {
-          target: "closed",
-          actions: ["resetRect"]
-        },
-        CLOSE: [
-          {
-            guard: "isOpenControlled",
-            target: "closed",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "closed",
-            actions: ["invokeOnClose", "resetRect"]
+        dragging: {
+          effects: ["trackPointerMove"],
+          exit: ["clearPrevPosition"],
+          on: {
+            DRAG: {
+              actions: ["setPositionFromDrag"]
+            },
+            DRAG_END: {
+              target: "idle",
+              actions: ["invokeOnDragEnd"]
+            },
+            ESCAPE: {
+              target: "idle",
+              actions: ["restorePosition"]
+            }
           }
-        ],
-        ESCAPE: {
-          target: "open"
-        }
-      }
-    },
-    "open.resizing": {
-      tags: ["open"],
-      effects: ["trackPointerMove"],
-      exit: ["clearPrevSize"],
-      on: {
-        DRAG: {
-          actions: ["setSize"]
         },
-        DRAG_END: {
-          target: "open",
-          actions: ["invokeOnResizeEnd"]
-        },
-        "CONTROLLED.CLOSE": {
-          target: "closed",
-          actions: ["resetRect"]
-        },
-        CLOSE: [
-          {
-            guard: "isOpenControlled",
-            target: "closed",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "closed",
-            actions: ["invokeOnClose", "resetRect"]
+        resizing: {
+          effects: ["trackPointerMove"],
+          exit: ["clearPrevSize"],
+          on: {
+            DRAG: {
+              actions: ["setSizeFromDrag"]
+            },
+            DRAG_END: {
+              target: "idle",
+              actions: ["invokeOnResizeEnd"]
+            },
+            ESCAPE: {
+              target: "idle",
+              actions: ["restoreSize"]
+            }
           }
-        ],
-        ESCAPE: {
-          target: "open"
         }
       }
     }
@@ -778,27 +1120,41 @@ var machine = createMachine({
       }
     },
     actions: {
-      setAnchorPosition({ context, prop, scope }) {
-        if (prop("hasSpecifiedPosition")) return;
+      setPosition({ context, event, prop, scope }) {
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, prop("allowOverflow"));
+        const position = clampPoint(event.position, context.get("size"), boundaryRect);
+        context.set("position", position);
+      },
+      setSize({ context, event, scope, prop }) {
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+        let nextSize = event.size;
+        nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+        nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+        const nextPosition = clampPoint(context.get("position"), nextSize, boundaryRect);
+        context.set("size", nextSize);
+        context.set("position", nextPosition);
+      },
+      setAnchorPosition({ context, computed, prop, scope }) {
+        if (computed("hasSpecifiedPosition")) return;
         const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
         if (prop("persistRect") && hasPrevRect) return;
-        raf(() => {
-          const triggerRect = getTriggerEl(scope);
-          const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
-          let anchorPosition = prop("getAnchorPosition")?.({
-            triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
-            boundaryRect: DOMRect.fromRect(boundaryRect)
-          });
-          if (!anchorPosition) {
-            const size = context.get("size");
-            anchorPosition = {
-              x: boundaryRect.x + (boundaryRect.width - size.width) / 2,
-              y: boundaryRect.y + (boundaryRect.height - size.height) / 2
-            };
-          }
-          if (!anchorPosition) return;
-          context.set("position", anchorPosition);
+        const triggerRect = getTriggerEl(scope);
+        const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
+        let anchorPosition = prop("getAnchorPosition")?.({
+          triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
+          boundaryRect: DOMRect.fromRect(boundaryRect)
         });
+        if (!anchorPosition) {
+          const size = context.get("size");
+          anchorPosition = {
+            x: boundaryRect.x + (boundaryRect.width - size.width) / 2,
+            y: boundaryRect.y + (boundaryRect.height - size.height) / 2
+          };
+        }
+        if (!anchorPosition) return;
+        context.set("position", anchorPosition);
       },
       setPrevPosition({ context, event }) {
         context.set("prevPosition", { ...context.get("position") });
@@ -808,7 +1164,11 @@ var machine = createMachine({
         if (!prop("persistRect")) context.set("prevPosition", null);
         context.set("lastEventPosition", null);
       },
-      setPosition({ context, event, prop, scope }) {
+      restorePosition({ context }) {
+        const prevPosition = context.get("prevPosition");
+        if (prevPosition) context.set("position", prevPosition);
+      },
+      setPositionFromDrag({ context, event, prop, scope }) {
         let diff = subtractPoints(event.position, context.get("lastEventPosition"));
         diff.x = Math.round(diff.x / prop("gridSize")) * prop("gridSize");
         diff.y = Math.round(diff.y / prop("gridSize")) * prop("gridSize");
@@ -843,7 +1203,13 @@ var machine = createMachine({
         context.set("prevPosition", null);
         context.set("lastEventPosition", null);
       },
-      setSize({ context, event, scope, prop }) {
+      restoreSize({ context }) {
+        const prevSize = context.get("prevSize");
+        if (prevSize) context.set("size", prevSize);
+        const prevPosition = context.get("prevPosition");
+        if (prevPosition) context.set("position", prevPosition);
+      },
+      setSizeFromDrag({ context, event, scope, prop }) {
         const prevSize = context.get("prevSize");
         const prevPosition = context.get("prevPosition");
         const lastEventPosition = context.get("lastEventPosition");
@@ -875,22 +1241,36 @@ var machine = createMachine({
         });
       },
       setMaximized({ context, prop, scope }) {
-        context.set("stage", "maximized");
-        context.set("prevSize", context.get("size"));
-        context.set("prevPosition", context.get("position"));
+        if (context.get("stage") === "maximized") return;
+        const wasDefault = context.get("stage") === "default";
+        const currentSize = context.get("size");
+        const currentPosition = context.get("position");
         const boundaryEl = prop("getBoundaryEl")?.();
         const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
-        context.set("position", pick(boundaryRect, ["x", "y"]));
-        context.set("size", pick(boundaryRect, ["height", "width"]));
+        const nextPosition = pick(boundaryRect, ["x", "y"]);
+        const nextSize = pick(boundaryRect, ["height", "width"]);
+        context.set("stage", "maximized");
+        if (wasDefault) {
+          context.set("prevSize", currentSize);
+          context.set("prevPosition", currentPosition);
+        }
+        context.set("position", nextPosition);
+        context.set("size", nextSize);
       },
       setMinimized({ context, scope }) {
+        if (context.get("stage") === "minimized") return;
+        const wasDefault = context.get("stage") === "default";
+        const currentSize = context.get("size");
+        const currentPosition = context.get("position");
         context.set("stage", "minimized");
-        context.set("prevSize", context.get("size"));
-        context.set("prevPosition", context.get("position"));
+        if (wasDefault) {
+          context.set("prevSize", currentSize);
+          context.set("prevPosition", currentPosition);
+        }
         const headerEl = getHeaderEl(scope);
         if (!headerEl) return;
         const size = {
-          ...context.get("size"),
+          ...currentSize,
           height: headerEl?.offsetHeight
         };
         context.set("size", size);
@@ -898,20 +1278,21 @@ var machine = createMachine({
       setRestored({ context, prop, scope }) {
         const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
         context.set("stage", "default");
+        let restoredSize = context.get("size");
         const prevSize = context.get("prevSize");
         if (prevSize) {
-          let nextSize = prevSize;
-          nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
-          nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
-          context.set("size", nextSize);
-          context.set("prevSize", null);
+          restoredSize = clampSize(prevSize, prop("minSize"), prop("maxSize"));
+          restoredSize = clampSize(restoredSize, prop("minSize"), boundaryRect);
         }
-        if (context.get("prevPosition")) {
-          let nextPosition = context.get("prevPosition");
-          nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
-          context.set("position", nextPosition);
-          context.set("prevPosition", null);
+        let restoredPosition = context.get("position");
+        const prevPosition = context.get("prevPosition");
+        if (prevPosition) {
+          restoredPosition = clampPoint(prevPosition, restoredSize, boundaryRect);
         }
+        context.set("size", restoredSize);
+        context.set("position", restoredPosition);
+        context.set("prevSize", null);
+        context.set("prevPosition", null);
       },
       setPositionFromKeyboard({ context, event, prop, scope }) {
         invariant(event.step == null, "step is required");
@@ -943,12 +1324,12 @@ var machine = createMachine({
       invokeOnResizeEnd({ context, prop }) {
         prop("onSizeChangeEnd")?.({ size: context.get("size") });
       },
-      focusTriggerEl({ scope }) {
+      setFinalFocus({ scope }) {
         raf(() => {
           getTriggerEl(scope)?.focus();
         });
       },
-      focusContentEl({ scope }) {
+      setInitialFocus({ scope }) {
         raf(() => {
           getContentEl(scope)?.focus();
         });
@@ -959,47 +1340,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "allowOverflow",
-  "closeOnEscape",
-  "defaultOpen",
-  "defaultPosition",
-  "defaultSize",
-  "dir",
-  "disabled",
-  "draggable",
-  "getAnchorPosition",
-  "getBoundaryEl",
-  "getRootNode",
-  "gridSize",
-  "id",
-  "ids",
-  "lockAspectRatio",
-  "maxSize",
-  "minSize",
-  "onOpenChange",
-  "onPositionChange",
-  "onPositionChangeEnd",
-  "onSizeChange",
-  "onSizeChangeEnd",
-  "onStageChange",
-  "open",
-  "persistRect",
-  "position",
-  "resizable",
-  "size",
-  "strategy",
-  "translations"
-]);
-var splitProps = createSplitProps(props);
-var resizeTriggerProps = createProps()(["axis"]);
-var splitResizeTriggerProps = createSplitProps(resizeTriggerProps);
 
 // components/floating-panel.ts
 var FloatingPanel = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

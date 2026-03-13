@@ -14,10 +14,10 @@ defmodule E2eWeb.AvatarLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Avatar</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Avatar</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <div class="layout__row gap-ui-gap">
         <.avatar id="avatar-fallback" src="" class="avatar">
           <:fallback>JD</:fallback>

@@ -14,8 +14,8 @@ defmodule E2eWeb.ColorPickerLive do
     {:noreply, Corex.ColorPicker.set_open(socket, "my-color-picker", open?)}
   end
 
-  def handle_event("set_value", %{"value" => value}, socket) do
-    {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", value)}
+  def handle_event("set_value", %{"color" => color}, socket) do
+    {:noreply, Corex.ColorPicker.set_value(socket, "my-color-picker", color)}
   end
 
   def handle_event("on_value_change", %{"id" => _id, "valueAsString" => value}, socket) do
@@ -35,51 +35,51 @@ defmodule E2eWeb.ColorPickerLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Color Picker</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Color Picker</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.ColorPicker.set_open("my-color-picker", true)}
           class="button button--sm"
         >
           Open
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ColorPicker.set_open("my-color-picker", false)}
           class="button button--sm"
         >
           Close
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ColorPicker.set_value("my-color-picker", "#FF0000")}
           class="button button--sm"
         >
           Set Red
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ColorPicker.set_value("my-color-picker", "#1909C0")}
           class="button button--sm"
         >
           Set Blue
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_open" phx-value-open="true" class="button button--sm">
+        <.action phx-click="set_open" phx-value-open="true" class="button button--sm">
           Open
-        </button>
-        <button phx-click="set_open" phx-value-open="false" class="button button--sm">
+        </.action>
+        <.action phx-click="set_open" phx-value-open="false" class="button button--sm">
           Close
-        </button>
-        <button phx-click="set_value" phx-value-value="#FF0000" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" phx-value-color="#FF0000" class="button button--sm">
           Set Red
-        </button>
-        <button phx-click="set_value" phx-value-value="#00FF00" class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" phx-value-color="#00FF00" class="button button--sm">
           Set Green
-        </button>
+        </.action>
       </div>
       <div :if={@value != nil} class="layout__row">
         <p>

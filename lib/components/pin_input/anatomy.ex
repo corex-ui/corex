@@ -82,8 +82,8 @@ defmodule Corex.PinInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :index]
+    defstruct [:id, :index, :aria_label]
 
-    @type t :: %__MODULE__{id: String.t(), index: non_neg_integer()}
+    @type t :: %__MODULE__{id: String.t(), index: non_neg_integer(), aria_label: String.t() | nil}
   end
 end

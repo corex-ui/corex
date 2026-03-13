@@ -8,21 +8,17 @@ defmodule Corex.Clipboard do
 
   ### Basic Usage
 
-  This example assumes the import of `.icon` from `Core Components`
-
   ```heex
   <.clipboard id="my-clipboard" value="Text to copy">
     <:label>Copy to clipboard</:label>
      <:trigger>
-          <.icon name="hero-clipboard" class="icon data-copy" />
-          <.icon name="hero-check" class="icon data-copied" />
+          <.heroicon name="hero-clipboard" class="icon data-copy" />
+          <.heroicon name="hero-check" class="icon data-copied" />
       </:trigger>
   </.clipboard>
   ```
 
   ### With Callback
-
-  This example assumes the import of `.icon` from `Core Components`
 
   ```heex
   <.clipboard
@@ -31,8 +27,8 @@ defmodule Corex.Clipboard do
     on_copy="clipboard_copied">
     <:label>Copy to clipboard</:label>
             <:trigger>
-          <.icon name="hero-clipboard" class="icon data-copy" />
-          <.icon name="hero-check" class="icon data-copied" />
+          <.heroicon name="hero-clipboard" class="icon data-copy" />
+          <.heroicon name="hero-check" class="icon data-copied" />
         </:trigger>
   </.clipboard>
   ```

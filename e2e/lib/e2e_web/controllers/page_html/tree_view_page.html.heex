@@ -5,8 +5,11 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Tree View</h1>
-  <h2>Controller View</h2>
+  <.layout_heading>
+    <:title>Tree View</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
   <h3>Client Api</h3>
   <section class="layout__section">
     <div class="layout__row">
@@ -80,7 +83,7 @@
   >
     <:label>Corex Components</:label>
     <:indicator>
-      <.icon name="hero-chevron-right" />
+      <.heroicon name="hero-chevron-right" />
     </:indicator>
   </.tree_view>
 </Layouts.app>

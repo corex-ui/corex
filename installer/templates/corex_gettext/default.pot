@@ -1,0 +1,87 @@
+## This is a PO Template file for the default gettext domain.
+##
+## Run `mix gettext.extract` to bring this file up to date.
+## Leave `msgstr`s empty; edit them in PO (`.po`) files instead.
+##
+## Generator (core_components, layouts, home)
+msgid "close"
+msgstr ""
+
+msgid "Actions"
+msgstr ""
+
+msgid "We can't find the internet"
+msgstr ""
+
+msgid "Attempting to reconnect"
+msgstr ""
+
+msgid "Something went wrong!"
+msgstr ""
+
+msgid "Go to Corex UI Github"
+msgstr ""
+
+msgid "Go to Corex Hex docs"
+msgstr ""
+
+msgid "Corex"
+msgstr ""
+
+msgid "From design tokens to accessible, interactive components, Corex provides a complete foundation for creating beautiful, scalable, and performant websites."
+msgstr ""
+
+msgid "Hex Documentation"
+msgstr ""
+
+## Corex lib components
+msgid "Select an option"
+msgstr ""
+
+msgid "editable input"
+msgstr ""
+
+msgid "edit"
+msgstr ""
+
+msgid "submit"
+msgstr ""
+
+msgid "cancel"
+msgstr ""
+
+msgid "Minimize window"
+msgstr ""
+
+msgid "Maximize window"
+msgstr ""
+
+msgid "Restore window"
+msgstr ""
+
+msgid "Close window"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Toggle password visibility"
+msgstr ""
+
+msgid "Decrease value"
+msgstr ""
+
+msgid "Increase value"
+msgstr ""
+
+msgid "Scrub to adjust value"
+msgstr ""
+
+msgid "Digit %{digit}"
+msgstr ""
+
+msgid "Hex color value"
+msgstr ""
+
+msgid "Alpha (opacity) value"
+msgstr ""

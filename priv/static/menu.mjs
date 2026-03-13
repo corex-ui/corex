@@ -1,34 +1,33 @@
 import {
-  getElementPolygon,
-  isPointInPolygon
-} from "./chunk-QHOSSHQC.mjs";
+  createRect,
+  getRectCorners
+} from "./chunk-ZZKFCQSP.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunk-QYWY7F3J.mjs";
+} from "./chunk-IMEAISCQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-CHUGBG5L.mjs";
-import "./chunk-DTH4G7GO.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
   ariaAttr,
+  callAll,
   cast,
   clickIfLink,
   contains,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   first,
   getBoolean,
@@ -49,9 +48,9 @@ import {
   isModifierKey,
   isOpeningInNewTab,
   isPrintableKey,
+  isString,
   isValidTabEvent,
   last,
-  mergeProps,
   next,
   normalizeProps,
   observeAttributes,
@@ -59,9 +58,9 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+menu@1.34.1/node_modules/@zag-js/menu/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
   "arrow",
   "arrowTip",
@@ -79,6 +78,60 @@ var anatomy = createAnatomy("menu").parts(
   "triggerItem"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+core@1.36.0/node_modules/@zag-js/core/dist/merge-props.mjs
+var clsx = (...args) => args.map((str) => str?.trim?.()).filter(Boolean).join(" ");
+var CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
+var serialize = (style) => {
+  const res = {};
+  let match;
+  while (match = CSS_REGEX.exec(style)) {
+    res[match[1]] = match[2];
+  }
+  return res;
+};
+var css = (a, b) => {
+  if (isString(a)) {
+    if (isString(b)) return `${a};${b}`;
+    a = serialize(a);
+  } else if (isString(b)) {
+    b = serialize(b);
+  }
+  return Object.assign({}, a ?? {}, b ?? {});
+};
+function mergeProps(...args) {
+  let result = {};
+  for (let props of args) {
+    if (!props) continue;
+    for (let key in result) {
+      if (key.startsWith("on") && typeof result[key] === "function" && typeof props[key] === "function") {
+        result[key] = callAll(props[key], result[key]);
+        continue;
+      }
+      if (key === "className" || key === "class") {
+        result[key] = clsx(result[key], props[key]);
+        continue;
+      }
+      if (key === "style") {
+        result[key] = css(result[key], props[key]);
+        continue;
+      }
+      result[key] = props[key] !== void 0 ? props[key] : result[key];
+    }
+    for (let key in props) {
+      if (result[key] === void 0) {
+        result[key] = props[key];
+      }
+    }
+    const symbols = Object.getOwnPropertySymbols(props);
+    for (let symbol of symbols) {
+      result[symbol] = props[symbol];
+    }
+  }
+  return result;
+}
+
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.dom.mjs
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `menu:${ctx.id}:trigger`;
 var getContextTriggerId = (ctx) => ctx.ids?.contextTrigger ?? `menu:${ctx.id}:ctx-trigger`;
 var getContentId = (ctx) => ctx.ids?.content ?? `menu:${ctx.id}:content`;
@@ -132,6 +185,8 @@ function dispatchSelectionEvent(el, value) {
   const event = new win.CustomEvent(itemSelectEvent, { detail: { value } });
   el.dispatchEvent(event);
 }
+
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.connect.mjs
 function connect(service, normalize) {
   const { context, send, state, computed, prop, scope } = service;
   const open = state.hasTag("open");
@@ -145,27 +200,27 @@ function connect(service, normalize) {
     ...prop("positioning"),
     placement: anchorPoint ? "bottom" : currentPlacement
   });
-  function getItemState(props2) {
+  function getItemState(props) {
     return {
-      id: getItemId(scope, props2.value),
-      disabled: !!props2.disabled,
-      highlighted: highlightedValue === props2.value
+      id: getItemId(scope, props.value),
+      disabled: !!props.disabled,
+      highlighted: highlightedValue === props.value
     };
   }
-  function getOptionItemProps(props2) {
-    const valueText = props2.valueText ?? props2.value;
-    return { ...props2, id: props2.value, valueText };
+  function getOptionItemProps(props) {
+    const valueText = props.valueText ?? props.value;
+    return { ...props, id: props.value, valueText };
   }
-  function getOptionItemState(props2) {
-    const itemState = getItemState(getOptionItemProps(props2));
+  function getOptionItemState(props) {
+    const itemState = getItemState(getOptionItemProps(props));
     return {
       ...itemState,
-      checked: !!props2.checked
+      checked: !!props.checked
     };
   }
-  function getItemProps(props2) {
-    const { closeOnSelect, valueText, value } = props2;
-    const itemState = getItemState(props2);
+  function getItemProps(props) {
+    const { closeOnSelect, valueText, value } = props;
+    const itemState = getItemState(props);
     const id = getItemId(scope, value);
     return normalize.element({
       ...parts.item.attrs,
@@ -231,10 +286,10 @@ function connect(service, normalize) {
     reposition(options = {}) {
       send({ type: "POSITIONING.SET", options });
     },
-    addItemListener(props2) {
-      const node = scope.getById(props2.id);
+    addItemListener(props) {
+      const node = scope.getById(props.id);
       if (!node) return;
-      const listener = () => props2.onSelect?.();
+      const listener = () => props.onSelect?.();
       node.addEventListener(itemSelectEvent, listener);
       return () => node.removeEventListener(itemSelectEvent, listener);
     },
@@ -288,7 +343,7 @@ function connect(service, normalize) {
         "aria-haspopup": composite ? "menu" : "dialog",
         "aria-controls": getContentId(scope),
         "data-controls": getContentId(scope),
-        "aria-expanded": open || void 0,
+        "aria-expanded": open,
         "data-state": open ? "open" : "closed",
         onPointerMove(event) {
           if (event.pointerType !== "mouse") return;
@@ -470,10 +525,10 @@ function connect(service, normalize) {
     getItemState,
     getItemProps,
     getOptionItemState,
-    getOptionItemProps(props2) {
-      const { type, disabled, closeOnSelect } = props2;
-      const option = getOptionItemProps(props2);
-      const itemState = getOptionItemState(props2);
+    getOptionItemProps(props) {
+      const { type, disabled, closeOnSelect } = props;
+      const option = getOptionItemProps(props);
+      const itemState = getOptionItemState(props);
       return {
         ...getItemProps(option),
         ...normalize.element({
@@ -494,50 +549,79 @@ function connect(service, normalize) {
         })
       };
     },
-    getItemIndicatorProps(props2) {
-      const itemState = getOptionItemState(cast(props2));
+    getItemIndicatorProps(props) {
+      const itemState = getOptionItemState(cast(props));
       const dataState = itemState.checked ? "checked" : "unchecked";
       return normalize.element({
         ...parts.itemIndicator.attrs,
         dir: prop("dir"),
         "data-disabled": dataAttr(itemState.disabled),
         "data-highlighted": dataAttr(itemState.highlighted),
-        "data-state": hasProp(props2, "checked") ? dataState : void 0,
-        hidden: hasProp(props2, "checked") ? !itemState.checked : void 0
+        "data-state": hasProp(props, "checked") ? dataState : void 0,
+        hidden: hasProp(props, "checked") ? !itemState.checked : void 0
       });
     },
-    getItemTextProps(props2) {
-      const itemState = getOptionItemState(cast(props2));
+    getItemTextProps(props) {
+      const itemState = getOptionItemState(cast(props));
       const dataState = itemState.checked ? "checked" : "unchecked";
       return normalize.element({
         ...parts.itemText.attrs,
         dir: prop("dir"),
         "data-disabled": dataAttr(itemState.disabled),
         "data-highlighted": dataAttr(itemState.highlighted),
-        "data-state": hasProp(props2, "checked") ? dataState : void 0
+        "data-state": hasProp(props, "checked") ? dataState : void 0
       });
     },
-    getItemGroupLabelProps(props2) {
+    getItemGroupLabelProps(props) {
       return normalize.element({
         ...parts.itemGroupLabel.attrs,
-        id: getGroupLabelId(scope, props2.htmlFor),
+        id: getGroupLabelId(scope, props.htmlFor),
         dir: prop("dir")
       });
     },
-    getItemGroupProps(props2) {
+    getItemGroupProps(props) {
       return normalize.element({
-        id: getGroupId(scope, props2.id),
+        id: getGroupId(scope, props.id),
         ...parts.itemGroup.attrs,
         dir: prop("dir"),
-        "aria-labelledby": getGroupLabelId(scope, props2.id),
+        "aria-labelledby": getGroupLabelId(scope, props.id),
         role: "group"
       });
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/polygon.mjs
+function getElementPolygon(rectValue, placement) {
+  const rect = createRect(rectValue);
+  const { top, right, left, bottom } = getRectCorners(rect);
+  const [base] = placement.split("-");
+  return {
+    top: [left, top, right, bottom],
+    right: [top, right, bottom, left],
+    bottom: [top, left, bottom, right],
+    left: [right, top, left, bottom]
+  }[base];
+}
+function isPointInPolygon(polygon, point) {
+  const { x, y } = point;
+  let c = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+    if (yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+      c = !c;
+    }
+  }
+  return c;
+}
+
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.machine.mjs
 var { not, and, or } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       closeOnSelect: true,
       typeahead: true,
@@ -546,11 +630,11 @@ var machine = createMachine({
       navigate(details) {
         clickIfLink(details.node);
       },
-      ...props2,
+      ...props,
       positioning: {
         placement: "bottom-start",
         gutter: 8,
-        ...props2.positioning
+        ...props.positioning
       }
     };
   },
@@ -1049,7 +1133,7 @@ var machine = createMachine({
         return trackFocusVisible({ root: scope.getRootNode?.() });
       },
       trackPositioning({ context, prop, scope, refs }) {
-        if (!!getContextTriggerEl(scope)) return;
+        if (getContextTriggerEl(scope)) return;
         const positioning = {
           ...prop("positioning"),
           ...refs.get("positioningOverride")
@@ -1372,56 +1456,13 @@ function resolveItemId(children, value, scope) {
   }
   return getItemId(scope, value);
 }
-var props = createProps()([
-  "anchorPoint",
-  "aria-label",
-  "closeOnSelect",
-  "composite",
-  "defaultHighlightedValue",
-  "defaultOpen",
-  "dir",
-  "getRootNode",
-  "highlightedValue",
-  "id",
-  "ids",
-  "loopFocus",
-  "navigate",
-  "onEscapeKeyDown",
-  "onFocusOutside",
-  "onHighlightChange",
-  "onInteractOutside",
-  "onOpenChange",
-  "onPointerDownOutside",
-  "onRequestDismiss",
-  "onSelect",
-  "open",
-  "positioning",
-  "typeahead"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["closeOnSelect", "disabled", "value", "valueText"]);
-var splitItemProps = createSplitProps(itemProps);
-var itemGroupLabelProps = createProps()(["htmlFor"]);
-var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
-var itemGroupProps = createProps()(["id"]);
-var splitItemGroupProps = createSplitProps(itemGroupProps);
-var optionItemProps = createProps()([
-  "checked",
-  "closeOnSelect",
-  "disabled",
-  "onCheckedChange",
-  "type",
-  "value",
-  "valueText"
-]);
-var splitOptionItemProps = createSplitProps(optionItemProps);
 
 // components/menu.ts
 var Menu = class extends Component {
   children = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

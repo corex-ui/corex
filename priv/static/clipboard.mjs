@@ -1,23 +1,25 @@
 import {
+  setRafTimeout
+} from "./chunk-MYBRVHPZ.mjs";
+import {
   Component,
   VanillaMachine,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   getBoolean,
   getNumber,
   getString,
   getWindow,
   normalizeProps,
-  setElementValue,
-  setRafTimeout
-} from "./chunk-PLUM2DEK.mjs";
+  setElementValue
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.34.1/node_modules/@zag-js/clipboard/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `clip:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `clip:${ctx.id}:input`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `clip:${ctx.id}:label`;
@@ -63,9 +65,12 @@ function copyText(doc, text) {
   doc.body.removeChild(node);
   return Promise.resolve();
 }
+
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
 function connect(service, normalize) {
-  const { state, send, context, scope } = service;
+  const { state, send, context, scope, prop } = service;
   const copied = state.matches("copied");
+  const translations = prop("translations");
   return {
     copied,
     value: context.get("value"),
@@ -116,27 +121,33 @@ function connect(service, normalize) {
       return normalize.button({
         ...parts.trigger.attrs,
         type: "button",
-        "aria-label": copied ? "Copied to clipboard" : "Copy to clipboard",
+        "aria-label": translations.triggerLabel?.(copied),
         "data-copied": dataAttr(copied),
         onClick() {
           send({ type: "COPY" });
         }
       });
     },
-    getIndicatorProps(props2) {
+    getIndicatorProps(props) {
       return normalize.element({
         ...parts.indicator.attrs,
-        hidden: props2.copied !== copied
+        hidden: props.copied !== copied
       });
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       timeout: 3e3,
       defaultValue: "",
-      ...props2
+      ...props,
+      translations: {
+        triggerLabel: (copied) => copied ? "Copied to clipboard" : "Copy to clipboard",
+        ...props.translations
+      }
     };
   },
   initialState() {
@@ -218,25 +229,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "getRootNode",
-  "id",
-  "ids",
-  "value",
-  "defaultValue",
-  "timeout",
-  "onStatusChange",
-  "onValueChange"
-]);
-var contextProps = createSplitProps(props);
-var indicatorProps = createProps()(["copied"]);
-var splitIndicatorProps = createSplitProps(indicatorProps);
 
 // components/clipboard.ts
 var Clipboard = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

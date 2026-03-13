@@ -23,8 +23,6 @@ defmodule Corex.ToggleGroup do
 
   ### Extended
 
-  This example assumes the import of `.icon` from `Core Components`
-
   ```heex
 
       <.toggle_group multiple={false}
@@ -33,13 +31,13 @@ defmodule Corex.ToggleGroup do
       value=["center"]
       class="toggle-group">
       <:item value="left">
-       <.icon name="hero-bars-3-bottom-left" />
+       <.heroicon name="hero-bars-3-bottom-left" />
       </:item>
       <:item value="center">
-      <.icon name="hero-bars-3" />
+      <.heroicon name="hero-bars-3" />
       </:item>
       <:item value="right">
-      <.icon name="hero-bars-3-bottom-right" />
+      <.heroicon name="hero-bars-3-bottom-right" />
       </:item>
     </.toggle_group>
 

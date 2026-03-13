@@ -1,0 +1,64 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Combobox form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/combobox/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.native_input
+      field={f[:name]}
+      type="text"
+      class="native-input"
+    >
+      <:label>Name</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.native_input>
+    <.combobox
+      field={f[:airport]}
+      class="combobox"
+      placeholder="Select a country"
+      collection={[
+        %{label: "France", id: "fra"},
+        %{label: "Belgium", id: "bel"},
+        %{label: "Germany", id: "deu"},
+        %{label: "Netherlands", id: "nld"},
+        %{label: "Switzerland", id: "che"},
+        %{label: "Austria", id: "aut"}
+      ]}
+    >
+      <:label>Country</:label>
+      <:empty>No results</:empty>
+      <:trigger>
+        <.heroicon name="hero-chevron-down" />
+      </:trigger>
+      <:clear_trigger>
+        <.heroicon name="hero-backspace" />
+      </:clear_trigger>
+      <:item_indicator>
+        <.heroicon name="hero-check" />
+      </:item_indicator>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.combobox>
+    <.action type="submit" id="combobox-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
+</Layouts.app>

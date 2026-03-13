@@ -3,7 +3,7 @@ defmodule CorexWeb.Listbox do
   use E2eWeb.LiveCapture
 
   alias Corex.Listbox
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   @collection [
     %{label: "France", id: "fra", disabled: true},
@@ -32,26 +32,26 @@ defmodule CorexWeb.Listbox do
   capture variants: [
             basic: %{
               class: "listbox",
-              collection: @collection,
+              items: @collection,
               label: [%{inner_block: "Choose a country"}],
-              item_indicator: [%{inner_block: "<.icon name=\"hero-check\" />"}]
+              item_indicator: [%{inner_block: "<.heroicon name=\"hero-check\" />"}]
             },
             grouped: %{
               class: "listbox",
-              collection: @grouped_collection,
+              items: @grouped_collection,
               label: [%{inner_block: "Choose a country"}],
-              item_indicator: [%{inner_block: "<.icon name=\"hero-check\" />"}]
+              item_indicator: [%{inner_block: "<.heroicon name=\"hero-check\" />"}]
             },
             multiple: %{
               class: "listbox",
-              collection: @collection,
+              items: @collection,
               value: ["bel", "deu"],
               selection_mode: "multiple",
               label: [%{inner_block: "Choose countries"}],
-              item_indicator: [%{inner_block: "<.icon name=\"hero-check\" />"}]
+              item_indicator: [%{inner_block: "<.heroicon name=\"hero-check\" />"}]
             }
           ]
 
   defdelegate listbox(assigns), to: Listbox
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

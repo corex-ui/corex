@@ -5,23 +5,29 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <.header>
-    User {@user.id}
+  <.layout_heading>
+    <:title>User {@user.id}</:title>
     <:subtitle>This is a user record from your database.</:subtitle>
     <:actions>
-      <.button navigate={~p"/#{@locale}/users"} class="button">
-        <.icon name="hero-arrow-left" />
-      </.button>
-      <.button
-        navigate={~p"/#{@locale}/users/#{@user}/edit?return_to=show"}
+      <.navigate
+        to={~p"/#{@locale}/users"}
+        type="href"
+        class="button"
+        aria_label={gettext("Previous page")}
+      >
+        <.heroicon name="hero-arrow-left" />
+      </.navigate>
+      <.navigate
+        to={~p"/#{@locale}/users/#{@user}/edit"}
+        type="href"
         class="button button--accent"
       >
-        <.icon name="hero-pencil-square" /> Edit user
-      </.button>
+        <.heroicon name="hero-pencil-square" /> Edit user
+      </.navigate>
     </:actions>
-  </.header>
+  </.layout_heading>
 
-  <.list>
+  <.data_list class="data-list">
     <:item title="Name">{@user.name}</:item>
     <:item title="Country">{@user.country}</:item>
     <:item title="Birth date">
@@ -31,5 +37,5 @@
       <.signature_preview signature={@user.signature} />
     </:item>
     <:item title="Terms">{if @user.terms, do: "Yes", else: "No"}</:item>
-  </.list>
+  </.data_list>
 </Layouts.app>

@@ -77,7 +77,10 @@ defmodule E2e.MixProject do
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
       {:ex_cldr, "~> 2.47"},
-      {:ex_cldr_territories, "~> 2.10.0"}
+      {:ex_cldr_languages, "~> 0.3"},
+      {:ex_cldr_territories, "~> 2.10.0"},
+      {:tidewave, "~> 0.5.5", only: :dev},
+      {:designex, "~> 1.0", only: [:dev, :test]}
     ]
   end
 
@@ -94,27 +97,23 @@ defmodule E2e.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
-        &clean_static_assets/1,
-        &copy_static_images/1,
         "assets.build",
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
+        "run priv/repo/seeds/user_admin_seed.exs",
         "test"
       ],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.digest.clean": ["phx.digest.clean", "--no-compile"],
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
       "assets.build": [
-        &clean_static_assets/1,
-        &copy_static_images/1,
         "compile",
+        "designex corex",
         "tailwind e2e --minify",
         "esbuild e2e"
       ],
       "assets.deploy": [
-        &clean_static_assets/1,
-        &copy_static_images/1,
         "compile",
         "tailwind e2e --minify",
         "esbuild e2e --minify",
@@ -122,22 +121,5 @@ defmodule E2e.MixProject do
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
     ]
-  end
-
-  defp clean_static_assets(_) do
-    static = Path.join([__DIR__, "priv", "static"])
-    File.rm_rf(Path.join(static, "assets"))
-    File.rm_rf(Path.join(static, "cache_manifest.json"))
-    File.rm_rf(Path.join(static, "images"))
-  end
-
-  defp copy_static_images(_) do
-    source = Path.join([__DIR__, "images"])
-    destination = Path.join([__DIR__, "priv", "static", "images"])
-
-    if File.exists?(source) and File.dir?(source) do
-      File.mkdir_p!(Path.dirname(destination))
-      File.cp_r!(source, destination, force: true)
-    end
   end
 end

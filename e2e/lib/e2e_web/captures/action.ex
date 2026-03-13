@@ -3,6 +3,7 @@ defmodule CorexWeb.Action do
   use E2eWeb.LiveCapture
 
   alias Corex.Action
+  alias Corex.Heroicon
 
   capture variants: [
             basic: %{
@@ -14,7 +15,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(Text and SVG <span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                    ~s(Text and SVG <span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -24,7 +25,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -71,7 +72,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -86,7 +87,7 @@ defmodule CorexWeb.Action do
               inner_block: [
                 %{
                   inner_block:
-                    ~s(<span aria-hidden="true"><.icon name="hero-arrow-right" class="icon" /></span>)
+                    ~s(<span aria-hidden="true"><.heroicon name="hero-arrow-right" class="icon" /></span>)
                 }
               ]
             },
@@ -108,5 +109,5 @@ defmodule CorexWeb.Action do
           ]
 
   defdelegate action(assigns), to: Action
-  defdelegate icon(assigns), to: E2eWeb.CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

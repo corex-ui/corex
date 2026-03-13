@@ -10,24 +10,22 @@ defmodule Corex.PasswordInput do
   ```heex
   <.password_input class="password-input">
     <:label>Password</:label>
-    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
   ```
 
   ### Custom Error
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.password_input field={@form[:password]} class="password-input">
     <:label>Password</:label>
     <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
-    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
   ```
 
@@ -39,61 +37,36 @@ defmodule Corex.PasswordInput do
 
   ### Controller
 
-  ```elixir
-  defmodule MyAppWeb.PageController do
-    use MyAppWeb, :controller
+  Build the form from an Ecto changeset:
 
-    def home(conn, params) do
-      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-      render(conn, :home, form: form)
-    end
+  ```elixir
+  def form_page(conn, _params) do
+    form =
+      %MyApp.Form.PasswordForm{}
+      |> MyApp.Form.PasswordForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :password_form, id: "password-form")
+    render(conn, :form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="post">
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
     <.password_input field={f[:password]} class="password-input">
       <:label>Password</:label>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
-      <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-      <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+      <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
     </.password_input>
     <button type="submit">Submit</button>
   </.form>
   ```
 
-  ### LiveView
+  ### Live View
 
-  ```elixir
-  defmodule MyAppWeb.LoginLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      form = to_form(%{"password" => ""}, as: :user)
-      {:ok, assign(socket, :form, form)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.form as={:user} for={@form} id={get_form_id(@form)}>
-        <.password_input field={@form[:password]} class="password-input">
-          <:label>Password</:label>
-          <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-          <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-          <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
-        </.password_input>
-        <button type="submit">Submit</button>
-      </.form>
-      """
-    end
-  end
-  ```
+  When using in a Live view add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 
@@ -139,11 +112,11 @@ defmodule Corex.PasswordInput do
         <.password_input field={@form[:password]} class="password-input">
           <:label>Password</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
-          <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-          <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+          <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+          <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
         </.password_input>
       </.form>
       """
@@ -177,16 +150,29 @@ defmodule Corex.PasswordInput do
 
   ```heex
   <.password_input class="password-input password-input--accent password-input--lg">
-    <:visible_indicator><.icon name="hero-eye" /></:visible_indicator>
-    <:hidden_indicator><.icon name="hero-eye-slash" /></:hidden_indicator>
+    <:visible_indicator><.heroicon name="hero-eye" /></:visible_indicator>
+    <:hidden_indicator><.heroicon name="hero-eye-slash" /></:hidden_indicator>
   </.password_input>
   ```
 
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/password-input#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for PasswordInput component strings.
+
+    Without gettext: `translation={%PasswordInput.Translation{ toggle_visibility: "Toggle password visibility" }}`
+
+    With gettext: `translation={%PasswordInput.Translation{ toggle_visibility: gettext("Toggle password visibility") }}`
+    """
+    defstruct [:toggle_visibility]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.PasswordInput.Anatomy.{
     Control,
@@ -222,6 +208,11 @@ defmodule Corex.PasswordInput do
 
   attr(:errors, :list, default: [], doc: "List of error messages to display")
 
+  attr(:translation, Corex.PasswordInput.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:field, Phoenix.HTML.FormField,
     doc:
       "A form field struct retrieved from the form, for example: @form[:password]. Automatically sets id, name, form, invalid state, and errors from the form field"
@@ -229,14 +220,21 @@ defmodule Corex.PasswordInput do
 
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
   slot(:error, required: false) do
     attr(:class, :string, required: false)
   end
 
-  slot(:visible_indicator, required: false, doc: "Icon shown when password is visible")
-  slot(:hidden_indicator, required: false, doc: "Icon shown when password is hidden")
+  slot :visible_indicator, required: false, doc: "Icon shown when password is visible" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :hidden_indicator, required: false, doc: "Icon shown when password is hidden" do
+    attr(:class, :string, required: false)
+  end
 
   def password_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
@@ -253,12 +251,16 @@ defmodule Corex.PasswordInput do
   end
 
   def password_input(assigns) do
+    default_translation = %Translation{toggle_visibility: gettext("Toggle password visibility")}
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "password-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
     ~H"""
     <div
@@ -301,7 +303,7 @@ defmodule Corex.PasswordInput do
           <button
             :if={@visible_indicator != [] and @hidden_indicator != []}
             type="button"
-            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir})}
+            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir, aria_label: @translation.toggle_visibility})}
           >
             <span {Connect.indicator(%Indicator{id: @id, dir: @dir})} data-state={if @visible, do: "visible", else: "hidden"}>
               <span data-visible="" aria-hidden="true">{render_slot(@visible_indicator)}</span>
@@ -315,5 +317,13 @@ defmodule Corex.PasswordInput do
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      toggle_visibility: partial.toggle_visibility || default.toggle_visibility
+    }
   end
 end

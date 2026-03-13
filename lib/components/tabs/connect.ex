@@ -81,6 +81,22 @@ defmodule Corex.Tabs.Connect do
     }
   end
 
+  @spec indicator(Trigger.t()) :: map()
+  def indicator(assigns) do
+    expanded = assigns.value in assigns.values
+    data_state = if expanded, do: "open", else: "closed"
+
+    %{
+      "data-scope" => "tabs",
+      "data-part" => "item-indicator",
+      "aria-hidden" => true,
+      "data-state" => data_state,
+      "data-disabled" => assigns.disabled,
+      "data-orientation" => assigns.orientation,
+      "dir" => assigns.dir
+    }
+  end
+
   @spec content(Content.t()) :: map()
   def content(assigns) do
     expanded = assigns.value in assigns.values

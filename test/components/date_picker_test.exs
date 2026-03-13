@@ -1,5 +1,6 @@
 defmodule Corex.DatePickerTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.DatePicker
   alias Corex.DatePicker.Connect
@@ -9,6 +10,80 @@ defmodule Corex.DatePickerTest do
       html = render_component(&CorexTest.ComponentHelpers.render_date_picker/1, [])
       assert html =~ ~r/data-scope="date-picker"/
       assert html =~ ~r/data-part="root"/
+    end
+  end
+
+  describe "date_picker/1 direct rendering" do
+    test "renders directly with all attributes and translations" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.DatePicker.date_picker
+              id="dp1"
+              name="dp_name"
+              value={["2025-01-01", "2025-01-02"]}
+              controlled={true}
+              locale="fr-FR"
+              time_zone="Europe/Paris"
+              disabled={true}
+              read_only={true}
+              min="2025-01-01"
+              max="2025-12-31"
+              selection_mode="multiple"
+              format="DD/MM/YYYY"
+              start_of_week={1}
+              fixed_weeks={true}
+              close_on_select={false}
+              dir="rtl"
+              on_value_change="change"
+              on_value_change_client="change_client"
+            >
+              <:label>Date</:label>
+            </Corex.DatePicker.date_picker>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Date"
+      assert html =~ "dp_name"
+      assert html =~ "data-disabled"
+      assert html =~ "data-locale=\"fr-FR\""
+      assert html =~ "data-time-zone=\"Europe/Paris\""
+      assert html =~ "data-selection-mode=\"multiple\""
+    end
+  end
+
+  describe "date_picker/1 with field" do
+    test "normalizes Date structs and other types" do
+      form = Phoenix.Component.to_form(%{"d1" => ~D[2025-01-01], "d2" => 123}, as: :user)
+
+      html1 =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.DatePicker.date_picker field={@form[:d1]} />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html1 =~ "data-default-value=\"2025-01-01\""
+
+      html2 =
+        render_component(
+          fn assigns ->
+            ~H"""
+            <Corex.DatePicker.date_picker field={@form[:d2]} />
+            """
+          end,
+          %{form: form}
+        )
+
+      assert html2 =~ "data-scope=\"date-picker\""
     end
   end
 

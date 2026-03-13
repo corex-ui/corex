@@ -30,6 +30,19 @@ export class Listbox extends Component<Props<Item>, Api> {
     this._options = Array.isArray(options) ? options : [];
   }
 
+  getOrderedGroupIds(): string[] {
+    const seen = new Set<string>();
+    const ids: string[] = [];
+    for (const item of this.options) {
+      const id = item.group ?? "default";
+      if (!seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+    return ids;
+  }
+
   getCollection(): ListCollection<Item> {
     const items = this.options;
     if (this.hasGroups) {
@@ -52,12 +65,10 @@ export class Listbox extends Component<Props<Item>, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props: Props<Item>): VanillaMachine<any> {
     const getCollection = this.getCollection.bind(this);
-    const collectionFromProps = (props as Props<Item> & { collection?: ListCollection<Item> })
-      .collection;
     return new VanillaMachine(machine, {
       ...props,
       get collection() {
-        return collectionFromProps ?? getCollection();
+        return getCollection();
       },
     });
   }
@@ -74,6 +85,70 @@ export class Listbox extends Component<Props<Item>, Api> {
       this.render();
     });
   };
+
+  renderItems(): void {
+    const contentEl = this.el.querySelector<HTMLElement>(
+      '[data-scope="listbox"][data-part="content"]'
+    );
+    if (!contentEl) return;
+
+    const templatesContainer = this.el.querySelector<HTMLElement>('[data-templates="listbox"]');
+    if (!templatesContainer) return;
+
+    contentEl
+      .querySelectorAll<HTMLElement>(
+        '[data-scope="listbox"][data-part="empty"]:not([data-template])'
+      )
+      .forEach((el) => el.remove());
+    contentEl
+      .querySelectorAll<HTMLElement>(
+        '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
+      )
+      .forEach((el) => el.remove());
+    contentEl
+      .querySelectorAll<HTMLElement>(
+        '[data-scope="listbox"][data-part="item"]:not([data-template])'
+      )
+      .forEach((el) => el.remove());
+
+    const items = this.options;
+
+    if (items.length === 0) {
+      const emptyTemplate = templatesContainer.querySelector<HTMLElement>(
+        '[data-scope="listbox"][data-part="empty"][data-template]'
+      );
+      if (emptyTemplate) {
+        const emptyEl = emptyTemplate.cloneNode(true) as HTMLElement;
+        emptyEl.removeAttribute("data-template");
+        contentEl.appendChild(emptyEl);
+      }
+    } else if (this.hasGroups) {
+      const groupIds = this.getOrderedGroupIds();
+      for (const groupId of groupIds) {
+        const template = templatesContainer.querySelector<HTMLElement>(
+          `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+        );
+        if (!template) continue;
+        const groupEl = template.cloneNode(true) as HTMLElement;
+        groupEl.removeAttribute("data-template");
+        groupEl
+          .querySelectorAll<HTMLElement>("[data-template]")
+          .forEach((e) => e.removeAttribute("data-template"));
+        contentEl.appendChild(groupEl);
+      }
+    } else {
+      for (const item of items) {
+        const value = String(item.id ?? item.value ?? "");
+        const template = templatesContainer.querySelector<HTMLElement>(
+          `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
+        );
+        if (!template) continue;
+        const itemEl = template.cloneNode(true) as HTMLElement;
+        itemEl.removeAttribute("data-template");
+        contentEl.appendChild(itemEl);
+      }
+    }
+  }
 
   applyItemProps(): void {
     const contentEl = this.el.querySelector<HTMLElement>(
@@ -137,6 +212,7 @@ export class Listbox extends Component<Props<Item>, Api> {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
+      this.renderItems();
       this.applyItemProps();
     }
   }

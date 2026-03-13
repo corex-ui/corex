@@ -1,5 +1,6 @@
 defmodule Corex.TreeViewTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.TreeView
   alias Corex.TreeView.Connect
@@ -10,6 +11,100 @@ defmodule Corex.TreeViewTest do
       assert html =~ ~r/data-scope="tree-view"/
       assert html =~ ~r/data-part="root"/
       assert html =~ ~r/Item/
+    end
+
+    test "raises on nil items" do
+      assert_raise ArgumentError, ~r/tree_view requires :items to be a list/, fn ->
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.TreeView.tree_view id="t1" items={nil} />
+            """
+          end,
+          %{}
+        )
+      end
+    end
+
+    test "raises on invalid items" do
+      assert_raise ArgumentError, ~r/Invalid item in :items/, fn ->
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.TreeView.tree_view id="t2" items={["invalid"]} />
+            """
+          end,
+          %{}
+        )
+      end
+    end
+
+    test "renders expanded and selected values" do
+      items =
+        Corex.Tree.new([
+          [label: "P1", id: "p1", children: [[label: "C1", id: "c1"]]]
+        ])
+
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.TreeView.tree_view id="t3" items={@items} expanded_value={["p1"]} value={["c1"]} />
+            """
+          end,
+          %{items: items}
+        )
+
+      assert html =~ ~s(data-state="open")
+      assert html =~ ~s(data-selected)
+    end
+  end
+
+  describe "tree_item/1 and tree_branch/1" do
+    test "renders tree_item" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.TreeView.tree_item item={%{id: "i1", value: "v1", index_path: [0], dir: "ltr", redirect: true, new_tab: false, selected: false, focused: false, name: "I1", disabled: false}}>Leaf</Corex.TreeView.tree_item>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Leaf"
+      assert html =~ "data-part=\"item\""
+    end
+
+    test "renders tree_branch" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.TreeView.tree_branch branch={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
+              <:trigger>Trigger</:trigger>
+              <:indicator>Icon</:indicator>
+              Content
+            </Corex.TreeView.tree_branch>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Trigger"
+      assert html =~ "Icon"
+      assert html =~ "Content"
+      assert html =~ "data-part=\"branch\""
     end
   end
 

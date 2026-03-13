@@ -1,0 +1,55 @@
+<Layouts.app
+  flash={@flash}<%= if layout_mode do %>
+  mode={@mode}<% end %><%= if layout_theme do %>
+  theme={@theme}<% end %><%= if layout_themes do %>
+  themes={@themes}<% end %><%= if layout_locale do %>
+  locale={@locale}
+  current_path={@current_path}<% end %><%= if scope do %>
+  <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
+>
+  <.layout_heading>
+    <:title>Listing <%= schema.human_plural %></:title>
+    <:subtitle>Add and manage <%= schema.singular %> records</:subtitle>
+    <:actions>
+      <.navigate
+        to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/new"}
+        type="href"
+        class="button button--accent"
+      >
+        <.heroicon name="hero-plus" /> New <%= schema.human_singular %>
+      </.navigate>
+    </:actions>
+  </.layout_heading>
+
+  <.data_table
+    id="<%= schema.plural %>"
+    class="data-table"
+    rows={@<%= schema.collection %>}
+    row_click={&JS.navigate(~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{&1}")}
+  ><%= for {k, _} <- schema.attrs do %>
+    <:col :let={<%= schema.singular %>} label="<%= Phoenix.Naming.humanize(Atom.to_string(k)) %>">{<%= schema.singular %>.<%= k %>}</:col><% end %>
+    <:action :let={<%= schema.singular %>}>
+      <div class="sr-only">
+        <.link href={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"} class="link">Show</.link>
+      </div>
+      <.link
+        href={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}/edit"}
+        class="button button--sm"
+        aria-label={"Edit #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
+      >
+        <.heroicon name="hero-pencil-square" />
+      </.link>
+    </:action>
+    <:action :let={<%= schema.singular %>}>
+      <.link
+        href={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"}
+        method="delete"
+        data-confirm="Are you sure?"
+        class="button button--sm button--alert"
+        aria-label={"Delete #{<%= schema.singular %>.<%= schema.attrs |> Keyword.keys() |> List.first() %>}"}
+      >
+        <.heroicon name="hero-trash" />
+      </.link>
+    </:action>
+  </.data_table>
+</Layouts.app>

@@ -14,10 +14,10 @@ defmodule E2eWeb.RadioGroupLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Radio Group</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Radio Group</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <div>
         <h3>Without indicator</h3>
         <.radio_group
@@ -46,7 +46,7 @@ defmodule E2eWeb.RadioGroupLive do
           class="radio-group"
         >
           <:label>Choose one</:label>
-          <:item_control><.icon name="hero-check" class="data-checked" /></:item_control>
+          <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
         </.radio_group>
       </div>
     </Layouts.app>

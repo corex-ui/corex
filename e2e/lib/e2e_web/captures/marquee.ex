@@ -2,7 +2,7 @@ defmodule CorexWeb.Marquee do
   use Phoenix.Component
   use E2eWeb.LiveCapture
 
-  alias Corex.Marquee
+  alias Corex.{Heroicon, Marquee}
 
   @items_pause_on_hover [
     %{name: "Apple", logo: "🍎"},
@@ -57,7 +57,7 @@ defmodule CorexWeb.Marquee do
                 %{
                   let: :item,
                   inner_block:
-                    ~s(<.icon name={item.item.icon} class="icon" /><span>{item.item.name}</span>)
+                    ~s(<.heroicon name={item.item.icon} class="icon" /><span>{item.item.name}</span>)
                 }
               ]
             },
@@ -79,5 +79,5 @@ defmodule CorexWeb.Marquee do
           ]
 
   defdelegate marquee(assigns), to: Marquee
-  defdelegate icon(assigns), to: E2eWeb.CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

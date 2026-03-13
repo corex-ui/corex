@@ -70,10 +70,10 @@ defmodule E2eWeb.ToastLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Toast</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Toast</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
 
       <h3>Create Toast</h3>
       <.form
@@ -82,26 +82,28 @@ defmodule E2eWeb.ToastLive do
         phx-submit="create_flash"
         id={get_form_id(@form)}
       >
-        <.input
+        <.native_input
           field={@form[:title]}
           type="text"
-          label="Title"
           placeholder="Enter flash title"
           required
-        />
-        <.input
+        >
+          <:label>Title</:label>
+        </.native_input>
+        <.native_input
           field={@form[:message]}
           type="text"
-          label="Message"
           placeholder="Enter flash message"
           required
-        />
+        >
+          <:label>Message</:label>
+        </.native_input>
 
         <.select
           class="select"
           field={@form[:type]}
           placeholder="Select flash type"
-          collection={[
+          items={[
             %{label: "Info", id: "info"},
             %{label: "Error", id: "error"},
             %{label: "Success", id: "success"}
@@ -109,27 +111,28 @@ defmodule E2eWeb.ToastLive do
         >
           <:label>Type</:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
         </.select>
 
-        <.input
+        <.native_input
           field={@form[:duration]}
           type="number"
-          label="Duration"
           placeholder="Enter flash duration"
           required
           value={5000}
-        />
+        >
+          <:label>Duration</:label>
+        </.native_input>
 
         <footer class="flex w-full justify-end gap-ui-gap">
-          <.button class="button button--accent">Create Flash Message</.button>
+          <.action type="submit" class="button button--accent">Create Flash Message</.action>
         </footer>
       </.form>
 
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={
             Corex.Toast.create_toast(
               "layout-toast",
@@ -142,9 +145,8 @@ defmodule E2eWeb.ToastLive do
           class="button"
         >
           Create Info Toast
-        </button>
-
-        <button
+        </.action>
+        <.action
           phx-click={
             Corex.Toast.create_toast(
               "layout-toast",
@@ -157,8 +159,8 @@ defmodule E2eWeb.ToastLive do
           class="button"
         >
           Succes Toast
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={
             Corex.Toast.create_toast(
               "layout-toast",
@@ -171,9 +173,8 @@ defmodule E2eWeb.ToastLive do
           class="button"
         >
           Error Toast
-        </button>
-
-        <button
+        </.action>
+        <.action
           phx-click={
             Corex.Toast.create_toast(
               "layout-toast",
@@ -186,22 +187,22 @@ defmodule E2eWeb.ToastLive do
           class="button"
         >
           Create Loading
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="create_toast" value={:info} class="button button--sm">
+        <.action phx-click="create_toast" value="info" class="button button--sm">
           Create info
-        </button>
-        <button phx-click="create_toast" value={:success} class="button button--sm">
+        </.action>
+        <.action phx-click="create_toast" value="success" class="button button--sm">
           Create success
-        </button>
-        <button phx-click="create_toast" value={:error} class="button button--sm">
+        </.action>
+        <.action phx-click="create_toast" value="error" class="button button--sm">
           Create error
-        </button>
-        <button phx-click="create_toast" value={:loading} class="button button--sm">
+        </.action>
+        <.action phx-click="create_toast" value="loading" class="button button--sm">
           Create loading
-        </button>
+        </.action>
       </div>
     </Layouts.app>
     """

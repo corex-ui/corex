@@ -2,21 +2,22 @@ import {
   GridCollection,
   ListCollection,
   Selection,
-  isGridCollection
-} from "./chunk-MWK4GDRX.mjs";
+  createSelectedItemMap,
+  deriveSelectionState,
+  isGridCollection,
+  resolveSelectedItems
+} from "./chunk-WAY74VD3.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
   ariaAttr,
   contains,
   createAnatomy,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensure,
   getBoolean,
@@ -27,17 +28,20 @@ import {
   getString,
   getStringList,
   isComposingEvent,
+  isContextMenuEvent,
   isCtrlOrMetaKey,
+  isDownloadingEvent,
   isEditableElement,
   isEqual,
+  isOpeningInNewTab,
   normalizeProps,
   observeAttributes,
   raf,
   scrollIntoView,
   setup
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.34.1/node_modules/@zag-js/listbox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
   "label",
   "input",
@@ -51,6 +55,8 @@ var anatomy = createAnatomy("listbox").parts(
   "valueText"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -63,6 +69,8 @@ var gridCollection = (options) => {
 gridCollection.empty = () => {
   return new GridCollection({ items: [], columnCount: 0 });
 };
+
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `listbox:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `listbox:${ctx.id}:content`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `listbox:${ctx.id}:label`;
@@ -71,6 +79,8 @@ var getItemGroupId = (ctx, id) => ctx.ids?.itemGroup?.(id) ?? `listbox:${ctx.id}
 var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `listbox:${ctx.id}:item-group-label:${id}`;
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getItemEl = (ctx, id) => ctx.getById(getItemId(ctx, id));
+
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, computed, send, refs } = service;
   const disabled = prop("disabled");
@@ -80,16 +90,16 @@ function connect(service, normalize) {
   const focusVisible = refs.get("focusVisible") && focused;
   const inputState = refs.get("inputState");
   const value = context.get("value");
-  const selectedItems = context.get("selectedItems");
+  const selectedItems = computed("selectedItems");
   const highlightedValue = context.get("highlightedValue");
   const highlightedItem = context.get("highlightedItem");
   const isTypingAhead = computed("isTypingAhead");
   const interactive = computed("isInteractive");
   const ariaActiveDescendant = highlightedValue ? getItemId(scope, highlightedValue) : void 0;
-  function getItemState(props2) {
-    const itemDisabled = collection2.getItemDisabled(props2.item);
-    const value2 = collection2.getItemValue(props2.item);
-    ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props2.item)}`);
+  function getItemState(props) {
+    const itemDisabled = collection2.getItemDisabled(props.item);
+    const value2 = collection2.getItemValue(props.item);
+    ensure(value2, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
     const highlighted = highlightedValue === value2;
     return {
       value: value2,
@@ -129,6 +139,18 @@ function connect(service, normalize) {
     highlightValue(value2) {
       send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
     },
+    highlightFirst() {
+      send({ type: "HIGHLIGHT.FIRST" });
+    },
+    highlightLast() {
+      send({ type: "HIGHLIGHT.LAST" });
+    },
+    highlightNext() {
+      send({ type: "HIGHLIGHT.NEXT" });
+    },
+    highlightPrevious() {
+      send({ type: "HIGHLIGHT.PREV" });
+    },
     clearValue(value2) {
       if (value2) {
         send({ type: "ITEM.CLEAR", value: value2 });
@@ -146,7 +168,8 @@ function connect(service, normalize) {
         "data-disabled": dataAttr(disabled)
       });
     },
-    getInputProps(props2 = {}) {
+    getInputProps(props = {}) {
+      const keyboardPriority = props.keyboardPriority ?? "caret";
       return normalize.input({
         ...parts.input.attrs,
         dir: prop("dir"),
@@ -162,14 +185,14 @@ function connect(service, normalize) {
         enterKeyHint: "go",
         onFocus() {
           queueMicrotask(() => {
-            send({ type: "INPUT.FOCUS", autoHighlight: !!props2?.autoHighlight });
+            send({ type: "INPUT.FOCUS", autoHighlight: !!props?.autoHighlight });
           });
         },
         onBlur() {
           send({ type: "CONTENT.BLUR", src: "input" });
         },
         onInput(event) {
-          if (!props2?.autoHighlight) return;
+          if (!props?.autoHighlight) return;
           if (event.currentTarget.value.trim()) return;
           queueMicrotask(() => {
             send({ type: "HIGHLIGHTED_VALUE.SET", value: null });
@@ -190,12 +213,16 @@ function connect(service, normalize) {
             case "ArrowRight": {
               if (!isGridCollection(collection2)) return;
               if (event.ctrlKey) return;
+              if (keyboardPriority !== "navigate") return;
               forwardEvent();
+              break;
             }
             case "Home":
             case "End": {
+              if (keyboardPriority !== "navigate") return;
               if (highlightedValue == null && event.shiftKey) return;
               forwardEvent();
+              break;
             }
             case "ArrowDown":
             case "ArrowUp": {
@@ -207,6 +234,8 @@ function connect(service, normalize) {
                 event.preventDefault();
                 send({ type: "ITEM.CLICK", value: highlightedValue });
               }
+              break;
+            default:
               break;
           }
         }
@@ -227,8 +256,8 @@ function connect(service, normalize) {
         "data-disabled": dataAttr(disabled)
       });
     },
-    getItemProps(props2) {
-      const itemState = getItemState(props2);
+    getItemProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         id: getItemId(scope, itemState.value),
         role: "option",
@@ -244,7 +273,7 @@ function connect(service, normalize) {
         "data-disabled": dataAttr(itemState.disabled),
         "aria-disabled": ariaAttr(itemState.disabled),
         onPointerMove(event) {
-          if (!props2.highlightOnHover) return;
+          if (!props.highlightOnHover) return;
           if (itemState.disabled || event.pointerType !== "mouse") return;
           if (itemState.highlighted) return;
           send({ type: "ITEM.POINTER_MOVE", value: itemState.value });
@@ -255,6 +284,9 @@ function connect(service, normalize) {
         },
         onClick(event) {
           if (event.defaultPrevented) return;
+          if (isDownloadingEvent(event)) return;
+          if (isOpeningInNewTab(event)) return;
+          if (isContextMenuEvent(event)) return;
           if (itemState.disabled) return;
           send({
             type: "ITEM.CLICK",
@@ -266,8 +298,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getItemTextProps(props2) {
-      const itemState = getItemState(props2);
+    getItemTextProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemText.attrs,
         "data-state": itemState.selected ? "checked" : "unchecked",
@@ -275,8 +307,8 @@ function connect(service, normalize) {
         "data-highlighted": dataAttr(itemState.highlighted)
       });
     },
-    getItemIndicatorProps(props2) {
-      const itemState = getItemState(props2);
+    getItemIndicatorProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemIndicator.attrs,
         "aria-hidden": true,
@@ -284,8 +316,8 @@ function connect(service, normalize) {
         hidden: !itemState.selected
       });
     },
-    getItemGroupLabelProps(props2) {
-      const { htmlFor } = props2;
+    getItemGroupLabelProps(props) {
+      const { htmlFor } = props;
       return normalize.element({
         ...parts.itemGroupLabel.attrs,
         id: getItemGroupLabelId(scope, htmlFor),
@@ -293,8 +325,8 @@ function connect(service, normalize) {
         role: "presentation"
       });
     },
-    getItemGroupProps(props2) {
-      const { id } = props2;
+    getItemGroupProps(props) {
+      const { id } = props;
       return normalize.element({
         ...parts.itemGroup.attrs,
         "data-disabled": dataAttr(disabled),
@@ -331,6 +363,7 @@ function connect(service, normalize) {
         },
         onKeyDown(event) {
           if (!interactive) return;
+          const target = getEventTarget(event);
           if (!contains(event.currentTarget, getEventTarget(event))) return;
           const shiftKey = event.shiftKey;
           const keyMap = {
@@ -383,11 +416,13 @@ function connect(service, normalize) {
               send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
             },
             Home(event2) {
+              if (isEditableElement(target)) return;
               event2.preventDefault();
               let nextValue = collection2.firstValue;
               send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
             },
             End(event2) {
+              if (isEditableElement(target)) return;
               event2.preventDefault();
               let nextValue = collection2.lastValue;
               send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
@@ -421,10 +456,7 @@ function connect(service, normalize) {
             exec(event);
             return;
           }
-          const target = getEventTarget(event);
-          if (isEditableElement(target)) {
-            return;
-          }
+          if (isEditableElement(target)) return;
           if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
             send({ type: "CONTENT.TYPEAHEAD", key: event.key });
             event.preventDefault();
@@ -434,10 +466,12 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.machine.mjs
 var { guards, createMachine } = setup();
 var { or } = guards;
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       loopFocus: false,
       composite: true,
@@ -447,18 +481,34 @@ var machine = createMachine({
       collection: collection.empty(),
       orientation: "vertical",
       selectionMode: "single",
-      ...props2
+      ...props
     };
   },
-  context({ prop, bindable }) {
+  context({ prop, bindable, getContext }) {
+    const initialValue = prop("value") ?? prop("defaultValue") ?? [];
+    const initialSelectedItems = prop("collection").findMany(initialValue);
     return {
       value: bindable(() => ({
         defaultValue: prop("defaultValue"),
         value: prop("value"),
         isEqual,
         onChange(value) {
-          const items = prop("collection").findMany(value);
-          return prop("onValueChange")?.({ value, items });
+          const context = getContext();
+          const collection2 = prop("collection");
+          const selectedItemMap = context.get("selectedItemMap");
+          const proposed = deriveSelectionState({
+            values: value,
+            collection: collection2,
+            selectedItemMap
+          });
+          const effectiveValue = prop("value") ?? value;
+          const effective = effectiveValue === value ? proposed : deriveSelectionState({
+            values: effectiveValue,
+            collection: collection2,
+            selectedItemMap: proposed.nextSelectedItemMap
+          });
+          context.set("selectedItemMap", effective.nextSelectedItemMap);
+          return prop("onValueChange")?.({ value, items: proposed.selectedItems });
         }
       })),
       highlightedValue: bindable(() => ({
@@ -476,10 +526,13 @@ var machine = createMachine({
       highlightedItem: bindable(() => ({
         defaultValue: null
       })),
-      selectedItems: bindable(() => {
-        const value = prop("value") ?? prop("defaultValue") ?? [];
-        const items = prop("collection").findMany(value);
-        return { defaultValue: items };
+      selectedItemMap: bindable(() => {
+        return {
+          defaultValue: createSelectedItemMap({
+            selectedItems: initialSelectedItems,
+            collection: prop("collection")
+          })
+        };
       }),
       focused: bindable(() => ({
         sync: true,
@@ -505,7 +558,12 @@ var machine = createMachine({
       return selection;
     },
     multiple: ({ prop }) => prop("selectionMode") === "multiple" || prop("selectionMode") === "extended",
-    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems"))
+    selectedItems: ({ context, prop }) => resolveSelectedItems({
+      values: context.get("value"),
+      collection: prop("collection"),
+      selectedItemMap: context.get("selectedItemMap")
+    }),
+    valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems"))
   },
   initialState() {
     return "idle";
@@ -537,6 +595,18 @@ var machine = createMachine({
     },
     "VALUE.CLEAR": {
       actions: ["clearSelectedItems"]
+    },
+    "HIGHLIGHT.FIRST": {
+      actions: ["highlightFirstValue"]
+    },
+    "HIGHLIGHT.LAST": {
+      actions: ["highlightLastValue"]
+    },
+    "HIGHLIGHT.NEXT": {
+      actions: ["highlightNextValue"]
+    },
+    "HIGHLIGHT.PREV": {
+      actions: ["highlightPreviousValue"]
     }
   },
   states: {
@@ -671,6 +741,42 @@ var machine = createMachine({
       setHighlightedItem({ context, event }) {
         context.set("highlightedValue", event.value);
       },
+      highlightFirstValue({ context, prop }) {
+        context.set("highlightedValue", prop("collection").firstValue ?? null);
+      },
+      highlightLastValue({ context, prop }) {
+        context.set("highlightedValue", prop("collection").lastValue ?? null);
+      },
+      highlightNextValue({ context, prop }) {
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        let nextValue = null;
+        if (isGridCollection(collection2) && highlightedValue) {
+          nextValue = collection2.getNextRowValue(highlightedValue);
+        } else if (highlightedValue) {
+          nextValue = collection2.getNextValue(highlightedValue);
+        }
+        if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+          nextValue = collection2.firstValue;
+        }
+        if (!nextValue) return;
+        context.set("highlightedValue", nextValue);
+      },
+      highlightPreviousValue({ context, prop }) {
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        let nextValue = null;
+        if (isGridCollection(collection2) && highlightedValue) {
+          nextValue = collection2.getPreviousRowValue(highlightedValue);
+        } else if (highlightedValue) {
+          nextValue = collection2.getPreviousValue(highlightedValue);
+        }
+        if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+          nextValue = collection2.lastValue;
+        }
+        if (!nextValue) return;
+        context.set("highlightedValue", nextValue);
+      },
       clearHighlightedItem({ context }) {
         context.set("highlightedValue", null);
       },
@@ -693,14 +799,12 @@ var machine = createMachine({
         context.set("value", []);
       },
       syncSelectedItems({ context, prop }) {
-        const collection2 = prop("collection");
-        const prevSelectedItems = context.get("selectedItems");
-        const value = context.get("value");
-        const selectedItems = value.map((value2) => {
-          const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === value2);
-          return item || collection2.find(value2);
+        const next = deriveSelectionState({
+          values: context.get("value"),
+          collection: prop("collection"),
+          selectedItemMap: context.get("selectedItemMap")
         });
-        context.set("selectedItems", selectedItems);
+        context.set("selectedItemMap", next.nextSelectedItemMap);
       },
       syncHighlightedItem({ context, prop }) {
         const collection2 = prop("collection");
@@ -757,44 +861,14 @@ function invokeOnSelect(current, next, onSelect) {
     onSelect?.({ value: item });
   }
 }
-var props = createProps()([
-  "collection",
-  "defaultHighlightedValue",
-  "defaultValue",
-  "dir",
-  "disabled",
-  "deselectable",
-  "disallowSelectAll",
-  "getRootNode",
-  "highlightedValue",
-  "id",
-  "ids",
-  "loopFocus",
-  "onHighlightChange",
-  "onSelect",
-  "onValueChange",
-  "orientation",
-  "scrollToIndexFn",
-  "selectionMode",
-  "selectOnHighlight",
-  "typeahead",
-  "value"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["item", "highlightOnHover"]);
-var splitItemProps = createSplitProps(itemProps);
-var itemGroupProps = createProps()(["id"]);
-var splitItemGroupProps = createSplitProps(itemGroupProps);
-var itemGroupLabelProps = createProps()(["htmlFor"]);
-var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
 
 // components/listbox.ts
 var Listbox = class extends Component {
   _options = [];
   hasGroups = false;
-  constructor(el, props2) {
-    super(el, props2);
-    const collectionFromProps = props2.collection;
+  constructor(el, props) {
+    super(el, props);
+    const collectionFromProps = props.collection;
     this._options = collectionFromProps?.items ?? [];
   }
   get options() {
@@ -802,6 +876,18 @@ var Listbox = class extends Component {
   }
   setOptions(options) {
     this._options = Array.isArray(options) ? options : [];
+  }
+  getOrderedGroupIds() {
+    const seen = /* @__PURE__ */ new Set();
+    const ids = [];
+    for (const item of this.options) {
+      const id = item.group ?? "default";
+      if (!seen.has(id)) {
+        seen.add(id);
+        ids.push(id);
+      }
+    }
+    return ids;
   }
   getCollection() {
     const items = this.options;
@@ -822,13 +908,12 @@ var Listbox = class extends Component {
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
+  initMachine(props) {
     const getCollection = this.getCollection.bind(this);
-    const collectionFromProps = props2.collection;
     return new VanillaMachine(machine, {
-      ...props2,
+      ...props,
       get collection() {
-        return collectionFromProps ?? getCollection();
+        return getCollection();
       }
     });
   }
@@ -843,6 +928,57 @@ var Listbox = class extends Component {
       this.render();
     });
   };
+  renderItems() {
+    const contentEl = this.el.querySelector(
+      '[data-scope="listbox"][data-part="content"]'
+    );
+    if (!contentEl) return;
+    const templatesContainer = this.el.querySelector('[data-templates="listbox"]');
+    if (!templatesContainer) return;
+    contentEl.querySelectorAll(
+      '[data-scope="listbox"][data-part="empty"]:not([data-template])'
+    ).forEach((el) => el.remove());
+    contentEl.querySelectorAll(
+      '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
+    ).forEach((el) => el.remove());
+    contentEl.querySelectorAll(
+      '[data-scope="listbox"][data-part="item"]:not([data-template])'
+    ).forEach((el) => el.remove());
+    const items = this.options;
+    if (items.length === 0) {
+      const emptyTemplate = templatesContainer.querySelector(
+        '[data-scope="listbox"][data-part="empty"][data-template]'
+      );
+      if (emptyTemplate) {
+        const emptyEl = emptyTemplate.cloneNode(true);
+        emptyEl.removeAttribute("data-template");
+        contentEl.appendChild(emptyEl);
+      }
+    } else if (this.hasGroups) {
+      const groupIds = this.getOrderedGroupIds();
+      for (const groupId of groupIds) {
+        const template = templatesContainer.querySelector(
+          `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
+        );
+        if (!template) continue;
+        const groupEl = template.cloneNode(true);
+        groupEl.removeAttribute("data-template");
+        groupEl.querySelectorAll("[data-template]").forEach((e) => e.removeAttribute("data-template"));
+        contentEl.appendChild(groupEl);
+      }
+    } else {
+      for (const item of items) {
+        const value = String(item.id ?? item.value ?? "");
+        const template = templatesContainer.querySelector(
+          `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
+        );
+        if (!template) continue;
+        const itemEl = template.cloneNode(true);
+        itemEl.removeAttribute("data-template");
+        contentEl.appendChild(itemEl);
+      }
+    }
+  }
   applyItemProps() {
     const contentEl = this.el.querySelector(
       '[data-scope="listbox"][data-part="content"]'
@@ -893,6 +1029,7 @@ var Listbox = class extends Component {
     );
     if (contentEl) {
       this.spreadProps(contentEl, this.api.getContentProps());
+      this.renderItems();
       this.applyItemProps();
     }
   }
@@ -919,8 +1056,8 @@ function buildCollection(items, hasGroups) {
 var ListboxHook = {
   mounted() {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.collection ?? "[]");
-    const hasGroups = allItems.some((item) => item.group !== void 0);
+    const allItems = JSON.parse(el.dataset.items ?? "[]");
+    const hasGroups = allItems.some((item) => Boolean(item.group));
     const valueList = getStringList(el, "value");
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
@@ -968,19 +1105,32 @@ var ListboxHook = {
     zag.init();
     this.listbox = zag;
     this.handlers = [];
+    this.handleContentClick = (e) => {
+      const btn = e.target.closest?.(
+        "[data-phx-push][data-phx-push-id]"
+      );
+      if (btn && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.pushEvent(btn.dataset.phxPush, { id: btn.dataset.phxPushId });
+      }
+    };
+    el.addEventListener("click", this.handleContentClick, true);
   },
   updated() {
-    const newItems = JSON.parse(this.el.dataset.collection ?? "[]");
-    const hasGroups = newItems.some((item) => item.group !== void 0);
+    const newItems = JSON.parse(this.el.dataset.items ?? "[]");
+    const hasGroups = newItems.some((item) => Boolean(item.group));
     const valueList = getStringList(this.el, "value");
+    const defaultValueList = getStringList(this.el, "defaultValue");
     const controlled = getBoolean(this.el, "controlled");
     if (this.listbox) {
       this.listbox.hasGroups = hasGroups;
       this.listbox.setOptions(newItems);
+      this.listbox.render();
       this.listbox.updateProps({
-        collection: buildCollection(newItems, hasGroups),
+        collection: this.listbox.getCollection(),
         id: this.el.id,
-        ...controlled && valueList ? { value: valueList } : {},
+        ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
         disabled: getBoolean(this.el, "disabled"),
         dir: getString(this.el, "dir", ["ltr", "rtl"]),
         orientation: getString(this.el, "orientation", [
@@ -993,6 +1143,9 @@ var ListboxHook = {
   destroyed() {
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
+    }
+    if (this.handleContentClick) {
+      this.el.removeEventListener("click", this.handleContentClick, true);
     }
     this.listbox?.destroy();
   }

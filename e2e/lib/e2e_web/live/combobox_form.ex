@@ -158,17 +158,14 @@ defmodule E2eWeb.ComboboxForm do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Combobox</h1>
-        <h2>Form with validation</h2>
-      </div>
+      <.layout_heading>
+        <:title>Combobox</:title>
+        <:subtitle>Live View Form</:subtitle>
+      </.layout_heading>
 
-      <.header>
-        Combobox form
-        <:subtitle>
-          Phoenix form with Ecto validation, database fetching and server side fitlering combobox.
-        </:subtitle>
-      </.header>
+      <p>
+        Phoenix form with Ecto validation, database fetching and server side filtering combobox.
+      </p>
 
       <.form
         for={@form}
@@ -177,7 +174,9 @@ defmodule E2eWeb.ComboboxForm do
         phx-submit="save"
         class="flex flex-col gap-4 max-w-md"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.native_input field={@form[:name]} type="text">
+          <:label>Name</:label>
+        </.native_input>
 
         <.combobox
           field={@form[:airport]}
@@ -191,20 +190,20 @@ defmodule E2eWeb.ComboboxForm do
           <:label>Airport</:label>
           <:empty>No results</:empty>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:clear_trigger>
-            <.icon name="hero-backspace" />
+            <.heroicon name="hero-backspace" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.combobox>
 
-        <.button type="submit" class="button button--accent">
+        <.action type="submit" class="button button--accent">
           Save
-        </.button>
+        </.action>
       </.form>
     </Layouts.app>
     """

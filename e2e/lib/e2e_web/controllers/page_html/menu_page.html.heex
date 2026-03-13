@@ -5,8 +5,10 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Menu</h1>
-  <h2>Controller View</h2>
+  <.layout_heading>
+    <:title>Menu</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
 
   <.menu
     class="menu"
@@ -27,7 +29,7 @@
   >
     <:trigger>File</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
   <.menu
@@ -63,10 +65,10 @@
   >
     <:trigger>Menu</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
     <:nested_indicator>
-      <.icon name="hero-chevron-right" />
+      <.heroicon name="hero-chevron-right" />
     </:nested_indicator>
   </.menu>
 
@@ -97,7 +99,7 @@
   >
     <:trigger>Actions</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
   </.menu>
 
@@ -108,7 +110,7 @@
   >
     <:trigger>Corex</:trigger>
     <:indicator>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:indicator>
     <:item :let={item}>
       {item.label}

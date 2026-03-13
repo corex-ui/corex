@@ -10,7 +10,7 @@ defmodule Corex.Action do
     <.action phx-click="go">Send!</.action>
     <.action type="submit">Save</.action>
     <.action aria_label="Close dialog">
-      <.icon name="hero-x-mark" aria-hidden="true" />
+      <.heroicon name="hero-x-mark" aria-hidden="true" />
     </.action>
     ```
 
@@ -50,15 +50,16 @@ defmodule Corex.Action do
 
   attr(:disabled, :boolean, default: false, doc: "Disables the button")
 
-  attr(:rest, :global,
-    include: ~w(class name value form phx-click phx-submit phx-disable-with phx-value)
-  )
+  attr(:name, :string, default: nil, doc: "Form input name for submit buttons")
+  attr(:value, :string, default: nil, doc: "Form input value for submit buttons")
+
+  attr(:rest, :global)
 
   slot(:inner_block, required: true)
 
   def action(assigns) do
     ~H"""
-    <button type={@type} aria-label={@aria_label} disabled={@disabled} {@rest}>
+    <button type={@type} aria-label={@aria_label} disabled={@disabled} name={@name} value={@value} {@rest}>
       {render_slot(@inner_block)}
     </button>
     """

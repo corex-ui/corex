@@ -35,7 +35,8 @@
   }
 
   .switch [data-scope="switch"][data-part="control"][data-disabled] {
-    opacity: 0.6;
+    color: var(--color-ui--muted);
+    cursor: not-allowed;
     pointer-events: none;
     box-shadow: none;
   }

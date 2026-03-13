@@ -1,22 +1,26 @@
 import {
+  memo
+} from "./chunk-BYLQVWJG.mjs";
+import {
+  setRafInterval,
+  setRafTimeout
+} from "./chunk-MYBRVHPZ.mjs";
+import {
+  clampValue
+} from "./chunk-MV633JPN.mjs";
+import {
   Component,
   VanillaMachine,
-  clampValue,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   getBoolean,
   getNumber,
   getString,
   match,
-  memo,
-  normalizeProps,
-  setRafInterval,
-  setRafTimeout
-} from "./chunk-PLUM2DEK.mjs";
+  normalizeProps
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+timer@1.34.1/node_modules/@zag-js/timer/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
   "root",
   "area",
@@ -28,11 +32,16 @@ var anatomy = createAnatomy("timer").parts(
   "separator"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `timer:${ctx.id}:root`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `timer:${ctx.id}:area`;
+
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.connect.mjs
 var validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
 function connect(service, normalize) {
-  const { state, send, computed, scope } = service;
+  const { state, send, computed, scope, prop } = service;
+  const translations = prop("translations");
   const running = state.matches("running");
   const paused = state.matches("paused");
   const time = computed("time");
@@ -69,7 +78,7 @@ function connect(service, normalize) {
       return normalize.element({
         role: "timer",
         id: getAreaId(scope),
-        "aria-label": `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+        "aria-label": translations.areaLabel?.(time, formattedTime),
         "aria-atomic": true,
         ...parts.area.attrs
       });
@@ -79,26 +88,26 @@ function connect(service, normalize) {
         ...parts.control.attrs
       });
     },
-    getItemProps(props2) {
-      const value = time[props2.type];
+    getItemProps(props) {
+      const value = time[props.type];
       return normalize.element({
         ...parts.item.attrs,
-        "data-type": props2.type,
+        "data-type": props.type,
         style: {
           "--value": value
         }
       });
     },
-    getItemLabelProps(props2) {
+    getItemLabelProps(props) {
       return normalize.element({
         ...parts.itemLabel.attrs,
-        "data-type": props2.type
+        "data-type": props.type
       });
     },
-    getItemValueProps(props2) {
+    getItemValueProps(props) {
       return normalize.element({
         ...parts.itemValue.attrs,
-        "data-type": props2.type
+        "data-type": props.type
       });
     },
     getSeparatorProps() {
@@ -107,15 +116,15 @@ function connect(service, normalize) {
         ...parts.separator.attrs
       });
     },
-    getActionTriggerProps(props2) {
-      if (!validActions.has(props2.action)) {
+    getActionTriggerProps(props) {
+      if (!validActions.has(props.action)) {
         throw new Error(
-          `[zag-js] Invalid action: ${props2.action}. Must be one of: ${Array.from(validActions).join(", ")}`
+          `[zag-js] Invalid action: ${props.action}. Must be one of: ${Array.from(validActions).join(", ")}`
         );
       }
       return normalize.button({
         ...parts.actionTrigger.attrs,
-        hidden: match(props2.action, {
+        hidden: match(props.action, {
           start: () => running || paused,
           pause: () => !running,
           reset: () => !running && !paused,
@@ -125,19 +134,25 @@ function connect(service, normalize) {
         type: "button",
         onClick(event) {
           if (event.defaultPrevented) return;
-          send({ type: props2.action.toUpperCase() });
+          send({ type: props.action.toUpperCase() });
         }
       });
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.machine.mjs
 var machine = createMachine({
-  props({ props: props2 }) {
-    validateProps(props2);
+  props({ props }) {
+    validateProps(props);
     return {
       interval: 1e3,
       startMs: 0,
-      ...props2
+      ...props,
+      translations: {
+        areaLabel: (time, formattedTime) => `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+        ...props.translations
+      }
     };
   },
   initialState({ prop }) {
@@ -316,8 +331,8 @@ function formatTime(time) {
     milliseconds: padStart(time.milliseconds, 3)
   };
 }
-function validateProps(props2) {
-  const { startMs, targetMs, countdown, interval } = props2;
+function validateProps(props) {
+  const { startMs, targetMs, countdown, interval } = props;
   if (interval != null && (typeof interval !== "number" || interval <= 0)) {
     throw new Error(`[timer] Invalid interval: ${interval}. Must be a positive number.`);
   }
@@ -347,25 +362,12 @@ function validateProps(props2) {
     );
   }
 }
-var props = createProps()([
-  "autoStart",
-  "countdown",
-  "getRootNode",
-  "id",
-  "ids",
-  "interval",
-  "onComplete",
-  "onTick",
-  "startMs",
-  "targetMs"
-]);
-var splitProps = createSplitProps(props);
 
 // components/timer.ts
 var Timer = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

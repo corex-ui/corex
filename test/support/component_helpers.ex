@@ -7,6 +7,7 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.Action
   import Corex.Avatar
   import Corex.Carousel
+  import Corex.Checkbox
   import Corex.Clipboard
   import Corex.Collapsible
   import Corex.Combobox
@@ -22,6 +23,7 @@ defmodule CorexTest.ComponentHelpers do
   import Corex.RadioGroup
   import Corex.Select
   import Corex.SignaturePad
+  import Corex.Switch
   import Corex.Tabs
   import Corex.Timer
   import Corex.ToggleGroup
@@ -76,6 +78,19 @@ defmodule CorexTest.ComponentHelpers do
       <:prev_trigger>Prev</:prev_trigger>
       <:next_trigger>Next</:next_trigger>
     </.carousel>
+    """
+  end
+
+  def render_checkbox(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:checked, fn -> false end)
+      |> assign_new(:name, fn -> "cb-#{System.unique_integer([:positive])}" end)
+
+    ~H"""
+    <.checkbox checked={@checked} name={@name}>
+      <:label>Label</:label>
+    </.checkbox>
     """
   end
 
@@ -228,6 +243,17 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_editable_with_translation(assigns) do
+    ~H"""
+    <.editable value="text" translation={@translation}>
+      <:label>Label</:label>
+      <:edit_trigger>Edit</:edit_trigger>
+      <:submit_trigger>Save</:submit_trigger>
+      <:cancel_trigger>Cancel</:cancel_trigger>
+    </.editable>
+    """
+  end
+
   def render_floating_panel(assigns) do
     ~H"""
     <.floating_panel>
@@ -244,25 +270,25 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_listbox(assigns) do
     ~H"""
-    <.listbox collection={[%{label: "A", id: "a"}]} />
+    <.listbox items={[%{label: "A", id: "a"}]} />
     """
   end
 
   def render_listbox_grouped(assigns) do
     ~H"""
-    <.listbox collection={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]} />
+    <.listbox items={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]} />
     """
   end
 
   def render_listbox_list_items(assigns) do
     ~H"""
-    <.listbox collection={[%Corex.List.Item{id: "li-1", label: "Item 1"}, %Corex.List.Item{id: "li-2", label: "Item 2"}]} />
+    <.listbox items={[%Corex.List.Item{id: "li-1", label: "Item 1"}, %Corex.List.Item{id: "li-2", label: "Item 2"}]} />
     """
   end
 
   def render_listbox_controlled(assigns) do
     ~H"""
-    <.listbox collection={[%{label: "A", id: "a"}]} controlled value={["a"]} />
+    <.listbox items={[%{label: "A", id: "a"}]} controlled value={["a"]} />
     """
   end
 
@@ -309,7 +335,18 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select(assigns) do
     ~H"""
-    <.select collection={[%{label: "A", id: "a"}]}>
+    <.select items={[%{label: "A", id: "a"}]}>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_with_opts(assigns) do
+    ~H"""
+    <.select
+      items={[%{label: "A", id: "a"}]}
+      translation={%Corex.Select.Translation{placeholder: @placeholder}}
+    >
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -317,7 +354,7 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_controlled_multiple(assigns) do
     ~H"""
-    <.select collection={[%{label: "A", id: "a"}, %{label: "B", id: "b"}]} controlled value={["a"]} multiple>
+    <.select items={[%{label: "A", id: "a"}, %{label: "B", id: "b"}]} controlled value={["a"]} multiple>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -325,7 +362,28 @@ defmodule CorexTest.ComponentHelpers do
 
   def render_select_grouped(assigns) do
     ~H"""
-    <.select collection={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]}>
+    <.select items={[%{label: "E1", id: "e1", group: "Europe"}, %{label: "A1", id: "a1", group: "Asia"}]}>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_uncontrolled_value(assigns) do
+    ~H"""
+    <.select items={[%{label: "A", id: "a"}]} value={["a"]}>
+      <:trigger>Select</:trigger>
+    </.select>
+    """
+  end
+
+  def render_select_with_field(assigns) do
+    form = Phoenix.Component.to_form(%{"country" => "fra"}, as: :user)
+    field = form[:country]
+
+    assigns = assign(assigns, :field, field)
+
+    ~H"""
+    <.select field={@field} items={[%{id: "fra", label: "France"}, %{id: "deu", label: "Germany"}]}>
       <:trigger>Select</:trigger>
     </.select>
     """
@@ -371,13 +429,15 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
-  def render_tabs_custom_slots_only(assigns) do
+  def render_tabs_with_indicator(assigns) do
+    assigns =
+      assign_new(assigns, :items, fn ->
+        Corex.Content.new([[trigger: "T1", content: "C1"]])
+      end)
+
     ~H"""
-    <.tabs id="custom-tabs" value="tab-2">
-      <:trigger value="tab-1">Tab 1</:trigger>
-      <:trigger value="tab-2">Tab 2</:trigger>
-      <:content value="tab-1">Content 1</:content>
-      <:content value="tab-2">Content 2</:content>
+    <.tabs items={@items}>
+      <:indicator :let={_item}><span data-indicator>!</span></:indicator>
     </.tabs>
     """
   end
@@ -416,6 +476,19 @@ defmodule CorexTest.ComponentHelpers do
       <:label>Sign</:label>
       <:clear_trigger>Clear</:clear_trigger>
     </.signature_pad>
+    """
+  end
+
+  def render_switch(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:checked, fn -> false end)
+      |> assign_new(:name, fn -> "sw-#{System.unique_integer([:positive])}" end)
+
+    ~H"""
+    <.switch checked={@checked} name={@name}>
+      <:label>Label</:label>
+    </.switch>
     """
   end
 

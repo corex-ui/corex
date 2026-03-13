@@ -1,0 +1,31 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Checkbox form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/checkbox/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.checkbox field={f[:terms]} class="checkbox">
+      <:label>Accept terms</:label>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.checkbox>
+    <.action type="submit" id="checkbox-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
+</Layouts.app>

@@ -1,16 +1,16 @@
 import {
+  clampValue
+} from "./chunk-MV633JPN.mjs";
+import {
   Component,
   VanillaMachine,
   add,
   addDomEvent,
   ariaAttr,
   callAll,
-  clampValue,
   contains,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensureProps,
   getBoolean,
@@ -19,6 +19,7 @@ import {
   getEventKey,
   getEventTarget,
   getNumber,
+  getScale,
   getString,
   getTabbables,
   isFocusable,
@@ -34,171 +35,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.34.1/node_modules/@zag-js/scroll-snap/dist/index.mjs
-var getDirection = (element) => getComputedStyle2(element).direction;
-function getScrollPadding(element) {
-  const style = getComputedStyle2(element);
-  const rect = element.getBoundingClientRect();
-  let xBeforeRaw = style.getPropertyValue("scroll-padding-left").replace("auto", "0px");
-  let yBeforeRaw = style.getPropertyValue("scroll-padding-top").replace("auto", "0px");
-  let xAfterRaw = style.getPropertyValue("scroll-padding-right").replace("auto", "0px");
-  let yAfterRaw = style.getPropertyValue("scroll-padding-bottom").replace("auto", "0px");
-  function convert(raw, size) {
-    let n = parseFloat(raw);
-    if (/%/.test(raw)) {
-      n /= 100;
-      n *= size;
-    }
-    return Number.isNaN(n) ? 0 : n;
-  }
-  let xBefore = convert(xBeforeRaw, rect.width);
-  let yBefore = convert(yBeforeRaw, rect.height);
-  let xAfter = convert(xAfterRaw, rect.width);
-  let yAfter = convert(yAfterRaw, rect.height);
-  return {
-    x: { before: xBefore, after: xAfter },
-    y: { before: yBefore, after: yAfter }
-  };
-}
-function isRectIntersecting(a, b, axis = "both") {
-  return axis === "x" && a.right >= b.left && a.left <= b.right || axis === "y" && a.bottom >= b.top && a.top <= b.bottom || axis === "both" && a.right >= b.left && a.left <= b.right && a.bottom >= b.top && a.top <= b.bottom;
-}
-function getDescendants(parent) {
-  let children = [];
-  for (const child of parent.children) {
-    children = children.concat(child, getDescendants(child));
-  }
-  return children;
-}
-function getSnapPositions(parent, subtree = false) {
-  const parentRect = parent.getBoundingClientRect();
-  const dir = getDirection(parent);
-  const isRtl = dir === "rtl";
-  const positions = {
-    x: { start: [], center: [], end: [] },
-    y: { start: [], center: [], end: [] }
-  };
-  const children = subtree ? getDescendants(parent) : parent.children;
-  for (const axis of ["x", "y"]) {
-    const orthogonalAxis = axis === "x" ? "y" : "x";
-    const axisStart = axis === "x" ? "left" : "top";
-    const axisEnd = axis === "x" ? "right" : "bottom";
-    const axisSize = axis === "x" ? "width" : "height";
-    const axisScroll = axis === "x" ? "scrollLeft" : "scrollTop";
-    const useRtlCalc = isRtl && axis === "x";
-    for (const child of children) {
-      const childRect = child.getBoundingClientRect();
-      if (!isRectIntersecting(parentRect, childRect, orthogonalAxis)) {
-        continue;
-      }
-      const childStyle = getComputedStyle2(child);
-      let [childAlignY, childAlignX] = childStyle.getPropertyValue("scroll-snap-align").split(" ");
-      if (typeof childAlignX === "undefined") {
-        childAlignX = childAlignY;
-      }
-      const childAlign = axis === "x" ? childAlignX : childAlignY;
-      let childOffsetStart;
-      let childOffsetEnd;
-      let childOffsetCenter;
-      if (useRtlCalc) {
-        const scrollOffset = Math.abs(parent[axisScroll]);
-        const rightOffset = parentRect[axisEnd] - childRect[axisEnd] + scrollOffset;
-        childOffsetStart = rightOffset;
-        childOffsetEnd = rightOffset + childRect[axisSize];
-        childOffsetCenter = rightOffset + childRect[axisSize] / 2;
-      } else {
-        childOffsetStart = childRect[axisStart] - parentRect[axisStart] + parent[axisScroll];
-        childOffsetEnd = childOffsetStart + childRect[axisSize];
-        childOffsetCenter = childOffsetStart + childRect[axisSize] / 2;
-      }
-      switch (childAlign) {
-        case "none":
-          break;
-        case "start":
-          positions[axis].start.push({ node: child, position: childOffsetStart });
-          break;
-        case "center":
-          positions[axis].center.push({ node: child, position: childOffsetCenter });
-          break;
-        case "end":
-          positions[axis].end.push({ node: child, position: childOffsetEnd });
-          break;
-      }
-    }
-  }
-  return positions;
-}
-function getScrollSnapPositions(element) {
-  const dir = getDirection(element);
-  const rect = element.getBoundingClientRect();
-  const scrollPadding = getScrollPadding(element);
-  const snapPositions = getSnapPositions(element);
-  const maxScroll = {
-    x: element.scrollWidth - element.offsetWidth,
-    y: element.scrollHeight - element.offsetHeight
-  };
-  const isRtl = dir === "rtl";
-  const usesNegativeScrollLeft = isRtl && element.scrollLeft <= 0;
-  let xPositions;
-  if (isRtl) {
-    xPositions = uniq2(
-      [
-        ...snapPositions.x.start.map((v) => v.position - scrollPadding.x.after),
-        ...snapPositions.x.center.map((v) => v.position - rect.width / 2),
-        ...snapPositions.x.end.map((v) => v.position - rect.width + scrollPadding.x.before)
-      ].map(clamp(0, maxScroll.x))
-    );
-    if (usesNegativeScrollLeft) {
-      xPositions = xPositions.map((pos) => -pos);
-    }
-  } else {
-    xPositions = uniq2(
-      [
-        ...snapPositions.x.start.map((v) => v.position - scrollPadding.x.before),
-        ...snapPositions.x.center.map((v) => v.position - rect.width / 2),
-        ...snapPositions.x.end.map((v) => v.position - rect.width + scrollPadding.x.after)
-      ].map(clamp(0, maxScroll.x))
-    );
-  }
-  return {
-    x: xPositions,
-    y: uniq2(
-      [
-        ...snapPositions.y.start.map((v) => v.position - scrollPadding.y.before),
-        ...snapPositions.y.center.map((v) => v.position - rect.height / 2),
-        ...snapPositions.y.end.map((v) => v.position - rect.height + scrollPadding.y.after)
-      ].map(clamp(0, maxScroll.y))
-    )
-  };
-}
-function findSnapPoint(parent, axis, predicate) {
-  const dir = getDirection(parent);
-  const scrollPadding = getScrollPadding(parent);
-  const snapPositions = getSnapPositions(parent);
-  const items = [...snapPositions[axis].start, ...snapPositions[axis].center, ...snapPositions[axis].end];
-  const isRtl = dir === "rtl";
-  const usesNegativeScrollLeft = isRtl && axis === "x" && parent.scrollLeft <= 0;
-  for (const item of items) {
-    if (predicate(item.node)) {
-      let position;
-      if (axis === "x" && isRtl) {
-        position = item.position - scrollPadding.x.after;
-        if (usesNegativeScrollLeft) {
-          position = -position;
-        }
-      } else {
-        position = item.position - (axis === "x" ? scrollPadding.x.before : scrollPadding.y.before);
-      }
-      return position;
-    }
-  }
-}
-var uniq2 = (arr) => [...new Set(arr)];
-var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
-
-// ../node_modules/.pnpm/@zag-js+carousel@1.34.1/node_modules/@zag-js/carousel/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",
@@ -212,6 +51,8 @@ var anatomy = createAnatomy("carousel").parts(
   "progressText"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
 var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
 var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
@@ -228,6 +69,8 @@ var syncTabIndex = (ctx) => {
   const tabbables = getTabbables(el);
   el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
 };
+
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
 function connect(service, normalize) {
   const { state, context, computed, send, scope, prop } = service;
   const isPlaying = state.matches("autoplay");
@@ -238,21 +81,22 @@ function connect(service, normalize) {
   const autoSize = prop("autoSize");
   const pageSnapPoints = Array.from(context.get("pageSnapPoints"));
   const page = context.get("page");
+  const activePage = pageSnapPoints.length ? clampValue(page, 0, pageSnapPoints.length - 1) : 0;
   const slidesPerPage = prop("slidesPerPage");
   const padding = prop("padding");
   const translations = prop("translations");
   return {
     isPlaying,
     isDragging,
-    page,
+    page: activePage,
     pageSnapPoints,
     canScrollNext,
     canScrollPrev,
     getProgress() {
-      return page / pageSnapPoints.length;
+      return activePage / pageSnapPoints.length;
     },
     getProgressText() {
-      const details = { page: page + 1, totalPages: pageSnapPoints.length };
+      const details = { page: activePage + 1, totalPages: pageSnapPoints.length };
       return translations.progressText?.(details) ?? "";
     },
     scrollToIndex(index, instant) {
@@ -344,27 +188,27 @@ function connect(service, normalize) {
         }
       });
     },
-    getItemProps(props2) {
-      const isInView = context.get("slidesInView").includes(props2.index);
+    getItemProps(props) {
+      const isInView = context.get("slidesInView").includes(props.index);
       return normalize.element({
         ...parts.item.attrs,
-        id: getItemId(scope, props2.index),
+        id: getItemId(scope, props.index),
         dir: prop("dir"),
         role: "group",
-        "data-index": props2.index,
+        "data-index": props.index,
         "data-inview": dataAttr(isInView),
         "aria-roledescription": "slide",
         "data-orientation": prop("orientation"),
-        "aria-label": translations.item(props2.index, prop("slideCount")),
+        "aria-label": translations.item(props.index, prop("slideCount")),
         "aria-hidden": ariaAttr(!isInView),
         style: {
           flex: "0 0 auto",
           [horizontal ? "maxWidth" : "maxHeight"]: "100%",
           scrollSnapAlign: (() => {
-            const snapAlign = props2.snapAlign ?? "start";
+            const snapAlign = props.snapAlign ?? "start";
             const slidesPerMove = prop("slidesPerMove");
             const perMove = slidesPerMove === "auto" ? Math.floor(prop("slidesPerPage")) : slidesPerMove;
-            const shouldSnap = (props2.index + perMove) % perMove === 0;
+            const shouldSnap = (props.index + perMove) % perMove === 0;
             return shouldSnap ? snapAlign : void 0;
           })()
         }
@@ -456,21 +300,21 @@ function connect(service, normalize) {
         }
       });
     },
-    getIndicatorProps(props2) {
+    getIndicatorProps(props) {
       return normalize.button({
         ...parts.indicator.attrs,
         dir: prop("dir"),
-        id: getIndicatorId(scope, props2.index),
+        id: getIndicatorId(scope, props.index),
         type: "button",
         "data-orientation": prop("orientation"),
-        "data-index": props2.index,
-        "data-readonly": dataAttr(props2.readOnly),
-        "data-current": dataAttr(props2.index === page),
-        "aria-label": translations.indicator(props2.index),
+        "data-index": props.index,
+        "data-readonly": dataAttr(props.readOnly),
+        "data-current": dataAttr(props.index === activePage),
+        "aria-label": translations.indicator(props.index),
         onClick(event) {
           if (event.defaultPrevented) return;
-          if (props2.readOnly) return;
-          send({ type: "PAGE.SET", index: props2.index, src: "indicator" });
+          if (props.readOnly) return;
+          send({ type: "PAGE.SET", index: props.index, src: "indicator" });
         }
       });
     },
@@ -494,15 +338,184 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.36.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
+var getDirection = (element) => getComputedStyle2(element).direction;
+var convert = (raw, size) => {
+  let n = parseFloat(raw);
+  if (/%/.test(raw)) {
+    n /= 100;
+    n *= size;
+  }
+  return Number.isNaN(n) ? 0 : n;
+};
+function getScrollPadding(element) {
+  const style = getComputedStyle2(element);
+  const layoutWidth = element.offsetWidth;
+  const layoutHeight = element.offsetHeight;
+  let xBeforeRaw = style.getPropertyValue("scroll-padding-left").replace("auto", "0px");
+  let yBeforeRaw = style.getPropertyValue("scroll-padding-top").replace("auto", "0px");
+  let xAfterRaw = style.getPropertyValue("scroll-padding-right").replace("auto", "0px");
+  let yAfterRaw = style.getPropertyValue("scroll-padding-bottom").replace("auto", "0px");
+  let xBefore = convert(xBeforeRaw, layoutWidth);
+  let yBefore = convert(yBeforeRaw, layoutHeight);
+  let xAfter = convert(xAfterRaw, layoutWidth);
+  let yAfter = convert(yAfterRaw, layoutHeight);
+  return {
+    x: { before: xBefore, after: xAfter },
+    y: { before: yBefore, after: yAfter }
+  };
+}
+function isRectIntersecting(a, b, axis = "both") {
+  return axis === "x" && a.right >= b.left && a.left <= b.right || axis === "y" && a.bottom >= b.top && a.top <= b.bottom || axis === "both" && a.right >= b.left && a.left <= b.right && a.bottom >= b.top && a.top <= b.bottom;
+}
+function getDescendants(parent) {
+  let children = [];
+  for (const child of parent.children) {
+    children = children.concat(child, getDescendants(child));
+  }
+  return children;
+}
+function getSnapPositions(parent, subtree = false) {
+  const parentRect = parent.getBoundingClientRect();
+  const dir = getDirection(parent);
+  const isRtl = dir === "rtl";
+  const scale = getScale(parent);
+  const positions = {
+    x: { start: [], center: [], end: [] },
+    y: { start: [], center: [], end: [] }
+  };
+  const children = subtree ? getDescendants(parent) : parent.children;
+  for (const axis of ["x", "y"]) {
+    const orthogonalAxis = axis === "x" ? "y" : "x";
+    const axisStart = axis === "x" ? "left" : "top";
+    const axisEnd = axis === "x" ? "right" : "bottom";
+    const axisSize = axis === "x" ? "width" : "height";
+    const axisScroll = axis === "x" ? "scrollLeft" : "scrollTop";
+    const axisScale = axis === "x" ? scale.x : scale.y;
+    const useRtlCalc = isRtl && axis === "x";
+    for (const child of children) {
+      const childRect = child.getBoundingClientRect();
+      if (!isRectIntersecting(parentRect, childRect, orthogonalAxis)) {
+        continue;
+      }
+      const childStyle = getComputedStyle2(child);
+      let [childAlignY, childAlignX] = childStyle.getPropertyValue("scroll-snap-align").split(" ");
+      if (typeof childAlignX === "undefined") {
+        childAlignX = childAlignY;
+      }
+      const childAlign = axis === "x" ? childAlignX : childAlignY;
+      let childOffsetStart;
+      let childOffsetEnd;
+      let childOffsetCenter;
+      if (useRtlCalc) {
+        const scrollOffset = Math.abs(parent[axisScroll]);
+        const rightOffset = (parentRect[axisEnd] - childRect[axisEnd]) / axisScale + scrollOffset;
+        childOffsetStart = rightOffset;
+        childOffsetEnd = rightOffset + childRect[axisSize] / axisScale;
+        childOffsetCenter = rightOffset + childRect[axisSize] / (2 * axisScale);
+      } else {
+        childOffsetStart = (childRect[axisStart] - parentRect[axisStart]) / axisScale + parent[axisScroll];
+        childOffsetEnd = childOffsetStart + childRect[axisSize] / axisScale;
+        childOffsetCenter = childOffsetStart + childRect[axisSize] / (2 * axisScale);
+      }
+      switch (childAlign) {
+        case "none":
+          break;
+        case "start":
+          positions[axis].start.push({ node: child, position: childOffsetStart });
+          break;
+        case "center":
+          positions[axis].center.push({ node: child, position: childOffsetCenter });
+          break;
+        case "end":
+          positions[axis].end.push({ node: child, position: childOffsetEnd });
+          break;
+      }
+    }
+  }
+  return positions;
+}
+function getScrollSnapPositions(element) {
+  const dir = getDirection(element);
+  const scrollPadding = getScrollPadding(element);
+  const snapPositions = getSnapPositions(element);
+  const layoutWidth = element.offsetWidth;
+  const layoutHeight = element.offsetHeight;
+  const maxScroll = {
+    x: element.scrollWidth - element.offsetWidth,
+    y: element.scrollHeight - element.offsetHeight
+  };
+  const isRtl = dir === "rtl";
+  const usesNegativeScrollLeft = isRtl && element.scrollLeft <= 0;
+  let xPositions;
+  if (isRtl) {
+    xPositions = uniq2(
+      [
+        ...snapPositions.x.start.map((v) => v.position - scrollPadding.x.after),
+        ...snapPositions.x.center.map((v) => v.position - layoutWidth / 2),
+        ...snapPositions.x.end.map((v) => v.position - layoutWidth + scrollPadding.x.before)
+      ].map(clamp(0, maxScroll.x))
+    );
+    if (usesNegativeScrollLeft) {
+      xPositions = xPositions.map((pos) => -pos);
+    }
+  } else {
+    xPositions = uniq2(
+      [
+        ...snapPositions.x.start.map((v) => v.position - scrollPadding.x.before),
+        ...snapPositions.x.center.map((v) => v.position - layoutWidth / 2),
+        ...snapPositions.x.end.map((v) => v.position - layoutWidth + scrollPadding.x.after)
+      ].map(clamp(0, maxScroll.x))
+    );
+  }
+  return {
+    x: xPositions,
+    y: uniq2(
+      [
+        ...snapPositions.y.start.map((v) => v.position - scrollPadding.y.before),
+        ...snapPositions.y.center.map((v) => v.position - layoutHeight / 2),
+        ...snapPositions.y.end.map((v) => v.position - layoutHeight + scrollPadding.y.after)
+      ].map(clamp(0, maxScroll.y))
+    )
+  };
+}
+function findSnapPoint(parent, axis, predicate) {
+  const dir = getDirection(parent);
+  const scrollPadding = getScrollPadding(parent);
+  const snapPositions = getSnapPositions(parent);
+  const items = [...snapPositions[axis].start, ...snapPositions[axis].center, ...snapPositions[axis].end];
+  const isRtl = dir === "rtl";
+  const usesNegativeScrollLeft = isRtl && axis === "x" && parent.scrollLeft <= 0;
+  for (const item of items) {
+    if (predicate(item.node)) {
+      let position;
+      if (axis === "x" && isRtl) {
+        position = item.position - scrollPadding.x.after;
+        if (usesNegativeScrollLeft) {
+          position = -position;
+        }
+      } else {
+        position = item.position - (axis === "x" ? scrollPadding.x.before : scrollPadding.y.before);
+      }
+      return position;
+    }
+  }
+}
+var uniq2 = (arr) => [...new Set(arr)];
+var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
+
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+var DRIFT_THRESHOLD = 1;
 var machine = createMachine({
-  props({ props: props2 }) {
-    ensureProps(props2, ["slideCount"], "carousel");
+  props({ props }) {
+    ensureProps(props, ["slideCount"], "carousel");
     return {
       dir: "ltr",
       defaultPage: 0,
       orientation: "horizontal",
       snapType: "mandatory",
-      loop: !!props2.autoplay,
+      loop: !!props.autoplay,
       slidesPerPage: 1,
       slidesPerMove: "auto",
       spacing: "0px",
@@ -510,7 +523,7 @@ var machine = createMachine({
       allowMouseDrag: false,
       inViewThreshold: 0.6,
       autoSize: false,
-      ...props2,
+      ...props,
       translations: {
         nextTrigger: "Next slide",
         prevTrigger: "Previous slide",
@@ -519,7 +532,7 @@ var machine = createMachine({
         autoplayStart: "Start slide rotation",
         autoplayStop: "Stop slide rotation",
         progressText: ({ page, totalPages }) => `${page} / ${totalPages}`,
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -597,7 +610,7 @@ var machine = createMachine({
       actions: ["clearScrollEndTimer", "setMatchingPage"]
     },
     "SNAP.REFRESH": {
-      actions: ["setSnapPoints", "clampPage"]
+      actions: ["setSnapPoints", "scrollToPageIfDrifted"]
     },
     "PAGE.SCROLL": {
       actions: ["scrollToPage"]
@@ -656,9 +669,29 @@ var machine = createMachine({
           actions: ["scrollSlides", "invokeDragging"]
         },
         "DRAGGING.END": {
-          target: "idle",
-          actions: ["endDragging", "invokeDraggingEnd"]
+          target: "settling",
+          actions: ["endDragging"]
         }
+      }
+    },
+    settling: {
+      effects: ["trackSettlingScroll"],
+      on: {
+        "DRAGGING.START": {
+          target: "dragging",
+          actions: ["clearScrollEndTimer", "invokeDragStart"]
+        },
+        "SCROLL.END": [
+          {
+            guard: "isFocused",
+            target: "focus",
+            actions: ["clearScrollEndTimer", "setClosestPage", "invokeDraggingEnd"]
+          },
+          {
+            target: "idle",
+            actions: ["clearScrollEndTimer", "setClosestPage", "invokeDraggingEnd"]
+          }
+        ]
       }
     },
     userScroll: {
@@ -738,7 +771,10 @@ var machine = createMachine({
         });
         const itemEls = getItemEls(scope);
         itemEls.forEach(exec);
-        const cleanups = itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec));
+        const cleanups = [
+          resizeObserverBorderBox.observe(el, exec),
+          ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))
+        ];
         return callAll(...cleanups);
       },
       trackSlideIntersections({ scope, prop, context }) {
@@ -776,6 +812,30 @@ var machine = createMachine({
           );
         };
         return addDomEvent(el, "scroll", onScroll, { passive: true });
+      },
+      trackSettlingScroll({ send, refs, scope }) {
+        const el = getItemGroupEl(scope);
+        if (!el) return;
+        const startTimer = () => {
+          clearTimeout(refs.get("timeoutRef"));
+          refs.set("timeoutRef", void 0);
+          refs.set(
+            "timeoutRef",
+            setTimeout(() => {
+              send({ type: "SCROLL.END" });
+            }, 200)
+          );
+        };
+        startTimer();
+        const onScroll = () => {
+          startTimer();
+        };
+        const cleanup = addDomEvent(el, "scroll", onScroll, { passive: true });
+        return () => {
+          cleanup();
+          clearTimeout(refs.get("timeoutRef"));
+          refs.set("timeoutRef", void 0);
+        };
       },
       trackDocumentVisibility({ scope, send }) {
         const doc = scope.getDoc();
@@ -836,12 +896,27 @@ var machine = createMachine({
           el.scrollTo({ [axis]: context.get("pageSnapPoints")[index], behavior });
         });
       },
+      scrollToPageIfDrifted({ context, scope, computed }) {
+        const el = getItemGroupEl(scope);
+        if (!el) return;
+        const snapPoint = context.get("pageSnapPoints")[context.get("page")];
+        if (snapPoint == null) return;
+        const scrollPos = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
+        if (Math.abs(scrollPos - snapPoint) <= DRIFT_THRESHOLD) return;
+        const axis = computed("isHorizontal") ? "left" : "top";
+        el.scrollTo({ [axis]: snapPoint, behavior: "instant" });
+      },
       setClosestPage({ context, scope, computed }) {
         const el = getItemGroupEl(scope);
         if (!el) return;
         const scrollPosition = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
-        const page = context.get("pageSnapPoints").findIndex((point) => Math.abs(point - scrollPosition) < 1);
-        if (page === -1) return;
+        const snapPoints = context.get("pageSnapPoints");
+        if (!snapPoints.length) return;
+        const page = snapPoints.reduce((closestIndex, snapPoint, index) => {
+          const currentDistance = Math.abs(snapPoint - scrollPosition);
+          const closestDistance = Math.abs(snapPoints[closestIndex] - scrollPosition);
+          return currentDistance < closestDistance ? index : closestIndex;
+        }, 0);
         context.set("page", page);
       },
       setNextPage({ context, prop, state }) {
@@ -870,15 +945,15 @@ var machine = createMachine({
         const page = event.index ?? context.get("page");
         context.set("page", page);
       },
-      clampPage({ context }) {
-        const index = clampValue(context.get("page"), 0, context.get("pageSnapPoints").length - 1);
-        context.set("page", index);
-      },
       setSnapPoints({ context, computed, scope }) {
         const el = getItemGroupEl(scope);
         if (!el) return;
         const scrollSnapPoints = getScrollSnapPositions(el);
-        context.set("pageSnapPoints", computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y);
+        const pageSnapPoints = computed("isHorizontal") ? scrollSnapPoints.x : scrollSnapPoints.y;
+        context.set("pageSnapPoints", pageSnapPoints);
+        if (!pageSnapPoints.length) return;
+        const index = clampValue(context.get("page"), 0, pageSnapPoints.length - 1);
+        context.set("page", index);
       },
       disableScrollSnap({ scope }) {
         const el = getItemGroupEl(scope);
@@ -897,6 +972,7 @@ var machine = createMachine({
         const isHorizontal = computed("isHorizontal");
         const scrollPos = isHorizontal ? el.scrollLeft : el.scrollTop;
         const snapPoints = context.get("pageSnapPoints");
+        if (!snapPoints.length) return;
         const closest = snapPoints.reduce((closest2, curr) => {
           return Math.abs(curr - scrollPos) < Math.abs(closest2 - scrollPos) ? curr : closest2;
         }, snapPoints[0]);
@@ -906,7 +982,6 @@ var machine = createMachine({
             top: isHorizontal ? el.scrollTop : closest,
             behavior: "smooth"
           });
-          context.set("page", snapPoints.indexOf(closest));
           const scrollSnapType = el.dataset.scrollSnapType;
           if (scrollSnapType) {
             el.style.setProperty("scroll-snap-type", scrollSnapType);
@@ -956,41 +1031,12 @@ function getPageSnapPoints(totalSlides, slidesPerMove, slidesPerPage) {
   }
   return snapPoints;
 }
-var props = createProps()([
-  "dir",
-  "getRootNode",
-  "id",
-  "ids",
-  "loop",
-  "page",
-  "defaultPage",
-  "onPageChange",
-  "orientation",
-  "slideCount",
-  "slidesPerPage",
-  "slidesPerMove",
-  "spacing",
-  "padding",
-  "autoplay",
-  "allowMouseDrag",
-  "inViewThreshold",
-  "translations",
-  "snapType",
-  "autoSize",
-  "onDragStatusChange",
-  "onAutoplayStatusChange"
-]);
-var splitProps = createSplitProps(props);
-var indicatorProps = createProps()(["index", "readOnly"]);
-var splitIndicatorProps = createSplitProps(indicatorProps);
-var itemProps = createProps()(["index", "snapAlign"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/carousel.ts
 var Carousel = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

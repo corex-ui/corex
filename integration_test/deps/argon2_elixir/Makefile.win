@@ -1,0 +1,58 @@
+# Argon2 password hashing algorithm for use with Elixir
+# Makefile for use with Windows
+#
+# Copyright 2016-2017 David Whitlock
+#
+# This is licensed under the Apache Public License 2.0
+#
+# The license and copyright information for the reference implementation
+# is detailed below:
+#
+# Argon2 reference source code package - reference C implementations
+#
+# Copyright 2015
+# Daniel Dinu, Dmitry Khovratovich, Jean-Philippe Aumasson, and Samuel Neves
+#
+# You may use this work under the terms of a Creative Commons CC0 1.0
+# License/Waiver or the Apache Public License 2.0, at your option. The terms of
+# these licenses can be found at:
+#
+# - CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
+# - Apache 2.0        : http://www.apache.org/licenses/LICENSE-2.0
+#
+# You should have received a copy of both of these licenses along with this
+# software. If not, they may be obtained at the above URLs.
+#
+
+!IF [where /Q Makefile.auto.win]
+# The file doesn't exist, so don't include it.
+!ELSE
+!INCLUDE Makefile.auto.win
+!IF [del /Q /F Makefile.auto.win] == 0
+!ENDIF
+!ENDIF
+
+SRC_INC = argon2\include
+SRC_DIR = argon2\src
+NMAKE = nmake /$(MAKEFLAGS)
+CFLAGS = /O2 /EHsc /I"$(SRC_INC)" /I"$(SRC_DIR)"
+
+SRC = $(SRC_DIR)\argon2.c $(SRC_DIR)\core.c $(SRC_DIR)\blake2\blake2b.c\
+      $(SRC_DIR)\thread.c $(SRC_DIR)\encoding.c $(SRC_DIR)\ref.c c_src\argon2_nif.c
+
+all: clean priv\argon2_nif.dll
+
+clean:
+	del /Q /F priv
+
+Makefile.auto.win:
+	erl -noshell -eval "io:format(\"ERTS_INCLUDE_PATH=~ts/erts-~ts/include/\", [code:root_dir(), erlang:system_info(version)])." -s init stop > $@
+
+!IFDEF ERTS_INCLUDE_PATH
+priv\argon2_nif.dll:
+	if NOT EXIST "priv" mkdir "priv"
+	$(CC) $(CFLAGS) /I"$(ERTS_INCLUDE_PATH)" /LD /MD /Fe$@ $(SRC)
+!ELSE
+priv\argon2_nif.dll: Makefile.auto.win
+	$(NMAKE) /F Makefile.win priv\argon2_nif.dll
+!ENDIF

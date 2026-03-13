@@ -8,8 +8,33 @@
     max-width: var(--container-ui);
   }
 
+  .pin-input [data-scope="pin-input"][data-part="root"][data-disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="root"][data-readonly] {
+    opacity: 0.9;
+  }
+
   .pin-input [data-scope="pin-input"][data-part="label"] {
     @apply ui-label;
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-invalid] {
+    color: var(--color-ui-alert);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-disabled] {
+    color: var(--color-ui--muted);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-complete] {
+    color: var(--color-ui-success);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="label"][data-readonly] {
+    color: var(--color-ui--muted);
   }
 
   .pin-input [data-scope="pin-input"][data-part="control"] {
@@ -27,15 +52,23 @@
     width: var(--spacing-ui);
     flex-shrink: 0;
     text-align: center;
+  }
 
-    &[data-complete] {
-      color: var(--color-root--success);
-      border-color: var(--color-root--success);
-    }
+  .pin-input [data-scope="pin-input"][data-part="input"][data-complete] {
+    color: var(--color-ui-success--text);
+    background-color: var(--color-ui-success);
+    border-color: var(--color-ui-success--border);
+  }
 
-    &[data-invalid] {
-      color: var(--color-root--alert);
-      border-color: var(--color-root--alert);
-    }
+  .pin-input [data-scope="pin-input"][data-part="input"][data-invalid] {
+    color: var(--color-ui-alert--text);
+    background-color: var(--color-ui-alert);
+    border-color: var(--color-ui-alert--border);
+  }
+
+  .pin-input [data-scope="pin-input"][data-part="input"][data-disabled] {
+    color: var(--color-ui--muted);
+    background-color: --alpha(var(--color-ui) / 60%);
+    cursor: not-allowed;
   }
 }

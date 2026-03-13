@@ -1,0 +1,34 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Signature form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form (field=)</p>
+  <.form
+    :let={f}
+    for={@form}
+    action={~p"/#{@locale}/signature/form"}
+    method="post"
+    id={Corex.Form.get_form_id(@form)}
+  >
+    <.signature_pad field={f[:signature]}>
+      <:label>Sign here</:label>
+      <:clear_trigger>
+        <.heroicon name="hero-x-mark" />
+      </:clear_trigger>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.signature_pad>
+    <.action type="submit" id="signature-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </.form>
+</Layouts.app>

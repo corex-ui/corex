@@ -1,0 +1,27 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Color Picker form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form</p>
+  <form action={~p"/#{@locale}/color-picker/form"} method="post" id="color-picker-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.color_picker
+      name="color_picker_form[color]"
+      id="color-picker-form-color"
+      default_value="#3b82f6"
+      label="Pick a color"
+      presets={["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]}
+      class="color-picker"
+    />
+    <.action type="submit" id="color-picker-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

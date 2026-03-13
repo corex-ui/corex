@@ -14,10 +14,10 @@ defmodule E2eWeb.EditableLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Editable</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Editable</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.editable
         id="my-editable"
         value="My custom value"
@@ -27,9 +27,9 @@ defmodule E2eWeb.EditableLive do
         class="editable"
       >
         <:label>Name</:label>
-        <:edit_trigger><.icon name="hero-pencil-square" class="icon" /></:edit_trigger>
-        <:submit_trigger><.icon name="hero-check" class="icon" /></:submit_trigger>
-        <:cancel_trigger><.icon name="hero-x-mark" class="icon" /></:cancel_trigger>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
       </.editable>
     </Layouts.app>
     """

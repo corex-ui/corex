@@ -5,8 +5,11 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Clipboard</h1>
-  <h2>Controller View</h2>
+  <.layout_heading>
+    <:title>Clipboard</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
   <h3>Client Api</h3>
   <div class="layout__row">
     <.action
@@ -37,8 +40,8 @@
   >
     <:label>Copy to clipboard</:label>
     <:trigger>
-      <.icon name="hero-clipboard" class="icon data-copy" />
-      <.icon name="hero-check" class="icon data-copied" />
+      <.heroicon name="hero-clipboard" class="icon data-copy" />
+      <.heroicon name="hero-check" class="icon data-copied" />
     </:trigger>
   </.clipboard>
 </Layouts.app>

@@ -1,15 +1,14 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
@@ -21,11 +20,13 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+switch@1.34.1/node_modules/@zag-js/switch/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
@@ -33,6 +34,8 @@ var getControlId = (ctx) => ctx.ids?.control ?? `switch:${ctx.id}:control`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const disabled = !!prop("disabled");
@@ -148,14 +151,16 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       defaultChecked: false,
       label: "switch",
       value: "on",
-      ...props2
+      ...props
     };
   },
   initialState() {
@@ -288,30 +293,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "checked",
-  "defaultChecked",
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "label",
-  "name",
-  "onCheckedChange",
-  "readOnly",
-  "required",
-  "value"
-]);
-var splitProps = createSplitProps(props);
 
 // components/switch.ts
 var Switch = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -363,7 +350,7 @@ var SwitchHook = {
       label: getString(el, "label"),
       onCheckedChange: (details) => {
         const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             checked: details.checked,
             id: el.id
@@ -375,8 +362,8 @@ var SwitchHook = {
             new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: {
-                value: details,
-                id: el.id
+                id: el.id,
+                checked: details.checked
               }
             })
           );
@@ -386,8 +373,8 @@ var SwitchHook = {
     zagSwitch.init();
     this.zagSwitch = zagSwitch;
     this.onSetChecked = (event) => {
-      const { value } = event.detail;
-      zagSwitch.api.setChecked(value);
+      const { checked } = event.detail;
+      zagSwitch.api.setChecked(checked);
     };
     el.addEventListener("phx:switch:set-checked", this.onSetChecked);
     this.handlers = [];
@@ -395,7 +382,7 @@ var SwitchHook = {
       this.handleEvent("switch_set_checked", (payload) => {
         const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
-        zagSwitch.api.setChecked(payload.value);
+        zagSwitch.api.setChecked(payload.checked);
       })
     );
     this.handlers.push(

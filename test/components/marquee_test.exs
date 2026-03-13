@@ -57,6 +57,41 @@ defmodule Corex.MarqueeTest do
     end
   end
 
+  describe "Connect.props/1" do
+    test "returns full props with events" do
+      assigns = %Corex.Marquee.Anatomy.Props{
+        id: "test",
+        side: "top",
+        duration: 20,
+        content_count: 2,
+        speed: 10,
+        spacing: "20px",
+        auto_fill: true,
+        pause_on_interaction: true,
+        default_paused: true,
+        delay: 5,
+        loop_count: 3,
+        reverse: true,
+        respect_reduced_motion: false,
+        dir: "ltr",
+        aria_label: "L",
+        on_pause_change: "pc",
+        on_pause_change_client: "pcc",
+        on_loop_complete: "lc",
+        on_loop_complete_client: "lcc",
+        on_complete: "c",
+        on_complete_client: "cc"
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-orientation"] == "vertical"
+      assert result["data-on-pause-change"] == "pc"
+      assert result["data-respect-reduced-motion"] == "false"
+      assert result["data-aria-label"] == "L"
+      assert result["data-reverse"] == ""
+    end
+  end
+
   describe "Connect.root/1" do
     test "returns root attributes" do
       assigns = %{
@@ -77,6 +112,25 @@ defmodule Corex.MarqueeTest do
       assert result["data-part"] == "root"
       assert result["role"] == "region"
       assert result["aria-roledescription"] == "marquee"
+    end
+
+    test "respect_reduced_motion false and loop_count > 0" do
+      assigns = %{
+        id: "test",
+        dir: "ltr",
+        orientation: "vertical",
+        duration: 10,
+        spacing: "1rem",
+        delay: 0,
+        loop_count: 5,
+        translate: "0px",
+        respect_reduced_motion: false
+      }
+
+      result = Connect.root(assigns)
+      assert result["data-respect-reduced-motion"] == "false"
+      assert result["style"] =~ "flex-direction:column"
+      assert result["style"] =~ "--marquee-loop-count:5"
     end
 
     test "includes aria-label from assigns" do
@@ -122,6 +176,19 @@ defmodule Corex.MarqueeTest do
       assert result["id"] == "marquee:test-marquee:viewport"
       assert result["data-scope"] == "marquee"
       assert result["data-part"] == "viewport"
+      assert result["style"] =~ "flex-direction:row-reverse"
+
+      assigns = %{id: "test-marquee", orientation: "vertical", side: "bottom"}
+      result = Connect.viewport(assigns)
+      assert result["style"] =~ "flex-direction:column-reverse"
+
+      assigns = %{id: "test-marquee", orientation: "vertical", side: "top"}
+      result = Connect.viewport(assigns)
+      assert result["style"] =~ "flex-direction:column"
+
+      assigns = %{id: "test-marquee", orientation: "horizontal", side: "start"}
+      result = Connect.viewport(assigns)
+      assert result["style"] =~ "flex-direction:row"
     end
   end
 
@@ -132,6 +199,14 @@ defmodule Corex.MarqueeTest do
       assert result["data-part"] == "edge"
       assert result["data-side"] == "end"
     end
+
+    test "returns edge attributes for other sides" do
+      assert Connect.edge(%{side: "start", orientation: "horizontal"})["style"] =~
+               "inset-inline-start:0"
+
+      assert Connect.edge(%{side: "top", orientation: "vertical"})["style"] =~ "top:0"
+      assert Connect.edge(%{side: "bottom", orientation: "vertical"})["style"] =~ "bottom:0"
+    end
   end
 
   describe "Connect.item/1" do
@@ -140,6 +215,10 @@ defmodule Corex.MarqueeTest do
       result = Connect.item(assigns)
       assert result["data-scope"] == "marquee"
       assert result["data-part"] == "item"
+
+      assigns = %{orientation: "vertical"}
+      result = Connect.item(assigns)
+      assert result["style"] =~ "margin-block"
     end
   end
 
@@ -157,6 +236,23 @@ defmodule Corex.MarqueeTest do
       result = Connect.content(assigns)
       assert result["id"] == "marquee:test-marquee:content:0"
       assert result["data-part"] == "content"
+    end
+
+    test "returns content attributes for clone and reverse" do
+      assigns = %{
+        root_id: "t",
+        index: 1,
+        orientation: "vertical",
+        side: "top",
+        clone: true,
+        reverse: true
+      }
+
+      result = Connect.content(assigns)
+      assert result["data-reverse"] == ""
+      assert result["role"] == "presentation"
+      assert result["aria-hidden"] == "true"
+      assert result["style"] =~ "flex-direction:column"
     end
   end
 end

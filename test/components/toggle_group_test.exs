@@ -54,6 +54,68 @@ defmodule Corex.ToggleGroupTest do
     end
   end
 
+  describe "Connect.props/1" do
+    test "returns correct value encoding for controlled and uncontrolled" do
+      # uncontrolled with value
+      assigns_unc = %Corex.ToggleGroup.Anatomy.Props{
+        id: "t1",
+        value: ["a", "b"],
+        controlled: false,
+        deselectable: true,
+        loopFocus: true,
+        rovingFocus: true,
+        disabled: false,
+        multiple: true,
+        orientation: "horizontal",
+        dir: "ltr",
+        on_value_change: nil,
+        on_value_change_client: nil
+      }
+
+      props_unc = Connect.props(assigns_unc)
+      assert props_unc["data-default-value"] == "a,b"
+      assert props_unc["data-value"] == nil
+      assert props_unc["data-deselectable"] == ""
+      assert props_unc["data-loop-focus"] == ""
+
+      # controlled with value
+      assigns_ctrl = %Corex.ToggleGroup.Anatomy.Props{
+        id: "t2",
+        value: ["c"],
+        controlled: true,
+        deselectable: false,
+        loopFocus: false,
+        rovingFocus: false,
+        disabled: true,
+        multiple: false,
+        orientation: "vertical",
+        dir: "rtl",
+        on_value_change: "vc",
+        on_value_change_client: "vcc"
+      }
+
+      props_ctrl = Connect.props(assigns_ctrl)
+      assert props_ctrl["data-default-value"] == nil
+      assert props_ctrl["data-value"] == "c"
+      assert props_ctrl["data-disabled"] == ""
+      assert props_ctrl["data-multiple"] == nil
+    end
+  end
+
+  describe "Connect.validate_value!/1" do
+    test "raises error on non-list" do
+      assert_raise ArgumentError, ~r/value must be a list of strings, got: "not a list"/, fn ->
+        Connect.validate_value!("not a list")
+      end
+    end
+
+    test "raises error on list with non-strings" do
+      assert_raise ArgumentError, ~r/value must be a list of strings, got: \["a", 1\]/, fn ->
+        Connect.validate_value!(["a", 1])
+      end
+    end
+  end
+
   describe "Connect.item/1" do
     test "returns item attributes when off" do
       assigns = %{

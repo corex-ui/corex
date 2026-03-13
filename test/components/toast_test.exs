@@ -37,6 +37,20 @@ defmodule Corex.ToastTest do
       assert %Phoenix.LiveView.Socket{} = result
     end
 
+    test "handles unknown types gracefully" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Corex.Toast.push_toast(socket, "layout-toast", "Title", "Desc", :unknown, 5000)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "accepts error and info types" do
+      socket = %Phoenix.LiveView.Socket{}
+      result1 = Corex.Toast.push_toast(socket, "layout-toast", "Error", "Desc", :error, 5000)
+      result2 = Corex.Toast.push_toast(socket, "layout-toast", "Info", "Desc", :info, 5000)
+      assert %Phoenix.LiveView.Socket{} = result1
+      assert %Phoenix.LiveView.Socket{} = result2
+    end
+
     test "accepts infinite duration" do
       socket = %Phoenix.LiveView.Socket{}
       result = Corex.Toast.push_toast(socket, "layout-toast", "Loading", nil, :loading, :infinity)
@@ -59,6 +73,19 @@ defmodule Corex.ToastTest do
 
       assert [_] = find_in_html(result, ~s([data-scope="toast"]))
     end
+
+    test "renders toast group with flash structs" do
+      result =
+        render_component(&Corex.Toast.toast_group/1,
+          id: "layout-toast",
+          flash: %{info: "Hello", error: "Oops"},
+          flash_info: %Corex.Flash.Info{title: "Info", type: :success, duration: 1000},
+          flash_error: %Corex.Flash.Error{title: "Alert", type: :error, duration: :infinity}
+        )
+
+      assert [_] = find_in_html(result, ~s([data-flash-info-duration="1000"]))
+      assert [_] = find_in_html(result, ~s([data-flash-error-duration="infinity"]))
+    end
   end
 
   describe "toast_client_error/1" do
@@ -71,6 +98,35 @@ defmodule Corex.ToastTest do
         )
 
       assert [_] = find_in_html(result, "[phx-disconnected]")
+    end
+
+    test "handles explicit types" do
+      result =
+        render_component(&Corex.Toast.toast_client_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :success
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_client_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :error
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_client_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
     end
   end
 
@@ -85,6 +141,35 @@ defmodule Corex.ToastTest do
 
       assert [_] = find_in_html(result, "[phx-disconnected]")
     end
+
+    test "handles explicit types" do
+      result =
+        render_component(&Corex.Toast.toast_server_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :success
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_server_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :info
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_server_error/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+    end
   end
 
   describe "toast_connected/1" do
@@ -98,6 +183,35 @@ defmodule Corex.ToastTest do
 
       assert [_] = find_in_html(result, "[phx-connected]")
     end
+
+    test "handles explicit types" do
+      result =
+        render_component(&Corex.Toast.toast_connected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :error
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_connected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :info
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_connected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+    end
   end
 
   describe "toast_disconnected/1" do
@@ -110,6 +224,35 @@ defmodule Corex.ToastTest do
         )
 
       assert [_] = find_in_html(result, "[phx-disconnected]")
+    end
+
+    test "handles explicit types" do
+      result =
+        render_component(&Corex.Toast.toast_disconnected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :success
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;success&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_disconnected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :error
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;error&quot;)
+
+      result =
+        render_component(&Corex.Toast.toast_disconnected/1,
+          toast_group_id: "layout-toast",
+          title: "Error",
+          type: :unknown_type
+        )
+
+      assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
     end
   end
 end

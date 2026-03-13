@@ -39,23 +39,24 @@ defmodule Corex.Switch do
 
   ### Controller
 
-  ```elixir
-  defmodule MyAppWeb.PageController do
-    use MyAppWeb, :controller
+  Build the form from an Ecto changeset:
 
-    def home(conn, params) do
-      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-      render(conn, :home, form: form)
-    end
+  ```elixir
+  def form_page(conn, _params) do
+    form =
+      %MyApp.Form.Preferences{}
+      |> MyApp.Form.Preferences.changeset(%{})
+      |> Phoenix.Component.to_form(as: :preferences, id: "preferences-form")
+    render(conn, :form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
-    <.switch field={f[:notifications_enabled]} class="switch">
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+    <.switch field={f[:notifications]} class="switch">
       <:label>Enable notifications</:label>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.switch>
@@ -65,33 +66,7 @@ defmodule Corex.Switch do
 
   ### Live View
 
-  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly.
-
-  ```elixir
-  defmodule MyAppWeb.SwitchLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      form = to_form(%{"notifications_enabled" => "false"}, as: :user)
-      {:ok, assign(socket, :form, form)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.form as={:user} for={@form} id={get_form_id(@form)}>
-        <.switch field={@form[:notifications_enabled]} class="switch">
-          <:label>Enable notifications</:label>
-          <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.switch>
-        <button type="submit">Submit</button>
-      </.form>
-      """
-    end
-  end
-  ```
+  When using Phoenix form in a Live view you must also add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 
@@ -138,7 +113,7 @@ defmodule Corex.Switch do
         <.switch field={@form[:notifications_enabled]} class="switch" controlled>
           <:label>Enable notifications</:label>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.switch>
@@ -255,6 +230,12 @@ defmodule Corex.Switch do
       "The direction of the switch. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["vertical", "horizontal"],
+    doc: "Layout orientation for CSS (vertical or horizontal)"
+  )
+
   attr(:read_only, :boolean,
     default: false,
     doc: "Whether the switch is read-only"
@@ -326,6 +307,7 @@ defmodule Corex.Switch do
     <div
       id={@id}
       phx-hook="Switch"
+      data-js="pending"
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -344,20 +326,20 @@ defmodule Corex.Switch do
         value: @value
       })}
     >
-      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
       <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
-        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked})}>
-          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked})}></span>
+      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}></span>
         </span>
-        <span
-          :if={@label}
-          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked})}
-        >
+        <span :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
           {render_slot(@label)}
         </span>
+        <span :if={@label == [] && @aria_label} class="sr-only" {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          {@aria_label}
+        </span>
       </label>
-      <div :if={@error} :for={msg <- @errors} data-scope="switch" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="switch" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -401,7 +383,7 @@ defmodule Corex.Switch do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) and
              is_boolean(checked) do
     LiveView.push_event(socket, "switch_set_checked", %{
-      switch_id: switch_id,
+      id: switch_id,
       checked: checked
     })
   end
@@ -437,7 +419,7 @@ defmodule Corex.Switch do
   def toggle_checked(socket, switch_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(switch_id) do
     LiveView.push_event(socket, "switch_toggle_checked", %{
-      switch_id: switch_id
+      id: switch_id
     })
   end
 end

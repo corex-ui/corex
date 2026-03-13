@@ -29,22 +29,21 @@ defmodule Corex.Form do
   ### Controller
 
   ```elixir
-  defmodule MyAppWeb.PageController do
-  use MyAppWeb, :controller
-
-  def home(conn, params) do
-    form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-    render(conn, :home, form: form)
-  end
+  def checkbox_form_page(conn, _params) do
+    form =
+      %MyApp.Form.Terms{}
+      |> MyApp.Form.Terms.changeset(%{})
+      |> Phoenix.Component.to_form(as: :terms, id: "checkbox-form")
+    render(conn, :checkbox_form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} method="get">
   <.checkbox field={f[:terms]} class="checkbox">
     <:label>I accept the terms</:label>
       <:error :let={msg}>
-    <.icon name="hero-exclamation-circle" class="icon" />
+    <.heroicon name="hero-exclamation-circle" class="icon" />
     {msg}
   </:error>
   </.checkbox>
@@ -54,34 +53,26 @@ defmodule Corex.Form do
 
   #### In a Live View
 
-
-  You must use the `Corex.Form.get_form_id/1` function to get the form id and pass it to the form component.
-
+  Use `Corex.Form.get_form_id/1` for the form `id`. For a form without Ecto validation you can build the form from a map:
 
   ```elixir
-  defmodule MyAppWeb.CheckboxLive do
-  use MyAppWeb, :live_view
-
   def mount(_params, _session, socket) do
-    form = to_form(%{"terms" => "false"}, as: :user)
-    {:ok, socket |> assign(:form, form)}
+    form = to_form(%{"terms" => "false"}, as: :terms)
+    {:ok, assign(socket, :form, form)}
   end
+  ```
 
-  def render(assigns) do
-    ~H"""
-    <.form as={:user} for={@form} id={get_form_id(@form)}>
+  ```heex
+  <.form for={@form} id={Corex.Form.get_form_id(@form)}>
     <.checkbox field={@form[:terms]} class="checkbox">
       <:label>I accept the terms</:label>
-        <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
+      <:error :let={msg}>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
     </.checkbox>
     <button type="submit">Submit</button>
   </.form>
-    """
-  end
-  end
   ```
 
   ### With Ecto changeset
@@ -90,63 +81,59 @@ defmodule Corex.Form do
 
   This allows the Live View to be the source of truth and the component to be in sync accordingly
 
-  First lets create an embededed schema and changeset
+  First create an embedded schema and changeset:
 
   ```elixir
-  defmodule MyApp.Account.User do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias MyApp.Account.User
+  defmodule MyApp.Form.Terms do
+    use Ecto.Schema
+    import Ecto.Changeset
 
-  embedded_schema do
-    field :term, :boolean, default: false
-  end
+    embedded_schema do
+      field :terms, :boolean, default: false
+    end
 
-
-  @doc false
-  def changeset(%User{} = user, attrs) do
-    user
-    |> cast(attrs, [:term])
-    |> validate_required([:term])
-    |> validate_acceptance(:terms)
-  end
+    def changeset(terms, attrs \\ %{}) do
+      terms
+      |> cast(attrs, [:terms])
+      |> validate_required([:terms])
+      |> validate_acceptance(:terms)
+    end
   end
   ```
 
   ```elixir
-  defmodule MyAppWeb.UserLive do
-  use MyAppWeb, :live_view
-  alias MyApp.Account.User
+  defmodule MyAppWeb.CheckboxFormLive do
+    use MyAppWeb, :live_view
+    alias MyApp.Form.Terms
+    alias Corex.Form
 
-  @impl true
+    def mount(_params, _session, socket) do
+      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms)
+      {:ok, assign(socket, :form, form)}
+    end
 
-  def mount(_params, _session, socket) do
-    {:ok,  assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
-  end
+    def handle_event("validate", %{"terms" => params}, socket) do
+      changeset = Terms.changeset(%Terms{}, params)
+      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms))}
+    end
 
-  @impl true
-  def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = User.changeset(%User{}, user_params)
-    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
-  end
-
-  @impl true
-  def render(assigns) do
-    ~H"""
-    <.form for={@form} id={get_form_id(@form)} phx-change="validate">
-      <.checkbox field={@form[:terms]} class="checkbox" controlled>
+    def render(assigns) do
+      ~H"""
+      <.form for={@form} id={Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+        <.checkbox field={@form[:terms]} class="checkbox" controlled>
         <:label>I accept the terms</:label>
         <:error :let={msg}>
-          <.icon name="hero-exclamation-circle" class="icon" />
+          <.heroicon name="hero-exclamation-circle" class="icon" />
           {msg}
         </:error>
-      </.checkbox>
-    </.form>
-    """
-  end
+        </.checkbox>
+      </.form>
+      """
+    end
   end
   ```
 
+  Other Corex form components (e.g. `Corex.Select`, `Corex.RadioGroup`, `Corex.Switch`) follow the same pattern: use `Corex.Form.get_form_id/1` on the form and pass `field={@form[:field_name]}` or `field={f[:field_name]}` with `:let={f}`.
   '''
 
   alias Ecto.Changeset
@@ -162,10 +149,10 @@ defmodule Corex.Form do
 
   ## Examples
 
-  #### In a Controller
+  When the form is built with `Phoenix.Component.to_form/2`, use the form assign:
 
   ```heex
-  <.form :let={f} for={@changeset} id={get_form_id(@changeset)}>
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)}>
     <.checkbox field={f[:terms]} class="checkbox">
       <:label>I accept the terms</:label>
     </.checkbox>
@@ -173,11 +160,11 @@ defmodule Corex.Form do
   </.form>
   ```
 
-  #### In a Live View
+  In a LiveView with controlled checkbox:
 
   ```heex
-  <.form for={@form} id={get_form_id(@form)}>
-    <.checkbox field={@form[:terms]} controlled class="checkbox">
+  <.form for={@form} id={Corex.Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+    <.checkbox field={@form[:terms]} class="checkbox" controlled>
       <:label>I accept the terms</:label>
     </.checkbox>
     <button type="submit">Submit</button>

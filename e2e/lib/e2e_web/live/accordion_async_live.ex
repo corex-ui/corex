@@ -47,10 +47,10 @@ defmodule E2eWeb.AccordionAsyncLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Accordion</h1>
-        <h2>Async</h2>
-      </div>
+      <.layout_heading>
+        <:title>Accordion</:title>
+        <:subtitle>Async</:subtitle>
+      </.layout_heading>
 
       <.async_result :let={accordion} assign={@accordion}>
         <:loading>

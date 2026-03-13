@@ -1,5 +1,6 @@
 defmodule Corex.ComboboxTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Combobox.Connect
 
@@ -23,14 +24,14 @@ defmodule Corex.ComboboxTest do
       assert html =~ ~r/X!/
     end
 
-    test "renders with clear_trigger and item_indicator slots" do
+    test "renders with clear_trigger and item_indicator slots - clear trigger hidden when input empty" do
       html =
         render_component(
           &CorexTest.ComponentHelpers.render_combobox_with_clear_and_indicator/1,
           []
         )
 
-      assert html =~ ~r/data-part="clear-trigger"/
+      refute html =~ ~r/data-part="clear-trigger"/
       assert html =~ ~r/data-part="item-indicator"/
     end
 
@@ -73,6 +74,93 @@ defmodule Corex.ComboboxTest do
 
       result = Connect.props(assigns)
       assert result["data-filter"] == nil
+    end
+
+    test "renders with field as string value matching label" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "France",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} collection={[%{id: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-default-value="fra"/
+    end
+
+    test "renders with field as string value without matching collection" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: "unknown_id",
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox field={@field} collection={[%{id: "fra", label: "France"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-default-value="unknown_id"/
+    end
+
+    test "renders with field as multiple values" do
+      form = %Phoenix.HTML.Form{id: "user", name: "user", data: %{}, params: %{}}
+
+      field = %Phoenix.HTML.FormField{
+        form: form,
+        field: :country,
+        id: "user_country",
+        name: "user[country]",
+        value: ["fra", "bel"],
+        errors: []
+      }
+
+      assigns = %{field: field}
+
+      html =
+        render_component(
+          fn _assigns ->
+            ~H"""
+            <Corex.Combobox.combobox multiple={true} field={@field} collection={[%{id: "fra", label: "France"}, %{id: "bel", label: "Belgium"}]}>
+              <:trigger>v</:trigger>
+            </Corex.Combobox.combobox>
+            """
+          end,
+          assigns
+        )
+
+      assert html =~ ~r/data-default-value="fra,bel"/
     end
   end
 

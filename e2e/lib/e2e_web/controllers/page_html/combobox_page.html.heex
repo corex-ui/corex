@@ -5,12 +5,12 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <div class="layout__row">
-    <h1>Combobox</h1>
-    <h2>Live View</h2>
-  </div>
+  <.layout_heading>
+    <:title>Combobox</:title>
+    <:subtitle>Live View</:subtitle>
+  </.layout_heading>
 
-  <h2>Minimal</h2>
+  <h3>Minimal</h3>
   <.combobox
     id="my-combobox"
     class="combobox"
@@ -27,11 +27,17 @@
   >
     <:empty>No results</:empty>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
+    <:clear_trigger>
+      <.heroicon name="hero-backspace" />
+    </:clear_trigger>
+    <:item_indicator>
+      <.heroicon name="hero-check" />
+    </:item_indicator>
   </.combobox>
 
-  <h2>Grouped</h2>
+  <h3>Grouped</h3>
   <.combobox
     class="combobox"
     placeholder="Select a country"
@@ -53,11 +59,11 @@
   >
     <:empty>No results</:empty>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.combobox>
 
-  <h2>Extended</h2>
+  <h3>Extended</h3>
   <.combobox
     class="combobox"
     placeholder="Select a country"
@@ -79,17 +85,17 @@
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:clear_trigger>
-      <.icon name="hero-backspace" />
+      <.heroicon name="hero-backspace" />
     </:clear_trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.combobox>
 
-  <h2>Extended Grouped</h2>
+  <h3>Extended Grouped</h3>
   <.combobox
     class="combobox"
     placeholder="Select a country"
@@ -108,13 +114,13 @@
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:clear_trigger>
-      <.icon name="hero-backspace" />
+      <.heroicon name="hero-backspace" />
     </:clear_trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.combobox>
 </Layouts.app>

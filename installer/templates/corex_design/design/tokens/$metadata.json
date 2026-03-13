@@ -1,0 +1,18 @@
+{
+  "tokenSetOrder": [
+    "semantic/color",
+    "semantic/dimension",
+    "semantic/border",
+    "semantic/text",
+    "semantic/font",
+    "semantic/effect",
+    "themes/neo/light",
+    "themes/neo/dark",
+    "themes/uno/light",
+    "themes/uno/dark",
+    "themes/duo/light",
+    "themes/duo/dark",
+    "themes/leo/light",
+    "themes/leo/dark"
+  ]
+}

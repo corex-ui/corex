@@ -9,6 +9,37 @@ defmodule Corex.CheckboxTest do
       html = render_component(&Checkbox.checkbox/1, checked: false, name: "cb")
       assert html =~ ~r/data-scope="checkbox"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/data-js="pending"/
+    end
+
+    test "renders with checked true has data-state checked on root and control" do
+      html = render_component(&Checkbox.checkbox/1, checked: true, name: "cb")
+      assert html =~ ~r/data-state="checked"/
+    end
+
+    test "renders controlled with checked true has data-checked and no data-default-checked" do
+      html = render_component(&Checkbox.checkbox/1, controlled: true, checked: true, name: "cb")
+      assert html =~ ~r/data-controlled/
+      assert html =~ ~r/data-checked/
+      refute html =~ ~r/data-default-checked/
+    end
+
+    test "renders uncontrolled with checked true has data-default-checked and no data-checked" do
+      html = render_component(&Checkbox.checkbox/1, controlled: false, checked: true, name: "cb")
+      assert html =~ ~r/data-default-checked/
+      refute html =~ ~r/data-checked/
+    end
+
+    test "renders with errors displays error container" do
+      html = render_component(&Checkbox.checkbox/1, name: "cb", errors: ["is required"])
+      assert html =~ ~r/data-part="error"/
+    end
+
+    test "renders with field from form has correct hidden input name and id" do
+      form = Phoenix.Component.to_form(%{"terms" => false}, as: :user)
+      html = render_component(&Checkbox.checkbox/1, field: form[:terms])
+      assert html =~ ~r/name="user\[terms\]"/
+      assert html =~ ~r/id="user_terms"/
     end
   end
 

@@ -132,9 +132,17 @@ defmodule Corex.Marquee do
 
   attr(:rest, :global)
 
-  slot(:item, required: true)
-  slot(:edge_start, required: false)
-  slot(:edge_end, required: false)
+  slot :item, required: true do
+    attr(:class, :string, required: false)
+  end
+
+  slot :edge_start, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :edge_end, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def marquee(assigns) do
     items = List.wrap(assigns.items)

@@ -1,19 +1,22 @@
 import {
-  ListCollection
-} from "./chunk-MWK4GDRX.mjs";
+  ListCollection,
+  createSelectedItemMap,
+  deriveSelectionState,
+  resolveSelectedItems
+} from "./chunk-WAY74VD3.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-QYWY7F3J.mjs";
+} from "./chunk-IMEAISCQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-CHUGBG5L.mjs";
-import "./chunk-DTH4G7GO.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
@@ -21,8 +24,6 @@ import {
   ariaAttr,
   clickIfLink,
   createAnatomy,
-  createProps,
-  createSplitProps,
   dataAttr,
   ensure,
   getBoolean,
@@ -47,9 +48,9 @@ import {
   scrollIntoView,
   setCaretToEnd,
   setup
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.34.1/node_modules/@zag-js/combobox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
   "root",
   "clearTrigger",
@@ -67,12 +68,16 @@ var anatomy = createAnatomy("combobox").parts(
   "trigger"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
 collection.empty = () => {
   return new ListCollection({ items: [] });
 };
+
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
@@ -107,6 +112,8 @@ var focusTriggerEl = (ctx) => {
   if (ctx.isActiveElement(triggerEl)) return;
   triggerEl?.focus({ preventScroll: true });
 };
+
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, state, send, scope, computed, event } = service;
   const translations = prop("translations");
@@ -124,10 +131,10 @@ function connect(service, normalize) {
     ...prop("positioning"),
     placement: context.get("currentPlacement")
   });
-  function getItemState(props2) {
-    const itemDisabled = collection2.getItemDisabled(props2.item);
-    const value = collection2.getItemValue(props2.item);
-    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props2.item)}`);
+  function getItemState(props) {
+    const itemDisabled = collection2.getItemDisabled(props.item);
+    const value = collection2.getItemValue(props.item);
+    ensure(value, () => `[zag-js] No value found for item ${JSON.stringify(props.item)}`);
     return {
       value,
       disabled: Boolean(disabled || itemDisabled),
@@ -144,7 +151,7 @@ function connect(service, normalize) {
     value: context.get("value"),
     valueAsString: computed("valueAsString"),
     hasSelectedItems: computed("hasSelectedItems"),
-    selectedItems: context.get("selectedItems"),
+    selectedItems: computed("selectedItems"),
     collection: prop("collection"),
     multiple: !!prop("multiple"),
     disabled: !!disabled,
@@ -330,25 +337,25 @@ function connect(service, normalize) {
         }
       });
     },
-    getTriggerProps(props2 = {}) {
+    getTriggerProps(props = {}) {
       return normalize.button({
         ...parts.trigger.attrs,
         dir: prop("dir"),
         id: getTriggerId(scope),
         "aria-haspopup": composite ? "listbox" : "dialog",
         type: "button",
-        tabIndex: props2.focusable ? void 0 : -1,
+        tabIndex: props.focusable ? void 0 : -1,
         "aria-label": translations.triggerLabel,
         "aria-expanded": open,
         "data-state": open ? "open" : "closed",
         "aria-controls": open ? getContentId(scope) : void 0,
         disabled,
         "data-invalid": dataAttr(invalid),
-        "data-focusable": dataAttr(props2.focusable),
+        "data-focusable": dataAttr(props.focusable),
         "data-readonly": dataAttr(readOnly),
         "data-disabled": dataAttr(disabled),
         onFocus() {
-          if (!props2.focusable) return;
+          if (!props.focusable) return;
           send({ type: "INPUT.FOCUS", src: "trigger" });
         },
         onClick(event2) {
@@ -438,8 +445,8 @@ function connect(service, normalize) {
       });
     },
     getItemState,
-    getItemProps(props2) {
-      const itemState = getItemState(props2);
+    getItemProps(props) {
+      const itemState = getItemState(props);
       const value = itemState.value;
       return normalize.element({
         ...parts.item.attrs,
@@ -459,7 +466,7 @@ function connect(service, normalize) {
           send({ type: "ITEM.POINTER_MOVE", value });
         },
         onPointerLeave() {
-          if (props2.persistFocus) return;
+          if (props.persistFocus) return;
           if (itemState.disabled) return;
           const prev = event.previous();
           const mouseMoved = prev?.type.includes("POINTER");
@@ -475,8 +482,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getItemTextProps(props2) {
-      const itemState = getItemState(props2);
+    getItemTextProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemText.attrs,
         dir: prop("dir"),
@@ -485,8 +492,8 @@ function connect(service, normalize) {
         "data-highlighted": dataAttr(itemState.highlighted)
       });
     },
-    getItemIndicatorProps(props2) {
-      const itemState = getItemState(props2);
+    getItemIndicatorProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         "aria-hidden": true,
         ...parts.itemIndicator.attrs,
@@ -495,8 +502,8 @@ function connect(service, normalize) {
         hidden: !itemState.selected
       });
     },
-    getItemGroupProps(props2) {
-      const { id } = props2;
+    getItemGroupProps(props) {
+      const { id } = props;
       return normalize.element({
         ...parts.itemGroup.attrs,
         dir: prop("dir"),
@@ -506,8 +513,8 @@ function connect(service, normalize) {
         role: "group"
       });
     },
-    getItemGroupLabelProps(props2) {
-      const { htmlFor } = props2;
+    getItemGroupLabelProps(props) {
+      const { htmlFor } = props;
       return normalize.element({
         ...parts.itemGroupLabel.attrs,
         dir: prop("dir"),
@@ -517,20 +524,22 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
 var { guards, createMachine, choose } = setup();
 var { and, not } = guards;
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       loopFocus: true,
       openOnClick: false,
       defaultValue: [],
       defaultInputValue: "",
-      closeOnSelect: !props2.multiple,
+      closeOnSelect: !props.multiple,
       allowCustomValue: false,
       alwaysSubmitOnEnter: false,
       inputBehavior: "none",
-      selectionBehavior: props2.multiple ? "clear" : "replace",
+      selectionBehavior: props.multiple ? "clear" : "replace",
       openOnKeyPress: true,
       openOnChange: true,
       composite: true,
@@ -538,24 +547,26 @@ var machine = createMachine({
         clickIfLink(node);
       },
       collection: collection.empty(),
-      ...props2,
+      ...props,
       positioning: {
         placement: "bottom",
         sameWidth: true,
-        ...props2.positioning
+        ...props.positioning
       },
       translations: {
         triggerLabel: "Toggle suggestions",
         clearTriggerLabel: "Clear value",
-        ...props2.translations
+        ...props.translations
       }
     };
   },
   initialState({ prop }) {
     const open = prop("open") || prop("defaultOpen");
-    return open ? "suggesting" : "idle";
+    return open ? "open.suggesting" : "closed.idle";
   },
   context({ prop, bindable, getContext, getEvent }) {
+    const initialValue = prop("value") ?? prop("defaultValue") ?? [];
+    const initialSelectedItems = prop("collection").findMany(initialValue);
     return {
       currentPlacement: bindable(() => ({
         defaultValue: void 0
@@ -569,15 +580,21 @@ var machine = createMachine({
         },
         onChange(value) {
           const context = getContext();
-          const prevSelectedItems = context.get("selectedItems");
           const collection2 = prop("collection");
-          const effectiveValue = prop("value") || value;
-          const nextItems = effectiveValue.map((v) => {
-            const item = prevSelectedItems.find((item2) => collection2.getItemValue(item2) === v);
-            return item || collection2.find(v);
+          const selectedItemMap = context.get("selectedItemMap");
+          const proposed = deriveSelectionState({
+            values: value,
+            collection: collection2,
+            selectedItemMap
           });
-          context.set("selectedItems", nextItems);
-          prop("onValueChange")?.({ value, items: nextItems });
+          const effectiveValue = prop("value") ?? value;
+          const effective = effectiveValue === value ? proposed : deriveSelectionState({
+            values: effectiveValue,
+            collection: collection2,
+            selectedItemMap: proposed.nextSelectedItemMap
+          });
+          context.set("selectedItemMap", effective.nextSelectedItemMap);
+          prop("onValueChange")?.({ value, items: proposed.selectedItems });
         }
       })),
       highlightedValue: bindable(() => ({
@@ -614,10 +631,13 @@ var machine = createMachine({
         const highlightedItem = prop("collection").find(highlightedValue);
         return { defaultValue: highlightedItem };
       }),
-      selectedItems: bindable(() => {
-        const value = prop("value") || prop("defaultValue") || [];
-        const selectedItems = prop("collection").findMany(value);
-        return { defaultValue: selectedItems };
+      selectedItemMap: bindable(() => {
+        return {
+          defaultValue: createSelectedItemMap({
+            selectedItems: initialSelectedItems,
+            collection: prop("collection")
+          })
+        };
       })
     };
   },
@@ -627,7 +647,12 @@ var machine = createMachine({
     autoComplete: ({ prop }) => prop("inputBehavior") === "autocomplete",
     autoHighlight: ({ prop }) => prop("inputBehavior") === "autohighlight",
     hasSelectedItems: ({ context }) => context.get("value").length > 0,
-    valueAsString: ({ context, prop }) => prop("collection").stringifyItems(context.get("selectedItems")),
+    selectedItems: ({ context, prop }) => resolveSelectedItems({
+      values: context.get("value"),
+      collection: prop("collection"),
+      selectedItemMap: context.get("selectedItemMap")
+    }),
+    valueAsString: ({ computed, prop }) => prop("collection").stringifyItems(computed("selectedItems")),
     isCustomValue: ({ context, computed }) => context.get("inputValue") !== computed("valueAsString")
   },
   watch({ context, prop, track, action, send }) {
@@ -680,167 +705,173 @@ var machine = createMachine({
     }
   ]),
   states: {
-    idle: {
-      tags: ["idle", "closed"],
-      entry: ["scrollContentToTop", "clearHighlightedValue"],
-      on: {
-        "CONTROLLED.OPEN": {
-          target: "interacting"
+    closed: {
+      tags: ["closed"],
+      initial: "idle",
+      states: {
+        idle: {
+          tags: ["idle"],
+          entry: ["scrollContentToTop", "clearHighlightedValue"],
+          on: {
+            "CONTROLLED.OPEN": {
+              target: "open.interacting"
+            },
+            "TRIGGER.CLICK": [
+              {
+                guard: "isOpenControlled",
+                actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+              }
+            ],
+            "INPUT.CLICK": [
+              {
+                guard: "isOpenControlled",
+                actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+              }
+            ],
+            "INPUT.FOCUS": {
+              target: "focused"
+            },
+            OPEN: [
+              {
+                guard: "isOpenControlled",
+                actions: ["invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["invokeOnOpen"]
+              }
+            ],
+            "VALUE.CLEAR": {
+              target: "focused",
+              actions: ["clearInputValue", "clearSelectedItems", "setInitialFocus"]
+            }
+          }
         },
-        "TRIGGER.CLICK": [
-          {
-            guard: "isOpenControlled",
-            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+        focused: {
+          tags: ["focused"],
+          entry: ["scrollContentToTop", "clearHighlightedValue"],
+          on: {
+            "CONTROLLED.OPEN": [
+              {
+                guard: "isChangeEvent",
+                target: "open.suggesting"
+              },
+              {
+                target: "open.interacting"
+              }
+            ],
+            "INPUT.CHANGE": [
+              {
+                guard: and("isOpenControlled", "openOnChange"),
+                actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+              },
+              {
+                guard: "openOnChange",
+                target: "open.suggesting",
+                actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
+              },
+              {
+                actions: ["setInputValue"]
+              }
+            ],
+            "LAYER.INTERACT_OUTSIDE": {
+              target: "idle"
+            },
+            "INPUT.ESCAPE": {
+              guard: and("isCustomValue", not("allowCustomValue")),
+              actions: ["revertInputValue"]
+            },
+            "INPUT.BLUR": {
+              target: "idle"
+            },
+            "INPUT.CLICK": [
+              {
+                guard: "isOpenControlled",
+                actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
+              }
+            ],
+            "TRIGGER.CLICK": [
+              {
+                guard: "isOpenControlled",
+                actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
+              }
+            ],
+            "INPUT.ARROW_DOWN": [
+              // == group 1 ==
+              {
+                guard: and("isOpenControlled", "autoComplete"),
+                actions: ["invokeOnOpen"]
+              },
+              {
+                guard: "autoComplete",
+                target: "open.interacting",
+                actions: ["invokeOnOpen"]
+              },
+              // == group 2 ==
+              {
+                guard: "isOpenControlled",
+                actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
+              }
+            ],
+            "INPUT.ARROW_UP": [
+              // == group 1 ==
+              {
+                guard: and("isOpenControlled", "autoComplete"),
+                actions: ["invokeOnOpen"]
+              },
+              {
+                guard: "autoComplete",
+                target: "open.interacting",
+                actions: ["invokeOnOpen"]
+              },
+              // == group 2 ==
+              {
+                guard: "isOpenControlled",
+                actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
+              }
+            ],
+            OPEN: [
+              {
+                guard: "isOpenControlled",
+                actions: ["invokeOnOpen"]
+              },
+              {
+                target: "open.interacting",
+                actions: ["invokeOnOpen"]
+              }
+            ],
+            "VALUE.CLEAR": {
+              actions: ["clearInputValue", "clearSelectedItems"]
+            }
           }
-        ],
-        "INPUT.CLICK": [
-          {
-            guard: "isOpenControlled",
-            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-          }
-        ],
-        "INPUT.FOCUS": {
-          target: "focused"
-        },
-        OPEN: [
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["invokeOnOpen"]
-          }
-        ],
-        "VALUE.CLEAR": {
-          target: "focused",
-          actions: ["clearInputValue", "clearSelectedItems", "setInitialFocus"]
         }
       }
     },
-    focused: {
-      tags: ["focused", "closed"],
-      entry: ["scrollContentToTop", "clearHighlightedValue"],
-      on: {
-        "CONTROLLED.OPEN": [
-          {
-            guard: "isChangeEvent",
-            target: "suggesting"
-          },
-          {
-            target: "interacting"
-          }
-        ],
-        "INPUT.CHANGE": [
-          {
-            guard: and("isOpenControlled", "openOnChange"),
-            actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
-          },
-          {
-            guard: "openOnChange",
-            target: "suggesting",
-            actions: ["setInputValue", "invokeOnOpen", "highlightFirstItemIfNeeded"]
-          },
-          {
-            actions: ["setInputValue"]
-          }
-        ],
-        "LAYER.INTERACT_OUTSIDE": {
-          target: "idle"
-        },
-        "INPUT.ESCAPE": {
-          guard: and("isCustomValue", not("allowCustomValue")),
-          actions: ["revertInputValue"]
-        },
-        "INPUT.BLUR": {
-          target: "idle"
-        },
-        "INPUT.CLICK": [
-          {
-            guard: "isOpenControlled",
-            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["highlightFirstSelectedItem", "invokeOnOpen"]
-          }
-        ],
-        "TRIGGER.CLICK": [
-          {
-            guard: "isOpenControlled",
-            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["setInitialFocus", "highlightFirstSelectedItem", "invokeOnOpen"]
-          }
-        ],
-        "INPUT.ARROW_DOWN": [
-          // == group 1 ==
-          {
-            guard: and("isOpenControlled", "autoComplete"),
-            actions: ["invokeOnOpen"]
-          },
-          {
-            guard: "autoComplete",
-            target: "interacting",
-            actions: ["invokeOnOpen"]
-          },
-          // == group 2 ==
-          {
-            guard: "isOpenControlled",
-            actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["highlightFirstOrSelectedItem", "invokeOnOpen"]
-          }
-        ],
-        "INPUT.ARROW_UP": [
-          // == group 1 ==
-          {
-            guard: and("isOpenControlled", "autoComplete"),
-            actions: ["invokeOnOpen"]
-          },
-          {
-            guard: "autoComplete",
-            target: "interacting",
-            actions: ["invokeOnOpen"]
-          },
-          // == group 2 ==
-          {
-            guard: "isOpenControlled",
-            actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["highlightLastOrSelectedItem", "invokeOnOpen"]
-          }
-        ],
-        OPEN: [
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
-          },
-          {
-            target: "interacting",
-            actions: ["invokeOnOpen"]
-          }
-        ],
-        "VALUE.CLEAR": {
-          actions: ["clearInputValue", "clearSelectedItems"]
-        }
-      }
-    },
-    interacting: {
+    open: {
       tags: ["open", "focused"],
       entry: ["setInitialFocus"],
       effects: ["trackFocusVisible", "scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
@@ -848,44 +879,11 @@ var machine = createMachine({
         "CONTROLLED.CLOSE": [
           {
             guard: "restoreFocus",
-            target: "focused",
+            target: "closed.focused",
             actions: ["setFinalFocus"]
           },
           {
-            target: "idle"
-          }
-        ],
-        CHILDREN_CHANGE: [
-          {
-            guard: "isHighlightedItemRemoved",
-            actions: ["clearHighlightedValue"]
-          },
-          {
-            actions: ["scrollToHighlightedItem"]
-          }
-        ],
-        "INPUT.HOME": {
-          actions: ["highlightFirstItem"]
-        },
-        "INPUT.END": {
-          actions: ["highlightLastItem"]
-        },
-        "INPUT.ARROW_DOWN": [
-          {
-            guard: and("autoComplete", "isLastItemHighlighted"),
-            actions: ["clearHighlightedValue", "scrollContentToTop"]
-          },
-          {
-            actions: ["highlightNextItem"]
-          }
-        ],
-        "INPUT.ARROW_UP": [
-          {
-            guard: and("autoComplete", "isFirstItemHighlighted"),
-            actions: ["clearHighlightedValue"]
-          },
-          {
-            actions: ["highlightPrevItem"]
+            target: "closed.idle"
           }
         ],
         "INPUT.ENTER": [
@@ -896,7 +894,7 @@ var machine = createMachine({
           },
           {
             guard: and("isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
-            target: "focused",
+            target: "closed.focused",
             actions: ["revertInputValue", "invokeOnClose"]
           },
           // == group 2 ==
@@ -906,30 +904,13 @@ var machine = createMachine({
           },
           {
             guard: "closeOnSelect",
-            target: "focused",
+            target: "closed.focused",
             actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
           },
           {
             actions: ["selectHighlightedItem"]
           }
         ],
-        "INPUT.CHANGE": [
-          {
-            guard: "autoComplete",
-            target: "suggesting",
-            actions: ["setInputValue"]
-          },
-          {
-            target: "suggesting",
-            actions: ["clearHighlightedValue", "setInputValue"]
-          }
-        ],
-        "ITEM.POINTER_MOVE": {
-          actions: ["setHighlightedValue"]
-        },
-        "ITEM.POINTER_LEAVE": {
-          actions: ["clearHighlightedValue"]
-        },
         "ITEM.CLICK": [
           {
             guard: and("isOpenControlled", "closeOnSelect"),
@@ -937,30 +918,11 @@ var machine = createMachine({
           },
           {
             guard: "closeOnSelect",
-            target: "focused",
+            target: "closed.focused",
             actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
           },
           {
             actions: ["selectItem"]
-          }
-        ],
-        "LAYER.ESCAPE": [
-          {
-            guard: and("isOpenControlled", "autoComplete"),
-            actions: ["syncInputValue", "invokeOnClose"]
-          },
-          {
-            guard: "autoComplete",
-            target: "focused",
-            actions: ["syncInputValue", "invokeOnClose"]
-          },
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "focused",
-            actions: ["invokeOnClose", "setFinalFocus"]
           }
         ],
         "TRIGGER.CLICK": [
@@ -969,7 +931,7 @@ var machine = createMachine({
             actions: ["invokeOnClose"]
           },
           {
-            target: "focused",
+            target: "closed.focused",
             actions: ["invokeOnClose"]
           }
         ],
@@ -981,7 +943,7 @@ var machine = createMachine({
           },
           {
             guard: and("isCustomValue", not("allowCustomValue")),
-            target: "idle",
+            target: "closed.idle",
             actions: ["revertInputValue", "invokeOnClose"]
           },
           // == group 2 ==
@@ -990,7 +952,7 @@ var machine = createMachine({
             actions: ["invokeOnClose"]
           },
           {
-            target: "idle",
+            target: "closed.idle",
             actions: ["invokeOnClose"]
           }
         ],
@@ -1000,7 +962,7 @@ var machine = createMachine({
             actions: ["invokeOnClose"]
           },
           {
-            target: "focused",
+            target: "closed.focused",
             actions: ["invokeOnClose", "setFinalFocus"]
           }
         ],
@@ -1010,167 +972,140 @@ var machine = createMachine({
             actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
           },
           {
-            target: "focused",
+            target: "closed.focused",
             actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
           }
         ]
-      }
-    },
-    suggesting: {
-      tags: ["open", "focused"],
-      effects: ["trackFocusVisible", "trackDismissableLayer", "scrollToHighlightedItem", "trackPlacement"],
-      entry: ["setInitialFocus"],
-      on: {
-        "CONTROLLED.CLOSE": [
-          {
-            guard: "restoreFocus",
-            target: "focused",
-            actions: ["setFinalFocus"]
-          },
-          {
-            target: "idle"
+      },
+      initial: "interacting",
+      states: {
+        interacting: {
+          on: {
+            CHILDREN_CHANGE: [
+              {
+                guard: "isHighlightedItemRemoved",
+                actions: ["clearHighlightedValue"]
+              },
+              {
+                actions: ["scrollToHighlightedItem"]
+              }
+            ],
+            "INPUT.HOME": {
+              actions: ["highlightFirstItem"]
+            },
+            "INPUT.END": {
+              actions: ["highlightLastItem"]
+            },
+            "INPUT.ARROW_DOWN": [
+              {
+                guard: and("autoComplete", "isLastItemHighlighted"),
+                actions: ["clearHighlightedValue", "scrollContentToTop"]
+              },
+              {
+                actions: ["highlightNextItem"]
+              }
+            ],
+            "INPUT.ARROW_UP": [
+              {
+                guard: and("autoComplete", "isFirstItemHighlighted"),
+                actions: ["clearHighlightedValue"]
+              },
+              {
+                actions: ["highlightPrevItem"]
+              }
+            ],
+            "INPUT.CHANGE": [
+              {
+                guard: "autoComplete",
+                target: "suggesting",
+                actions: ["setInputValue"]
+              },
+              {
+                target: "suggesting",
+                actions: ["clearHighlightedValue", "setInputValue"]
+              }
+            ],
+            "ITEM.POINTER_MOVE": {
+              actions: ["setHighlightedValue"]
+            },
+            "ITEM.POINTER_LEAVE": {
+              actions: ["clearHighlightedValue"]
+            },
+            "LAYER.ESCAPE": [
+              {
+                guard: and("isOpenControlled", "autoComplete"),
+                actions: ["syncInputValue", "invokeOnClose"]
+              },
+              {
+                guard: "autoComplete",
+                target: "closed.focused",
+                actions: ["syncInputValue", "invokeOnClose"]
+              },
+              {
+                guard: "isOpenControlled",
+                actions: ["invokeOnClose"]
+              },
+              {
+                target: "closed.focused",
+                actions: ["invokeOnClose", "setFinalFocus"]
+              }
+            ]
           }
-        ],
-        CHILDREN_CHANGE: [
-          {
-            guard: and("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
-            actions: ["clearHighlightedValue", "highlightFirstItem"]
-          },
-          {
-            guard: "isHighlightedItemRemoved",
-            actions: ["clearHighlightedValue"]
-          },
-          {
-            guard: "autoHighlight",
-            actions: ["highlightFirstItem"]
-          }
-        ],
-        "INPUT.ARROW_DOWN": {
-          target: "interacting",
-          actions: ["highlightNextItem"]
         },
-        "INPUT.ARROW_UP": {
-          target: "interacting",
-          actions: ["highlightPrevItem"]
-        },
-        "INPUT.HOME": {
-          target: "interacting",
-          actions: ["highlightFirstItem"]
-        },
-        "INPUT.END": {
-          target: "interacting",
-          actions: ["highlightLastItem"]
-        },
-        "INPUT.ENTER": [
-          // == group 1 ==
-          {
-            guard: and("isOpenControlled", "isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
-            actions: ["revertInputValue", "invokeOnClose"]
-          },
-          {
-            guard: and("isCustomValue", not("hasHighlightedItem"), not("allowCustomValue")),
-            target: "focused",
-            actions: ["revertInputValue", "invokeOnClose"]
-          },
-          // == group 2 ==
-          {
-            guard: and("isOpenControlled", "closeOnSelect"),
-            actions: ["selectHighlightedItem", "invokeOnClose"]
-          },
-          {
-            guard: "closeOnSelect",
-            target: "focused",
-            actions: ["selectHighlightedItem", "invokeOnClose", "setFinalFocus"]
-          },
-          {
-            actions: ["selectHighlightedItem"]
+        suggesting: {
+          on: {
+            CHILDREN_CHANGE: [
+              {
+                guard: and("isHighlightedItemRemoved", "hasCollectionItems", "autoHighlight"),
+                actions: ["clearHighlightedValue", "highlightFirstItem"]
+              },
+              {
+                guard: "isHighlightedItemRemoved",
+                actions: ["clearHighlightedValue"]
+              },
+              {
+                guard: "autoHighlight",
+                actions: ["highlightFirstItem"]
+              }
+            ],
+            "INPUT.ARROW_DOWN": {
+              target: "interacting",
+              actions: ["highlightNextItem"]
+            },
+            "INPUT.ARROW_UP": {
+              target: "interacting",
+              actions: ["highlightPrevItem"]
+            },
+            "INPUT.HOME": {
+              target: "interacting",
+              actions: ["highlightFirstItem"]
+            },
+            "INPUT.END": {
+              target: "interacting",
+              actions: ["highlightLastItem"]
+            },
+            "INPUT.CHANGE": {
+              actions: ["setInputValue"]
+            },
+            "LAYER.ESCAPE": [
+              {
+                guard: "isOpenControlled",
+                actions: ["invokeOnClose"]
+              },
+              {
+                target: "closed.focused",
+                actions: ["invokeOnClose"]
+              }
+            ],
+            "ITEM.POINTER_MOVE": {
+              target: "interacting",
+              actions: ["setHighlightedValue"]
+            },
+            "ITEM.POINTER_LEAVE": {
+              actions: ["clearHighlightedValue"]
+            }
           }
-        ],
-        "INPUT.CHANGE": {
-          actions: ["setInputValue"]
-        },
-        "LAYER.ESCAPE": [
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "focused",
-            actions: ["invokeOnClose"]
-          }
-        ],
-        "ITEM.POINTER_MOVE": {
-          target: "interacting",
-          actions: ["setHighlightedValue"]
-        },
-        "ITEM.POINTER_LEAVE": {
-          actions: ["clearHighlightedValue"]
-        },
-        "LAYER.INTERACT_OUTSIDE": [
-          // == group 1 ==
-          {
-            guard: and("isOpenControlled", "isCustomValue", not("allowCustomValue")),
-            actions: ["revertInputValue", "invokeOnClose"]
-          },
-          {
-            guard: and("isCustomValue", not("allowCustomValue")),
-            target: "idle",
-            actions: ["revertInputValue", "invokeOnClose"]
-          },
-          // == group 2 ==
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "idle",
-            actions: ["invokeOnClose"]
-          }
-        ],
-        "TRIGGER.CLICK": [
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "focused",
-            actions: ["invokeOnClose"]
-          }
-        ],
-        "ITEM.CLICK": [
-          {
-            guard: and("isOpenControlled", "closeOnSelect"),
-            actions: ["selectItem", "invokeOnClose"]
-          },
-          {
-            guard: "closeOnSelect",
-            target: "focused",
-            actions: ["selectItem", "invokeOnClose", "setFinalFocus"]
-          },
-          {
-            actions: ["selectItem"]
-          }
-        ],
-        CLOSE: [
-          {
-            guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
-          },
-          {
-            target: "focused",
-            actions: ["invokeOnClose", "setFinalFocus"]
-          }
-        ],
-        "VALUE.CLEAR": [
-          {
-            guard: "isOpenControlled",
-            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose"]
-          },
-          {
-            target: "focused",
-            actions: ["clearInputValue", "clearSelectedItems", "invokeOnClose", "setFinalFocus"]
-          }
-        ]
+        }
       }
     }
   },
@@ -1531,11 +1466,9 @@ var machine = createMachine({
           const { context, prop } = params;
           const collection2 = prop("collection");
           const value = context.get("value");
-          const selectedItems = value.map((v) => {
-            const item = context.get("selectedItems").find((item2) => collection2.getItemValue(item2) === v);
-            return item || collection2.find(v);
-          });
-          context.set("selectedItems", selectedItems);
+          const selectedItemMap = context.get("selectedItemMap");
+          const next = deriveSelectionState({ values: value, collection: collection2, selectedItemMap });
+          context.set("selectedItemMap", next.nextSelectedItemMap);
           const inputValue = match(prop("selectionBehavior"), {
             preserve: context.get("inputValue"),
             replace: collection2.stringifyMany(value),
@@ -1557,61 +1490,6 @@ var machine = createMachine({
 function getOpenChangeReason(event) {
   return (event.previousEvent || event).src;
 }
-var props = createProps()([
-  "allowCustomValue",
-  "autoFocus",
-  "closeOnSelect",
-  "collection",
-  "composite",
-  "defaultHighlightedValue",
-  "defaultInputValue",
-  "defaultOpen",
-  "defaultValue",
-  "dir",
-  "disabled",
-  "disableLayer",
-  "form",
-  "getRootNode",
-  "highlightedValue",
-  "id",
-  "ids",
-  "inputBehavior",
-  "inputValue",
-  "invalid",
-  "loopFocus",
-  "multiple",
-  "name",
-  "navigate",
-  "onFocusOutside",
-  "onHighlightChange",
-  "onInputValueChange",
-  "onInteractOutside",
-  "onOpenChange",
-  "onOpenChange",
-  "onPointerDownOutside",
-  "onSelect",
-  "onValueChange",
-  "open",
-  "openOnChange",
-  "openOnClick",
-  "openOnKeyPress",
-  "placeholder",
-  "positioning",
-  "readOnly",
-  "required",
-  "scrollToIndexFn",
-  "selectionBehavior",
-  "translations",
-  "value",
-  "alwaysSubmitOnEnter"
-]);
-var splitProps = createSplitProps(props);
-var itemGroupLabelProps = createProps()(["htmlFor"]);
-var splitItemGroupLabelProps = createSplitProps(itemGroupLabelProps);
-var itemGroupProps = createProps()(["id"]);
-var splitItemGroupProps = createSplitProps(itemGroupProps);
-var itemProps = createProps()(["item", "persistFocus"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/combobox.ts
 var Combobox = class extends Component {
@@ -1641,10 +1519,10 @@ var Combobox = class extends Component {
     });
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
+  initMachine(props) {
     const getCollection = () => this.getCollection();
     return new VanillaMachine(machine, {
-      ...props2,
+      ...props,
       get collection() {
         return getCollection();
       },
@@ -1652,13 +1530,13 @@ var Combobox = class extends Component {
         if (details.open) {
           this.options = this.allOptions;
         }
-        if (props2.onOpenChange) {
-          props2.onOpenChange(details);
+        if (props.onOpenChange) {
+          props.onOpenChange(details);
         }
       },
       onInputValueChange: (details) => {
-        if (props2.onInputValueChange) {
-          props2.onInputValueChange(details);
+        if (props.onInputValueChange) {
+          props.onInputValueChange(details);
         }
         if (this.el.hasAttribute("data-filter")) {
           const filtered = this.allOptions.filter(
@@ -1820,7 +1698,7 @@ var ComboboxHook = {
     const pushEvent = this.pushEvent.bind(this);
     const allItems = JSON.parse(el.dataset.collection || "[]");
     const hasGroups = allItems.some((item) => Boolean(item.group));
-    const props2 = {
+    const props = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
       disabled: getBoolean(el, "disabled"),
@@ -1929,7 +1807,7 @@ var ComboboxHook = {
         }
       }
     };
-    const combobox = new Combobox(el, props2);
+    const combobox = new Combobox(el, props);
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();

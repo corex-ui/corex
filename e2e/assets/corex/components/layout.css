@@ -8,8 +8,10 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    min-width: 0;
     color: var(--color-root--text);
     background: var(--color-root);
+    overflow-x: hidden;
     overflow-y: scroll;
 
     scrollbar-gutter: stable;
@@ -58,6 +60,7 @@
     display: flex;
     flex: 1;
     width: 100%;
+    min-width: 0;
     justify-content: flex-start;
     margin-inline: auto;
     background-color: var(--color-root);
@@ -107,6 +110,7 @@
     flex-direction: row;
     width: 100%;
     flex: 1;
+    min-width: 0;
     justify-content: flex-start;
     align-items: center;
   }
@@ -116,6 +120,7 @@
     flex-direction: column;
     width: 100%;
     flex: 1;
+    min-width: 0;
     justify-content: flex-start;
     align-items: center;
     padding: var(--spacing-ui-padding);
@@ -134,7 +139,7 @@
     margin-inline: auto;
     justify-items: center;
     align-items: center;
-    gap: var(--spacing-ui-gap);
+    gap: var(--spacing-ui);
     display: flex;
     flex-direction: column;
   }

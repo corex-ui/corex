@@ -5,8 +5,10 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Marquee</h1>
-  <h2>Controller View</h2>
+  <.layout_heading>
+    <:title>Marquee</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
   <h3>Client API</h3>
   <section class="layout__section">
     <div class="layout__row">
@@ -60,7 +62,7 @@
     pause_on_interaction
   >
     <:item :let={%{item: item}}>
-      <.icon name={item.icon} />
+      <.heroicon name={item.icon} />
       <span>{item.name}</span>
     </:item>
   </.marquee>

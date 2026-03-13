@@ -1,30 +1,31 @@
 import {
+  toPx
+} from "./chunk-MV633JPN.mjs";
+import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
+  getEventTarget,
   getString,
   isLeftClick,
   isSafari,
   normalizeProps,
   queryAll,
   resizeObserverBorderBox,
-  toPx,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.34.1/node_modules/@zag-js/radio-group/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
 var anatomy = createAnatomy("radio-group").parts(
   "root",
   "label",
@@ -34,6 +35,8 @@ var anatomy = createAnatomy("radio-group").parts(
   "indicator"
 );
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `radio-group:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `radio-group:${ctx.id}:label`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `radio-group:${ctx.id}:radio:${value}`;
@@ -61,25 +64,27 @@ var getOffsetRect = (el) => ({
   width: el?.offsetWidth ?? 0,
   height: el?.offsetHeight ?? 0
 });
+
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, computed, prop, scope } = service;
   const groupDisabled = computed("isDisabled");
   const groupInvalid = prop("invalid");
   const readOnly = prop("readOnly");
-  function getItemState(props2) {
+  function getItemState(props) {
     return {
-      value: props2.value,
-      invalid: !!props2.invalid || !!groupInvalid,
-      disabled: !!props2.disabled || groupDisabled,
-      checked: context.get("value") === props2.value,
-      focused: context.get("focusedValue") === props2.value,
-      focusVisible: context.get("focusVisibleValue") === props2.value,
-      hovered: context.get("hoveredValue") === props2.value,
-      active: context.get("activeValue") === props2.value
+      value: props.value,
+      invalid: !!props.invalid || !!groupInvalid,
+      disabled: !!props.disabled || groupDisabled,
+      checked: context.get("value") === props.value,
+      focused: context.get("focusedValue") === props.value,
+      focusVisible: context.get("focusVisibleValue") === props.value,
+      hovered: context.get("hoveredValue") === props.value,
+      active: context.get("activeValue") === props.value
     };
   }
-  function getItemDataAttrs(props2) {
-    const itemState = getItemState(props2);
+  function getItemDataAttrs(props) {
+    const itemState = getItemState(props);
     return {
       "data-focus": dataAttr(itemState.focused),
       "data-focus-visible": dataAttr(itemState.focusVisible),
@@ -138,18 +143,18 @@ function connect(service, normalize) {
       });
     },
     getItemState,
-    getItemProps(props2) {
-      const itemState = getItemState(props2);
+    getItemProps(props) {
+      const itemState = getItemState(props);
       return normalize.label({
         ...parts.item.attrs,
         dir: prop("dir"),
-        id: getItemId(scope, props2.value),
-        htmlFor: getItemHiddenInputId(scope, props2.value),
-        ...getItemDataAttrs(props2),
+        id: getItemId(scope, props.value),
+        htmlFor: getItemHiddenInputId(scope, props.value),
+        ...getItemDataAttrs(props),
         onPointerMove() {
           if (itemState.disabled) return;
           if (itemState.hovered) return;
-          send({ type: "SET_HOVERED", value: props2.value, hovered: true });
+          send({ type: "SET_HOVERED", value: props.value, hovered: true });
         },
         onPointerLeave() {
           if (itemState.disabled) return;
@@ -161,7 +166,7 @@ function connect(service, normalize) {
           if (itemState.focused && event.pointerType === "mouse") {
             event.preventDefault();
           }
-          send({ type: "SET_ACTIVE", value: props2.value, active: true });
+          send({ type: "SET_ACTIVE", value: props.value, active: true });
         },
         onPointerUp() {
           if (itemState.disabled) return;
@@ -169,39 +174,39 @@ function connect(service, normalize) {
         },
         onClick() {
           if (!itemState.disabled && isSafari()) {
-            getItemHiddenInputEl(scope, props2.value)?.focus();
+            getItemHiddenInputEl(scope, props.value)?.focus();
           }
         }
       });
     },
-    getItemTextProps(props2) {
+    getItemTextProps(props) {
       return normalize.element({
         ...parts.itemText.attrs,
         dir: prop("dir"),
-        id: getItemLabelId(scope, props2.value),
-        ...getItemDataAttrs(props2)
+        id: getItemLabelId(scope, props.value),
+        ...getItemDataAttrs(props)
       });
     },
-    getItemControlProps(props2) {
-      const itemState = getItemState(props2);
+    getItemControlProps(props) {
+      const itemState = getItemState(props);
       return normalize.element({
         ...parts.itemControl.attrs,
         dir: prop("dir"),
-        id: getItemControlId(scope, props2.value),
+        id: getItemControlId(scope, props.value),
         "data-active": dataAttr(itemState.active),
         "aria-hidden": true,
-        ...getItemDataAttrs(props2)
+        ...getItemDataAttrs(props)
       });
     },
-    getItemHiddenInputProps(props2) {
-      const itemState = getItemState(props2);
+    getItemHiddenInputProps(props) {
+      const itemState = getItemState(props);
       return normalize.input({
         "data-ownedby": getRootId(scope),
-        id: getItemHiddenInputId(scope, props2.value),
+        id: getItemHiddenInputId(scope, props.value),
         type: "radio",
         name: prop("name") || prop("id"),
         form: prop("form"),
-        value: props2.value,
+        value: props.value,
         required: prop("required"),
         "aria-invalid": itemState.invalid || void 0,
         onClick(event) {
@@ -210,7 +215,7 @@ function connect(service, normalize) {
             return;
           }
           if (event.currentTarget.checked) {
-            send({ type: "SET_VALUE", value: props2.value, isTrusted: true });
+            send({ type: "SET_VALUE", value: props.value, isTrusted: true });
           }
         },
         onBlur() {
@@ -218,12 +223,12 @@ function connect(service, normalize) {
         },
         onFocus() {
           const focusVisible = isFocusVisible();
-          send({ type: "SET_FOCUSED", value: props2.value, focused: true, focusVisible });
+          send({ type: "SET_FOCUSED", value: props.value, focused: true, focusVisible });
         },
         onKeyDown(event) {
           if (event.defaultPrevented) return;
           if (event.key === " ") {
-            send({ type: "SET_ACTIVE", value: props2.value, active: true });
+            send({ type: "SET_ACTIVE", value: props.value, active: true });
           }
         },
         onKeyUp(event) {
@@ -239,14 +244,18 @@ function connect(service, normalize) {
     },
     getIndicatorProps() {
       const rect = context.get("indicatorRect");
-      const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+      const animateIndicator = context.get("animateIndicator");
       return normalize.element({
         id: getIndicatorId(scope),
         ...parts.indicator.attrs,
         dir: prop("dir"),
-        hidden: context.get("value") == null || rectIsEmpty,
+        hidden: context.get("value") == null || isRectEmpty(rect),
         "data-disabled": dataAttr(groupDisabled),
         "data-orientation": prop("orientation"),
+        onTransitionEnd(event) {
+          if (getEventTarget(event) !== event.currentTarget) return;
+          send({ type: "INDICATOR_TRANSITION_END" });
+        },
         style: {
           "--transition-property": "left, top, width, height",
           "--left": toPx(rect?.x),
@@ -254,9 +263,9 @@ function connect(service, normalize) {
           "--width": toPx(rect?.width),
           "--height": toPx(rect?.height),
           position: "absolute",
-          willChange: "var(--transition-property)",
-          transitionProperty: "var(--transition-property)",
-          transitionDuration: "var(--transition-duration, 150ms)",
+          willChange: animateIndicator ? "var(--transition-property)" : "auto",
+          transitionProperty: animateIndicator ? "var(--transition-property)" : "none",
+          transitionDuration: animateIndicator ? "var(--transition-duration, 150ms)" : "0ms",
           transitionTimingFunction: "var(--transition-timing-function)",
           [prop("orientation") === "horizontal" ? "left" : "top"]: prop("orientation") === "horizontal" ? "var(--left)" : "var(--top)"
         }
@@ -264,12 +273,15 @@ function connect(service, normalize) {
     }
   };
 }
+var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       orientation: "vertical",
-      ...props2
+      ...props
     };
   },
   initialState() {
@@ -299,6 +311,9 @@ var machine = createMachine({
       indicatorRect: bindable(() => ({
         defaultValue: null
       })),
+      animateIndicator: bindable(() => ({
+        defaultValue: false
+      })),
       fieldsetDisabled: bindable(() => ({
         defaultValue: false
       })),
@@ -310,18 +325,19 @@ var machine = createMachine({
   refs() {
     return {
       indicatorCleanup: null,
-      focusVisibleValue: null
+      focusVisibleValue: null,
+      prevValue: null
     };
   },
   computed: {
     isDisabled: ({ prop, context }) => !!prop("disabled") || context.get("fieldsetDisabled")
   },
-  entry: ["syncIndicatorRect", "syncSsr"],
+  entry: ["syncPrevValue", "syncIndicatorRect", "syncSsr"],
   exit: ["cleanupObserver"],
   effects: ["trackFormControlState", "trackFocusVisible"],
   watch({ track, action, context }) {
     track([() => context.get("value")], () => {
-      action(["syncIndicatorRect", "syncInputElements"]);
+      action(["syncIndicatorAnimation", "syncIndicatorRect", "syncInputElements"]);
     });
   },
   on: {
@@ -342,6 +358,9 @@ var machine = createMachine({
     },
     SET_FOCUSED: {
       actions: ["setFocused"]
+    },
+    INDICATOR_TRANSITION_END: {
+      actions: ["clearIndicatorAnimation"]
     }
   },
   states: {
@@ -380,6 +399,19 @@ var machine = createMachine({
         context.set("focusedValue", event.value);
         const focusVisibleValue = event.value != null && event.focusVisible ? event.value : null;
         context.set("focusVisibleValue", focusVisibleValue);
+      },
+      syncPrevValue({ context, refs }) {
+        refs.set("prevValue", context.get("value"));
+      },
+      syncIndicatorAnimation({ context, refs }) {
+        const prevValue = refs.get("prevValue");
+        const nextValue = context.get("value");
+        const animate = prevValue != null && nextValue != null && prevValue !== nextValue;
+        context.set("animateIndicator", animate);
+        refs.set("prevValue", nextValue);
+      },
+      clearIndicatorAnimation({ context }) {
+        context.set("animateIndicator", false);
       },
       syncInputElements({ context, scope }) {
         const inputs = getInputEls(scope);
@@ -420,31 +452,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "name",
-  "onValueChange",
-  "orientation",
-  "readOnly",
-  "required",
-  "value",
-  "defaultValue"
-]);
-var splitProps = createSplitProps(props);
-var itemProps = createProps()(["value", "disabled", "invalid"]);
-var splitItemProps = createSplitProps(itemProps);
 
 // components/radio-group.ts
 var RadioGroup = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

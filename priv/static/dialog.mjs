@@ -1,15 +1,13 @@
 import {
   trackDismissableElement
-} from "./chunk-CHUGBG5L.mjs";
-import "./chunk-DTH4G7GO.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
   createAnatomy,
   createMachine,
-  createProps,
-  createSplitProps,
   findControlledElements,
   getActiveElement,
   getBoolean,
@@ -33,9 +31,130 @@ import {
   raf,
   setStyle,
   setStyleProperty
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+aria-hidden@1.34.1/node_modules/@zag-js/aria-hidden/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
+var anatomy = createAnatomy("dialog").parts(
+  "trigger",
+  "backdrop",
+  "positioner",
+  "content",
+  "title",
+  "description",
+  "closeTrigger"
+);
+var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.dom.mjs
+var getPositionerId = (ctx) => ctx.ids?.positioner ?? `dialog:${ctx.id}:positioner`;
+var getBackdropId = (ctx) => ctx.ids?.backdrop ?? `dialog:${ctx.id}:backdrop`;
+var getContentId = (ctx) => ctx.ids?.content ?? `dialog:${ctx.id}:content`;
+var getTriggerId = (ctx) => ctx.ids?.trigger ?? `dialog:${ctx.id}:trigger`;
+var getTitleId = (ctx) => ctx.ids?.title ?? `dialog:${ctx.id}:title`;
+var getDescriptionId = (ctx) => ctx.ids?.description ?? `dialog:${ctx.id}:description`;
+var getCloseTriggerId = (ctx) => ctx.ids?.closeTrigger ?? `dialog:${ctx.id}:close`;
+var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
+var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
+var getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
+var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
+var getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
+var getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
+var getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.connect.mjs
+function connect(service, normalize) {
+  const { state, send, context, prop, scope } = service;
+  const ariaLabel = prop("aria-label");
+  const open = state.matches("open");
+  return {
+    open,
+    setOpen(nextOpen) {
+      const open2 = state.matches("open");
+      if (open2 === nextOpen) return;
+      send({ type: nextOpen ? "OPEN" : "CLOSE" });
+    },
+    getTriggerProps() {
+      return normalize.button({
+        ...parts.trigger.attrs,
+        dir: prop("dir"),
+        id: getTriggerId(scope),
+        "aria-haspopup": "dialog",
+        type: "button",
+        "aria-expanded": open,
+        "data-state": open ? "open" : "closed",
+        "aria-controls": getContentId(scope),
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          send({ type: "TOGGLE" });
+        }
+      });
+    },
+    getBackdropProps() {
+      return normalize.element({
+        ...parts.backdrop.attrs,
+        dir: prop("dir"),
+        hidden: !open,
+        id: getBackdropId(scope),
+        "data-state": open ? "open" : "closed"
+      });
+    },
+    getPositionerProps() {
+      return normalize.element({
+        ...parts.positioner.attrs,
+        dir: prop("dir"),
+        id: getPositionerId(scope),
+        style: {
+          pointerEvents: open ? void 0 : "none"
+        }
+      });
+    },
+    getContentProps() {
+      const rendered = context.get("rendered");
+      return normalize.element({
+        ...parts.content.attrs,
+        dir: prop("dir"),
+        role: prop("role"),
+        hidden: !open,
+        id: getContentId(scope),
+        tabIndex: -1,
+        "data-state": open ? "open" : "closed",
+        "aria-modal": true,
+        "aria-label": ariaLabel || void 0,
+        "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
+        "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
+      });
+    },
+    getTitleProps() {
+      return normalize.element({
+        ...parts.title.attrs,
+        dir: prop("dir"),
+        id: getTitleId(scope)
+      });
+    },
+    getDescriptionProps() {
+      return normalize.element({
+        ...parts.description.attrs,
+        dir: prop("dir"),
+        id: getDescriptionId(scope)
+      });
+    },
+    getCloseTriggerProps() {
+      return normalize.button({
+        ...parts.closeTrigger.attrs,
+        dir: prop("dir"),
+        id: getCloseTriggerId(scope),
+        type: "button",
+        onClick(event) {
+          if (event.defaultPrevented) return;
+          event.stopPropagation();
+          send({ type: "CLOSE" });
+        }
+      });
+    }
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.36.0/node_modules/@zag-js/aria-hidden/dist/walk-tree-outside.mjs
 var counterMap = /* @__PURE__ */ new WeakMap();
 var uncontrolledNodes = /* @__PURE__ */ new WeakMap();
 var markerMap = {};
@@ -57,8 +176,8 @@ var isIgnoredNode = (node) => {
   if (node.hasAttribute("aria-live")) return true;
   return node.matches("[data-live-announcer]");
 };
-var walkTreeOutside = (originalTarget, props2) => {
-  const { parentNode, markerName, controlAttribute, followControlledElements = true } = props2;
+var walkTreeOutside = (originalTarget, props) => {
+  const { parentNode, markerName, controlAttribute, explicitBooleanValue, followControlledElements = true } = props;
   const targets = correctTargets(parentNode, Array.isArray(originalTarget) ? originalTarget : [originalTarget]);
   markerMap[markerName] || (markerMap[markerName] = /* @__PURE__ */ new WeakMap());
   const markerCounter = markerMap[markerName];
@@ -89,7 +208,7 @@ var walkTreeOutside = (originalTarget, props2) => {
         try {
           if (isIgnoredNode(node)) return;
           const attr = node.getAttribute(controlAttribute);
-          const alreadyHidden = attr === "true";
+          const alreadyHidden = explicitBooleanValue ? attr === "true" : attr !== null && attr !== "false";
           const counterValue = (counterMap.get(node) || 0) + 1;
           const markerValue = (markerCounter.get(node) || 0) + 1;
           counterMap.set(node, counterValue);
@@ -102,7 +221,7 @@ var walkTreeOutside = (originalTarget, props2) => {
             node.setAttribute(markerName, "");
           }
           if (!alreadyHidden) {
-            node.setAttribute(controlAttribute, "true");
+            node.setAttribute(controlAttribute, explicitBooleanValue ? "true" : "");
           }
         } catch (e) {
           console.error("[zag-js > ariaHidden] cannot operate on ", node, e);
@@ -138,6 +257,8 @@ var walkTreeOutside = (originalTarget, props2) => {
     }
   };
 };
+
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.36.0/node_modules/@zag-js/aria-hidden/dist/aria-hidden.mjs
 var getParentNode = (originalTarget) => {
   const target = Array.isArray(originalTarget) ? originalTarget[0] : originalTarget;
   return target.ownerDocument.body;
@@ -148,9 +269,12 @@ var hideOthers = (originalTarget, parentNode = getParentNode(originalTarget), ma
     parentNode,
     markerName,
     controlAttribute: "aria-hidden",
+    explicitBooleanValue: true,
     followControlledElements
   });
 };
+
+// ../node_modules/.pnpm/@zag-js+aria-hidden@1.36.0/node_modules/@zag-js/aria-hidden/dist/index.mjs
 var raf2 = (fn) => {
   const frameId = requestAnimationFrame(() => fn());
   return () => cancelAnimationFrame(frameId);
@@ -172,10 +296,12 @@ function ariaHidden(targetsOrFn, options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+focus-trap@1.34.1/node_modules/@zag-js/focus-trap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.36.0/node_modules/@zag-js/focus-trap/dist/chunk-QZ7TP4HQ.mjs
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.36.0/node_modules/@zag-js/focus-trap/dist/focus-trap.mjs
 var activeFocusTraps = {
   activateTrap(trapStack, trap) {
     if (trapStack.length > 0) {
@@ -736,7 +862,7 @@ var FocusTrap = class {
     return this;
   }
 };
-var isKeyboardEvent = (event) => event.type === "keydown";
+var isKeyboardEvent = (event) => event?.type === "keydown";
 var isTabEvent = (event) => isKeyboardEvent(event) && event?.key === "Tab";
 var isKeyForward = (e) => isKeyboardEvent(e) && e.key === "Tab" && !e?.shiftKey;
 var isKeyBackward = (e) => isKeyboardEvent(e) && e.key === "Tab" && e?.shiftKey;
@@ -744,6 +870,8 @@ var valueOrHandler = (value, ...params) => typeof value === "function" ? value(.
 var isEscapeEvent = (event) => !event.isComposing && event.key === "Escape";
 var delay = (fn) => setTimeout(fn, 0);
 var isSelectableInput = (node) => node.localName === "input" && "select" in node && typeof node.select === "function";
+
+// ../node_modules/.pnpm/@zag-js+focus-trap@1.36.0/node_modules/@zag-js/focus-trap/dist/index.mjs
 function trapFocus(el, options = {}) {
   let trap;
   const cleanup = raf(() => {
@@ -772,7 +900,7 @@ function trapFocus(el, options = {}) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+remove-scroll@1.34.1/node_modules/@zag-js/remove-scroll/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+remove-scroll@1.36.0/node_modules/@zag-js/remove-scroll/dist/index.mjs
 var LOCK_CLASSNAME = "data-scroll-lock";
 function getPaddingProperty(documentElement) {
   const documentLeft = documentElement.getBoundingClientRect().left;
@@ -831,127 +959,12 @@ function preventBodyScroll(_document) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+dialog@1.34.1/node_modules/@zag-js/dialog/dist/index.mjs
-var anatomy = createAnatomy("dialog").parts(
-  "trigger",
-  "backdrop",
-  "positioner",
-  "content",
-  "title",
-  "description",
-  "closeTrigger"
-);
-var parts = anatomy.build();
-var getPositionerId = (ctx) => ctx.ids?.positioner ?? `dialog:${ctx.id}:positioner`;
-var getBackdropId = (ctx) => ctx.ids?.backdrop ?? `dialog:${ctx.id}:backdrop`;
-var getContentId = (ctx) => ctx.ids?.content ?? `dialog:${ctx.id}:content`;
-var getTriggerId = (ctx) => ctx.ids?.trigger ?? `dialog:${ctx.id}:trigger`;
-var getTitleId = (ctx) => ctx.ids?.title ?? `dialog:${ctx.id}:title`;
-var getDescriptionId = (ctx) => ctx.ids?.description ?? `dialog:${ctx.id}:description`;
-var getCloseTriggerId = (ctx) => ctx.ids?.closeTrigger ?? `dialog:${ctx.id}:close`;
-var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
-var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
-var getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
-var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
-var getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
-var getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
-var getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
-function connect(service, normalize) {
-  const { state, send, context, prop, scope } = service;
-  const ariaLabel = prop("aria-label");
-  const open = state.matches("open");
-  return {
-    open,
-    setOpen(nextOpen) {
-      const open2 = state.matches("open");
-      if (open2 === nextOpen) return;
-      send({ type: nextOpen ? "OPEN" : "CLOSE" });
-    },
-    getTriggerProps() {
-      return normalize.button({
-        ...parts.trigger.attrs,
-        dir: prop("dir"),
-        id: getTriggerId(scope),
-        "aria-haspopup": "dialog",
-        type: "button",
-        "aria-expanded": open,
-        "data-state": open ? "open" : "closed",
-        "aria-controls": getContentId(scope),
-        onClick(event) {
-          if (event.defaultPrevented) return;
-          send({ type: "TOGGLE" });
-        }
-      });
-    },
-    getBackdropProps() {
-      return normalize.element({
-        ...parts.backdrop.attrs,
-        dir: prop("dir"),
-        hidden: !open,
-        id: getBackdropId(scope),
-        "data-state": open ? "open" : "closed"
-      });
-    },
-    getPositionerProps() {
-      return normalize.element({
-        ...parts.positioner.attrs,
-        dir: prop("dir"),
-        id: getPositionerId(scope),
-        style: {
-          pointerEvents: open ? void 0 : "none"
-        }
-      });
-    },
-    getContentProps() {
-      const rendered = context.get("rendered");
-      return normalize.element({
-        ...parts.content.attrs,
-        dir: prop("dir"),
-        role: prop("role"),
-        hidden: !open,
-        id: getContentId(scope),
-        tabIndex: -1,
-        "data-state": open ? "open" : "closed",
-        "aria-modal": true,
-        "aria-label": ariaLabel || void 0,
-        "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
-        "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
-      });
-    },
-    getTitleProps() {
-      return normalize.element({
-        ...parts.title.attrs,
-        dir: prop("dir"),
-        id: getTitleId(scope)
-      });
-    },
-    getDescriptionProps() {
-      return normalize.element({
-        ...parts.description.attrs,
-        dir: prop("dir"),
-        id: getDescriptionId(scope)
-      });
-    },
-    getCloseTriggerProps() {
-      return normalize.button({
-        ...parts.closeTrigger.attrs,
-        dir: prop("dir"),
-        id: getCloseTriggerId(scope),
-        type: "button",
-        onClick(event) {
-          if (event.defaultPrevented) return;
-          event.stopPropagation();
-          send({ type: "CLOSE" });
-        }
-      });
-    }
-  };
-}
+// ../node_modules/.pnpm/@zag-js+dialog@1.36.0/node_modules/@zag-js/dialog/dist/dialog.machine.mjs
 var machine = createMachine({
-  props({ props: props2, scope }) {
-    const alertDialog = props2.role === "alertdialog";
+  props({ props, scope }) {
+    const alertDialog = props.role === "alertdialog";
     const initialFocusEl = alertDialog ? () => getCloseTriggerEl(scope) : void 0;
-    const modal = typeof props2.modal === "boolean" ? props2.modal : true;
+    const modal = typeof props.modal === "boolean" ? props.modal : true;
     return {
       role: "dialog",
       modal,
@@ -961,7 +974,7 @@ var machine = createMachine({
       closeOnEscape: true,
       restoreFocus: true,
       initialFocusEl,
-      ...props2
+      ...props
     };
   },
   initialState({ prop }) {
@@ -1128,40 +1141,12 @@ var machine = createMachine({
     }
   }
 });
-var props = createProps()([
-  "aria-label",
-  "closeOnEscape",
-  "closeOnInteractOutside",
-  "dir",
-  "finalFocusEl",
-  "getRootNode",
-  "getRootNode",
-  "id",
-  "id",
-  "ids",
-  "initialFocusEl",
-  "modal",
-  "onEscapeKeyDown",
-  "onFocusOutside",
-  "onInteractOutside",
-  "onOpenChange",
-  "onPointerDownOutside",
-  "onRequestDismiss",
-  "defaultOpen",
-  "open",
-  "persistentElements",
-  "preventScroll",
-  "restoreFocus",
-  "role",
-  "trapFocus"
-]);
-var splitProps = createSplitProps(props);
 
 // components/dialog.ts
 var Dialog = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

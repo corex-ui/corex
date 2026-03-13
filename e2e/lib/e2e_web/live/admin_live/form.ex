@@ -14,10 +14,15 @@ defmodule E2eWeb.AdminLive.Form do
       locale={@locale}
       current_path={@current_path}
     >
-      <.header>
-        {@page_title}
+      <.layout_heading>
+        <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage admin records in your database.</:subtitle>
-      </.header>
+        <:actions>
+          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">
+            <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+          </.navigate>
+        </:actions>
+      </.layout_heading>
 
       <.form
         for={@form}
@@ -25,14 +30,19 @@ defmodule E2eWeb.AdminLive.Form do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
+        <.native_input field={@form[:name]} type="text" class="native-input">
+          <:label>Name</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.native_input>
 
         <.select
           class="select"
           field={@form[:country]}
-          controlled
-          placeholder_text="Select a country"
-          collection={[
+          translation={%Corex.Select.Translation{placeholder: gettext("Select a country")}}
+          items={[
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
             %{label: "Germany", id: "deu"}
@@ -42,10 +52,10 @@ defmodule E2eWeb.AdminLive.Form do
             Your country of residence
           </:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.select>
@@ -53,26 +63,26 @@ defmodule E2eWeb.AdminLive.Form do
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Select a date</:label>
           <:trigger>
-            <.icon name="hero-calendar" class="icon" />
+            <.heroicon name="hero-calendar" class="icon" />
           </:trigger>
           <:prev_trigger>
-            <.icon name="hero-chevron-left" class="icon" />
+            <.heroicon name="hero-chevron-left" class="icon" />
           </:prev_trigger>
           <:next_trigger>
-            <.icon name="hero-chevron-right" class="icon" />
+            <.heroicon name="hero-chevron-right" class="icon" />
           </:next_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.date_picker>
         <.signature_pad field={@form[:signature]} class="signature-pad">
           <:label>Sign here</:label>
           <:clear_trigger>
-            <.icon name="hero-x-mark" />
+            <.heroicon name="hero-x-mark" />
           </:clear_trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.signature_pad>
@@ -80,18 +90,22 @@ defmodule E2eWeb.AdminLive.Form do
           <:label>
             Accept the terms
           </:label>
-          <:control>
-            <.icon name="hero-check" class="data-checked" />
-          </:control>
+          <:indicator>
+            <.heroicon name="hero-check" class="data-checked" />
+          </:indicator>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.checkbox>
 
         <footer class="flex w-full justify-between gap-ui-gap">
-          <.button navigate={return_path(@return_to, @admin, @locale)} class="button">Cancel</.button>
-          <.button phx-disable-with="Saving..." class="button button--accent ">Save Admin</.button>
+          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">
+            Cancel
+          </.navigate>
+          <.action phx-disable-with="Saving..." type="submit" class="button button--accent">
+            Save Admin
+          </.action>
         </footer>
       </.form>
     </Layouts.app>

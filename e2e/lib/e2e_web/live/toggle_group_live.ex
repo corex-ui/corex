@@ -18,45 +18,47 @@ defmodule E2eWeb.ToggleGroupLive do
       locale={@locale}
       current_path={@current_path}
     >
+      <.layout_heading>
+        <:title>Toggle Group</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
+
+      <h3>Client Api</h3>
       <div class="layout__row">
-        <h1>Toggle Group</h1>
-        <h2>Live View</h2>
-      </div>
-      <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem"])}
           class="button button--sm"
         >
           Set Lorem
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ToggleGroup.set_value("my-toggle-group", ["lorem", "donec"])}
           class="button button--sm"
         >
           Set Lorem and Donec
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.ToggleGroup.set_value("my-toggle-group", [])}
           class="button button--sm"
         >
           Set no items
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="lorem" class="button button--sm">
+        <.action phx-click="set_value" value="lorem" class="button button--sm">
           Set Lorem
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value="lorem,donec"
           class="button button--sm"
         >
           Set Lorem and Donec
-        </button>
-        <button phx-click="set_value" value={nil} class="button button--sm">
+        </.action>
+        <.action phx-click="set_value" class="button button--sm">
           Set no items
-        </button>
+        </.action>
       </div>
       <.toggle_group id="my-toggle-group" class="toggle-group">
         <:item value="lorem">

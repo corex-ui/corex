@@ -3,7 +3,7 @@ defmodule CorexWeb.Clipboard do
   use E2eWeb.LiveCapture
 
   alias Corex.Clipboard
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   capture variants: [
             basic: %{
@@ -13,12 +13,12 @@ defmodule CorexWeb.Clipboard do
               trigger: [
                 %{
                   inner_block:
-                    ~s(<.icon name="hero-clipboard" class="icon data-copy" /><.icon name="hero-check" class="icon data-copied" />)
+                    ~s(<.heroicon name="hero-clipboard" class="icon data-copy" /><.heroicon name="hero-check" class="icon data-copied" />)
                 }
               ]
             }
           ]
 
   defdelegate clipboard(assigns), to: Clipboard
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

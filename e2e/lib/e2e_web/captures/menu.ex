@@ -4,7 +4,7 @@ defmodule CorexWeb.Menu do
 
   alias Corex.Menu
   alias Corex.Tree.Item
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   @items [
     %Item{id: "edit", label: "Edit"},
@@ -17,7 +17,7 @@ defmodule CorexWeb.Menu do
               class: "menu",
               items: @items,
               trigger: [%{inner_block: "Actions"}],
-              indicator: [%{inner_block: ~s(<.icon name="hero-chevron-down" />)}]
+              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-down" />)}]
             },
             nested: %{
               class: "menu",
@@ -39,5 +39,5 @@ defmodule CorexWeb.Menu do
           ]
 
   defdelegate menu(assigns), to: Menu
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

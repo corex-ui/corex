@@ -33,8 +33,13 @@ corex-*.tar
 
 /.expert/
 
-/installer/
+/installer/_build/
+/installer/assets/
+/installer/deps/
+/installer/doc/
+/installer/phx_new-*.ez
+/installer/tmp/
+/installer/cover/
 
-/integration_test/
-
-/my_app/
+/integration_test/_build/
+/integration_test/deps/

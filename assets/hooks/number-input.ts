@@ -2,7 +2,7 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { NumberInput } from "../components/number-input";
 import type { Props, ValueChangeDetails } from "@zag-js/number-input";
-import { getString, getBoolean, getNumber } from "../lib/util";
+import { getString, getBoolean, getNumber, canPushEvent } from "../lib/util";
 
 type NumberInputHookState = {
   numberInput?: NumberInput;
@@ -31,16 +31,16 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       onValueChange: (details: ValueChangeDetails) => {
-        const inputEl = el.querySelector<HTMLInputElement>(
-          '[data-scope="number-input"][data-part="input"]'
-        );
-        if (inputEl) {
-          inputEl.value = details.value;
-          inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-          inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+        if (details.value !== undefined) {
+          const valueInput = el.querySelector<HTMLInputElement>(
+            '[data-scope="number-input"][data-part="value-input"]'
+          );
+          if (valueInput) {
+            valueInput.value = details.value ?? "";
+          }
         }
         const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           this.pushEvent(eventName, {
             value: details.value,
             valueAsNumber: details.valueAsNumber,
@@ -66,9 +66,13 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & NumberInputHookState) {
     const valueStr = getString(this.el, "value");
     const controlled = getBoolean(this.el, "controlled");
+    const defaultValueStr = getString(this.el, "defaultValue");
+
     this.numberInput?.updateProps({
       id: this.el.id,
-      ...(controlled && valueStr !== undefined ? { value: valueStr } : {}),
+      ...(controlled && valueStr !== undefined
+        ? { value: valueStr }
+        : { defaultValue: defaultValueStr }),
       min: getNumber(this.el, "min"),
       max: getNumber(this.el, "max"),
       step: getNumber(this.el, "step"),

@@ -6,12 +6,10 @@ defmodule Corex.Combobox do
 
   ### Minimal
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.combobox
         class="combobox"
-        placeholder="Select a country"
+        translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         collection={[
           %{label: "France", id: "fra", disabled: true},
           %{label: "Belgium", id: "bel"},
@@ -21,9 +19,8 @@ defmodule Corex.Combobox do
           %{label: "Austria", id: "aut"}
         ]}
       >
-        <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.combobox>
   ```
@@ -33,7 +30,7 @@ defmodule Corex.Combobox do
   ```heex
   <.combobox
         class="combobox"
-        placeholder="Select a country"
+        translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         collection={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
@@ -50,9 +47,8 @@ defmodule Corex.Combobox do
           %{label: "Mexico", id: "mex", group: "North America"}
         ]}
       >
-        <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.combobox>
   ```
@@ -61,12 +57,10 @@ defmodule Corex.Combobox do
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
     <.combobox
         class="combobox"
-        placeholder="Select a country"
+        translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         collection={[
           %{label: "France", id: "fra"},
           %{label: "Belgium", id: "bel"},
@@ -76,19 +70,18 @@ defmodule Corex.Combobox do
           %{label: "Austria", id: "aut"}
         ]}
       >
-        <:empty>No results</:empty>
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
   ```
@@ -97,12 +90,10 @@ defmodule Corex.Combobox do
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.combobox
         class="combobox"
-        placeholder="Select a country"
+        translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
         collection={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
@@ -112,22 +103,25 @@ defmodule Corex.Combobox do
           %{label: "South Korea", id: "kor", group: "Asia"}
         ]}
       >
-        <:empty>No results</:empty>
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
   ```
+
+  ## Phoenix Form Integration
+
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. In Live view add controlled mode and use the same changeset pattern. See the Select or NumberInput component docs for the full Controller and Live View examples.
 
   ### Server-side Filtering
 
@@ -171,8 +165,7 @@ defmodule Corex.Combobox do
         filter={false}
         on_input_value_change="search"
       >
-        <:empty>No results</:empty>
-        <:trigger><.icon name="hero-chevron-down" /></:trigger>
+        <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
       </.combobox>
       """
     end
@@ -215,7 +208,7 @@ defmodule Corex.Combobox do
   <.combobox class="combobox combobox--accent combobox--lg" collection={[]}>
     <:empty>No results</:empty>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.combobox>
   ```
@@ -223,8 +216,21 @@ defmodule Corex.Combobox do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/combobox#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for Combobox component strings.
+
+    Without gettext: `translation={%Combobox.Translation{ placeholder: "Select...", empty: "No results" }}`
+
+    With gettext: `translation={%Combobox.Translation{ placeholder: gettext("Select..."), empty: gettext("No results") }}`
+    """
+    defstruct [:placeholder, :empty]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
   alias Corex.Combobox.Anatomy.{Content, Control, Input, Label, Positioner, Props, Root}
   alias Corex.Combobox.Connect
 
@@ -259,7 +265,10 @@ defmodule Corex.Combobox do
   attr(:open, :boolean, default: false, doc: "Whether the combobox is open")
   attr(:value, :list, default: [], doc: "The value of the combobox")
 
-  attr(:placeholder, :string, default: nil, doc: "The placeholder of the combobox")
+  attr(:translation, Corex.Combobox.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
 
   attr(:always_submit_on_enter, :boolean,
     default: false,
@@ -309,20 +318,37 @@ defmodule Corex.Combobox do
 
   attr(:rest, :global)
 
-  slot(:label, required: false, doc: "The label content")
-  slot(:empty, required: true, doc: "Content to display when there are no results")
-  slot(:trigger, required: true, doc: "The trigger button content")
-  slot(:clear_trigger, required: false, doc: "The clear button content")
-  slot(:item_indicator, required: false, doc: "Optional indicator for selected items")
+  slot :label, required: false, doc: "The label content" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :empty,
+    required: false,
+    doc: "Content when there are no results. When omitted, translation.empty is used" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :trigger, required: true, doc: "The trigger button content" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :clear_trigger, required: false, doc: "The clear button content" do
+    attr(:class, :string, required: false)
+  end
+
+  slot :item_indicator, required: false, doc: "Optional indicator for selected items" do
+    attr(:class, :string, required: false)
+  end
 
   slot :error, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot(:item,
+  slot :item,
     required: false,
-    doc: "Custom content for each item. Receives the item as :let binding"
-  )
+    doc: "Custom content for each item. Receives the item as :let binding" do
+    attr(:class, :string, required: false)
+  end
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
@@ -352,11 +378,23 @@ defmodule Corex.Combobox do
   end
 
   def combobox(assigns) do
+    default_translation = %Translation{
+      placeholder: gettext("Select an option"),
+      empty: gettext("No results")
+    }
+
+    translation = assigns[:translation] || default_translation
+    placeholder = translation.placeholder
+    empty_text = translation.empty
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "combobox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign(:translation, translation)
+      |> assign(:placeholder, placeholder)
+      |> assign(:empty_text, empty_text)
 
     value = Map.get(assigns, :value, [])
     value_list = get_value(value)
@@ -396,7 +434,7 @@ defmodule Corex.Combobox do
         </div>
         <div phx-update="ignore" {Connect.control(%Control{id: @id, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
           <input {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
-          <button :if={!Enum.empty?(@clear_trigger)} data-scope="combobox" data-part="clear-trigger">
+          <button :if={!Enum.empty?(@clear_trigger) and !Enum.empty?(@value)} data-scope="combobox" data-part="clear-trigger">
             {render_slot(@clear_trigger)}
           </button>
           <button data-scope="combobox" data-part="trigger">
@@ -414,7 +452,11 @@ defmodule Corex.Combobox do
       </div>
       <div style="display: none;" data-templates="combobox">
         <li data-scope="combobox" data-part="empty" data-template="true">
-          {render_slot(@empty)}
+          <%= if Enum.empty?(@empty) do %>
+            {@empty_text}
+          <% else %>
+            {render_slot(@empty)}
+          <% end %>
         </li>
         <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"} data-template="true">
           <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>

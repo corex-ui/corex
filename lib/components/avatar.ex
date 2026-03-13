@@ -65,7 +65,9 @@ defmodule Corex.Avatar do
 
   attr(:rest, :global)
 
-  slot(:fallback, required: true)
+  slot :fallback, required: true do
+    attr(:class, :string, required: false)
+  end
 
   def avatar(assigns) do
     assigns =

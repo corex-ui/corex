@@ -1,22 +1,26 @@
 import {
+  memo
+} from "./chunk-BYLQVWJG.mjs";
+import {
+  clampValue,
+  isValueWithinRange
+} from "./chunk-MV633JPN.mjs";
+import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-QYWY7F3J.mjs";
+} from "./chunk-IMEAISCQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-CHUGBG5L.mjs";
-import "./chunk-DTH4G7GO.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   Component,
   VanillaMachine,
   ariaAttr,
   chunk,
-  clampValue,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   disableTextSelection,
   getBoolean,
@@ -26,23 +30,50 @@ import {
   getString,
   getStringList,
   isComposingEvent,
-  isValueWithinRange,
   match,
-  memo,
   normalizeProps,
   query,
   queryAll,
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/utils.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
+var anatomy = createAnatomy("date-picker").parts(
+  "clearTrigger",
+  "content",
+  "control",
+  "input",
+  "label",
+  "monthSelect",
+  "nextTrigger",
+  "positioner",
+  "presetTrigger",
+  "prevTrigger",
+  "rangeText",
+  "root",
+  "table",
+  "tableBody",
+  "tableCell",
+  "tableCellTrigger",
+  "tableHead",
+  "tableHeader",
+  "tableRow",
+  "trigger",
+  "view",
+  "viewControl",
+  "viewTrigger",
+  "yearSelect"
+);
+var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/utils.mjs
 function $2b4dce13dd5a17fa$export$842a2cf37af977e1(amount, numerator) {
   return amount - numerator * Math.floor(amount / numerator);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/GregorianCalendar.mjs
 var $3b62074eb05584b2$var$EPOCH = 1721426;
 function $3b62074eb05584b2$export$f297eb839006d339(era, year, month, day) {
   year = $3b62074eb05584b2$export$c36e0ecb2d4fa69d(era, year);
@@ -163,7 +194,7 @@ var $3b62074eb05584b2$export$80ee6245ec4f29ec = class {
   }
 };
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/weekStartData.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/weekStartData.mjs
 var $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
   "001": 1,
   AD: 1,
@@ -262,7 +293,7 @@ var $2fe286d2fb449abb$export$7a5acbd77d414bd9 = {
   XK: 1
 };
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/queries.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/queries.mjs
 function $14e0f24ef4ac5c92$export$ea39ec197993aef0(a, b) {
   b = (0, $11d87f3f76e88657$export$b4a036af3fc0b032)(b, a.calendar);
   return a.era === b.era && a.year === b.year && a.month === b.month && a.day === b.day;
@@ -328,9 +359,13 @@ function $14e0f24ef4ac5c92$var$timeToMs(a) {
   return a.hour * 36e5 + a.minute * 6e4 + a.second * 1e3 + a.millisecond;
 }
 var $14e0f24ef4ac5c92$var$localTimeZone = null;
+var $14e0f24ef4ac5c92$var$localTimeZoneOverride = false;
 function $14e0f24ef4ac5c92$export$aa8b41735afcabd2() {
   if ($14e0f24ef4ac5c92$var$localTimeZone == null) $14e0f24ef4ac5c92$var$localTimeZone = new Intl.DateTimeFormat().resolvedOptions().timeZone;
   return $14e0f24ef4ac5c92$var$localTimeZone;
+}
+function $14e0f24ef4ac5c92$export$6ab69b273755230b() {
+  return $14e0f24ef4ac5c92$var$localTimeZoneOverride;
 }
 function $14e0f24ef4ac5c92$export$a5a3b454ada2268e(date) {
   return date.subtract({
@@ -518,7 +553,7 @@ function $14e0f24ef4ac5c92$export$618d60ea299da42(date, locale) {
   return dayOfWeek === start || dayOfWeek === end;
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/conversion.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/conversion.mjs
 function $11d87f3f76e88657$export$bd4fb2bc8bb06fb(date) {
   date = $11d87f3f76e88657$export$b4a036af3fc0b032(date, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
   let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(date.era, date.year);
@@ -532,7 +567,7 @@ function $11d87f3f76e88657$var$epochFromParts(year, month, day, hour, minute, se
 }
 function $11d87f3f76e88657$export$59c99f3515d3493f(ms, timeZone) {
   if (timeZone === "UTC") return 0;
-  if (ms > 0 && timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)()) return new Date(ms).getTimezoneOffset() * -6e4;
+  if (ms > 0 && timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && !(0, $14e0f24ef4ac5c92$export$6ab69b273755230b)()) return new Date(ms).getTimezoneOffset() * -6e4;
   let { year, month, day, hour, minute, second } = $11d87f3f76e88657$var$getTimeZoneParts(ms, timeZone);
   let utc = $11d87f3f76e88657$var$epochFromParts(year, month, day, hour, minute, second, 0);
   return utc - Math.floor(ms / 1e3) * 1e3;
@@ -584,7 +619,7 @@ function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
 function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
   let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
   if (timeZone === "UTC") return $11d87f3f76e88657$export$bd4fb2bc8bb06fb(dateTime);
-  if (timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && disambiguation === "compatible") {
+  if (timeZone === (0, $14e0f24ef4ac5c92$export$aa8b41735afcabd2)() && disambiguation === "compatible" && !(0, $14e0f24ef4ac5c92$export$6ab69b273755230b)()) {
     dateTime = $11d87f3f76e88657$export$b4a036af3fc0b032(dateTime, new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)());
     let date2 = /* @__PURE__ */ new Date();
     let year = (0, $3b62074eb05584b2$export$c36e0ecb2d4fa69d)(dateTime.era, dateTime.year);
@@ -672,7 +707,7 @@ function $11d87f3f76e88657$export$538b00033cc11c75(date, timeZone) {
   return $11d87f3f76e88657$export$b4a036af3fc0b032($11d87f3f76e88657$export$1b96692a1ba042ac(ms, timeZone), date.calendar);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/manipulation.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/manipulation.mjs
 var $735220c2d4774dd3$var$ONE_HOUR = 36e5;
 function $735220c2d4774dd3$export$e16d8520af44a096(date, duration) {
   let mutableDate = date.copy();
@@ -957,7 +992,7 @@ function $735220c2d4774dd3$export$31b5430eb18be4f8(dateTime, fields, disambiguat
   return (0, $11d87f3f76e88657$export$b4a036af3fc0b032)((0, $11d87f3f76e88657$export$1b96692a1ba042ac)(ms, dateTime.timeZone), dateTime.calendar);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/string.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/string.mjs
 var $fae977aafc393c5c$var$DATE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})$/;
 var $fae977aafc393c5c$var$ABSOLUTE_RE = /^([+-]\d{6}|\d{4})-(\d{2})-(\d{2})(?:T(\d{2}))?(?::(\d{2}))?(?::(\d{2}))?(\.\d+)?(?:(?:([+-]\d{2})(?::?(\d{2}))?)|Z)$/;
 var $fae977aafc393c5c$var$requiredDurationTimeGroups = [
@@ -1014,20 +1049,20 @@ function $fae977aafc393c5c$export$bf79f1ebf4b18792(date) {
   return `${$fae977aafc393c5c$export$4223de14708adc63(date)}${$fae977aafc393c5c$var$offsetToString(date.offset)}[${date.timeZone}]`;
 }
 
-// ../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_check_private_redeclaration.js
+// ../node_modules/.pnpm/@swc+helpers@0.5.19/node_modules/@swc/helpers/esm/_check_private_redeclaration.js
 function _check_private_redeclaration(obj, privateCollection) {
   if (privateCollection.has(obj)) {
     throw new TypeError("Cannot initialize the same private elements twice on an object");
   }
 }
 
-// ../node_modules/.pnpm/@swc+helpers@0.5.18/node_modules/@swc/helpers/esm/_class_private_field_init.js
+// ../node_modules/.pnpm/@swc+helpers@0.5.19/node_modules/@swc/helpers/esm/_class_private_field_init.js
 function _class_private_field_init(obj, privateMap, value) {
   _check_private_redeclaration(obj, privateMap);
   privateMap.set(obj, value);
 }
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/CalendarDate.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/CalendarDate.mjs
 function $35ea8db9cb2ccb90$var$shiftArgs(args) {
   let calendar = typeof args[0] === "object" ? args.shift() : new (0, $3b62074eb05584b2$export$80ee6245ec4f29ec)();
   let era;
@@ -1230,7 +1265,7 @@ var $35ea8db9cb2ccb90$export$d3b7288e7994edea = class _$35ea8db9cb2ccb90$export$
   }
 };
 
-// ../node_modules/.pnpm/@internationalized+date@3.11.0/node_modules/@internationalized/date/dist/DateFormatter.mjs
+// ../node_modules/.pnpm/@internationalized+date@3.12.0/node_modules/@internationalized/date/dist/DateFormatter.mjs
 var $fb18d541ea1ad717$var$formatterCache = /* @__PURE__ */ new Map();
 var $fb18d541ea1ad717$export$ad991b66133851cf = class {
   /** Formats a date as a string according to the locale and format options passed to the constructor. */
@@ -1344,7 +1379,7 @@ function $fb18d541ea1ad717$var$getResolvedHourCycle(locale, options) {
   throw new Error("Unexpected hour cycle result");
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.34.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-utils/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/constrain.mjs
 function alignCenter(date, duration, locale, min, max) {
   const halfDuration = {};
   for (let prop in duration) {
@@ -1416,6 +1451,8 @@ function constrainValue(date, minValue, maxValue) {
   }
   return constrainedDateOnly;
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/align.mjs
 function alignDate(date, alignment, duration, locale, min, max) {
   switch (alignment) {
     case "start":
@@ -1427,6 +1464,8 @@ function alignDate(date, alignment, duration, locale, min, max) {
       return alignCenter(date, duration, locale, min, max);
   }
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/assertion.mjs
 function isDateEqual(dateA, dateB) {
   if (dateA == null || dateB == null) return dateA === dateB;
   return $14e0f24ef4ac5c92$export$ea39ec197993aef0(dateA, dateB);
@@ -1447,6 +1486,8 @@ function isNextRangeInvalid(endDate, minValue, maxValue) {
   const nextDate = endDate.add({ days: 1 });
   return $14e0f24ef4ac5c92$export$ea39ec197993aef0(nextDate, endDate) || isDateOutsideRange(nextDate, minValue, maxValue);
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/duration.mjs
 function getUnitDuration(duration) {
   let clone = { ...duration };
   for (let key in clone) clone[key] = 1;
@@ -1458,30 +1499,42 @@ function getEndDate(startDate, duration) {
   else clone.days = -1;
   return startDate.add(clone);
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
 function getEraFormat(date) {
-  return date?.calendar.identifier === "gregory" && date.era === "BC" ? "short" : void 0;
+  if (!date) return void 0;
+  const id = date.calendar.identifier;
+  if (id === "gregory" || id === "iso8601") {
+    return date.era === "BC" ? "short" : void 0;
+  }
+  return "short";
 }
-function getDayFormatter(locale, timeZone) {
-  const date = $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/formatter.mjs
+function getDayFormatter(locale, timeZone, referenceDate) {
+  const date = referenceDate ?? $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
   return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
     weekday: "long",
     month: "long",
     year: "numeric",
     day: "numeric",
     era: getEraFormat(date),
+    calendar: date.calendar.identifier,
     timeZone
   });
 }
-function getMonthFormatter(locale, timeZone) {
-  const date = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone);
+function getMonthFormatter(locale, timeZone, referenceDate) {
+  const date = referenceDate ?? $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone);
   return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
     month: "long",
     year: "numeric",
     era: getEraFormat(date),
-    calendar: date?.calendar.identifier,
+    calendar: date.calendar.identifier,
     timeZone
   });
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/format.mjs
 function formatRange(startDate, endDate, formatter, toString, timeZone) {
   let parts2 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
   let separatorIndex = -1;
@@ -1514,6 +1567,8 @@ function formatSelectedDate(startDate, endDate, locale, timeZone) {
   }
   return formatRange(start, end, formatter, (start2, end2) => `${start2} \u2013 ${end2}`, timeZone);
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-month.mjs
 var daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 function normalizeFirstDayOfWeek(firstDayOfWeek) {
   return firstDayOfWeek != null ? daysOfTheWeek[firstDayOfWeek] : void 0;
@@ -1560,12 +1615,25 @@ function getWeekDays(date, startOfWeekProp, timeZone, locale) {
   const format = getWeekdayFormats(locale, timeZone);
   return weeks.map((index) => format(firstDayOfWeek.add({ days: index })));
 }
-function getMonthNames(locale, format = "long") {
-  const date = new Date(2021, 0, 1);
+function getMonthNames(locale, format = "long", referenceDate) {
+  if (!referenceDate || referenceDate.calendar.identifier === "gregory" || referenceDate.calendar.identifier === "iso8601") {
+    const date = new Date(2021, 0, 1);
+    const monthNames2 = [];
+    for (let i = 0; i < 12; i++) {
+      monthNames2.push(date.toLocaleString(locale, { month: format }));
+      date.setMonth(date.getMonth() + 1);
+    }
+    return monthNames2;
+  }
+  const monthCount = referenceDate.calendar.getMonthsInYear(referenceDate);
+  const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+    month: format,
+    calendar: referenceDate.calendar.identifier
+  });
   const monthNames = [];
-  for (let i = 0; i < 12; i++) {
-    monthNames.push(date.toLocaleString(locale, { month: format }));
-    date.setMonth(date.getMonth() + 1);
+  for (let month = 1; month <= monthCount; month++) {
+    const d = referenceDate.set({ month });
+    monthNames.push(formatter.format(d.toDate("UTC")));
   }
   return monthNames;
 }
@@ -1584,10 +1652,20 @@ function getWeekOfYear(date, locale) {
   const julianPrevWeek1 = prevWeek1Monday.calendar.toJulianDay(prevWeek1Monday);
   return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-year.mjs
 function getYearsRange(range) {
   const years = [];
   for (let year = range.from; year <= range.to; year += 1) years.push(year);
   return years;
+}
+var DEFAULT_MIN_YEAR = 1900;
+var DEFAULT_MAX_YEAR = 2099;
+function getDefaultYearRange(referenceDate, min, max) {
+  const calendar = referenceDate.calendar;
+  const fromYear = min?.year ?? $11d87f3f76e88657$export$b4a036af3fc0b032(new $35ea8db9cb2ccb90$export$99faa760c7908e4f(DEFAULT_MIN_YEAR, 1, 1), calendar).year;
+  const toYear = max?.year ?? $11d87f3f76e88657$export$b4a036af3fc0b032(new $35ea8db9cb2ccb90$export$99faa760c7908e4f(DEFAULT_MAX_YEAR, 12, 31), calendar).year;
+  return { from: fromYear, to: toYear };
 }
 var FUTURE_YEAR_COERCION = 10;
 function normalizeYear(year) {
@@ -1612,9 +1690,15 @@ function getDecadeRange(year, opts) {
   }
   return years;
 }
-function getTodayDate(timeZone) {
-  return $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone ?? $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/mutation.mjs
+function getTodayDate(timeZone, calendar) {
+  const tod = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone ?? $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
+  if (calendar) return $11d87f3f76e88657$export$b4a036af3fc0b032(tod, calendar);
+  return tod;
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/pagination.mjs
 function getAdjustedDateFn(visibleDuration, locale, minValue, maxValue) {
   return function getDate(options) {
     const { startDate, focusedDate } = options;
@@ -1719,6 +1803,8 @@ function getPreviousSection(focusedDate, startDate, larger, visibleDuration, loc
     });
   }
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/parse-date.mjs
 var isValidYear = (year) => year != null && year.length === 4;
 var isValidMonth = (month) => month != null && parseFloat(month) <= 12;
 var isValidDay = (day) => day != null && parseFloat(day) <= 31;
@@ -1767,117 +1853,46 @@ function extract(pattern, str) {
     return acc;
   }, {});
 }
+
+// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/preset.mjs
 function getDateRangePreset(preset, locale, timeZone) {
-  const today3 = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
+  const today = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
   switch (preset) {
     case "thisWeek":
-      return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today3, locale), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today3, locale)];
+      return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today, locale), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today, locale)];
     case "thisMonth":
-      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3), today3];
+      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today), today];
     case "thisQuarter":
-      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3).add({ months: -((today3.month - 1) % 3) }), today3];
+      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today).add({ months: -((today.month - 1) % 3) }), today];
     case "thisYear":
-      return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today3), today3];
+      return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today), today];
     case "last3Days":
-      return [today3.add({ days: -2 }), today3];
+      return [today.add({ days: -2 }), today];
     case "last7Days":
-      return [today3.add({ days: -6 }), today3];
+      return [today.add({ days: -6 }), today];
     case "last14Days":
-      return [today3.add({ days: -13 }), today3];
+      return [today.add({ days: -13 }), today];
     case "last30Days":
-      return [today3.add({ days: -29 }), today3];
+      return [today.add({ days: -29 }), today];
     case "last90Days":
-      return [today3.add({ days: -89 }), today3];
+      return [today.add({ days: -89 }), today];
     case "lastMonth":
-      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3.add({ months: -1 })), $14e0f24ef4ac5c92$export$a2258d9c4118825c(today3.add({ months: -1 }))];
+      return [$14e0f24ef4ac5c92$export$a5a3b454ada2268e(today.add({ months: -1 })), $14e0f24ef4ac5c92$export$a2258d9c4118825c(today.add({ months: -1 }))];
     case "lastQuarter":
       return [
-        $14e0f24ef4ac5c92$export$a5a3b454ada2268e(today3.add({ months: -((today3.month - 1) % 3) - 3 })),
-        $14e0f24ef4ac5c92$export$a2258d9c4118825c(today3.add({ months: -((today3.month - 1) % 3) - 1 }))
+        $14e0f24ef4ac5c92$export$a5a3b454ada2268e(today.add({ months: -((today.month - 1) % 3) - 3 })),
+        $14e0f24ef4ac5c92$export$a2258d9c4118825c(today.add({ months: -((today.month - 1) % 3) - 1 }))
       ];
     case "lastWeek":
-      return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today3, locale).add({ weeks: -1 }), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today3, locale).add({ weeks: -1 })];
+      return [$14e0f24ef4ac5c92$export$42c81a444fbfb5d4(today, locale).add({ weeks: -1 }), $14e0f24ef4ac5c92$export$ef8b6d9133084f4e(today, locale).add({ weeks: -1 })];
     case "lastYear":
-      return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today3.add({ years: -1 })), $14e0f24ef4ac5c92$export$8b7aa55c66d5569e(today3.add({ years: -1 }))];
+      return [$14e0f24ef4ac5c92$export$f91e89d3d0406102(today.add({ years: -1 })), $14e0f24ef4ac5c92$export$8b7aa55c66d5569e(today.add({ years: -1 }))];
     default:
       throw new Error(`Invalid date range preset: ${preset}`);
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+live-region@1.34.1/node_modules/@zag-js/live-region/dist/index.mjs
-var ID = "__live-region__";
-function createLiveRegion(opts = {}) {
-  const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
-  const win = doc.defaultView ?? window;
-  const parent = root ?? doc.body;
-  function announce(message, delay) {
-    const oldRegion = doc.getElementById(ID);
-    oldRegion?.remove();
-    delay = delay ?? _delay;
-    const region = doc.createElement("span");
-    region.id = ID;
-    region.dataset.liveAnnouncer = "true";
-    const role = level !== "assertive" ? "status" : "alert";
-    region.setAttribute("aria-live", level);
-    region.setAttribute("role", role);
-    Object.assign(region.style, {
-      border: "0",
-      clip: "rect(0 0 0 0)",
-      height: "1px",
-      margin: "-1px",
-      overflow: "hidden",
-      padding: "0",
-      position: "absolute",
-      width: "1px",
-      whiteSpace: "nowrap",
-      wordWrap: "normal"
-    });
-    parent.appendChild(region);
-    win.setTimeout(() => {
-      region.textContent = message;
-    }, delay);
-  }
-  function destroy() {
-    const oldRegion = doc.getElementById(ID);
-    oldRegion?.remove();
-  }
-  return {
-    announce,
-    destroy,
-    toJSON() {
-      return ID;
-    }
-  };
-}
-
-// ../node_modules/.pnpm/@zag-js+date-picker@1.34.1_@internationalized+date@3.11.0/node_modules/@zag-js/date-picker/dist/index.mjs
-var anatomy = createAnatomy("date-picker").parts(
-  "clearTrigger",
-  "content",
-  "control",
-  "input",
-  "label",
-  "monthSelect",
-  "nextTrigger",
-  "positioner",
-  "presetTrigger",
-  "prevTrigger",
-  "rangeText",
-  "root",
-  "table",
-  "tableBody",
-  "tableCell",
-  "tableCellTrigger",
-  "tableHead",
-  "tableHeader",
-  "tableRow",
-  "trigger",
-  "view",
-  "viewControl",
-  "viewTrigger",
-  "yearSelect"
-);
-var parts = anatomy.build();
+// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
 var getLabelId = (ctx, index) => ctx.ids?.label?.(index) ?? `datepicker:${ctx.id}:label:${index}`;
 var getRootId = (ctx) => ctx.ids?.root ?? `datepicker:${ctx.id}`;
 var getTableId = (ctx, id) => ctx.ids?.table?.(id) ?? `datepicker:${ctx.id}:table:${id}`;
@@ -1902,6 +1917,8 @@ var getMonthSelectEl = (ctx) => ctx.getById(getMonthSelectId(ctx));
 var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
 var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
 function adjustStartAndEndDate(value) {
   const [startDate, endDate] = value;
   let result;
@@ -2036,19 +2053,30 @@ var getVisibleRangeText = memo(
       return { start: start2, end: end2, formatted: `${start2} - ${end2}` };
     }
     if (view === "month") {
-      const formatter2 = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { year: "numeric", timeZone });
+      const formatter2 = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+        year: "numeric",
+        timeZone,
+        calendar: startValue.calendar.identifier
+      });
       const start2 = formatter2.format(startValue.toDate(timeZone));
       const end2 = formatter2.format(endValue.toDate(timeZone));
       const formatted2 = selectionMode === "range" ? `${start2} - ${end2}` : start2;
       return { start: start2, end: end2, formatted: formatted2 };
     }
-    const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { month: "long", year: "numeric", timeZone });
+    const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+      month: "long",
+      year: "numeric",
+      timeZone,
+      calendar: startValue.calendar.identifier
+    });
     const start = formatter.format(startValue.toDate(timeZone));
     const end = formatter.format(endValue.toDate(timeZone));
     const formatted = selectionMode === "range" ? `${start} - ${end}` : start;
     return { start, end, formatted };
   }
 );
+
+// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
 function connect(service, normalize) {
   const { state, context, prop, send, computed, scope } = service;
   const startValue = context.get("startValue");
@@ -2085,9 +2113,9 @@ function connect(service, normalize) {
     const numOfWeeks = prop("fixedWeeks") ? 6 : void 0;
     return getMonthDays(from, locale, numOfWeeks, startOfWeek);
   }
-  function getMonths(props2 = {}) {
-    const { format } = props2;
-    return getMonthNames(locale, format).map((label, index) => {
+  function getMonths(props = {}) {
+    const { format } = props;
+    return getMonthNames(locale, format, focusedValue).map((label, index) => {
       const value = index + 1;
       const dateValue = focusedValue.set({ month: value });
       const disabled2 = isDateOutsideRange(dateValue, min, max);
@@ -2095,7 +2123,8 @@ function connect(service, normalize) {
     });
   }
   function getYears() {
-    const range = getYearsRange({ from: min?.year ?? 1900, to: max?.year ?? 2100 });
+    const defaultRange = getDefaultYearRange(focusedValue, min, max);
+    const range = getYearsRange(defaultRange);
     return range.map((year) => ({
       label: year.toString(),
       value: year,
@@ -2106,21 +2135,21 @@ function connect(service, normalize) {
     return isDateUnavailable(date, isDateUnavailableFn, locale, min, max);
   }
   function focusMonth(month) {
-    const date = startValue ?? getTodayDate(timeZone);
+    const date = startValue ?? getTodayDate(timeZone, focusedValue.calendar);
     send({ type: "FOCUS.SET", value: date.set({ month }) });
   }
   function focusYear(year) {
-    const date = startValue ?? getTodayDate(timeZone);
+    const date = startValue ?? getTodayDate(timeZone, focusedValue.calendar);
     send({ type: "FOCUS.SET", value: date.set({ year }) });
   }
-  function getYearTableCellState(props2) {
-    const { value, disabled: disabled2 } = props2;
+  function getYearTableCellState(props) {
+    const { value, disabled: disabled2 } = props;
     const dateValue = focusedValue.set({ year: value });
     const decadeYears = getDecadeRange(startValue.year, { strict: true });
     const isOutsideVisibleRange = !decadeYears.includes(value);
     const isOutsideRange = isValueWithinRange(value, min?.year, max?.year);
     const cellState = {
-      focused: focusedValue.year === props2.value,
+      focused: focusedValue.year === props.value,
       selectable: isOutsideVisibleRange || isOutsideRange,
       outsideRange: isOutsideVisibleRange,
       selected: !!selectedValue.find((date) => date && date.year === value),
@@ -2133,12 +2162,12 @@ function connect(service, normalize) {
     };
     return cellState;
   }
-  function getMonthTableCellState(props2) {
-    const { value, disabled: disabled2 } = props2;
+  function getMonthTableCellState(props) {
+    const { value, disabled: disabled2 } = props;
     const dateValue = focusedValue.set({ month: value });
-    const formatter = getMonthFormatter(locale, timeZone);
+    const formatter = getMonthFormatter(locale, timeZone, focusedValue);
     const cellState = {
-      focused: focusedValue.month === props2.value,
+      focused: focusedValue.month === props.value,
       selectable: !isDateOutsideRange(dateValue, min, max),
       selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
       valueText: formatter.format(dateValue.toDate(timeZone)),
@@ -2150,9 +2179,9 @@ function connect(service, normalize) {
     };
     return cellState;
   }
-  function getDayTableCellState(props2) {
-    const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props2;
-    const formatter = getDayFormatter(locale, timeZone);
+  function getDayTableCellState(props) {
+    const { value, disabled: disabled2, visibleRange = computed("visibleRange") } = props;
+    const formatter = getDayFormatter(locale, timeZone, focusedValue);
     const unitDuration = getUnitDuration(computed("visibleDuration"));
     const outsideDaySelectable = prop("outsideDaySelectable");
     const end = visibleRange.start.add(unitDuration).subtract({ days: 1 });
@@ -2195,8 +2224,8 @@ function connect(service, normalize) {
     };
     return cellState;
   }
-  function getTableId2(props2) {
-    const { view = "day", id } = props2;
+  function getTableId2(props) {
+    const { view = "day", id } = props;
     return [view, id].filter(Boolean).join(" ");
   }
   return {
@@ -2225,7 +2254,7 @@ function connect(service, normalize) {
     getOffset(duration) {
       const from = startValue.add(duration);
       const end = endValue.add(duration);
-      const formatter = getMonthFormatter(locale, timeZone);
+      const formatter = getMonthFormatter(locale, timeZone, focusedValue);
       return {
         visibleRange: { start: from, end },
         weeks: getMonthWeeks(from),
@@ -2238,7 +2267,7 @@ function connect(service, normalize) {
     getMonthWeeks,
     isUnavailable,
     weeks: getMonthWeeks(),
-    weekDays: getWeekDays(getTodayDate(timeZone), startOfWeek, timeZone, locale),
+    weekDays: getWeekDays(startValue, startOfWeek, timeZone, locale),
     visibleRangeText: computed("visibleRangeText"),
     value: selectedValue,
     valueAsDate: selectedValue.filter((date) => date != null).map((date) => date.toDate(timeZone)),
@@ -2248,7 +2277,7 @@ function connect(service, normalize) {
     focusedValueAsString: prop("format")(focusedValue, { locale, timeZone }),
     visibleRange: computed("visibleRange"),
     selectToday() {
-      const value = constrainValue(getTodayDate(timeZone), min, max);
+      const value = constrainValue(getTodayDate(timeZone, focusedValue.calendar), min, max);
       send({ type: "VALUE.SET", value: [value] });
     },
     setValue(values) {
@@ -2288,8 +2317,8 @@ function connect(service, normalize) {
     focusYear,
     getYears,
     getMonths,
-    getYearsGrid(props2 = {}) {
-      const { columns = 1 } = props2;
+    getYearsGrid(props = {}) {
+      const { columns = 1 } = props;
       const years = getDecadeRange(startValue.year, { strict: true }).map((year) => ({
         label: year.toString(),
         value: year,
@@ -2301,12 +2330,15 @@ function connect(service, normalize) {
       const years = getDecadeRange(startValue.year, { strict: true });
       return { start: years.at(0), end: years.at(-1) };
     },
-    getMonthsGrid(props2 = {}) {
-      const { columns = 1, format } = props2;
+    getMonthsGrid(props = {}) {
+      const { columns = 1, format } = props;
       return chunk(getMonths({ format }), columns);
     },
     format(value, opts = { month: "long", year: "numeric" }) {
-      return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, opts).format(value.toDate(timeZone));
+      return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
+        ...opts,
+        calendar: value.calendar.identifier
+      }).format(value.toDate(timeZone));
     },
     setView(view) {
       send({ type: "VIEW.SET", view });
@@ -2328,8 +2360,8 @@ function connect(service, normalize) {
         "data-empty": dataAttr(empty)
       });
     },
-    getLabelProps(props2 = {}) {
-      const { index = 0 } = props2;
+    getLabelProps(props = {}) {
+      const { index = 0 } = props;
       return normalize.label({
         ...parts.label.attrs,
         id: getLabelId(scope, index),
@@ -2371,9 +2403,9 @@ function connect(service, normalize) {
         "aria-label": translations.content
       });
     },
-    getTableProps(props2 = {}) {
-      const { view = "day", columns = view === "day" ? 7 : 4 } = props2;
-      const uid = getTableId2(props2);
+    getTableProps(props = {}) {
+      const { view = "day", columns = view === "day" ? 7 : 4 } = props;
+      const uid = getTableId2(props);
       return normalize.element({
         ...parts.table.attrs,
         role: "grid",
@@ -2446,8 +2478,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getTableHeadProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getTableHeadProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.tableHead.attrs,
         "aria-hidden": true,
@@ -2456,8 +2488,8 @@ function connect(service, normalize) {
         "data-disabled": dataAttr(disabled)
       });
     },
-    getTableHeaderProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getTableHeaderProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.tableHeader.attrs,
         dir: prop("dir"),
@@ -2465,16 +2497,16 @@ function connect(service, normalize) {
         "data-disabled": dataAttr(disabled)
       });
     },
-    getTableBodyProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getTableBodyProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.tableBody.attrs,
         "data-view": view,
         "data-disabled": dataAttr(disabled)
       });
     },
-    getTableRowProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getTableRowProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.tableRow.attrs,
         "aria-disabled": ariaAttr(disabled),
@@ -2482,18 +2514,19 @@ function connect(service, normalize) {
         "data-view": view
       });
     },
-    getWeekNumberHeaderCellProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getWeekNumberHeaderCellProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.tableCell.attrs,
         scope: "col",
         "aria-label": translations.weekColumnHeader,
         "data-view": view,
+        "data-type": "week-number",
         "data-disabled": dataAttr(disabled)
       });
     },
-    getWeekNumberCellProps(props2) {
-      const { weekIndex, week } = props2;
+    getWeekNumberCellProps(props) {
+      const { weekIndex, week } = props;
       const weekNumber = week[0] ? getWeekOfYear(week[0], locale) : 0;
       return normalize.element({
         ...parts.tableCell.attrs,
@@ -2501,13 +2534,14 @@ function connect(service, normalize) {
         "aria-label": translations.weekNumberCell?.(weekNumber),
         "data-view": "day",
         "data-week-index": weekIndex,
+        "data-type": "week-number",
         "data-disabled": dataAttr(disabled)
       });
     },
     getDayTableCellState,
-    getDayTableCellProps(props2) {
-      const { value } = props2;
-      const cellState = getDayTableCellState(props2);
+    getDayTableCellProps(props) {
+      const { value } = props;
+      const cellState = getDayTableCellState(props);
       return normalize.element({
         ...parts.tableCell.attrs,
         role: "gridcell",
@@ -2518,9 +2552,9 @@ function connect(service, normalize) {
         "data-value": value.toString()
       });
     },
-    getDayTableCellTriggerProps(props2) {
-      const { value } = props2;
-      const cellState = getDayTableCellState(props2);
+    getDayTableCellTriggerProps(props) {
+      const { value } = props;
+      const cellState = getDayTableCellState(props);
       return normalize.element({
         ...parts.tableCellTrigger.attrs,
         id: getCellTriggerId(scope, value.toString()),
@@ -2560,9 +2594,9 @@ function connect(service, normalize) {
       });
     },
     getMonthTableCellState,
-    getMonthTableCellProps(props2) {
-      const { value, columns } = props2;
-      const cellState = getMonthTableCellState(props2);
+    getMonthTableCellProps(props) {
+      const { value, columns } = props;
+      const cellState = getMonthTableCellState(props);
       return normalize.element({
         ...parts.tableCell.attrs,
         dir: prop("dir"),
@@ -2574,9 +2608,9 @@ function connect(service, normalize) {
         "data-value": value
       });
     },
-    getMonthTableCellTriggerProps(props2) {
-      const { value } = props2;
-      const cellState = getMonthTableCellState(props2);
+    getMonthTableCellTriggerProps(props) {
+      const { value } = props;
+      const cellState = getMonthTableCellState(props);
       return normalize.element({
         ...parts.tableCellTrigger.attrs,
         dir: prop("dir"),
@@ -2607,9 +2641,9 @@ function connect(service, normalize) {
       });
     },
     getYearTableCellState,
-    getYearTableCellProps(props2) {
-      const { value, columns } = props2;
-      const cellState = getYearTableCellState(props2);
+    getYearTableCellProps(props) {
+      const { value, columns } = props;
+      const cellState = getYearTableCellState(props);
       return normalize.element({
         ...parts.tableCell.attrs,
         dir: prop("dir"),
@@ -2621,9 +2655,9 @@ function connect(service, normalize) {
         "data-value": value
       });
     },
-    getYearTableCellTriggerProps(props2) {
-      const { value } = props2;
-      const cellState = getYearTableCellState(props2);
+    getYearTableCellTriggerProps(props) {
+      const { value } = props;
+      const cellState = getYearTableCellState(props);
       return normalize.element({
         ...parts.tableCellTrigger.attrs,
         dir: prop("dir"),
@@ -2653,8 +2687,8 @@ function connect(service, normalize) {
         } : void 0
       });
     },
-    getNextTriggerProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getNextTriggerProps(props = {}) {
+      const { view = "day" } = props;
       const isDisabled = disabled || !computed("isNextVisibleRangeValid");
       return normalize.button({
         ...parts.nextTrigger.attrs,
@@ -2670,8 +2704,8 @@ function connect(service, normalize) {
         }
       });
     },
-    getPrevTriggerProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getPrevTriggerProps(props = {}) {
+      const { view = "day" } = props;
       const isDisabled = disabled || !computed("isPrevVisibleRangeValid");
       return normalize.button({
         ...parts.prevTrigger.attrs,
@@ -2721,16 +2755,16 @@ function connect(service, normalize) {
         }
       });
     },
-    getViewProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getViewProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.view.attrs,
         "data-view": view,
         hidden: context.get("view") !== view
       });
     },
-    getViewTriggerProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getViewTriggerProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.button({
         ...parts.viewTrigger.attrs,
         "data-view": view,
@@ -2746,16 +2780,16 @@ function connect(service, normalize) {
         }
       });
     },
-    getViewControlProps(props2 = {}) {
-      const { view = "day" } = props2;
+    getViewControlProps(props = {}) {
+      const { view = "day" } = props;
       return normalize.element({
         ...parts.viewControl.attrs,
         "data-view": view,
         dir: prop("dir")
       });
     },
-    getInputProps(props2 = {}) {
-      const { index = 0, fixOnBlur = true } = props2;
+    getInputProps(props = {}) {
+      const { index = 0, fixOnBlur = true } = props;
       return normalize.input({
         ...parts.input.attrs,
         id: getInputId(scope, index),
@@ -2850,8 +2884,8 @@ function connect(service, normalize) {
         style: popperStyles.floating
       });
     },
-    getPresetTriggerProps(props2) {
-      const value = Array.isArray(props2.value) ? props2.value : getDateRangePreset(props2.value, locale, timeZone);
+    getPresetTriggerProps(props) {
+      const value = Array.isArray(props.value) ? props.value : getDateRangePreset(props.value, locale, timeZone);
       const valueAsString = value.filter((item) => item != null).map((item) => item.toDate(timeZone).toDateString());
       return normalize.button({
         ...parts.presetTrigger.attrs,
@@ -2865,6 +2899,54 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+live-region@1.36.0/node_modules/@zag-js/live-region/dist/index.mjs
+var ID = "__live-region__";
+function createLiveRegion(opts = {}) {
+  const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
+  const win = doc.defaultView ?? window;
+  const parent = root ?? doc.body;
+  function announce(message, delay) {
+    const oldRegion = doc.getElementById(ID);
+    oldRegion?.remove();
+    delay = delay ?? _delay;
+    const region = doc.createElement("span");
+    region.id = ID;
+    region.dataset.liveAnnouncer = "true";
+    const role = level !== "assertive" ? "status" : "alert";
+    region.setAttribute("aria-live", level);
+    region.setAttribute("role", role);
+    Object.assign(region.style, {
+      border: "0",
+      clip: "rect(0 0 0 0)",
+      height: "1px",
+      margin: "-1px",
+      overflow: "hidden",
+      padding: "0",
+      position: "absolute",
+      width: "1px",
+      whiteSpace: "nowrap",
+      wordWrap: "normal"
+    });
+    parent.appendChild(region);
+    win.setTimeout(() => {
+      region.textContent = message;
+    }, delay);
+  }
+  function destroy() {
+    const oldRegion = doc.getElementById(ID);
+    oldRegion?.remove();
+  }
+  return {
+    announce,
+    destroy,
+    toJSON() {
+      return ID;
+    }
+  };
+}
+
+// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
 var { and } = createGuards();
 function isDateArrayEqual(a, b) {
   if (a?.length !== b?.length) return false;
@@ -2881,18 +2963,31 @@ function getValueAsString(value, prop) {
   });
 }
 var machine = createMachine({
-  props({ props: props2 }) {
-    const locale = props2.locale || "en-US";
-    const timeZone = props2.timeZone || "UTC";
-    const selectionMode = props2.selectionMode || "single";
-    const numOfMonths = props2.numOfMonths || 1;
-    const defaultValue = props2.defaultValue ? sortDates(props2.defaultValue).map((date) => constrainValue(date, props2.min, props2.max)) : void 0;
-    const value = props2.value ? sortDates(props2.value).map((date) => constrainValue(date, props2.min, props2.max)) : void 0;
-    let focusedValue = props2.focusedValue || props2.defaultFocusedValue || value?.[0] || defaultValue?.[0] || getTodayDate(timeZone);
-    focusedValue = constrainValue(focusedValue, props2.min, props2.max);
+  props({ props }) {
+    const locale = props.locale || "en-US";
+    const timeZone = props.timeZone || "UTC";
+    const selectionMode = props.selectionMode || "single";
+    const numOfMonths = props.numOfMonths || 1;
+    let calendar;
+    if (props.createCalendar) {
+      const resolved = new Intl.DateTimeFormat(locale).resolvedOptions();
+      const calendarId = resolved.calendar;
+      if (calendarId !== "gregory" && calendarId !== "iso8601") {
+        calendar = props.createCalendar(calendarId);
+      }
+    }
+    const toTargetCalendar = (date) => {
+      if (!calendar) return date;
+      if (date.calendar.identifier === calendar.identifier) return date;
+      return $11d87f3f76e88657$export$b4a036af3fc0b032(date, calendar);
+    };
+    const defaultValue = props.defaultValue ? sortDates(props.defaultValue).map((date) => constrainValue(toTargetCalendar(date), props.min, props.max)) : void 0;
+    const value = props.value ? sortDates(props.value).map((date) => constrainValue(toTargetCalendar(date), props.min, props.max)) : void 0;
+    let focusedValue = props.focusedValue || props.defaultFocusedValue || value?.[0] || defaultValue?.[0] || getTodayDate(timeZone, calendar);
+    focusedValue = constrainValue(toTargetCalendar(focusedValue), props.min, props.max);
     const minView = "day";
     const maxView = "year";
-    const defaultView = clampView(props2.view || minView, minView, maxView);
+    const defaultView = clampView(props.view || minView, minView, maxView);
     return {
       locale,
       numOfMonths,
@@ -2904,20 +2999,26 @@ var machine = createMachine({
       outsideDaySelectable: false,
       closeOnSelect: true,
       format(date, { locale: locale2, timeZone: timeZone2 }) {
-        const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale2, { timeZone: timeZone2, day: "2-digit", month: "2-digit", year: "numeric" });
+        const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale2, {
+          timeZone: timeZone2,
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          calendar: calendar?.identifier
+        });
         return formatter.format(date.toDate(timeZone2));
       },
       parse(value2, { locale: locale2, timeZone: timeZone2 }) {
         return parseDateString(value2, locale2, timeZone2);
       },
-      ...props2,
-      focusedValue: typeof props2.focusedValue === "undefined" ? void 0 : focusedValue,
+      ...props,
+      focusedValue: typeof props.focusedValue === "undefined" ? void 0 : focusedValue,
       defaultFocusedValue: focusedValue,
       value,
       defaultValue: defaultValue ?? [],
       positioning: {
         placement: "bottom",
-        ...props2.positioning
+        ...props.positioning
       }
     };
   },
@@ -3755,8 +3856,9 @@ var machine = createMachine({
         setFocusedValue(params, nextValue);
       },
       clearFocusedDate(params) {
-        const { prop } = params;
-        setFocusedValue(params, getTodayDate(prop("timeZone")));
+        const { context, prop } = params;
+        const calendar = context.get("focusedValue").calendar;
+        setFocusedValue(params, getTodayDate(prop("timeZone"), calendar));
       },
       focusPreviousMonthColumn(params) {
         const { context, event } = params;
@@ -3780,13 +3882,15 @@ var machine = createMachine({
       },
       focusFirstMonth(params) {
         const { context } = params;
-        const nextValue = context.get("focusedValue").set({ month: 1 });
-        setFocusedValue(params, nextValue);
+        const focused = context.get("focusedValue");
+        const minMonth = focused.calendar.getMinimumMonthInYear?.(focused) ?? 1;
+        setFocusedValue(params, focused.set({ month: minMonth }));
       },
       focusLastMonth(params) {
         const { context } = params;
-        const nextValue = context.get("focusedValue").set({ month: 12 });
-        setFocusedValue(params, nextValue);
+        const focused = context.get("focusedValue");
+        const maxMonth = focused.calendar.getMonthsInYear(focused);
+        setFocusedValue(params, focused.set({ month: maxMonth }));
       },
       focusFirstYear(params) {
         const { context } = params;
@@ -3980,6 +4084,8 @@ function setAdjustedValue(ctx, value) {
   if (isDateEqual(focusedValue, value.focusedDate)) return;
   context.set("focusedValue", value.focusedDate);
 }
+
+// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
 function parse(value) {
   if (Array.isArray(value)) {
     return value.map((v) => parse(v));
@@ -3989,69 +4095,12 @@ function parse(value) {
   }
   return $fae977aafc393c5c$export$6b862160d295c8e(value);
 }
-var props = createProps()([
-  "closeOnSelect",
-  "dir",
-  "disabled",
-  "fixedWeeks",
-  "focusedValue",
-  "format",
-  "parse",
-  "placeholder",
-  "getRootNode",
-  "id",
-  "ids",
-  "inline",
-  "invalid",
-  "isDateUnavailable",
-  "locale",
-  "max",
-  "maxSelectedDates",
-  "min",
-  "name",
-  "numOfMonths",
-  "onFocusChange",
-  "onOpenChange",
-  "onValueChange",
-  "onViewChange",
-  "onVisibleRangeChange",
-  "open",
-  "openOnClick",
-  "defaultOpen",
-  "positioning",
-  "readOnly",
-  "required",
-  "selectionMode",
-  "showWeekNumbers",
-  "startOfWeek",
-  "timeZone",
-  "translations",
-  "value",
-  "defaultView",
-  "defaultValue",
-  "view",
-  "defaultFocusedValue",
-  "outsideDaySelectable",
-  "minView",
-  "maxView"
-]);
-var splitProps = createSplitProps(props);
-var inputProps = createProps()(["index", "fixOnBlur"]);
-var splitInputProps = createSplitProps(inputProps);
-var presetTriggerProps = createProps()(["value"]);
-var splitPresetTriggerProps = createSplitProps(presetTriggerProps);
-var tableProps = createProps()(["columns", "id", "view"]);
-var splitTableProps = createSplitProps(tableProps);
-var tableCellProps = createProps()(["disabled", "value", "columns"]);
-var splitTableCellProps = createSplitProps(tableCellProps);
-var viewProps = createProps()(["view"]);
-var splitViewProps = createSplitProps(viewProps);
 
 // components/date-picker.ts
 var DatePicker = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);

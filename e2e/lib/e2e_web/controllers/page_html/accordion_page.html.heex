@@ -5,8 +5,11 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Accordion</h1>
-  <h2>Controller View</h2>
+  <.layout_heading>
+    <:title>Accordion</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
   <h3>Client Api</h3>
   <section class="layout__section">
     <div class="layout__row">
@@ -51,7 +54,7 @@
     }
   >
     <:indicator>
-      <.icon name="hero-chevron-right" />
+      <.heroicon name="hero-chevron-right" />
     </:indicator>
   </.accordion>
 </Layouts.app>

@@ -23,37 +23,37 @@ defmodule E2eWeb.MenuLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Menu</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Menu</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Menu.set_open("my-menu", true)}
           class="button button--sm"
         >
           Open menu
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click={Corex.Menu.set_open("my-menu", false)}
           class="button button--sm"
         >
           Close menu
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_value" value="true" class="button button--sm">
+        <.action phx-click="set_value" value="true" class="button button--sm">
           Open menu
-        </button>
-        <button
+        </.action>
+        <.action
           phx-click="set_value"
           value="false"
           class="button button--sm"
         >
           Close menu
-        </button>
+        </.action>
       </div>
 
       <.menu
@@ -76,7 +76,7 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>File</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
       </.menu>
       <.menu
@@ -112,10 +112,10 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>Menu</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
         <:nested_indicator>
-          <.icon name="hero-chevron-right" />
+          <.heroicon name="hero-chevron-right" />
         </:nested_indicator>
       </.menu>
 
@@ -146,7 +146,7 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>Actions</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
       </.menu>
 
@@ -158,10 +158,10 @@ defmodule E2eWeb.MenuLive do
       >
         <:trigger>Corex</:trigger>
         <:indicator>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:indicator>
         <:nested_indicator>
-          <.icon name="hero-chevron-right" />
+          <.heroicon name="hero-chevron-right" />
         </:nested_indicator>
         <:item :let={item}>
           {item.label}

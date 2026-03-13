@@ -166,7 +166,9 @@ defmodule Corex.AngleSlider do
 
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def angle_slider(assigns) do
     assigns =

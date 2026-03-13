@@ -1,0 +1,72 @@
+@import "../main.css";
+
+@layer components {
+  .data-list {
+    @apply ui-root;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-ui--border);
+    border-radius: var(--radius-ui);
+    background-color: var(--color-layer);
+    color: var(--color-layer--text);
+  }
+
+  .data-list [data-scope="data-list"][data-part="root"] {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+    background-color: var(--color-ui);
+    color: var(--color-ui--text);
+  }
+
+  .data-list [data-scope="data-list"][data-part="item"] {
+    padding: var(--spacing-ui-padding) var(--spacing-ui-padding);
+    border-bottom: 1px solid var(--color-ui--border);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  .data-list [data-scope="data-list"][data-part="item"]:last-child {
+    border-bottom: none;
+  }
+
+  .data-list [data-scope="data-list"][data-part="item"]:hover {
+    background-color: var(--color-ui-active);
+  }
+
+  .data-list [data-scope="data-list"][data-part="title"] {
+      font-weight: var(--font-weight-ui-bold);
+      color: var(--color-ui--muted);
+      font-size: calc(var(--text-ui) * 0.85);
+      margin-bottom: var(--spacing-mini-gap);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+  }
+
+  .data-list [data-scope="data-list"][data-part="content"] {
+    display: flex;
+    flex-direction: column;
+    font-size: var(--text-ui);
+    line-height: var(--text-ui--line-height);
+  }
+}
+
+@utility data-list--* {
+  font-size: --value(--text-ui-*, [length]);
+  line-height: --value(--text-ui-* --line-height, [length]);
+  
+  [data-scope="data-list"][data-part="item"] {
+    padding: --value(--spacing-ui-padding-*, [length]);
+  }
+  
+  [data-scope="data-list"][data-part="title"] {
+    font-size: calc(--value(--text-ui-*, [length]) * 0.85);
+  }
+}

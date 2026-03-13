@@ -14,15 +14,15 @@ defmodule E2eWeb.SelectLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Select</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Select</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <.select
         id="my-select"
         class="select"
-        placeholder_text="Select a country"
-        collection={[
+        placeholder="Select a country"
+        items={[
           %{label: "France", id: "fra", disabled: true},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
@@ -32,15 +32,15 @@ defmodule E2eWeb.SelectLive do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
 
       <h3>Grouped</h3>
       <.select
         class="select"
-        placeholder_text="Select a country"
-        collection={[
+        placeholder="Select a country"
+        items={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
@@ -57,15 +57,15 @@ defmodule E2eWeb.SelectLive do
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
 
       <h3>Extended</h3>
       <.select
         class="select"
-        placeholder_text="Select a country"
-        collection={[
+        placeholder="Select a country"
+        items={[
           %{label: "France", id: "fra"},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
@@ -82,18 +82,18 @@ defmodule E2eWeb.SelectLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.select>
 
       <h3>Extended Grouped</h3>
       <.select
         class="select"
-        placeholder_text="Select a country"
-        collection={[
+        placeholder="Select a country"
+        items={[
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
@@ -107,10 +107,10 @@ defmodule E2eWeb.SelectLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.select>
     </Layouts.app>

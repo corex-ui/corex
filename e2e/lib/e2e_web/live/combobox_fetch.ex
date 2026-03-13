@@ -91,18 +91,15 @@ defmodule E2eWeb.ComboboxFetch do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Combobox</h1>
-        <h2>Server-side Filtering</h2>
-      </div>
+      <.layout_heading>
+        <:title>Combobox</:title>
+        <:subtitle>Server-side Filtering</:subtitle>
+      </.layout_heading>
 
-      <.header>
-        Server-side filtering
-        <:subtitle>
-          Use on_input_value_change to filter on the server. Useful for large item lists.
-          <p>Can be used with a database query to filter the items or a local list.</p>
-        </:subtitle>
-      </.header>
+      <p>
+        Use on_input_value_change to filter on the server. Useful for large item lists.
+        Can be used with a database query to filter the items or a local list.
+      </p>
 
       <.combobox
         id="country-combobox"
@@ -114,10 +111,10 @@ defmodule E2eWeb.ComboboxFetch do
       >
         <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
       </.combobox>
     </Layouts.app>

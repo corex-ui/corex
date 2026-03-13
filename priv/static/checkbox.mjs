@@ -1,15 +1,14 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-EDSYBTWY.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
-  createProps,
-  createSplitProps,
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
@@ -21,17 +20,21 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.34.1/node_modules/@zag-js/checkbox/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+checkbox@1.36.0/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+checkbox@1.36.0/node_modules/@zag-js/checkbox/dist/checkbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `checkbox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `checkbox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `checkbox:${ctx.id}:control`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `checkbox:${ctx.id}:input`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
+
+// ../node_modules/.pnpm/@zag-js+checkbox@1.36.0/node_modules/@zag-js/checkbox/dist/checkbox.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, computed, scope } = service;
   const disabled = !!prop("disabled");
@@ -146,13 +149,15 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+checkbox@1.36.0/node_modules/@zag-js/checkbox/dist/checkbox.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       value: "on",
-      ...props2,
-      defaultChecked: props2.defaultChecked ?? false
+      ...props,
+      defaultChecked: props.defaultChecked ?? false
     };
   },
   initialState() {
@@ -285,29 +290,12 @@ function isIndeterminate(checked) {
 function isChecked(checked) {
   return isIndeterminate(checked) ? false : !!checked;
 }
-var props = createProps()([
-  "defaultChecked",
-  "checked",
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "name",
-  "onCheckedChange",
-  "readOnly",
-  "required",
-  "value"
-]);
-var splitProps = createSplitProps(props);
 
 // components/checkbox.ts
 var Checkbox = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -361,7 +349,7 @@ var CheckboxHook = {
       readOnly: getBoolean(el, "readOnly"),
       onCheckedChange: (details) => {
         const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             checked: details.checked,
             id: el.id
@@ -373,8 +361,8 @@ var CheckboxHook = {
             new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: {
-                value: details,
-                id: el.id
+                id: el.id,
+                checked: details.checked
               }
             })
           );

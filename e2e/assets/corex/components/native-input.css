@@ -17,7 +17,6 @@
     flex-flow: row nowrap;
     align-items: stretch;
     position: relative;
-    margin-inline: auto;
     max-width: var(--container-mini);
   }
 
@@ -56,6 +55,7 @@
 
   .native-input [data-scope="native-input"][data-part="error"] {
     @apply ui-error;
+    margin-block-start: var(--spacing-ui-gap);
   }
 
   .native-input [data-scope="native-input"][data-part="control"] label[data-part="label"] {
@@ -147,8 +147,8 @@
   }
 
   .native-input input[type="checkbox"][data-scope="native-input"][data-part="input"]:focus-visible {
-    outline: 2px solid var(--color-ui--text);
-    outline-offset: -3px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ui--text);
   }
 
   .native-input input[type="radio"][data-scope="native-input"][data-part="input"] {
@@ -182,7 +182,32 @@
   }
 
   .native-input input[type="radio"][data-scope="native-input"][data-part="input"]:focus-visible {
-    outline: 2px solid var(--color-ui--text);
-    outline-offset: -3px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-ui--text);
+  }
+
+  .native-input [data-scope="native-input"][data-part="date-wrapper"] {
+    position: relative;
+    flex: 1;
+    display: flex;
+    min-width: 0;
+  }
+
+  .native-input [data-scope="native-input"][data-part="date-wrapper"] input {
+    flex: 1;
+  }
+
+  .native-input [data-scope="native-input"][data-part="placeholder-overlay"] {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding-inline: var(--spacing-ui-padding);
+    pointer-events: none;
+    color: var(--color-ui--text);
+  }
+
+  .native-input [data-scope="native-input"][data-part="date-wrapper"]:focus-within [data-part="placeholder-overlay"] {
+    visibility: hidden;
   }
 }

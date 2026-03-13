@@ -24,7 +24,7 @@ defmodule Corex.NativeInput do
   ```heex
   <.native_input type="email" id="email" name="user[email]" class="native-input">
     <:label>Email</:label>
-    <:icon><.icon name="hero-envelope" class="icon" /></:icon>
+    <:icon><.heroicon name="hero-envelope" class="icon" /></:icon>
   </.native_input>
   ```
 
@@ -52,11 +52,15 @@ defmodule Corex.NativeInput do
 
   ### With form field
 
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. See the Checkbox or NumberInput component docs for the full Controller and Live View pattern.
+
   ```heex
-  <.native_input type="email" field={@form[:email]} class="native-input">
-    <:label>Email</:label>
-    <:error :let={msg}>{msg}</:error>
-  </.native_input>
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)}>
+    <.native_input type="email" field={f[:email]} class="native-input">
+      <:label>Email</:label>
+      <:error :let={msg}>{msg}</:error>
+    </.native_input>
+  </.form>
   ```
 
   ## Styling
@@ -93,8 +97,7 @@ defmodule Corex.NativeInput do
   attr(:type, :string, required: true, values: @types)
   attr(:id, :string, required: false)
   attr(:name, :string, required: false)
-  attr(:value, :any, default: nil)
-  attr(:form, :string, required: false)
+  attr(:value, :any)
   attr(:errors, :list, default: [], doc: "List of error messages to display")
   attr(:class, :any, default: nil)
   attr(:prompt, :string, default: nil, doc: "Prompt for select inputs")
@@ -105,7 +108,7 @@ defmodule Corex.NativeInput do
   )
 
   attr(:multiple, :boolean, default: false, doc: "Multiple flag for select inputs")
-  attr(:checked, :boolean, default: nil, doc: "Checked flag for checkbox. Defaults from value.")
+  attr(:checked, :boolean, doc: "Checked flag for checkbox. Defaults from value.")
 
   attr(:field, Phoenix.HTML.FormField,
     doc: "A form field struct from the form, e.g. @form[:email]"
@@ -116,13 +119,16 @@ defmodule Corex.NativeInput do
       ~w(autocomplete disabled maxlength minlength pattern placeholder readonly required cols rows list form min max step accept)
   )
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:icon,
+  slot :icon,
     required: false,
     doc:
-      "Optional. Ignored for textarea, date, datetime-local, time, month, week, color, number, checkbox, radio, select."
-  )
+      "Optional. Ignored for textarea, date, datetime-local, time, month, week, color, number, checkbox, radio, select." do
+    attr(:class, :string, required: false)
+  end
 
   slot(:error, required: false) do
     attr(:class, :string, required: false)
@@ -131,16 +137,14 @@ defmodule Corex.NativeInput do
   def native_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
-    assigns =
-      assigns
-      |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
-      |> assign_new(:id, fn -> field.id end)
-      |> assign_new(:name, fn -> field.name end)
-      |> assign_new(:value, fn -> field.value end)
-      |> assign_new(:form, fn -> field.form.id end)
-
-    native_input(assigns)
+    assigns
+    |> assign(field: nil, id: assigns[:id] || field.id)
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+    |> assign_new(:name, fn ->
+      if assigns.multiple, do: field.name <> "[]", else: field.name
+    end)
+    |> assign_new(:value, fn -> field.value end)
+    |> native_input()
   end
 
   @types_ignoring_icon ~w(textarea date datetime-local time month week color number checkbox radio select)
@@ -177,7 +181,7 @@ defmodule Corex.NativeInput do
           <span :if={@label != []}>{render_slot(@label)}</span>
         </label>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -186,7 +190,9 @@ defmodule Corex.NativeInput do
 
   def native_input(%{type: "select"} = assigns) do
     assigns =
-      assign_new(assigns, :id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      assigns
+      |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:value, fn -> nil end)
 
     ~H"""
     <div id={@id} class={@class} data-scope="native-input" data-part="root">
@@ -206,7 +212,7 @@ defmodule Corex.NativeInput do
           {Phoenix.HTML.Form.options_for_select(@options || [], @value)}
         </select>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -217,6 +223,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:value, fn -> nil end)
       |> assign(:options, assigns[:options] || [])
 
     ~H"""
@@ -239,7 +246,7 @@ defmodule Corex.NativeInput do
           <label for={"#{@id}-input-#{opt_value}"}>{opt_label}</label>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
@@ -250,6 +257,7 @@ defmodule Corex.NativeInput do
     assigns =
       assigns
       |> assign_new(:id, fn -> "native-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:value, fn -> nil end)
       |> assign(:show_icon, show_icon?(assigns))
 
     ~H"""
@@ -283,7 +291,7 @@ defmodule Corex.NativeInput do
           <% end %>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="native-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="native-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>

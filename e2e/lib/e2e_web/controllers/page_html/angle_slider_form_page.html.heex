@@ -1,0 +1,28 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  locale={@locale}
+  current_path={@current_path}
+>
+  <.layout_heading>
+    <:title>Angle Slider form</:title>
+    <:subtitle>Controller Form</:subtitle>
+  </.layout_heading>
+  <p>Controller Form</p>
+  <form action={~p"/#{@locale}/angle-slider/form"} method="post" id="angle-slider-plain-form">
+    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+    <.angle_slider
+      name="angle_slider_form[angle]"
+      id="angle-slider-form-angle"
+      value={0.0}
+      marker_values={[0, 90, 180, 270]}
+      class="angle-slider"
+    >
+      <:label>Angle</:label>
+    </.angle_slider>
+    <.action type="submit" id="angle-slider-form-submit" class="button button--accent">
+      Submit
+    </.action>
+  </form>
+</Layouts.app>

@@ -1,0 +1,20 @@
+<Layouts.app
+  flash={@flash}<%= if layout_mode do %>
+  mode={@mode}<% end %><%= if layout_theme do %>
+  theme={@theme}<% end %><%= if layout_themes do %>
+  themes={@themes}<% end %><%= if layout_locale do %>
+  locale={@locale}
+  current_path={@current_path}<% end %><%= if scope do %>
+  <%= scope.assign_key %>={@<%= scope.assign_key %>}<% end %>
+>
+  <.layout_heading>
+    <:title>New <%= schema.human_singular %></:title>
+    <:subtitle>Use this form to manage <%= schema.singular %> records in your database.</:subtitle>
+  </.layout_heading>
+
+  <.<%= schema.singular %>_form
+    changeset={@changeset}
+    action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+    return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
+  />
+</Layouts.app>

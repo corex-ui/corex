@@ -76,9 +76,9 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule VisibilityTrigger do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, :aria_label]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), aria_label: String.t() | nil}
   end
 
   defmodule Indicator do

@@ -35,13 +35,14 @@ function buildCollection(items: ListboxItem[], hasGroups: boolean) {
 type ListboxHookState = {
   listbox?: Listbox;
   handlers?: Array<CallbackRef>;
+  handleContentClick?: (e: MouseEvent) => void;
 };
 
 const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ListboxHookState) {
     const el = this.el;
-    const allItems = JSON.parse(el.dataset.collection ?? "[]") as ListboxItem[];
-    const hasGroups = allItems.some((item) => item.group !== undefined);
+    const allItems = JSON.parse(el.dataset.items ?? "[]") as ListboxItem[];
+    const hasGroups = allItems.some((item) => Boolean(item.group));
     const valueList = getStringList(el, "value");
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
@@ -92,21 +93,37 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
 
     this.listbox = zag;
     this.handlers = [];
+    this.handleContentClick = (e: MouseEvent) => {
+      const btn = (e.target as HTMLElement).closest?.(
+        "[data-phx-push][data-phx-push-id]"
+      ) as HTMLElement | null;
+      if (btn && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        e.stopPropagation();
+        e.preventDefault();
+        this.pushEvent(btn.dataset.phxPush!, { id: btn.dataset.phxPushId });
+      }
+    };
+    el.addEventListener("click", this.handleContentClick, true);
   },
 
   updated(this: object & HookInterface<HTMLElement> & ListboxHookState) {
-    const newItems = JSON.parse(this.el.dataset.collection ?? "[]") as ListboxItem[];
-    const hasGroups = newItems.some((item) => item.group !== undefined);
+    const newItems = JSON.parse(this.el.dataset.items ?? "[]") as ListboxItem[];
+    const hasGroups = newItems.some((item) => Boolean(item.group));
+
     const valueList = getStringList(this.el, "value");
+    const defaultValueList = getStringList(this.el, "defaultValue");
     const controlled = getBoolean(this.el, "controlled");
 
     if (this.listbox) {
       this.listbox.hasGroups = hasGroups;
       this.listbox.setOptions(newItems);
+      this.listbox.render();
       this.listbox.updateProps({
-        collection: buildCollection(newItems, hasGroups),
+        collection: this.listbox.getCollection(),
         id: this.el.id,
-        ...(controlled && valueList ? { value: valueList } : {}),
+        ...(controlled && valueList
+          ? { value: valueList }
+          : { defaultValue: defaultValueList ?? [] }),
         disabled: getBoolean(this.el, "disabled"),
         dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
         orientation: getString<"horizontal" | "vertical">(this.el, "orientation", [
@@ -120,6 +137,9 @@ const ListboxHook: Hook<object & ListboxHookState, HTMLElement> = {
   destroyed(this: object & HookInterface<HTMLElement> & ListboxHookState) {
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
+    }
+    if (this.handleContentClick) {
+      this.el.removeEventListener("click", this.handleContentClick, true);
     }
     this.listbox?.destroy();
   },

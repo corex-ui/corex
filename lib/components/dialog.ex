@@ -21,7 +21,7 @@ defmodule Corex.Dialog do
       <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
     </:content>
     <:close_trigger>
-      <.icon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" class="icon" />
     </:close_trigger>
   </.dialog>
   ```
@@ -38,7 +38,7 @@ defmodule Corex.Dialog do
       </.dialog_description>
       <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
       <.dialog_close_trigger id="my-dialog">
-        <.icon name="hero-x-mark" class="icon" />
+        <.heroicon name="hero-x-mark" class="icon" />
       </.dialog_close_trigger>
     </:content>
   </.dialog>
@@ -123,8 +123,21 @@ defmodule Corex.Dialog do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/dialog#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for Dialog component strings.
+
+    Without gettext: `translation={%Dialog.Translation{ close: "Close" }}`
+
+    With gettext: `translation={%Dialog.Translation{ close: gettext("Close") }}`
+    """
+    defstruct [:close]
+  end
+
   @doc type: :component
   use Phoenix.Component
+
+  import Corex.Gettext, only: [gettext: 1]
 
   alias Corex.Dialog.Anatomy.{
     Backdrop,
@@ -203,6 +216,7 @@ defmodule Corex.Dialog do
     doc: "The client event name when the open state changes"
   )
 
+  attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
   slot :trigger, required: true do
@@ -227,9 +241,13 @@ defmodule Corex.Dialog do
   end
 
   def dialog(assigns) do
+    default_translation = %Translation{close: gettext("Close")}
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "dialog-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
     ~H"""
     <div
@@ -261,7 +279,7 @@ defmodule Corex.Dialog do
         <h2 :if={@title != []} {Connect.title(%Title{id: @id, dir: @dir, open: @open})}>
             {render_slot(@title)}
           </h2>
-          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open})}>
+          <button :if={@close_trigger != []}  {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: @open, aria_label: @translation.close})}>
           {render_slot(@close_trigger)}
         </button>
         </div>
@@ -309,12 +327,15 @@ defmodule Corex.Dialog do
   @doc "Renders the dialog close button. Use inside `<:content>` when not using the top-level `<:close_trigger>` slot. Pass the same id as the parent dialog."
   attr(:id, :string, required: true)
   attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:aria_label, :string, default: nil)
   attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def dialog_close_trigger(assigns) do
+    assigns = assign_new(assigns, :aria_label, fn -> gettext("Close") end)
+
     ~H"""
-    <button {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false})} {@rest}>
+    <button {Connect.close_trigger(%CloseTrigger{id: @id, dir: @dir, open: false, aria_label: @aria_label})} {@rest}>
       <%= render_slot(@inner_block) %>
     </button>
     """
@@ -356,5 +377,13 @@ defmodule Corex.Dialog do
       dialog_id: dialog_id,
       open: open
     })
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      close: partial.close || default.close
+    }
   end
 end

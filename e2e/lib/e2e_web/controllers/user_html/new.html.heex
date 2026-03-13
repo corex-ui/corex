@@ -5,10 +5,15 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <.header>
-    New User
+  <.layout_heading>
+    <:title>New User</:title>
     <:subtitle>Use this form to manage user records in your database.</:subtitle>
-  </.header>
+    <:actions>
+      <.navigate to={~p"/#{@locale}/users"} type="href" class="button">
+        <.heroicon name="hero-arrow-left" class="icon" /> Cancel
+      </.navigate>
+    </:actions>
+  </.layout_heading>
 
   <.user_form
     changeset={@changeset}

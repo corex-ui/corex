@@ -65,4 +65,8 @@
     border-start-end-radius: 0;
     border-block-start: 0;
   }
+
+  .number-input [data-scope="number-input"][data-part="error"] {
+    @apply ui-error;
+  }
 }

@@ -45,7 +45,6 @@
     &[data-state="unchecked"] {
       background: var(--color-ui);
       color: var(--color-ui--text);
-      border-color: var(--color-ui--border);
     }
 
     &:hover {
@@ -64,8 +63,8 @@
 
     &:focus-visible,
     &[data-focus] {
-      outline: 2px solid var(--color-ui--text);
-      outline-offset: -3px;
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ui--text);
     }
 
     &:disabled,
@@ -101,7 +100,7 @@
     .data-checked {
     display: block !important;
     @apply ui-icon;
-    color: var(--color-ui-accent--text);
+    color: inherit;
     width: 100%;
     height: 100%;
   }
@@ -111,7 +110,7 @@
     .data-indeterminate {
     display: block !important;
     @apply ui-icon;
-    color: var(--color-ui-accent--text);
+    color: inherit;
     width: 100%;
     height: 100%;
   }
@@ -152,7 +151,8 @@
 
   [data-scope="checkbox"][data-part="control"]:focus-visible,
   [data-scope="checkbox"][data-part="control"][data-focus] {
-    outline-color: --value(--color-ui-* --text, [color]);
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
   }
 
   [data-scope="checkbox"][data-part="control"]:disabled,

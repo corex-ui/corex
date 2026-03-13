@@ -5,10 +5,10 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <.header>
-    Edit User {@user.id}
+  <.layout_heading>
+    <:title>Edit User {@user.id}</:title>
     <:subtitle>Use this form to manage user records in your database.</:subtitle>
-  </.header>
+  </.layout_heading>
 
   <.user_form
     changeset={@changeset}

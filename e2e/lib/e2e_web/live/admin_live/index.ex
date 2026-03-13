@@ -13,41 +13,47 @@ defmodule E2eWeb.AdminLive.Index do
       locale={@locale}
       current_path={@current_path}
     >
-      <.header>
-        Listing Admins
+      <.layout_heading>
+        <:title>Listing Admins</:title>
+        <:subtitle>Add and manage admin records</:subtitle>
         <:actions>
-          <.button class="button button--accent" navigate={~p"/#{@locale}/admins/new"}>
-            <.icon name="hero-plus" /> New Admin
-          </.button>
+          <.navigate to={~p"/#{@locale}/admins/new"} type="navigate" class="button button--accent">
+            <.heroicon name="hero-plus" /> New Admin
+          </.navigate>
         </:actions>
-      </.header>
-
-      <div class="table-scroll">
-        <.table
-          id="admins"
-          rows={@streams.admins}
-          row_click={fn {_id, admin} -> JS.navigate(~p"/#{@locale}/admins/#{admin}") end}
-        >
-          <:col :let={{_id, admin}} label="Name">{admin.name}</:col>
-          <:col :let={{_id, admin}} label="Country">{admin.country}</:col>
-          <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
-          <:action :let={{_id, admin}}>
-            <div class="sr-only">
-              <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
-            </div>
-            <.link navigate={~p"/#{@locale}/admins/#{admin}/edit"} class="link">Edit</.link>
-          </:action>
-          <:action :let={{id, admin}}>
-            <.link
-              phx-click={JS.push("delete", value: %{id: admin.id}) |> hide("##{id}")}
-              data-confirm="Are you sure?"
-              class="link link--alert"
-            >
-              Delete
-            </.link>
-          </:action>
-        </.table>
-      </div>
+      </.layout_heading>
+      <.data_table
+        id="admins"
+        class="data-table"
+        rows={@streams.admins}
+        row_click={fn {_id, admin} -> JS.navigate(~p"/#{@locale}/admins/#{admin}") end}
+      >
+        <:col :let={{_id, admin}} label="Name">{admin.name}</:col>
+        <:col :let={{_id, admin}} label="Country">{admin.country}</:col>
+        <:col :let={{_id, admin}} label="Terms">{admin.terms}</:col>
+        <:action :let={{_id, admin}}>
+          <div class="sr-only">
+            <.link navigate={~p"/#{@locale}/admins/#{admin}"} class="link">Show</.link>
+          </div>
+          <.link
+            navigate={~p"/#{@locale}/admins/#{admin}/edit"}
+            class="button button--sm"
+            aria-label={"Edit #{admin.name}"}
+          >
+            <.heroicon name="hero-pencil-square" />
+          </.link>
+        </:action>
+        <:action :let={{_id, admin}}>
+          <.action
+            phx-click={JS.push("delete", value: %{id: admin.id})}
+            data-confirm="Are you sure?"
+            class="button button--sm button--alert"
+            aria-label={"Delete #{admin.name}"}
+          >
+            <.heroicon name="hero-trash" />
+          </.action>
+        </:action>
+      </.data_table>
     </Layouts.app>
     """
   end

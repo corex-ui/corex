@@ -13,7 +13,7 @@ defmodule Corex.Toast do
   ```heex
     <.toast_group id="layout-toast" flash={@flash} class="toast">
       <:loading>
-        <.icon name="hero-arrow-path" />
+        <.heroicon name="hero-arrow-path" />
       </:loading>
     </.toast_group>
   ```
@@ -76,6 +76,17 @@ defmodule Corex.Toast do
   ```
   """
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for Toast component strings (default titles for flash messages).
+
+    Without gettext: `translation={%Toast.Translation{ info: "Info", error: "Error" }}`
+
+    With gettext: `translation={%Toast.Translation{ info: gettext("Info"), error: gettext("Error") }}`
+    """
+    defstruct [:info, :error]
+  end
+
   @doc type: :component
   use Phoenix.Component
 
@@ -94,7 +105,7 @@ defmodule Corex.Toast do
   ```heex
    <.toast_group id="layout-toast" class="toast" flash={@flash}>
     <:loading>
-      <.icon name="hero-arrow-path" />
+      <.heroicon name="hero-arrow-path" />
     </:loading>
   </.toast_group>
   ```
@@ -114,19 +125,20 @@ defmodule Corex.Toast do
   ```
 
   """
-  attr(:id, :string, required: true)
+  attr(:id, :string, required: true, doc: "The id of the toast group")
 
   attr(:placement, :string,
     default: "bottom-end",
-    values: ~w(top-start top top-end bottom-start bottom bottom-end)
+    values: ~w(top-start top top-end bottom-start bottom bottom-end),
+    doc: "Where toasts appear on screen"
   )
 
-  attr(:overlap, :boolean, default: true)
-  attr(:max, :integer, default: 5)
-  attr(:gap, :integer, default: nil)
-  attr(:offset, :string, default: nil)
-  attr(:pause_on_page_idle, :boolean, default: false)
-  attr(:flash, :map, default: %{}, doc: "the map of flash messages to display as toasts")
+  attr(:overlap, :boolean, default: true, doc: "Whether toasts can overlap")
+  attr(:max, :integer, default: 5, doc: "Maximum number of visible toasts")
+  attr(:gap, :integer, default: nil, doc: "Gap between toasts in pixels")
+  attr(:offset, :string, default: nil, doc: "Offset from viewport edge")
+  attr(:pause_on_page_idle, :boolean, default: false, doc: "Pause duration when page is idle")
+  attr(:flash, :map, default: %{}, doc: "The map of flash messages to display as toasts")
 
   attr(:flash_info, Flash.Info,
     doc: "configuration for info flash messages (Corex.Flash.Info struct)"
@@ -136,9 +148,15 @@ defmodule Corex.Toast do
     doc: "configuration for error flash messages (Corex.Flash.Error struct)"
   )
 
-  slot(:loading,
-    doc: "the loading spinner icon to display when duration is infinity"
+  attr(:translation, Corex.Toast.Translation,
+    default: nil,
+    doc: "Override default titles for info/error flash messages"
   )
+
+  slot :loading,
+    doc: "the loading spinner icon to display when duration is infinity" do
+    attr(:class, :string, required: false)
+  end
 
   attr(:rest, :global)
 
@@ -146,13 +164,16 @@ defmodule Corex.Toast do
     info_flash = Phoenix.Flash.get(assigns.flash, :info)
     error_flash = Phoenix.Flash.get(assigns.flash, :error)
 
+    default_translation = %Translation{info: gettext("Info"), error: gettext("Error")}
+    translation = merge_translation(assigns[:translation], default_translation)
+
     flash_info =
       Map.get(assigns, :flash_info) ||
-        %Flash.Info{title: gettext("Info"), type: :info, duration: 5000}
+        %Flash.Info{title: translation.info, type: :info, duration: 5000}
 
     flash_error =
       Map.get(assigns, :flash_error) ||
-        %Flash.Error{title: gettext("Error"), type: :error, duration: 5000}
+        %Flash.Error{title: translation.error, type: :error, duration: 5000}
 
     assigns =
       assigns
@@ -441,6 +462,15 @@ defmodule Corex.Toast do
     >
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      info: partial.info || default.info,
+      error: partial.error || default.error
+    }
   end
 
   @doc type: :api

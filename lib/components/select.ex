@@ -1,23 +1,21 @@
 defmodule Corex.Select do
+  import Corex.Gettext, only: [gettext: 1]
+
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Select](https://zagjs.com/components/react/select).
 
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder can be set via the `placeholder_text` attribute or via the optional `:placeholder` slot.
-  When both are provided, the slot content is shown (the slot overrides the attribute).
+  The placeholder text comes from the Translation struct. Use `translation={%Select.Translation{ placeholder: gettext("Select an option") }}` to customize.
 
   ### Minimal
-
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
 
   ```heex
   <.select
     id="my-select"
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    items={[
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -27,20 +25,17 @@ defmodule Corex.Select do
     ]}
   >
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
 
   ### Grouped
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.select
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -57,41 +52,18 @@ defmodule Corex.Select do
     ]}
   >
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
 
-  ### With custom placeholder slot
-
-  Use the `:placeholder` slot to fully customize the placeholder (e.g. icon + text):
-
-  ```heex
-  <.select
-    id="my-select"
-    class="select"
-    collection={[...]}
-  >
-    <:placeholder>
-      <.icon name="hero-globe-alt" class="opacity-60" />
-      <span>Choose a country</span>
-    </:placeholder>
-    <:trigger>
-      <.icon name="hero-chevron-down" />
-    </:trigger>
-  </.select>
-  ```
-
-    ### Custom
+  ### Custom
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.select
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    items={[
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
@@ -108,10 +80,10 @@ defmodule Corex.Select do
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   ```
@@ -119,13 +91,10 @@ defmodule Corex.Select do
   ### Custom Grouped
 
   This example requires the installation of [Flagpack](https://hex.pm/packages/flagpack) to display the use of custom item rendering.
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.select
     class="select"
-    placeholder_text="Select a country"
-    collection={[
+    items={[
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -139,10 +108,10 @@ defmodule Corex.Select do
       {item.label}
     </:item>
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
     <:item_indicator>
-      <.icon name="hero-check" />
+      <.heroicon name="hero-check" />
     </:item_indicator>
   </.select>
   ```
@@ -162,14 +131,14 @@ defmodule Corex.Select do
     id="nav-select"
     class="select"
     redirect
-    placeholder_text="Go to"
-    collection={[
+    translation={%Corex.Select.Translation{placeholder: "Go to"}}
+    items={[
       %{label: "Account", id: ~p"/account"},
       %{label: "Settings", id: ~p"/settings"}
     ]}
   >
     <:trigger>
-      <.icon name="hero-chevron-down" />
+      <.heroicon name="hero-chevron-down" />
     </:trigger>
   </.select>
   ```
@@ -194,14 +163,14 @@ defmodule Corex.Select do
         class="select"
         redirect
         on_value_change="nav_change"
-        placeholder_text="Go to"
-        collection={[
+        translation={%Corex.Select.Translation{placeholder: "Go to"}}
+        items={[
           %{label: "Account", id: ~p"/account"},
           %{label: "Settings", id: ~p"/settings"}
         ]}
       >
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
       </.select>
       """
@@ -215,24 +184,25 @@ defmodule Corex.Select do
 
   ### Controller
 
-  ```elixir
-  defmodule MyAppWeb.PageController do
-    use MyAppWeb, :controller
+  Build the form from an Ecto changeset:
 
-    def home(conn, params) do
-      form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-      render(conn, :home, form: form)
-    end
+  ```elixir
+  def form_page(conn, _params) do
+    form =
+      %MyApp.Form.SelectForm{}
+      |> MyApp.Form.SelectForm.changeset(%{})
+      |> Phoenix.Component.to_form(as: :select_form, id: "select-form")
+    render(conn, :form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
     <.select
       field={f[:country]}
       class="select"
-      placeholder_text="Select a country"
-      collection={[
+      translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+      items={[
         %{label: "France", id: "fra", disabled: true},
         %{label: "Belgium", id: "bel"},
         %{label: "Germany", id: "deu"},
@@ -243,10 +213,10 @@ defmodule Corex.Select do
     >
       <:label>Your country of residence</:label>
       <:trigger>
-        <.icon name="hero-chevron-down" />
+        <.heroicon name="hero-chevron-down" />
       </:trigger>
       <:error :let={msg}>
-        <.icon name="hero-exclamation-circle" class="icon" />
+        <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
       </:error>
     </.select>
@@ -256,49 +226,7 @@ defmodule Corex.Select do
 
   ### Live View
 
-  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly.
-
-  ```elixir
-  defmodule MyAppWeb.SelectLive do
-    use MyAppWeb, :live_view
-
-    def mount(_params, _session, socket) do
-      form = to_form(%{"country" => nil}, as: :user)
-      {:ok, assign(socket, :form, form)}
-    end
-
-    def render(assigns) do
-      ~H"""
-      <.form as={:user} for={@form} id={get_form_id(@form)}>
-        <.select
-          field={@form[:country]}
-          class="select"
-          controlled
-          placeholder_text="Select a country"
-          collection={[
-            %{label: "France", id: "fra", disabled: true},
-            %{label: "Belgium", id: "bel"},
-            %{label: "Germany", id: "deu"},
-            %{label: "Netherlands", id: "nld"},
-            %{label: "Switzerland", id: "che"},
-            %{label: "Austria", id: "aut"}
-          ]}
-        >
-          <:label>Your country of residence</:label>
-          <:trigger>
-            <.icon name="hero-chevron-down" />
-          </:trigger>
-          <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
-            {msg}
-          </:error>
-        </.select>
-        <button type="submit">Submit</button>
-      </.form>
-      """
-    end
-  end
-  ```
+  When using in a Live view you must add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 
@@ -348,8 +276,8 @@ defmodule Corex.Select do
           field={@form[:country]}
           class="select"
           controlled
-          placeholder_text="Select a country"
-          collection={[
+          translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+          items={[
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
             %{label: "Germany", id: "deu"}
@@ -357,10 +285,10 @@ defmodule Corex.Select do
         >
           <:label>Your country of residence</:label>
           <:trigger>
-            <.icon name="hero-chevron-down" />
+            <.heroicon name="hero-chevron-down" />
           </:trigger>
           <:error :let={msg}>
-            <.icon name="hero-exclamation-circle" class="icon" />
+            <.heroicon name="hero-exclamation-circle" class="icon" />
             {msg}
           </:error>
         </.select>
@@ -425,18 +353,31 @@ defmodule Corex.Select do
 
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for Select component strings.
+
+    Without gettext: `translation={%Select.Translation{ placeholder: "Choose an option" }}`
+
+    With gettext: `translation={%Select.Translation{ placeholder: gettext("Select an option") }}`
+    """
+    defstruct [:placeholder]
+  end
+
   use Phoenix.Component
   alias Corex.Select.Anatomy.{Content, Control, Label, Positioner, Props, Root}
   alias Corex.Select.Connect
 
-  attr(:id, :string, required: false)
-  attr(:collection, :list, default: [])
-  attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
+  import Corex.Helpers, only: [normalize_items: 1, has_groups?: 1, group_by_group: 1]
 
-  attr(:placeholder_text, :string,
-    default: nil,
-    doc: "The placeholder text of the select when no value is selected"
+  attr(:id, :string, required: false, doc: "The id of the select component")
+
+  attr(:items, :list,
+    default: [],
+    doc: "List of items (maps with :id and :label, or Corex.List.Item)"
   )
+
+  attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
 
   attr(:value, :list, default: [], doc: "The value of the select")
   attr(:disabled, :boolean, default: false, doc: "Whether the select is disabled")
@@ -446,6 +387,12 @@ defmodule Corex.Select do
     default: nil,
     doc:
       "The direction of the select. When nil, derived from document (html lang + config :rtl_locales)"
+  )
+
+  attr(:orientation, :string,
+    default: "vertical",
+    values: ["vertical", "horizontal"],
+    doc: "Layout orientation for CSS (vertical or horizontal)"
   )
 
   attr(:loop_focus, :boolean, default: false, doc: "Whether to loop focus the select")
@@ -483,29 +430,30 @@ defmodule Corex.Select do
     doc: "Positioning options for the dropdown"
   )
 
+  attr(:translation, Corex.Select.Translation, default: nil, doc: "Override translatable strings")
   attr(:rest, :global)
 
   slot :label, required: false, doc: "The label content" do
     attr(:class, :string, required: false)
   end
 
-  slot(:trigger, required: true, doc: "The trigger button content")
+  slot :trigger, required: true, doc: "The trigger button content" do
+    attr(:class, :string, required: false)
+  end
 
-  slot(:placeholder,
-    required: false,
-    doc: "Custom placeholder content. When provided, overrides the placeholder_text attribute"
-  )
-
-  slot(:item_indicator, required: false, doc: "Optional indicator for selected items")
+  slot :item_indicator, required: false, doc: "Optional indicator for selected items" do
+    attr(:class, :string, required: false)
+  end
 
   slot :error, required: false do
     attr(:class, :string, required: false)
   end
 
-  slot(:item,
+  slot :item,
     required: false,
-    doc: "Custom content for each item. Receives the item as :let binding"
-  )
+    doc: "Custom content for each item. Receives the item as :let binding" do
+    attr(:class, :string, required: false)
+  end
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
@@ -520,7 +468,7 @@ defmodule Corex.Select do
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
     value = get_value(field.value)
-    selected_label = get_selected_label(assigns.collection, value)
+    selected_label = get_selected_label(assigns.items, value)
 
     assigns
     |> assign(field: nil)
@@ -534,27 +482,30 @@ defmodule Corex.Select do
   end
 
   def select(assigns) do
+    items = normalize_items(assigns.items)
+    default_translation = %Translation{placeholder: gettext("Select an option")}
+    translation = assigns[:translation] || default_translation
+    placeholder = translation.placeholder
+
     assigns =
       assigns
+      |> assign(:items, items)
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign(:translation, translation)
+      |> assign(:placeholder, placeholder)
 
     value = Map.get(assigns, :value, [])
 
     value_list = get_value(value)
-    selected_label = get_selected_label(assigns.collection, value_list)
+    selected_label = get_selected_label(items, value_list)
 
     assigns = assign(assigns, :selected_label, selected_label)
 
-    options = transform_collection_to_options(assigns.collection)
-
-    grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
-
-    has_groups =
-      grouped_items
-      |> Map.keys()
-      |> Enum.any?(& &1)
+    options = transform_collection_to_options(items)
+    grouped_items = group_by_group(items)
+    has_groups = has_groups?(items)
 
     selected_for_options =
       if assigns.multiple do
@@ -572,43 +523,36 @@ defmodule Corex.Select do
       |> assign(:options, options)
       |> assign(:options_with_prompt, options_with_prompt)
       |> assign(:selected_for_options, selected_for_options)
-      |> assign(:disabled_values, get_disabled_values(assigns.collection))
+      |> assign(:disabled_values, get_disabled_values(items))
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
-    <div id={@id} phx-hook="Select" {@rest} {Connect.props(%Props{
-      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder_text, value: @value,
+    <div id={@id} phx-hook="Select" data-js="pending" {@rest} {Connect.props(%Props{
+      id: @id, items: @items, controlled: @controlled, placeholder: @placeholder, value: @value,
       disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
       required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
       redirect: @redirect,
       positioning: @positioning
     })}>
-      <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
+      <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation})}>
 
       <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
 
       <select multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
-        <%= Phoenix.HTML.Form.options_for_select(
-          @options_with_prompt,
-          @selected_for_options,
-          disabled: @disabled_values
-        ) %>
+        <%= Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options) %>
       </select>
 
-        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </div>
-        <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled})}>
-          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={if @selected_label, do: @selected_label, else: @placeholder_text || "Select an option"} data-scope="select" data-part="trigger">
+        <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
+          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={@selected_label || @placeholder} data-scope="select" data-part="trigger">
             <span :if={@selected_label} data-scope="select" data-part="item-text">
               {@selected_label}
             </span>
-            <span :if={!@selected_label and !Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
-              {render_slot(@placeholder)}
-            </span>
-            <span :if={!@selected_label and Enum.empty?(@placeholder)} data-scope="select" data-part="item-text">
-              {@placeholder_text || "Select an option"}
+            <span :if={!@selected_label} data-scope="select" data-part="item-text">
+              {@placeholder}
             </span>
             {render_slot(@trigger)}
           </button>
@@ -618,12 +562,12 @@ defmodule Corex.Select do
         </div>
         <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
           <ul {Connect.content(%Content{id: @id, dir: @dir})}>
-            <li :if={@has_groups} :for={{group, items} <- Enum.sort(@grouped_items, fn {a, _}, {b, _} -> (a || "") <= (b || "") end)} data-scope="select" data-part="item-group" data-id={group || "default"}>
+            <li :if={@has_groups} :for={{group, group_items} <- @grouped_items} data-scope="select" data-part="item-group" data-id={group || "default"}>
               <div :if={group} data-scope="select" data-part="item-group-label" data-id={group}>
                 {group}
               </div>
               <ul>
-                <li :for={item <- items} data-scope="select" data-part="item" data-value={item.id}>
+                <li :for={item <- group_items} data-scope="select" data-part="item" data-value={item.id}>
                   <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
                     {render_slot(@item, item)}
                   </span>
@@ -636,7 +580,7 @@ defmodule Corex.Select do
                 </li>
               </ul>
             </li>
-            <li :if={!@has_groups} :for={item <- @collection} data-scope="select" data-part="item" data-value={item.id}>
+            <li :if={!@has_groups} :for={item <- @items} data-scope="select" data-part="item" data-value={item.id}>
               <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
                 {render_slot(@item, item)}
               </span>
@@ -664,17 +608,12 @@ defmodule Corex.Select do
   defp value_for_hidden_input(value_list, false), do: List.first(value_list)
   defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
 
-  defp transform_collection_to_options(collection) do
-    grouped = Enum.group_by(collection, &Map.get(&1, :group))
+  defp transform_collection_to_options(items) do
+    grouped = group_by_group(items)
 
-    case Map.keys(grouped) do
-      [nil] ->
-        Enum.map(collection, &{&1.label, &1.id})
-
-      _ ->
-        grouped
-        |> Enum.sort_by(fn {group, _} -> group || "" end)
-        |> Enum.flat_map(&group_to_options/1)
+    case grouped do
+      [{nil, all_items}] -> Enum.map(all_items, &{&1.label, &1.id})
+      _ -> Enum.flat_map(grouped, &group_to_options/1)
     end
   end
 

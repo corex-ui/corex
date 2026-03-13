@@ -5,8 +5,11 @@
   locale={@locale}
   current_path={@current_path}
 >
-  <h1>Dialog</h1>
-  <h2>Controller View</h2>
+  <.layout_heading>
+    <:title>Dialog</:title>
+    <:subtitle>Controller View</:subtitle>
+  </.layout_heading>
+
   <h3>Client Api</h3>
   <div class="layout__row">
     <.action
@@ -32,7 +35,7 @@
       </.action>
     </:content>
     <:close_trigger>
-      <.icon name="hero-x-mark" class="icon" />
+      <.heroicon name="hero-x-mark" class="icon" />
     </:close_trigger>
   </.dialog>
 </Layouts.app>

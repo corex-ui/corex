@@ -1,5 +1,6 @@
 defmodule Corex.ListboxTest do
   use CorexTest.ComponentCase, async: true
+  import Phoenix.Component
 
   alias Corex.Listbox.Connect
 
@@ -8,6 +9,64 @@ defmodule Corex.ListboxTest do
       html = render_component(&CorexTest.ComponentHelpers.render_listbox/1, [])
       assert html =~ ~r/data-scope="listbox"/
       assert html =~ ~r/data-part="root"/
+    end
+
+    test "renders with all attributes and slots" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox 
+              items={[%{id: "1", label: "One", disabled: true, group: "G"}, %{id: "2", label: "Two", group: "G"}]}
+              controlled={true}
+              disabled={true}
+              dir="rtl"
+              orientation="horizontal"
+              loop_focus={true}
+              selection_mode="multiple"
+              select_on_highlight={true}
+              deselectable={true}
+              typeahead={true}
+              on_value_change="change"
+              on_value_change_client="change_client"
+              aria_label="Listbox"
+            >
+              <:label>Label</:label>
+              <:item :let={%{label: label}}>Item {label}</:item>
+              <:item_indicator>Selected</:item_indicator>
+              <:empty>No items</:empty>
+            </Corex.Listbox.listbox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Label"
+      assert html =~ "Item One"
+      assert html =~ "Selected"
+      assert html =~ "data-disabled"
+      assert html =~ "data-orientation=\"horizontal\""
+    end
+
+    test "renders empty slot" do
+      html =
+        render_component(
+          fn assigns ->
+            _ = assigns
+
+            ~H"""
+            <Corex.Listbox.listbox items={[]}>
+              <:empty>Empty state</:empty>
+            </Corex.Listbox.listbox>
+            """
+          end,
+          %{}
+        )
+
+      assert html =~ "Empty state"
+      assert html =~ "data-part=\"empty\""
     end
   end
 
@@ -43,15 +102,6 @@ defmodule Corex.ListboxTest do
       result = Connect.value_text(assigns)
       assert result["id"] == "listbox:test-listbox:value-text"
       assert result["data-part"] == "value-text"
-    end
-  end
-
-  describe "Connect.input/1" do
-    test "returns input attributes" do
-      assigns = %{id: "test-listbox"}
-      result = Connect.input(assigns)
-      assert result["id"] == "listbox:test-listbox:input"
-      assert result["data-part"] == "input"
     end
   end
 
@@ -112,7 +162,7 @@ defmodule Corex.ListboxTest do
     test "returns props when controlled" do
       assigns = %{
         id: "test-listbox",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: true,
         value: ["a"],
         dir: "ltr",
@@ -135,7 +185,7 @@ defmodule Corex.ListboxTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-listbox",
-        collection: [%{id: "a", label: "A"}],
+        items: [%{id: "a", label: "A"}],
         controlled: false,
         value: ["a"],
         dir: "ltr",

@@ -9,7 +9,7 @@ defmodule Corex.Select.Anatomy do
 
     defstruct [
       :id,
-      collection: [],
+      items: [],
       controlled: false,
       placeholder: nil,
       value: [],
@@ -32,7 +32,7 @@ defmodule Corex.Select.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            collection: list(Tree.Item.t() | map()),
+            items: list(Tree.Item.t() | map()),
             controlled: boolean(),
             placeholder: String.t() | nil,
             value: list(String.t()),
@@ -55,7 +55,7 @@ defmodule Corex.Select.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, invalid: false, read_only: false]
+    defstruct [:id, invalid: false, read_only: false, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -72,7 +72,8 @@ defmodule Corex.Select.Anatomy do
       read_only: false,
       required: false,
       disabled: false,
-      dir: "ltr"
+      dir: "ltr",
+      orientation: "vertical"
     ]
 
     @type t :: %__MODULE__{
@@ -87,7 +88,7 @@ defmodule Corex.Select.Anatomy do
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :disabled, :invalid]
+    defstruct [:id, :dir, :disabled, :invalid, orientation: "vertical"]
 
     @type t :: %__MODULE__{
             id: String.t(),

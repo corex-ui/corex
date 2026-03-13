@@ -4,10 +4,10 @@ import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 import type { Direction } from "@zag-js/types";
 
-import { getString, getBoolean } from "../lib/util";
+import { getString, getBoolean, canPushEvent } from "../lib/util";
 
 type SwitchHookState = {
-  switch?: Switch;
+  zagSwitch?: Switch;
   handlers?: Array<CallbackRef>;
   onSetChecked?: (event: Event) => void;
   wasFocused?: boolean;
@@ -35,7 +35,7 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
 
       onCheckedChange: (details: CheckedChangeDetails) => {
         const eventName = getString(el, "onCheckedChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             checked: details.checked,
             id: el.id,
@@ -48,8 +48,8 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
             new CustomEvent(eventNameClient, {
               bubbles: true,
               detail: {
-                value: details,
                 id: el.id,
+                checked: details.checked,
               },
             })
           );
@@ -61,18 +61,18 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     this.zagSwitch = zagSwitch;
 
     this.onSetChecked = (event: Event) => {
-      const { value } = (event as CustomEvent<{ value: boolean }>).detail;
-      zagSwitch.api.setChecked(value);
+      const { checked } = (event as CustomEvent<{ checked: boolean }>).detail;
+      zagSwitch.api.setChecked(checked);
     };
     el.addEventListener("phx:switch:set-checked", this.onSetChecked);
 
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("switch_set_checked", (payload: { id?: string; value: boolean }) => {
+      this.handleEvent("switch_set_checked", (payload: { id?: string; checked: boolean }) => {
         const targetId = payload.id;
         if (targetId && targetId !== el.id) return;
-        zagSwitch.api.setChecked(payload.value);
+        zagSwitch.api.setChecked(payload.checked);
       })
     );
 

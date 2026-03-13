@@ -1,10 +1,11 @@
 import {
+  setValueAtIndex
+} from "./chunk-MV633JPN.mjs";
+import {
   Component,
   VanillaMachine,
   ariaAttr,
   createAnatomy,
-  createProps,
-  createSplitProps,
   dataAttr,
   dispatchInputValueEvent,
   getBeforeInputValue,
@@ -22,14 +23,15 @@ import {
   normalizeProps,
   queryAll,
   raf,
-  setValueAtIndex,
   setup,
   visuallyHiddenStyle
-} from "./chunk-PLUM2DEK.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.34.1/node_modules/@zag-js/pin-input/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
 var parts = anatomy.build();
+
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `pin-input:${ctx.id}`;
 var getInputId = (ctx, id) => ctx.ids?.input?.(id) ?? `pin-input:${ctx.id}:${id}`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `pin-input:${ctx.id}:hidden`;
@@ -48,6 +50,8 @@ var setInputValue = (inputEl, value) => {
   inputEl.value = value;
   inputEl.setAttribute("value", value);
 };
+
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
 var REGEX = {
   numeric: /^[0-9]+$/,
   alphabetic: /^[A-Za-z]+$/,
@@ -62,6 +66,8 @@ function isValidValue(value, type, pattern) {
   const regex = new RegExp(pattern, "g");
   return regex.test(value);
 }
+
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
 function connect(service, normalize) {
   const { send, context, computed, prop, scope } = service;
   const complete = computed("isValueComplete");
@@ -144,8 +150,8 @@ function connect(service, normalize) {
         id: getControlId(scope)
       });
     },
-    getInputProps(props2) {
-      const { index } = props2;
+    getInputProps(props) {
+      const { index } = props;
       const inputType = prop("type") === "numeric" ? "tel" : "text";
       return normalize.input({
         ...parts.input.attrs,
@@ -209,6 +215,7 @@ function connect(service, normalize) {
             send({ type: "INPUT.BACKSPACE" });
             return;
           }
+          if (value === computed("focusedValue")) return;
           send({ type: "INPUT.CHANGE", value, index });
         },
         onKeyDown(event) {
@@ -253,18 +260,20 @@ function connect(service, normalize) {
     }
   };
 }
+
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
 var { choose, createMachine } = setup();
 var machine = createMachine({
-  props({ props: props2 }) {
+  props({ props }) {
     return {
       placeholder: "\u25CB",
       otp: false,
       type: "numeric",
-      defaultValue: props2.count ? fill([], props2.count) : [],
-      ...props2,
+      defaultValue: props.count ? fill([], props.count) : [],
+      ...props,
       translations: {
         inputLabel: (index, length) => `pin code ${index + 1} of ${length}`,
-        ...props2.translations
+        ...props.translations
       }
     };
   },
@@ -530,40 +539,12 @@ function getNextValue(current, next) {
 function fill(value, count) {
   return Array.from({ length: count }).fill("").map((v, i) => value[i] || v);
 }
-var props = createProps()([
-  "autoFocus",
-  "blurOnComplete",
-  "count",
-  "defaultValue",
-  "dir",
-  "disabled",
-  "form",
-  "getRootNode",
-  "id",
-  "ids",
-  "invalid",
-  "mask",
-  "name",
-  "onValueChange",
-  "onValueComplete",
-  "onValueInvalid",
-  "otp",
-  "pattern",
-  "placeholder",
-  "readOnly",
-  "required",
-  "selectOnFocus",
-  "translations",
-  "type",
-  "value"
-]);
-var splitProps = createSplitProps(props);
 
 // components/pin-input.ts
 var PinInput = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initMachine(props2) {
-    return new VanillaMachine(machine, props2);
+  initMachine(props) {
+    return new VanillaMachine(machine, props);
   }
   initApi() {
     return connect(this.machine.service, normalizeProps);
@@ -593,15 +574,25 @@ var PinInput = class extends Component {
 };
 
 // hooks/pin-input.ts
+function parseValueWithEmpties(raw) {
+  return raw.split(",").map((v) => v.trim());
+}
+function padToCount(arr, count) {
+  const copy = [...arr];
+  while (copy.length < count) copy.push("");
+  return copy.slice(0, count);
+}
 var PinInputHook = {
   mounted() {
     const el = this.el;
-    const valueList = getStringList(el, "value");
+    const count = getNumber(el, "count") ?? 4;
+    const rawValue = el.dataset.value;
+    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
     const defaultValueList = getStringList(el, "defaultValue");
     const controlled = getBoolean(el, "controlled");
     const zag = new PinInput(el, {
       id: el.id,
-      count: getNumber(el, "count") ?? 4,
+      count,
       ...controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList ?? [] },
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
@@ -663,11 +654,13 @@ var PinInputHook = {
     this.handlers = [];
   },
   updated() {
-    const valueList = getStringList(this.el, "value");
+    const count = getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4;
+    const rawValue = this.el.dataset.value;
+    const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
     const controlled = getBoolean(this.el, "controlled");
     this.pinInput?.updateProps({
       id: this.el.id,
-      count: getNumber(this.el, "count") ?? this.pinInput?.api.count ?? 4,
+      count,
       ...controlled && valueList ? { value: valueList } : {},
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),

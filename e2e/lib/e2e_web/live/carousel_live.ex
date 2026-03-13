@@ -21,19 +21,19 @@ defmodule E2eWeb.CarouselLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Carousel</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Carousel</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <div class="layout__row flex flex-col gap-ui">
         <section>
           <h3 class="font-ui-lg mb-micro">Basic</h3>
           <.carousel id="carousel-basic" items={@carousel_items} class="carousel">
             <:prev_trigger>
-              <.icon name="hero-arrow-left" />
+              <.heroicon name="hero-arrow-left" />
             </:prev_trigger>
             <:next_trigger>
-              <.icon name="hero-arrow-right" />
+              <.heroicon name="hero-arrow-right" />
             </:next_trigger>
           </.carousel>
         </section>
@@ -41,10 +41,10 @@ defmodule E2eWeb.CarouselLive do
           <h3 class="font-ui-lg mb-micro">Loop</h3>
           <.carousel id="carousel-loop" items={@carousel_items} loop class="carousel">
             <:prev_trigger>
-              <.icon name="hero-arrow-left" />
+              <.heroicon name="hero-arrow-left" />
             </:prev_trigger>
             <:next_trigger>
-              <.icon name="hero-arrow-right" />
+              <.heroicon name="hero-arrow-right" />
             </:next_trigger>
           </.carousel>
         </section>
@@ -57,10 +57,10 @@ defmodule E2eWeb.CarouselLive do
             class="carousel"
           >
             <:prev_trigger>
-              <.icon name="hero-arrow-up" />
+              <.heroicon name="hero-arrow-up" />
             </:prev_trigger>
             <:next_trigger>
-              <.icon name="hero-arrow-down" />
+              <.heroicon name="hero-arrow-down" />
             </:next_trigger>
           </.carousel>
         </section>
@@ -73,10 +73,10 @@ defmodule E2eWeb.CarouselLive do
             class="carousel"
           >
             <:prev_trigger>
-              <.icon name="hero-arrow-left" />
+              <.heroicon name="hero-arrow-left" />
             </:prev_trigger>
             <:next_trigger>
-              <.icon name="hero-arrow-right" />
+              <.heroicon name="hero-arrow-right" />
             </:next_trigger>
           </.carousel>
         </section>
@@ -84,10 +84,10 @@ defmodule E2eWeb.CarouselLive do
           <h3 class="font-ui-lg mb-micro">Autoplay</h3>
           <.carousel id="carousel-autoplay" items={@carousel_items} autoplay class="carousel">
             <:prev_trigger>
-              <.icon name="hero-arrow-left" />
+              <.heroicon name="hero-arrow-left" />
             </:prev_trigger>
             <:next_trigger>
-              <.icon name="hero-arrow-right" />
+              <.heroicon name="hero-arrow-right" />
             </:next_trigger>
           </.carousel>
         </section>

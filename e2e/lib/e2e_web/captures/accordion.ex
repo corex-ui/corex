@@ -4,7 +4,7 @@ defmodule CorexWeb.Accordion do
 
   alias Corex.Accordion
   alias Corex.Content
-  alias E2eWeb.CoreComponents
+  alias Corex.Heroicon
 
   capture variants: [
             with_custom_slots: %{
@@ -36,12 +36,12 @@ defmodule CorexWeb.Accordion do
               trigger: [
                 %{
                   let: :item,
-                  inner_block: ~s(<.icon name={item.data.meta.icon} />{item.data.trigger})
+                  inner_block: ~s(<.heroicon name={item.data.meta.icon} />{item.data.trigger})
                 }
               ],
               content: [%{let: :item, inner_block: "{item.data.content}"}],
               indicator: [
-                %{let: :item, inner_block: ~s(<.icon name={item.data.meta.indicator} />)}
+                %{let: :item, inner_block: ~s(<.heroicon name={item.data.meta.indicator} />)}
               ]
             },
             basic: %{
@@ -84,7 +84,7 @@ defmodule CorexWeb.Accordion do
                 ]),
               trigger: [%{let: :item, inner_block: "{item.data.trigger}"}],
               content: [%{let: :item, inner_block: "{item.data.content}"}],
-              indicator: [%{inner_block: ~s(<.icon name="hero-chevron-right" />)}]
+              indicator: [%{inner_block: ~s(<.heroicon name="hero-chevron-right" />)}]
             },
             with_switching_indicator: %{
               class: "accordion",
@@ -108,7 +108,7 @@ defmodule CorexWeb.Accordion do
               indicator: [
                 %{
                   inner_block:
-                    ~s(<.icon name="hero-plus" class="state-closed" /><.icon name="hero-minus" class="state-open" />)
+                    ~s(<.heroicon name="hero-plus" class="state-closed" /><.heroicon name="hero-minus" class="state-open" />)
                 }
               ]
             },
@@ -166,5 +166,5 @@ defmodule CorexWeb.Accordion do
           ]
 
   defdelegate accordion(assigns), to: Accordion
-  defdelegate icon(assigns), to: CoreComponents
+  defdelegate heroicon(assigns), to: Heroicon
 end

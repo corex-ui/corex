@@ -15,22 +15,18 @@ defmodule Corex.Checkbox do
 
   ### Custom Control
 
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
-
   ```heex
   <.checkbox class="checkbox">
     <:label>
       Accept the terms
     </:label>
-    <:control>
-      <.icon name="hero-check" class="data-checked" />
-    </:control>
+    <:indicator>
+      <.heroicon name="hero-check" class="data-checked" />
+    </:indicator>
   </.checkbox>
   ```
 
   ### Custom Error
-
-  This example assumes the import of `.icon` from `Core Components`, you are free to replace it
 
   ```heex
   <.checkbox class="checkbox">
@@ -38,7 +34,7 @@ defmodule Corex.Checkbox do
       Accept the terms
     </:label>
     <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
+      <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
   </.checkbox>
@@ -52,121 +48,101 @@ defmodule Corex.Checkbox do
 
   ### Controller
 
-  ```elixir
-  defmodule MyAppWeb.PageController do
-  use MyAppWeb, :controller
+  Build the form from an Ecto changeset and pass it to the template. Use `Corex.Form.get_form_id/1` for the form `id`:
 
-  def home(conn, params) do
-    form = Phoenix.Component.to_form(Map.get(params, "user", %{}), as: :user)
-    render(conn, :home, form: form)
-  end
+  ```elixir
+  def checkbox_form_page(conn, _params) do
+    form =
+      %MyApp.Form.Terms{}
+      |> MyApp.Form.Terms.changeset(%{})
+      |> Phoenix.Component.to_form(as: :terms, id: "checkbox-form")
+    render(conn, :checkbox_form_page, form: form)
   end
   ```
 
   ```heex
-  <.form :let={f} as={:user} for={@form} id={get_form_id(@form)} method="get">
-  <.checkbox field={f[:terms]} class="checkbox">
-    <:label>I accept the terms</:label>
+  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+    <.checkbox field={f[:terms]} class="checkbox">
+      <:label>Accept terms</:label>
       <:error :let={msg}>
-    <.icon name="hero-exclamation-circle" class="icon" />
-    {msg}
-  </:error>
-  </.checkbox>
-  <button type="submit">Submit</button>
+        <.heroicon name="hero-exclamation-circle" class="icon" />
+        {msg}
+      </:error>
+    </.checkbox>
+    <button type="submit">Submit</button>
   </.form>
   ```
 
 
   ### Live View
 
-  When using Phoenix form in a Live view you must also add controlled mode. This allows the Live view to be the source of truth and the component to be in sync accordingly
+  When using Phoenix form in a Live view you must also add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
+
+  ### With Ecto changeset (LiveView)
+
+  When using an Ecto changeset for validation in a LiveView, enable the `controlled` attribute on the checkbox so the LiveView remains the source of truth.
+
+  Schema and changeset:
 
   ```elixir
-  defmodule MyAppWeb.CheckboxLive do
-  use MyAppWeb, :live_view
+  defmodule MyApp.Form.Terms do
+    use Ecto.Schema
+    import Ecto.Changeset
 
-  def mount(_params, _session, socket) do
-    form = to_form(%{"terms" => "false"}, as: :user)
-    {:ok, socket |> assign(:form, form)}
-  end
+    embedded_schema do
+      field :terms, :boolean, default: false
+    end
 
-  def render(assigns) do
-    ~H"""
-    <.form as={:user} for={@form} id={get_form_id(@form)}>
-    <.checkbox field={@form[:terms]} class="checkbox">
-      <:label>I accept the terms</:label>
-        <:error :let={msg}>
-      <.icon name="hero-exclamation-circle" class="icon" />
-      {msg}
-    </:error>
-    </.checkbox>
-    <button type="submit">Submit</button>
-  </.form>
-    """
-  end
+    def changeset(terms, attrs \\ %{}) do
+      terms
+      |> cast(attrs, [:terms])
+      |> validate_required([:terms])
+      |> validate_acceptance(:terms)
+    end
   end
   ```
 
-  ### With Ecto changeset
-
-  When using Ecto changeset for validation and inside a Live view you must enable the controlled mode.
-
-  This allows the Live View to be the source of truth and the component to be in sync accordingly
-
-  First lets create an embededed schema and changeset
+  LiveView with validate and submit:
 
   ```elixir
-  defmodule MyApp.Account.User do
-  use Ecto.Schema
-  import Ecto.Changeset
-  alias MyApp.Account.User
+  defmodule MyAppWeb.CheckboxFormLive do
+    use MyAppWeb, :live_view
+    alias MyApp.Form.Terms
+    alias Corex.Form
 
-  embedded_schema do
-    field :term, :boolean, default: false
-  end
+    def mount(_params, _session, socket) do
+      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms)
+      {:ok, assign(socket, :form, form)}
+    end
 
+    def handle_event("validate", %{"terms" => params}, socket) do
+      changeset = Terms.changeset(%Terms{}, params)
+      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms))}
+    end
 
-  @doc false
-  def changeset(%User{} = user, attrs) do
-    user
-    |> cast(attrs, [:term])
-    |> validate_required([:term])
-    |> validate_acceptance(:terms)
-  end
-  end
-  ```
+    def handle_event("save", %{"terms" => params}, socket) do
+      case Terms.changeset(%Terms{}, params) do
+        %Ecto.Changeset{valid?: true} = _ ->
+          {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms))}
+        changeset ->
+          {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms))}
+      end
+    end
 
-  ```elixir
-  defmodule MyAppWeb.UserLive do
-  use MyAppWeb, :live_view
-  alias MyApp.Account.User
-
-  @impl true
-
-  def mount(_params, _session, socket) do
-    {:ok,  assign(socket, :form, to_form(User.changeset(%User{}, %{})))}
-  end
-
-  @impl true
-  def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = User.changeset(%User{}, user_params)
-    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
-  end
-
-  @impl true
-  def render(assigns) do
-    ~H"""
-    <.form for={@form} id={get_form_id(@form)} phx-change="validate">
-      <.checkbox field={@form[:terms]} class="checkbox" controlled>
-        <:label>I accept the terms</:label>
-        <:error :let={msg}>
-          <.icon name="hero-exclamation-circle" class="icon" />
-          {msg}
-        </:error>
-      </.checkbox>
-    </.form>
-    """
-  end
+    def render(assigns) do
+      ~H"""
+      <.form for={@form} id={Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+        <.checkbox field={@form[:terms]} class="checkbox" controlled>
+          <:label>Accept terms</:label>
+          <:error :let={msg}>
+            <.heroicon name="hero-exclamation-circle" class="icon" />
+            {msg}
+          </:error>
+        </.checkbox>
+        <button type="submit">Submit</button>
+      </.form>
+      """
+    end
   end
   ```
 
@@ -276,6 +252,12 @@ defmodule Corex.Checkbox do
       "The direction of the checkbox. When nil, derived from document (html lang + config :rtl_locales)"
   )
 
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["vertical", "horizontal"],
+    doc: "Layout orientation for CSS (vertical or horizontal)"
+  )
+
   attr(:read_only, :boolean,
     default: false,
     doc: "Whether the checkbox is read-only"
@@ -317,7 +299,7 @@ defmodule Corex.Checkbox do
     attr(:class, :string, required: false)
   end
 
-  slot :control, required: false do
+  slot :indicator, required: false do
     attr(:class, :string, required: false)
   end
 
@@ -351,6 +333,7 @@ defmodule Corex.Checkbox do
     <div
       id={@id}
       phx-hook="Checkbox"
+      data-js="pending"
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -370,17 +353,20 @@ defmodule Corex.Checkbox do
       })}
     >
 
-      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked})}>
+      <label {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
 
       <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
-      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked})}>
-          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked})}>
-          {render_slot(@control)}
+      <div {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span {Connect.indicator(%Indicator{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          {render_slot(@indicator)}
           </span>
       </div>
-      <span :if={@label} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked})}>
+      <span :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
       {render_slot(@label)}
+      </span>
+      <span :if={@label == [] && @aria_label} class="sr-only" {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      {@aria_label}
       </span>
       </label>
       <div :if={@error} :for={msg <- @errors} data-scope="checkbox" data-part="error">
@@ -427,7 +413,7 @@ defmodule Corex.Checkbox do
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) and
              is_boolean(checked) do
     LiveView.push_event(socket, "checkbox_set_checked", %{
-      checkbox_id: checkbox_id,
+      id: checkbox_id,
       checked: checked
     })
   end
@@ -463,7 +449,7 @@ defmodule Corex.Checkbox do
   def toggle_checked(socket, checkbox_id)
       when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(checkbox_id) do
     LiveView.push_event(socket, "checkbox_toggle_checked", %{
-      checkbox_id: checkbox_id
+      id: checkbox_id
     })
   end
 end

@@ -1,0 +1,85 @@
+## Default domain (gettext/1). Edit msgstr for English or leave empty.
+msgid ""
+msgstr ""
+"Language: en\n"
+
+msgid "close"
+msgstr "close"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "We can't find the internet"
+msgstr "We can't find the internet"
+
+msgid "Attempting to reconnect"
+msgstr "Attempting to reconnect"
+
+msgid "Something went wrong!"
+msgstr "Something went wrong!"
+
+msgid "Go to Corex UI Github"
+msgstr "Go to Corex UI Github"
+
+msgid "Go to Corex Hex docs"
+msgstr "Go to Corex Hex docs"
+
+msgid "Corex"
+msgstr "Corex"
+
+msgid "From design tokens to accessible, interactive components, Corex provides a complete foundation for creating beautiful, scalable, and performant websites."
+msgstr "From design tokens to accessible, interactive components, Corex provides a complete foundation for creating beautiful, scalable, and performant websites."
+
+msgid "Hex Documentation"
+msgstr "Hex Documentation"
+
+msgid "Select an option"
+msgstr "Select an option"
+
+msgid "editable input"
+msgstr "editable input"
+
+msgid "edit"
+msgstr "edit"
+
+msgid "submit"
+msgstr "submit"
+
+msgid "cancel"
+msgstr "cancel"
+
+msgid "Minimize window"
+msgstr "Minimize window"
+
+msgid "Maximize window"
+msgstr "Maximize window"
+
+msgid "Restore window"
+msgstr "Restore window"
+
+msgid "Close window"
+msgstr "Close window"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Toggle password visibility"
+msgstr "Toggle password visibility"
+
+msgid "Decrease value"
+msgstr "Decrease value"
+
+msgid "Increase value"
+msgstr "Increase value"
+
+msgid "Scrub to adjust value"
+msgstr "Scrub to adjust value"
+
+msgid "Digit %{digit}"
+msgstr "Digit %{digit}"
+
+msgid "Hex color value"
+msgstr "Hex color value"
+
+msgid "Alpha (opacity) value"
+msgstr "Alpha (opacity) value"

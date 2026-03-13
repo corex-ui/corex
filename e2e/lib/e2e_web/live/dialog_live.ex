@@ -26,24 +26,24 @@ defmodule E2eWeb.DialogLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Dialog</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Dialog</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Client Api</h3>
       <div class="layout__row">
-        <button
+        <.action
           phx-click={Corex.Dialog.set_open("my-dialog", true)}
           class="button button--sm"
         >
           Open Dialog
-        </button>
+        </.action>
       </div>
       <h3>Server Api</h3>
       <div class="layout__row">
-        <button phx-click="set_open" value="true" class="button button--sm">
+        <.action phx-click="set_open" value="true" class="button button--sm">
           Open Dialog
-        </button>
+        </.action>
       </div>
 
       <.dialog
@@ -59,19 +59,19 @@ defmodule E2eWeb.DialogLive do
         <:content>
           <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
           <div class="layout__row">
-            <button
+            <.action
               phx-click={Corex.Dialog.set_open("my-dialog", false)}
               class="button button--sm"
             >
               Client Close Dialog
-            </button>
-            <button phx-click="set_open" value="false" class="button button--sm">
+            </.action>
+            <.action phx-click="set_open" value="false" class="button button--sm">
               Server Close Dialog
-            </button>
+            </.action>
           </div>
         </:content>
         <:close_trigger>
-          <.icon name="hero-x-mark" class="icon" />
+          <.heroicon name="hero-x-mark" class="icon" />
         </:close_trigger>
       </.dialog>
     </Layouts.app>

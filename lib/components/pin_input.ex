@@ -43,11 +43,23 @@ defmodule Corex.PinInput do
   Learn more about modifiers and [Corex Design](https://corex-ui.com/components/pin-input#modifiers)
   '''
 
+  defmodule Translation do
+    @moduledoc """
+    Translation struct for PinInput component strings.
+
+    Without gettext: `translation={%PinInput.Translation{ digit: "Box %{digit}" }}`
+
+    With gettext: `translation={%PinInput.Translation{ digit: "Digit %{digit}" }}` (add to catalog; component calls gettext at render)
+    """
+    defstruct [:digit]
+  end
+
   @doc type: :component
   use Phoenix.Component
 
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.PinInput.Connect
+  import Corex.Gettext, only: [gettext: 2]
   import Corex.Helpers, only: [validate_value!: 1]
 
   attr(:id, :string, required: false)
@@ -71,15 +83,27 @@ defmodule Corex.PinInput do
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
   attr(:on_value_complete, :string, default: nil)
+
+  attr(:translation, Corex.PinInput.Translation,
+    default: nil,
+    doc: "Override translatable strings"
+  )
+
   attr(:rest, :global)
 
-  slot(:label, required: false)
+  slot :label, required: false do
+    attr(:class, :string, required: false)
+  end
 
   def pin_input(assigns) do
+    default_translation = %Translation{digit: "Digit %{digit}"}
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:translation, fn -> default_translation end)
+      |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:value, validate_value!(assigns[:value] || []))
       |> assign(:default_value, validate_value!(assigns[:default_value] || []))
 
@@ -126,11 +150,19 @@ defmodule Corex.PinInput do
             inputmode={@type}
             maxlength="1"
             autocomplete={if(@otp, do: "one-time-code", else: "off")}
-            {Connect.input(%Input{id: @id, index: i})}
+            {Connect.input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1)})}
           />
         </div>
       </div>
     </div>
     """
+  end
+
+  defp merge_translation(nil, default), do: default
+
+  defp merge_translation(partial, default) do
+    %Translation{
+      digit: partial.digit || default.digit
+    }
   end
 end

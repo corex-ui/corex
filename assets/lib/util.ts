@@ -95,3 +95,9 @@ export const generateId = (element?: HTMLElement, fallbackId: string = "element"
   if (element?.id) return element.id;
   return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
 };
+
+export function canPushEvent(liveSocket: {
+  main: { isDead: boolean; isConnected: () => boolean };
+}): boolean {
+  return !liveSocket.main.isDead && liveSocket.main.isConnected();
+}

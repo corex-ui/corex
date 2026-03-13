@@ -19,10 +19,10 @@ defmodule E2eWeb.ComboboxLive do
       locale={@locale}
       current_path={@current_path}
     >
-      <div class="layout__row">
-        <h1>Combobox</h1>
-        <h2>Live View</h2>
-      </div>
+      <.layout_heading>
+        <:title>Combobox</:title>
+        <:subtitle>Live View</:subtitle>
+      </.layout_heading>
       <h3>Minimal</h3>
       <.combobox
         id="my-combobox"
@@ -42,8 +42,11 @@ defmodule E2eWeb.ComboboxLive do
       >
         <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
+        <:clear_trigger>
+          <.heroicon name="hero-backspace" />
+        </:clear_trigger>
       </.combobox>
 
       <h3>Grouped</h3>
@@ -68,8 +71,11 @@ defmodule E2eWeb.ComboboxLive do
       >
         <:empty>No results</:empty>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
+        <:item_indicator>
+          <.heroicon name="hero-check" />
+        </:item_indicator>
       </.combobox>
 
       <h3>Extended</h3>
@@ -91,13 +97,13 @@ defmodule E2eWeb.ComboboxLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
 
@@ -120,13 +126,13 @@ defmodule E2eWeb.ComboboxLive do
           {item.label}
         </:item>
         <:trigger>
-          <.icon name="hero-chevron-down" />
+          <.heroicon name="hero-chevron-down" />
         </:trigger>
         <:clear_trigger>
-          <.icon name="hero-backspace" />
+          <.heroicon name="hero-backspace" />
         </:clear_trigger>
         <:item_indicator>
-          <.icon name="hero-check" />
+          <.heroicon name="hero-check" />
         </:item_indicator>
       </.combobox>
     </Layouts.app>

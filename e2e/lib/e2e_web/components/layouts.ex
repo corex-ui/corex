@@ -49,13 +49,22 @@ defmodule E2eWeb.Layouts do
   def app(assigns) do
     locale = assigns.locale || "en"
 
+    current_path = assigns.current_path || "/"
+    form_menu = form_menu_items(locale)
+    corex_menu = corex_menu_items(locale)
+    form_components_menu = form_components_menu_items(locale)
+    layout_components_menu = layout_components_menu_items(locale)
+    full_path = "/#{locale}#{current_path}"
+
     assigns =
       assigns
-      |> assign(:form_menu, form_menu_items(locale))
-      |> assign(:corex_menu, corex_menu_items(locale))
-      |> assign(:form_components_menu, form_components_menu_items(locale))
-      |> assign(:prev_path, prev_next_paths(locale, assigns.current_path || "/", :prev))
-      |> assign(:next_path, prev_next_paths(locale, assigns.current_path || "/", :next))
+      |> assign(:form_menu, form_menu)
+      |> assign(:corex_menu, corex_menu)
+      |> assign(:form_components_menu, form_components_menu)
+      |> assign(:layout_components_menu, layout_components_menu)
+      |> assign(:full_path, full_path)
+      |> assign(:prev_path, prev_next_paths(locale, current_path, :prev))
+      |> assign(:next_path, prev_next_paths(locale, current_path, :next))
 
     ~H"""
     <header class="layout__header">
@@ -63,7 +72,7 @@ defmodule E2eWeb.Layouts do
         <div class="layout__row gap-0 sm:gap-1">
           <.dialog id="menu-dialog" class="dialog dialog--side lg:hidden">
             <:trigger class="button button--sm button--circle rounded-full" aria_label="Open menu">
-              <.icon name="hero-bars-3" class="icon" />
+              <.heroicon name="hero-bars-3" class="icon" />
             </:trigger>
 
             <:content>
@@ -71,7 +80,7 @@ defmodule E2eWeb.Layouts do
                 <div class="layout__header__content">
                   <div class="layout__row">
                     <.dialog_close_trigger id="menu-dialog">
-                      <.icon name="hero-x-mark" class="icon" />
+                      <.heroicon name="hero-x-mark" class="icon" />
                     </.dialog_close_trigger>
                     <a
                       href="/"
@@ -88,18 +97,19 @@ defmodule E2eWeb.Layouts do
                   </div>
                 </div>
               </div>
-              <div class="scrollbar scrollbar--sm overflow-y-auto">
+              <div class="scrollbar scrollbar--sm overflow-y-auto pb-ui">
                 <.tree_view
                   id="form-menu"
                   class="tree-view navigation px-ui-padding"
                   on_selection_change="handle_menu"
                   redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@form_menu, @full_path)}
                   items={@form_menu}
                 >
                   <:label>Phoenix Form</:label>
                   <:indicator>
-                    <.icon name="hero-chevron-right" />
+                    <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
                 <.tree_view
@@ -107,12 +117,13 @@ defmodule E2eWeb.Layouts do
                   on_selection_change="handle_menu"
                   class="tree-view navigation px-ui-padding"
                   redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@corex_menu, @full_path)}
                   items={@corex_menu}
                 >
                   <:label>Corex Components</:label>
                   <:indicator>
-                    <.icon name="hero-chevron-right" />
+                    <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
                 <.tree_view
@@ -120,12 +131,27 @@ defmodule E2eWeb.Layouts do
                   on_selection_change="handle_menu"
                   class="tree-view navigation px-ui-padding"
                   redirect
-                  value={[@current_path |> String.split("/") |> List.last()]}
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@form_components_menu, @full_path)}
                   items={@form_components_menu}
                 >
                   <:label>Form Components</:label>
                   <:indicator>
-                    <.icon name="hero-chevron-right" />
+                    <.heroicon name="hero-chevron-right" />
+                  </:indicator>
+                </.tree_view>
+                <.tree_view
+                  id="layout-components-menu"
+                  on_selection_change="handle_menu"
+                  class="tree-view navigation px-ui-padding"
+                  redirect
+                  value={[@full_path]}
+                  expanded_value={ancestor_ids_for_path(@layout_components_menu, @full_path)}
+                  items={@layout_components_menu}
+                >
+                  <:label>Layout Components</:label>
+                  <:indicator>
+                    <.heroicon name="hero-chevron-right" />
                   </:indicator>
                 </.tree_view>
               </div>
@@ -153,18 +179,19 @@ defmodule E2eWeb.Layouts do
       </div>
     </header>
     <div class="layout__wrapper">
-      <aside class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto">
+      <aside class="layout__side hidden lg:flex scrollbar scrollbar--sm overflow-y-auto pb-ui">
         <.tree_view
           id="form-menu-side"
           class="tree-view navigation px-ui-padding"
           on_selection_change="handle_menu"
           redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@form_menu, @full_path)}
           items={@form_menu}
         >
           <:label>Phoenix Form</:label>
           <:indicator>
-            <.icon name="hero-chevron-right" />
+            <.heroicon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
         <.tree_view
@@ -172,12 +199,13 @@ defmodule E2eWeb.Layouts do
           on_selection_change="handle_menu"
           class="tree-view navigation px-ui-padding"
           redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@corex_menu, @full_path)}
           items={@corex_menu}
         >
           <:label>Corex Components</:label>
           <:indicator>
-            <.icon name="hero-chevron-right" />
+            <.heroicon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
         <.tree_view
@@ -185,12 +213,27 @@ defmodule E2eWeb.Layouts do
           on_selection_change="handle_menu"
           class="tree-view navigation px-ui-padding"
           redirect
-          value={[@current_path |> String.split("/") |> List.last()]}
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@form_components_menu, @full_path)}
           items={@form_components_menu}
         >
           <:label>Form Components</:label>
           <:indicator>
-            <.icon name="hero-chevron-right" />
+            <.heroicon name="hero-chevron-right" />
+          </:indicator>
+        </.tree_view>
+        <.tree_view
+          id="layout-components-menu-side"
+          on_selection_change="handle_menu"
+          class="tree-view navigation px-ui-padding"
+          redirect
+          value={[@full_path]}
+          expanded_value={ancestor_ids_for_path(@layout_components_menu, @full_path)}
+          items={@layout_components_menu}
+        >
+          <:label>Layout Components</:label>
+          <:indicator>
+            <.heroicon name="hero-chevron-right" />
           </:indicator>
         </.tree_view>
       </aside>
@@ -202,12 +245,12 @@ defmodule E2eWeb.Layouts do
         >
           <div>
             <.link :if={@prev_path} navigate={@prev_path} class="button button--sm gap-mini-gap">
-              <.icon name="hero-chevron-left" /> Previous
+              <.heroicon name="hero-chevron-left" /> Previous
             </.link>
           </div>
           <div>
             <.link :if={@next_path} navigate={@next_path} class="button button--sm gap-mini-gap">
-              Next <.icon name="hero-chevron-right" />
+              Next <.heroicon name="hero-chevron-right" />
             </.link>
           </div>
         </nav>
@@ -222,7 +265,7 @@ defmodule E2eWeb.Layouts do
 
     <.toast_group id="layout-toast" class="toast" flash={@flash}>
       <:loading>
-        <.icon name="hero-arrow-path" />
+        <.heroicon name="hero-arrow-path" />
       </:loading>
     </.toast_group>
     <.toast_client_error
@@ -249,22 +292,34 @@ defmodule E2eWeb.Layouts do
     doc: "path without locale segment so switching language preserves the URL"
 
   @doc """
-  Language switcher (English / Arabic) using the select component.
-
-  Uses the server event "locale_change" so the LiveView pushes navigate to /locale/path;
-  the plug runs and updates lang/dir. Pass current_path (e.g. from
-  `E2eWeb.Plugs.Locale.path_without_locale(conn.request_path, conn.assigns.locale)` or
-  from LiveView URI in handle_params) to preserve the path when switching.
+  Language switcher using the select component. Labels use Cldr language names
+  in each locale (e.g. English, العربية). Uses the server event "locale_change"
+  so the LiveView pushes navigate to /locale/path; the plug runs and updates
+  lang/dir. Pass current_path (e.g. from
+  `E2eWeb.Plugs.Locale.path_without_locale(conn.request_path, conn.assigns.locale)`
+  or from LiveView URI in handle_params) to preserve the path when switching.
   """
   def locale_switcher(assigns) do
+    locales = Gettext.known_locales(E2eWeb.Gettext)
+
+    collection =
+      Enum.map(locales, fn loc ->
+        label =
+          case E2e.Cldr.Language.to_string(loc, locale: loc) do
+            {:ok, name} -> String.capitalize(name)
+            _ -> String.upcase(loc)
+          end
+
+        %{id: "/#{loc}#{assigns.current_path}", label: label}
+      end)
+
+    assigns = assign(assigns, :collection, collection)
+
     ~H"""
     <.select
       id="locale-select"
       class="select select--sm select--micro"
-      collection={[
-        %{id: "/en#{@current_path}", label: "English"},
-        %{id: "/ar#{@current_path}", label: "العربية"}
-      ]}
+      items={@collection}
       value={["/#{@locale}#{@current_path}"]}
       redirect
       on_value_change="locale_change"
@@ -276,10 +331,10 @@ defmodule E2eWeb.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.icon name="hero-language" />
+        <.heroicon name="hero-language" class="icon" />
       </:trigger>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" class="icon" />
       </:item_indicator>
     </.select>
     """
@@ -298,7 +353,7 @@ defmodule E2eWeb.Layouts do
     <.select
       id="theme-select"
       class="select select--sm select--micro"
-      collection={[
+      items={[
         %{id: "neo", label: "Neo"},
         %{id: "uno", label: "Uno"},
         %{id: "duo", label: "Duo"},
@@ -314,10 +369,10 @@ defmodule E2eWeb.Layouts do
         {item.label}
       </:item>
       <:trigger>
-        <.icon name="hero-swatch" />
+        <.heroicon name="hero-swatch" class="icon" />
       </:trigger>
       <:item_indicator>
-        <.icon name="hero-check" />
+        <.heroicon name="hero-check" class="icon" />
       </:item_indicator>
     </.select>
     """
@@ -340,8 +395,8 @@ defmodule E2eWeb.Layouts do
       on_value_change_client="phx:set-mode"
     >
       <:item value="dark">
-        <.icon name="hero-sun" class="icon state-on" />
-        <.icon name="hero-moon" class="icon state-off" />
+        <.heroicon name="hero-sun" class="icon state-on" />
+        <.heroicon name="hero-moon" class="icon state-off" />
       </:item>
     </.toggle_group>
     """
@@ -351,8 +406,9 @@ defmodule E2eWeb.Layouts do
     form_paths = form_menu_items(locale) |> flatten_tree_ids()
     corex_paths = corex_menu_items(locale) |> flatten_tree_ids()
     form_components_paths = form_components_menu_items(locale) |> flatten_tree_ids()
+    layout_components_paths = layout_components_menu_items(locale) |> flatten_tree_ids()
 
-    form_paths ++ corex_paths ++ form_components_paths
+    form_paths ++ corex_paths ++ form_components_paths ++ layout_components_paths
   end
 
   defp flatten_tree_ids(items) when is_list(items) do
@@ -365,6 +421,22 @@ defmodule E2eWeb.Layouts do
 
       %{id: _id, children: children} when is_list(children) and children != [] ->
         flatten_tree_ids(children)
+
+      _ ->
+        []
+    end)
+  end
+
+  defp ancestor_ids_for_path(items, full_path) when is_list(items) do
+    Enum.flat_map(items, fn
+      %{id: id, children: children} when is_list(children) and children != [] ->
+        leaf_ids = flatten_tree_ids(children)
+
+        if full_path in leaf_ids do
+          [id | ancestor_ids_for_path(children, full_path)]
+        else
+          ancestor_ids_for_path(children, full_path)
+        end
 
       _ ->
         []
@@ -413,9 +485,20 @@ defmodule E2eWeb.Layouts do
       component_item("Clipboard", "clipboard", locale),
       component_item("Code", "code", locale),
       component_item("Collapsible", "collapsible", locale),
+      component_item("Data List", "data-list", locale),
+      component_item("Data Table", "data-table", locale,
+        extra: [
+          [label: "Stream", id: "/#{locale}/live/data-table/stream"],
+          [label: "Sorting", id: "/#{locale}/live/data-table/sorting"],
+          [label: "Selection", id: "/#{locale}/live/data-table/selection"],
+          [label: "Full", id: "/#{locale}/live/data-table/full"]
+        ]
+      ),
       component_item("Dialog", "dialog", locale),
       component_item("Floating Panel", "floating-panel", locale),
-      component_item("Listbox", "listbox", locale),
+      component_item("Listbox", "listbox", locale,
+        extra: [[label: "Stream", id: "/#{locale}/live/listbox/stream"]]
+      ),
       component_item("Marquee", "marquee", locale),
       component_item("Menu", "menu", locale),
       component_item("Navigate", "navigate", locale),
@@ -427,32 +510,106 @@ defmodule E2eWeb.Layouts do
     ])
   end
 
+  defp layout_components_menu_items(locale) do
+    Corex.Tree.new([
+      component_item("Heading", "layout-heading", locale)
+    ])
+  end
+
   defp form_components_menu_items(locale) do
     Corex.Tree.new([
       component_item("Angle Slider", "angle-slider", locale,
         extra: [
+          [label: "Form", id: "/#{locale}/angle-slider/form"],
+          [label: "Form Live", id: "/#{locale}/live/angle-slider/form"],
           [label: "Playground", id: "/#{locale}/playground/angle-slider"],
           [label: "Controlled", id: "/#{locale}/controlled/angle-slider"]
         ]
       ),
-      component_item("Checkbox", "checkbox", locale),
-      component_item("Color Picker", "color-picker", locale),
-      component_item("Combobox", "combobox", locale,
+      component_item("Checkbox", "checkbox", locale,
         extra: [
-          [label: "Fetch", id: "/#{locale}/live/combobox-fetch"],
-          [label: "Form", id: "/#{locale}/live/combobox-form"]
+          [label: "Form", id: "/#{locale}/checkbox/form"],
+          [label: "Form Live", id: "/#{locale}/live/checkbox/form"],
+          [label: "Controlled", id: "/#{locale}/live/checkbox/controlled"]
         ]
       ),
-      component_item("Date Picker", "date-picker", locale),
-      component_item("Editable", "editable", locale),
-      component_item("Native Input", "native-input", locale),
-      component_item("Number Input", "number-input", locale),
-      component_item("Password Input", "password-input", locale),
-      component_item("Pin Input", "pin-input", locale),
-      component_item("Radio Group", "radio-group", locale),
-      component_item("Select", "select", locale),
-      component_item("Signature", "signature", locale),
-      component_item("Switch", "switch", locale)
+      component_item("Color Picker", "color-picker", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/color-picker/form"],
+          [label: "Form Live", id: "/#{locale}/live/color-picker/form"]
+        ]
+      ),
+      component_item("Combobox", "combobox", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/combobox/form"],
+          [label: "Form Live", id: "/#{locale}/live/combobox-form"],
+          [label: "Fetch", id: "/#{locale}/live/combobox-fetch"]
+        ]
+      ),
+      component_item("Date Picker", "date-picker", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/date-picker/form"],
+          [label: "Form Live", id: "/#{locale}/live/date-picker/form"],
+          [label: "Controlled", id: "/#{locale}/live/date-picker/controlled"]
+        ]
+      ),
+      component_item("Editable", "editable", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/editable/form"],
+          [label: "Form Live", id: "/#{locale}/live/editable/form"]
+        ]
+      ),
+      component_item("Native Input", "native-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/native-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/native-input/form"]
+        ]
+      ),
+      component_item("Number Input", "number-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/number-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/number-input/form"],
+          [label: "Controlled", id: "/#{locale}/live/number-input/controlled"]
+        ]
+      ),
+      component_item("Password Input", "password-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/password-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/password-input/form"]
+        ]
+      ),
+      component_item("Pin Input", "pin-input", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/pin-input/form"],
+          [label: "Form Live", id: "/#{locale}/live/pin-input/form"]
+        ]
+      ),
+      component_item("Radio Group", "radio-group", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/radio-group/form"],
+          [label: "Form Live", id: "/#{locale}/live/radio-group/form"]
+        ]
+      ),
+      component_item("Select", "select", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/select/form"],
+          [label: "Form Live", id: "/#{locale}/live/select/form"],
+          [label: "Controlled", id: "/#{locale}/live/select/controlled"]
+        ]
+      ),
+      component_item("Signature", "signature", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/signature/form"],
+          [label: "Form Live", id: "/#{locale}/live/signature/form"]
+        ]
+      ),
+      component_item("Switch", "switch", locale,
+        extra: [
+          [label: "Form", id: "/#{locale}/switch/form"],
+          [label: "Form Live", id: "/#{locale}/live/switch/form"],
+          [label: "Controlled", id: "/#{locale}/live/switch/controlled"]
+        ]
+      )
     ])
   end
 
