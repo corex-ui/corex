@@ -4,7 +4,7 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
 
-  <% params_create = schema.params.create %><% params_update = schema.params.update %>
+  <% params_create = schema.params.create %><% params_update = schema.params.update-%>
   @invalid_attrs %{
 <%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= inspect(value |> Mix.Phoenix.Schema.live_form_value() |> Mix.Phoenix.Schema.invalid_form_value()) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
 <% end %>  }
