@@ -231,6 +231,10 @@ defmodule Corex.MixProject do
       Positioning: [
         Corex.Positioning
       ],
+      DataTable: [
+        Corex.DataTable.Sort,
+        Corex.DataTable.Selection
+      ],
       Translations: [
         Corex.Combobox.Translation,
         Corex.ColorPicker.Translation,

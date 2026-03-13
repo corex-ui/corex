@@ -33,23 +33,6 @@ This is still in an early stage and will evolve with future stable releases.
 
 Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*.
 
-## Requirements
-
-This guide assumes the use of [asdf](https://asdf-vm.com/) to manage the Erlang and Elixir versions.
-
-Add `.tool-versions` file to the root of your project:
-
-```
-erlang 28.3.1
-elixir 1.19.5-otp-28
-```
-
-You can then install the versions:
-
-```bash
-asdf install
-```
-
 ## New project with Corex
 
 To create a new Phoenix application with Corex preconfigured, install the Corex project generator archive (first time only), then generate the app:
