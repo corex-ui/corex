@@ -1,7 +1,7 @@
 defmodule Corex.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.30"
+  @version "0.1.0-alpha.33"
   @elixir_requirement "~> 1.15"
 
   def project do
@@ -134,7 +134,7 @@ defmodule Corex.MixProject do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/corex-ui/corex",
-        "Website" => "https://corex-ui.com"
+        "Website" => "https://corex.gigalixirapp.com/en"
       },
       files: ~w(
         lib priv mix.exs package.json README.md .formatter.exs

@@ -36,7 +36,8 @@ defmodule Corex.New.Single do
      "corex_gettext/gettext.ex": "lib/:lib_web_name/gettext.ex",
      "corex_gettext/errors.pot": "priv/gettext/errors.pot",
      "corex_gettext/default.pot": "priv/gettext/default.pot",
-     "corex_gettext/en/LC_MESSAGES/default.po": "priv/gettext/en/LC_MESSAGES/default.po"}
+     "corex_gettext/en/LC_MESSAGES/default.po": "priv/gettext/en/LC_MESSAGES/default.po",
+     "corex_gettext/locale_errors.po.eex": nil}
   ])
 
   template(:html, [
@@ -95,6 +96,11 @@ defmodule Corex.New.Single do
      "corex_static/favicon.ico": "priv/static/favicon.ico"}
   ])
 
+  template(:no_css, [
+    {:text, :web,
+     "corex_static/default.css": "priv/static/assets/css/app.css"}
+  ])
+
   template(:mailer, [
     {:eex, :app, "corex_mailer/lib/app_name/mailer.ex": "lib/:app/mailer.ex"}
   ])
@@ -124,6 +130,84 @@ defmodule Corex.New.Single do
   template(:cldr, [
     {:eex, :app,
      "corex_cldr/cldr.ex": "lib/:app/cldr.ex"}
+  ])
+
+  template(:design, [
+    {:text, :web,
+     "corex_design/components/accordion.css": "assets/corex/components/accordion.css",
+     "corex_design/components/angle-slider.css": "assets/corex/components/angle-slider.css",
+     "corex_design/components/avatar.css": "assets/corex/components/avatar.css",
+     "corex_design/components/badge.css": "assets/corex/components/badge.css",
+     "corex_design/components/button.css": "assets/corex/components/button.css",
+     "corex_design/components/carousel.css": "assets/corex/components/carousel.css",
+     "corex_design/components/checkbox.css": "assets/corex/components/checkbox.css",
+     "corex_design/components/clipboard.css": "assets/corex/components/clipboard.css",
+     "corex_design/components/code.css": "assets/corex/components/code.css",
+     "corex_design/components/collapsible.css": "assets/corex/components/collapsible.css",
+     "corex_design/components/color-picker.css": "assets/corex/components/color-picker.css",
+     "corex_design/components/combobox.css": "assets/corex/components/combobox.css",
+     "corex_design/components/data-list.css": "assets/corex/components/data-list.css",
+     "corex_design/components/data-table.css": "assets/corex/components/data-table.css",
+     "corex_design/components/date-picker.css": "assets/corex/components/date-picker.css",
+     "corex_design/components/dialog.css": "assets/corex/components/dialog.css",
+     "corex_design/components/editable.css": "assets/corex/components/editable.css",
+     "corex_design/components/floating-panel.css": "assets/corex/components/floating-panel.css",
+     "corex_design/components/icon.css": "assets/corex/components/icon.css",
+     "corex_design/components/layout.css": "assets/corex/components/layout.css",
+     "corex_design/components/layout-heading.css": "assets/corex/components/layout-heading.css",
+     "corex_design/components/link.css": "assets/corex/components/link.css",
+     "corex_design/components/listbox.css": "assets/corex/components/listbox.css",
+     "corex_design/components/marquee.css": "assets/corex/components/marquee.css",
+     "corex_design/components/menu.css": "assets/corex/components/menu.css",
+     "corex_design/components/native-input.css": "assets/corex/components/native-input.css",
+     "corex_design/components/number-input.css": "assets/corex/components/number-input.css",
+     "corex_design/components/password-input.css": "assets/corex/components/password-input.css",
+     "corex_design/components/pin-input.css": "assets/corex/components/pin-input.css",
+     "corex_design/components/radio-group.css": "assets/corex/components/radio-group.css",
+     "corex_design/components/scrollbar.css": "assets/corex/components/scrollbar.css",
+     "corex_design/components/select.css": "assets/corex/components/select.css",
+     "corex_design/components/signature-pad.css": "assets/corex/components/signature-pad.css",
+     "corex_design/components/switch.css": "assets/corex/components/switch.css",
+     "corex_design/components/tabs.css": "assets/corex/components/tabs.css",
+     "corex_design/components/timer.css": "assets/corex/components/timer.css",
+     "corex_design/components/toast.css": "assets/corex/components/toast.css",
+     "corex_design/components/toggle-group.css": "assets/corex/components/toggle-group.css",
+     "corex_design/components/tree-view.css": "assets/corex/components/tree-view.css",
+     "corex_design/components/typo.css": "assets/corex/components/typo.css",
+     "corex_design/design/build.mjs": "assets/corex/design/build.mjs",
+     "corex_design/design/tokens/$metadata.json": "assets/corex/design/tokens/$metadata.json",
+     "corex_design/design/tokens/semantic/border.json": "assets/corex/design/tokens/semantic/border.json",
+     "corex_design/design/tokens/semantic/color.json": "assets/corex/design/tokens/semantic/color.json",
+     "corex_design/design/tokens/semantic/dimension.json": "assets/corex/design/tokens/semantic/dimension.json",
+     "corex_design/design/tokens/semantic/effect.json": "assets/corex/design/tokens/semantic/effect.json",
+     "corex_design/design/tokens/semantic/font.json": "assets/corex/design/tokens/semantic/font.json",
+     "corex_design/design/tokens/semantic/text.json": "assets/corex/design/tokens/semantic/text.json",
+     "corex_design/design/tokens/themes/duo/dark.json": "assets/corex/design/tokens/themes/duo/dark.json",
+     "corex_design/design/tokens/themes/duo/light.json": "assets/corex/design/tokens/themes/duo/light.json",
+     "corex_design/design/tokens/themes/leo/dark.json": "assets/corex/design/tokens/themes/leo/dark.json",
+     "corex_design/design/tokens/themes/leo/light.json": "assets/corex/design/tokens/themes/leo/light.json",
+     "corex_design/design/tokens/themes/neo/dark.json": "assets/corex/design/tokens/themes/neo/dark.json",
+     "corex_design/design/tokens/themes/neo/light.json": "assets/corex/design/tokens/themes/neo/light.json",
+     "corex_design/design/tokens/themes/uno/dark.json": "assets/corex/design/tokens/themes/uno/dark.json",
+     "corex_design/design/tokens/themes/uno/light.json": "assets/corex/design/tokens/themes/uno/light.json",
+     "corex_design/design/transform.mjs": "assets/corex/design/transform.mjs",
+     "corex_design/main.css": "assets/corex/main.css",
+     "corex_design/tokens.css": "assets/corex/tokens.css",
+     "corex_design/tokens/semantic/border.css": "assets/corex/tokens/semantic/border.css",
+     "corex_design/tokens/semantic/color.css": "assets/corex/tokens/semantic/color.css",
+     "corex_design/tokens/semantic/dimension.css": "assets/corex/tokens/semantic/dimension.css",
+     "corex_design/tokens/semantic/effect.css": "assets/corex/tokens/semantic/effect.css",
+     "corex_design/tokens/semantic/font.css": "assets/corex/tokens/semantic/font.css",
+     "corex_design/tokens/semantic/text.css": "assets/corex/tokens/semantic/text.css",
+     "corex_design/tokens/themes/duo/dark.css": "assets/corex/tokens/themes/duo/dark.css",
+     "corex_design/tokens/themes/duo/light.css": "assets/corex/tokens/themes/duo/light.css",
+     "corex_design/tokens/themes/leo/dark.css": "assets/corex/tokens/themes/leo/dark.css",
+     "corex_design/tokens/themes/leo/light.css": "assets/corex/tokens/themes/leo/light.css",
+     "corex_design/tokens/themes/neo/dark.css": "assets/corex/tokens/themes/neo/dark.css",
+     "corex_design/tokens/themes/neo/light.css": "assets/corex/tokens/themes/neo/light.css",
+     "corex_design/tokens/themes/uno/dark.css": "assets/corex/tokens/themes/uno/dark.css",
+     "corex_design/tokens/themes/uno/light.css": "assets/corex/tokens/themes/uno/light.css",
+     "corex_design/utilities.css": "assets/corex/utilities.css"}
   ])
 
   def prepare_project(%Project{app: app, base_path: base_path} = project) when not is_nil(app) do
@@ -182,17 +266,11 @@ defmodule Corex.New.Single do
   end
 
   def gen_design(%Project{} = project) do
-    design_src = Path.expand("../../templates/corex_design", __DIR__)
-    dest = Project.join_path(project, :web, "assets/corex")
-    designex = project.binding[:designex]
+    copy_from(project, __MODULE__, :design)
 
-    if File.dir?(design_src) do
-      File.mkdir_p!(Path.dirname(dest))
-      File.cp_r!(design_src, dest)
-      unless designex do
-        design_subfolder = Path.join(dest, "design")
-        if File.exists?(design_subfolder), do: File.rm_rf!(design_subfolder)
-      end
+    unless project.binding[:designex] do
+      design_subfolder = Project.join_path(project, :web, "assets/corex/design")
+      if File.exists?(design_subfolder), do: File.rm_rf!(design_subfolder)
     end
   end
 
@@ -207,15 +285,14 @@ defmodule Corex.New.Single do
 
   defp gen_locale_errors(project) do
     locales = project.binding[:locales] || ["en"]
-    ecto = project.binding[:ecto]
-    template_path = Path.expand("../../templates/corex_gettext/locale_errors.po.eex", __DIR__)
 
     for locale <- locales do
       path =
         project
         |> Project.join_path(:web, "priv/gettext/#{locale}/LC_MESSAGES/errors.po")
 
-      content = EEx.eval_file(template_path, locale: locale, ecto: ecto)
+      binding = Keyword.merge(project.binding, [locale: locale, ecto: project.binding[:ecto]])
+      content = __MODULE__.render(:gettext, "corex_gettext/locale_errors.po.eex", binding)
       File.mkdir_p!(Path.dirname(path))
       Mix.Generator.create_file(path, content)
     end
@@ -233,15 +310,8 @@ defmodule Corex.New.Single do
     if project.binding[:tailwind] do
       copy_from(project, __MODULE__, :css)
     else
-      copy_default_css(project)
+      copy_from(project, __MODULE__, :no_css)
     end
-  end
-
-  defp copy_default_css(%Project{} = project) do
-    src = Path.expand("../../templates/corex_static/default.css", __DIR__)
-    dest = Project.join_path(project, :web, "priv/static/assets/css/app.css")
-    File.mkdir_p!(Path.dirname(dest))
-    File.cp!(src, dest)
   end
 
   def gen_mailer(%Project{} = project) do

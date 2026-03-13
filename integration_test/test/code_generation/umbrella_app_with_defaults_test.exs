@@ -72,6 +72,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
           """)
         end)
 
+        assert_passes_formatter_check(app_root_path)
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)
       end)
@@ -182,6 +183,7 @@ defmodule Corex.Integration.CodeGeneration.UmbrellaAppWithDefaultsTest do
           """)
         end)
 
+        assert_passes_formatter_check(app_root_path)
         drop_test_database(app_root_path)
         assert_tests_pass(app_root_path)
       end)
