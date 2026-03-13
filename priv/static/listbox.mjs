@@ -6,12 +6,12 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunk-SHF22JMM.mjs";
+} from "./chunk-WAY74VD3.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-K4KBICFH.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
@@ -28,17 +28,20 @@ import {
   getString,
   getStringList,
   isComposingEvent,
+  isContextMenuEvent,
   isCtrlOrMetaKey,
+  isDownloadingEvent,
   isEditableElement,
   isEqual,
+  isOpeningInNewTab,
   normalizeProps,
   observeAttributes,
   raf,
   scrollIntoView,
   setup
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.35.3/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(
   "label",
   "input",
@@ -53,7 +56,7 @@ var anatomy = createAnatomy("listbox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.35.3/node_modules/@zag-js/listbox/dist/listbox.collection.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -67,7 +70,7 @@ gridCollection.empty = () => {
   return new GridCollection({ items: [], columnCount: 0 });
 };
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.35.3/node_modules/@zag-js/listbox/dist/listbox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `listbox:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `listbox:${ctx.id}:content`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `listbox:${ctx.id}:label`;
@@ -77,7 +80,7 @@ var getItemGroupLabelId = (ctx, id) => ctx.ids?.itemGroupLabel?.(id) ?? `listbox
 var getContentEl = (ctx) => ctx.getById(getContentId(ctx));
 var getItemEl = (ctx, id) => ctx.getById(getItemId(ctx, id));
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.35.3/node_modules/@zag-js/listbox/dist/listbox.connect.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, computed, send, refs } = service;
   const disabled = prop("disabled");
@@ -136,6 +139,18 @@ function connect(service, normalize) {
     highlightValue(value2) {
       send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
     },
+    highlightFirst() {
+      send({ type: "HIGHLIGHT.FIRST" });
+    },
+    highlightLast() {
+      send({ type: "HIGHLIGHT.LAST" });
+    },
+    highlightNext() {
+      send({ type: "HIGHLIGHT.NEXT" });
+    },
+    highlightPrevious() {
+      send({ type: "HIGHLIGHT.PREV" });
+    },
     clearValue(value2) {
       if (value2) {
         send({ type: "ITEM.CLEAR", value: value2 });
@@ -154,6 +169,7 @@ function connect(service, normalize) {
       });
     },
     getInputProps(props = {}) {
+      const keyboardPriority = props.keyboardPriority ?? "caret";
       return normalize.input({
         ...parts.input.attrs,
         dir: prop("dir"),
@@ -197,11 +213,13 @@ function connect(service, normalize) {
             case "ArrowRight": {
               if (!isGridCollection(collection2)) return;
               if (event.ctrlKey) return;
+              if (keyboardPriority !== "navigate") return;
               forwardEvent();
               break;
             }
             case "Home":
             case "End": {
+              if (keyboardPriority !== "navigate") return;
               if (highlightedValue == null && event.shiftKey) return;
               forwardEvent();
               break;
@@ -266,6 +284,9 @@ function connect(service, normalize) {
         },
         onClick(event) {
           if (event.defaultPrevented) return;
+          if (isDownloadingEvent(event)) return;
+          if (isOpeningInNewTab(event)) return;
+          if (isContextMenuEvent(event)) return;
           if (itemState.disabled) return;
           send({
             type: "ITEM.CLICK",
@@ -342,6 +363,7 @@ function connect(service, normalize) {
         },
         onKeyDown(event) {
           if (!interactive) return;
+          const target = getEventTarget(event);
           if (!contains(event.currentTarget, getEventTarget(event))) return;
           const shiftKey = event.shiftKey;
           const keyMap = {
@@ -394,11 +416,13 @@ function connect(service, normalize) {
               send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
             },
             Home(event2) {
+              if (isEditableElement(target)) return;
               event2.preventDefault();
               let nextValue = collection2.firstValue;
               send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
             },
             End(event2) {
+              if (isEditableElement(target)) return;
               event2.preventDefault();
               let nextValue = collection2.lastValue;
               send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
@@ -432,10 +456,7 @@ function connect(service, normalize) {
             exec(event);
             return;
           }
-          const target = getEventTarget(event);
-          if (isEditableElement(target)) {
-            return;
-          }
+          if (isEditableElement(target)) return;
           if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
             send({ type: "CONTENT.TYPEAHEAD", key: event.key });
             event.preventDefault();
@@ -446,7 +467,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+listbox@1.35.3/node_modules/@zag-js/listbox/dist/listbox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+listbox@1.36.0/node_modules/@zag-js/listbox/dist/listbox.machine.mjs
 var { guards, createMachine } = setup();
 var { or } = guards;
 var machine = createMachine({
@@ -574,6 +595,18 @@ var machine = createMachine({
     },
     "VALUE.CLEAR": {
       actions: ["clearSelectedItems"]
+    },
+    "HIGHLIGHT.FIRST": {
+      actions: ["highlightFirstValue"]
+    },
+    "HIGHLIGHT.LAST": {
+      actions: ["highlightLastValue"]
+    },
+    "HIGHLIGHT.NEXT": {
+      actions: ["highlightNextValue"]
+    },
+    "HIGHLIGHT.PREV": {
+      actions: ["highlightPreviousValue"]
     }
   },
   states: {
@@ -707,6 +740,42 @@ var machine = createMachine({
       },
       setHighlightedItem({ context, event }) {
         context.set("highlightedValue", event.value);
+      },
+      highlightFirstValue({ context, prop }) {
+        context.set("highlightedValue", prop("collection").firstValue ?? null);
+      },
+      highlightLastValue({ context, prop }) {
+        context.set("highlightedValue", prop("collection").lastValue ?? null);
+      },
+      highlightNextValue({ context, prop }) {
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        let nextValue = null;
+        if (isGridCollection(collection2) && highlightedValue) {
+          nextValue = collection2.getNextRowValue(highlightedValue);
+        } else if (highlightedValue) {
+          nextValue = collection2.getNextValue(highlightedValue);
+        }
+        if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+          nextValue = collection2.firstValue;
+        }
+        if (!nextValue) return;
+        context.set("highlightedValue", nextValue);
+      },
+      highlightPreviousValue({ context, prop }) {
+        const collection2 = prop("collection");
+        const highlightedValue = context.get("highlightedValue");
+        let nextValue = null;
+        if (isGridCollection(collection2) && highlightedValue) {
+          nextValue = collection2.getPreviousRowValue(highlightedValue);
+        } else if (highlightedValue) {
+          nextValue = collection2.getPreviousValue(highlightedValue);
+        }
+        if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+          nextValue = collection2.lastValue;
+        }
+        if (!nextValue) return;
+        context.set("highlightedValue", nextValue);
       },
       clearHighlightedItem({ context }) {
         context.set("highlightedValue", null);

@@ -1,21 +1,21 @@
 import {
   createRect,
   getRectCorners
-} from "./chunk-3QRJREC6.mjs";
+} from "./chunk-ZZKFCQSP.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunk-FWBO7OZW.mjs";
+} from "./chunk-IMEAISCQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-6EX3NMK5.mjs";
-import "./chunk-HWQDHESJ.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-K4KBICFH.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
@@ -58,9 +58,9 @@ import {
   queryAll,
   raf,
   scrollIntoView
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+menu@1.35.3/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
   "arrow",
   "arrowTip",
@@ -79,7 +79,7 @@ var anatomy = createAnatomy("menu").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+core@1.35.3/node_modules/@zag-js/core/dist/merge-props.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.36.0/node_modules/@zag-js/core/dist/merge-props.mjs
 var clsx = (...args) => args.map((str) => str?.trim?.()).filter(Boolean).join(" ");
 var CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
 var serialize = (style) => {
@@ -131,7 +131,7 @@ function mergeProps(...args) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.35.3/node_modules/@zag-js/menu/dist/menu.dom.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.dom.mjs
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `menu:${ctx.id}:trigger`;
 var getContextTriggerId = (ctx) => ctx.ids?.contextTrigger ?? `menu:${ctx.id}:ctx-trigger`;
 var getContentId = (ctx) => ctx.ids?.content ?? `menu:${ctx.id}:content`;
@@ -186,7 +186,7 @@ function dispatchSelectionEvent(el, value) {
   el.dispatchEvent(event);
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.35.3/node_modules/@zag-js/menu/dist/menu.connect.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.connect.mjs
 function connect(service, normalize) {
   const { context, send, state, computed, prop, scope } = service;
   const open = state.hasTag("open");
@@ -343,7 +343,7 @@ function connect(service, normalize) {
         "aria-haspopup": composite ? "menu" : "dialog",
         "aria-controls": getContentId(scope),
         "data-controls": getContentId(scope),
-        "aria-expanded": open || void 0,
+        "aria-expanded": open,
         "data-state": open ? "open" : "closed",
         onPointerMove(event) {
           if (event.pointerType !== "mouse") return;
@@ -591,7 +591,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/polygon.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/polygon.mjs
 function getElementPolygon(rectValue, placement) {
   const rect = createRect(rectValue);
   const { top, right, left, bottom } = getRectCorners(rect);
@@ -618,7 +618,7 @@ function isPointInPolygon(polygon, point) {
   return c;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.35.3/node_modules/@zag-js/menu/dist/menu.machine.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.machine.mjs
 var { not, and, or } = createGuards();
 var machine = createMachine({
   props({ props }) {

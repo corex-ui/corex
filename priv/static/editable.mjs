@@ -1,6 +1,6 @@
 import {
   trackInteractOutside
-} from "./chunk-HWQDHESJ.mjs";
+} from "./chunk-7UNOLQU5.mjs";
 import {
   Component,
   VanillaMachine,
@@ -17,9 +17,9 @@ import {
   normalizeProps,
   raf,
   setElementValue
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.36.0/node_modules/@zag-js/editable/dist/editable.anatomy.mjs
 var anatomy = createAnatomy("editable").parts(
   "root",
   "area",
@@ -33,7 +33,7 @@ var anatomy = createAnatomy("editable").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.dom.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.36.0/node_modules/@zag-js/editable/dist/editable.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `editable:${ctx.id}`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `editable:${ctx.id}:area`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `editable:${ctx.id}:label`;
@@ -49,7 +49,7 @@ var getSubmitTriggerEl = (ctx) => ctx.getById(getSubmitTriggerId(ctx));
 var getCancelTriggerEl = (ctx) => ctx.getById(getCancelTriggerId(ctx));
 var getEditTriggerEl = (ctx) => ctx.getById(getEditTriggerId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.connect.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.36.0/node_modules/@zag-js/editable/dist/editable.connect.mjs
 function connect(service, normalize) {
   const { state, context, send, prop, scope, computed } = service;
   const disabled = !!prop("disabled");
@@ -285,7 +285,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+editable@1.35.3/node_modules/@zag-js/editable/dist/editable.machine.mjs
+// ../node_modules/.pnpm/@zag-js+editable@1.36.0/node_modules/@zag-js/editable/dist/editable.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {

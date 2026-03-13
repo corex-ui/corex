@@ -1,13 +1,13 @@
 import {
   memo
-} from "./chunk-O7RPVRVA.mjs";
+} from "./chunk-BYLQVWJG.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunk-AMS5CJ65.mjs";
+} from "./chunk-MYBRVHPZ.mjs";
 import {
   clampValue
-} from "./chunk-G66USZ47.mjs";
+} from "./chunk-MV633JPN.mjs";
 import {
   Component,
   VanillaMachine,
@@ -18,9 +18,9 @@ import {
   getString,
   match,
   normalizeProps
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+timer@1.35.3/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
   "root",
   "area",
@@ -33,14 +33,15 @@ var anatomy = createAnatomy("timer").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+timer@1.35.3/node_modules/@zag-js/timer/dist/timer.dom.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `timer:${ctx.id}:root`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `timer:${ctx.id}:area`;
 
-// ../node_modules/.pnpm/@zag-js+timer@1.35.3/node_modules/@zag-js/timer/dist/timer.connect.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.connect.mjs
 var validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
 function connect(service, normalize) {
-  const { state, send, computed, scope } = service;
+  const { state, send, computed, scope, prop } = service;
+  const translations = prop("translations");
   const running = state.matches("running");
   const paused = state.matches("paused");
   const time = computed("time");
@@ -77,7 +78,7 @@ function connect(service, normalize) {
       return normalize.element({
         role: "timer",
         id: getAreaId(scope),
-        "aria-label": `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+        "aria-label": translations.areaLabel?.(time, formattedTime),
         "aria-atomic": true,
         ...parts.area.attrs
       });
@@ -140,14 +141,18 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+timer@1.35.3/node_modules/@zag-js/timer/dist/timer.machine.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.machine.mjs
 var machine = createMachine({
   props({ props }) {
     validateProps(props);
     return {
       interval: 1e3,
       startMs: 0,
-      ...props
+      ...props,
+      translations: {
+        areaLabel: (time, formattedTime) => `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+        ...props.translations
+      }
     };
   },
   initialState({ prop }) {

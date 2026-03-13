@@ -15,9 +15,9 @@ import {
   normalizeProps,
   query,
   trackPointerMove
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
   "root",
   "control",
@@ -29,7 +29,7 @@ var anatomy = createAnatomy("signature-pad").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
 var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
@@ -40,7 +40,7 @@ var getDataUrl2 = (ctx, options) => {
   return getDataUrl(getSegmentEl(ctx), options);
 };
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, computed, context, scope } = service;
   const drawing = state.matches("drawing");
@@ -353,7 +353,7 @@ function R(e2, t2 = {}) {
 }
 var z = R;
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
 var average = (a2, b2) => (a2 + b2) / 2;
 function getSvgPathFromStroke(points, closed = true) {
   const len = points.length;
@@ -378,7 +378,7 @@ function getSvgPathFromStroke(points, closed = true) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.35.3/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {

@@ -1,10 +1,10 @@
 import {
   toPx
-} from "./chunk-G66USZ47.mjs";
+} from "./chunk-MV633JPN.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-K4KBICFH.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
@@ -14,6 +14,7 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
+  getEventTarget,
   getString,
   isLeftClick,
   isSafari,
@@ -22,9 +23,9 @@ import {
   resizeObserverBorderBox,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.35.3/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.anatomy.mjs
 var anatomy = createAnatomy("radio-group").parts(
   "root",
   "label",
@@ -35,7 +36,7 @@ var anatomy = createAnatomy("radio-group").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.35.3/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `radio-group:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `radio-group:${ctx.id}:label`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `radio-group:${ctx.id}:radio:${value}`;
@@ -64,7 +65,7 @@ var getOffsetRect = (el) => ({
   height: el?.offsetHeight ?? 0
 });
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.35.3/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, computed, prop, scope } = service;
   const groupDisabled = computed("isDisabled");
@@ -243,14 +244,18 @@ function connect(service, normalize) {
     },
     getIndicatorProps() {
       const rect = context.get("indicatorRect");
-      const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+      const animateIndicator = context.get("animateIndicator");
       return normalize.element({
         id: getIndicatorId(scope),
         ...parts.indicator.attrs,
         dir: prop("dir"),
-        hidden: context.get("value") == null || rectIsEmpty,
+        hidden: context.get("value") == null || isRectEmpty(rect),
         "data-disabled": dataAttr(groupDisabled),
         "data-orientation": prop("orientation"),
+        onTransitionEnd(event) {
+          if (getEventTarget(event) !== event.currentTarget) return;
+          send({ type: "INDICATOR_TRANSITION_END" });
+        },
         style: {
           "--transition-property": "left, top, width, height",
           "--left": toPx(rect?.x),
@@ -258,9 +263,9 @@ function connect(service, normalize) {
           "--width": toPx(rect?.width),
           "--height": toPx(rect?.height),
           position: "absolute",
-          willChange: "var(--transition-property)",
-          transitionProperty: "var(--transition-property)",
-          transitionDuration: "var(--transition-duration, 150ms)",
+          willChange: animateIndicator ? "var(--transition-property)" : "auto",
+          transitionProperty: animateIndicator ? "var(--transition-property)" : "none",
+          transitionDuration: animateIndicator ? "var(--transition-duration, 150ms)" : "0ms",
           transitionTimingFunction: "var(--transition-timing-function)",
           [prop("orientation") === "horizontal" ? "left" : "top"]: prop("orientation") === "horizontal" ? "var(--left)" : "var(--top)"
         }
@@ -268,8 +273,9 @@ function connect(service, normalize) {
     }
   };
 }
+var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/.pnpm/@zag-js+radio-group@1.35.3/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+radio-group@1.36.0/node_modules/@zag-js/radio-group/dist/radio-group.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -305,6 +311,9 @@ var machine = createMachine({
       indicatorRect: bindable(() => ({
         defaultValue: null
       })),
+      animateIndicator: bindable(() => ({
+        defaultValue: false
+      })),
       fieldsetDisabled: bindable(() => ({
         defaultValue: false
       })),
@@ -316,18 +325,19 @@ var machine = createMachine({
   refs() {
     return {
       indicatorCleanup: null,
-      focusVisibleValue: null
+      focusVisibleValue: null,
+      prevValue: null
     };
   },
   computed: {
     isDisabled: ({ prop, context }) => !!prop("disabled") || context.get("fieldsetDisabled")
   },
-  entry: ["syncIndicatorRect", "syncSsr"],
+  entry: ["syncPrevValue", "syncIndicatorRect", "syncSsr"],
   exit: ["cleanupObserver"],
   effects: ["trackFormControlState", "trackFocusVisible"],
   watch({ track, action, context }) {
     track([() => context.get("value")], () => {
-      action(["syncIndicatorRect", "syncInputElements"]);
+      action(["syncIndicatorAnimation", "syncIndicatorRect", "syncInputElements"]);
     });
   },
   on: {
@@ -348,6 +358,9 @@ var machine = createMachine({
     },
     SET_FOCUSED: {
       actions: ["setFocused"]
+    },
+    INDICATOR_TRANSITION_END: {
+      actions: ["clearIndicatorAnimation"]
     }
   },
   states: {
@@ -386,6 +399,19 @@ var machine = createMachine({
         context.set("focusedValue", event.value);
         const focusVisibleValue = event.value != null && event.focusVisible ? event.value : null;
         context.set("focusVisibleValue", focusVisibleValue);
+      },
+      syncPrevValue({ context, refs }) {
+        refs.set("prevValue", context.get("value"));
+      },
+      syncIndicatorAnimation({ context, refs }) {
+        const prevValue = refs.get("prevValue");
+        const nextValue = context.get("value");
+        const animate = prevValue != null && nextValue != null && prevValue !== nextValue;
+        context.set("animateIndicator", animate);
+        refs.set("prevValue", nextValue);
+      },
+      clearIndicatorAnimation({ context }) {
+        context.set("animateIndicator", false);
       },
       syncInputElements({ context, scope }) {
         const inputs = getInputEls(scope);

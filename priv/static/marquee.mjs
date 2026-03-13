@@ -9,13 +9,13 @@ import {
   getNumber,
   getString,
   normalizeProps
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.anatomy.mjs
 var anatomy = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.dom.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.dom.mjs
 var dom = {
   getRootId: (ctx) => ctx.ids?.root ?? `marquee:${ctx.id}`,
   getViewportId: (ctx) => ctx.ids?.viewport ?? `marquee:${ctx.id}:viewport`,
@@ -25,7 +25,7 @@ var dom = {
   getContentEl: (ctx, index) => ctx.getById(dom.getContentId(ctx, index))
 };
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.utils.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.utils.mjs
 var getEdgePositionStyles = (options) => {
   const { side } = options;
   switch (side) {
@@ -67,7 +67,7 @@ var getMarqueeTranslate = (options) => {
   return shouldBeNegative ? "-100%" : "100%";
 };
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.connect.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.connect.mjs
 function connect(service, normalize) {
   const { scope, send, context, computed, prop } = service;
   const side = prop("side");
@@ -219,7 +219,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+marquee@1.35.3/node_modules/@zag-js/marquee/dist/marquee.machine.mjs
+// ../node_modules/.pnpm/@zag-js+marquee@1.36.0/node_modules/@zag-js/marquee/dist/marquee.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {

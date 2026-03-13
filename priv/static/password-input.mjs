@@ -11,9 +11,9 @@ import {
   isLeftClick,
   normalizeProps,
   uuid
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.anatomy.mjs
 var anatomy = createAnatomy("password-input").parts(
   "root",
   "input",
@@ -24,11 +24,11 @@ var anatomy = createAnatomy("password-input").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.dom.mjs
 var getInputId = (ctx) => ctx.ids?.input ?? `p-input-${ctx.id}-input`;
 var getInputEl = (ctx) => ctx.getById(getInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.connect.mjs
 function connect(service, normalize) {
   const { scope, prop, context } = service;
   const visible = context.get("visible");
@@ -143,7 +143,7 @@ var passwordManagerProps = {
   "data-protonpass-ignore": "true"
 };
 
-// ../node_modules/.pnpm/@zag-js+password-input@1.35.3/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+password-input@1.36.0/node_modules/@zag-js/password-input/dist/password-input.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {

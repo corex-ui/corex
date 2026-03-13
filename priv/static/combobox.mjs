@@ -3,20 +3,20 @@ import {
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunk-SHF22JMM.mjs";
+} from "./chunk-WAY74VD3.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-FWBO7OZW.mjs";
+} from "./chunk-IMEAISCQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-6EX3NMK5.mjs";
-import "./chunk-HWQDHESJ.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-K4KBICFH.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
@@ -48,9 +48,9 @@ import {
   scrollIntoView,
   setCaretToEnd,
   setup
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.35.3/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
   "root",
   "clearTrigger",
@@ -69,7 +69,7 @@ var anatomy = createAnatomy("combobox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.35.3/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -77,7 +77,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.35.3/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
@@ -113,7 +113,7 @@ var focusTriggerEl = (ctx) => {
   triggerEl?.focus({ preventScroll: true });
 };
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.35.3/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, state, send, scope, computed, event } = service;
   const translations = prop("translations");
@@ -525,7 +525,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.35.3/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
 var { guards, createMachine, choose } = setup();
 var { and, not } = guards;
 var machine = createMachine({

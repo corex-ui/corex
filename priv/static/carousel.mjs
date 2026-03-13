@@ -1,6 +1,6 @@
 import {
   clampValue
-} from "./chunk-G66USZ47.mjs";
+} from "./chunk-MV633JPN.mjs";
 import {
   Component,
   VanillaMachine,
@@ -19,6 +19,7 @@ import {
   getEventKey,
   getEventTarget,
   getNumber,
+  getScale,
   getString,
   getTabbables,
   isFocusable,
@@ -34,9 +35,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",
@@ -51,7 +52,7 @@ var anatomy = createAnatomy("carousel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
 var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
 var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
@@ -69,7 +70,7 @@ var syncTabIndex = (ctx) => {
   el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
 };
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
 function connect(service, normalize) {
   const { state, context, computed, send, scope, prop } = service;
   const isPlaying = state.matches("autoplay");
@@ -338,27 +339,28 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.35.3/node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.36.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
+var convert = (raw, size) => {
+  let n = parseFloat(raw);
+  if (/%/.test(raw)) {
+    n /= 100;
+    n *= size;
+  }
+  return Number.isNaN(n) ? 0 : n;
+};
 function getScrollPadding(element) {
   const style = getComputedStyle2(element);
-  const rect = element.getBoundingClientRect();
+  const layoutWidth = element.offsetWidth;
+  const layoutHeight = element.offsetHeight;
   let xBeforeRaw = style.getPropertyValue("scroll-padding-left").replace("auto", "0px");
   let yBeforeRaw = style.getPropertyValue("scroll-padding-top").replace("auto", "0px");
   let xAfterRaw = style.getPropertyValue("scroll-padding-right").replace("auto", "0px");
   let yAfterRaw = style.getPropertyValue("scroll-padding-bottom").replace("auto", "0px");
-  function convert(raw, size) {
-    let n = parseFloat(raw);
-    if (/%/.test(raw)) {
-      n /= 100;
-      n *= size;
-    }
-    return Number.isNaN(n) ? 0 : n;
-  }
-  let xBefore = convert(xBeforeRaw, rect.width);
-  let yBefore = convert(yBeforeRaw, rect.height);
-  let xAfter = convert(xAfterRaw, rect.width);
-  let yAfter = convert(yAfterRaw, rect.height);
+  let xBefore = convert(xBeforeRaw, layoutWidth);
+  let yBefore = convert(yBeforeRaw, layoutHeight);
+  let xAfter = convert(xAfterRaw, layoutWidth);
+  let yAfter = convert(yAfterRaw, layoutHeight);
   return {
     x: { before: xBefore, after: xAfter },
     y: { before: yBefore, after: yAfter }
@@ -378,6 +380,7 @@ function getSnapPositions(parent, subtree = false) {
   const parentRect = parent.getBoundingClientRect();
   const dir = getDirection(parent);
   const isRtl = dir === "rtl";
+  const scale = getScale(parent);
   const positions = {
     x: { start: [], center: [], end: [] },
     y: { start: [], center: [], end: [] }
@@ -389,6 +392,7 @@ function getSnapPositions(parent, subtree = false) {
     const axisEnd = axis === "x" ? "right" : "bottom";
     const axisSize = axis === "x" ? "width" : "height";
     const axisScroll = axis === "x" ? "scrollLeft" : "scrollTop";
+    const axisScale = axis === "x" ? scale.x : scale.y;
     const useRtlCalc = isRtl && axis === "x";
     for (const child of children) {
       const childRect = child.getBoundingClientRect();
@@ -406,14 +410,14 @@ function getSnapPositions(parent, subtree = false) {
       let childOffsetCenter;
       if (useRtlCalc) {
         const scrollOffset = Math.abs(parent[axisScroll]);
-        const rightOffset = parentRect[axisEnd] - childRect[axisEnd] + scrollOffset;
+        const rightOffset = (parentRect[axisEnd] - childRect[axisEnd]) / axisScale + scrollOffset;
         childOffsetStart = rightOffset;
-        childOffsetEnd = rightOffset + childRect[axisSize];
-        childOffsetCenter = rightOffset + childRect[axisSize] / 2;
+        childOffsetEnd = rightOffset + childRect[axisSize] / axisScale;
+        childOffsetCenter = rightOffset + childRect[axisSize] / (2 * axisScale);
       } else {
-        childOffsetStart = childRect[axisStart] - parentRect[axisStart] + parent[axisScroll];
-        childOffsetEnd = childOffsetStart + childRect[axisSize];
-        childOffsetCenter = childOffsetStart + childRect[axisSize] / 2;
+        childOffsetStart = (childRect[axisStart] - parentRect[axisStart]) / axisScale + parent[axisScroll];
+        childOffsetEnd = childOffsetStart + childRect[axisSize] / axisScale;
+        childOffsetCenter = childOffsetStart + childRect[axisSize] / (2 * axisScale);
       }
       switch (childAlign) {
         case "none":
@@ -434,9 +438,10 @@ function getSnapPositions(parent, subtree = false) {
 }
 function getScrollSnapPositions(element) {
   const dir = getDirection(element);
-  const rect = element.getBoundingClientRect();
   const scrollPadding = getScrollPadding(element);
   const snapPositions = getSnapPositions(element);
+  const layoutWidth = element.offsetWidth;
+  const layoutHeight = element.offsetHeight;
   const maxScroll = {
     x: element.scrollWidth - element.offsetWidth,
     y: element.scrollHeight - element.offsetHeight
@@ -448,8 +453,8 @@ function getScrollSnapPositions(element) {
     xPositions = uniq2(
       [
         ...snapPositions.x.start.map((v) => v.position - scrollPadding.x.after),
-        ...snapPositions.x.center.map((v) => v.position - rect.width / 2),
-        ...snapPositions.x.end.map((v) => v.position - rect.width + scrollPadding.x.before)
+        ...snapPositions.x.center.map((v) => v.position - layoutWidth / 2),
+        ...snapPositions.x.end.map((v) => v.position - layoutWidth + scrollPadding.x.before)
       ].map(clamp(0, maxScroll.x))
     );
     if (usesNegativeScrollLeft) {
@@ -459,8 +464,8 @@ function getScrollSnapPositions(element) {
     xPositions = uniq2(
       [
         ...snapPositions.x.start.map((v) => v.position - scrollPadding.x.before),
-        ...snapPositions.x.center.map((v) => v.position - rect.width / 2),
-        ...snapPositions.x.end.map((v) => v.position - rect.width + scrollPadding.x.after)
+        ...snapPositions.x.center.map((v) => v.position - layoutWidth / 2),
+        ...snapPositions.x.end.map((v) => v.position - layoutWidth + scrollPadding.x.after)
       ].map(clamp(0, maxScroll.x))
     );
   }
@@ -469,8 +474,8 @@ function getScrollSnapPositions(element) {
     y: uniq2(
       [
         ...snapPositions.y.start.map((v) => v.position - scrollPadding.y.before),
-        ...snapPositions.y.center.map((v) => v.position - rect.height / 2),
-        ...snapPositions.y.end.map((v) => v.position - rect.height + scrollPadding.y.after)
+        ...snapPositions.y.center.map((v) => v.position - layoutHeight / 2),
+        ...snapPositions.y.end.map((v) => v.position - layoutHeight + scrollPadding.y.after)
       ].map(clamp(0, maxScroll.y))
     )
   };
@@ -500,7 +505,8 @@ function findSnapPoint(parent, axis, predicate) {
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.35.3/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.36.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+var DRIFT_THRESHOLD = 1;
 var machine = createMachine({
   props({ props }) {
     ensureProps(props, ["slideCount"], "carousel");
@@ -604,7 +610,7 @@ var machine = createMachine({
       actions: ["clearScrollEndTimer", "setMatchingPage"]
     },
     "SNAP.REFRESH": {
-      actions: ["setSnapPoints"]
+      actions: ["setSnapPoints", "scrollToPageIfDrifted"]
     },
     "PAGE.SCROLL": {
       actions: ["scrollToPage"]
@@ -765,7 +771,10 @@ var machine = createMachine({
         });
         const itemEls = getItemEls(scope);
         itemEls.forEach(exec);
-        const cleanups = [resizeObserverBorderBox.observe(el, exec), ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))];
+        const cleanups = [
+          resizeObserverBorderBox.observe(el, exec),
+          ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))
+        ];
         return callAll(...cleanups);
       },
       trackSlideIntersections({ scope, prop, context }) {
@@ -886,6 +895,16 @@ var machine = createMachine({
         flush(() => {
           el.scrollTo({ [axis]: context.get("pageSnapPoints")[index], behavior });
         });
+      },
+      scrollToPageIfDrifted({ context, scope, computed }) {
+        const el = getItemGroupEl(scope);
+        if (!el) return;
+        const snapPoint = context.get("pageSnapPoints")[context.get("page")];
+        if (snapPoint == null) return;
+        const scrollPos = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
+        if (Math.abs(scrollPos - snapPoint) <= DRIFT_THRESHOLD) return;
+        const axis = computed("isHorizontal") ? "left" : "top";
+        el.scrollTo({ [axis]: snapPoint, behavior: "instant" });
       },
       setClosestPage({ context, scope, computed }) {
         const el = getItemGroupEl(scope);

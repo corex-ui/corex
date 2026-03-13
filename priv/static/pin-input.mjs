@@ -1,6 +1,6 @@
 import {
   setValueAtIndex
-} from "./chunk-G66USZ47.mjs";
+} from "./chunk-MV633JPN.mjs";
 import {
   Component,
   VanillaMachine,
@@ -25,13 +25,13 @@ import {
   raf,
   setup,
   visuallyHiddenStyle
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.35.3/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.anatomy.mjs
 var anatomy = createAnatomy("pinInput").parts("root", "label", "input", "control");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.35.3/node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `pin-input:${ctx.id}`;
 var getInputId = (ctx, id) => ctx.ids?.input?.(id) ?? `pin-input:${ctx.id}:${id}`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `pin-input:${ctx.id}:hidden`;
@@ -51,7 +51,7 @@ var setInputValue = (inputEl, value) => {
   inputEl.setAttribute("value", value);
 };
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.35.3/node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.utils.mjs
 var REGEX = {
   numeric: /^[0-9]+$/,
   alphabetic: /^[A-Za-z]+$/,
@@ -67,7 +67,7 @@ function isValidValue(value, type, pattern) {
   return regex.test(value);
 }
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.35.3/node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.connect.mjs
 function connect(service, normalize) {
   const { send, context, computed, prop, scope } = service;
   const complete = computed("isValueComplete");
@@ -215,6 +215,7 @@ function connect(service, normalize) {
             send({ type: "INPUT.BACKSPACE" });
             return;
           }
+          if (value === computed("focusedValue")) return;
           send({ type: "INPUT.CHANGE", value, index });
         },
         onKeyDown(event) {
@@ -260,7 +261,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+pin-input@1.35.3/node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+pin-input@1.36.0/node_modules/@zag-js/pin-input/dist/pin-input.machine.mjs
 var { choose, createMachine } = setup();
 var machine = createMachine({
   props({ props }) {

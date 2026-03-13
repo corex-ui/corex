@@ -3,11 +3,11 @@ import {
   addPoints,
   createRect,
   subtractPoints
-} from "./chunk-3QRJREC6.mjs";
+} from "./chunk-ZZKFCQSP.mjs";
 import {
   clampValue,
   toPx
-} from "./chunk-G66USZ47.mjs";
+} from "./chunk-MV633JPN.mjs";
 import {
   Component,
   VanillaMachine,
@@ -34,9 +34,9 @@ import {
   resizeObserverBorderBox,
   subscribe,
   trackPointerMove
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.anatomy.mjs
 var anatomy = createAnatomy("floating-panel").parts(
   "trigger",
   "positioner",
@@ -52,7 +52,7 @@ var anatomy = createAnatomy("floating-panel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/affine-transform.mjs
 var AffineTransform = class _AffineTransform {
   constructor([m00, m01, m02, m10, m11, m12] = [0, 0, 0, 0, 0, 0]) {
     __publicField(this, "m00");
@@ -212,7 +212,7 @@ var AffineTransform = class _AffineTransform {
   }
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/clamp.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/clamp.mjs
 var clamp = (value, min2, max) => Math.min(Math.max(value, min2), max);
 var clampPoint = (position, size, boundaryRect) => {
   const x = clamp(position.x, boundaryRect.x, boundaryRect.x + boundaryRect.width - size.width);
@@ -234,7 +234,7 @@ var clampSize = (size, minSize = defaultMinSize, maxSize = defaultMaxSize) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/constrain.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/constrain.mjs
 var constrainRect = (rect, boundary) => {
   const left = Math.max(boundary.x, Math.min(rect.x, boundary.x + boundary.width - rect.width));
   const top = Math.max(boundary.y, Math.min(rect.y, boundary.y + boundary.height - rect.height));
@@ -246,7 +246,7 @@ var constrainRect = (rect, boundary) => {
   };
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/equality.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/equality.mjs
 var isSizeEqual = (a, b) => {
   return a.width === b?.width && a.height === b?.height;
 };
@@ -254,7 +254,7 @@ var isPointEqual = (a, b) => {
   return a.x === b?.x && a.y === b?.y;
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/from-element.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/from-element.mjs
 var styleCache = /* @__PURE__ */ new WeakMap();
 function getCacheComputedStyle(el) {
   if (!styleCache.has(el)) {
@@ -291,7 +291,7 @@ function getClientRect(el, opts = {}) {
 var px = (v) => parseFloat(v.replace("px", ""));
 var sum = (...vals) => vals.reduce((sum2, v) => sum2 + (v ? px(v) : 0), 0);
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/from-window.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/from-window.mjs
 function getWindowRect(win, opts = {}) {
   return createRect(getViewportRect(win, opts));
 }
@@ -310,7 +310,7 @@ function getViewportRect(win, opts) {
   return rect;
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/compass.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/compass.mjs
 var compassDirectionMap = {
   n: { x: 0.5, y: 0 },
   ne: { x: 1, y: 0 },
@@ -332,7 +332,7 @@ var oppositeDirectionMap = {
   nw: "se"
 };
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.35.3/node_modules/@zag-js/rect-utils/dist/resize.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/resize.mjs
 var { sign, abs, min } = Math;
 function getRectExtentPoint(rect, direction) {
   const { minX, minY, maxX, maxY, midX, midY } = rect;
@@ -416,7 +416,7 @@ function transformRect(rect, transform, normalized = true) {
   return createRectFromPoints(p1, p2, normalized);
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.dom.mjs
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `float:${ctx.id}:trigger`;
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `float:${ctx.id}:positioner`;
 var getContentId = (ctx) => ctx.ids?.content ?? `float:${ctx.id}:content`;
@@ -447,7 +447,7 @@ var getBoundaryRect = (ctx, boundaryEl, allowOverflow) => {
   return pick(boundaryRect, ["x", "y", "width", "height"]);
 };
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/get-resize-axis-style.mjs
 function getResizeAxisStyle(axis) {
   switch (axis) {
     case "n":
@@ -511,7 +511,7 @@ function getResizeAxisStyle(axis) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.connect.mjs
 var validStages = /* @__PURE__ */ new Set(["minimized", "maximized", "default"]);
 function connect(service, normalize) {
   const { state, send, scope, prop, computed, context } = service;
@@ -809,7 +809,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.store.mjs
 var panelStack = proxy({
   stack: [],
   count() {
@@ -836,26 +836,25 @@ var panelStack = proxy({
   }
 });
 
-// ../node_modules/.pnpm/@zag-js+floating-panel@1.35.3/node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+floating-panel@1.36.0/node_modules/@zag-js/floating-panel/dist/floating-panel.machine.mjs
 var { not, and } = createGuards();
 var defaultTranslations = {
   minimize: "Minimize window",
   maximize: "Maximize window",
   restore: "Restore window"
 };
+var FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
+var FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
 var machine = createMachine({
   props({ props }) {
     ensureProps(props, ["id"], "floating-panel");
     return {
       strategy: "fixed",
       gridSize: 1,
-      defaultSize: { width: 320, height: 240 },
-      defaultPosition: { x: 300, y: 100 },
       allowOverflow: true,
       resizable: true,
       draggable: true,
       ...props,
-      hasSpecifiedPosition: !!props.defaultPosition || !!props.position,
       translations: {
         ...defaultTranslations,
         ...props.translations
@@ -863,16 +862,15 @@ var machine = createMachine({
     };
   },
   initialState({ prop }) {
-    const open = prop("open") || prop("defaultOpen");
+    const open = prop("open") ?? prop("defaultOpen");
     return open ? "open" : "closed";
   },
   context({ prop, bindable }) {
     return {
       size: bindable(() => ({
-        defaultValue: prop("defaultSize"),
+        defaultValue: prop("defaultSize") ?? FALLBACK_SIZE,
         value: prop("size"),
         isEqual: isSizeEqual,
-        sync: true,
         hash(v) {
           return `W:${v.width} H:${v.height}`;
         },
@@ -881,10 +879,9 @@ var machine = createMachine({
         }
       })),
       position: bindable(() => ({
-        defaultValue: prop("defaultPosition"),
+        defaultValue: prop("defaultPosition") ?? FALLBACK_POSITION,
         value: prop("position"),
         isEqual: isPointEqual,
-        sync: true,
         hash(v) {
           return `X:${v.x} Y:${v.y}`;
         },
@@ -916,6 +913,7 @@ var machine = createMachine({
     isMaximized: ({ context }) => context.get("stage") === "maximized",
     isMinimized: ({ context }) => context.get("stage") === "minimized",
     isStaged: ({ context }) => context.get("stage") !== "default",
+    hasSpecifiedPosition: ({ prop }) => prop("defaultPosition") != null || prop("position") != null,
     canResize: ({ context, prop }) => prop("resizable") && !prop("disabled") && context.get("stage") === "default",
     canDrag: ({ prop, computed }) => prop("draggable") && !prop("disabled") && !computed("isMaximized")
   },
@@ -948,7 +946,7 @@ var machine = createMachine({
       on: {
         "CONTROLLED.OPEN": {
           target: "open",
-          actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+          actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "setInitialFocus"]
         },
         OPEN: [
           {
@@ -957,7 +955,7 @@ var machine = createMachine({
           },
           {
             target: "open",
-            actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+            actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "setInitialFocus"]
           }
         ]
       }
@@ -966,6 +964,23 @@ var machine = createMachine({
       tags: ["open"],
       entry: ["bringToFrontOfPanelStack"],
       initial: "idle",
+      on: {
+        "CONTROLLED.CLOSE": {
+          target: "closed",
+          actions: ["resetRect", "setFinalFocus"]
+        },
+        CLOSE: [
+          {
+            guard: "isOpenControlled",
+            target: "closed",
+            actions: ["invokeOnClose", "setFinalFocus"]
+          },
+          {
+            target: "closed",
+            actions: ["invokeOnClose", "resetRect", "setFinalFocus"]
+          }
+        ]
+      },
       states: {
         idle: {
           effects: ["trackBoundaryRect"],
@@ -980,21 +995,6 @@ var machine = createMachine({
               target: "resizing",
               actions: ["setPrevSize"]
             },
-            "CONTROLLED.CLOSE": {
-              target: "closed",
-              actions: ["resetRect", "focusTriggerEl"]
-            },
-            CLOSE: [
-              {
-                guard: "isOpenControlled",
-                target: "closed",
-                actions: ["invokeOnClose"]
-              },
-              {
-                target: "closed",
-                actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
-              }
-            ],
             ESCAPE: [
               {
                 guard: and("isOpenControlled", "closeOnEsc"),
@@ -1003,7 +1003,7 @@ var machine = createMachine({
               {
                 guard: "closeOnEsc",
                 target: "closed",
-                actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+                actions: ["invokeOnClose", "resetRect", "setFinalFocus"]
               }
             ],
             MINIMIZE: {
@@ -1025,29 +1025,15 @@ var machine = createMachine({
           exit: ["clearPrevPosition"],
           on: {
             DRAG: {
-              actions: ["setPosition"]
+              actions: ["setPositionFromDrag"]
             },
             DRAG_END: {
               target: "idle",
               actions: ["invokeOnDragEnd"]
             },
-            "CONTROLLED.CLOSE": {
-              target: "closed",
-              actions: ["resetRect"]
-            },
-            CLOSE: [
-              {
-                guard: "isOpenControlled",
-                target: "closed",
-                actions: ["invokeOnClose"]
-              },
-              {
-                target: "closed",
-                actions: ["invokeOnClose", "resetRect"]
-              }
-            ],
             ESCAPE: {
-              target: "idle"
+              target: "idle",
+              actions: ["restorePosition"]
             }
           }
         },
@@ -1056,29 +1042,15 @@ var machine = createMachine({
           exit: ["clearPrevSize"],
           on: {
             DRAG: {
-              actions: ["setSize"]
+              actions: ["setSizeFromDrag"]
             },
             DRAG_END: {
               target: "idle",
               actions: ["invokeOnResizeEnd"]
             },
-            "CONTROLLED.CLOSE": {
-              target: "closed",
-              actions: ["resetRect"]
-            },
-            CLOSE: [
-              {
-                guard: "isOpenControlled",
-                target: "closed",
-                actions: ["invokeOnClose"]
-              },
-              {
-                target: "closed",
-                actions: ["invokeOnClose", "resetRect"]
-              }
-            ],
             ESCAPE: {
-              target: "idle"
+              target: "idle",
+              actions: ["restoreSize"]
             }
           }
         }
@@ -1148,27 +1120,41 @@ var machine = createMachine({
       }
     },
     actions: {
-      setAnchorPosition({ context, prop, scope }) {
-        if (prop("hasSpecifiedPosition")) return;
+      setPosition({ context, event, prop, scope }) {
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, prop("allowOverflow"));
+        const position = clampPoint(event.position, context.get("size"), boundaryRect);
+        context.set("position", position);
+      },
+      setSize({ context, event, scope, prop }) {
+        const boundaryEl = prop("getBoundaryEl")?.();
+        const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+        let nextSize = event.size;
+        nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+        nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+        const nextPosition = clampPoint(context.get("position"), nextSize, boundaryRect);
+        context.set("size", nextSize);
+        context.set("position", nextPosition);
+      },
+      setAnchorPosition({ context, computed, prop, scope }) {
+        if (computed("hasSpecifiedPosition")) return;
         const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
         if (prop("persistRect") && hasPrevRect) return;
-        raf(() => {
-          const triggerRect = getTriggerEl(scope);
-          const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
-          let anchorPosition = prop("getAnchorPosition")?.({
-            triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
-            boundaryRect: DOMRect.fromRect(boundaryRect)
-          });
-          if (!anchorPosition) {
-            const size = context.get("size");
-            anchorPosition = {
-              x: boundaryRect.x + (boundaryRect.width - size.width) / 2,
-              y: boundaryRect.y + (boundaryRect.height - size.height) / 2
-            };
-          }
-          if (!anchorPosition) return;
-          context.set("position", anchorPosition);
+        const triggerRect = getTriggerEl(scope);
+        const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
+        let anchorPosition = prop("getAnchorPosition")?.({
+          triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
+          boundaryRect: DOMRect.fromRect(boundaryRect)
         });
+        if (!anchorPosition) {
+          const size = context.get("size");
+          anchorPosition = {
+            x: boundaryRect.x + (boundaryRect.width - size.width) / 2,
+            y: boundaryRect.y + (boundaryRect.height - size.height) / 2
+          };
+        }
+        if (!anchorPosition) return;
+        context.set("position", anchorPosition);
       },
       setPrevPosition({ context, event }) {
         context.set("prevPosition", { ...context.get("position") });
@@ -1178,7 +1164,11 @@ var machine = createMachine({
         if (!prop("persistRect")) context.set("prevPosition", null);
         context.set("lastEventPosition", null);
       },
-      setPosition({ context, event, prop, scope }) {
+      restorePosition({ context }) {
+        const prevPosition = context.get("prevPosition");
+        if (prevPosition) context.set("position", prevPosition);
+      },
+      setPositionFromDrag({ context, event, prop, scope }) {
         let diff = subtractPoints(event.position, context.get("lastEventPosition"));
         diff.x = Math.round(diff.x / prop("gridSize")) * prop("gridSize");
         diff.y = Math.round(diff.y / prop("gridSize")) * prop("gridSize");
@@ -1213,7 +1203,13 @@ var machine = createMachine({
         context.set("prevPosition", null);
         context.set("lastEventPosition", null);
       },
-      setSize({ context, event, scope, prop }) {
+      restoreSize({ context }) {
+        const prevSize = context.get("prevSize");
+        if (prevSize) context.set("size", prevSize);
+        const prevPosition = context.get("prevPosition");
+        if (prevPosition) context.set("position", prevPosition);
+      },
+      setSizeFromDrag({ context, event, scope, prop }) {
         const prevSize = context.get("prevSize");
         const prevPosition = context.get("prevPosition");
         const lastEventPosition = context.get("lastEventPosition");
@@ -1245,22 +1241,36 @@ var machine = createMachine({
         });
       },
       setMaximized({ context, prop, scope }) {
-        context.set("stage", "maximized");
-        context.set("prevSize", context.get("size"));
-        context.set("prevPosition", context.get("position"));
+        if (context.get("stage") === "maximized") return;
+        const wasDefault = context.get("stage") === "default";
+        const currentSize = context.get("size");
+        const currentPosition = context.get("position");
         const boundaryEl = prop("getBoundaryEl")?.();
         const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
-        context.set("position", pick(boundaryRect, ["x", "y"]));
-        context.set("size", pick(boundaryRect, ["height", "width"]));
+        const nextPosition = pick(boundaryRect, ["x", "y"]);
+        const nextSize = pick(boundaryRect, ["height", "width"]);
+        context.set("stage", "maximized");
+        if (wasDefault) {
+          context.set("prevSize", currentSize);
+          context.set("prevPosition", currentPosition);
+        }
+        context.set("position", nextPosition);
+        context.set("size", nextSize);
       },
       setMinimized({ context, scope }) {
+        if (context.get("stage") === "minimized") return;
+        const wasDefault = context.get("stage") === "default";
+        const currentSize = context.get("size");
+        const currentPosition = context.get("position");
         context.set("stage", "minimized");
-        context.set("prevSize", context.get("size"));
-        context.set("prevPosition", context.get("position"));
+        if (wasDefault) {
+          context.set("prevSize", currentSize);
+          context.set("prevPosition", currentPosition);
+        }
         const headerEl = getHeaderEl(scope);
         if (!headerEl) return;
         const size = {
-          ...context.get("size"),
+          ...currentSize,
           height: headerEl?.offsetHeight
         };
         context.set("size", size);
@@ -1268,20 +1278,21 @@ var machine = createMachine({
       setRestored({ context, prop, scope }) {
         const boundaryRect = getBoundaryRect(scope, prop("getBoundaryEl")?.(), false);
         context.set("stage", "default");
+        let restoredSize = context.get("size");
         const prevSize = context.get("prevSize");
         if (prevSize) {
-          let nextSize = prevSize;
-          nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
-          nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
-          context.set("size", nextSize);
-          context.set("prevSize", null);
+          restoredSize = clampSize(prevSize, prop("minSize"), prop("maxSize"));
+          restoredSize = clampSize(restoredSize, prop("minSize"), boundaryRect);
         }
-        if (context.get("prevPosition")) {
-          let nextPosition = context.get("prevPosition");
-          nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
-          context.set("position", nextPosition);
-          context.set("prevPosition", null);
+        let restoredPosition = context.get("position");
+        const prevPosition = context.get("prevPosition");
+        if (prevPosition) {
+          restoredPosition = clampPoint(prevPosition, restoredSize, boundaryRect);
         }
+        context.set("size", restoredSize);
+        context.set("position", restoredPosition);
+        context.set("prevSize", null);
+        context.set("prevPosition", null);
       },
       setPositionFromKeyboard({ context, event, prop, scope }) {
         invariant(event.step == null, "step is required");
@@ -1313,12 +1324,12 @@ var machine = createMachine({
       invokeOnResizeEnd({ context, prop }) {
         prop("onSizeChangeEnd")?.({ size: context.get("size") });
       },
-      focusTriggerEl({ scope }) {
+      setFinalFocus({ scope }) {
         raf(() => {
           getTriggerEl(scope)?.focus();
         });
       },
-      focusContentEl({ scope }) {
+      setInitialFocus({ scope }) {
         raf(() => {
           getContentEl(scope)?.focus();
         });

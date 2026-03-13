@@ -21,13 +21,13 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `accordion:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `accordion:${ctx.id}:item:${value}`;
 var getItemContentId = (ctx, value) => ctx.ids?.itemContent?.(value) ?? `accordion:${ctx.id}:content:${value}`;
@@ -43,7 +43,7 @@ var getLastTriggerEl = (ctx) => last(getTriggerEls(ctx));
 var getNextTriggerEl = (ctx, id) => nextById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 var getPrevTriggerEl = (ctx, id) => prevById(getTriggerEls(ctx), getItemTriggerId(ctx, id));
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, scope, computed } = service;
   const focusedValue = context.get("focusedValue");
@@ -188,7 +188,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+accordion@1.35.3/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
+// ../node_modules/.pnpm/@zag-js+accordion@1.36.0/node_modules/@zag-js/accordion/dist/accordion.machine.mjs
 var { and, not } = createGuards();
 var machine = createMachine({
   props({ props }) {

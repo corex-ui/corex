@@ -3,20 +3,20 @@ import {
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunk-SHF22JMM.mjs";
+} from "./chunk-WAY74VD3.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-FWBO7OZW.mjs";
+} from "./chunk-IMEAISCQ.mjs";
 import {
   trackDismissableElement
-} from "./chunk-6EX3NMK5.mjs";
-import "./chunk-HWQDHESJ.mjs";
+} from "./chunk-B6KPIA33.mjs";
+import "./chunk-7UNOLQU5.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-K4KBICFH.mjs";
+} from "./chunk-KF3PY6Q6.mjs";
 import {
   Component,
   VanillaMachine,
@@ -48,9 +48,9 @@ import {
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -70,7 +70,7 @@ var anatomy = createAnatomy("select").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.collection.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -78,7 +78,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.dom.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
@@ -100,9 +100,10 @@ var getItemEl = (ctx, id) => {
   return ctx.getById(getItemId(ctx, id));
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.connect.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, state, computed, send } = service;
+  const translations = prop("translations");
   const disabled = prop("disabled") || context.get("fieldsetDisabled");
   const invalid = !!prop("invalid");
   const required = !!prop("required");
@@ -393,7 +394,7 @@ function connect(service, normalize) {
         ...parts.clearTrigger.attrs,
         id: getClearTriggerId(scope),
         type: "button",
-        "aria-label": "Clear value",
+        "aria-label": translations.clearTriggerLabel,
         "data-invalid": dataAttr(invalid),
         disabled,
         hidden: !computed("hasSelectedItems"),
@@ -523,7 +524,7 @@ var getSelectedValues = (el) => {
   return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.35.3/node_modules/@zag-js/select/dist/select.machine.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.36.0/node_modules/@zag-js/select/dist/select.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -534,6 +535,10 @@ var machine = createMachine({
       defaultValue: [],
       ...props,
       collection: props.collection ?? collection.empty(),
+      translations: {
+        clearTriggerLabel: "Clear value",
+        ...props.translations
+      },
       positioning: {
         placement: "bottom-start",
         gutter: 8,

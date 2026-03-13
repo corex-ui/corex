@@ -1,6 +1,6 @@
 import {
   setRafTimeout
-} from "./chunk-AMS5CJ65.mjs";
+} from "./chunk-MYBRVHPZ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -13,13 +13,13 @@ import {
   getWindow,
   normalizeProps,
   setElementValue
-} from "./chunk-VYU2VXER.mjs";
+} from "./chunk-ZOODJA3P.mjs";
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.35.3/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.35.3/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `clip:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `clip:${ctx.id}:input`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `clip:${ctx.id}:label`;
@@ -66,10 +66,11 @@ function copyText(doc, text) {
   return Promise.resolve();
 }
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.35.3/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
 function connect(service, normalize) {
-  const { state, send, context, scope } = service;
+  const { state, send, context, scope, prop } = service;
   const copied = state.matches("copied");
+  const translations = prop("translations");
   return {
     copied,
     value: context.get("value"),
@@ -120,7 +121,7 @@ function connect(service, normalize) {
       return normalize.button({
         ...parts.trigger.attrs,
         type: "button",
-        "aria-label": copied ? "Copied to clipboard" : "Copy to clipboard",
+        "aria-label": translations.triggerLabel?.(copied),
         "data-copied": dataAttr(copied),
         onClick() {
           send({ type: "COPY" });
@@ -136,13 +137,17 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.35.3/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
       timeout: 3e3,
       defaultValue: "",
-      ...props
+      ...props,
+      translations: {
+        triggerLabel: (copied) => copied ? "Copied to clipboard" : "Copy to clipboard",
+        ...props.translations
+      }
     };
   },
   initialState() {

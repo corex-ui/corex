@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-VYU2VXER.mjs
+  // ../priv/static/chunk-ZOODJA3P.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -1335,6 +1335,17 @@ var Corex = (() => {
       unobserve
     };
   }
+  function getScale(element) {
+    const rect = element.getBoundingClientRect();
+    const offsetWidth = element.offsetWidth;
+    const offsetHeight = element.offsetHeight;
+    const hasTransform = Math.round(rect.width) !== offsetWidth || Math.round(rect.height) !== offsetHeight;
+    let x2 = hasTransform ? Math.round(rect.width) / offsetWidth : 1;
+    let y2 = hasTransform ? Math.round(rect.height) / offsetHeight : 1;
+    if (!x2 || !Number.isFinite(x2)) x2 = 1;
+    if (!y2 || !Number.isFinite(y2)) y2 = 1;
+    return { x: x2, y: y2 };
+  }
   function getByText(v2, text, currentId, itemToId = defaultItemToId) {
     const index = currentId ? indexOfId(v2, currentId, itemToId) : -1;
     let items = currentId ? wrap(v2, index) : v2;
@@ -1559,7 +1570,7 @@ var Corex = (() => {
       },
       set(nextValue) {
         var _a2, _b2;
-        const prev2 = this.get();
+        const prev2 = controlled() ? props().value : store.value;
         const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
         if (props().debug) {
           console.log(`[bindable > ${props().debug}] setValue`, { next: next2, prev: prev2 });
@@ -1689,8 +1700,8 @@ var Corex = (() => {
     };
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, __defProp2, __defNormalProp2, __publicField2, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_VYU2VXER = __esm({
-    "../priv/static/chunk-VYU2VXER.mjs"() {
+  var init_chunk_ZOODJA3P = __esm({
+    "../priv/static/chunk-ZOODJA3P.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2767,7 +2778,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3100,7 +3111,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-3QRJREC6.mjs
+  // ../priv/static/chunk-ZZKFCQSP.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
     const midX = x2 + width / 2;
@@ -3127,8 +3138,8 @@ var Corex = (() => {
     return { top, right, bottom, left };
   }
   var __defProp4, __defNormalProp4, __publicField4, createPoint, subtractPoints, addPoints;
-  var init_chunk_3QRJREC6 = __esm({
-    "../priv/static/chunk-3QRJREC6.mjs"() {
+  var init_chunk_ZZKFCQSP = __esm({
+    "../priv/static/chunk-ZZKFCQSP.mjs"() {
       "use strict";
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -3142,10 +3153,10 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-G66USZ47.mjs
+  // ../priv/static/chunk-MV633JPN.mjs
   var floor, abs, round, min, max, pow, sign, isNaN2, nan, mod, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, roundValue, clampValue, getValuePercent, getPercentValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, toFixedNumber, countDecimals, decimalOp, incrementValue, decrementValue, toPx;
-  var init_chunk_G66USZ47 = __esm({
-    "../priv/static/chunk-G66USZ47.mjs"() {
+  var init_chunk_MV633JPN = __esm({
+    "../priv/static/chunk-MV633JPN.mjs"() {
       "use strict";
       ({ floor, abs, round, min, max, pow, sign } = Math);
       isNaN2 = (v2) => Number.isNaN(v2);
@@ -3459,9 +3470,9 @@ var Corex = (() => {
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_3QRJREC6();
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_ZZKFCQSP();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -3888,7 +3899,7 @@ var Corex = (() => {
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4334,23 +4345,16 @@ var Corex = (() => {
   }
   function getScrollPadding(element) {
     const style = getComputedStyle2(element);
-    const rect = element.getBoundingClientRect();
+    const layoutWidth = element.offsetWidth;
+    const layoutHeight = element.offsetHeight;
     let xBeforeRaw = style.getPropertyValue("scroll-padding-left").replace("auto", "0px");
     let yBeforeRaw = style.getPropertyValue("scroll-padding-top").replace("auto", "0px");
     let xAfterRaw = style.getPropertyValue("scroll-padding-right").replace("auto", "0px");
     let yAfterRaw = style.getPropertyValue("scroll-padding-bottom").replace("auto", "0px");
-    function convert(raw, size3) {
-      let n2 = parseFloat(raw);
-      if (/%/.test(raw)) {
-        n2 /= 100;
-        n2 *= size3;
-      }
-      return Number.isNaN(n2) ? 0 : n2;
-    }
-    let xBefore = convert(xBeforeRaw, rect.width);
-    let yBefore = convert(yBeforeRaw, rect.height);
-    let xAfter = convert(xAfterRaw, rect.width);
-    let yAfter = convert(yAfterRaw, rect.height);
+    let xBefore = convert(xBeforeRaw, layoutWidth);
+    let yBefore = convert(yBeforeRaw, layoutHeight);
+    let xAfter = convert(xAfterRaw, layoutWidth);
+    let yAfter = convert(yAfterRaw, layoutHeight);
     return {
       x: { before: xBefore, after: xAfter },
       y: { before: yBefore, after: yAfter }
@@ -4370,6 +4374,7 @@ var Corex = (() => {
     const parentRect = parent.getBoundingClientRect();
     const dir = getDirection(parent);
     const isRtl = dir === "rtl";
+    const scale = getScale(parent);
     const positions = {
       x: { start: [], center: [], end: [] },
       y: { start: [], center: [], end: [] }
@@ -4381,6 +4386,7 @@ var Corex = (() => {
       const axisEnd = axis === "x" ? "right" : "bottom";
       const axisSize = axis === "x" ? "width" : "height";
       const axisScroll = axis === "x" ? "scrollLeft" : "scrollTop";
+      const axisScale = axis === "x" ? scale.x : scale.y;
       const useRtlCalc = isRtl && axis === "x";
       for (const child of children) {
         const childRect = child.getBoundingClientRect();
@@ -4398,14 +4404,14 @@ var Corex = (() => {
         let childOffsetCenter;
         if (useRtlCalc) {
           const scrollOffset = Math.abs(parent[axisScroll]);
-          const rightOffset = parentRect[axisEnd] - childRect[axisEnd] + scrollOffset;
+          const rightOffset = (parentRect[axisEnd] - childRect[axisEnd]) / axisScale + scrollOffset;
           childOffsetStart = rightOffset;
-          childOffsetEnd = rightOffset + childRect[axisSize];
-          childOffsetCenter = rightOffset + childRect[axisSize] / 2;
+          childOffsetEnd = rightOffset + childRect[axisSize] / axisScale;
+          childOffsetCenter = rightOffset + childRect[axisSize] / (2 * axisScale);
         } else {
-          childOffsetStart = childRect[axisStart] - parentRect[axisStart] + parent[axisScroll];
-          childOffsetEnd = childOffsetStart + childRect[axisSize];
-          childOffsetCenter = childOffsetStart + childRect[axisSize] / 2;
+          childOffsetStart = (childRect[axisStart] - parentRect[axisStart]) / axisScale + parent[axisScroll];
+          childOffsetEnd = childOffsetStart + childRect[axisSize] / axisScale;
+          childOffsetCenter = childOffsetStart + childRect[axisSize] / (2 * axisScale);
         }
         switch (childAlign) {
           case "none":
@@ -4426,9 +4432,10 @@ var Corex = (() => {
   }
   function getScrollSnapPositions(element) {
     const dir = getDirection(element);
-    const rect = element.getBoundingClientRect();
     const scrollPadding = getScrollPadding(element);
     const snapPositions = getSnapPositions(element);
+    const layoutWidth = element.offsetWidth;
+    const layoutHeight = element.offsetHeight;
     const maxScroll = {
       x: element.scrollWidth - element.offsetWidth,
       y: element.scrollHeight - element.offsetHeight
@@ -4440,8 +4447,8 @@ var Corex = (() => {
       xPositions = uniq2(
         [
           ...snapPositions.x.start.map((v2) => v2.position - scrollPadding.x.after),
-          ...snapPositions.x.center.map((v2) => v2.position - rect.width / 2),
-          ...snapPositions.x.end.map((v2) => v2.position - rect.width + scrollPadding.x.before)
+          ...snapPositions.x.center.map((v2) => v2.position - layoutWidth / 2),
+          ...snapPositions.x.end.map((v2) => v2.position - layoutWidth + scrollPadding.x.before)
         ].map(clamp2(0, maxScroll.x))
       );
       if (usesNegativeScrollLeft) {
@@ -4451,8 +4458,8 @@ var Corex = (() => {
       xPositions = uniq2(
         [
           ...snapPositions.x.start.map((v2) => v2.position - scrollPadding.x.before),
-          ...snapPositions.x.center.map((v2) => v2.position - rect.width / 2),
-          ...snapPositions.x.end.map((v2) => v2.position - rect.width + scrollPadding.x.after)
+          ...snapPositions.x.center.map((v2) => v2.position - layoutWidth / 2),
+          ...snapPositions.x.end.map((v2) => v2.position - layoutWidth + scrollPadding.x.after)
         ].map(clamp2(0, maxScroll.x))
       );
     }
@@ -4461,8 +4468,8 @@ var Corex = (() => {
       y: uniq2(
         [
           ...snapPositions.y.start.map((v2) => v2.position - scrollPadding.y.before),
-          ...snapPositions.y.center.map((v2) => v2.position - rect.height / 2),
-          ...snapPositions.y.end.map((v2) => v2.position - rect.height + scrollPadding.y.after)
+          ...snapPositions.y.center.map((v2) => v2.position - layoutHeight / 2),
+          ...snapPositions.y.end.map((v2) => v2.position - layoutHeight + scrollPadding.y.after)
         ].map(clamp2(0, maxScroll.y))
       )
     };
@@ -4504,12 +4511,12 @@ var Corex = (() => {
     }
     return snapPoints;
   }
-  var anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, getDirection, uniq2, clamp2, machine4, Carousel, CarouselHook;
+  var anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, getDirection, convert, uniq2, clamp2, DRIFT_THRESHOLD, machine4, Carousel, CarouselHook;
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
       "use strict";
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -4561,8 +4568,17 @@ var Corex = (() => {
         el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
       };
       getDirection = (element) => getComputedStyle2(element).direction;
+      convert = (raw, size3) => {
+        let n2 = parseFloat(raw);
+        if (/%/.test(raw)) {
+          n2 /= 100;
+          n2 *= size3;
+        }
+        return Number.isNaN(n2) ? 0 : n2;
+      };
       uniq2 = (arr) => [...new Set(arr)];
       clamp2 = (min4, max3) => (value) => Math.max(min4, Math.min(max3, value));
+      DRIFT_THRESHOLD = 1;
       machine4 = createMachine({
         props({ props }) {
           ensureProps(props, ["slideCount"], "carousel");
@@ -4666,7 +4682,7 @@ var Corex = (() => {
             actions: ["clearScrollEndTimer", "setMatchingPage"]
           },
           "SNAP.REFRESH": {
-            actions: ["setSnapPoints"]
+            actions: ["setSnapPoints", "scrollToPageIfDrifted"]
           },
           "PAGE.SCROLL": {
             actions: ["scrollToPage"]
@@ -4827,7 +4843,10 @@ var Corex = (() => {
               });
               const itemEls = getItemEls(scope);
               itemEls.forEach(exec);
-              const cleanups = [resizeObserverBorderBox.observe(el, exec), ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))];
+              const cleanups = [
+                resizeObserverBorderBox.observe(el, exec),
+                ...itemEls.map((el2) => resizeObserverBorderBox.observe(el2, exec))
+              ];
               return callAll(...cleanups);
             },
             trackSlideIntersections({ scope, prop, context }) {
@@ -4950,6 +4969,16 @@ var Corex = (() => {
               flush(() => {
                 el.scrollTo({ [axis]: context.get("pageSnapPoints")[index], behavior });
               });
+            },
+            scrollToPageIfDrifted({ context, scope, computed }) {
+              const el = getItemGroupEl(scope);
+              if (!el) return;
+              const snapPoint = context.get("pageSnapPoints")[context.get("page")];
+              if (snapPoint == null) return;
+              const scrollPos = computed("isHorizontal") ? el.scrollLeft : el.scrollTop;
+              if (Math.abs(scrollPos - snapPoint) <= DRIFT_THRESHOLD) return;
+              const axis = computed("isHorizontal") ? "left" : "top";
+              el.scrollTo({ [axis]: snapPoint, behavior: "instant" });
             },
             setClosestPage({ context, scope, computed }) {
               const el = getItemGroupEl(scope);
@@ -5220,7 +5249,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-K4KBICFH.mjs
+  // ../priv/static/chunk-KF3PY6Q6.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -5339,10 +5368,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_K4KBICFH = __esm({
-    "../priv/static/chunk-K4KBICFH.mjs"() {
+  var init_chunk_KF3PY6Q6 = __esm({
+    "../priv/static/chunk-KF3PY6Q6.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -5511,8 +5540,8 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -5827,7 +5856,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-AMS5CJ65.mjs
+  // ../priv/static/chunk-MYBRVHPZ.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -5850,10 +5879,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_AMS5CJ65 = __esm({
-    "../priv/static/chunk-AMS5CJ65.mjs"() {
+  var init_chunk_MYBRVHPZ = __esm({
+    "../priv/static/chunk-MYBRVHPZ.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -5960,8 +5989,9 @@ var Corex = (() => {
     return Promise.resolve();
   }
   function connect6(service, normalize) {
-    const { state: state2, send, context, scope } = service;
+    const { state: state2, send, context, scope, prop } = service;
     const copied = state2.matches("copied");
+    const translations = prop("translations");
     return {
       copied,
       value: context.get("value"),
@@ -6005,9 +6035,10 @@ var Corex = (() => {
         }));
       },
       getTriggerProps() {
+        var _a;
         return normalize.button(__spreadProps(__spreadValues({}, parts6.trigger.attrs), {
           type: "button",
-          "aria-label": copied ? "Copied to clipboard" : "Copy to clipboard",
+          "aria-label": (_a = translations.triggerLabel) == null ? void 0 : _a.call(translations, copied),
           "data-copied": dataAttr(copied),
           onClick() {
             send({ type: "COPY" });
@@ -6025,8 +6056,8 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_AMS5CJ65();
-      init_chunk_VYU2VXER();
+      init_chunk_MYBRVHPZ();
+      init_chunk_ZOODJA3P();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6045,10 +6076,14 @@ var Corex = (() => {
       writeToClipboard = (ctx, value) => copyText(ctx.getDoc(), value);
       machine6 = createMachine({
         props({ props }) {
-          return __spreadValues({
+          return __spreadProps(__spreadValues({
             timeout: 3e3,
             defaultValue: ""
-          }, props);
+          }, props), {
+            translations: __spreadValues({
+              triggerLabel: (copied) => copied ? "Copied to clipboard" : "Copy to clipboard"
+            }, props.translations)
+          });
         },
         initialState() {
           return "idle";
@@ -6373,8 +6408,8 @@ var Corex = (() => {
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6751,7 +6786,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-SHF22JMM.mjs
+  // ../priv/static/chunk-WAY74VD3.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -7151,10 +7186,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_SHF22JMM = __esm({
-    "../priv/static/chunk-SHF22JMM.mjs"() {
+  var init_chunk_WAY74VD3 = __esm({
+    "../priv/static/chunk-WAY74VD3.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -8151,7 +8186,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-FWBO7OZW.mjs
+  // ../priv/static/chunk-IMEAISCQ.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8600,7 +8635,7 @@ var Corex = (() => {
   function unwrapElement(element) {
     return !isElement2(element) ? element.contextElement : element;
   }
-  function getScale(element) {
+  function getScale2(element) {
     const domElement = unwrapElement(element);
     if (!isHTMLElement2(domElement)) {
       return createCoords(1);
@@ -8656,10 +8691,10 @@ var Corex = (() => {
     if (includeScale) {
       if (offsetParent) {
         if (isElement2(offsetParent)) {
-          scale = getScale(offsetParent);
+          scale = getScale2(offsetParent);
         }
       } else {
-        scale = getScale(element);
+        scale = getScale2(element);
       }
     }
     const visualOffsets = shouldAddVisualOffsets(domElement, isFixedStrategy, offsetParent) ? getVisualOffsets(domElement) : createCoords(0);
@@ -8673,7 +8708,7 @@ var Corex = (() => {
       let currentWin = win;
       let currentIFrame = getFrameElement(currentWin);
       while (currentIFrame && offsetParent && offsetWin !== currentWin) {
-        const iframeScale = getScale(currentIFrame);
+        const iframeScale = getScale2(currentIFrame);
         const iframeRect = currentIFrame.getBoundingClientRect();
         const css2 = getComputedStyle3(currentIFrame);
         const left = iframeRect.left + (currentIFrame.clientLeft + parseFloat(css2.paddingLeft)) * iframeScale.x;
@@ -8737,7 +8772,7 @@ var Corex = (() => {
       }
       if (isOffsetParentAnElement) {
         const offsetRect = getBoundingClientRect(offsetParent);
-        scale = getScale(offsetParent);
+        scale = getScale2(offsetParent);
         offsets.x = offsetRect.x + offsetParent.clientLeft;
         offsets.y = offsetRect.y + offsetParent.clientTop;
       }
@@ -8812,7 +8847,7 @@ var Corex = (() => {
     const clientRect = getBoundingClientRect(element, true, strategy === "fixed");
     const top = clientRect.top + element.clientTop;
     const left = clientRect.left + element.clientLeft;
-    const scale = isHTMLElement2(element) ? getScale(element) : createCoords(1);
+    const scale = isHTMLElement2(element) ? getScale2(element) : createCoords(1);
     const width = element.clientWidth * scale.x;
     const height = element.clientHeight * scale.y;
     const x2 = left * scale.x;
@@ -9445,10 +9480,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_FWBO7OZW = __esm({
-    "../priv/static/chunk-FWBO7OZW.mjs"() {
+  var init_chunk_IMEAISCQ = __esm({
+    "../priv/static/chunk-IMEAISCQ.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10064,7 +10099,7 @@ var Corex = (() => {
         getElementRects,
         getClientRects,
         getDimensions,
-        getScale,
+        getScale: getScale2,
         isElement: isElement2,
         isRTL
       };
@@ -10143,7 +10178,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-HWQDHESJ.mjs
+  // ../priv/static/chunk-7UNOLQU5.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10360,17 +10395,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_HWQDHESJ = __esm({
-    "../priv/static/chunk-HWQDHESJ.mjs"() {
+  var init_chunk_7UNOLQU5 = __esm({
+    "../priv/static/chunk-7UNOLQU5.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-6EX3NMK5.mjs
+  // ../priv/static/chunk-B6KPIA33.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10529,11 +10564,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_6EX3NMK5 = __esm({
-    "../priv/static/chunk-6EX3NMK5.mjs"() {
+  var init_chunk_B6KPIA33 = __esm({
+    "../priv/static/chunk-B6KPIA33.mjs"() {
       "use strict";
-      init_chunk_HWQDHESJ();
-      init_chunk_VYU2VXER();
+      init_chunk_7UNOLQU5();
+      init_chunk_ZOODJA3P();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -11079,12 +11114,12 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_SHF22JMM();
-      init_chunk_FWBO7OZW();
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_WAY74VD3();
+      init_chunk_IMEAISCQ();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -13292,11 +13327,11 @@ var Corex = (() => {
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_G66USZ47();
-      init_chunk_FWBO7OZW();
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_VYU2VXER();
+      init_chunk_MV633JPN();
+      init_chunk_IMEAISCQ();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_ZOODJA3P();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -14476,8 +14511,9 @@ var Corex = (() => {
             trackPointerMove({ context, scope, event, send }) {
               return trackPointerMove(scope.getDoc(), {
                 onPointerMove({ point }) {
+                  var _a;
                   const type = context.get("activeId") === "area" ? "AREA.POINTER_MOVE" : "CHANNEL_SLIDER.POINTER_MOVE";
-                  send({ type, point, format: event.format });
+                  send({ type, point, format: event.format, orientation: (_a = context.get("activeOrientation")) != null ? _a : void 0 });
                 },
                 onPointerUp() {
                   const type = context.get("activeId") === "area" ? "AREA.POINTER_UP" : "CHANNEL_SLIDER.POINTER_UP";
@@ -14529,7 +14565,7 @@ var Corex = (() => {
               const normalizedValue = event.format ? context.get("value").toFormat(event.format) : computed("areaValue");
               const percent = getChannelSliderValueFromPoint(scope, event.point, channel, prop("dir"));
               if (!percent) return;
-              const orientation = context.get("activeOrientation") || "horizontal";
+              const orientation = event.orientation || context.get("activeOrientation") || "horizontal";
               const channelPercent = orientation === "horizontal" ? percent.x : percent.y;
               const value = normalizedValue.getChannelPercentValue(channel, channelPercent);
               const color = normalizedValue.withChannelValue(channel, value);
@@ -15022,7 +15058,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-O7RPVRVA.mjs
+  // ../priv/static/chunk-BYLQVWJG.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -15037,10 +15073,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_O7RPVRVA = __esm({
-    "../priv/static/chunk-O7RPVRVA.mjs"() {
+  var init_chunk_BYLQVWJG = __esm({
+    "../priv/static/chunk-BYLQVWJG.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
     }
   });
 
@@ -17232,12 +17268,12 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_O7RPVRVA();
-      init_chunk_G66USZ47();
-      init_chunk_FWBO7OZW();
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_VYU2VXER();
+      init_chunk_BYLQVWJG();
+      init_chunk_MV633JPN();
+      init_chunk_IMEAISCQ();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_ZOODJA3P();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -19678,9 +19714,9 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_VYU2VXER();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_ZOODJA3P();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -20968,8 +21004,8 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_HWQDHESJ();
-      init_chunk_VYU2VXER();
+      init_chunk_7UNOLQU5();
+      init_chunk_ZOODJA3P();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -21865,13 +21901,13 @@ var Corex = (() => {
     }
     return void 0;
   }
-  var anatomy13, parts13, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, machine13, FloatingPanel, FloatingPanelHook;
+  var anatomy13, parts13, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine13, FloatingPanel, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_3QRJREC6();
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_ZZKFCQSP();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -22180,54 +22216,58 @@ var Corex = (() => {
         maximize: "Maximize window",
         restore: "Restore window"
       };
+      FALLBACK_SIZE = Object.freeze({ width: 320, height: 240 });
+      FALLBACK_POSITION = Object.freeze({ x: 300, y: 100 });
       machine13 = createMachine({
         props({ props }) {
           ensureProps(props, ["id"], "floating-panel");
           return __spreadProps(__spreadValues({
             strategy: "fixed",
             gridSize: 1,
-            defaultSize: { width: 320, height: 240 },
-            defaultPosition: { x: 300, y: 100 },
             allowOverflow: true,
             resizable: true,
             draggable: true
           }, props), {
-            hasSpecifiedPosition: !!props.defaultPosition || !!props.position,
             translations: __spreadValues(__spreadValues({}, defaultTranslations2), props.translations)
           });
         },
         initialState({ prop }) {
-          const open = prop("open") || prop("defaultOpen");
+          var _a;
+          const open = (_a = prop("open")) != null ? _a : prop("defaultOpen");
           return open ? "open" : "closed";
         },
         context({ prop, bindable: bindable2 }) {
           return {
-            size: bindable2(() => ({
-              defaultValue: prop("defaultSize"),
-              value: prop("size"),
-              isEqual: isSizeEqual,
-              sync: true,
-              hash(v2) {
-                return `W:${v2.width} H:${v2.height}`;
-              },
-              onChange(value) {
-                var _a;
-                (_a = prop("onSizeChange")) == null ? void 0 : _a({ size: value });
-              }
-            })),
-            position: bindable2(() => ({
-              defaultValue: prop("defaultPosition"),
-              value: prop("position"),
-              isEqual: isPointEqual,
-              sync: true,
-              hash(v2) {
-                return `X:${v2.x} Y:${v2.y}`;
-              },
-              onChange(value) {
-                var _a;
-                (_a = prop("onPositionChange")) == null ? void 0 : _a({ position: value });
-              }
-            })),
+            size: bindable2(() => {
+              var _a;
+              return {
+                defaultValue: (_a = prop("defaultSize")) != null ? _a : FALLBACK_SIZE,
+                value: prop("size"),
+                isEqual: isSizeEqual,
+                hash(v2) {
+                  return `W:${v2.width} H:${v2.height}`;
+                },
+                onChange(value) {
+                  var _a2;
+                  (_a2 = prop("onSizeChange")) == null ? void 0 : _a2({ size: value });
+                }
+              };
+            }),
+            position: bindable2(() => {
+              var _a;
+              return {
+                defaultValue: (_a = prop("defaultPosition")) != null ? _a : FALLBACK_POSITION,
+                value: prop("position"),
+                isEqual: isPointEqual,
+                hash(v2) {
+                  return `X:${v2.x} Y:${v2.y}`;
+                },
+                onChange(value) {
+                  var _a2;
+                  (_a2 = prop("onPositionChange")) == null ? void 0 : _a2({ position: value });
+                }
+              };
+            }),
             stage: bindable2(() => ({
               defaultValue: "default",
               onChange(value) {
@@ -22253,6 +22293,7 @@ var Corex = (() => {
           isMaximized: ({ context }) => context.get("stage") === "maximized",
           isMinimized: ({ context }) => context.get("stage") === "minimized",
           isStaged: ({ context }) => context.get("stage") !== "default",
+          hasSpecifiedPosition: ({ prop }) => prop("defaultPosition") != null || prop("position") != null,
           canResize: ({ context, prop }) => prop("resizable") && !prop("disabled") && context.get("stage") === "default",
           canDrag: ({ prop, computed }) => prop("draggable") && !prop("disabled") && !computed("isMaximized")
         },
@@ -22285,7 +22326,7 @@ var Corex = (() => {
             on: {
               "CONTROLLED.OPEN": {
                 target: "open",
-                actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+                actions: ["setAnchorPosition", "setPositionStyle", "setSizeStyle", "setInitialFocus"]
               },
               OPEN: [
                 {
@@ -22294,7 +22335,7 @@ var Corex = (() => {
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "focusContentEl"]
+                  actions: ["invokeOnOpen", "setAnchorPosition", "setPositionStyle", "setSizeStyle", "setInitialFocus"]
                 }
               ]
             }
@@ -22303,6 +22344,23 @@ var Corex = (() => {
             tags: ["open"],
             entry: ["bringToFrontOfPanelStack"],
             initial: "idle",
+            on: {
+              "CONTROLLED.CLOSE": {
+                target: "closed",
+                actions: ["resetRect", "setFinalFocus"]
+              },
+              CLOSE: [
+                {
+                  guard: "isOpenControlled",
+                  target: "closed",
+                  actions: ["invokeOnClose", "setFinalFocus"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose", "resetRect", "setFinalFocus"]
+                }
+              ]
+            },
             states: {
               idle: {
                 effects: ["trackBoundaryRect"],
@@ -22317,21 +22375,6 @@ var Corex = (() => {
                     target: "resizing",
                     actions: ["setPrevSize"]
                   },
-                  "CONTROLLED.CLOSE": {
-                    target: "closed",
-                    actions: ["resetRect", "focusTriggerEl"]
-                  },
-                  CLOSE: [
-                    {
-                      guard: "isOpenControlled",
-                      target: "closed",
-                      actions: ["invokeOnClose"]
-                    },
-                    {
-                      target: "closed",
-                      actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
-                    }
-                  ],
                   ESCAPE: [
                     {
                       guard: and5("isOpenControlled", "closeOnEsc"),
@@ -22340,7 +22383,7 @@ var Corex = (() => {
                     {
                       guard: "closeOnEsc",
                       target: "closed",
-                      actions: ["invokeOnClose", "resetRect", "focusTriggerEl"]
+                      actions: ["invokeOnClose", "resetRect", "setFinalFocus"]
                     }
                   ],
                   MINIMIZE: {
@@ -22362,29 +22405,15 @@ var Corex = (() => {
                 exit: ["clearPrevPosition"],
                 on: {
                   DRAG: {
-                    actions: ["setPosition"]
+                    actions: ["setPositionFromDrag"]
                   },
                   DRAG_END: {
                     target: "idle",
                     actions: ["invokeOnDragEnd"]
                   },
-                  "CONTROLLED.CLOSE": {
-                    target: "closed",
-                    actions: ["resetRect"]
-                  },
-                  CLOSE: [
-                    {
-                      guard: "isOpenControlled",
-                      target: "closed",
-                      actions: ["invokeOnClose"]
-                    },
-                    {
-                      target: "closed",
-                      actions: ["invokeOnClose", "resetRect"]
-                    }
-                  ],
                   ESCAPE: {
-                    target: "idle"
+                    target: "idle",
+                    actions: ["restorePosition"]
                   }
                 }
               },
@@ -22393,29 +22422,15 @@ var Corex = (() => {
                 exit: ["clearPrevSize"],
                 on: {
                   DRAG: {
-                    actions: ["setSize"]
+                    actions: ["setSizeFromDrag"]
                   },
                   DRAG_END: {
                     target: "idle",
                     actions: ["invokeOnResizeEnd"]
                   },
-                  "CONTROLLED.CLOSE": {
-                    target: "closed",
-                    actions: ["resetRect"]
-                  },
-                  CLOSE: [
-                    {
-                      guard: "isOpenControlled",
-                      target: "closed",
-                      actions: ["invokeOnClose"]
-                    },
-                    {
-                      target: "closed",
-                      actions: ["invokeOnClose", "resetRect"]
-                    }
-                  ],
                   ESCAPE: {
-                    target: "idle"
+                    target: "idle",
+                    actions: ["restoreSize"]
                   }
                 }
               }
@@ -22488,28 +22503,44 @@ var Corex = (() => {
             }
           },
           actions: {
-            setAnchorPosition({ context, prop, scope }) {
-              if (prop("hasSpecifiedPosition")) return;
+            setPosition({ context, event, prop, scope }) {
+              var _a;
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, prop("allowOverflow"));
+              const position = clampPoint(event.position, context.get("size"), boundaryRect);
+              context.set("position", position);
+            },
+            setSize({ context, event, scope, prop }) {
+              var _a;
+              const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
+              const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
+              let nextSize = event.size;
+              nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
+              nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
+              const nextPosition = clampPoint(context.get("position"), nextSize, boundaryRect);
+              context.set("size", nextSize);
+              context.set("position", nextPosition);
+            },
+            setAnchorPosition({ context, computed, prop, scope }) {
+              var _a, _b;
+              if (computed("hasSpecifiedPosition")) return;
               const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
               if (prop("persistRect") && hasPrevRect) return;
-              raf(() => {
-                var _a, _b;
-                const triggerRect = getTriggerEl5(scope);
-                const boundaryRect = getBoundaryRect(scope, (_a = prop("getBoundaryEl")) == null ? void 0 : _a(), false);
-                let anchorPosition = (_b = prop("getAnchorPosition")) == null ? void 0 : _b({
-                  triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
-                  boundaryRect: DOMRect.fromRect(boundaryRect)
-                });
-                if (!anchorPosition) {
-                  const size3 = context.get("size");
-                  anchorPosition = {
-                    x: boundaryRect.x + (boundaryRect.width - size3.width) / 2,
-                    y: boundaryRect.y + (boundaryRect.height - size3.height) / 2
-                  };
-                }
-                if (!anchorPosition) return;
-                context.set("position", anchorPosition);
+              const triggerRect = getTriggerEl5(scope);
+              const boundaryRect = getBoundaryRect(scope, (_a = prop("getBoundaryEl")) == null ? void 0 : _a(), false);
+              let anchorPosition = (_b = prop("getAnchorPosition")) == null ? void 0 : _b({
+                triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
+                boundaryRect: DOMRect.fromRect(boundaryRect)
               });
+              if (!anchorPosition) {
+                const size3 = context.get("size");
+                anchorPosition = {
+                  x: boundaryRect.x + (boundaryRect.width - size3.width) / 2,
+                  y: boundaryRect.y + (boundaryRect.height - size3.height) / 2
+                };
+              }
+              if (!anchorPosition) return;
+              context.set("position", anchorPosition);
             },
             setPrevPosition({ context, event }) {
               context.set("prevPosition", __spreadValues({}, context.get("position")));
@@ -22519,7 +22550,11 @@ var Corex = (() => {
               if (!prop("persistRect")) context.set("prevPosition", null);
               context.set("lastEventPosition", null);
             },
-            setPosition({ context, event, prop, scope }) {
+            restorePosition({ context }) {
+              const prevPosition = context.get("prevPosition");
+              if (prevPosition) context.set("position", prevPosition);
+            },
+            setPositionFromDrag({ context, event, prop, scope }) {
               var _a;
               let diff3 = subtractPoints(event.position, context.get("lastEventPosition"));
               diff3.x = Math.round(diff3.x / prop("gridSize")) * prop("gridSize");
@@ -22555,7 +22590,13 @@ var Corex = (() => {
               context.set("prevPosition", null);
               context.set("lastEventPosition", null);
             },
-            setSize({ context, event, scope, prop }) {
+            restoreSize({ context }) {
+              const prevSize = context.get("prevSize");
+              if (prevSize) context.set("size", prevSize);
+              const prevPosition = context.get("prevPosition");
+              if (prevPosition) context.set("position", prevPosition);
+            },
+            setSizeFromDrag({ context, event, scope, prop }) {
               var _a;
               const prevSize = context.get("prevSize");
               const prevPosition = context.get("prevPosition");
@@ -22589,21 +22630,35 @@ var Corex = (() => {
             },
             setMaximized({ context, prop, scope }) {
               var _a;
-              context.set("stage", "maximized");
-              context.set("prevSize", context.get("size"));
-              context.set("prevPosition", context.get("position"));
+              if (context.get("stage") === "maximized") return;
+              const wasDefault = context.get("stage") === "default";
+              const currentSize = context.get("size");
+              const currentPosition = context.get("position");
               const boundaryEl = (_a = prop("getBoundaryEl")) == null ? void 0 : _a();
               const boundaryRect = getBoundaryRect(scope, boundaryEl, false);
-              context.set("position", pick(boundaryRect, ["x", "y"]));
-              context.set("size", pick(boundaryRect, ["height", "width"]));
+              const nextPosition = pick(boundaryRect, ["x", "y"]);
+              const nextSize = pick(boundaryRect, ["height", "width"]);
+              context.set("stage", "maximized");
+              if (wasDefault) {
+                context.set("prevSize", currentSize);
+                context.set("prevPosition", currentPosition);
+              }
+              context.set("position", nextPosition);
+              context.set("size", nextSize);
             },
             setMinimized({ context, scope }) {
+              if (context.get("stage") === "minimized") return;
+              const wasDefault = context.get("stage") === "default";
+              const currentSize = context.get("size");
+              const currentPosition = context.get("position");
               context.set("stage", "minimized");
-              context.set("prevSize", context.get("size"));
-              context.set("prevPosition", context.get("position"));
+              if (wasDefault) {
+                context.set("prevSize", currentSize);
+                context.set("prevPosition", currentPosition);
+              }
               const headerEl = getHeaderEl(scope);
               if (!headerEl) return;
-              const size3 = __spreadProps(__spreadValues({}, context.get("size")), {
+              const size3 = __spreadProps(__spreadValues({}, currentSize), {
                 height: headerEl == null ? void 0 : headerEl.offsetHeight
               });
               context.set("size", size3);
@@ -22612,20 +22667,21 @@ var Corex = (() => {
               var _a;
               const boundaryRect = getBoundaryRect(scope, (_a = prop("getBoundaryEl")) == null ? void 0 : _a(), false);
               context.set("stage", "default");
+              let restoredSize = context.get("size");
               const prevSize = context.get("prevSize");
               if (prevSize) {
-                let nextSize = prevSize;
-                nextSize = clampSize(nextSize, prop("minSize"), prop("maxSize"));
-                nextSize = clampSize(nextSize, prop("minSize"), boundaryRect);
-                context.set("size", nextSize);
-                context.set("prevSize", null);
+                restoredSize = clampSize(prevSize, prop("minSize"), prop("maxSize"));
+                restoredSize = clampSize(restoredSize, prop("minSize"), boundaryRect);
               }
-              if (context.get("prevPosition")) {
-                let nextPosition = context.get("prevPosition");
-                nextPosition = clampPoint(nextPosition, context.get("size"), boundaryRect);
-                context.set("position", nextPosition);
-                context.set("prevPosition", null);
+              let restoredPosition = context.get("position");
+              const prevPosition = context.get("prevPosition");
+              if (prevPosition) {
+                restoredPosition = clampPoint(prevPosition, restoredSize, boundaryRect);
               }
+              context.set("size", restoredSize);
+              context.set("position", restoredPosition);
+              context.set("prevSize", null);
+              context.set("prevPosition", null);
             },
             setPositionFromKeyboard({ context, event, prop, scope }) {
               var _a;
@@ -22662,13 +22718,13 @@ var Corex = (() => {
               var _a;
               (_a = prop("onSizeChangeEnd")) == null ? void 0 : _a({ size: context.get("size") });
             },
-            focusTriggerEl({ scope }) {
+            setFinalFocus({ scope }) {
               raf(() => {
                 var _a;
                 (_a = getTriggerEl5(scope)) == null ? void 0 : _a.focus();
               });
             },
-            focusContentEl({ scope }) {
+            setInitialFocus({ scope }) {
               raf(() => {
                 var _a;
                 (_a = getContentEl6(scope)) == null ? void 0 : _a.focus();
@@ -22905,6 +22961,18 @@ var Corex = (() => {
       highlightValue(value2) {
         send({ type: "HIGHLIGHTED_VALUE.SET", value: value2 });
       },
+      highlightFirst() {
+        send({ type: "HIGHLIGHT.FIRST" });
+      },
+      highlightLast() {
+        send({ type: "HIGHLIGHT.LAST" });
+      },
+      highlightNext() {
+        send({ type: "HIGHLIGHT.NEXT" });
+      },
+      highlightPrevious() {
+        send({ type: "HIGHLIGHT.PREV" });
+      },
       clearValue(value2) {
         if (value2) {
           send({ type: "ITEM.CLEAR", value: value2 });
@@ -22922,6 +22990,8 @@ var Corex = (() => {
         }));
       },
       getInputProps(props = {}) {
+        var _a;
+        const keyboardPriority = (_a = props.keyboardPriority) != null ? _a : "caret";
         return normalize.input(__spreadProps(__spreadValues({}, parts14.input.attrs), {
           dir: prop("dir"),
           disabled,
@@ -22954,22 +23024,24 @@ var Corex = (() => {
             if (isComposingEvent(event)) return;
             const nativeEvent = getNativeEvent(event);
             const forwardEvent = () => {
-              var _a;
+              var _a2;
               event.preventDefault();
               const win = scope.getWin();
               const keyboardEvent = new win.KeyboardEvent(nativeEvent.type, nativeEvent);
-              (_a = getContentEl7(scope)) == null ? void 0 : _a.dispatchEvent(keyboardEvent);
+              (_a2 = getContentEl7(scope)) == null ? void 0 : _a2.dispatchEvent(keyboardEvent);
             };
             switch (nativeEvent.key) {
               case "ArrowLeft":
               case "ArrowRight": {
                 if (!isGridCollection(collection22)) return;
                 if (event.ctrlKey) return;
+                if (keyboardPriority !== "navigate") return;
                 forwardEvent();
                 break;
               }
               case "Home":
               case "End": {
+                if (keyboardPriority !== "navigate") return;
                 if (highlightedValue == null && event.shiftKey) return;
                 forwardEvent();
                 break;
@@ -23034,6 +23106,9 @@ var Corex = (() => {
           },
           onClick(event) {
             if (event.defaultPrevented) return;
+            if (isDownloadingEvent(event)) return;
+            if (isOpeningInNewTab(event)) return;
+            if (isContextMenuEvent(event)) return;
             if (itemState.disabled) return;
             send({
               type: "ITEM.CLICK",
@@ -23106,6 +23181,7 @@ var Corex = (() => {
           },
           onKeyDown(event) {
             if (!interactive) return;
+            const target = getEventTarget(event);
             if (!contains(event.currentTarget, getEventTarget(event))) return;
             const shiftKey = event.shiftKey;
             const keyMap2 = {
@@ -23158,11 +23234,13 @@ var Corex = (() => {
                 send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
               },
               Home(event2) {
+                if (isEditableElement(target)) return;
                 event2.preventDefault();
                 let nextValue = collection22.firstValue;
                 send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
               },
               End(event2) {
+                if (isEditableElement(target)) return;
                 event2.preventDefault();
                 let nextValue = collection22.lastValue;
                 send({ type: "NAVIGATE", value: nextValue, shiftKey, anchorValue: highlightedValue });
@@ -23197,10 +23275,7 @@ var Corex = (() => {
               exec(event);
               return;
             }
-            const target = getEventTarget(event);
-            if (isEditableElement(target)) {
-              return;
-            }
+            if (isEditableElement(target)) return;
             if (getByTypeahead.isValidEvent(event) && prop("typeahead")) {
               send({ type: "CONTENT.TYPEAHEAD", key: event.key });
               event.preventDefault();
@@ -23246,9 +23321,9 @@ var Corex = (() => {
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_SHF22JMM();
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_WAY74VD3();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -23429,6 +23504,18 @@ var Corex = (() => {
           },
           "VALUE.CLEAR": {
             actions: ["clearSelectedItems"]
+          },
+          "HIGHLIGHT.FIRST": {
+            actions: ["highlightFirstValue"]
+          },
+          "HIGHLIGHT.LAST": {
+            actions: ["highlightLastValue"]
+          },
+          "HIGHLIGHT.NEXT": {
+            actions: ["highlightNextValue"]
+          },
+          "HIGHLIGHT.PREV": {
+            actions: ["highlightPreviousValue"]
           }
         },
         states: {
@@ -23564,6 +23651,44 @@ var Corex = (() => {
             },
             setHighlightedItem({ context, event }) {
               context.set("highlightedValue", event.value);
+            },
+            highlightFirstValue({ context, prop }) {
+              var _a;
+              context.set("highlightedValue", (_a = prop("collection").firstValue) != null ? _a : null);
+            },
+            highlightLastValue({ context, prop }) {
+              var _a;
+              context.set("highlightedValue", (_a = prop("collection").lastValue) != null ? _a : null);
+            },
+            highlightNextValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              let nextValue = null;
+              if (isGridCollection(collection22) && highlightedValue) {
+                nextValue = collection22.getNextRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection22.getNextValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection22.firstValue;
+              }
+              if (!nextValue) return;
+              context.set("highlightedValue", nextValue);
+            },
+            highlightPreviousValue({ context, prop }) {
+              const collection22 = prop("collection");
+              const highlightedValue = context.get("highlightedValue");
+              let nextValue = null;
+              if (isGridCollection(collection22) && highlightedValue) {
+                nextValue = collection22.getPreviousRowValue(highlightedValue);
+              } else if (highlightedValue) {
+                nextValue = collection22.getPreviousValue(highlightedValue);
+              }
+              if (!nextValue && (prop("loopFocus") || !highlightedValue)) {
+                nextValue = collection22.lastValue;
+              }
+              if (!nextValue) return;
+              context.set("highlightedValue", nextValue);
             },
             clearHighlightedItem({ context }) {
               context.set("highlightedValue", null);
@@ -24099,7 +24224,7 @@ var Corex = (() => {
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
       dom = {
@@ -24698,7 +24823,7 @@ var Corex = (() => {
           "aria-haspopup": composite ? "menu" : "dialog",
           "aria-controls": getContentId8(scope),
           "data-controls": getContentId8(scope),
-          "aria-expanded": open || void 0,
+          "aria-expanded": open,
           "data-state": open ? "open" : "closed",
           onPointerMove(event) {
             if (event.pointerType !== "mouse") return;
@@ -24990,12 +25115,12 @@ var Corex = (() => {
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_3QRJREC6();
-      init_chunk_FWBO7OZW();
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_ZZKFCQSP();
+      init_chunk_IMEAISCQ();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy16 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -26739,9 +26864,9 @@ var Corex = (() => {
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_O7RPVRVA();
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_BYLQVWJG();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy17 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -27776,7 +27901,7 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -28144,6 +28269,7 @@ var Corex = (() => {
               send({ type: "INPUT.BACKSPACE" });
               return;
             }
+            if (value === computed("focusedValue")) return;
             send({ type: "INPUT.CHANGE", value, index });
           },
           onKeyDown(event) {
@@ -28214,8 +28340,8 @@ var Corex = (() => {
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
       getRootId14 = (ctx) => {
@@ -28836,14 +28962,18 @@ var Corex = (() => {
       },
       getIndicatorProps() {
         const rect = context.get("indicatorRect");
-        const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+        const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId2(scope)
         }, parts20.indicator.attrs), {
           dir: prop("dir"),
-          hidden: context.get("value") == null || rectIsEmpty,
+          hidden: context.get("value") == null || isRectEmpty(rect),
           "data-disabled": dataAttr(groupDisabled),
           "data-orientation": prop("orientation"),
+          onTransitionEnd(event) {
+            if (getEventTarget(event) !== event.currentTarget) return;
+            send({ type: "INDICATOR_TRANSITION_END" });
+          },
           style: {
             "--transition-property": "left, top, width, height",
             "--left": toPx(rect == null ? void 0 : rect.x),
@@ -28851,9 +28981,9 @@ var Corex = (() => {
             "--width": toPx(rect == null ? void 0 : rect.width),
             "--height": toPx(rect == null ? void 0 : rect.height),
             position: "absolute",
-            willChange: "var(--transition-property)",
-            transitionProperty: "var(--transition-property)",
-            transitionDuration: "var(--transition-duration, 150ms)",
+            willChange: animateIndicator ? "var(--transition-property)" : "auto",
+            transitionProperty: animateIndicator ? "var(--transition-property)" : "none",
+            transitionDuration: animateIndicator ? "var(--transition-duration, 150ms)" : "0ms",
             transitionTimingFunction: "var(--transition-timing-function)",
             [prop("orientation") === "horizontal" ? "left" : "top"]: prop("orientation") === "horizontal" ? "var(--left)" : "var(--top)"
           }
@@ -28861,13 +28991,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy20, parts20, getRootId15, getLabelId11, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, not7, machine20, RadioGroup, RadioGroupHook;
+  var anatomy20, parts20, getRootId15, getLabelId11, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine20, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_G66USZ47();
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_MV633JPN();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -28934,6 +29064,7 @@ var Corex = (() => {
           height: (_d = el == null ? void 0 : el.offsetHeight) != null ? _d : 0
         };
       };
+      isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ not: not7 } = createGuards());
       machine20 = createMachine({
         props({ props }) {
@@ -28969,6 +29100,9 @@ var Corex = (() => {
             indicatorRect: bindable2(() => ({
               defaultValue: null
             })),
+            animateIndicator: bindable2(() => ({
+              defaultValue: false
+            })),
             fieldsetDisabled: bindable2(() => ({
               defaultValue: false
             })),
@@ -28980,18 +29114,19 @@ var Corex = (() => {
         refs() {
           return {
             indicatorCleanup: null,
-            focusVisibleValue: null
+            focusVisibleValue: null,
+            prevValue: null
           };
         },
         computed: {
           isDisabled: ({ prop, context }) => !!prop("disabled") || context.get("fieldsetDisabled")
         },
-        entry: ["syncIndicatorRect", "syncSsr"],
+        entry: ["syncPrevValue", "syncIndicatorRect", "syncSsr"],
         exit: ["cleanupObserver"],
         effects: ["trackFormControlState", "trackFocusVisible"],
         watch({ track, action, context }) {
           track([() => context.get("value")], () => {
-            action(["syncIndicatorRect", "syncInputElements"]);
+            action(["syncIndicatorAnimation", "syncIndicatorRect", "syncInputElements"]);
           });
         },
         on: {
@@ -29012,6 +29147,9 @@ var Corex = (() => {
           },
           SET_FOCUSED: {
             actions: ["setFocused"]
+          },
+          INDICATOR_TRANSITION_END: {
+            actions: ["clearIndicatorAnimation"]
           }
         },
         states: {
@@ -29051,6 +29189,19 @@ var Corex = (() => {
               context.set("focusedValue", event.value);
               const focusVisibleValue = event.value != null && event.focusVisible ? event.value : null;
               context.set("focusVisibleValue", focusVisibleValue);
+            },
+            syncPrevValue({ context, refs }) {
+              refs.set("prevValue", context.get("value"));
+            },
+            syncIndicatorAnimation({ context, refs }) {
+              const prevValue = refs.get("prevValue");
+              const nextValue = context.get("value");
+              const animate = prevValue != null && nextValue != null && prevValue !== nextValue;
+              context.set("animateIndicator", animate);
+              refs.set("prevValue", nextValue);
+            },
+            clearIndicatorAnimation({ context }) {
+              context.set("animateIndicator", false);
             },
             syncInputElements({ context, scope }) {
               const inputs = getInputEls3(scope);
@@ -29234,6 +29385,7 @@ var Corex = (() => {
   });
   function connect21(service, normalize) {
     const { context, prop, scope, state: state2, computed, send } = service;
+    const translations = prop("translations");
     const disabled = prop("disabled") || context.get("fieldsetDisabled");
     const invalid = !!prop("invalid");
     const required = !!prop("required");
@@ -29518,7 +29670,7 @@ var Corex = (() => {
         return normalize.button(__spreadProps(__spreadValues({}, parts21.clearTrigger.attrs), {
           id: getClearTriggerId3(scope),
           type: "button",
-          "aria-label": "Clear value",
+          "aria-label": translations.clearTriggerLabel,
           "data-invalid": dataAttr(invalid),
           disabled,
           hidden: !computed("hasSelectedItems"),
@@ -29690,12 +29842,12 @@ var Corex = (() => {
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_SHF22JMM();
-      init_chunk_FWBO7OZW();
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_WAY74VD3();
+      init_chunk_IMEAISCQ();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy21 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -29787,6 +29939,9 @@ var Corex = (() => {
             defaultValue: []
           }, props), {
             collection: (_a = props.collection) != null ? _a : collection3.empty(),
+            translations: __spreadValues({
+              clearTriggerLabel: "Clear value"
+            }, props.translations),
             positioning: __spreadValues({
               placement: "bottom-start",
               gutter: 8
@@ -31108,7 +31263,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -31591,8 +31746,8 @@ var Corex = (() => {
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_K4KBICFH();
-      init_chunk_VYU2VXER();
+      init_chunk_KF3PY6Q6();
+      init_chunk_ZOODJA3P();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
       getRootId18 = (ctx) => {
@@ -32081,13 +32236,17 @@ var Corex = (() => {
       },
       getIndicatorProps() {
         const rect = context.get("indicatorRect");
-        const rectIsEmpty = rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
+        const animateIndicator = context.get("animateIndicator");
         return normalize.element(__spreadProps(__spreadValues({
           id: getIndicatorId3(scope)
         }, parts24.indicator.attrs), {
           dir: prop("dir"),
           "data-orientation": prop("orientation"),
-          hidden: rectIsEmpty,
+          hidden: isRectEmpty2(rect),
+          onTransitionEnd(event) {
+            if (getEventTarget(event) !== event.currentTarget) return;
+            send({ type: "INDICATOR_TRANSITION_END" });
+          },
           style: {
             "--transition-property": "left, right, top, bottom, width, height",
             "--left": toPx(rect == null ? void 0 : rect.x),
@@ -32095,9 +32254,9 @@ var Corex = (() => {
             "--width": toPx(rect == null ? void 0 : rect.width),
             "--height": toPx(rect == null ? void 0 : rect.height),
             position: "absolute",
-            willChange: "var(--transition-property)",
-            transitionProperty: "var(--transition-property)",
-            transitionDuration: "var(--transition-duration, 150ms)",
+            willChange: animateIndicator ? "var(--transition-property)" : "auto",
+            transitionProperty: animateIndicator ? "var(--transition-property)" : "none",
+            transitionDuration: animateIndicator ? "var(--transition-duration, 150ms)" : "0ms",
             transitionTimingFunction: "var(--transition-timing-function)",
             [isHorizontal ? "left" : "top"]: isHorizontal ? "var(--left)" : "var(--top)"
           }
@@ -32105,12 +32264,12 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, createMachine6, machine24, Tabs, TabsHook;
+  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine24, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -32159,6 +32318,7 @@ var Corex = (() => {
         const tab = itemById(getElements2(ctx), getTriggerId9(ctx, value));
         return getOffsetRect2(tab);
       };
+      isRectEmpty2 = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
       ({ createMachine: createMachine6 } = setup());
       machine24 = createMachine6({
         props({ props }) {
@@ -32198,12 +32358,21 @@ var Corex = (() => {
             ssr: bindable2(() => ({ defaultValue: true })),
             indicatorRect: bindable2(() => ({
               defaultValue: null
+            })),
+            animateIndicator: bindable2(() => ({
+              defaultValue: false
             }))
+          };
+        },
+        refs() {
+          return {
+            indicatorCleanup: null,
+            prevValue: null
           };
         },
         watch({ context, prop, track, action }) {
           track([() => context.get("value")], () => {
-            action(["syncIndicatorRect", "syncTabIndex", "navigateIfNeeded"]);
+            action(["syncIndicatorAnimation", "syncIndicatorRect", "syncTabIndex", "navigateIfNeeded"]);
           });
           track([() => prop("dir"), () => prop("orientation")], () => {
             action(["syncIndicatorRect"]);
@@ -32221,9 +32390,12 @@ var Corex = (() => {
           },
           SYNC_TAB_INDEX: {
             actions: ["syncTabIndex"]
+          },
+          INDICATOR_TRANSITION_END: {
+            actions: ["clearIndicatorAnimation"]
           }
         },
-        entry: ["syncIndicatorRect", "syncTabIndex", "syncSsr"],
+        entry: ["syncPrevValue", "syncIndicatorRect", "syncTabIndex", "syncSsr"],
         exit: ["cleanupObserver"],
         states: {
           idle: {
@@ -32393,6 +32565,19 @@ var Corex = (() => {
             },
             syncSsr({ context }) {
               context.set("ssr", false);
+            },
+            syncPrevValue({ context, refs }) {
+              refs.set("prevValue", context.get("value"));
+            },
+            syncIndicatorAnimation({ context, refs }) {
+              const prevValue = refs.get("prevValue");
+              const nextValue = context.get("value");
+              const animate = prevValue != null && nextValue != null && prevValue !== nextValue;
+              context.set("animateIndicator", animate);
+              refs.set("prevValue", nextValue);
+            },
+            clearIndicatorAnimation({ context }) {
+              context.set("animateIndicator", false);
             },
             syncIndicatorRect({ context, refs, scope }) {
               const cleanup = refs.get("indicatorCleanup");
@@ -32575,7 +32760,8 @@ var Corex = (() => {
     Timer: () => TimerHook
   });
   function connect25(service, normalize) {
-    const { state: state2, send, computed, scope } = service;
+    const { state: state2, send, computed, scope, prop } = service;
+    const translations = prop("translations");
     const running = state2.matches("running");
     const paused = state2.matches("paused");
     const time = computed("time");
@@ -32608,10 +32794,11 @@ var Corex = (() => {
         }, parts25.root.attrs));
       },
       getAreaProps() {
+        var _a;
         return normalize.element(__spreadValues({
           role: "timer",
           id: getAreaId3(scope),
-          "aria-label": `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`,
+          "aria-label": (_a = translations.areaLabel) == null ? void 0 : _a.call(translations, time, formattedTime),
           "aria-atomic": true
         }, parts25.area.attrs));
       },
@@ -32736,10 +32923,10 @@ var Corex = (() => {
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_O7RPVRVA();
-      init_chunk_AMS5CJ65();
-      init_chunk_G66USZ47();
-      init_chunk_VYU2VXER();
+      init_chunk_BYLQVWJG();
+      init_chunk_MYBRVHPZ();
+      init_chunk_MV633JPN();
+      init_chunk_ZOODJA3P();
       anatomy25 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -32763,10 +32950,14 @@ var Corex = (() => {
       machine25 = createMachine({
         props({ props }) {
           validateProps(props);
-          return __spreadValues({
+          return __spreadProps(__spreadValues({
             interval: 1e3,
             startMs: 0
-          }, props);
+          }, props), {
+            translations: __spreadValues({
+              areaLabel: (time, formattedTime) => `${time.days} days ${formattedTime.hours}:${formattedTime.minutes}:${formattedTime.seconds}`
+            }, props.translations)
+          });
         },
         initialState({ prop }) {
           return prop("autoStart") ? "running" : "idle";
@@ -33245,6 +33436,7 @@ var Corex = (() => {
   }
   function connect26(service, normalize) {
     const { state: state2, send, prop, scope, context, computed } = service;
+    const translations = prop("translations");
     const visible = state2.hasTag("visible");
     const paused = state2.hasTag("paused");
     const mounted = context.get("mounted");
@@ -33343,7 +33535,7 @@ var Corex = (() => {
           id: getCloseTriggerId2(scope)
         }, parts26.closeTrigger.attrs), {
           type: "button",
-          "aria-label": "Dismiss notification",
+          "aria-label": translations == null ? void 0 : translations.closeTriggerLabel,
           onClick(event) {
             if (event.defaultPrevented) return;
             send({ type: "DISMISS", src: "user" });
@@ -33606,10 +33798,10 @@ var Corex = (() => {
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_AMS5CJ65();
-      init_chunk_6EX3NMK5();
-      init_chunk_HWQDHESJ();
-      init_chunk_VYU2VXER();
+      init_chunk_MYBRVHPZ();
+      init_chunk_B6KPIA33();
+      init_chunk_7UNOLQU5();
+      init_chunk_ZOODJA3P();
       anatomy26 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -33895,6 +34087,9 @@ var Corex = (() => {
           return __spreadProps(__spreadValues({
             closable: true
           }, props), {
+            translations: __spreadValues({
+              closeTriggerLabel: "Dismiss notification"
+            }, props.translations),
             duration: getToastDuration(props.duration, props.type)
           });
         },
@@ -34566,7 +34761,7 @@ var Corex = (() => {
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_VYU2VXER();
+      init_chunk_ZOODJA3P();
       anatomy27 = createAnatomy("toggle-group").parts("root", "item");
       parts27 = anatomy27.build();
       getRootId22 = (ctx) => {
@@ -34918,6 +35113,7 @@ var Corex = (() => {
   function connect28(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
+    const translations = prop("translations");
     const expandedValue = Array.from(context.get("expandedValue"));
     const selectedValue = Array.from(context.get("selectedValue"));
     const checkedValue = Array.from(context.get("checkedValue"));
@@ -35033,7 +35229,7 @@ var Corex = (() => {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
-          "aria-label": "Tree View",
+          "aria-label": translations.treeLabel,
           "aria-labelledby": getLabelId15(scope),
           "aria-multiselectable": prop("selectionMode") === "multiple" || void 0,
           tabIndex: -1,
@@ -35329,7 +35525,7 @@ var Corex = (() => {
         return normalize.input(__spreadProps(__spreadValues({}, parts28.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
-          "aria-label": "Rename tree item",
+          "aria-label": translations.renameInputLabel,
           hidden: !nodeState.renaming,
           onKeyDown(event) {
             if (isComposingEvent(event)) return;
@@ -35490,8 +35686,8 @@ var Corex = (() => {
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_SHF22JMM();
-      init_chunk_VYU2VXER();
+      init_chunk_WAY74VD3();
+      init_chunk_ZOODJA3P();
       anatomy28 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
@@ -35544,14 +35740,19 @@ var Corex = (() => {
       ({ and: and11 } = createGuards());
       machine28 = createMachine({
         props({ props }) {
-          return __spreadValues({
+          return __spreadProps(__spreadValues({
             selectionMode: "single",
             collection: collection4.empty(),
             typeahead: true,
             expandOnClick: true,
             defaultExpandedValue: [],
             defaultSelectedValue: []
-          }, props);
+          }, props), {
+            translations: __spreadValues({
+              treeLabel: "Tree View",
+              renameInputLabel: "Rename tree item"
+            }, props.translations)
+          });
         },
         initialState() {
           return "idle";

@@ -1,2 +1,0 @@
-patchedDependencies:
-  '@zag-js/vanilla@1.35.3': patches/@zag-js__vanilla@1.35.3.patch
