@@ -7,21 +7,130 @@
   current_path={@current_path}
 <% end %>>
 <% else %><Layouts.app flash={@flash}>
-<% end %>  <section>
-    <h1>{gettext("Corex")}</h1>
-    <p>
-      {gettext(
-        "From design tokens to accessible, interactive components, Corex provides a complete foundation for creating beautiful, scalable, and performant websites."
-      )}
-    </p>
-    <div class="gap-ui-gap p-ui-padding flex flex-wrap justify-start">
-      <.navigate
-        to="https://hexdocs.pm/corex"
-        external
-        class="button button--brand button--sm md:button--md w-full md:w-auto"
-      >
-        {gettext("Hex Documentation")} <.heroicon name="hero-arrow-top-right-on-square" />
-      </.navigate>
+<% end %>  <section
+    aria-label={gettext("Hero")}
+    class="relative flex flex-col flex-1 w-full overflow-hidden min-h-screen justify-start items-center"
+  >
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0 opacity-[0.04]">
+      <div class="absolute top-1/4 left-0 right-0 h-px bg-root--brand"></div>
+      <div class="absolute top-1/2 left-0 right-0 h-px bg-root--brand"></div>
+      <div class="absolute top-3/4 left-0 right-0 h-px bg-root--brand"></div>
+      <div class="absolute inset-y-0 left-1/4 w-px bg-root--brand"></div>
+      <div class="absolute inset-y-0 left-1/2 w-px bg-root--brand"></div>
+      <div class="absolute inset-y-0 left-3/4 w-px bg-root--brand"></div>
+    </div>
+
+    <div class="relative w-full max-w-ui-xl mx-auto px-ui-padding-xl py-12 sm:py-16 flex flex-col gap-ui justify-start flex-shrink-0">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-ui-xl items-center">
+        <div class="flex flex-col gap-ui-gap-md text-center md:text-start">
+          <h1 class="text-ui-brand text-5xl md:text-6xl font-bold tracking-tight leading-tight my-0">
+            {gettext("Corex UI")}
+          </h1>
+          <h2 class="text-3xl md:text-4xl font-semibold tracking-tight text-root--muted my-0">
+            {gettext("for Phoenix Framework")}
+          </h2>
+          <p class="text-base md:text-lg text-root--muted max-w-ui-md">
+            {gettext(
+              "An unstyled and accessible UI component system powered by Zag.js state machines and designed for Phoenix applications."
+            )}
+          </p>
+          <div class="flex flex-wrap gap-ui-gap-sm justify-center md:justify-start pt-ui">
+            <.navigate
+              to={if @locale, do: "/#{@locale}/live", else: "/live"}
+              type="href"
+              class="button button--brand"
+            >
+              {gettext("Switch to Live View")}
+              <.heroicon name="hero-arrow-right" />
+            </.navigate>
+            <.navigate to="https://hexdocs.pm/corex" external type="href" class="button">
+              {gettext("Corex Docs")}
+              <.heroicon name="hero-arrow-top-right-on-square" />
+            </.navigate>
+          </div>
+        </div>
+        <div class="flex justify-center md:justify-end w-full">
+          <div class="w-full max-w-ui-md border border-ui--border rounded-ui bg-layer p-ui-padding-xl flex flex-col items-center gap-ui-gap-lg">
+            <.checkbox
+              id="demo_checkbox"
+              class="checkbox checkbox--xl"
+              on_checked_change_client="demo_checkbox_change"
+            >
+              <:label>
+                {gettext("Check me")}
+              </:label>
+              <:indicator>
+                <.heroicon name="hero-check" class="data-checked" />
+              </:indicator>
+            </.checkbox>
+            <div class="flex flex-wrap gap-ui-gap-sm justify-center">
+              <span class="badge badge--sm bg-root text-root--success">
+                <.heroicon name="hero-signal" class="text-root--success animate-pulse" />
+                {gettext("Client Events")}
+              </span>
+              <span class="badge badge--sm bg-root text-root--alert">
+                <.heroicon name="hero-signal-slash" class="text-ui--alert" />
+                {gettext("Server Events")}
+              </span>
+            </div>
+            <.navigate
+              to={if @locale, do: "/#{@locale}/live", else: "/live"}
+              type="href"
+              class="link link--sm"
+            >
+              {gettext("Switch to Live View")}
+              <.heroicon name="hero-arrow-right" />
+            </.navigate>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    aria-label={gettext("About this page")}
+    class="min-h-screen flex flex-col justify-center w-full border-t border-ui--border"
+  >
+    <div class="w-full max-w-ui-xl mx-auto px-ui-padding-xl py-12 sm:py-16 flex flex-col gap-ui-gap-2xl">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-ui-gap-xl items-start">
+        <div class="flex flex-col gap-ui-gap-md">
+          <h2 class="text-xl font-bold text-root--muted my-0">
+            {gettext("Controller view")}
+          </h2>
+          <p class="text-root--muted my-0">
+            {gettext(
+              "This page is rendered from a Phoenix controller. Edit these files to change it:"
+            )}
+          </p>
+          <div class="flex flex-col gap-ui-gap-sm">
+            <code
+              tabindex="0"
+              class="font-mono text-sm border border-ui--border bg-ui px-ui-padding py-ui-padding-sm text-ui--text block overflow-x-auto scrollbar scrollbar--sm"
+            >
+              lib/<%= @lib_web_name %>/controllers/page_html/home.html.heex
+            </code>
+            <code
+              tabindex="0"
+              class="font-mono text-sm border border-ui--border bg-ui px-ui-padding py-ui-padding-sm text-ui--text block overflow-x-auto scrollbar scrollbar--sm"
+            >
+              lib/<%= @lib_web_name %>/controllers/page_controller.ex
+            </code>
+          </div>
+        </div>
+        <div class="flex flex-col gap-ui-gap-md">
+          <h2 class="text-xl font-bold text-root--muted my-0">
+            {gettext("Client vs server events")}
+          </h2>
+          <p class="text-root--muted my-0">
+            {gettext(
+              "In controller views only client-side events are available. The checkbox above fires a client event and shows a toast."
+            )}
+          </p>
+          <p class="text-root--muted my-0">
+            {gettext("To try server-side events and real-time updates, open the LiveView demo.")}
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 </Layouts.app>

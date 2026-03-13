@@ -4,14 +4,21 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
   import Phoenix.LiveViewTest
   import <%= inspect context.module %>Fixtures
 
-  @create_attrs %{
-<% params_create_live = schema.params.create %><%= for {{key, value}, idx} <- Enum.with_index(params_create_live) do %>    <%= key %>: <%= Mix.Phoenix.Schema.live_form_value(value) %><%= if idx < Enum.count(params_create_live) - 1 do %>,<% end %>
-<% end %>  }
-  @update_attrs %{
-<% params_update_live = schema.params.update %><%= for {{key, value}, idx} <- Enum.with_index(params_update_live) do %>    <%= key %>: <%= Mix.Phoenix.Schema.live_form_value(value) %><%= if idx < Enum.count(params_update_live) - 1 do %>,<% end %>
-<% end %>  }
+  <% params_create = schema.params.create %><% params_update = schema.params.update %>
   @invalid_attrs %{
-<% params_invalid_live = schema.params.create %><%= for {{key, value}, idx} <- Enum.with_index(params_invalid_live) do %>    <%= key %>: <%= value |> Mix.Phoenix.Schema.live_form_value() |> Mix.Phoenix.Schema.invalid_form_value() %><%= if idx < Enum.count(params_invalid_live) - 1 do %>,<% end %>
+<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= inspect(value |> Mix.Phoenix.Schema.live_form_value() |> Mix.Phoenix.Schema.invalid_form_value()) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
+<% end %>  }
+
+  @create_attrs_params %{
+<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    "<%= key %>" => <%= inspect(Mix.Phoenix.Schema.live_form_value(value)) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
+<% end %>  }
+
+  @update_attrs_params %{
+<%= for {{key, value}, idx} <- Enum.with_index(params_update) do %>    "<%= key %>" => <%= inspect(Mix.Phoenix.Schema.live_form_value(value)) %><%= if idx < Enum.count(params_update) - 1 do %>,<% end %>
+<% end %>  }
+
+  @invalid_attrs_edit %{
+<%= for {{key, value}, idx} <- Enum.with_index(params_create) do %>    <%= key %>: <%= inspect(if(schema.string_attr && key == schema.string_attr, do: "", else: Mix.Phoenix.Schema.live_form_value(value))) %><%= if idx < Enum.count(params_create) - 1 do %>,<% end %>
 <% end %>  }<%= if layout_locale do %>
 
   @locale Application.compile_env(:<%= context.context_app %>, :locales, ["en"]) |> List.first()<% end %><%= if scope do %>
@@ -52,9 +59,12 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
              |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs)
              |> render_change() =~ "<%= Mix.Phoenix.Schema.failed_render_change_message(schema) %>"
 
+      form_live
+      |> render_change("validate", %{"<%= schema.singular %>" => @create_attrs_params})
+
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>", <%= schema.singular %>: @create_attrs)
+               |> form("#<%= schema.singular %>")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
@@ -75,12 +85,15 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       assert render(form_live) =~ "Edit <%= schema.human_singular %>"
 
       assert form_live
-             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs)
+             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs_edit)
              |> render_change() =~ "<%= Mix.Phoenix.Schema.failed_render_change_message(schema) %>"
+
+      form_live
+      |> render_change("validate", %{"<%= schema.singular %>" => @update_attrs_params})
 
       assert {:ok, index_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>", <%= schema.singular %>: @update_attrs)
+               |> form("#<%= schema.singular %>")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>")
 
@@ -119,12 +132,15 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
       assert render(form_live) =~ "Edit <%= schema.human_singular %>"
 
       assert form_live
-             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs)
+             |> form("#<%= schema.singular %>", <%= schema.singular %>: @invalid_attrs_edit)
              |> render_change() =~ "<%= Mix.Phoenix.Schema.failed_render_change_message(schema) %>"
+
+      form_live
+      |> render_change("validate", %{"<%= schema.singular %>" => @update_attrs_params})
 
       assert {:ok, show_live, _html} =
                form_live
-               |> form("#<%= schema.singular %>", <%= schema.singular %>: @update_attrs)
+               |> form("#<%= schema.singular %>")
                |> render_submit()
                |> follow_redirect(conn, ~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}")
 

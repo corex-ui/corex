@@ -100,7 +100,7 @@
     .data-checked {
     display: block !important;
     @apply ui-icon;
-    color: var(--color-ui-accent--text);
+    color: inherit;
     width: 100%;
     height: 100%;
   }
@@ -110,7 +110,7 @@
     .data-indeterminate {
     display: block !important;
     @apply ui-icon;
-    color: var(--color-ui-accent--text);
+    color: inherit;
     width: 100%;
     height: 100%;
   }

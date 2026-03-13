@@ -241,8 +241,8 @@ defmodule Corex.DataTable do
 
     col_count =
       length(assigns.col) +
-        (if assigns.selectable, do: 1, else: 0) +
-        (if assigns.action != [], do: 1, else: 0)
+        if(assigns.selectable, do: 1, else: 0) +
+        if assigns.action != [], do: 1, else: 0
 
     assigns = assign(assigns, :empty_col_count, col_count)
 

@@ -33,6 +33,7 @@
 @import "../corex/components/link.css";
 @import "../corex/components/toast.css";
 @import "../corex/components/select.css";
+@import "../corex/components/badge.css";
 /* The following components are used by `mix corex.gen.*` generators. You can safely remove them if not in use */
 @import "../corex/components/data-table.css";
 @import "../corex/components/data-list.css";

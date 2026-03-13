@@ -38,6 +38,32 @@ import "phoenix_html"
 <%= @live_comment %>window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 <%= @live_comment %>window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
+const toastGroup = document.getElementById("layout-toast")
+document
+  .getElementById("demo_checkbox")
+  ?.addEventListener("demo_checkbox_change", (event) => {
+    if (!toastGroup || window.location.pathname.includes("/live")) return
+    const time = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    })
+    const checked = event.detail?.checked ?? event.detail
+    toastGroup.dispatchEvent(
+      new CustomEvent("toast:create", {
+        bubbles: true,
+        detail: {
+          title: `${time}`,
+          description: `Client event received\nStatus checked: ${checked}`,
+          type: checked ? "success" : "info",
+          groupId: "layout-toast",
+        },
+      })
+    )
+  })
+
+<%= @live_comment %>window.addEventListener("phx:console_log", (e) => console.log(e.detail))
+
 // connect if there are any LiveViews on the page
 <%= @live_comment %>liveSocket.connect()
 
@@ -46,6 +72,7 @@ import "phoenix_html"
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 <%= @live_comment %>window.liveSocket = liveSocket
+
 
 // The lines below enable quality of life phoenix_live_reload
 // development features:
