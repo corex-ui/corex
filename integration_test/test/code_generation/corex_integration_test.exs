@@ -40,7 +40,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "default app LiveView" do
-    test "GET /live returns 200 and body contains Live View" do
+    test "GET /live returns 200 and body contains Corex" do
       with_installer_tmp("corex_live", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--no-ecto"])
 
@@ -51,7 +51,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         :inets.start()
         {:ok, response} = request_with_retries("http://localhost:#{port}/live", 20)
         assert response.status_code == 200
-        assert response.body =~ "Live View"
+        assert response.body =~ "Corex"
       end)
     end
   end
