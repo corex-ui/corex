@@ -74,7 +74,8 @@ defmodule Corex.New.Generator do
 
     for {format, project_location, files} <- mapping,
         {source, target_path} <- files,
-        source = to_string(source) do
+        source = to_string(source),
+        target_path != nil do
       target = Project.join_path(project, project_location, target_path)
 
       case format do

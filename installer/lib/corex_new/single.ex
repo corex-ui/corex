@@ -36,7 +36,8 @@ defmodule Corex.New.Single do
      "corex_gettext/gettext.ex": "lib/:lib_web_name/gettext.ex",
      "corex_gettext/errors.pot": "priv/gettext/errors.pot",
      "corex_gettext/default.pot": "priv/gettext/default.pot",
-     "corex_gettext/en/LC_MESSAGES/default.po": "priv/gettext/en/LC_MESSAGES/default.po"}
+     "corex_gettext/en/LC_MESSAGES/default.po": "priv/gettext/en/LC_MESSAGES/default.po",
+     "corex_gettext/locale_errors.po.eex": nil}
   ])
 
   template(:html, [
@@ -207,15 +208,14 @@ defmodule Corex.New.Single do
 
   defp gen_locale_errors(project) do
     locales = project.binding[:locales] || ["en"]
-    ecto = project.binding[:ecto]
-    template_path = Path.expand("../../templates/corex_gettext/locale_errors.po.eex", __DIR__)
 
     for locale <- locales do
       path =
         project
         |> Project.join_path(:web, "priv/gettext/#{locale}/LC_MESSAGES/errors.po")
 
-      content = EEx.eval_file(template_path, locale: locale, ecto: ecto)
+      binding = Keyword.merge(project.binding, [locale: locale, ecto: project.binding[:ecto]])
+      content = __MODULE__.render(:gettext, "corex_gettext/locale_errors.po.eex", binding)
       File.mkdir_p!(Path.dirname(path))
       Mix.Generator.create_file(path, content)
     end
