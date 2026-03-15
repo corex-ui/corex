@@ -62,7 +62,6 @@ defmodule E2eWeb.DataTableSelectionLive do
         <:subtitle>Selection Example</:subtitle>
       </.layout_heading>
 
-      <div class="space-y-4">
         <p>
           This example demonstrates how to implement row selection with the `data-table` component.
         </p>
@@ -91,7 +90,6 @@ defmodule E2eWeb.DataTableSelectionLive do
           <:col :let={user} label="Role" name={:role}>{user.role}</:col>
           <:col :let={user} label="Status" name={:status}>{user.status}</:col>
         </.data_table>
-      </div>
     </Layouts.app>
     """
   end

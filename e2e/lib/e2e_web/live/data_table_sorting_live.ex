@@ -39,7 +39,6 @@ defmodule E2eWeb.DataTableSortingLive do
         <:subtitle>Sorting Example</:subtitle>
       </.layout_heading>
 
-      <div class="space-y-4">
         <p>This example uses `Corex.DataTable.Sort` helpers so the LiveView stays minimal.</p>
 
         <.data_table
@@ -65,7 +64,6 @@ defmodule E2eWeb.DataTableSortingLive do
           <:col :let={user} label="Role" name={:role}>{user.role}</:col>
           <:col :let={user} label="Status" name={:status}>{user.status}</:col>
         </.data_table>
-      </div>
     </Layouts.app>
     """
   end

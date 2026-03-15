@@ -70,7 +70,6 @@ defmodule E2eWeb.DataTableFullLive do
         <:subtitle>Full Example (Sorting & Selection)</:subtitle>
       </.layout_heading>
 
-      <div class="space-y-4">
         <p>
           This example uses `Corex.DataTable.Sort` and `Corex.DataTable.Selection` for sorting and selection.
         </p>
@@ -116,7 +115,6 @@ defmodule E2eWeb.DataTableFullLive do
             </.action>
           </:action>
         </.data_table>
-      </div>
     </Layouts.app>
     """
   end
