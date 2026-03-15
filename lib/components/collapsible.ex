@@ -219,8 +219,7 @@ defmodule Corex.Collapsible do
     assigns =
       assigns
       |> assign_new(:id, fn -> "collapsible-#{System.unique_integer([:positive])}" end)
-
-    context = %{open: assigns.open, disabled: assigns.disabled}
+      |> assign(:slot_assigns, %{open: assigns.open, disabled: assigns.disabled})
 
     ~H"""
     <div
@@ -239,19 +238,13 @@ defmodule Corex.Collapsible do
     >
       <div {Connect.root(%Root{id: @id, dir: @dir, open: @open})}>
         <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
-          <%= for slot <- @trigger do %>
-            <%= render_slot(slot, context) %>
-          <% end %>
+          {render_slot(@trigger, @slot_assigns)}
           <span :if={@indicator != []} {Connect.indicator(%Indicator{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
-            <%= for indicator <- @indicator do %>
-              <%= render_slot(indicator, context) %>
-            <% end %>
+            {render_slot(@indicator, @slot_assigns)}
           </span>
         </button>
         <div {Connect.content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
-          <%= for slot <- @content do %>
-            <%= render_slot(slot, context) %>
-          <% end %>
+          {render_slot(@content, @slot_assigns)}
         </div>
       </div>
     </div>
