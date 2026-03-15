@@ -6,7 +6,7 @@ defmodule Corex.Collapsible do
 
   <!-- tabs-open -->
 
-  ### Basic Usage
+  ### Basic
 
   ```heex
   <.collapsible id="my-collapsible">
@@ -17,7 +17,40 @@ defmodule Corex.Collapsible do
   </.collapsible>
   ```
 
-  ### Controlled Mode
+  ### With indicator
+
+  Use the optional `:indicator` slot to add an icon after the trigger. Use CSS classes `state-open` and `state-closed` to target the indicator by `data-state`.
+
+  ```heex
+  <.collapsible id="my-collapsible">
+    <:trigger>Toggle Content</:trigger>
+    <:indicator>
+      <.heroicon name="hero-chevron-down" class="state-closed" />
+      <.heroicon name="hero-chevron-up" class="state-open" />
+    </:indicator>
+    <:content>
+      This content can be collapsed and expanded.
+    </:content>
+  </.collapsible>
+  ```
+
+  ### Custom with :let
+
+  Use `:let={collapsible}` on `:trigger`, `:content`, or `:indicator` to access `collapsible.open` and `collapsible.disabled`.
+
+  ```heex
+  <.collapsible id="my-collapsible">
+    <:trigger :let={collapsible}>
+      <%= if collapsible.open, do: "Collapse", else: "Expand" %>
+    </:trigger>
+    <:content :let={_c}>Panel body</:content>
+    <:indicator :let={collapsible}>
+      <.heroicon name={if collapsible.open, do: "hero-minus", else: "hero-plus"} />
+    </:indicator>
+  </.collapsible>
+  ```
+
+  ### Controlled
 
   ```heex
   <.collapsible
@@ -62,12 +95,37 @@ defmodule Corex.Collapsible do
 
   ## Styling
 
-  Use data attributes to target elements:
+  Target parts with `data-scope="collapsible"` and `data-part`:
 
   ```css
   [data-scope="collapsible"][data-part="root"] {}
   [data-scope="collapsible"][data-part="trigger"] {}
   [data-scope="collapsible"][data-part="content"] {}
+  [data-scope="collapsible"][data-part="indicator"] {}
+  ```
+
+  Root, trigger, and content have `data-state="open"` or `data-state="closed"`. When the trigger is focused, `data-focus` is set on root, trigger, and content.
+
+  The content part exposes `--height`, `--width`, `--collapsed-height`, and `--collapsed-width` for animations. Example:
+
+  ```css
+  [data-scope="collapsible"][data-part="content"] {
+    overflow: hidden;
+  }
+  [data-scope="collapsible"][data-part="content"][data-state="open"] {
+    animation: expand 110ms cubic-bezier(0, 0, 0.38, 0.9);
+  }
+  [data-scope="collapsible"][data-part="content"][data-state="closed"] {
+    animation: collapse 110ms cubic-bezier(0, 0, 0.38, 0.9);
+  }
+  @keyframes expand {
+    from { height: var(--collapsed-height, 0); }
+    to { height: var(--height); }
+  }
+  @keyframes collapse {
+    from { height: var(--height); }
+    to { height: var(--collapsed-height, 0); }
+  }
   ```
 
   If you wish to use the default Corex styling, you can use the class `collapsible` on the component.
@@ -91,13 +149,15 @@ defmodule Corex.Collapsible do
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Collapsible.Anatomy.{Content, Props, Root, Trigger}
+  alias Corex.Collapsible.Anatomy.{Content, Indicator, Props, Root, Trigger}
   alias Corex.Collapsible.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   @doc """
   Renders a collapsible component.
+
+  Requires `:trigger` and `:content` slots. Use the optional `:indicator` slot to add content after the trigger. Use `:let={collapsible}` on any slot to access `collapsible.open` and `collapsible.disabled`.
   """
 
   attr(:id, :string,
@@ -140,11 +200,18 @@ defmodule Corex.Collapsible do
 
   attr(:rest, :global)
 
-  slot :trigger, required: true do
+  slot :trigger, required: true,
+    doc: "Trigger button content. Use :let={collapsible} to access open and disabled state." do
     attr(:class, :string, required: false)
   end
 
-  slot :content, required: true do
+  slot :content, required: true,
+    doc: "Expandable content. Use :let={collapsible} to access open and disabled state." do
+    attr(:class, :string, required: false)
+  end
+
+  slot :indicator, required: false,
+    doc: "Optional content after the trigger (e.g. chevron). Use :let={collapsible} for state. Target data-state with .state-open and .state-closed in CSS." do
     attr(:class, :string, required: false)
   end
 
@@ -152,6 +219,8 @@ defmodule Corex.Collapsible do
     assigns =
       assigns
       |> assign_new(:id, fn -> "collapsible-#{System.unique_integer([:positive])}" end)
+
+    context = %{open: assigns.open, disabled: assigns.disabled}
 
     ~H"""
     <div
@@ -170,10 +239,19 @@ defmodule Corex.Collapsible do
     >
       <div {Connect.root(%Root{id: @id, dir: @dir, open: @open})}>
         <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
-          {render_slot(@trigger)}
+          <%= for slot <- @trigger do %>
+            <%= render_slot(slot, context) %>
+          <% end %>
+          <span :if={@indicator != []} {Connect.indicator(%Indicator{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
+            <%= for indicator <- @indicator do %>
+              <%= render_slot(indicator, context) %>
+            <% end %>
+          </span>
         </button>
         <div {Connect.content(%Content{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
-          {render_slot(@content)}
+          <%= for slot <- @content do %>
+            <%= render_slot(slot, context) %>
+          <% end %>
         </div>
       </div>
     </div>
