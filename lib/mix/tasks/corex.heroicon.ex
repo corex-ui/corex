@@ -48,7 +48,7 @@ defmodule Mix.Tasks.Corex.Heroicon do
       else
         dir = Path.dirname(target_path)
         File.mkdir_p!(dir)
-        rendered = EEx.eval_string(template, [assigns: [in_umbrella: in_umb]])
+        rendered = EEx.eval_string(template, assigns: [in_umbrella: in_umb])
         File.write!(target_path, rendered)
         Mix.shell().info("Created #{target_path}")
       end
@@ -61,8 +61,15 @@ defmodule Mix.Tasks.Corex.Heroicon do
   defp target_paths(false) do
     root = File.cwd!()
     assets = Path.join(root, "assets")
+
     if File.exists?(assets) and File.dir?(assets) do
-      [%{path: Path.join(assets, "vendor/heroicons.js"), in_umbrella: false, css_path: Path.join(assets, "css/app.css")}]
+      [
+        %{
+          path: Path.join(assets, "vendor/heroicons.js"),
+          in_umbrella: false,
+          css_path: Path.join(assets, "css/app.css")
+        }
+      ]
     else
       []
     end
@@ -91,12 +98,15 @@ defmodule Mix.Tasks.Corex.Heroicon do
     Mix.shell().info("  " <> @plugin_line)
     Mix.shell().info("")
 
-    for %{css_path: css_path} <- target_infos do
-      if File.exists?(css_path) do
-        content = File.read!(css_path)
-        if String.contains?(content, "vendor/heroicons") do
-          Mix.shell().info("  (#{Path.relative_to_cwd(css_path)} already contains the plugin)")
-        end
+    Enum.each(target_infos, &print_css_path_status/1)
+  end
+
+  defp print_css_path_status(%{css_path: css_path}) do
+    if File.exists?(css_path) do
+      content = File.read!(css_path)
+
+      if String.contains?(content, "vendor/heroicons") do
+        Mix.shell().info("  (#{Path.relative_to_cwd(css_path)} already contains the plugin)")
       end
     end
   end
