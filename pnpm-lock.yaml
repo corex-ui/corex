@@ -107,6 +107,9 @@ importers:
       '@zag-js/toggle-group':
         specifier: ^1.36.0
         version: 1.36.0
+      '@zag-js/tooltip':
+        specifier: ^1.36.0
+        version: 1.36.0
       '@zag-js/tree-view':
         specifier: ^1.36.0
         version: 1.36.0
@@ -420,6 +423,9 @@ packages:
 
   '@zag-js/toggle-group@1.36.0':
     resolution: {integrity: sha512-UbBrXiu4FFGuKTaXm4ELeo0/Ecs8lPlaPCe2kzRy0n+db7s//QHNPvtfEjskWPd/Tw33IwzHOsBK+WEfNK+53g==}
+
+  '@zag-js/tooltip@1.36.0':
+    resolution: {integrity: sha512-LzON1FatPEJ1y0kvvrJRvZvOjsEdy36pnHwvAliVRryadZobtMNpKXUlYfj0p+adrGE7t97vKM7TcuefTXD9SA==}
 
   '@zag-js/tree-view@1.36.0':
     resolution: {integrity: sha512-hg1/hIP5IMzT/J/JVEPDWqhqrP3LSTcuEtJdYMRjRXjuXXxFzsZBuYUgHilEOuoGAYbKloImT5yOB46lDGBeMA==}
@@ -1327,6 +1333,16 @@ snapshots:
       '@zag-js/anatomy': 1.36.0
       '@zag-js/core': 1.36.0
       '@zag-js/dom-query': 1.36.0
+      '@zag-js/types': 1.36.0
+      '@zag-js/utils': 1.36.0
+
+  '@zag-js/tooltip@1.36.0':
+    dependencies:
+      '@zag-js/anatomy': 1.36.0
+      '@zag-js/core': 1.36.0
+      '@zag-js/dom-query': 1.36.0
+      '@zag-js/focus-visible': 1.36.0
+      '@zag-js/popper': 1.36.0
       '@zag-js/types': 1.36.0
       '@zag-js/utils': 1.36.0
 

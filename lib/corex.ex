@@ -38,6 +38,7 @@ defmodule Corex do
     switch: {Corex.Switch, [switch: 1]},
     tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]},
     timer: {Corex.Timer, [timer: 1]},
+    tooltip: {Corex.Tooltip, [tooltip: 1]},
     toast:
       {Corex.Toast,
        [

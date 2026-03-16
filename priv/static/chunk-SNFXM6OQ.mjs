@@ -1292,6 +1292,15 @@ function getNearestOverflowAncestor(el) {
   if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) return parentNode;
   return getNearestOverflowAncestor(parentNode);
 }
+function getOverflowAncestors(el, list = []) {
+  const scrollableAncestor = getNearestOverflowAncestor(el);
+  const isBody = scrollableAncestor === el.ownerDocument.body;
+  const win = getWindow(scrollableAncestor);
+  if (isBody) {
+    return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : []);
+  }
+  return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, []));
+}
 var OVERFLOW_RE = /auto|scroll|overlay|hidden|clip/;
 var nonOverflowValues = /* @__PURE__ */ new Set(["inline", "contents"]);
 function isOverflowElement(el) {
@@ -2636,6 +2645,7 @@ export {
   observeChildren,
   clickIfLink,
   getNearestOverflowAncestor,
+  getOverflowAncestors,
   scrollIntoView,
   getRelativePoint,
   requestPointerLock,

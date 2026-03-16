@@ -1,6 +1,6 @@
 import {
   setRafTimeout
-} from "./chunk-MYBRVHPZ.mjs";
+} from "./chunk-OUU6AXP5.mjs";
 import {
   Component,
   VanillaMachine,
@@ -13,7 +13,7 @@ import {
   getWindow,
   normalizeProps,
   setElementValue
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunk-SNFXM6OQ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+clipboard@1.36.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");

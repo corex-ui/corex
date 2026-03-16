@@ -1,0 +1,75 @@
+@import "../main.css";
+
+@layer components {
+  .tooltip [data-scope="tooltip"][data-part="positioner"] {
+    z-index: 50;
+    position: absolute;
+    left: 0;
+    top: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="positioner"]:has(
+    [data-scope="tooltip"][data-part="content"][data-state="open"]
+  ) {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="content"] {
+    @apply ui-content;
+
+    padding: var(--spacing-ui-padding);
+    max-width: var(--container-mini);
+    position: relative;
+    z-index: 1;
+    border: 1px solid var(--color-ui--border);
+    box-shadow: var(--shadow-ui);
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="content"][data-state="closed"] {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.15s, opacity 0.15s;
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="content"][data-state="open"] {
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0.15s, opacity 0.15s;
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-size: var(--spacing-micro);
+    --arrow-background: var(--color-ui);
+    z-index: 0;
+  }
+
+  .tooltip [data-scope="tooltip"][data-part="arrow-tip"] {
+    background: var(--arrow-background);
+    border: 1px solid var(--color-ui--border);
+  }
+}
+
+@utility tooltip--* {
+  [data-scope="tooltip"][data-part="content"] {
+    padding: --value(--spacing-ui-padding-*, [length]);
+    max-width: --value(--container-ui-*, [length]);
+    font-size: --value(--text-ui-*, [length]);
+    line-height: --value(--text-ui-* --line-height, [length]);
+    background: --value(--color-ui-*, [color]);
+    color: --value(--color-ui-* --text, [color]);
+    border-color: --value(--color-ui-* --border, [color]);
+  }
+
+  [data-scope="tooltip"][data-part="arrow"] {
+    --arrow-size: --value(--spacing-micro-*, [length]);
+    --arrow-background: --value(--color-ui-*, [color]);
+  }
+
+  [data-scope="tooltip"][data-part="arrow-tip"] {
+    background: var(--arrow-background);
+    border-color: --value(--color-ui-* --border, [color]);
+  }
+}

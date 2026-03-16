@@ -20,13 +20,21 @@ defmodule Corex.CollapsibleTest do
     end
 
     test "renders with :let on trigger, content, and indicator" do
-      html = render_component(&CorexTest.ComponentHelpers.render_collapsible_with_let_slots/1, open: false)
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_collapsible_with_let_slots/1,
+          open: false
+        )
+
       assert html =~ ~r/data-scope="collapsible"/
       assert html =~ "Expand"
       assert html =~ "Panel"
       assert html =~ ~r/data-indicator-state="closed"/
 
-      html_open = render_component(&CorexTest.ComponentHelpers.render_collapsible_with_let_slots/1, open: true)
+      html_open =
+        render_component(&CorexTest.ComponentHelpers.render_collapsible_with_let_slots/1,
+          open: true
+        )
+
       assert html_open =~ "Collapse"
       assert html_open =~ ~r/data-indicator-state="open"/
     end

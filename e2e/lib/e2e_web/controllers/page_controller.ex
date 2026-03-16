@@ -401,4 +401,9 @@ defmodule E2eWeb.PageController do
   def timer_page(conn, _params) do
     render(conn, :timer_page)
   end
+
+  def tooltip_page(conn, _params) do
+    render(conn, :tooltip_page)
+  end
+
 end

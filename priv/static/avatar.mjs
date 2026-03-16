@@ -7,7 +7,7 @@ import {
   normalizeProps,
   observeAttributes,
   observeChildren
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunk-SNFXM6OQ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.36.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");

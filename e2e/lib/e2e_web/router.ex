@@ -98,6 +98,7 @@ defmodule E2eWeb.Router do
       live "/live/native-input/form", NativeInputFormLive
       live "/live/radio-group", RadioGroupLive
       live "/live/radio-group/form", RadioGroupFormLive
+      live "/live/tooltip", TooltipLive
       live "/live/timer", TimerLive
     end
 
@@ -179,6 +180,7 @@ defmodule E2eWeb.Router do
     get "/radio-group/form", PageController, :radio_group_form_page
     post "/radio-group/form", PageController, :radio_group_form_submit
     get "/timer", PageController, :timer_page
+    get "/tooltip", PageController, :tooltip_page
 
     live_session :browser, on_mount: [E2eWeb.ModeLive, E2eWeb.ThemeLive, E2eWeb.SharedEvents] do
       live "/admins", AdminLive.Index, :index
