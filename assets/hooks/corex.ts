@@ -55,6 +55,7 @@ export const Hooks = {
   Tabs: createLazyHook(() => import("corex/tabs"), "Tabs"),
   Timer: createLazyHook(() => import("corex/timer"), "Timer"),
   Toast: createLazyHook(() => import("corex/toast"), "Toast"),
+  Tooltip: createLazyHook(() => import("corex/tooltip"), "Tooltip"),
   ToggleGroup: createLazyHook(() => import("corex/toggle-group"), "ToggleGroup"),
   TreeView: createLazyHook(() => import("corex/tree-view"), "TreeView"),
 };

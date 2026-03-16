@@ -1,6 +1,6 @@
 defmodule Corex.Collapsible.Connect do
   @moduledoc false
-  alias Corex.Collapsible.Anatomy.{Content, Props, Root, Trigger}
+  alias Corex.Collapsible.Anatomy.{Content, Indicator, Props, Root, Trigger}
 
   defp data_attr(true), do: ""
   defp data_attr(false), do: nil
@@ -61,12 +61,32 @@ defmodule Corex.Collapsible.Connect do
     %{
       "data-scope" => "collapsible",
       "data-part" => "content",
+      "data-collapsible" => "",
+      "id" => "collapsible:#{assigns.id}:content",
       "data-state" => data_state,
       "data-disabled" => assigns.disabled,
+      "hidden" => !assigns.open,
       "dir" => assigns.dir,
       "aria-labelledby" => "collapsible:#{assigns.id}:trigger",
-      "hidden" => !assigns.open,
-      "id" => "collapsible:#{assigns.id}:content"
+      "style" => content_style()
+    }
+  end
+
+  defp content_style do
+    "--height: 0px; --width: 0px; --collapsed-height: 0px; --collapsed-width: 0px"
+  end
+
+  @spec indicator(Indicator.t()) :: map()
+  def indicator(assigns) do
+    data_state = if assigns.open, do: "open", else: "closed"
+
+    %{
+      "data-scope" => "collapsible",
+      "data-part" => "indicator",
+      "aria-hidden" => true,
+      "data-state" => data_state,
+      "data-disabled" => assigns.disabled,
+      "dir" => assigns.dir
     }
   end
 

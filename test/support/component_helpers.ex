@@ -112,6 +112,28 @@ defmodule CorexTest.ComponentHelpers do
     """
   end
 
+  def render_collapsible_with_indicator(assigns) do
+    ~H"""
+    <.collapsible open={true}>
+      <:trigger>Toggle</:trigger>
+      <:content>Content</:content>
+      <:indicator><span data-indicator>Indicator</span></:indicator>
+    </.collapsible>
+    """
+  end
+
+  def render_collapsible_with_let_slots(assigns) do
+    assigns = assign_new(assigns, :open, fn -> false end)
+
+    ~H"""
+    <.collapsible open={@open}>
+      <:trigger :let={c}><%= if c.open, do: "Collapse", else: "Expand" %></:trigger>
+      <:content :let={_c}>Panel</:content>
+      <:indicator :let={c}><span data-indicator-state={if c.open, do: "open", else: "closed"}>▼</span></:indicator>
+    </.collapsible>
+    """
+  end
+
   def render_combobox(assigns) do
     ~H"""
     <.combobox collection={[]}>

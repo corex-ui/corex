@@ -36,7 +36,10 @@ defmodule E2eWeb.DataTableStreamLive do
   end
 
   def handle_event("reset", _params, socket) do
-    {:noreply, redirect(socket, to: socket.assigns.current_path)}
+    {:noreply,
+     socket
+     |> stream(:items, @initial_items, reset: true)
+     |> assign(:next_id, 4)}
   end
 
   def render(assigns) do

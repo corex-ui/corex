@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-ZOODJA3P.mjs
+  // ../priv/static/chunk-SNFXM6OQ.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -252,8 +252,8 @@ var Corex = (() => {
     if (missingKeys.length > 0)
       throw new Error(`[zag-js${scope ? ` > ${scope}` : ""}] missing required props: ${missingKeys.join(", ")}`);
   }
-  function joinStatePath(parts29) {
-    return parts29.join(STATE_DELIMITER);
+  function joinStatePath(parts30) {
+    return parts30.join(STATE_DELIMITER);
   }
   function isAbsoluteStatePath(value) {
     return value.includes(STATE_DELIMITER);
@@ -267,7 +267,7 @@ var Corex = (() => {
   function appendStatePath(base, segment) {
     return base ? `${base}${STATE_DELIMITER}${segment}` : segment;
   }
-  function buildStateIndex(machine29) {
+  function buildStateIndex(machine30) {
     const index = /* @__PURE__ */ new Map();
     const idIndex = /* @__PURE__ */ new Map();
     const visit2 = (basePath, state2) => {
@@ -287,32 +287,32 @@ var Corex = (() => {
         visit2(childPath, childState);
       }
     };
-    for (const [topKey, topState] of Object.entries(machine29.states)) {
+    for (const [topKey, topState] of Object.entries(machine30.states)) {
       if (!topState) continue;
       visit2(topKey, topState);
     }
     return { index, idIndex };
   }
-  function ensureStateIndex(machine29) {
-    const cached = stateIndexCache.get(machine29);
+  function ensureStateIndex(machine30) {
+    const cached = stateIndexCache.get(machine30);
     if (cached) return cached;
-    const { index, idIndex } = buildStateIndex(machine29);
-    stateIndexCache.set(machine29, index);
-    stateIdIndexCache.set(machine29, idIndex);
+    const { index, idIndex } = buildStateIndex(machine30);
+    stateIndexCache.set(machine30, index);
+    stateIdIndexCache.set(machine30, idIndex);
     return index;
   }
-  function getStatePathById(machine29, stateId) {
+  function getStatePathById(machine30, stateId) {
     var _a;
-    ensureStateIndex(machine29);
-    return (_a = stateIdIndexCache.get(machine29)) == null ? void 0 : _a.get(stateId);
+    ensureStateIndex(machine30);
+    return (_a = stateIdIndexCache.get(machine30)) == null ? void 0 : _a.get(stateId);
   }
   function toSegments(value) {
     if (!value) return [];
     return String(value).split(STATE_DELIMITER).filter(Boolean);
   }
-  function getStateChain(machine29, state2) {
+  function getStateChain(machine30, state2) {
     if (!state2) return [];
-    const stateIndex = ensureStateIndex(machine29);
+    const stateIndex = ensureStateIndex(machine30);
     const segments = toSegments(state2);
     const chain = [];
     const statePath = [];
@@ -325,8 +325,8 @@ var Corex = (() => {
     }
     return chain;
   }
-  function resolveAbsoluteStateValue(machine29, value) {
-    const stateIndex = ensureStateIndex(machine29);
+  function resolveAbsoluteStateValue(machine30, value) {
+    const stateIndex = ensureStateIndex(machine30);
     const segments = toSegments(value);
     if (!segments.length) return value;
     const resolved = [];
@@ -346,45 +346,45 @@ var Corex = (() => {
     }
     return resolvedPath;
   }
-  function hasStatePath(machine29, value) {
-    const stateIndex = ensureStateIndex(machine29);
+  function hasStatePath(machine30, value) {
+    const stateIndex = ensureStateIndex(machine30);
     return stateIndex.has(value);
   }
-  function resolveStateValue(machine29, value, source) {
+  function resolveStateValue(machine30, value, source) {
     const stateValue = String(value);
     if (isExplicitAbsoluteStatePath(stateValue)) {
       const stateId = stripAbsolutePrefix(stateValue);
-      const statePath = getStatePathById(machine29, stateId);
+      const statePath = getStatePathById(machine30, stateId);
       if (!statePath) {
         throw new Error(`Unknown state id: ${stateId}`);
       }
-      return resolveAbsoluteStateValue(machine29, statePath);
+      return resolveAbsoluteStateValue(machine30, statePath);
     }
     if (!isAbsoluteStatePath(stateValue) && source) {
       const sourceSegments = toSegments(source);
       for (let index = sourceSegments.length; index >= 1; index--) {
         const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
         const candidate = appendStatePath(base, stateValue);
-        if (hasStatePath(machine29, candidate)) return resolveAbsoluteStateValue(machine29, candidate);
+        if (hasStatePath(machine30, candidate)) return resolveAbsoluteStateValue(machine30, candidate);
       }
     }
-    return resolveAbsoluteStateValue(machine29, stateValue);
+    return resolveAbsoluteStateValue(machine30, stateValue);
   }
-  function findTransition(machine29, state2, eventType) {
+  function findTransition(machine30, state2, eventType) {
     var _a, _b;
-    const chain = getStateChain(machine29, state2);
+    const chain = getStateChain(machine30, state2);
     for (let index = chain.length - 1; index >= 0; index--) {
       const transitionMap = (_a = chain[index]) == null ? void 0 : _a.state.on;
       const transition = transitionMap == null ? void 0 : transitionMap[eventType];
       if (transition) return { transitions: transition, source: (_b = chain[index]) == null ? void 0 : _b.path };
     }
-    const rootTransitionMap = machine29.on;
+    const rootTransitionMap = machine30.on;
     return { transitions: rootTransitionMap == null ? void 0 : rootTransitionMap[eventType], source: void 0 };
   }
-  function getExitEnterStates(machine29, prevState, nextState, reenter) {
+  function getExitEnterStates(machine30, prevState, nextState, reenter) {
     var _a, _b, _c, _d;
-    const prevChain = prevState ? getStateChain(machine29, prevState) : [];
-    const nextChain = getStateChain(machine29, nextState);
+    const prevChain = prevState ? getStateChain(machine30, prevState) : [];
+    const nextChain = getStateChain(machine30, nextState);
     let commonIndex = 0;
     while (commonIndex < prevChain.length && commonIndex < nextChain.length && ((_a = prevChain[commonIndex]) == null ? void 0 : _a.path) === ((_b = nextChain[commonIndex]) == null ? void 0 : _b.path)) {
       commonIndex += 1;
@@ -402,8 +402,8 @@ var Corex = (() => {
     if (!current) return false;
     return current === value || current.startsWith(`${value}${STATE_DELIMITER}`);
   }
-  function hasTag(machine29, state2, tag) {
-    return getStateChain(machine29, state2).some((item) => {
+  function hasTag(machine30, state2, tag) {
+    return getStateChain(machine30, state2).some((item) => {
       var _a;
       return (_a = item.state.tags) == null ? void 0 : _a.includes(tag);
     });
@@ -1044,6 +1044,15 @@ var Corex = (() => {
     if (isHTMLElement(parentNode) && isOverflowElement(parentNode)) return parentNode;
     return getNearestOverflowAncestor(parentNode);
   }
+  function getOverflowAncestors(el, list = []) {
+    const scrollableAncestor = getNearestOverflowAncestor(el);
+    const isBody = scrollableAncestor === el.ownerDocument.body;
+    const win = getWindow(scrollableAncestor);
+    if (isBody) {
+      return list.concat(win, win.visualViewport || [], isOverflowElement(scrollableAncestor) ? scrollableAncestor : []);
+    }
+    return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, []));
+  }
   function isOverflowElement(el) {
     const win = getWindow(el);
     const { overflow, overflowX, overflowY, display } = win.getComputedStyle(el);
@@ -1560,22 +1569,22 @@ var Corex = (() => {
       console.log(`[bindable > ${props().debug}] initial`, initial);
     }
     const eq = (_b = props().isEqual) != null ? _b : Object.is;
-    const store = proxy({ value: initial });
+    const store2 = proxy({ value: initial });
     const controlled = () => props().value !== void 0;
     return {
       initial,
-      ref: store,
+      ref: store2,
       get() {
-        return controlled() ? props().value : store.value;
+        return controlled() ? props().value : store2.value;
       },
       set(nextValue) {
         var _a2, _b2;
-        const prev2 = controlled() ? props().value : store.value;
+        const prev2 = controlled() ? props().value : store2.value;
         const next2 = isFunction(nextValue) ? nextValue(prev2) : nextValue;
         if (props().debug) {
           console.log(`[bindable > ${props().debug}] setValue`, { next: next2, prev: prev2 });
         }
-        if (!controlled()) store.value = next2;
+        if (!controlled()) store2.value = next2;
         if (!eq(next2, prev2)) {
           (_b2 = (_a2 = props()).onChange) == null ? void 0 : _b2.call(_a2, next2, prev2);
         }
@@ -1700,8 +1709,8 @@ var Corex = (() => {
     };
   }
   var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, __defProp2, __defNormalProp2, __publicField2, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_ZOODJA3P = __esm({
-    "../priv/static/chunk-ZOODJA3P.mjs"() {
+  var init_chunk_SNFXM6OQ = __esm({
+    "../priv/static/chunk-SNFXM6OQ.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -2267,9 +2276,9 @@ var Corex = (() => {
         };
       };
       VanillaMachine = class {
-        constructor(machine29, userProps = {}) {
+        constructor(machine30, userProps = {}) {
           var _a, _b, _c;
-          this.machine = machine29;
+          this.machine = machine30;
           __publicField2(this, "scope");
           __publicField2(this, "context");
           __publicField2(this, "prop");
@@ -2415,11 +2424,11 @@ var Corex = (() => {
           const prop = (key) => {
             var _a2, _b2;
             const __props = runIfFn(this.userPropsRef.current);
-            const props = (_b2 = (_a2 = machine29.props) == null ? void 0 : _a2.call(machine29, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
+            const props = (_b2 = (_a2 = machine30.props) == null ? void 0 : _a2.call(machine30, { props: compact(__props), scope: this.scope })) != null ? _b2 : __props;
             return props[key];
           };
           this.prop = prop;
-          const context = (_a = machine29.context) == null ? void 0 : _a.call(machine29, {
+          const context = (_a = machine30.context) == null ? void 0 : _a.call(machine30, {
             prop,
             bindable,
             scope: this.scope,
@@ -2461,7 +2470,7 @@ var Corex = (() => {
           this.context = ctx;
           const computed = (key) => {
             var _a2, _b2;
-            return (_b2 = (_a2 = machine29.computed) == null ? void 0 : _a2[key]({
+            return (_b2 = (_a2 = machine30.computed) == null ? void 0 : _a2[key]({
               context: ctx,
               event: this.getEvent(),
               prop,
@@ -2471,10 +2480,10 @@ var Corex = (() => {
             })) != null ? _b2 : {};
           };
           this.computed = computed;
-          const refs = createRefs((_c = (_b = machine29.refs) == null ? void 0 : _b.call(machine29, { prop, context: ctx })) != null ? _c : {});
+          const refs = createRefs((_c = (_b = machine30.refs) == null ? void 0 : _b.call(machine30, { prop, context: ctx })) != null ? _c : {});
           this.refs = refs;
           const state2 = bindable(() => ({
-            defaultValue: resolveStateValue(machine29, machine29.initialState({ prop })),
+            defaultValue: resolveStateValue(machine30, machine30.initialState({ prop })),
             onChange: (nextState, prevState) => {
               var _a2, _b2;
               const { exiting, entering } = getExitEnterStates(this.machine, prevState, nextState, (_a2 = this.transition) == null ? void 0 : _a2.reenter);
@@ -2494,8 +2503,8 @@ var Corex = (() => {
                 if (cleanup) this.effects.set(item.path, cleanup);
               });
               if (prevState === INIT_STATE) {
-                this.action(machine29.entry);
-                const cleanup = this.effect(machine29.effects);
+                this.action(machine30.entry);
+                const cleanup = this.effect(machine30.effects);
                 if (cleanup) this.effects.set(INIT_STATE, cleanup);
               }
               entering.forEach((item) => {
@@ -2601,18 +2610,18 @@ var Corex = (() => {
           this.api = this.initApi();
         }
       };
-      createAnatomy = (name, parts29 = []) => ({
+      createAnatomy = (name, parts30 = []) => ({
         parts: (...values) => {
-          if (isEmpty(parts29)) {
+          if (isEmpty(parts30)) {
             return createAnatomy(name, values);
           }
           throw new Error("createAnatomy().parts(...) should only be called once. Did you mean to use .extendWith(...) ?");
         },
-        extendWith: (...values) => createAnatomy(name, [...parts29, ...values]),
-        omit: (...values) => createAnatomy(name, parts29.filter((part) => !values.includes(part))),
-        rename: (newName) => createAnatomy(newName, parts29),
-        keys: () => parts29,
-        build: () => [...new Set(parts29)].reduce(
+        extendWith: (...values) => createAnatomy(name, [...parts30, ...values]),
+        omit: (...values) => createAnatomy(name, parts30.filter((part) => !values.includes(part))),
+        rename: (newName) => createAnatomy(newName, parts30),
+        keys: () => parts30,
+        build: () => [...new Set(parts30)].reduce(
           (prev2, part) => Object.assign(prev2, {
             [part]: {
               selector: [
@@ -2778,7 +2787,7 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -3472,7 +3481,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_ZZKFCQSP();
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -3899,7 +3908,7 @@ var Corex = (() => {
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4516,7 +4525,7 @@ var Corex = (() => {
     "../priv/static/carousel.mjs"() {
       "use strict";
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5249,7 +5258,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-KF3PY6Q6.mjs
+  // ../priv/static/chunk-IAPTZYKE.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -5368,10 +5377,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_KF3PY6Q6 = __esm({
-    "../priv/static/chunk-KF3PY6Q6.mjs"() {
+  var init_chunk_IAPTZYKE = __esm({
+    "../priv/static/chunk-IAPTZYKE.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -5540,8 +5549,8 @@ var Corex = (() => {
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -5856,7 +5865,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-MYBRVHPZ.mjs
+  // ../priv/static/chunk-OUU6AXP5.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -5879,10 +5888,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_MYBRVHPZ = __esm({
-    "../priv/static/chunk-MYBRVHPZ.mjs"() {
+  var init_chunk_OUU6AXP5 = __esm({
+    "../priv/static/chunk-OUU6AXP5.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6056,8 +6065,8 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_MYBRVHPZ();
-      init_chunk_ZOODJA3P();
+      init_chunk_OUU6AXP5();
+      init_chunk_SNFXM6OQ();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6409,7 +6418,7 @@ var Corex = (() => {
     "../priv/static/collapsible.mjs"() {
       "use strict";
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6786,7 +6795,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-WAY74VD3.mjs
+  // ../priv/static/chunk-7ZKQLYA7.mjs
   function insert(items, index, ...values) {
     return [...items.slice(0, index), ...values, ...items.slice(index)];
   }
@@ -7186,10 +7195,10 @@ var Corex = (() => {
     }
   }
   var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_WAY74VD3 = __esm({
-    "../priv/static/chunk-WAY74VD3.mjs"() {
+  var init_chunk_7ZKQLYA7 = __esm({
+    "../priv/static/chunk-7ZKQLYA7.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       __defProp5 = Object.defineProperty;
       __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
@@ -8186,7 +8195,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-IMEAISCQ.mjs
+  // ../priv/static/chunk-VXCJNDUG.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -8593,7 +8602,7 @@ var Corex = (() => {
     }
     return getNearestOverflowAncestor2(parentNode);
   }
-  function getOverflowAncestors(node, list, traverseIframes) {
+  function getOverflowAncestors2(node, list, traverseIframes) {
     var _node$ownerDocument2;
     if (list === void 0) {
       list = [];
@@ -8606,9 +8615,9 @@ var Corex = (() => {
     const win = getWindow2(scrollableAncestor);
     if (isBody) {
       const frameElement = getFrameElement(win);
-      return list.concat(win, win.visualViewport || [], isOverflowElement2(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors(frameElement) : []);
+      return list.concat(win, win.visualViewport || [], isOverflowElement2(scrollableAncestor) ? scrollableAncestor : [], frameElement && traverseIframes ? getOverflowAncestors2(frameElement) : []);
     } else {
-      return list.concat(scrollableAncestor, getOverflowAncestors(scrollableAncestor, [], traverseIframes));
+      return list.concat(scrollableAncestor, getOverflowAncestors2(scrollableAncestor, [], traverseIframes));
     }
   }
   function getFrameElement(win) {
@@ -8890,7 +8899,7 @@ var Corex = (() => {
     if (cachedResult) {
       return cachedResult;
     }
-    let result = getOverflowAncestors(element, [], false).filter((el) => isElement2(el) && getNodeName2(el) !== "body");
+    let result = getOverflowAncestors2(element, [], false).filter((el) => isElement2(el) && getNodeName2(el) !== "body");
     let currentContainingBlockComputedStyle = null;
     const elementIsFixed = getComputedStyle3(element).position === "fixed";
     let currentNode = elementIsFixed ? getParentNode2(element) : element;
@@ -9118,7 +9127,7 @@ var Corex = (() => {
       animationFrame = false
     } = options;
     const referenceEl = unwrapElement(reference);
-    const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors(referenceEl) : [], ...floating ? getOverflowAncestors(floating) : []] : [];
+    const ancestors = ancestorScroll || ancestorResize ? [...referenceEl ? getOverflowAncestors2(referenceEl) : [], ...floating ? getOverflowAncestors2(floating) : []] : [];
     ancestors.forEach((ancestor) => {
       ancestorScroll && ancestor.addEventListener("scroll", update, {
         passive: true
@@ -9480,10 +9489,10 @@ var Corex = (() => {
     };
   }
   var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_IMEAISCQ = __esm({
-    "../priv/static/chunk-IMEAISCQ.mjs"() {
+  var init_chunk_VXCJNDUG = __esm({
+    "../priv/static/chunk-VXCJNDUG.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10178,7 +10187,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-7UNOLQU5.mjs
+  // ../priv/static/chunk-YCAWAEF3.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10395,17 +10404,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_7UNOLQU5 = __esm({
-    "../priv/static/chunk-7UNOLQU5.mjs"() {
+  var init_chunk_YCAWAEF3 = __esm({
+    "../priv/static/chunk-YCAWAEF3.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-B6KPIA33.mjs
+  // ../priv/static/chunk-EV6LXBMY.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10564,11 +10573,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_B6KPIA33 = __esm({
-    "../priv/static/chunk-B6KPIA33.mjs"() {
+  var init_chunk_EV6LXBMY = __esm({
+    "../priv/static/chunk-EV6LXBMY.mjs"() {
       "use strict";
-      init_chunk_7UNOLQU5();
-      init_chunk_ZOODJA3P();
+      init_chunk_YCAWAEF3();
+      init_chunk_SNFXM6OQ();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -11114,12 +11123,12 @@ var Corex = (() => {
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_WAY74VD3();
-      init_chunk_IMEAISCQ();
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_7ZKQLYA7();
+      init_chunk_VXCJNDUG();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -13328,10 +13337,10 @@ var Corex = (() => {
     "../priv/static/color-picker.mjs"() {
       "use strict";
       init_chunk_MV633JPN();
-      init_chunk_IMEAISCQ();
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_ZOODJA3P();
+      init_chunk_VXCJNDUG();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_SNFXM6OQ();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -15058,7 +15067,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-BYLQVWJG.mjs
+  // ../priv/static/chunk-B7UVPCXR.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -15073,10 +15082,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_BYLQVWJG = __esm({
-    "../priv/static/chunk-BYLQVWJG.mjs"() {
+  var init_chunk_B7UVPCXR = __esm({
+    "../priv/static/chunk-B7UVPCXR.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
     }
   });
 
@@ -15322,9 +15331,9 @@ var Corex = (() => {
       });
       $11d87f3f76e88657$var$formattersByTimeZone.set(timeZone, formatter);
     }
-    let parts29 = formatter.formatToParts(new Date(ms));
+    let parts210 = formatter.formatToParts(new Date(ms));
     let namedParts = {};
-    for (let part of parts29) if (part.type !== "literal") namedParts[part.type] = part.value;
+    for (let part of parts210) if (part.type !== "literal") namedParts[part.type] = part.value;
     return {
       // Firefox returns B instead of BC... https://bugzilla.mozilla.org/show_bug.cgi?id=1752253
       year: namedParts.era === "BC" || namedParts.era === "B" ? -namedParts.year + 1 : +namedParts.year,
@@ -15345,8 +15354,8 @@ var Corex = (() => {
     return found.filter((absolute) => $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute));
   }
   function $11d87f3f76e88657$var$isValidWallTime(date, timeZone, absolute) {
-    let parts29 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
-    return date.year === parts29.year && date.month === parts29.month && date.day === parts29.day && date.hour === parts29.hour && date.minute === parts29.minute && date.second === parts29.second;
+    let parts210 = $11d87f3f76e88657$var$getTimeZoneParts(absolute, timeZone);
+    return date.year === parts210.year && date.month === parts210.month && date.day === parts210.day && date.hour === parts210.hour && date.minute === parts210.minute && date.second === parts210.second;
   }
   function $11d87f3f76e88657$export$5107c82f94518f5c(date, timeZone, disambiguation = "compatible") {
     let dateTime = $11d87f3f76e88657$export$b21e0b124e224484(date);
@@ -15977,10 +15986,10 @@ var Corex = (() => {
     });
   }
   function formatRange(startDate, endDate, formatter, toString, timeZone) {
-    let parts29 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
+    let parts210 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
     let separatorIndex = -1;
-    for (let i2 = 0; i2 < parts29.length; i2++) {
-      let part = parts29[i2];
+    for (let i2 = 0; i2 < parts210.length; i2++) {
+      let part = parts210[i2];
       if (part.source === "shared" && part.type === "literal") {
         separatorIndex = i2;
       } else if (part.source === "endRange") {
@@ -15989,11 +15998,11 @@ var Corex = (() => {
     }
     let start = "";
     let end = "";
-    for (let i2 = 0; i2 < parts29.length; i2++) {
+    for (let i2 = 0; i2 < parts210.length; i2++) {
       if (i2 < separatorIndex) {
-        start += parts29[i2].value;
+        start += parts210[i2].value;
       } else if (i2 > separatorIndex) {
-        end += parts29[i2].value;
+        end += parts210[i2].value;
       }
     }
     return toString(start, end);
@@ -16258,8 +16267,8 @@ var Corex = (() => {
   }
   function createRegex(locale, timeZone) {
     const formatter = new $fb18d541ea1ad717$export$ad991b66133851cf(locale, { day: "numeric", month: "numeric", year: "numeric", timeZone });
-    const parts29 = formatter.formatToParts(new Date(2e3, 11, 25));
-    return parts29.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
+    const parts210 = formatter.formatToParts(new Date(2e3, 11, 25));
+    return parts210.map(({ type, value }) => type === "literal" ? `${value}?` : `((?!=<${type}>)\\d+)?`).join("");
   }
   function extract(pattern, str) {
     var _a;
@@ -16347,8 +16356,8 @@ var Corex = (() => {
   }
   function getLocaleSeparator(locale) {
     const dateFormatter = new Intl.DateTimeFormat(locale);
-    const parts29 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
-    const literalPart = parts29.find((part) => part.type === "literal");
+    const parts210 = dateFormatter.formatToParts(/* @__PURE__ */ new Date());
+    const literalPart = parts210.find((part) => part.type === "literal");
     return literalPart ? literalPart.value : "/";
   }
   function viewToNumber(view, fallback2) {
@@ -17268,12 +17277,12 @@ var Corex = (() => {
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_BYLQVWJG();
+      init_chunk_B7UVPCXR();
       init_chunk_MV633JPN();
-      init_chunk_IMEAISCQ();
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_ZOODJA3P();
+      init_chunk_VXCJNDUG();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_SNFXM6OQ();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -19714,9 +19723,9 @@ var Corex = (() => {
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_ZOODJA3P();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_SNFXM6OQ();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -21004,8 +21013,8 @@ var Corex = (() => {
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_7UNOLQU5();
-      init_chunk_ZOODJA3P();
+      init_chunk_YCAWAEF3();
+      init_chunk_SNFXM6OQ();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -21907,7 +21916,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_ZZKFCQSP();
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -23321,9 +23330,9 @@ var Corex = (() => {
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_WAY74VD3();
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_7ZKQLYA7();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -24224,7 +24233,7 @@ var Corex = (() => {
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
       dom = {
@@ -25116,11 +25125,11 @@ var Corex = (() => {
     "../priv/static/menu.mjs"() {
       "use strict";
       init_chunk_ZZKFCQSP();
-      init_chunk_IMEAISCQ();
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_VXCJNDUG();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy16 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -26864,9 +26873,9 @@ var Corex = (() => {
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_BYLQVWJG();
+      init_chunk_B7UVPCXR();
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy17 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -27901,7 +27910,7 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -28341,7 +28350,7 @@ var Corex = (() => {
     "../priv/static/pin-input.mjs"() {
       "use strict";
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
       getRootId14 = (ctx) => {
@@ -28996,8 +29005,8 @@ var Corex = (() => {
     "../priv/static/radio-group.mjs"() {
       "use strict";
       init_chunk_MV633JPN();
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -29842,12 +29851,12 @@ var Corex = (() => {
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_WAY74VD3();
-      init_chunk_IMEAISCQ();
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_7ZKQLYA7();
+      init_chunk_VXCJNDUG();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy21 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -31263,7 +31272,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -31746,8 +31755,8 @@ var Corex = (() => {
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_KF3PY6Q6();
-      init_chunk_ZOODJA3P();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
       getRootId18 = (ctx) => {
@@ -32269,7 +32278,7 @@ var Corex = (() => {
     "../priv/static/tabs.mjs"() {
       "use strict";
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -32923,10 +32932,10 @@ var Corex = (() => {
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_BYLQVWJG();
-      init_chunk_MYBRVHPZ();
+      init_chunk_B7UVPCXR();
+      init_chunk_OUU6AXP5();
       init_chunk_MV633JPN();
-      init_chunk_ZOODJA3P();
+      init_chunk_SNFXM6OQ();
       anatomy25 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -33429,8 +33438,8 @@ var Corex = (() => {
         }));
       },
       subscribe(fn) {
-        const store = prop("store");
-        return store.subscribe(() => fn(context.get("toasts")));
+        const store2 = prop("store");
+        return store2.subscribe(() => fn(context.get("toasts")));
       }
     };
   }
@@ -33771,7 +33780,7 @@ var Corex = (() => {
   function createToastGroup(container, options) {
     var _a, _b, _c;
     const groupId = (_a = options == null ? void 0 : options.id) != null ? _a : generateId(container, "toast");
-    const store = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
+    const store2 = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
       placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom",
       overlap: options == null ? void 0 : options.overlap,
       max: options == null ? void 0 : options.max,
@@ -33779,13 +33788,13 @@ var Corex = (() => {
       offsets: options == null ? void 0 : options.offsets,
       pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
     });
-    const group2 = new ToastGroup(container, { id: groupId, store });
+    const group2 = new ToastGroup(container, { id: groupId, store: store2 });
     group2.init();
     toastGroups.set(groupId, group2);
-    toastStores.set(groupId, store);
+    toastStores.set(groupId, store2);
     container.dataset.toastGroup = "true";
     container.dataset.toastGroupId = groupId;
-    return { group: group2, store };
+    return { group: group2, store: store2 };
   }
   function getToastStore(groupId) {
     if (groupId) return toastStores.get(groupId);
@@ -33798,10 +33807,10 @@ var Corex = (() => {
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_MYBRVHPZ();
-      init_chunk_B6KPIA33();
-      init_chunk_7UNOLQU5();
-      init_chunk_ZOODJA3P();
+      init_chunk_OUU6AXP5();
+      init_chunk_EV6LXBMY();
+      init_chunk_YCAWAEF3();
+      init_chunk_SNFXM6OQ();
       anatomy26 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -33951,9 +33960,9 @@ var Corex = (() => {
           },
           effects: {
             subscribeToStore({ context, prop }) {
-              const store = prop("store");
-              context.set("toasts", store.getVisibleToasts());
-              return store.subscribe((toast) => {
+              const store2 = prop("store");
+              context.set("toasts", store2.getVisibleToasts());
+              return store2.subscribe((toast) => {
                 if (toast.dismiss) {
                   context.set("toasts", (prev2) => prev2.filter((t2) => t2.id !== toast.id));
                   return;
@@ -34522,16 +34531,16 @@ var Corex = (() => {
             offsets: parseOffsets(getString(el, "offset")),
             pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
           });
-          const store = getToastStore(this.groupId);
+          const store2 = getToastStore(this.groupId);
           const flashInfo = el.getAttribute("data-flash-info");
           const flashInfoTitle = el.getAttribute("data-flash-info-title");
           const flashError = el.getAttribute("data-flash-error");
           const flashErrorTitle = el.getAttribute("data-flash-error-title");
           const flashInfoDuration = el.getAttribute("data-flash-info-duration");
           const flashErrorDuration = el.getAttribute("data-flash-error-duration");
-          if (store && flashInfo) {
+          if (store2 && flashInfo) {
             try {
-              store.create({
+              store2.create({
                 title: flashInfoTitle || "Success",
                 description: flashInfo,
                 type: "info",
@@ -34542,9 +34551,9 @@ var Corex = (() => {
               console.error("Failed to create flash info toast:", error);
             }
           }
-          if (store && flashError) {
+          if (store2 && flashError) {
             try {
-              store.create({
+              store2.create({
                 title: flashErrorTitle || "Error",
                 description: flashError,
                 type: "error",
@@ -34558,10 +34567,10 @@ var Corex = (() => {
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("toast-create", (payload) => {
-              const store2 = getToastStore(payload.groupId || this.groupId);
-              if (!store2) return;
+              const store22 = getToastStore(payload.groupId || this.groupId);
+              if (!store22) return;
               try {
-                store2.create({
+                store22.create({
                   title: payload.title,
                   description: payload.description,
                   type: payload.type || "info",
@@ -34575,10 +34584,10 @@ var Corex = (() => {
           );
           this.handlers.push(
             this.handleEvent("toast-update", (payload) => {
-              const store2 = getToastStore(payload.groupId || this.groupId);
-              if (!store2) return;
+              const store22 = getToastStore(payload.groupId || this.groupId);
+              if (!store22) return;
               try {
-                store2.update(payload.id, {
+                store22.update(payload.id, {
                   title: payload.title,
                   description: payload.description,
                   type: payload.type
@@ -34590,10 +34599,10 @@ var Corex = (() => {
           );
           this.handlers.push(
             this.handleEvent("toast-dismiss", (payload) => {
-              const store2 = getToastStore(payload.groupId || this.groupId);
-              if (!store2) return;
+              const store22 = getToastStore(payload.groupId || this.groupId);
+              if (!store22) return;
               try {
-                store2.dismiss(payload.id);
+                store22.dismiss(payload.id);
               } catch (error) {
                 console.error("Failed to dismiss toast:", error);
               }
@@ -34601,10 +34610,10 @@ var Corex = (() => {
           );
           el.addEventListener("toast:create", (event) => {
             const { detail } = event;
-            const store2 = getToastStore(detail.groupId || this.groupId);
-            if (!store2) return;
+            const store22 = getToastStore(detail.groupId || this.groupId);
+            if (!store22) return;
             try {
-              store2.create({
+              store22.create({
                 title: detail.title,
                 description: detail.description,
                 type: detail.type || "info",
@@ -34627,12 +34636,715 @@ var Corex = (() => {
     }
   });
 
+  // ../priv/static/tooltip.mjs
+  var tooltip_exports = {};
+  __export(tooltip_exports, {
+    Tooltip: () => TooltipHook
+  });
+  function createStore(initialState, compare = Object.is) {
+    let state2 = __spreadValues({}, initialState);
+    const listeners = /* @__PURE__ */ new Set();
+    const subscribe2 = (listener) => {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    };
+    const publish = () => {
+      listeners.forEach((listener) => listener());
+    };
+    const get = (key) => {
+      return state2[key];
+    };
+    const set = (key, value) => {
+      if (!compare(state2[key], value)) {
+        state2[key] = value;
+        publish();
+      }
+    };
+    const update = (updates) => {
+      let hasChanges = false;
+      for (const key in updates) {
+        const value = updates[key];
+        if (value !== void 0 && !compare(state2[key], value)) {
+          state2[key] = value;
+          hasChanges = true;
+        }
+      }
+      if (hasChanges) {
+        publish();
+      }
+    };
+    const snapshot2 = () => __spreadValues({}, state2);
+    return {
+      subscribe: subscribe2,
+      get,
+      set,
+      update,
+      snapshot: snapshot2
+    };
+  }
+  function connect27(service, normalize) {
+    const { state: state2, context, send, scope, prop, event: _event } = service;
+    const id = prop("id");
+    const hasAriaLabel = !!prop("aria-label");
+    const open = state2.matches("open", "closing");
+    const triggerId = getTriggerId10(scope);
+    const contentId = getContentId11(scope);
+    const disabled = prop("disabled");
+    const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
+      placement: context.get("currentPlacement")
+    }));
+    return {
+      open,
+      setOpen(nextOpen) {
+        const open2 = state2.matches("open", "closing");
+        if (open2 === nextOpen) return;
+        send({ type: nextOpen ? "open" : "close" });
+      },
+      reposition(options = {}) {
+        send({ type: "positioning.set", options });
+      },
+      getTriggerProps() {
+        return normalize.button(__spreadProps(__spreadValues({}, parts27.trigger.attrs), {
+          id: triggerId,
+          dir: prop("dir"),
+          "data-expanded": dataAttr(open),
+          "data-state": open ? "open" : "closed",
+          "aria-describedby": open ? contentId : void 0,
+          onClick(event) {
+            if (event.defaultPrevented) return;
+            if (disabled) return;
+            if (!prop("closeOnClick")) return;
+            send({ type: "close", src: "trigger.click" });
+          },
+          onFocus(event) {
+            queueMicrotask(() => {
+              if (event.defaultPrevented) return;
+              if (disabled) return;
+              if (_event.src === "trigger.pointerdown") return;
+              if (!isFocusVisible()) return;
+              send({ type: "open", src: "trigger.focus" });
+            });
+          },
+          onBlur(event) {
+            if (event.defaultPrevented) return;
+            if (disabled) return;
+            if (id === store.get("id")) {
+              send({ type: "close", src: "trigger.blur" });
+            }
+          },
+          onPointerDown(event) {
+            if (event.defaultPrevented) return;
+            if (disabled) return;
+            if (!isLeftClick(event)) return;
+            if (!prop("closeOnPointerDown")) return;
+            if (id === store.get("id")) {
+              send({ type: "close", src: "trigger.pointerdown" });
+            }
+          },
+          onPointerMove(event) {
+            if (event.defaultPrevented) return;
+            if (disabled) return;
+            if (event.pointerType === "touch") return;
+            send({ type: "pointer.move" });
+          },
+          onPointerOver(event) {
+            if (event.defaultPrevented) return;
+            if (disabled) return;
+            if (event.pointerType === "touch") return;
+            send({ type: "pointer.move" });
+          },
+          onPointerLeave() {
+            if (disabled) return;
+            send({ type: "pointer.leave" });
+          },
+          onPointerCancel() {
+            if (disabled) return;
+            send({ type: "pointer.leave" });
+          }
+        }));
+      },
+      getArrowProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getArrowId2(scope)
+        }, parts27.arrow.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.arrow
+        }));
+      },
+      getArrowTipProps() {
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.arrowTip.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.arrowTip
+        }));
+      },
+      getPositionerProps() {
+        return normalize.element(__spreadProps(__spreadValues({
+          id: getPositionerId8(scope)
+        }, parts27.positioner.attrs), {
+          dir: prop("dir"),
+          style: popperStyles.floating
+        }));
+      },
+      getContentProps() {
+        const isCurrentTooltip = store.get("id") === id;
+        const isPrevTooltip = store.get("prevId") === id;
+        const instant = store.get("instant") && (open && isCurrentTooltip || isPrevTooltip);
+        return normalize.element(__spreadProps(__spreadValues({}, parts27.content.attrs), {
+          dir: prop("dir"),
+          hidden: !open,
+          "data-state": open ? "open" : "closed",
+          "data-instant": dataAttr(instant),
+          role: hasAriaLabel ? void 0 : "tooltip",
+          id: hasAriaLabel ? void 0 : contentId,
+          "data-placement": context.get("currentPlacement"),
+          onPointerEnter() {
+            send({ type: "content.pointer.move" });
+          },
+          onPointerLeave() {
+            send({ type: "content.pointer.leave" });
+          },
+          style: {
+            pointerEvents: prop("interactive") ? "auto" : "none"
+          }
+        }));
+      }
+    };
+  }
+  function getCloseDelay(el) {
+    const interactive = getBoolean(el, "interactive");
+    const raw = getNumber(el, "closeDelay");
+    if (interactive && (raw === void 0 || raw === 0)) return 400;
+    return raw;
+  }
+  var anatomy27, parts27, getTriggerId10, getContentId11, getArrowId2, getPositionerId8, getTriggerEl9, getPositionerEl8, store, and10, not11, machine27, Tooltip, PLACEMENTS, TooltipHook;
+  var init_tooltip = __esm({
+    "../priv/static/tooltip.mjs"() {
+      "use strict";
+      init_chunk_VXCJNDUG();
+      init_chunk_IAPTZYKE();
+      init_chunk_SNFXM6OQ();
+      anatomy27 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
+      parts27 = anatomy27.build();
+      getTriggerId10 = (scope) => {
+        var _a, _b;
+        return (_b = (_a = scope.ids) == null ? void 0 : _a.trigger) != null ? _b : `tooltip:${scope.id}:trigger`;
+      };
+      getContentId11 = (scope) => {
+        var _a, _b;
+        return (_b = (_a = scope.ids) == null ? void 0 : _a.content) != null ? _b : `tooltip:${scope.id}:content`;
+      };
+      getArrowId2 = (scope) => {
+        var _a, _b;
+        return (_b = (_a = scope.ids) == null ? void 0 : _a.arrow) != null ? _b : `tooltip:${scope.id}:arrow`;
+      };
+      getPositionerId8 = (scope) => {
+        var _a, _b;
+        return (_b = (_a = scope.ids) == null ? void 0 : _a.positioner) != null ? _b : `tooltip:${scope.id}:popper`;
+      };
+      getTriggerEl9 = (scope) => scope.getById(getTriggerId10(scope));
+      getPositionerEl8 = (scope) => scope.getById(getPositionerId8(scope));
+      store = createStore({
+        id: null,
+        prevId: null,
+        instant: false
+      });
+      ({ and: and10, not: not11 } = createGuards());
+      machine27 = createMachine({
+        initialState: ({ prop }) => {
+          const open = prop("open") || prop("defaultOpen");
+          return open ? "open" : "closed";
+        },
+        props({ props }) {
+          var _a, _b;
+          ensureProps(props, ["id"]);
+          const closeOnClick = (_a = props.closeOnClick) != null ? _a : true;
+          const closeOnPointerDown = (_b = props.closeOnPointerDown) != null ? _b : closeOnClick;
+          return __spreadProps(__spreadValues({
+            openDelay: 400,
+            closeDelay: 150,
+            closeOnEscape: true,
+            interactive: false,
+            closeOnScroll: true,
+            disabled: false
+          }, props), {
+            closeOnPointerDown,
+            closeOnClick,
+            positioning: __spreadValues({
+              placement: "bottom"
+            }, props.positioning)
+          });
+        },
+        effects: ["trackFocusVisible", "trackStore"],
+        context: ({ bindable: bindable2 }) => ({
+          currentPlacement: bindable2(() => ({ defaultValue: void 0 })),
+          hasPointerMoveOpened: bindable2(() => ({ defaultValue: false }))
+        }),
+        watch({ track, action, prop }) {
+          track([() => prop("disabled")], () => {
+            action(["closeIfDisabled"]);
+          });
+          track([() => prop("open")], () => {
+            action(["toggleVisibility"]);
+          });
+        },
+        states: {
+          closed: {
+            entry: ["clearGlobalId"],
+            on: {
+              "controlled.open": {
+                target: "open"
+              },
+              open: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["invokeOnOpen"]
+                }
+              ],
+              "pointer.leave": {
+                actions: ["clearPointerMoveOpened"]
+              },
+              "pointer.move": [
+                {
+                  guard: and10("noVisibleTooltip", not11("hasPointerMoveOpened")),
+                  target: "opening"
+                },
+                {
+                  guard: not11("hasPointerMoveOpened"),
+                  target: "open",
+                  actions: ["setPointerMoveOpened", "invokeOnOpen"]
+                }
+              ]
+            }
+          },
+          opening: {
+            effects: ["trackScroll", "trackPointerlockChange", "waitForOpenDelay"],
+            on: {
+              "after.openDelay": [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["setPointerMoveOpened", "invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["setPointerMoveOpened", "invokeOnOpen"]
+                }
+              ],
+              "controlled.open": {
+                target: "open"
+              },
+              "controlled.close": {
+                target: "closed"
+              },
+              open: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnOpen"]
+                },
+                {
+                  target: "open",
+                  actions: ["invokeOnOpen"]
+                }
+              ],
+              "pointer.leave": [
+                {
+                  guard: "isOpenControlled",
+                  // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
+                  actions: ["clearPointerMoveOpened", "invokeOnClose", "toggleVisibility"]
+                },
+                {
+                  target: "closed",
+                  actions: ["clearPointerMoveOpened", "invokeOnClose"]
+                }
+              ],
+              close: [
+                {
+                  guard: "isOpenControlled",
+                  // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
+                  actions: ["invokeOnClose", "toggleVisibility"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ]
+            }
+          },
+          open: {
+            effects: ["trackEscapeKey", "trackScroll", "trackPointerlockChange", "trackPositioning"],
+            entry: ["setGlobalId"],
+            on: {
+              "controlled.close": {
+                target: "closed"
+              },
+              close: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "pointer.leave": [
+                {
+                  guard: "isVisible",
+                  target: "closing",
+                  actions: ["clearPointerMoveOpened"]
+                },
+                // == group ==
+                {
+                  guard: "isOpenControlled",
+                  actions: ["clearPointerMoveOpened", "invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["clearPointerMoveOpened", "invokeOnClose"]
+                }
+              ],
+              "content.pointer.leave": {
+                guard: "isInteractive",
+                target: "closing"
+              },
+              "positioning.set": {
+                actions: ["reposition"]
+              }
+            }
+          },
+          closing: {
+            effects: ["trackPositioning", "waitForCloseDelay"],
+            on: {
+              "after.closeDelay": [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "controlled.close": {
+                target: "closed"
+              },
+              "controlled.open": {
+                target: "open"
+              },
+              close: [
+                {
+                  guard: "isOpenControlled",
+                  actions: ["invokeOnClose"]
+                },
+                {
+                  target: "closed",
+                  actions: ["invokeOnClose"]
+                }
+              ],
+              "pointer.move": [
+                {
+                  guard: "isOpenControlled",
+                  // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
+                  actions: ["setPointerMoveOpened", "invokeOnOpen", "toggleVisibility"]
+                },
+                {
+                  target: "open",
+                  actions: ["setPointerMoveOpened", "invokeOnOpen"]
+                }
+              ],
+              "content.pointer.move": {
+                guard: "isInteractive",
+                target: "open"
+              },
+              "positioning.set": {
+                actions: ["reposition"]
+              }
+            }
+          }
+        },
+        implementations: {
+          guards: {
+            noVisibleTooltip: () => store.get("id") === null,
+            isVisible: ({ prop }) => prop("id") === store.get("id"),
+            isInteractive: ({ prop }) => !!prop("interactive"),
+            hasPointerMoveOpened: ({ context }) => context.get("hasPointerMoveOpened"),
+            isOpenControlled: ({ prop }) => prop("open") !== void 0
+          },
+          actions: {
+            setGlobalId: ({ prop }) => {
+              const prevId = store.get("id");
+              const isInstant = prevId !== null && prevId !== prop("id");
+              store.update({ id: prop("id"), prevId: isInstant ? prevId : null, instant: isInstant });
+            },
+            clearGlobalId: ({ prop }) => {
+              if (prop("id") === store.get("id")) {
+                store.update({ id: null, prevId: null, instant: false });
+              }
+            },
+            invokeOnOpen: ({ prop }) => {
+              var _a;
+              (_a = prop("onOpenChange")) == null ? void 0 : _a({ open: true });
+            },
+            invokeOnClose: ({ prop }) => {
+              var _a;
+              (_a = prop("onOpenChange")) == null ? void 0 : _a({ open: false });
+            },
+            closeIfDisabled: ({ prop, send }) => {
+              if (!prop("disabled")) return;
+              send({ type: "close", src: "disabled.change" });
+            },
+            reposition: ({ context, event, prop, scope }) => {
+              if (event.type !== "positioning.set") return;
+              const getPositionerEl22 = () => getPositionerEl8(scope);
+              return getPlacement(getTriggerEl9(scope), getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+                defer: true,
+                listeners: false,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            toggleVisibility: ({ prop, event, send }) => {
+              queueMicrotask(() => {
+                send({
+                  type: prop("open") ? "controlled.open" : "controlled.close",
+                  previousEvent: event
+                });
+              });
+            },
+            setPointerMoveOpened: ({ context }) => {
+              context.set("hasPointerMoveOpened", true);
+            },
+            clearPointerMoveOpened: ({ context }) => {
+              context.set("hasPointerMoveOpened", false);
+            }
+          },
+          effects: {
+            trackFocusVisible: ({ scope }) => {
+              var _a;
+              return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
+            },
+            trackPositioning: ({ context, prop, scope }) => {
+              if (!context.get("currentPlacement")) {
+                context.set("currentPlacement", prop("positioning").placement);
+              }
+              const getPositionerEl22 = () => getPositionerEl8(scope);
+              return getPlacement(getTriggerEl9(scope), getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
+                defer: true,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            trackPointerlockChange: ({ send, scope }) => {
+              const doc = scope.getDoc();
+              const onChange = () => send({ type: "close", src: "pointerlock:change" });
+              return addDomEvent(doc, "pointerlockchange", onChange, false);
+            },
+            trackScroll: ({ send, prop, scope }) => {
+              if (!prop("closeOnScroll")) return;
+              const triggerEl = getTriggerEl9(scope);
+              if (!triggerEl) return;
+              const overflowParents = getOverflowAncestors(triggerEl);
+              const cleanups = overflowParents.map((overflowParent) => {
+                const onScroll = () => {
+                  send({ type: "close", src: "scroll" });
+                };
+                return addDomEvent(overflowParent, "scroll", onScroll, {
+                  passive: true,
+                  capture: true
+                });
+              });
+              return () => {
+                cleanups.forEach((fn) => fn == null ? void 0 : fn());
+              };
+            },
+            trackStore: ({ prop, send }) => {
+              let cleanup;
+              queueMicrotask(() => {
+                cleanup = store.subscribe(() => {
+                  if (store.get("id") !== prop("id")) {
+                    send({ type: "close", src: "id.change" });
+                  }
+                });
+              });
+              return () => cleanup == null ? void 0 : cleanup();
+            },
+            trackEscapeKey: ({ send, prop }) => {
+              if (!prop("closeOnEscape")) return;
+              const onKeyDown = (event) => {
+                if (isComposingEvent(event)) return;
+                if (event.key !== "Escape") return;
+                event.stopPropagation();
+                send({ type: "close", src: "keydown.escape" });
+              };
+              return addDomEvent(document, "keydown", onKeyDown, true);
+            },
+            waitForOpenDelay: ({ send, prop }) => {
+              const id = setTimeout(() => {
+                send({ type: "after.openDelay" });
+              }, prop("openDelay"));
+              return () => clearTimeout(id);
+            },
+            waitForCloseDelay: ({ send, prop }) => {
+              const id = setTimeout(() => {
+                send({ type: "after.closeDelay" });
+              }, prop("closeDelay"));
+              return () => clearTimeout(id);
+            }
+          }
+        }
+      });
+      Tooltip = class extends Component {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        initMachine(props) {
+          return new VanillaMachine(machine27, props);
+        }
+        initApi() {
+          return connect27(this.machine.service, normalizeProps);
+        }
+        render() {
+          const rootEl = this.el;
+          const triggerEl = rootEl.querySelector(
+            '[data-scope="tooltip"][data-part="trigger"]'
+          );
+          if (triggerEl) this.spreadProps(triggerEl, this.api.getTriggerProps());
+          const positionerEl = rootEl.querySelector(
+            '[data-scope="tooltip"][data-part="positioner"]'
+          );
+          if (positionerEl) this.spreadProps(positionerEl, this.api.getPositionerProps());
+          const contentEl = rootEl.querySelector(
+            '[data-scope="tooltip"][data-part="content"]'
+          );
+          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          const arrowEl = rootEl.querySelector(
+            '[data-scope="tooltip"][data-part="arrow"]'
+          );
+          if (arrowEl) this.spreadProps(arrowEl, this.api.getArrowProps());
+          const arrowTipEl = rootEl.querySelector(
+            '[data-scope="tooltip"][data-part="arrow-tip"]'
+          );
+          if (arrowTipEl) this.spreadProps(arrowTipEl, this.api.getArrowTipProps());
+        }
+      };
+      PLACEMENTS = [
+        "top",
+        "top-start",
+        "top-end",
+        "bottom",
+        "bottom-start",
+        "bottom-end",
+        "left",
+        "left-start",
+        "left-end",
+        "right",
+        "right-start",
+        "right-end"
+      ];
+      TooltipHook = {
+        mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const placement = getString(el, "placement", PLACEMENTS);
+          const positioning = placement ? { placement } : void 0;
+          const tooltip = new Tooltip(el, __spreadProps(__spreadValues({
+            id: el.id
+          }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+            disabled: getBoolean(el, "disabled"),
+            dir: getString(el, "dir", ["ltr", "rtl"]),
+            openDelay: getNumber(el, "openDelay"),
+            closeDelay: getCloseDelay(el),
+            positioning,
+            closeOnEscape: getBoolean(el, "closeOnEscape"),
+            closeOnClick: getBoolean(el, "closeOnClick"),
+            closeOnPointerDown: getBoolean(el, "closeOnPointerDown"),
+            closeOnScroll: getBoolean(el, "closeOnScroll"),
+            interactive: getBoolean(el, "interactive"),
+            onOpenChange: (details) => {
+              const eventName = getString(el, "onOpenChange");
+              if (eventName && this.liveSocket.main.isConnected()) {
+                pushEvent(eventName, {
+                  id: el.id,
+                  open: details.open
+                });
+              }
+              const eventNameClient = getString(el, "onOpenChangeClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      open: details.open
+                    }
+                  })
+                );
+              }
+            }
+          }));
+          tooltip.init();
+          this.tooltip = tooltip;
+          this.onSetOpen = (event) => {
+            const { open } = event.detail;
+            tooltip.api.setOpen(open);
+          };
+          el.addEventListener("phx:tooltip:set-open", this.onSetOpen);
+          this.handlers = [];
+          this.handlers.push(
+            this.handleEvent(
+              "tooltip_set_open",
+              (payload) => {
+                const targetId = payload.tooltip_id;
+                if (targetId && targetId !== el.id) return;
+                tooltip.api.setOpen(payload.open);
+              }
+            )
+          );
+        },
+        updated() {
+          var _a;
+          const placement = getString(this.el, "placement", PLACEMENTS);
+          const positioning = placement ? { placement } : void 0;
+          (_a = this.tooltip) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+            id: this.el.id
+          }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
+            disabled: getBoolean(this.el, "disabled"),
+            dir: getString(this.el, "dir", ["ltr", "rtl"]),
+            openDelay: getNumber(this.el, "openDelay"),
+            closeDelay: getCloseDelay(this.el),
+            positioning,
+            closeOnEscape: getBoolean(this.el, "closeOnEscape"),
+            closeOnClick: getBoolean(this.el, "closeOnClick"),
+            closeOnPointerDown: getBoolean(this.el, "closeOnPointerDown"),
+            closeOnScroll: getBoolean(this.el, "closeOnScroll"),
+            interactive: getBoolean(this.el, "interactive")
+          }));
+        },
+        destroyed() {
+          var _a;
+          if (this.onSetOpen) {
+            this.el.removeEventListener("phx:tooltip:set-open", this.onSetOpen);
+          }
+          if (this.handlers) {
+            for (const handler of this.handlers) {
+              this.removeHandleEvent(handler);
+            }
+          }
+          (_a = this.tooltip) == null ? void 0 : _a.destroy();
+        }
+      };
+    }
+  });
+
   // ../priv/static/toggle-group.mjs
   var toggle_group_exports = {};
   __export(toggle_group_exports, {
     ToggleGroup: () => ToggleGroupHook
   });
-  function connect27(service, normalize) {
+  function connect28(service, normalize) {
     const { context, send, prop, scope } = service;
     const value = context.get("value");
     const disabled = prop("disabled");
@@ -34654,7 +35366,7 @@ var Corex = (() => {
         send({ type: "VALUE.SET", value: value2 });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts27.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts28.root.attrs), {
           id: getRootId22(scope),
           dir: prop("dir"),
           role: isSingle ? "radiogroup" : "group",
@@ -34686,7 +35398,7 @@ var Corex = (() => {
       getItemProps(props) {
         const itemState = getItemState(props);
         const rovingTabIndex = itemState.focused ? 0 : -1;
-        return normalize.button(__spreadProps(__spreadValues({}, parts27.item.attrs), {
+        return normalize.button(__spreadProps(__spreadValues({}, parts28.item.attrs), {
           id: itemState.id,
           type: "button",
           "data-ownedby": getRootId22(scope),
@@ -34757,13 +35469,13 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy27, parts27, getRootId22, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not11, and10, machine27, ToggleGroup, ToggleGroupHook;
+  var anatomy28, parts28, getRootId22, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not12, and11, machine28, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_ZOODJA3P();
-      anatomy27 = createAnatomy("toggle-group").parts("root", "item");
-      parts27 = anatomy27.build();
+      init_chunk_SNFXM6OQ();
+      anatomy28 = createAnatomy("toggle-group").parts("root", "item");
+      parts28 = anatomy28.build();
       getRootId22 = (ctx) => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.root) != null ? _b : `toggle-group:${ctx.id}`;
@@ -34782,8 +35494,8 @@ var Corex = (() => {
       getLastEl2 = (ctx) => last(getElements3(ctx));
       getNextEl2 = (ctx, id, loopFocus) => nextById(getElements3(ctx), id, loopFocus);
       getPrevEl2 = (ctx, id, loopFocus) => prevById(getElements3(ctx), id, loopFocus);
-      ({ not: not11, and: and10 } = createGuards());
-      machine27 = createMachine({
+      ({ not: not12, and: and11 } = createGuards());
+      machine28 = createMachine({
         props({ props }) {
           return __spreadValues({
             defaultValue: [],
@@ -34840,7 +35552,7 @@ var Corex = (() => {
             on: {
               "ROOT.FOCUS": {
                 target: "focused",
-                guard: not11(and10("isClickFocus", "isTabbingBackward")),
+                guard: not12(and11("isClickFocus", "isTabbingBackward")),
                 actions: ["focusFirstToggle", "clearClickFocus"]
               },
               "TOGGLE.FOCUS": {
@@ -34872,7 +35584,7 @@ var Corex = (() => {
               },
               "TOGGLE.SHIFT_TAB": [
                 {
-                  guard: not11("isFirstToggleFocused"),
+                  guard: not12("isFirstToggleFocused"),
                   target: "idle",
                   actions: ["setIsTabbingBackward"]
                 },
@@ -34963,10 +35675,10 @@ var Corex = (() => {
       ToggleGroup = class extends Component {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine27, props);
+          return new VanillaMachine(machine28, props);
         }
         initApi() {
-          return connect27(this.machine.service, normalizeProps);
+          return connect28(this.machine.service, normalizeProps);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -35110,7 +35822,7 @@ var Corex = (() => {
     });
     return map2;
   }
-  function connect28(service, normalize) {
+  function connect29(service, normalize) {
     const { context, scope, computed, prop, send } = service;
     const collection22 = prop("collection");
     const translations = prop("translations");
@@ -35213,19 +35925,19 @@ var Corex = (() => {
         send({ type: "RENAME.CANCEL" });
       },
       getRootProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.root.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.root.attrs), {
           id: getRootId23(scope),
           dir: prop("dir")
         }));
       },
       getLabelProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.label.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.label.attrs), {
           id: getLabelId15(scope),
           dir: prop("dir")
         }));
       },
       getTreeProps() {
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.tree.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.tree.attrs), {
           id: getTreeId(scope),
           dir: prop("dir"),
           role: "tree",
@@ -35334,7 +36046,7 @@ var Corex = (() => {
       getNodeState,
       getItemProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.item.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.item.attrs), {
           id: nodeState.id,
           dir: prop("dir"),
           "data-ownedby": getTreeId(scope),
@@ -35373,7 +36085,7 @@ var Corex = (() => {
       },
       getItemTextProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.itemText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.itemText.attrs), {
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
           "data-focus": dataAttr(itemState.focused)
@@ -35381,7 +36093,7 @@ var Corex = (() => {
       },
       getItemIndicatorProps(props) {
         const itemState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.itemIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.itemIndicator.attrs), {
           "aria-hidden": true,
           "data-disabled": dataAttr(itemState.disabled),
           "data-selected": dataAttr(itemState.selected),
@@ -35391,7 +36103,7 @@ var Corex = (() => {
       },
       getBranchProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branch.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branch.attrs), {
           "data-depth": nodeState.depth,
           dir: prop("dir"),
           "data-branch": nodeState.value,
@@ -35415,7 +36127,7 @@ var Corex = (() => {
       },
       getBranchIndicatorProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branchIndicator.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchIndicator.attrs), {
           "aria-hidden": true,
           "data-state": nodeState.expanded ? "open" : "closed",
           "data-disabled": dataAttr(nodeState.disabled),
@@ -35426,7 +36138,7 @@ var Corex = (() => {
       },
       getBranchTriggerProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branchTrigger.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchTrigger.attrs), {
           role: "button",
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
@@ -35443,7 +36155,7 @@ var Corex = (() => {
       },
       getBranchControlProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branchControl.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchControl.attrs), {
           role: "button",
           id: nodeState.id,
           dir: prop("dir"),
@@ -35475,7 +36187,7 @@ var Corex = (() => {
       },
       getBranchTextProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branchText.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchText.attrs), {
           dir: prop("dir"),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -35484,7 +36196,7 @@ var Corex = (() => {
       },
       getBranchContentProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branchContent.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchContent.attrs), {
           role: "group",
           dir: prop("dir"),
           "data-state": nodeState.expanded ? "open" : "closed",
@@ -35496,14 +36208,14 @@ var Corex = (() => {
       },
       getBranchIndentGuideProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.branchIndentGuide.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.branchIndentGuide.attrs), {
           "data-depth": nodeState.depth
         }));
       },
       getNodeCheckboxProps(props) {
         const nodeState = getNodeState(props);
         const checkedState = nodeState.checked;
-        return normalize.element(__spreadProps(__spreadValues({}, parts28.nodeCheckbox.attrs), {
+        return normalize.element(__spreadProps(__spreadValues({}, parts29.nodeCheckbox.attrs), {
           tabIndex: -1,
           role: "checkbox",
           "data-state": checkedState === true ? "checked" : checkedState === false ? "unchecked" : "indeterminate",
@@ -35522,7 +36234,7 @@ var Corex = (() => {
       },
       getNodeRenameInputProps(props) {
         const nodeState = getNodeState(props);
-        return normalize.input(__spreadProps(__spreadValues({}, parts28.nodeRenameInput.attrs), {
+        return normalize.input(__spreadProps(__spreadValues({}, parts29.nodeRenameInput.attrs), {
           id: getRenameInputId(scope, nodeState.value),
           type: "text",
           "aria-label": translations.renameInputLabel,
@@ -35682,13 +36394,13 @@ var Corex = (() => {
     }
     return root;
   }
-  var anatomy28, parts28, collection4, getRootId23, getLabelId15, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and11, machine28, TreeView, TreeViewHook;
+  var anatomy29, parts29, collection4, getRootId23, getLabelId15, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and12, machine29, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_WAY74VD3();
-      init_chunk_ZOODJA3P();
-      anatomy28 = createAnatomy("tree-view").parts(
+      init_chunk_7ZKQLYA7();
+      init_chunk_SNFXM6OQ();
+      anatomy29 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
         "branchControl",
@@ -35705,7 +36417,7 @@ var Corex = (() => {
         "root",
         "tree"
       );
-      parts28 = anatomy28.build();
+      parts29 = anatomy29.build();
       collection4 = (options) => {
         return new TreeCollection(options);
       };
@@ -35737,8 +36449,8 @@ var Corex = (() => {
       getRenameInputEl = (ctx, value) => {
         return ctx.getById(getRenameInputId(ctx, value));
       };
-      ({ and: and11 } = createGuards());
-      machine28 = createMachine({
+      ({ and: and12 } = createGuards());
+      machine29 = createMachine({
         props({ props }) {
           return __spreadProps(__spreadValues({
             selectionMode: "single",
@@ -35865,7 +36577,7 @@ var Corex = (() => {
           },
           "SELECTED.ALL": [
             {
-              guard: and11("isMultipleSelection", "moveFocus"),
+              guard: and12("isMultipleSelection", "moveFocus"),
               actions: ["selectAllNodes", "focusTreeLastNode"]
             },
             {
@@ -35896,7 +36608,7 @@ var Corex = (() => {
           },
           "NODE.ARROW_DOWN": [
             {
-              guard: and11("isShiftKey", "isMultipleSelection"),
+              guard: and12("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreeNextNode", "extendSelectionToNextNode"]
             },
             {
@@ -35905,7 +36617,7 @@ var Corex = (() => {
           ],
           "NODE.ARROW_UP": [
             {
-              guard: and11("isShiftKey", "isMultipleSelection"),
+              guard: and12("isShiftKey", "isMultipleSelection"),
               actions: ["focusTreePrevNode", "extendSelectionToPrevNode"]
             },
             {
@@ -35926,7 +36638,7 @@ var Corex = (() => {
           ],
           "BRANCH_NODE.ARROW_RIGHT": [
             {
-              guard: and11("isBranchFocused", "isBranchExpanded"),
+              guard: and12("isBranchFocused", "isBranchExpanded"),
               actions: ["focusBranchFirstNode"]
             },
             {
@@ -35938,7 +36650,7 @@ var Corex = (() => {
           },
           "NODE.HOME": [
             {
-              guard: and11("isShiftKey", "isMultipleSelection"),
+              guard: and12("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToFirstNode", "focusTreeFirstNode"]
             },
             {
@@ -35947,7 +36659,7 @@ var Corex = (() => {
           ],
           "NODE.END": [
             {
-              guard: and11("isShiftKey", "isMultipleSelection"),
+              guard: and12("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToLastNode", "focusTreeLastNode"]
             },
             {
@@ -35956,11 +36668,11 @@ var Corex = (() => {
           ],
           "NODE.CLICK": [
             {
-              guard: and11("isCtrlKey", "isMultipleSelection"),
+              guard: and12("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and11("isShiftKey", "isMultipleSelection"),
+              guard: and12("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -35969,11 +36681,11 @@ var Corex = (() => {
           ],
           "BRANCH_NODE.CLICK": [
             {
-              guard: and11("isCtrlKey", "isMultipleSelection"),
+              guard: and12("isCtrlKey", "isMultipleSelection"),
               actions: ["toggleNodeSelection"]
             },
             {
-              guard: and11("isShiftKey", "isMultipleSelection"),
+              guard: and12("isShiftKey", "isMultipleSelection"),
               actions: ["extendSelectionToNode"]
             },
             {
@@ -36378,10 +37090,10 @@ var Corex = (() => {
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine28, __spreadValues({}, props));
+          return new VanillaMachine(machine29, __spreadValues({}, props));
         }
         initApi() {
-          return connect28(this.machine.service, normalizeProps);
+          return connect29(this.machine.service, normalizeProps);
         }
         getNodeAt(indexPath) {
           var _a;
@@ -36645,6 +37357,7 @@ var Corex = (() => {
     Tabs: createLazyHook(() => Promise.resolve().then(() => (init_tabs(), tabs_exports)), "Tabs"),
     Timer: createLazyHook(() => Promise.resolve().then(() => (init_timer(), timer_exports)), "Timer"),
     Toast: createLazyHook(() => Promise.resolve().then(() => (init_toast(), toast_exports)), "Toast"),
+    Tooltip: createLazyHook(() => Promise.resolve().then(() => (init_tooltip(), tooltip_exports)), "Tooltip"),
     ToggleGroup: createLazyHook(() => Promise.resolve().then(() => (init_toggle_group(), toggle_group_exports)), "ToggleGroup"),
     TreeView: createLazyHook(() => Promise.resolve().then(() => (init_tree_view(), tree_view_exports)), "TreeView")
   };

@@ -504,6 +504,7 @@ defmodule E2eWeb.Layouts do
       component_item("Navigate", "navigate", locale),
       component_item("Tabs", "tabs", locale),
       component_item("Timer", "timer", locale),
+      component_item("Tooltip", "tooltip", locale),
       component_item("Toast", "toast", locale),
       component_item("Toggle Group", "toggle-group", locale),
       component_item("Tree view", "tree-view", locale)

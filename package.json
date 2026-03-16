@@ -38,6 +38,7 @@
     "./tabs": "./priv/static/tabs.mjs",
     "./timer": "./priv/static/timer.mjs",
     "./toast": "./priv/static/toast.mjs",
+    "./tooltip": "./priv/static/tooltip.mjs",
     "./toggle-group": "./priv/static/toggle-group.mjs",
     "./tree-view": "./priv/static/tree-view.mjs"
   },
@@ -92,6 +93,7 @@
     "@zag-js/tabs": "^1.36.0",
     "@zag-js/timer": "^1.36.0",
     "@zag-js/toast": "^1.36.0",
+    "@zag-js/tooltip": "^1.36.0",
     "@zag-js/toggle-group": "^1.36.0",
     "@zag-js/tree-view": "^1.36.0",
     "@zag-js/types": "^1.36.0",

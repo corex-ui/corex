@@ -60,4 +60,16 @@ defmodule Corex.Collapsible.Anatomy do
             disabled: boolean()
           }
   end
+
+  defmodule Indicator do
+    @moduledoc false
+    defstruct [:id, :dir, :open, :disabled]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            open: boolean(),
+            disabled: boolean()
+          }
+  end
 end

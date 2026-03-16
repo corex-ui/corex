@@ -170,6 +170,7 @@ defmodule Corex.New.Single do
      "corex_design/components/switch.css": "assets/corex/components/switch.css",
      "corex_design/components/tabs.css": "assets/corex/components/tabs.css",
      "corex_design/components/timer.css": "assets/corex/components/timer.css",
+     "corex_design/components/tooltip.css": "assets/corex/components/tooltip.css",
      "corex_design/components/toast.css": "assets/corex/components/toast.css",
      "corex_design/components/toggle-group.css": "assets/corex/components/toggle-group.css",
      "corex_design/components/tree-view.css": "assets/corex/components/tree-view.css",

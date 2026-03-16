@@ -82,6 +82,9 @@ declare module "corex/timer" {
 declare module "corex/toast" {
   export const Toast: CorexHook;
 }
+declare module "corex/tooltip" {
+  export const Tooltip: CorexHook;
+}
 declare module "corex/toggle-group" {
   export const ToggleGroup: CorexHook;
 }

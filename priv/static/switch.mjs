@@ -1,7 +1,7 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-KF3PY6Q6.mjs";
+} from "./chunk-IAPTZYKE.mjs";
 import {
   Component,
   VanillaMachine,
@@ -20,7 +20,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-ZOODJA3P.mjs";
+} from "./chunk-SNFXM6OQ.mjs";
 
 // ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
