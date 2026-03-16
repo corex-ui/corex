@@ -168,7 +168,7 @@ defmodule Corex.New.Single do
      "corex_design/components/select.css": "assets/corex/components/select.css",
      "corex_design/components/signature-pad.css": "assets/corex/components/signature-pad.css",
      "corex_design/components/switch.css": "assets/corex/components/switch.css",
-     "corex_design/componesnts/tabs.css": "assets/corex/components/tabs.css",
+     "corex_design/components/tabs.css": "assets/corex/components/tabs.css",
      "corex_design/components/timer.css": "assets/corex/components/timer.css",
      "corex_design/components/tooltip.css": "assets/corex/components/tooltip.css",
      "corex_design/components/toast.css": "assets/corex/components/toast.css",
