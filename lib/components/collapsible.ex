@@ -200,18 +200,22 @@ defmodule Corex.Collapsible do
 
   attr(:rest, :global)
 
-  slot :trigger, required: true,
+  slot :trigger,
+    required: true,
     doc: "Trigger button content. Use :let={collapsible} to access open and disabled state." do
     attr(:class, :string, required: false)
   end
 
-  slot :content, required: true,
+  slot :content,
+    required: true,
     doc: "Expandable content. Use :let={collapsible} to access open and disabled state." do
     attr(:class, :string, required: false)
   end
 
-  slot :indicator, required: false,
-    doc: "Optional content after the trigger (e.g. chevron). Use :let={collapsible} for state. Target data-state with .state-open and .state-closed in CSS." do
+  slot :indicator,
+    required: false,
+    doc:
+      "Optional content after the trigger (e.g. chevron). Use :let={collapsible} for state. Target data-state with .state-open and .state-closed in CSS." do
     attr(:class, :string, required: false)
   end
 
