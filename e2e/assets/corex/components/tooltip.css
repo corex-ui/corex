@@ -1,11 +1,6 @@
 @import "../main.css";
 
 @layer components {
-
-  .tooltip [data-scope="tooltip"][data-part="trigger"] {
-  @apply ui-trigger;
-  }
-
   .tooltip [data-scope="tooltip"][data-part="positioner"] {
     z-index: 50;
     position: absolute;
@@ -26,7 +21,6 @@
     @apply ui-content;
 
     padding: var(--spacing-ui-padding);
-    padding-block: 0;
     max-width: var(--container-mini);
     position: relative;
     z-index: 1;
@@ -60,6 +54,7 @@
 
 @utility tooltip--* {
   [data-scope="tooltip"][data-part="content"] {
+    padding: --value(--spacing-ui-padding-*, [length]);
     max-width: --value(--container-ui-*, [length]);
     font-size: --value(--text-ui-*, [length]);
     line-height: --value(--text-ui-* --line-height, [length]);

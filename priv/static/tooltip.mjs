@@ -595,9 +595,7 @@ var Tooltip = class extends Component {
       '[data-scope="tooltip"][data-part="content"]'
     );
     if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
-    const arrowEl = rootEl.querySelector(
-      '[data-scope="tooltip"][data-part="arrow"]'
-    );
+    const arrowEl = rootEl.querySelector('[data-scope="tooltip"][data-part="arrow"]');
     if (arrowEl) this.spreadProps(arrowEl, this.api.getArrowProps());
     const arrowTipEl = rootEl.querySelector(
       '[data-scope="tooltip"][data-part="arrow-tip"]'
@@ -677,14 +675,11 @@ var TooltipHook = {
     el.addEventListener("phx:tooltip:set-open", this.onSetOpen);
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent(
-        "tooltip_set_open",
-        (payload) => {
-          const targetId = payload.tooltip_id;
-          if (targetId && targetId !== el.id) return;
-          tooltip.api.setOpen(payload.open);
-        }
-      )
+      this.handleEvent("tooltip_set_open", (payload) => {
+        const targetId = payload.tooltip_id;
+        if (targetId && targetId !== el.id) return;
+        tooltip.api.setOpen(payload.open);
+      })
     );
   },
   updated() {

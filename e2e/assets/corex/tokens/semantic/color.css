@@ -6,7 +6,6 @@
   --color-root: var(--theme-color-root);
   --color-root--border: var(--theme-color-root--border);
   --color-root--text: var(--theme-color-root--text);
-  --color-root--text-disabled: var(--theme-color-root--text-disabled);
   --color-root--muted: var(--theme-color-root--muted);
   --color-root--accent: var(--theme-color-root--accent);
   --color-root--brand: var(--theme-color-root--brand);
@@ -27,7 +26,6 @@
   --color-ui-active: var(--theme-color-ui-active);
   --color-ui--border: var(--theme-color-ui--border);
   --color-ui--text: var(--theme-color-ui--text);
-  --color-ui--text-disabled: var(--theme-color-ui--text-disabled);
   --color-ui--muted: var(--theme-color-ui--muted);
   --color-ui-accent: var(--theme-color-ui-accent);
   --color-ui-accent-hover: var(--theme-color-ui-accent-hover);

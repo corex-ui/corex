@@ -1,0 +1,19 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "@adobe/leonardo-contrast-colors": "^1.1.0",
+    "@tokens-studio/sd-transforms": "^2.0.3",
+    "sd-tailwindcss-transformer": "^2.0.0",
+    "style-dictionary": "^5.4.0"
+  }
+}

@@ -109,12 +109,14 @@ defmodule E2e.MixProject do
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
       "assets.build": [
         "compile",
+        "cmd node assets/corex/design/palette.mjs",
         "designex corex",
         "tailwind e2e --minify",
         "esbuild e2e"
       ],
       "assets.deploy": [
         "compile",
+        "designex corex",
         "tailwind e2e --minify",
         "esbuild e2e --minify",
         "phx.digest"
