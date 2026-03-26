@@ -7,13 +7,20 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const tokensBasePath = path.resolve(__dirname, "./");
-const buildPath = 'tokens/';
+const outputBasePath = path.resolve(tokensBasePath, '..', 'tokens');
+const buildPath = outputBasePath + path.sep;
 
 function cleanBuildPath() {
-  if (fs.existsSync(buildPath)) {
-    fs.rmSync(buildPath, { recursive: true, force: true });
-  }
   fs.mkdirSync(buildPath, { recursive: true });
+
+  for (const subdir of ['themes', 'semantic']) {
+    const dirPath = path.resolve(buildPath, subdir);
+    if (!fs.existsSync(dirPath)) continue;
+    for (const entry of fs.readdirSync(dirPath)) {
+      if (!entry.endsWith('.css')) continue;
+      fs.rmSync(path.resolve(dirPath, entry), { force: true });
+    }
+  }
 }
 
 function getTokenSets() {

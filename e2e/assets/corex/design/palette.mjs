@@ -1,12 +1,11 @@
 import { Theme, Color, BackgroundColor } from '@adobe/leonardo-contrast-colors';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-// -----------------------------
-// Flat theme configuration
-// -----------------------------
+const TOKENS_BASE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'tokens');
+
 const THEMES_CONFIG = {
-  // NEO: Modern, clean blue-gray (refined & matte)
   'neo-light': {
     backgrounds: [
       {
@@ -106,7 +105,7 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/neo/light.json',
+    output: path.join(TOKENS_BASE, 'themes/neo/light.json'),
     indent: 2
   },
 
@@ -209,7 +208,7 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/neo/dark.json',
+    output: path.join(TOKENS_BASE, 'themes/neo/dark.json'),
     indent: 2
   },
 
@@ -312,7 +311,7 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/uno/light.json',
+    output: path.join(TOKENS_BASE, 'themes/uno/light.json'),
     indent: 2
   },
 
@@ -415,11 +414,10 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/uno/dark.json',
+    output: path.join(TOKENS_BASE, 'themes/uno/dark.json'),
     indent: 2
   },
 
-  // DUO: Soft warm taupe & muted terracotta
   'duo-light': {
     backgrounds: [
       {
@@ -519,7 +517,7 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/duo/light.json',
+    output: path.join(TOKENS_BASE, 'themes/duo/light.json'),
     indent: 2
   },
 
@@ -622,11 +620,10 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/duo/dark.json',
+    output: path.join(TOKENS_BASE, 'themes/duo/dark.json'),
     indent: 2
   },
 
-  // LEO: Cool slate & muted teal
   'leo-light': {
     backgrounds: [
       {
@@ -726,7 +723,7 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/leo/light.json',
+    output: path.join(TOKENS_BASE, 'themes/leo/light.json'),
     indent: 2
   },
 
@@ -829,36 +826,70 @@ const THEMES_CONFIG = {
         ]
       }
     ],
-    output: 'tokens/multi/themes/leo/dark.json',
+    output: path.join(TOKENS_BASE, 'themes/leo/dark.json'),
     indent: 2
   }
 };
-// -----------------------------
+
+function asArray(value) {
+  if (Array.isArray(value)) return value;
+  if (value === undefined || value === null) return [];
+  return [value];
+}
+
 function ensureDirExists(filePath) {
   const dir = path.dirname(filePath);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 }
 
-// -----------------------------
-function createBackground(bg) {
-  const ratios = bg.ratios || { default: 1 };
-  const colorKeys = Array.isArray(bg.color) ? bg.color : [bg.color].filter(Boolean);
-  return new BackgroundColor({ name: bg.name, colorKeys: colorKeys.length ? colorKeys : ['#ffffff'], ratios });
+function writeJson(filePath, data, indent = 2) {
+  ensureDirExists(filePath);
+  fs.writeFileSync(filePath, JSON.stringify(data, null, indent) + '\n');
 }
 
-// -----------------------------
-function createTextColors(textColorConfigs) {
-  return (textColorConfigs || []).map(tc => {
-    const colorKeys = Array.isArray(tc.color) ? tc.color : [tc.color].filter(Boolean);
-    const ratio = typeof tc.ratio === 'number' ? tc.ratio : 1;
-    return new Color({ name: tc.name, colorKeys: colorKeys.length ? colorKeys : ['#000000'], ratios: { default: ratio } });
+function writeThemeColorIntoFile(filePath, themeColor, indent = 2) {
+  const existing =
+    fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : {};
+
+  const nextTheme = { ...(existing.theme || {}) };
+  nextTheme.color = themeColor;
+
+  const next = { ...existing, theme: nextTheme };
+  writeJson(filePath, next, indent);
+}
+
+function normalizeRatios(ratios) {
+  if (ratios && typeof ratios === 'object') return ratios;
+  return { default: 1 };
+}
+
+function normalizeColorKeys(color, fallback) {
+  const keys = asArray(color).filter(Boolean);
+  return keys.length ? keys : [fallback];
+}
+
+function createBackground(bg) {
+  return new BackgroundColor({
+    name: bg.name,
+    colorKeys: normalizeColorKeys(bg.color, '#ffffff'),
+    ratios: normalizeRatios(bg.ratios)
   });
 }
 
-// -----------------------------
+function createTextColors(textColorConfigs) {
+  return (textColorConfigs || []).map(tc => {
+    const ratio = typeof tc.ratio === 'number' ? tc.ratio : 1;
+    return new Color({
+      name: tc.name,
+      colorKeys: normalizeColorKeys(tc.color, '#000000'),
+      ratios: { default: ratio }
+    });
+  });
+}
+
 function generateThemes(themeConfig) {
-  if (!themeConfig || !themeConfig.backgrounds) return [];
-  return themeConfig.backgrounds.map(bgConfig => {
+  const backgrounds = themeConfig?.backgrounds || [];
+  return backgrounds.map(bgConfig => {
     const background = createBackground(bgConfig);
     const contrastColors = createTextColors(bgConfig.contrastColors);
     return new Theme({
@@ -869,9 +900,6 @@ function generateThemes(themeConfig) {
   });
 }
 
-// -----------------------------
-// Convert Leonardo output to Style Dictionary JSON with theme structure
-// -----------------------------
 function toStyleDictionaryFormat(themes, themeName) {
   const result = {};
   const themeKey = themeName || "theme";
@@ -953,7 +981,6 @@ function toStyleDictionaryFormat(themes, themeName) {
 }
 
 
-// -----------------------------
 function toStyleDictionarySemanticFormat(themes) {
   const result = { color: {} };
 
@@ -998,18 +1025,15 @@ function toStyleDictionarySemanticFormat(themes) {
 
 
 
-// -----------------------------
 function generateAllThemes(config = THEMES_CONFIG) {
   Object.entries(config).forEach(([themeKey, themeConfig]) => {
-    console.log(`🎨 Generating theme ${themeKey}...`);
+    console.log(`Generating theme ${themeKey}...`);
     const themes = generateThemes(themeConfig);
     const sd = toStyleDictionaryFormat(themes);
-    ensureDirExists(themeConfig.output);
-    fs.writeFileSync(themeConfig.output, JSON.stringify(sd, null, themeConfig.indent) + '\n');
-    console.log(`✅ ${themeConfig.output} created!`);
+    writeThemeColorIntoFile(themeConfig.output, sd.theme.color, themeConfig.indent);
+    console.log(`${themeConfig.output} created.`);
   });
 
-  // semantic tokens
   const semanticResult = { color: {} };
   Object.entries(config).forEach(([, themeConfig]) => {
     const themes = generateThemes(themeConfig);
@@ -1025,11 +1049,10 @@ function generateAllThemes(config = THEMES_CONFIG) {
     });
   });
 
-  const semanticFilename = 'tokens/multi/semantic/color.json';
-  ensureDirExists(semanticFilename);
-  fs.writeFileSync(semanticFilename, JSON.stringify(semanticResult, null, 2) + '\n');
-  console.log(`✅ ${semanticFilename} created!`);
-  console.log(`\n🎉 All themes and semantic tokens generated successfully!`);
+  const semanticFilename = path.join(TOKENS_BASE, 'semantic/color.json');
+  writeJson(semanticFilename, semanticResult, 2);
+  console.log(`${semanticFilename} created.`);
+  console.log('All themes and semantic tokens generated successfully.');
 }
 
 generateAllThemes();
