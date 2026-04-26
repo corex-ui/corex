@@ -83,7 +83,8 @@ defmodule E2e.MixProject do
       {:tidewave, "~> 0.5.5", only: :dev},
       {:designex, "~> 1.0"},
       {:usage_rules, "~> 1.2", only: [:dev, :test]},
-      {:igniter, "~> 0.6", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:json_polyfill, "~> 0.2"}
     ]
   end
 
