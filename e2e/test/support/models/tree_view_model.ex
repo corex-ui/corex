@@ -14,7 +14,8 @@ defmodule E2eWeb.TreeViewModel do
 
   def prepare_lazy_tree_view(session), do: session
 
-  def wait_until_css_match_count(session, css_selector, opts \\ []) when is_binary(css_selector) do
+  def wait_until_css_match_count(session, css_selector, opts \\ [])
+      when is_binary(css_selector) do
     timeout_ms = Keyword.get(opts, :timeout, 20_000)
     min = Keyword.get(opts, :minimum, 1)
     deadline = System.monotonic_time(:millisecond) + timeout_ms

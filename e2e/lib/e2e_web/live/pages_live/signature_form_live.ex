@@ -51,7 +51,11 @@ defmodule E2eWeb.SignatureFormLive do
 
   @impl true
   def handle_event("signature_drawn", %{"paths" => paths} = payload, socket) do
-    value = if is_list(paths) and paths != [], do: Enum.join(paths, "\n"), else: Map.get(payload, "url", "") || ""
+    value =
+      if is_list(paths) and paths != [],
+        do: Enum.join(paths, "\n"),
+        else: Map.get(payload, "url", "") || ""
+
     params = %{"signature" => value}
 
     changeset =

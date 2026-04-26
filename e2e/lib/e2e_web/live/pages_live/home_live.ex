@@ -69,7 +69,8 @@ defmodule E2eWeb.HomeLive do
           <div class="home__hero__inner">
             <div class="home__hero__copy" data-home-anim-group>
               <h1 id="home-hero-heading" data-home-anim class="home__display text-7xl">
-                The <span class="text-brand">Phoenix UI</span> with a <span class="text-alert">real API</span>.
+                The <span class="text-brand">Phoenix UI</span>
+                with a <span class="text-alert">real API</span>.
               </h1>
 
               <p data-home-anim class="home__lede">

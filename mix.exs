@@ -148,13 +148,15 @@ defmodule Corex.MixProject do
         (Path.wildcard(Path.join(root, "usage-rules/**/*"), match_dot: true)
          |> Enum.map(&Path.relative_to(&1, root)))
 
-    [maintainers: ["Karim Semmoud"],
-     licenses: ["MIT"],
-     links: %{
-       "GitHub" => "https://github.com/corex-ui/corex",
-       "Website" => "https://corex.gigalixirapp.com/en"
-     },
-     files: files]
+    [
+      maintainers: ["Karim Semmoud"],
+      licenses: ["MIT"],
+      links: %{
+        "GitHub" => "https://github.com/corex-ui/corex",
+        "Website" => "https://corex.gigalixirapp.com/en"
+      },
+      files: files
+    ]
   end
 
   defp docs do

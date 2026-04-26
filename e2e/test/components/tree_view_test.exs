@@ -57,5 +57,4 @@ defmodule E2eWeb.TreeViewTest do
 
     assert TreeView.events_server_log_has_row?(session)
   end
-
 end
