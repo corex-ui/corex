@@ -1154,9 +1154,11 @@ var toastStores = /* @__PURE__ */ new Map();
 var ToastItem = class extends Component {
   parts;
   duration;
+  showLoading;
   constructor(el, props) {
     super(el, props);
     this.duration = props.duration;
+    this.showLoading = props.meta?.loading === true;
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
     this.el.classList.add("toast-item");
@@ -1227,15 +1229,18 @@ var ToastItem = class extends Component {
     const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
     if (isInfinity) {
       this.parts.progressbar.style.display = "none";
-      this.parts.loadingSpinner.style.display = "flex";
       this.el.setAttribute("data-duration-infinity", "true");
+    } else {
+      this.parts.progressbar.style.display = "block";
+      this.el.removeAttribute("data-duration-infinity");
+    }
+    if (this.showLoading) {
+      this.parts.loadingSpinner.style.display = "flex";
       if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
         this.parts.loadingSpinner.innerHTML = loadingIcon;
       }
     } else {
-      this.parts.progressbar.style.display = "block";
       this.parts.loadingSpinner.style.display = "none";
-      this.el.removeAttribute("data-duration-infinity");
     }
   }
   destroy = () => {
@@ -1286,6 +1291,7 @@ var ToastGroup = class extends Component {
         this.toastComponents.set(toastData.id, item);
       } else {
         item.duration = toastData.duration;
+        item.showLoading = toastData.meta?.loading === true;
         item.updateProps({
           ...toastData,
           parent: this.machine.service,
@@ -1335,6 +1341,7 @@ function getToastStore(groupId) {
 }
 
 // hooks/toast.ts
+var loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
 var ToastHook = {
   mounted() {
     const el = this.el;
@@ -1420,7 +1427,8 @@ var ToastHook = {
             description: payload.description,
             type: payload.type || "info",
             id: payload.id || generateId(void 0, "toast"),
-            duration: parseDuration(payload.duration)
+            duration: parseDuration(payload.duration),
+            ...loadingMeta(payload.loading)
           });
         } catch (error) {
           console.error("Failed to create toast:", error);
@@ -1463,7 +1471,8 @@ var ToastHook = {
           description: detail.description,
           type: detail.type || "info",
           id: detail.id || generateId(void 0, "toast"),
-          duration: parseDuration(detail.duration)
+          duration: parseDuration(detail.duration),
+          ...loadingMeta(detail.loading)
         });
       } catch (error) {
         console.error("Failed to create toast:", error);

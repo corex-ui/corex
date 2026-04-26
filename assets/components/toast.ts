@@ -21,6 +21,7 @@ export const toastStores = new Map<string, Store>();
 type ToastItemProps<T = unknown> = Props<T> & {
   parent: unknown;
   index: number;
+  meta?: { loading?: boolean };
 };
 
 export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
@@ -35,11 +36,13 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
   };
 
   duration?: number | string;
+  showLoading: boolean;
 
   constructor(el: HTMLElement, props: ToastItemProps<T>) {
     super(el, props);
 
     this.duration = props.duration;
+    this.showLoading = props.meta?.loading === true;
 
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
@@ -125,23 +128,25 @@ export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
 
-    // duration logic
     const duration = this.duration;
     const isInfinity =
       duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
 
     if (isInfinity) {
       this.parts.progressbar.style.display = "none";
-      this.parts.loadingSpinner.style.display = "flex";
       this.el.setAttribute("data-duration-infinity", "true");
+    } else {
+      this.parts.progressbar.style.display = "block";
+      this.el.removeAttribute("data-duration-infinity");
+    }
 
+    if (this.showLoading) {
+      this.parts.loadingSpinner.style.display = "flex";
       if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
         this.parts.loadingSpinner.innerHTML = loadingIcon;
       }
     } else {
-      this.parts.progressbar.style.display = "block";
       this.parts.loadingSpinner.style.display = "none";
-      this.el.removeAttribute("data-duration-infinity");
     }
   }
 
@@ -210,6 +215,8 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
         this.toastComponents.set(toastData.id, item);
       } else {
         item.duration = toastData.duration;
+        (item as ToastItem).showLoading = (toastData as { meta?: { loading?: boolean } }).meta
+          ?.loading === true;
         item.updateProps({
           ...toastData,
           parent: this.machine.service,

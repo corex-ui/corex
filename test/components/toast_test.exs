@@ -53,7 +53,18 @@ defmodule Corex.ToastTest do
 
     test "accepts infinite duration" do
       socket = %Phoenix.LiveView.Socket{}
-      result = Corex.Toast.push_toast(socket, "layout-toast", "Loading", nil, :loading, :infinity)
+      result = Corex.Toast.push_toast(socket, "layout-toast", "Loading", nil, :info, :infinity)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+
+    test "passes loading: true in opts" do
+      socket = %Phoenix.LiveView.Socket{}
+
+      result =
+        Corex.Toast.push_toast(socket, "layout-toast", "Wait", nil, :info, :infinity,
+          loading: true
+        )
+
       assert %Phoenix.LiveView.Socket{} = result
     end
   end
