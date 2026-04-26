@@ -437,13 +437,18 @@ defmodule Corex.Tabs do
         is_list(assigns.items) and assigns.items != [] ->
           assigns.items
           |> Enum.with_index()
-          |> Enum.map(fn {entry, index} ->
-            %{
-              source: :items,
-              value: entry.value || "item-#{index}",
-              disabled: entry.disabled,
-              item_entry: entry
-            }
+          |> Enum.map(fn
+            {%Corex.Content.Item{} = entry, index} ->
+              %{
+                source: :items,
+                value: entry.value || "item-#{index}",
+                disabled: entry.disabled,
+                item_entry: entry
+              }
+
+            {other, _index} ->
+              raise ArgumentError,
+                    "items must be a list of Corex.Content.Item structs, got: #{inspect(other)}"
           end)
 
         is_nil(assigns.items) and (assigns.trigger != [] or assigns.content != []) ->
