@@ -35,7 +35,10 @@ defmodule Corex.TabsTest do
 
     test "raises when items is not a list of Corex.Content.Item" do
       assert_raise BadMapError, fn ->
-        render_component(&Tabs.tabs/1, items: [[trigger: "T1", content: "C1"]])
+        render_component(&Tabs.tabs/1,
+          items: [[trigger: "T1", content: "C1"]]
+        )
+        |> Phoenix.LiveViewTest.rendered_to_string()
       end
     end
   end
