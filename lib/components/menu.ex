@@ -10,7 +10,7 @@ defmodule Corex.Menu do
 
   You must use `Corex.Tree.Item` struct for items.
 
-  The value for each item is optional, useful for controlled mode and API to identify the item.
+  The value for each item is optional, useful for the API to identify the item.
 
   You can specify disabled for each item and nested children.
 
@@ -140,63 +140,31 @@ defmodule Corex.Menu do
   </.menu>
   ```
 
-  ### Controlled
-
-  Render a menu controlled by the server.
-
-  You must use the `on_select` event to handle selection on the server.
-
-  ```elixir
-  defmodule MyAppWeb.MenuLive do
-  use MyAppWeb, :live_view
-
-  def mount(_params, _session, socket) do
-    {:ok, assign(socket, :open, false)}
-  end
-
-  def handle_event("on_select", %{"value" => value}, socket) do
-    IO.inspect("Selected: #{value}")
-    {:noreply, socket}
-  end
-
-  def handle_event("on_open_change", %{"open" => open}, socket) do
-    {:noreply, assign(socket, :open, open)}
-  end
-
-  def render(assigns) do
-    ~H"""
-    <.menu
-      id="my-menu"
-      controlled
-      open={@open}
-      on_select="on_select"
-      on_open_change="on_open_change"
-      class="menu"
-      items={[
-        %Corex.Tree.Item{id: "edit", label: "Edit"},
-        %Corex.Tree.Item{id: "duplicate", label: "Duplicate"},
-        %Corex.Tree.Item{id: "delete", label: "Delete"}
-      ]}
-    >
-      <:trigger>Actions</:trigger>
-          <:indicator>
-      <.heroicon name="hero-chevron-down" />
-    </:indicator>
-    </.menu>
-    """
-  end
-  end
-  ```
-
   <!-- tabs-close -->
 
   ## Use as Navigation
 
-  Set `redirect` so selecting an item navigates to the item's id (e.g. path). Per item: `redirect: false` disables redirect; `new_tab: true` opens in a new tab.
+  Set `redirect` on the component so selecting an item navigates to the item's id (e.g. path).
+  Per item, choose the navigation kind explicitly via the item's `:redirect` field:
+
+    * `:href` (default) - full page redirect via `window.location` (safe everywhere)
+    * `:patch` - LiveView `js().patch(url)` (caller asserts: same LV mount + matching live route)
+    * `:navigate` - LiveView `js().navigate(url)` (caller asserts: another LV in the same `live_session`)
+    * `false` - disable redirect for this item (e.g. let your `on_select` server handler decide)
+
+  Set `new_tab: true` on an item to open its destination in a new tab via `window.open`.
+
+  > #### Breaking change {: .warning}
+  >
+  > Earlier versions were no-ops when LiveView was connected (the server
+  > handler was expected to call `redirect/2`). The hook now performs a hard
+  > `:href` redirect by default. Opt back into the old behavior by setting
+  > the per-item `redirect: false`, or opt into LV-aware navigation with
+  > `redirect: :patch` / `redirect: :navigate`.
 
   ### Controller
 
-  When not connected to LiveView, the hook automatically performs a full page redirect via `window.location`.
+  When not connected to LiveView, the hook always performs a full page redirect via `window.location`.
 
   ```heex
   <.menu
@@ -299,14 +267,25 @@ defmodule Corex.Menu do
   </.menu>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/menu#modifiers)
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Menu.Anatomy.{Group, Item, Props, Root, Trigger}
+  alias Corex.Menu.Anatomy.{
+    Content,
+    Group,
+    GroupLabel,
+    Indicator,
+    Item,
+    Positioner,
+    Props,
+    Root,
+    Trigger
+  }
+
   alias Corex.Menu.Connect
+  alias Corex.Positioning
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
@@ -336,15 +315,9 @@ defmodule Corex.Menu do
     doc: "The items of the menu, must be a list of %Corex.Tree.Item{} structs"
   )
 
-  attr(:open, :boolean,
-    default: false,
-    doc: "The initial open state or the controlled open state of the menu"
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Whether the menu is controlled. Only in LiveView, the on_select and on_open_change events are required"
+  attr(:positioning, Positioning,
+    default: %Positioning{},
+    doc: "Floating UI positioning (placement, gutter, flip, etc.)"
   )
 
   attr(:close_on_select, :boolean,
@@ -378,10 +351,16 @@ defmodule Corex.Menu do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the menu. When nil, derived from document (html lang + config :rtl_locales)"
+  )
+
+  attr(:orientation, :string,
+    default: "vertical",
+    values: ["horizontal", "vertical"],
+    doc: "Layout orientation for CSS and ignored attribute lists."
   )
 
   attr(:aria_label, :string,
@@ -401,8 +380,11 @@ defmodule Corex.Menu do
 
   attr(:redirect, :boolean,
     default: false,
-    doc:
-      "When true, selecting an item redirects to the item's id (e.g. path). When not connected to LiveView the hook sets window.location; when connected use on_select and redirect(socket, to: value) in your handler. Per item: set redirect: false on a Tree.Item to disable redirect for that item; set new_tab: true to open that item's URL in a new tab."
+    doc: """
+    When true, selecting an item triggers redirect-on-select using the item's id (or `:to`)
+    as the destination. Each item picks the navigation kind via its `:redirect` field
+    (`:href` (default) | `:patch` | `:navigate` | `false`); set `:new_tab` to open in a new tab.
+    """
   )
 
   attr(:on_open_change, :string,
@@ -445,86 +427,149 @@ defmodule Corex.Menu do
       |> validate_items()
       |> assign_menu_entries()
 
+    group_entries = Enum.filter(assigns.menu_entries, &match?({:group, _, _, _}, &1))
+    item_entries = Enum.filter(assigns.menu_entries, &match?({:item, _}, &1))
+
+    assigns =
+      assigns
+      |> assign(:menu_group_entries, group_entries)
+      |> assign(:menu_item_entries, item_entries)
+
     ~H"""
-    <div id={"menu:#{@id}"} phx-hook="Menu" {@rest} {Connect.props(%Props{
-      id: @id,
-      open: @open,
-      controlled: @controlled,
-      close_on_select: @close_on_select,
-      loop_focus: @loop_focus,
-      typeahead: @typeahead,
-      composite: @composite,
-      value: @value,
-      dir: @dir,
-      aria_label: @aria_label,
-      on_select: @on_select,
-      on_select_client: @on_select_client,
-      redirect: @redirect,
-      on_open_change: @on_open_change,
-      on_open_change_client: @on_open_change_client
-    })}>
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <button {Connect.trigger(%Trigger{
+    <div
+      id={"menu:#{@id}"}
+      phx-hook="Menu"
+      phx-mounted={Connect.ignore_hook(@id)}
+      data-loading
+      {@rest}
+      {Connect.props(%Props{
+        id: @id,
+        close_on_select: @close_on_select,
+        loop_focus: @loop_focus,
+        typeahead: @typeahead,
+        composite: @composite,
+        value: @value,
+        dir: @dir,
+        orientation: @orientation,
+        aria_label: @aria_label,
+        on_select: @on_select,
+        on_select_client: @on_select_client,
+        redirect: @redirect,
+        on_open_change: @on_open_change,
+        on_open_change_client: @on_open_change_client,
+        positioning: @positioning
+      })}
+    >
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+        <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.trigger(%Trigger{
           id: @id,
           disabled: @disabled,
-          dir: @dir
+          dir: @dir,
+          orientation: @orientation
         })}>
           {render_slot(@trigger)}
-          <span :if={@indicator != []} {Connect.indicator(%Root{id: @id, dir: @dir})}>
+          <span
+            :if={@indicator != []}
+            phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})}
+            {Connect.indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})}
+          >
             {render_slot(@indicator)}
           </span>
         </button>
 
-        <div {Connect.positioner(%Root{id: @id, dir: @dir, open: @open})}>
-          <div {Connect.content(%Root{id: @id, dir: @dir, open: @open})}>
-            <%= for entry <- @menu_entries do %>
-              <%= case entry do %>
-                <% {:group, group_id, group_label, group_items} -> %>
-                  <div {Connect.item_group(%Group{id: @id, group_id: group_id, dir: @dir})}>
-                    <div {Connect.item_group_label(%Group{id: @id, group_id: group_id, dir: @dir})}>
-                      {group_label}
-                    </div>
-                    <li :for={item <- group_items} {Connect.item(%Item{
-                      id: @id,
-                      value: item.id,
-                      disabled: item.disabled,
-                      dir: @dir,
-                      has_nested: item.children != [] && item.children != nil,
-                      nested_menu_id: if(item.children != [] && item.children != nil, do: "#{String.replace_prefix(@id, "menu:", "")}:#{item.id}", else: nil),
-                      redirect: Map.get(item, :redirect),
-                      new_tab: Map.get(item, :new_tab, false)
-                    })}>
-                      <div :if={@item != []} data-scope="menu" data-part="item-text">
-                        {render_slot(@item, item)}
-                      </div>
-                      <span :if={@item == []} data-scope="menu" data-part="item-text">
-                        {item.label}
-                      </span>
-                      <span :if={item.children != [] && item.children != nil && @nested_indicator != []} data-scope="menu" data-part="item-indicator">
-                        {render_slot(@nested_indicator)}
-                      </span>
-                      <div :if={item.children != [] && item.children != nil}>
-                        <.menu_nested_items menu_id={@id} item={item} dir={@dir} nested_indicator={@nested_indicator} item_slot={@item} />
-                      </div>
-                    </li>
-                  </div>
-                <% {:item, item} -> %>
-                  <li {entry_li_attrs(entry, @id, @dir)}>
-                    <div :if={@item != []} data-scope="menu" data-part="item-text">
-                      {render_slot(@item, item)}
-                    </div>
-                    <span :if={@item == []} data-scope="menu" data-part="item-text">
-                      {item.label}
-                    </span>
-                    <span :if={item.children != [] && item.children != nil && @nested_indicator != []} data-scope="menu" data-part="item-indicator">
-                      {render_slot(@nested_indicator)}
-                    </span>
-                    <div :if={item.children != [] && item.children != nil}>
-                      <.menu_nested_items menu_id={@id} item={item} dir={@dir} nested_indicator={@nested_indicator} item_slot={@item} />
-                    </div>
-                  </li>
-              <% end %>
-            <% end %>
+        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
+          <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
+            <div
+              :for={{:group, group_id, group_label, group_items} <- @menu_group_entries}
+              phx-mounted={Connect.ignore_item_group(%Group{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
+              {Connect.item_group(%Group{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
+            >
+              <div
+                phx-mounted={Connect.ignore_item_group_label(%GroupLabel{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
+                {Connect.item_group_label(%GroupLabel{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}
+              >
+                {group_label}
+              </div>
+              <div
+                :for={item <- group_items}
+                phx-mounted={Connect.ignore_item(menu_item_struct(@id, @dir, @orientation, item))}
+                {Connect.item(menu_item_struct(@id, @dir, @orientation, item))}
+              >
+                <div :if={@item != []} data-scope="menu" data-part="item-text">
+                  {render_slot(@item, item)}
+                </div>
+                <span :if={@item == []} data-scope="menu" data-part="item-text">
+                  {item.label}
+                </span>
+                <span
+                  :if={item.children != [] && item.children != nil && @nested_indicator != []}
+                  data-scope="menu"
+                  data-part="item-indicator"
+                >
+                  {render_slot(@nested_indicator)}
+                </span>
+                <div :if={item.children != [] && item.children != nil}>
+                  <.menu_nested_items
+                    menu_id={@id}
+                    item={item}
+                    dir={@dir}
+                    orientation={@orientation}
+                    nested_indicator={@nested_indicator}
+                    item_slot={@item}
+                    close_on_select={@close_on_select}
+                    loop_focus={@loop_focus}
+                    typeahead={@typeahead}
+                    composite={@composite}
+                    redirect={@redirect}
+                    on_select={@on_select}
+                    on_select_client={@on_select_client}
+                    on_open_change={@on_open_change}
+                    on_open_change_client={@on_open_change_client}
+                    positioning={@positioning}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              :for={{:item, item} <- @menu_item_entries}
+              phx-mounted={Connect.ignore_item(menu_item_struct(@id, @dir, @orientation, item))}
+              {Connect.item(menu_item_struct(@id, @dir, @orientation, item))}
+            >
+              <div :if={@item != []} data-scope="menu" data-part="item-text">
+                {render_slot(@item, item)}
+              </div>
+              <span :if={@item == []} data-scope="menu" data-part="item-text">
+                {item.label}
+              </span>
+              <span
+                :if={item.children != [] && item.children != nil && @nested_indicator != []}
+                data-scope="menu"
+                data-part="item-indicator"
+              >
+                {render_slot(@nested_indicator)}
+              </span>
+              <div :if={item.children != [] && item.children != nil}>
+                <.menu_nested_items
+                  menu_id={@id}
+                  item={item}
+                  dir={@dir}
+                  orientation={@orientation}
+                  nested_indicator={@nested_indicator}
+                  item_slot={@item}
+                  close_on_select={@close_on_select}
+                  loop_focus={@loop_focus}
+                  typeahead={@typeahead}
+                  composite={@composite}
+                  redirect={@redirect}
+                  on_select={@on_select}
+                  on_select_client={@on_select_client}
+                  on_open_change={@on_open_change}
+                  on_open_change_client={@on_open_change_client}
+                  positioning={@positioning}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -535,64 +580,166 @@ defmodule Corex.Menu do
   attr(:menu_id, :string, required: true)
   attr(:item, Corex.Tree.Item, required: true)
   attr(:dir, :string, required: true)
+  attr(:orientation, :string, required: true)
   attr(:nested_indicator, :list, required: true)
   attr(:item_slot, :list, required: true)
+  attr(:close_on_select, :boolean, required: true)
+  attr(:loop_focus, :boolean, required: true)
+  attr(:typeahead, :boolean, required: true)
+  attr(:composite, :boolean, required: true)
+  attr(:redirect, :boolean, required: true)
+  attr(:on_select, :string, default: nil)
+  attr(:on_select_client, :string, default: nil)
+  attr(:on_open_change, :string, default: nil)
+  attr(:on_open_change_client, :string, default: nil)
+  attr(:positioning, Positioning, required: true)
 
   defp menu_nested_items(assigns) do
     base_id = String.replace_prefix(assigns.menu_id, "menu:", "")
     nested_id = "#{base_id}:#{assigns.item.id}"
-    assigns = assign(assigns, :nested_id, nested_id)
+    children = List.wrap(assigns.item.children)
+    entries = build_menu_entries(children)
+    group_entries = Enum.filter(entries, &match?({:group, _, _, _}, &1))
+    item_entries = Enum.filter(entries, &match?({:item, _}, &1))
+
+    assigns =
+      assigns
+      |> assign(:nested_id, nested_id)
+      |> assign(:nested_group_entries, group_entries)
+      |> assign(:nested_item_entries, item_entries)
 
     ~H"""
-    <div phx-hook="Menu" {Connect.nested_menu(%Root{id: @nested_id, dir: @dir})} {Connect.props(%Props{
-      id: @nested_id,
-      open: false,
-      controlled: false,
-      close_on_select: true,
-      loop_focus: false,
-      typeahead: true,
-      composite: false,
-      value: nil,
-      dir: @dir,
-      aria_label: nil,
-      on_select: nil,
-      on_select_client: nil,
-      on_open_change: nil,
-      on_open_change_client: nil
-    })}>
-      <div phx-update="ignore" {Connect.root(%Root{id: @nested_id, dir: @dir})}>
-        <div {Connect.positioner(%Root{id: @nested_id, dir: @dir, open: false})}>
-          <ul {Connect.content(%Root{id: @nested_id, dir: @dir, open: false})}>
-            <li :for={child <- @item.children} {Connect.item(%Item{
-              id: @nested_id,
-              value: child.id,
-              disabled: child.disabled,
-              dir: @dir,
-              has_nested: false,
-              nested_menu_id: nil,
-              redirect: Map.get(child, :redirect),
-              new_tab: Map.get(child, :new_tab, false)
-            })}>
+    <div
+      phx-hook="Menu"
+      phx-mounted={Connect.ignore_hook(@nested_id)}
+      data-loading
+      {Connect.nested_menu(%Root{id: @nested_id, dir: @dir, orientation: @orientation})}
+      {Connect.props(%Props{
+        id: @nested_id,
+        close_on_select: @close_on_select,
+        loop_focus: @loop_focus,
+        typeahead: @typeahead,
+        composite: @composite,
+        value: nil,
+        dir: @dir,
+        orientation: @orientation,
+        aria_label: nil,
+        on_select: @on_select,
+        on_select_client: @on_select_client,
+        redirect: @redirect,
+        on_open_change: @on_open_change,
+        on_open_change_client: @on_open_change_client,
+        positioning: @positioning
+      })}
+    >
+      <div phx-mounted={Connect.ignore_root(%Root{id: @nested_id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @nested_id, dir: @dir, orientation: @orientation})}>
+        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @nested_id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @nested_id, dir: @dir, orientation: @orientation})}>
+          <div phx-mounted={Connect.ignore_content(%Content{id: @nested_id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @nested_id, dir: @dir, orientation: @orientation})}>
+            <div
+              :for={{:group, group_id, group_label, group_items} <- @nested_group_entries}
+              phx-mounted={Connect.ignore_item_group(%Group{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
+              {Connect.item_group(%Group{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
+            >
+              <div
+                phx-mounted={Connect.ignore_item_group_label(%GroupLabel{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
+                {Connect.item_group_label(%GroupLabel{id: @nested_id, group_id: group_id, dir: @dir, orientation: @orientation})}
+              >
+                {group_label}
+              </div>
+              <div
+                :for={nitem <- group_items}
+                phx-mounted={Connect.ignore_item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
+                {Connect.item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
+              >
+                <div :if={@item_slot != []} data-scope="menu" data-part="item-text">
+                  {render_slot(@item_slot, nitem)}
+                </div>
+                <span :if={@item_slot == []} data-scope="menu" data-part="item-text">
+                  {nitem.label}
+                </span>
+                <span
+                  :if={nitem.children != [] && nitem.children != nil && @nested_indicator != []}
+                  data-scope="menu"
+                  data-part="item-indicator"
+                >
+                  {render_slot(@nested_indicator)}
+                </span>
+                <div :if={nitem.children != [] && nitem.children != nil}>
+                  <.menu_nested_items
+                    menu_id={@nested_id}
+                    item={nitem}
+                    dir={@dir}
+                    orientation={@orientation}
+                    nested_indicator={@nested_indicator}
+                    item_slot={@item_slot}
+                    close_on_select={@close_on_select}
+                    loop_focus={@loop_focus}
+                    typeahead={@typeahead}
+                    composite={@composite}
+                    redirect={@redirect}
+                    on_select={@on_select}
+                    on_select_client={@on_select_client}
+                    on_open_change={@on_open_change}
+                    on_open_change_client={@on_open_change_client}
+                    positioning={@positioning}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div
+              :for={{:item, nitem} <- @nested_item_entries}
+              phx-mounted={Connect.ignore_item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
+              {Connect.item(menu_item_struct(@nested_id, @dir, @orientation, nitem))}
+            >
               <div :if={@item_slot != []} data-scope="menu" data-part="item-text">
-                {render_slot(@item_slot, child)}
+                {render_slot(@item_slot, nitem)}
               </div>
               <span :if={@item_slot == []} data-scope="menu" data-part="item-text">
-                {child.label}
+                {nitem.label}
               </span>
-            </li>
-          </ul>
+              <span
+                :if={nitem.children != [] && nitem.children != nil && @nested_indicator != []}
+                data-scope="menu"
+                data-part="item-indicator"
+              >
+                {render_slot(@nested_indicator)}
+              </span>
+              <div :if={nitem.children != [] && nitem.children != nil}>
+                <.menu_nested_items
+                  menu_id={@nested_id}
+                  item={nitem}
+                  dir={@dir}
+                  orientation={@orientation}
+                  nested_indicator={@nested_indicator}
+                  item_slot={@item_slot}
+                  close_on_select={@close_on_select}
+                  loop_focus={@loop_focus}
+                  typeahead={@typeahead}
+                  composite={@composite}
+                  redirect={@redirect}
+                  on_select={@on_select}
+                  on_select_client={@on_select_client}
+                  on_open_change={@on_open_change}
+                  on_open_change_client={@on_open_change_client}
+                  positioning={@positioning}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
     """
   end
 
-  defp entry_li_attrs({:item, item}, menu_id, dir) do
-    Connect.item(%Item{
+  defp menu_item_struct(menu_id, dir, orientation, item) do
+    %Item{
       id: menu_id,
       value: item.id,
       disabled: item.disabled,
       dir: dir,
+      orientation: orientation,
       has_nested: item.children != [] && item.children != nil,
       nested_menu_id:
         if(item.children != [] && item.children != nil,
@@ -601,7 +748,7 @@ defmodule Corex.Menu do
         ),
       redirect: Map.get(item, :redirect),
       new_tab: Map.get(item, :new_tab, false)
-    })
+    }
   end
 
   defp validate_items(%{items: nil} = assigns), do: assigns
@@ -636,6 +783,10 @@ defmodule Corex.Menu do
   end
 
   defp assign_menu_entries(%{items: items} = assigns) when is_list(items) do
+    assign(assigns, :menu_entries, build_menu_entries(items))
+  end
+
+  defp build_menu_entries(items) when is_list(items) do
     items_by_group = Enum.group_by(items, fn item -> item.group end)
 
     entries =
@@ -643,14 +794,11 @@ defmodule Corex.Menu do
       |> Enum.reject(fn {group, _} -> group == nil end)
       |> Enum.sort_by(fn {group, _} -> group end)
       |> Enum.flat_map(fn {group, group_items} ->
-        # Use group value as label, same as select
         [{:group, group, group, group_items}]
       end)
 
     ungrouped = Map.get(items_by_group, nil, []) |> Enum.map(&{:item, &1})
-    entries = entries ++ ungrouped
-
-    assign(assigns, :menu_entries, entries)
+    entries ++ ungrouped
   end
 
   @doc type: :api
@@ -664,7 +812,7 @@ defmodule Corex.Menu do
       </button>
   """
   def set_open(menu_id, open) when is_binary(menu_id) do
-    JS.dispatch("phx:menu:set-open",
+    JS.dispatch("corex:menu:set-open",
       to: "[id=\"menu:#{menu_id}\"]",
       detail: %{open: open},
       bubbles: false

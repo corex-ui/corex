@@ -2,32 +2,36 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Data Table</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-
-  <h3>Basic Example</h3>
-  <.data_table
-    id="basic-table"
-    class="data-table"
-    rows={[
-      %{id: 1, name: "Alice", role: "Admin", email: "alice@example.com"},
-      %{id: 2, name: "Bob", role: "User", email: "bob@example.com"},
-      %{id: 3, name: "Charlie", role: "Editor", email: "charlie@example.com"}
-    ]}
+  <.demo_page
+    id="data-table-anatomy-page"
+    title="Data Table Anatomy"
+    subtitle="Column slots, an optional action column, and the empty state."
+    heading_class="layout-heading"
   >
-    <:col :let={row} label="ID">{row.id}</:col>
-    <:col :let={row} label="Name">{row.name}</:col>
-    <:col :let={row} label="Role">{row.role}</:col>
-    <:col :let={row} label="Email">{row.email}</:col>
-    <:action :let={user}>
-      <.action class="button button--sm" aria-label={"Edit #{user.name}"}>
-        <.heroicon name="hero-pencil-square" />
-      </.action>
-    </:action>
-  </.data_table>
+    <.demo_section
+      id="data-table-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.DataTableDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.DataTableDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="data-table-anatomy-with-action"
+      title="With action"
+      code={E2eWeb.Demos.DataTableDemo.anatomy_with_action_code()}
+    >
+      <:preview><E2eWeb.Demos.DataTableDemo.anatomy_with_action_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="data-table-anatomy-empty"
+      title="Empty"
+      code={E2eWeb.Demos.DataTableDemo.anatomy_empty_code()}
+    >
+      <:preview><E2eWeb.Demos.DataTableDemo.anatomy_empty_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

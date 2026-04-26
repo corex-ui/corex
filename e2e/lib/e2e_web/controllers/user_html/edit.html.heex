@@ -2,8 +2,7 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
   <.layout_heading>
     <:title>Edit User {@user.id}</:title>
@@ -12,7 +11,7 @@
 
   <.user_form
     changeset={@changeset}
-    action={~p"/#{@locale}/users/#{@user}"}
-    return_to={~p"/#{@locale}/users"}
+    action={~p"/users/#{@user}"}
+    return_to={~p"/users"}
   />
 </Layouts.app>

@@ -96,15 +96,6 @@ defmodule Corex.ListboxTest do
     end
   end
 
-  describe "Connect.value_text/1" do
-    test "returns value text attributes" do
-      assigns = %{id: "test-listbox"}
-      result = Connect.value_text(assigns)
-      assert result["id"] == "listbox:test-listbox:value-text"
-      assert result["data-part"] == "value-text"
-    end
-  end
-
   describe "Connect.item_group/1" do
     test "returns item group attributes" do
       assigns = %{id: "test-listbox", group_id: "g1"}
@@ -131,6 +122,23 @@ defmodule Corex.ListboxTest do
       assert result["id"] == "listbox:test-listbox:item:opt1"
       assert result["data-part"] == "item"
       assert result["data-value"] == "opt1"
+    end
+
+    test "includes redirect and to when set" do
+      assigns = %{
+        id: "lb",
+        value: "p",
+        dir: "ltr",
+        orientation: "vertical",
+        to: "/path",
+        redirect: :patch,
+        new_tab: true
+      }
+
+      result = Connect.item(assigns)
+      assert result["data-to"] == "/path"
+      assert result["data-redirect"] == "patch"
+      assert result["data-new-tab"] == ""
     end
   end
 
@@ -174,7 +182,8 @@ defmodule Corex.ListboxTest do
         typeahead: false,
         disabled: false,
         on_value_change: nil,
-        on_value_change_client: nil
+        on_value_change_client: nil,
+        redirect: false
       }
 
       result = Connect.props(assigns)
@@ -197,7 +206,8 @@ defmodule Corex.ListboxTest do
         typeahead: false,
         disabled: false,
         on_value_change: nil,
-        on_value_change_client: nil
+        on_value_change_client: nil,
+        redirect: false
       }
 
       result = Connect.props(assigns)

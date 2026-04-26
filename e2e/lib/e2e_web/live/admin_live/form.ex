@@ -11,14 +11,13 @@ defmodule E2eWeb.AdminLive.Form do
       flash={@flash}
       mode={@mode}
       theme={@theme}
-      locale={@locale}
-      current_path={@current_path}
+      path={@path}
     >
-      <.layout_heading>
+      <.layout_heading class="layout-heading">
         <:title>{@page_title}</:title>
         <:subtitle>Use this form to manage admin records in your database.</:subtitle>
         <:actions>
-          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">
+          <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button button--sm">
             <.heroicon name="hero-arrow-left" class="icon" /> Cancel
           </.navigate>
         </:actions>
@@ -29,6 +28,7 @@ defmodule E2eWeb.AdminLive.Form do
         id={get_form_id(@form)}
         phx-change="validate"
         phx-submit="save"
+        class="max-w-none"
       >
         <.native_input field={@form[:name]} type="text" class="native-input">
           <:label>Name</:label>
@@ -39,8 +39,9 @@ defmodule E2eWeb.AdminLive.Form do
         </.native_input>
 
         <.select
-          class="select"
+          class="select max-w-none"
           field={@form[:country]}
+          deselectable
           translation={%Corex.Select.Translation{placeholder: gettext("Select a country")}}
           items={[
             %{label: "France", id: "fra"},
@@ -60,7 +61,7 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.select>
 
-        <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
+        <.date_picker field={@form[:birth_date]} class="date-picker max-w-none">
           <:label>Select a date</:label>
           <:trigger>
             <.heroicon name="hero-calendar" class="icon" />
@@ -76,7 +77,7 @@ defmodule E2eWeb.AdminLive.Form do
             {msg}
           </:error>
         </.date_picker>
-        <.signature_pad field={@form[:signature]} class="signature-pad">
+        <.signature_pad field={@form[:signature]} class="signature-pad max-w-none">
           <:label>Sign here</:label>
           <:clear_trigger>
             <.heroicon name="hero-x-mark" />
@@ -91,7 +92,7 @@ defmodule E2eWeb.AdminLive.Form do
             Accept the terms
           </:label>
           <:indicator>
-            <.heroicon name="hero-check" class="data-checked" />
+            <.heroicon name="hero-check" />
           </:indicator>
           <:error :let={msg}>
             <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -99,8 +100,8 @@ defmodule E2eWeb.AdminLive.Form do
           </:error>
         </.checkbox>
 
-        <footer class="flex w-full justify-between gap-ui-gap">
-          <.navigate to={return_path(@return_to, @admin, @locale)} type="navigate" class="button">
+        <footer class="flex w-full justify-between gap-2">
+          <.navigate to={return_path(@return_to, @admin)} type="navigate" class="button">
             Cancel
           </.navigate>
           <.action phx-disable-with="Saving..." type="submit" class="button button--accent">
@@ -116,7 +117,6 @@ defmodule E2eWeb.AdminLive.Form do
   def mount(params, _session, socket) do
     {:ok,
      socket
-     |> assign(:locale, params["locale"])
      |> assign(:return_to, return_to(params["return_to"]))
      |> apply_action(socket.assigns.live_action, params)}
   end
@@ -158,7 +158,7 @@ defmodule E2eWeb.AdminLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Admin updated successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, admin, socket.assigns.locale))}
+         |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
@@ -171,13 +171,13 @@ defmodule E2eWeb.AdminLive.Form do
         {:noreply,
          socket
          |> put_flash(:info, "Admin created successfully")
-         |> push_navigate(to: return_path(socket.assigns.return_to, admin, socket.assigns.locale))}
+         |> push_navigate(to: return_path(socket.assigns.return_to, admin))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 
-  defp return_path("index", _admin, locale), do: ~p"/#{locale}/admins"
-  defp return_path("show", admin, locale), do: ~p"/#{locale}/admins/#{admin}"
+  defp return_path("index", _admin), do: ~p"/admins"
+  defp return_path("show", admin), do: ~p"/admins/#{admin}"
 end

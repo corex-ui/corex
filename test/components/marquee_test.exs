@@ -8,7 +8,11 @@ defmodule Corex.MarqueeTest do
     test "renders" do
       html = render_component(&CorexTest.ComponentHelpers.render_marquee/1, [])
       assert html =~ ~r/data-scope="marquee"/
+      assert html =~ ~r/data-part="items-template"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/data-part="viewport"/
+      assert html =~ ~r/data-loading/
+      assert html =~ ~r/phx-mounted/
     end
   end
 
@@ -110,8 +114,11 @@ defmodule Corex.MarqueeTest do
       assert result["id"] == "marquee:test-marquee"
       assert result["data-scope"] == "marquee"
       assert result["data-part"] == "root"
+      assert result["data-orientation"] == "horizontal"
+      assert result["data-state"] == "idle"
       assert result["role"] == "region"
       assert result["aria-roledescription"] == "marquee"
+      assert result["style"] =~ "width:100%"
     end
 
     test "respect_reduced_motion false and loop_count > 0" do
@@ -250,6 +257,7 @@ defmodule Corex.MarqueeTest do
 
       result = Connect.content(assigns)
       assert result["data-reverse"] == ""
+      assert result["data-clone"] == ""
       assert result["role"] == "presentation"
       assert result["aria-hidden"] == "true"
       assert result["style"] =~ "flex-direction:column"

@@ -1,6 +1,6 @@
 @import "../main.css";
 
-@keyframes marquee-x {
+@keyframes marqueeX {
   0% {
     transform: translateX(0%);
   }
@@ -9,7 +9,7 @@
   }
 }
 
-@keyframes marquee-y {
+@keyframes marqueeY {
   0% {
     transform: translateY(0%);
   }
@@ -18,57 +18,110 @@
   }
 }
 
+
 @layer components {
-  
-  .marquee [data-scope="marquee"][data-part="root"] {
-    @apply ui-root;
-    
+
+
+  .marquee {
     width: 100%;
-  }
-  .marquee [data-scope="marquee"][data-part="content"] {
-    @apply ui-content;
-
-    animation-timing-function: linear;
-    animation-duration: var(--marquee-duration);
-    animation-delay: var(--marquee-delay);
-    animation-iteration-count: var(--marquee-loop-count);
+    max-width: var(--container-md);
   }
 
-  .marquee [data-scope="marquee"][data-part="content"][data-side="start"],
-  .marquee [data-scope="marquee"][data-part="content"][data-side="end"] {
-    animation-name: marquee-x;
+  .marquee:not([data-loading]) {
+    opacity: 1;
+    transition: opacity 2s ease;
   }
 
-  .marquee [data-scope="marquee"][data-part="content"][data-side="top"],
-  .marquee [data-scope="marquee"][data-part="content"][data-side="bottom"] {
-      animation-name: marquee-y;
+  .marquee[data-loading] {
+    opacity: 0;
   }
 
-  .marquee [data-scope="marquee"][data-part="content"][data-reverse] {
-    animation-direction: reverse;
+  .marquee[data-loading] [data-scope="marquee"][data-part="root"] {
+    @apply ui-loading;
+  }
+  
+.marquee [data-scope="marquee"][data-part="root"] {
+  width: 100%;
+
+  &[data-orientation="vertical"] {
+    height:  var(--container-md);
   }
 
-  .marquee [data-scope="marquee"][data-part="root"][data-paused] [data-scope="marquee"][data-part="content"] {
-    animation-play-state: paused;
+  &[data-orientation="horizontal"] {
+    width: 100%;
+    height:  fit-content;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .marquee [data-scope="marquee"][data-part="root"]:not([data-respect-reduced-motion="false"])
-      [data-scope="marquee"][data-part="content"] {
-      animation: none !important;
+  &[data-paused] {
+    &,
+    * {
+      animation-play-state: paused !important;
     }
   }
 }
+.marquee [data-scope="marquee"][data-part="content"] {
+  animation-timing-function: linear;
+  animation-duration: var(--marquee-duration);
+  animation-delay: var(--marquee-delay);
+  animation-iteration-count: var(--marquee-loop-count);
 
-@utility marquee--* {
-  [data-scope="marquee"][data-part="root"] {
-    max-width: --value(--container-ui-*, [length]);
-    gap: --value(--spacing-ui-gap-*, [length]);
+  &[data-side="start"],
+  &[data-side="end"] {
+    animation-name: marqueeX;
   }
 
-  [data-scope="marquee"][data-part="item"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+  &[data-side="top"],
+  &[data-side="bottom"] {
+    animation-name: marqueeY;
+  }
+
+  &[data-reverse] {
+    animation-direction: reverse;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none !important;
+  }
+}
+
+.marquee  [data-scope="marquee"][data-part="edge"] {
+  z-index: 10;
+
+  --edge-background: var(--color-root);
+
+  &[data-side="start"] {
+    width: 20%;
+    background: linear-gradient(to right, var(--edge-background), transparent);
+
+    &[dir="rtl"] {
+      background: linear-gradient(to left, var(--edge-background), transparent);
+    }
+  }
+
+  &[data-side="end"] {
+    width: 20%;
+    background: linear-gradient(to left, var(--edge-background), transparent);
+
+    &[dir="rtl"] {
+      background: linear-gradient(to right, var(--edge-background), transparent);
+    }
+  }
+
+  &[data-side="top"] {
+    height: 20%;
+    background: linear-gradient(to bottom, var(--edge-background), transparent);
+  }
+
+  &[data-side="bottom"] {
+    height: 20%;
+    background: linear-gradient(to top, var(--edge-background), transparent);
+  }
+}
+}
+
+@utility marquee--on-* {
+  [data-scope="marquee"][data-part="edge"] {
+
+  --edge-background: --value(--color-*, [color]);
   }
 }

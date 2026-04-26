@@ -1,6 +1,6 @@
 .greeting {
   padding: 1rem;
-  background: var(--color-layer);
+  background: var(--color-zinc-100);
 }
 
 .greeting h1 {

@@ -1,0 +1,43 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="leo"] {
+  --theme-text-xs: 0.74rem;
+  --theme-text-xs--line-height: 1.3649;
+  --theme-text-sm: 0.8812rem;
+  --theme-text-sm--line-height: 1.4298;
+  --theme-text-base: 1rem;
+  --theme-text-base--line-height: 1.52;
+  --theme-text-lg: 1.13rem;
+  --theme-text-lg--line-height: 1.5575;
+  --theme-text-xl: 1.255rem;
+  --theme-text-xl--line-height: 1.4024;
+  --theme-text-2xl: 1.48rem;
+  --theme-text-2xl--line-height: 1.3649;
+  --theme-text-3xl: 1.86rem;
+  --theme-text-3xl--line-height: 1.2258;
+  --theme-text-4xl: 2.22rem;
+  --theme-text-4xl--line-height: 1.1351;
+  --theme-text-5xl: 2.95rem;
+  --theme-text-5xl--line-height: 1.078;
+  --theme-text-6xl: 3.7rem;
+  --theme-text-6xl--line-height: 1.0595;
+  --theme-text-7xl: 4.42rem;
+  --theme-text-7xl--line-height: 1.0588;
+  --theme-text-8xl: 5.92rem;
+  --theme-text-8xl--line-height: 1.0473;
+  --theme-text-9xl: 7.9rem;
+  --theme-text-9xl--line-height: 1.038;
+  --theme-text-tracking-tighter: -0.058em;
+  --theme-text-tracking-tight: -0.029em;
+  --theme-text-tracking-normal: 0em;
+  --theme-text-tracking-wide: 0.028em;
+  --theme-text-tracking-wider: 0.056em;
+  --theme-text-tracking-widest: 0.108em;
+  --theme-text-leading-tight: 1.24;
+  --theme-text-leading-snug: 1.365;
+  --theme-text-leading-normal: 1.52;
+  --theme-text-leading-relaxed: 1.69;
+  --theme-text-leading-loose: 2.02;
+}

@@ -27,26 +27,24 @@ defmodule Corex.Tabs do
 
   ### With indicator
 
-  Use the optional `:indicator` slot to add an icon after each trigger.
+  Set the boolean `indicator` attribute to render the single shared item indicator (Zag) after the tab triggers.
 
   ```heex
   <.tabs
     class="tabs"
+    indicator
     items={Corex.Content.new([
       [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."],
       [trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus."],
       [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
     ])}
   >
-    <:indicator>
-      <.heroicon name="hero-chevron-right" />
-    </:indicator>
   </.tabs>
   ```
 
   ### Custom
 
-  Use `:trigger` and `:content` together to fully customize how each item is rendered. Add the `:indicator` slot to show an icon after each trigger. Use `:let={item}` on slots to access the item and its `data` (including `meta` for per-item customization).
+  Use `:trigger` and `:content` together to fully customize how each item is rendered. Render icons or extras inside each `:trigger` slot. Use `:let={item}` on slots to access the item and its `data` (including `meta` for per-item customization). Use `tabs_indicator` once inside `tabs_list` when you need the shared indicator in compound mode.
 
   ```heex
   <.tabs
@@ -55,7 +53,7 @@ defmodule Corex.Tabs do
     items={Corex.Content.new([
       [id: "lorem", trigger: "Lorem", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.", meta: %{indicator: "hero-chevron-right"}],
       [trigger: "Duis", content: "Nullam eget vestibulum ligula, at interdum tellus.", meta: %{indicator: "hero-chevron-right"}],
-      [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus.", disabled: true]
+      [id: "donec", trigger: "Donec", content: "Congue molestie ipsum gravida a. Sed ac eros luctus."]
     ])}
   >
     <:trigger :let={item}>
@@ -64,9 +62,6 @@ defmodule Corex.Tabs do
     <:content :let={item}>
       {item.data.content}
     </:content>
-    <:indicator :let={item}>
-      <.heroicon name={item.data.meta.indicator} />
-    </:indicator>
   </.tabs>
   ```
 
@@ -215,23 +210,20 @@ defmodule Corex.Tabs do
   <.tabs class="tabs tabs--accent tabs--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/tabs#modifiers)
 
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Tabs.Anatomy.{Content, List, Props, Root, Trigger}
+  alias Corex.Tabs.Anatomy.{Content, Indicator, List, Props, Root, Trigger}
   alias Corex.Tabs.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
 
   import Corex.Helpers,
     only: [
-      validate_tabs_value!: 1,
-      validate_content_items_required!: 2,
-      content_items_data_json: 1
+      validate_tabs_value!: 1
     ]
 
   @doc """
@@ -259,6 +251,12 @@ defmodule Corex.Tabs do
     doc: "The items of the tabs, must be a list of content items"
   )
 
+  attr(:compound, :boolean,
+    default: false,
+    doc:
+      "Enable compound mode. Use with :let={ctx} and tabs_root, tabs_list, tabs_trigger, tabs_content, tabs_indicator once inside tabs_list."
+  )
+
   attr(:value, :string,
     default: nil,
     doc: "The initial value or the controlled value of the tabs, must be a string"
@@ -283,10 +281,15 @@ defmodule Corex.Tabs do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the tabs. When nil, derived from document (html lang + config :rtl_locales)"
+  )
+
+  attr(:indicator, :boolean,
+    default: true,
+    doc: "Whether to show an indicator on the trigger list"
   )
 
   attr(:on_value_change, :string,
@@ -311,17 +314,19 @@ defmodule Corex.Tabs do
 
   attr(:rest, :global)
 
-  slot :indicator,
+  slot(:inner_block,
     required: false,
-    doc:
-      "Optional slot for content after each trigger. Use :let={item} for per-item customization." do
-    attr(:class, :string, required: false)
-  end
+    doc: """
+    Compound mode inner content. Use with the `compound` attribute and `:let={ctx}`.
+    `ctx` is a map with keys: `id`, `values`, `orientation`, `dir`.
+    """
+  )
 
   slot :trigger,
     required: false,
     doc:
       "Optional slot for custom trigger rendering. When provided with content, replaces default item rendering. Use :let={item} to access the item." do
+    attr(:value, :string, required: false)
     attr(:class, :string, required: false)
   end
 
@@ -330,18 +335,29 @@ defmodule Corex.Tabs do
     doc:
       "Optional slot for custom content rendering. When provided with trigger, replaces default item rendering. Use :let={item} to access the item." do
     attr(:class, :string, required: false)
+    attr(:value, :string, required: false)
   end
 
   def tabs(assigns) do
     values = if is_binary(assigns[:value]), do: [assigns.value], else: []
 
     assigns =
-      assign_new(assigns, :id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
-      |> validate_content_items_required!("Tabs")
+      assigns
+      |> assign_new(:id, fn -> "tabs-#{System.unique_integer([:positive])}" end)
       |> assign(:values, values)
+      |> tabs_assign_panels()
+
+    ctx = %{
+      id: assigns.id,
+      values: values,
+      orientation: assigns.orientation,
+      dir: assigns.dir
+    }
+
+    assigns = assign(assigns, :ctx, ctx)
 
     ~H"""
-    <div id={@id} phx-hook="Tabs" data-items={content_items_data_json(@items)} data-js="pending" {@rest}
+    <div id={@id} phx-hook="Tabs" data-loading phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}  {@rest}
     {Connect.props(%Props{
       id: @id,
       controlled: @controlled,
@@ -355,162 +371,246 @@ defmodule Corex.Tabs do
       on_focus_change: @on_focus_change,
       on_focus_change_client: @on_focus_change_client
     })}>
-      <div {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}>
-        <div {Connect.list(%List{id: @id, orientation: @orientation, dir: @dir})}>
-            <button
-            :if={@trigger == []} :for={{item_entry, index} <- Enum.with_index(@items)}
-             {Connect.trigger(%Trigger{
-              id: @id,
-              value: item_entry.id || "item-#{index}",
-              disabled: item_entry.disabled,
-              values: @values,
-              orientation: @orientation,
-              dir: @dir
-            })}>
-              <span data-scope="tabs" data-part="item-text">
-                {item_entry.trigger}
-              </span>
-              <span :if={@indicator != []} {Connect.indicator(%Trigger{
-                id: @id,
-                value: item_entry.id || "item-#{index}",
-                disabled: item_entry.disabled,
-                values: @values,
-                orientation: @orientation,
-                dir: @dir
-              })}>
-                <%= for indicator <- @indicator do %>
-                  <%= render_slot(indicator, %{
-                    id: @id,
-                    value: item_entry.id || "item-#{index}",
-                    disabled: item_entry.disabled,
-                    values: @values,
-                    orientation: @orientation,
-                    dir: @dir,
-                    data: %{
-                      trigger: item_entry.trigger,
-                      content: item_entry.content,
-                      meta: item_entry.meta || %{}
-                    }
-                  }) %>
-                <% end %>
-              </span>
-            </button>
-
-          <div :if={@trigger != []} :for={{item_entry, index} <- Enum.with_index(@items)}>
-            <div :for={trigger_slot <- @trigger}>
-              <% item_data = %{
-                id: @id,
-                value: item_entry.id || "item-#{index}",
-                disabled: item_entry.disabled,
-                values: @values,
-                orientation: @orientation,
-                dir: @dir,
-                data: %{
-                  trigger: item_entry.trigger,
-                  content: item_entry.content,
-                  meta: item_entry.meta || %{}
-                }
-              } %>
-              <.tabs_trigger item={item_data} indicator={@indicator}>
-                {render_slot(trigger_slot, item_data)}
-              </.tabs_trigger>
-            </div>
-          </div>
-
+      {if @compound do
+        render_slot(@inner_block, @ctx)
+      end}
+      <div :if={not @compound}
+        phx-mounted={Connect.ignore_root(%Root{id: @id, orientation: @orientation, dir: @dir})}
+        {Connect.root(%Root{id: @id, orientation: @orientation, dir: @dir})}
+      >
+        <div
+          phx-mounted={Connect.ignore_list(%List{id: @id, orientation: @orientation, dir: @dir})}
+          {Connect.list(%List{id: @id, orientation: @orientation, dir: @dir})}
+        >
+          <button
+            :for={panel <- @panels}
+            class={tabs_panel_class(panel, :trigger_slot)}
+            phx-mounted={Connect.ignore_trigger(tabs_panel_trigger(panel, @id, @values, @orientation, @dir))}
+            {Connect.trigger(tabs_panel_trigger(panel, @id, @values, @orientation, @dir))}
+          >
+            {cond do
+              panel.source == :slots -> render_slot(panel.trigger_slot)
+              @trigger != [] -> render_slot(@trigger, %{trigger: panel.item_entry.trigger, meta: panel.item_entry.meta || %{}})
+              true -> panel.item_entry.trigger
+            end}
+          </button>
         </div>
+        <span
+          :if={@indicator}
+          phx-mounted={Connect.ignore_indicator(%Indicator{
+            id: @id,
+            values: @values,
+            orientation: @orientation,
+            dir: @dir
+          })}
+          {Connect.indicator(%Indicator{
+            id: @id,
+            values: @values,
+            orientation: @orientation,
+            dir: @dir
+          })}
+        ></span>
 
-        <div :if={@content == []} :for={{item_entry, index} <- Enum.with_index(@items)} {Connect.content(%Content{
-          id: @id,
-          value: item_entry.id || "item-#{index}",
-          disabled: item_entry.disabled,
-          values: @values,
-          orientation: @orientation,
-          dir: @dir
-        })}>
-          {item_entry.content}
+        <div
+          :for={panel <- @panels}
+          class={tabs_panel_class(panel, :content_slot)}
+          phx-mounted={Connect.ignore_content(tabs_panel_content(panel, @id, @values, @orientation, @dir))}
+          {Connect.content(tabs_panel_content(panel, @id, @values, @orientation, @dir))}
+        >
+          {cond do
+            panel.source == :slots -> render_slot(panel.content_slot)
+            @content != [] -> render_slot(@content, %{content: panel.item_entry.content, meta: panel.item_entry.meta || %{}})
+            true -> panel.item_entry.content
+          end}
         </div>
-
-        <div :if={@content != []} :for={{item_entry, index} <- Enum.with_index(@items)}>
-          <div :for={content_slot <- @content}>
-            <% item_data = %{
-              id: @id,
-              value: item_entry.id || "item-#{index}",
-              disabled: item_entry.disabled,
-              values: @values,
-              orientation: @orientation,
-              dir: @dir,
-              data: %{
-                trigger: item_entry.trigger,
-                content: item_entry.content,
-                meta: item_entry.meta || %{}
-              }
-            } %>
-            <.tabs_content item={item_data}>
-              {render_slot(content_slot, item_data)}
-            </.tabs_content>
-          </div>
-        </div>
-
       </div>
     </div>
     """
   end
 
-  @doc type: :component
-  @doc """
-  Renders the tabs trigger button.
-  """
-  attr(:item, :map, required: true)
-  attr(:indicator, :list, default: [])
+  defp tabs_assign_panels(assigns) do
+    panels =
+      cond do
+        assigns.compound ->
+          []
+
+        is_list(assigns.items) and assigns.items != [] ->
+          assigns.items
+          |> Enum.with_index()
+          |> Enum.map(fn {entry, index} ->
+            %{
+              source: :items,
+              value: entry.value || "item-#{index}",
+              disabled: entry.disabled,
+              item_entry: entry
+            }
+          end)
+
+        is_nil(assigns.items) and (assigns.trigger != [] or assigns.content != []) ->
+          Corex.Slot.resolve_panels!(
+            %{trigger: assigns.trigger, content: assigns.content},
+            required: [:trigger, :content],
+            component: "Tabs"
+          )
+          |> Enum.map(fn p ->
+            %{
+              source: :slots,
+              value: p.value,
+              disabled: p.disabled,
+              trigger_slot: p.trigger,
+              content_slot: p.content
+            }
+          end)
+
+        true ->
+          []
+      end
+
+    assign(assigns, :panels, panels)
+  end
+
+  defp tabs_panel_class(%{source: :items, item_entry: e}, _slot_key), do: Map.get(e, :class, nil)
+
+  defp tabs_panel_class(%{source: :slots} = panel, slot_key),
+    do: Map.get(panel[slot_key], :class, nil)
+
+  defp tabs_panel_trigger(panel, id, values, orientation, dir) do
+    %Trigger{
+      id: id,
+      value: panel.value,
+      disabled: panel.disabled,
+      values: values,
+      orientation: orientation,
+      dir: dir,
+      data: %{}
+    }
+  end
+
+  defp tabs_panel_content(panel, id, values, orientation, dir) do
+    %Content{
+      id: id,
+      value: panel.value,
+      disabled: panel.disabled,
+      values: values,
+      orientation: orientation,
+      dir: dir,
+      data: %{}
+    }
+  end
+
+  attr(:ctx, :map, required: true)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  def tabs_root(assigns) do
+    root = %Root{
+      id: assigns.ctx.id,
+      orientation: assigns.ctx.orientation,
+      dir: assigns.ctx.dir
+    }
+
+    assigns = assign(assigns, :root, root)
+
+    ~H"""
+    <div phx-mounted={Connect.ignore_root(@root)} {Connect.root(@root)} {@rest}>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  attr(:ctx, :map, required: true)
+  attr(:rest, :global)
+  slot(:inner_block, required: true)
+
+  def tabs_list(assigns) do
+    list = %List{
+      id: assigns.ctx.id,
+      orientation: assigns.ctx.orientation,
+      dir: assigns.ctx.dir
+    }
+
+    assigns = assign(assigns, :list, list)
+
+    ~H"""
+    <div phx-mounted={Connect.ignore_list(@list)} {Connect.list(@list)} {@rest}>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  attr(:ctx, :map, required: true)
+  attr(:value, :string, required: true)
+  attr(:disabled, :boolean, default: false)
+  attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def tabs_trigger(assigns) do
+    trigger = %Trigger{
+      id: assigns.ctx.id,
+      value: assigns.value,
+      disabled: assigns.disabled,
+      values: assigns.ctx.values,
+      orientation: assigns.ctx.orientation,
+      dir: assigns.ctx.dir,
+      data: %{}
+    }
+
+    assigns = assign(assigns, :trigger, trigger)
+
     ~H"""
-    <button {Connect.trigger(%Trigger{
-      id: @item.id,
-      value: @item.value,
-      disabled: @item.disabled,
-      values: @item.values,
-      orientation: @item.orientation,
-      dir: @item.dir
-    })}>
-      <span data-scope="tabs" data-part="item-text">
-        {render_slot(@inner_block)}
-      </span>
-      <span :if={@indicator != []} {Connect.indicator(%Trigger{
-        id: @item.id,
-        value: @item.value,
-        disabled: @item.disabled,
-        values: @item.values,
-        orientation: @item.orientation,
-        dir: @item.dir
-      })}>
-        <%= for indicator <- @indicator do %>
-          <%= render_slot(indicator, Map.put(@item, :data, Map.get(@item, :data, %{}))) %>
-        <% end %>
-      </span>
+    <button
+      type="button"
+      phx-mounted={Connect.ignore_trigger(@trigger)}
+      {Connect.trigger(@trigger)}
+      {@rest}
+    >
+      {render_slot(@inner_block)}
     </button>
     """
   end
 
-  @doc type: :component
-  @doc """
-  Renders the tabs content area.
-  """
+  attr(:ctx, :map, required: true)
+  attr(:rest, :global)
+  slot(:inner_block, required: false)
 
-  attr(:item, :map, required: true)
+  def tabs_indicator(assigns) do
+    indicator = %Indicator{
+      id: assigns.ctx.id,
+      values: assigns.ctx.values,
+      orientation: assigns.ctx.orientation,
+      dir: assigns.ctx.dir
+    }
+
+    assigns = assign(assigns, :indicator, indicator)
+
+    ~H"""
+    <span phx-mounted={Connect.ignore_indicator(@indicator)} {Connect.indicator(@indicator)} {@rest}>
+      {render_slot(@inner_block)}
+    </span>
+    """
+  end
+
+  attr(:ctx, :map, required: true)
+  attr(:value, :string, required: true)
+  attr(:disabled, :boolean, default: false)
+  attr(:rest, :global)
   slot(:inner_block, required: true)
 
   def tabs_content(assigns) do
+    content = %Content{
+      id: assigns.ctx.id,
+      value: assigns.value,
+      disabled: assigns.disabled,
+      values: assigns.ctx.values,
+      orientation: assigns.ctx.orientation,
+      dir: assigns.ctx.dir,
+      data: %{}
+    }
+
+    assigns = assign(assigns, :content, content)
+
     ~H"""
-    <div {Connect.content(%Content{
-      id: @item.id,
-      value: @item.value,
-      disabled: @item.disabled,
-      values: @item.values,
-      orientation: @item.orientation,
-      dir: @item.dir
-    })}>
+    <div phx-mounted={Connect.ignore_content(@content)} {Connect.content(@content)} {@rest}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -569,7 +669,7 @@ defmodule Corex.Tabs do
       </button>
   """
   def set_value(tabs_id, value) when is_binary(tabs_id) do
-    JS.dispatch("phx:tabs:set-value",
+    JS.dispatch("corex:tabs:set-value",
       to: "##{tabs_id}",
       detail: %{value: validate_tabs_value!(value)},
       bubbles: false

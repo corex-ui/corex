@@ -10,15 +10,58 @@ const tokensBasePath = path.resolve(__dirname, "./");
 const outputBasePath = path.resolve(tokensBasePath, '..', 'tokens');
 const buildPath = outputBasePath + path.sep;
 
+const semanticReferenceTheme = "neo";
+
+function themeSources(theme, mode) {
+  const base = `${tokensBasePath}/tokens/themes/${theme}`;
+  return [
+    `${base}/border.json`,
+    `${base}/dimension.json`,
+    `${base}/text.json`,
+    `${base}/font.json`,
+    `${base}/color/${mode}.json`
+  ];
+}
+
+function themeStaticJsonPaths(theme) {
+  const base = `${tokensBasePath}/tokens/themes/${theme}`;
+  return [
+    `${base}/border.json`,
+    `${base}/dimension.json`,
+    `${base}/text.json`,
+    `${base}/font.json`
+  ];
+}
+
+function themeStaticSuffixes(theme) {
+  return [
+    `themes/${theme}/border.json`,
+    `themes/${theme}/dimension.json`,
+    `themes/${theme}/text.json`,
+    `themes/${theme}/font.json`
+  ];
+}
+
+function rmCssRecursive(dir) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) rmCssRecursive(full);
+    else if (entry.name.endsWith('.css')) fs.rmSync(full, { force: true });
+  }
+}
+
 function cleanBuildPath() {
   fs.mkdirSync(buildPath, { recursive: true });
 
-  for (const subdir of ['themes', 'semantic']) {
-    const dirPath = path.resolve(buildPath, subdir);
-    if (!fs.existsSync(dirPath)) continue;
-    for (const entry of fs.readdirSync(dirPath)) {
+  const themesDir = path.resolve(buildPath, 'themes');
+  rmCssRecursive(themesDir);
+
+  const semanticDir = path.resolve(buildPath, 'semantic');
+  if (fs.existsSync(semanticDir)) {
+    for (const entry of fs.readdirSync(semanticDir)) {
       if (!entry.endsWith('.css')) continue;
-      fs.rmSync(path.resolve(dirPath, entry), { force: true });
+      fs.rmSync(path.resolve(semanticDir, entry), { force: true });
     }
   }
 }
@@ -53,10 +96,35 @@ function registerTransforms() {
 async function semantic() {
   const sets = getTokenSets().filter(set => set.startsWith("semantic/"));
   const promises = sets.map(set => {
+    const colorFilter = token => token.filePath.endsWith(`${set}.json`)
+    const baseFile = {
+      destination: `${set}.css`,
+      format: 'css/variables',
+      options: {
+        selector: `@theme inline`,
+        outputReferences: true
+      },
+      filter: colorFilter
+    }
+    const files =
+      set === "semantic/color"
+        ? [
+            baseFile,
+            {
+              destination: `${set}-scope.css`,
+              format: 'css/variables',
+              options: {
+                selector: `[data-theme][data-mode]`,
+                outputReferences: true
+              },
+              filter: colorFilter
+            }
+          ]
+        : [baseFile]
     const sd = new StyleDictionary({
       source: [
         `${tokensBasePath}/tokens/semantic/*.json`,
-        `${tokensBasePath}/tokens/themes/neo/light.json`
+        ...themeSources(semanticReferenceTheme, "light")
       ],
       preprocessors: ['tokens-studio'],
       platforms: {
@@ -77,69 +145,95 @@ async function semantic() {
             'ts/shadow/innerShadow'
           ],
           buildPath,
-          files: [{
-            destination: `${set}.css`,
-            format: 'css/variables',
-            options: {
-              selector: `@theme inline`,
-              outputReferences: true
-            },
-            filter: token => token.filePath.endsWith(`${set}.json`)
-          }]
+          files
         }
       },
-      log: { verbosity: 'default' }
+      log: { verbosity: 'verbose' }
     });
     return sd.buildPlatform('css');
   });
   return Promise.all(promises);
 }
 
+const themeTransforms = [
+  'attribute/cti',
+  'name/kebab-no-default',
+  'fontFamily/css',
+  'shadow/css/shorthand',
+  'cubicBezier/css',
+  'ts/descriptionToComment',
+  'ts/resolveMath',
+  'ts/opacity',
+  'ts/size/lineheight',
+  'ts/typography/fontWeight',
+  'ts/color/modifiers',
+  'ts/size/css/letterspacing',
+  'ts/shadow/innerShadow'
+];
+
+async function themeStatic(theme) {
+  const suffixes = themeStaticSuffixes(theme);
+  const sd = new StyleDictionary({
+    source: themeStaticJsonPaths(theme),
+    preprocessors: ['tokens-studio'],
+    platforms: {
+      css: {
+        transforms: themeTransforms,
+        buildPath,
+        files: suffixes.map(suffix => {
+          const name = path.basename(suffix, '.json');
+          return {
+            destination: `themes/${theme}/${name}.css`,
+            format: 'css/variables',
+            options: {
+              selector: `[data-theme="${theme}"]`,
+              outputReferences: true
+            },
+            filter: token => token.filePath.endsWith(suffix)
+          };
+        })
+      }
+    },
+    log: { verbosity: 'verbose' }
+  });
+  return sd.buildPlatform('css');
+}
+
+async function themeColor(theme, mode) {
+  const base = `${tokensBasePath}/tokens/themes/${theme}`;
+  const colorPath = `${base}/color/${mode}.json`;
+  const suffix = `themes/${theme}/color/${mode}.json`;
+  const sd = new StyleDictionary({
+    source: [colorPath],
+    preprocessors: ['tokens-studio'],
+    platforms: {
+      css: {
+        transforms: themeTransforms,
+        buildPath,
+        files: [{
+          destination: `themes/${theme}/color/${mode}.css`,
+          format: 'css/variables',
+          options: {
+            selector: `[data-theme="${theme}"][data-mode="${mode}"]`,
+            outputReferences: true
+          },
+          filter: token => token.filePath.endsWith(suffix)
+        }]
+      }
+    },
+    log: { verbosity: 'verbose' }
+  });
+  return sd.buildPlatform('css');
+}
+
 async function theme() {
   const themes = ["neo", "uno", "duo", "leo"];
   const modes = ["light", "dark"];
-  
-  const promises = themes.flatMap(theme =>
-    modes.map(mode => {
-      const sd = new StyleDictionary({
-        source: [`${tokensBasePath}/tokens/themes/${theme}/${mode}.json`],
-        preprocessors: ['tokens-studio'],
-        platforms: {
-          css: {
-            transforms: [
-              'attribute/cti',
-              'name/kebab-no-default',
-              'fontFamily/css',
-              'shadow/css/shorthand',
-              'cubicBezier/css',
-              'ts/descriptionToComment',
-              'ts/resolveMath',
-              'ts/opacity',
-              'ts/size/lineheight',
-              'ts/typography/fontWeight',
-              'ts/color/modifiers',
-              'ts/size/css/letterspacing',
-              'ts/shadow/innerShadow'
-            ],
-            buildPath,
-            files: [{
-              destination: `themes/${theme}/${mode}.css`,
-              format: 'css/variables',
-              options: {
-                selector: `[data-theme="${theme}"][data-mode="${mode}"]`,
-                outputReferences: true
-              },
-              filter: token => token.filePath.endsWith(`themes/${theme}/${mode}.json`)
-            }]
-          }
-        },
-        log: { verbosity: 'default' }
-      });
-      return sd.buildPlatform('css');
-    })
+  const staticBuilds = themes.map(theme => themeStatic(theme));
+  const colorBuilds = themes.flatMap(theme =>
+    modes.map(mode => themeColor(theme, mode))
   );
-  
-  return Promise.all(promises);
+  return Promise.all([...staticBuilds, ...colorBuilds]);
 }
 
 async function build() {

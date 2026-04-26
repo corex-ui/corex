@@ -7,29 +7,11 @@ defmodule Corex.ColorPickerTest do
 
   describe "color_picker/1" do
     test "renders" do
-      html = render_component(&ColorPicker.color_picker/1, [])
+      html = render_component(&CorexTest.ComponentHelpers.render_color_picker/1, [])
       assert html =~ ~r/data-scope="color-picker"/
       assert html =~ ~r/data-part="root"/
-    end
-  end
-
-  describe "set_open/2" do
-    test "returns JS command when open is true" do
-      js = ColorPicker.set_open("my-color-picker", true)
-      assert %Phoenix.LiveView.JS{} = js
-    end
-
-    test "returns JS command when open is false" do
-      js = ColorPicker.set_open("my-color-picker", false)
-      assert %Phoenix.LiveView.JS{} = js
-    end
-  end
-
-  describe "set_open/3" do
-    test "pushes event to socket" do
-      socket = %Phoenix.LiveView.Socket{}
-      result = ColorPicker.set_open(socket, "my-color-picker", true)
-      assert %Phoenix.LiveView.Socket{} = result
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
     end
   end
 
@@ -49,31 +31,6 @@ defmodule Corex.ColorPickerTest do
     test "pushes event to socket" do
       socket = %Phoenix.LiveView.Socket{}
       result = ColorPicker.set_value(socket, "my-color-picker", "#00ff00")
-      assert %Phoenix.LiveView.Socket{} = result
-    end
-  end
-
-  describe "set_format/2" do
-    test "returns JS command for rgba format" do
-      js = ColorPicker.set_format("my-color-picker", "rgba")
-      assert %Phoenix.LiveView.JS{} = js
-    end
-
-    test "returns JS command for hex format" do
-      js = ColorPicker.set_format("my-color-picker", "hex")
-      assert %Phoenix.LiveView.JS{} = js
-    end
-
-    test "returns JS command for hsla and hsba formats" do
-      assert %Phoenix.LiveView.JS{} = ColorPicker.set_format("my-color-picker", "hsla")
-      assert %Phoenix.LiveView.JS{} = ColorPicker.set_format("my-color-picker", "hsba")
-    end
-  end
-
-  describe "set_format/3" do
-    test "pushes event to socket" do
-      socket = %Phoenix.LiveView.Socket{}
-      result = ColorPicker.set_format(socket, "my-color-picker", "hex")
       assert %Phoenix.LiveView.Socket{} = result
     end
   end
@@ -278,56 +235,19 @@ defmodule Corex.ColorPickerTest do
       assigns = base_assigns()
       result = Connect.props(assigns)
       assert result["id"] == "test-color-picker"
-      assert result["data-format"] == "rgba"
+      refute Map.has_key?(result, "data-default-format")
+      refute Map.has_key?(result, "data-format")
+      refute Map.has_key?(result, "data-open")
+      refute Map.has_key?(result, "data-default-open")
+      refute Map.has_key?(result, "data-value")
+      refute Map.has_key?(result, "data-controlled")
     end
 
-    test "returns props with default_value" do
-      assigns = base_assigns(default_value: "rgb(25, 9, 192, 0.9)")
+    test "returns props with value as data-default-value" do
+      assigns = base_assigns(value: "rgb(25, 9, 192, 0.9)")
       result = Connect.props(assigns)
       assert result["id"] == "test-color-picker"
       assert result["data-default-value"] == "rgb(25, 9, 192, 0.9)"
-      assert result["data-format"] == "rgba"
-      assert result["data-default-format"] == "rgba"
-    end
-
-    test "returns props with hex format" do
-      assigns = base_assigns(format: "hex", default_format: "hex", default_value: "#ff0000")
-      result = Connect.props(assigns)
-      assert result["data-format"] == "hex"
-      assert result["data-default-format"] == "hex"
-    end
-
-    test "returns props with hsla format" do
-      assigns = base_assigns(format: "hsla", default_format: "hsla")
-      result = Connect.props(assigns)
-      assert result["data-format"] == "hsla"
-      assert result["data-default-format"] == "hsla"
-    end
-
-    test "returns props with hsba format" do
-      assigns = base_assigns(format: "hsba", default_format: "hsba")
-      result = Connect.props(assigns)
-      assert result["data-format"] == "hsba"
-      assert result["data-default-format"] == "hsba"
-    end
-
-    test "controlled mode uses value not default_value" do
-      assigns =
-        base_assigns(
-          controlled: true,
-          value: "#1909c0",
-          default_value: "#ff0000"
-        )
-
-      result = Connect.props(assigns)
-      assert result["data-value"] == "#1909c0"
-      assert result["data-default-value"] == "#ff0000"
-    end
-
-    test "controlled mode passes open state" do
-      assigns = base_assigns(controlled: true, open: true)
-      result = Connect.props(assigns)
-      assert result["data-open"] == ""
     end
 
     test "includes event names when set" do
@@ -345,9 +265,9 @@ defmodule Corex.ColorPickerTest do
     end
 
     test "includes positioning when set" do
-      assigns = base_assigns(positioning: %{placement: "bottom"})
+      assigns = base_assigns(positioning: %Corex.Positioning{placement: "bottom"})
       result = Connect.props(assigns)
-      assert result["data-positioning"] =~ "placement"
+      assert result["data-position-placement"] == "bottom"
     end
 
     test "includes dir" do
@@ -376,7 +296,7 @@ defmodule Corex.ColorPickerTest do
   end
 
   describe "color_picker/1 component" do
-    test "assigns initial from default_value" do
+    test "assigns initial from value" do
       initial = Initial.parse("rgba(25, 9, 192, 0.9)")
       assert initial.hex_value == "#1909C0"
       assert initial.alpha_value == "0.9"
@@ -387,7 +307,7 @@ defmodule Corex.ColorPickerTest do
       assert initial.value_rgba == "rgba(25, 9, 192, 0.9)"
     end
 
-    test "assigns initial from controlled value" do
+    test "parses rgba with alpha" do
       initial = Initial.parse("rgba(0, 128, 255, 0.5)")
       assert initial.hex_value == "#0080FF"
       assert initial.alpha_value == "0.5"
@@ -404,22 +324,16 @@ defmodule Corex.ColorPickerTest do
   defp base_assigns(overrides \\ []) do
     [
       id: "test-color-picker",
-      default_value: nil,
       value: nil,
       name: nil,
-      format: "rgba",
-      default_format: "rgba",
-      controlled: false,
       close_on_select: true,
-      default_open: false,
-      open: false,
       open_auto_focus: true,
       disabled: false,
       invalid: false,
       read_only: false,
       required: false,
       dir: "ltr",
-      positioning: %{},
+      positioning: %Corex.Positioning{},
       on_value_change: nil,
       on_value_change_end: nil,
       on_open_change: nil

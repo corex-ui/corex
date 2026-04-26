@@ -6,6 +6,11 @@ defmodule Corex.Navigate do
   External links should be flagged with the `external` attribute.
   Icon-only links must pass `aria_label` to screen readers.
 
+  This is the **link** counterpart to `Corex.Action` (button): `to` + `type` select the link mode;
+  `method` and `replace` are the same knobs Phoenix’s unified `button` forwards on `{@rest}` when
+  it renders `<.link>`, exposed here as named attrs so call sites stay explicit. Any other link
+  attributes go through `rest`.
+
   ## Examples
 
   ```heex
@@ -21,14 +26,14 @@ defmodule Corex.Navigate do
         <svg aria-label="Download PDF, 2MB" ...>...</svg>
       </.navigate>
       <.navigate to="/profile" aria_label="View profile">
-        <svg aria-hidden="true" ...>...</svg>
+        <svg aria-hidden="true" ...></svg>
       </.navigate>
     ```
 
   ## Styling
 
-  If you wish to use the default Corex styling, you can use the class `link` on the component.
-  This requires to install `Mix.Tasks.Corex.Design` first and import the component css file.
+  If you wish to use the default Corex styling, you can use the `link` class on the component.
+  This requires you to install `Mix.Tasks.Corex.Design` first and import the component css file.
 
   ```css
   @import "../corex/main.css";
@@ -42,7 +47,6 @@ defmodule Corex.Navigate do
   <.navigate class="link link--accent link--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/link#modifiers)
   """
 
   @doc type: :component
@@ -72,17 +76,29 @@ defmodule Corex.Navigate do
     doc: "Required for icon-only links, describes the link to screen readers"
   )
 
-  attr(:rest, :global, include: ~w(class method replace))
+  attr(:replace, :boolean,
+    default: false,
+    doc: "Forwarded to Phoenix link for navigate/patch only; no effect for href (warns)."
+  )
+
+  attr(:method, :string,
+    default: nil,
+    doc: "Forwarded to Phoenix link for href only; no effect for navigate/patch (warns)."
+  )
+
+  attr(:rest, :global)
+
   slot(:inner_block, required: true)
 
-  def navigate(%{rest: %{replace: _}, type: "href"} = assigns) do
+  def navigate(%{replace: true, type: "href"} = assigns) do
     IO.warn("<.navigate> replace has no effect with type=\"href\"")
-    navigate(Map.update!(assigns, :rest, &Map.delete(&1, :replace)))
+    navigate(%{assigns | replace: false})
   end
 
-  def navigate(%{rest: %{method: _}, type: type} = assigns) when type in ["navigate", "patch"] do
+  def navigate(%{method: method, type: type} = assigns)
+      when is_binary(method) and type in ["navigate", "patch"] do
     IO.warn("<.navigate> method has no effect with type=\"#{type}\"")
-    navigate(Map.update!(assigns, :rest, &Map.delete(&1, :method)))
+    navigate(%{assigns | method: nil})
   end
 
   def navigate(%{external: true, type: type} = assigns) when type in ["navigate", "patch"] do
@@ -91,6 +107,25 @@ defmodule Corex.Navigate do
   end
 
   def navigate(assigns) do
+    method_attrs =
+      if assigns.type == "href" && is_binary(assigns.method) do
+        %{method: assigns.method}
+      else
+        %{}
+      end
+
+    replace_attrs =
+      if assigns.type in ["navigate", "patch"] && assigns.replace do
+        %{replace: true}
+      else
+        %{}
+      end
+
+    assigns =
+      assigns
+      |> assign(:method_attrs, method_attrs)
+      |> assign(:replace_attrs, replace_attrs)
+
     ~H"""
     <.link
       href={@type == "href" && @to}
@@ -98,6 +133,8 @@ defmodule Corex.Navigate do
       patch={@type == "patch" && @to}
       download={@download}
       aria-label={@aria_label}
+      {@replace_attrs}
+      {@method_attrs}
       target={@external && "_blank"}
       rel={@external && "noopener noreferrer"}
       {@rest}

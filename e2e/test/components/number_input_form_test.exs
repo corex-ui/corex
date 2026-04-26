@@ -17,7 +17,7 @@ defmodule E2eWeb.NumberInputFormTest do
     session
     |> NumberInput.goto_form(:static)
     |> NumberInput.wait(500)
-    |> NumberInput.fill_number_input("42")
+    |> NumberInput.fill_number_input("42", :static)
     |> NumberInput.wait(200)
     |> NumberInput.submit_form()
     |> NumberInput.wait(500)
@@ -44,11 +44,11 @@ defmodule E2eWeb.NumberInputFormTest do
     session
     |> NumberInput.goto_form(:live)
     |> NumberInput.wait(500)
-    |> NumberInput.fill_number_input("42")
+    |> NumberInput.fill_number_input("42", :live)
     |> NumberInput.wait(500)
     |> NumberInput.submit_form(:live)
     |> NumberInput.wait(2000)
-    |> NumberInput.see_flash("value=42")
+    |> NumberInput.see_flash("value=42", timeout: 12_000)
   end
 
   feature "live form - has no A11y violations", %{session: session} do

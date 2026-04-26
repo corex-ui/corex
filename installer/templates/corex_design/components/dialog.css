@@ -17,7 +17,7 @@
     inset: 0;
     width: 100vw;
     height: 100vh;
-    background: --alpha(var(--color-ui-accent) / 95%);
+    background: color-mix(in srgb, var(--color-ui) 95%, transparent);
     z-index: 10;
   }
 
@@ -35,16 +35,16 @@
   .dialog [data-scope="dialog"][data-part="content"] {
     @apply ui-content;
 
-    max-width: var(--container-ui);
-    margin: var(--spacing-ui-padding);
-    padding: var(--spacing-ui-padding);
+    max-width: var(--container-md);
+    margin: --spacing(4);
+    padding: --spacing(4);
   }
 
 
   .dialog [data-scope="dialog"][data-part="header"] {
     display: flex;
     align-items: center;
-    gap: var(--spacing-ui-gap);
+    gap: --spacing(4);
   }
 
   .dialog [data-scope="dialog"][data-part="header"] [data-scope="dialog"][data-part="title"] {
@@ -63,20 +63,39 @@
     margin-block: 0;
   }
 
-  .dialog.dialog--side [data-scope="dialog"][data-part="positioner"] {
+  .dialog.dialog--side [data-scope="dialog"][data-part="content"],
+  .dialog.dialog--sidebar [data-scope="dialog"][data-part="content"] {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--container-3xs);
+    padding: 0;
+    margin: 0;
+    border-radius: var(--radius-none);
+  }
+
+  .dialog.dialog--side [data-scope="dialog"][data-part="positioner"],
+  .dialog.dialog--sidebar [data-scope="dialog"][data-part="positioner"] {
     align-items: stretch;
     justify-content: flex-start;
     height: 100vh;
   }
 
-  .dialog.dialog--side [data-scope="dialog"][data-part="content"] {
-    height: 100%;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    width: auto;
-    padding: 0;
-    margin: 0;
-    border-radius: var(--radius-none);
+  .dialog.dialog--sm [data-scope="dialog"][data-part="content"] {
+    max-width: var(--container-xs);
+  }
+
+  .dialog.dialog--md [data-scope="dialog"][data-part="content"] {
+    max-width: var(--container-sm);
+  }
+
+  .dialog.dialog--lg [data-scope="dialog"][data-part="content"] {
+    max-width: var(--container-md);
+  }
+
+  .dialog.dialog--xl [data-scope="dialog"][data-part="content"] {
+    max-width: var(--container-lg);
   }
 }

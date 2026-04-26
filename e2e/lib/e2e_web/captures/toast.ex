@@ -32,7 +32,7 @@ defmodule CorexWeb.Toast do
 
   defp render_buttons(assigns) do
     ~H"""
-    <div class="layout__row gap-ui-gap">
+    <div class="layout__row gap-2">
       <.action
         phx-click={
           Toast.create_toast(

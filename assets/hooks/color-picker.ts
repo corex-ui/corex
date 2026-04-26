@@ -6,252 +6,159 @@ import type {
   ValueChangeDetails,
   OpenChangeDetails,
   FormatChangeDetails,
-  ColorFormat,
 } from "@zag-js/color-picker";
-import { getString, getBoolean, getDir } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readPositioningOptions } from "../lib/positioning";
+import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
 
 type ColorPickerHookState = {
   colorPicker?: ColorPicker;
   handlers?: Array<CallbackRef>;
-  onSetOpen?: (event: Event) => void;
   onSetValue?: (event: Event) => void;
-  onSetFormat?: (event: Event) => void;
 };
 
-function parsePositioning(val: string | undefined): Props["positioning"] | undefined {
-  if (!val) return undefined;
-  try {
-    return JSON.parse(val) as Props["positioning"];
-  } catch {
-    return undefined;
-  }
+function readValueProps(el: HTMLElement): Pick<Props, "defaultValue"> {
+  const defaultVal = getString(el, "defaultValue");
+  return { defaultValue: defaultVal ? parse(defaultVal) : undefined };
 }
 
 const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
     const el = this.el;
-    const controlled = getBoolean(el, "controlled");
-    const defaultVal = getString(el, "defaultValue");
-    const valueVal = getString(el, "value");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
+    const valueProps = readValueProps(el);
 
     const zag = new ColorPicker(el, {
       id: el.id,
-      ...(controlled
-        ? { value: valueVal ? parse(valueVal) : undefined }
-        : { defaultValue: defaultVal ? parse(defaultVal) : undefined }),
-      name: getString(el, "name") ?? el.id,
-      format:
-        getString<"rgba" | "hsla" | "hsba" | "hex">(el, "format", [
-          "rgba",
-          "hsla",
-          "hsba",
-          "hex",
-        ]) ?? "rgba",
-      defaultFormat: getString<"rgba" | "hsla" | "hsba" | "hex">(el, "defaultFormat", [
-        "rgba",
-        "hsla",
-        "hsba",
-        "hex",
-      ]),
-      closeOnSelect: getBoolean(el, "closeOnSelect") !== false,
-      ...(controlled
-        ? { open: getBoolean(el, "open") }
-        : { defaultOpen: getBoolean(el, "defaultOpen") }),
-      openAutoFocus: getBoolean(el, "openAutoFocus") !== false,
+      ...valueProps,
+      name: getString(el, "name"),
+      defaultFormat: "rgba",
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      defaultOpen: false,
+      openAutoFocus: getBoolean(el, "openAutoFocus"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
-      positioning: parsePositioning(el.dataset.positioning),
+      positioning: readPositioningOptions(el),
       onValueChange: (details: ValueChangeDetails) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            valueAsString: details.valueAsString,
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
             id: el.id,
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+            valueAsString: details.valueAsString,
+          } as Record<string, unknown>,
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient"),
+        });
       },
       onValueChangeEnd: (details: ValueChangeDetails) => {
-        const eventName = getString(el, "onValueChangeEnd");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            valueAsString: details.valueAsString,
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
             id: el.id,
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeEndClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+            valueAsString: details.valueAsString,
+          } as Record<string, unknown>,
+          serverEventName: getString(el, "onValueChangeEnd"),
+          clientEventName: getString(el, "onValueChangeEndClient"),
+        });
       },
       onOpenChange: (details: OpenChangeDetails) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { open: details.open, id: el.id });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { open: details.open, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, open: details.open } as Record<string, unknown>,
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient"),
+        });
       },
       onFormatChange: (details: FormatChangeDetails) => {
-        const eventName = getString(el, "onFormatChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { format: details.format, id: el.id });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, format: details.format } as Record<string, unknown>,
+          serverEventName: getString(el, "onFormatChange"),
+          clientEventName: getString(el, "onFormatChangeClient"),
+        });
       },
       onPointerDownOutside: () => {
-        const eventName = getString(el, "onPointerDownOutside");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { id: el.id });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id } as Record<string, unknown>,
+          serverEventName: getString(el, "onPointerDownOutside"),
+          clientEventName: getString(el, "onPointerDownOutsideClient"),
+        });
       },
       onFocusOutside: () => {
-        const eventName = getString(el, "onFocusOutside");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { id: el.id });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id } as Record<string, unknown>,
+          serverEventName: getString(el, "onFocusOutside"),
+          clientEventName: getString(el, "onFocusOutsideClient"),
+        });
       },
       onInteractOutside: () => {
-        const eventName = getString(el, "onInteractOutside");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { id: el.id });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id } as Record<string, unknown>,
+          serverEventName: getString(el, "onInteractOutside"),
+          clientEventName: getString(el, "onInteractOutsideClient"),
+        });
       },
     } as unknown as Props);
     zag.init();
     this.colorPicker = zag;
     this.handlers = [];
 
-    this.onSetOpen = (event: Event) => {
-      const { open } = (event as CustomEvent<{ open: boolean }>).detail;
-      zag.api.setOpen(open);
-    };
-    el.addEventListener("phx:color-picker:set-open", this.onSetOpen);
-
     this.onSetValue = (event: Event) => {
       const { value } = (event as CustomEvent<{ value: string }>).detail;
       zag.api.setValue(value);
     };
-    el.addEventListener("phx:color-picker:set-value", this.onSetValue);
-
-    this.onSetFormat = (event: Event) => {
-      const { format } = (event as CustomEvent<{ format: string }>).detail;
-      zag.api.setFormat(format as ColorFormat);
-    };
-    el.addEventListener("phx:color-picker:set-format", this.onSetFormat);
+    el.addEventListener("corex:color-picker:set-value", this.onSetValue);
 
     this.handlers.push(
-      this.handleEvent(
-        "color_picker_set_open",
-        (payload: { color_picker_id?: string; open: boolean }) => {
-          const targetId = payload.color_picker_id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
-            if (!matches) return;
-          }
-          zag.api.setOpen(payload.open);
-        }
-      )
-    );
-
-    this.handlers.push(
-      this.handleEvent(
-        "color_picker_set_value",
-        (payload: { color_picker_id?: string; value: string }) => {
-          const targetId = payload.color_picker_id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
-            if (!matches) return;
-          }
-          zag.api.setValue(payload.value);
-        }
-      )
-    );
-
-    this.handlers.push(
-      this.handleEvent(
-        "color_picker_set_format",
-        (payload: { color_picker_id?: string; format: string }) => {
-          const targetId = payload.color_picker_id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
-            if (!matches) return;
-          }
-          zag.api.setFormat(payload.format as ColorFormat);
-        }
-      )
+      this.handleEvent("color_picker_set_value", (payload: { value: string }) => {
+        if (!idMatches(el.id, readPayloadId(payload))) return;
+        zag.api.setValue(payload.value);
+      })
     );
   },
 
   updated(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
     const el = this.el;
-    const controlled = getBoolean(el, "controlled");
-    const defaultVal = getString(el, "defaultValue");
-    const valueVal = getString(el, "value");
+    const valueProps = readValueProps(el);
 
     this.colorPicker?.updateProps({
-      ...(controlled
-        ? { value: valueVal ? parse(valueVal) : undefined }
-        : { defaultValue: defaultVal ? parse(defaultVal) : undefined }),
-      name: getString(el, "name") ?? el.id,
-      format:
-        getString<"rgba" | "hsla" | "hsba" | "hex">(el, "format", [
-          "rgba",
-          "hsla",
-          "hsba",
-          "hex",
-        ]) ?? "rgba",
-      defaultFormat: getString<"rgba" | "hsla" | "hsba" | "hex">(el, "defaultFormat", [
-        "rgba",
-        "hsla",
-        "hsba",
-        "hex",
-      ]),
-      closeOnSelect: getBoolean(el, "closeOnSelect") !== false,
-      ...(controlled
-        ? { open: getBoolean(el, "open") }
-        : { defaultOpen: getBoolean(el, "defaultOpen") }),
-      openAutoFocus: getBoolean(el, "openAutoFocus") !== false,
+      ...valueProps,
+      name: getString(el, "name"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      openAutoFocus: getBoolean(el, "openAutoFocus"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       readOnly: getBoolean(el, "readOnly"),
       required: getBoolean(el, "required"),
       dir: getDir(el),
-      positioning: parsePositioning(el.dataset.positioning),
+      positioning: readPositioningOptions(el),
     } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & ColorPickerHookState) {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("phx:color-picker:set-open", this.onSetOpen);
-    }
     if (this.onSetValue) {
-      this.el.removeEventListener("phx:color-picker:set-value", this.onSetValue);
-    }
-    if (this.onSetFormat) {
-      this.el.removeEventListener("phx:color-picker:set-format", this.onSetFormat);
+      this.el.removeEventListener("corex:color-picker:set-value", this.onSetValue);
     }
     if (this.handlers) {
       for (const h of this.handlers) {

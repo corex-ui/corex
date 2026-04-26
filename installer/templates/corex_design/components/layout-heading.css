@@ -1,30 +1,50 @@
 @import "../main.css";
 
 @layer components {
-  [data-scope="layout-heading"][data-part="root"] {
+
+  .layout-heading {
+    width: 100%;
+  }
+
+  .layout-heading [data-scope="layout-heading"][data-part="root"] {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: var(--spacing-ui-gap);
+    gap: --spacing(4);
     width: 100%;
-    background-color: var(--color-layer);
-    border-radius: var(--radius-ui);
-    border: 1px solid var(--color-layer--border);
-    padding-inline: var(--spacing-ui);
+    padding: var(--spacing-space);
   }
 
-  [data-scope="layout-heading"][data-part="content"] {
+  .layout-heading [data-scope="layout-heading"][data-part="content"] {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-ui-gap-sm);
+    gap: var(--spacing-space);
   }
 
-  [data-scope="layout-heading"][data-part="actions"] {
+  .layout-heading h1,
+  .layout-heading h2 {
+    margin: 0;
+  }
+
+
+  .layout-heading [data-scope="layout-heading"][data-part="actions"] {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--spacing-ui-gap);
-    padding-block: var(--spacing-ui-padding);
+    gap: --spacing(4);
+    flex-shrink: 0;
+    padding: 0;
+  }
+
+  @media (max-width: 640px) {
+    .layout-heading [data-scope="layout-heading"][data-part="root"] {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .layout-heading [data-scope="layout-heading"][data-part="actions"] {
+      justify-content: flex-start;
+    }
   }
 }

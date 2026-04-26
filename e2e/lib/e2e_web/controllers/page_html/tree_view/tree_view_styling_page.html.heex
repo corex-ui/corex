@@ -1,0 +1,72 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="tree-view-styling-page"
+    title="Tree view · Style"
+    subtitle="Semantic colors, density steps, radius, and text utilities via modifier classes on the tree view."
+  >
+    <.demo_section
+      id="tree-view-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.TreeViewDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.TreeViewDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-styling-text"
+      title="Text"
+      code={E2eWeb.Demos.TreeViewDemo.styling_text_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_text_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.TreeViewDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-styling-max-width"
+      title="Max Width"
+      code={E2eWeb.Demos.TreeViewDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tree-view-styling-mix-modifiers"
+      title="Mix modifiers"
+      code={E2eWeb.Demos.TreeViewDemo.styling_mix_modifiers_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TreeViewDemo.styling_mix_modifiers_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

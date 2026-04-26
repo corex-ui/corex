@@ -1,7 +1,17 @@
 import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunk-WHNMJXTN.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunk-GGOQNLHD.mjs";
+import {
   Component,
   VanillaMachine,
   addOrRemove,
+  canPushEvent,
   contains,
   createAnatomy,
   createGuards,
@@ -10,6 +20,7 @@ import {
   ensureProps,
   first,
   getBoolean,
+  getDir,
   getEventKey,
   getEventTarget,
   getString,
@@ -19,17 +30,16 @@ import {
   isSafari,
   last,
   nextById,
-  normalizeProps,
   prevById,
   queryAll,
   raf
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.36.0/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.39.1/node_modules/@zag-js/toggle-group/dist/toggle-group.anatomy.mjs
 var anatomy = createAnatomy("toggle-group").parts("root", "item");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.36.0/node_modules/@zag-js/toggle-group/dist/toggle-group.dom.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.39.1/node_modules/@zag-js/toggle-group/dist/toggle-group.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `toggle-group:${ctx.id}`;
 var getItemId = (ctx, value) => ctx.ids?.item?.(value) ?? `toggle-group:${ctx.id}:${value}`;
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
@@ -43,7 +53,7 @@ var getLastEl = (ctx) => last(getElements(ctx));
 var getNextEl = (ctx, id, loopFocus) => nextById(getElements(ctx), id, loopFocus);
 var getPrevEl = (ctx, id, loopFocus) => prevById(getElements(ctx), id, loopFocus);
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.36.0/node_modules/@zag-js/toggle-group/dist/toggle-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.39.1/node_modules/@zag-js/toggle-group/dist/toggle-group.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const value = context.get("value");
@@ -172,7 +182,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toggle-group@1.36.0/node_modules/@zag-js/toggle-group/dist/toggle-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toggle-group@1.39.1/node_modules/@zag-js/toggle-group/dist/toggle-group.machine.mjs
 var { not, and } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -351,7 +361,7 @@ var ToggleGroup = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector(
@@ -373,66 +383,69 @@ var ToggleGroup = class extends Component {
 };
 
 // hooks/toggle-group.ts
+function valueChangePayload(el, details) {
+  return {
+    id: el.id,
+    value: details.value
+  };
+}
+function readPayloadValue(payload) {
+  if (!payload || typeof payload !== "object") return void 0;
+  const o = payload;
+  const v = o.value ?? o["value"];
+  if (Array.isArray(v) && v.every((x) => typeof x === "string")) return v;
+  return void 0;
+}
 var ToggleGroupHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const props = {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
-      defaultValue: getStringList(el, "defaultValue"),
       deselectable: getBoolean(el, "deselectable"),
       loopFocus: getBoolean(el, "loopFocus"),
       rovingFocus: getBoolean(el, "rovingFocus"),
       disabled: getBoolean(el, "disabled"),
       multiple: getBoolean(el, "multiple"),
-      orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      orientation: getString(el, "orientation"),
+      dir: getDir(el),
       onValueChange: (details) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            value: details.value,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                value: details.value,
-                id: el.id
-              }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       }
     };
     const toggleGroup = new ToggleGroup(el, props);
     toggleGroup.init();
     this.toggleGroup = toggleGroup;
-    this.onSetValue = (event) => {
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:toggle-group:set-value", (event) => {
       const { value } = event.detail;
       toggleGroup.api.setValue(value);
-    };
-    el.addEventListener("phx:toggle-group:set-value", this.onSetValue);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("toggle-group_set_value", (payload) => {
-        const targetId = payload.id;
-        if (targetId && targetId !== el.id) return;
-        toggleGroup.api.setValue(payload.value);
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("toggle-group:value", () => {
-        this.pushEvent("toggle-group:value_response", {
-          value: toggleGroup.api.value
-        });
-      })
-    );
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("toggle-group_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const value = readPayloadValue(payload);
+      if (value) toggleGroup.api.setValue(value);
+    });
+    registry.add("toggle-group:value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("toggle-group:value_response", {
+        id: el.id,
+        value: toggleGroup.api.value
+      });
+    });
   },
   updated() {
     this.toggleGroup?.updateProps({
@@ -442,19 +455,13 @@ var ToggleGroupHook = {
       rovingFocus: getBoolean(this.el, "rovingFocus"),
       disabled: getBoolean(this.el, "disabled"),
       multiple: getBoolean(this.el, "multiple"),
-      orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
-      dir: getString(this.el, "dir", ["ltr", "rtl"])
+      orientation: getString(this.el, "orientation"),
+      dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:toggle-group:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.toggleGroup?.destroy();
   }
 };

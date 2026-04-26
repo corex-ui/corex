@@ -1,22 +1,32 @@
 import {
   memo
-} from "./chunk-B7UVPCXR.mjs";
+} from "./chunk-7EQLYSUR.mjs";
 import {
-  clampValue,
-  isValueWithinRange
-} from "./chunk-MV633JPN.mjs";
+  createLiveRegion
+} from "./chunk-MRDCAPRF.mjs";
+import {
+  readPositioningOptions
+} from "./chunk-AFD7D2GA.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-VXCJNDUG.mjs";
+} from "./chunk-F6MNP3LD.mjs";
 import {
   trackDismissableElement
-} from "./chunk-EV6LXBMY.mjs";
-import "./chunk-YCAWAEF3.mjs";
+} from "./chunk-JJ4TVKGJ.mjs";
+import "./chunk-DXQBMWMN.mjs";
+import {
+  clampValue,
+  isValueWithinRange
+} from "./chunk-NX2BOTHE.mjs";
+import {
+  notifyChange
+} from "./chunk-GGOQNLHD.mjs";
 import {
   Component,
   VanillaMachine,
   ariaAttr,
+  canPushEvent,
   chunk,
   createAnatomy,
   createGuards,
@@ -31,15 +41,14 @@ import {
   getStringList,
   isComposingEvent,
   match,
-  normalizeProps,
   query,
   queryAll,
   raf,
   restoreTextSelection,
   setElementValue
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.anatomy.mjs
 var anatomy = createAnatomy("date-picker").parts(
   "clearTrigger",
   "content",
@@ -1379,7 +1388,7 @@ function $fb18d541ea1ad717$var$getResolvedHourCycle(locale, options) {
   throw new Error("Unexpected hour cycle result");
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/constrain.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/constrain.mjs
 function alignCenter(date, duration, locale, min, max) {
   const halfDuration = {};
   for (let prop in duration) {
@@ -1452,7 +1461,7 @@ function constrainValue(date, minValue, maxValue) {
   return constrainedDateOnly;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/align.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/align.mjs
 function alignDate(date, alignment, duration, locale, min, max) {
   switch (alignment) {
     case "start":
@@ -1465,7 +1474,7 @@ function alignDate(date, alignment, duration, locale, min, max) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/assertion.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/assertion.mjs
 function isDateEqual(dateA, dateB) {
   if (dateA == null || dateB == null) return dateA === dateB;
   return $14e0f24ef4ac5c92$export$ea39ec197993aef0(dateA, dateB);
@@ -1487,7 +1496,7 @@ function isNextRangeInvalid(endDate, minValue, maxValue) {
   return $14e0f24ef4ac5c92$export$ea39ec197993aef0(nextDate, endDate) || isDateOutsideRange(nextDate, minValue, maxValue);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/duration.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/duration.mjs
 function getUnitDuration(duration) {
   let clone = { ...duration };
   for (let key in clone) clone[key] = 1;
@@ -1500,7 +1509,7 @@ function getEndDate(startDate, duration) {
   return startDate.add(clone);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/get-era-format.mjs
 function getEraFormat(date) {
   if (!date) return void 0;
   const id = date.calendar.identifier;
@@ -1510,7 +1519,7 @@ function getEraFormat(date) {
   return "short";
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/formatter.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/formatter.mjs
 function getDayFormatter(locale, timeZone, referenceDate) {
   const date = referenceDate ?? $11d87f3f76e88657$export$b21e0b124e224484($14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone));
   return new $fb18d541ea1ad717$export$ad991b66133851cf(locale, {
@@ -1534,7 +1543,7 @@ function getMonthFormatter(locale, timeZone, referenceDate) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/format.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/format.mjs
 function formatRange(startDate, endDate, formatter, toString, timeZone) {
   let parts2 = formatter.formatRangeToParts(startDate.toDate(timeZone), endDate.toDate(timeZone));
   let separatorIndex = -1;
@@ -1568,7 +1577,7 @@ function formatSelectedDate(startDate, endDate, locale, timeZone) {
   return formatRange(start, end, formatter, (start2, end2) => `${start2} \u2013 ${end2}`, timeZone);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-month.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-month.mjs
 var daysOfTheWeek = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 function normalizeFirstDayOfWeek(firstDayOfWeek) {
   return firstDayOfWeek != null ? daysOfTheWeek[firstDayOfWeek] : void 0;
@@ -1653,7 +1662,7 @@ function getWeekOfYear(date, locale) {
   return 1 + Math.floor((julianMonday - julianPrevWeek1) / 7);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-year.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/date-year.mjs
 function getYearsRange(range) {
   const years = [];
   for (let year = range.from; year <= range.to; year += 1) years.push(year);
@@ -1691,14 +1700,14 @@ function getDecadeRange(year, opts) {
   return years;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/mutation.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/mutation.mjs
 function getTodayDate(timeZone, calendar) {
   const tod = $14e0f24ef4ac5c92$export$d0bdf45af03a6ea3(timeZone ?? $14e0f24ef4ac5c92$export$aa8b41735afcabd2());
   if (calendar) return $11d87f3f76e88657$export$b4a036af3fc0b032(tod, calendar);
   return tod;
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/pagination.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/pagination.mjs
 function getAdjustedDateFn(visibleDuration, locale, minValue, maxValue) {
   return function getDate(options) {
     const { startDate, focusedDate } = options;
@@ -1804,7 +1813,7 @@ function getPreviousSection(focusedDate, startDate, larger, visibleDuration, loc
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/parse-date.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/parse-date.mjs
 var isValidYear = (year) => year != null && year.length === 4;
 var isValidMonth = (month) => month != null && parseFloat(month) <= 12;
 var isValidDay = (day) => day != null && parseFloat(day) <= 31;
@@ -1854,7 +1863,7 @@ function extract(pattern, str) {
   }, {});
 }
 
-// ../node_modules/.pnpm/@zag-js+date-utils@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/preset.mjs
+// ../node_modules/.pnpm/@zag-js+date-utils@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-utils/dist/preset.mjs
 function getDateRangePreset(preset, locale, timeZone) {
   const today = $11d87f3f76e88657$export$93522d1a439f3617($14e0f24ef4ac5c92$export$461939dd4422153(timeZone));
   switch (preset) {
@@ -1892,7 +1901,7 @@ function getDateRangePreset(preset, locale, timeZone) {
   }
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.dom.mjs
 var getLabelId = (ctx, index) => ctx.ids?.label?.(index) ?? `datepicker:${ctx.id}:label:${index}`;
 var getRootId = (ctx) => ctx.ids?.root ?? `datepicker:${ctx.id}`;
 var getTableId = (ctx, id) => ctx.ids?.table?.(id) ?? `datepicker:${ctx.id}:table:${id}`;
@@ -1918,7 +1927,7 @@ var getClearTriggerEl = (ctx) => ctx.getById(getClearTriggerId(ctx));
 var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.utils.mjs
 function adjustStartAndEndDate(value) {
   const [startDate, endDate] = value;
   let result;
@@ -1967,9 +1976,11 @@ function getLocaleSeparator(locale) {
 }
 var defaultTranslations = {
   dayCell(state) {
-    if (state.unavailable) return `Not available. ${state.formattedDate}`;
-    if (state.selected) return `Selected date. ${state.formattedDate}`;
-    return `Choose ${state.formattedDate}`;
+    if (state.unavailable) return `Not available. ${state.valueText}`;
+    if (state.firstInRange) return `Starting range from ${state.valueText}`;
+    if (state.lastInRange) return `Range ending at ${state.valueText}`;
+    if (state.selected) return `Selected date. ${state.valueText}`;
+    return `Choose ${state.valueText}`;
   },
   trigger(open) {
     return open ? "Close calendar" : "Open calendar";
@@ -2076,7 +2087,7 @@ var getVisibleRangeText = memo(
   }
 );
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.connect.mjs
 function connect(service, normalize) {
   const { state, context, prop, send, computed, scope } = service;
   const startValue = context.get("startValue");
@@ -2147,14 +2158,26 @@ function connect(service, normalize) {
     const dateValue = focusedValue.set({ year: value });
     const decadeYears = getDecadeRange(startValue.year, { strict: true });
     const isOutsideVisibleRange = !decadeYears.includes(value);
-    const isOutsideRange = isValueWithinRange(value, min?.year, max?.year);
+    const isWithinMinMax = isValueWithinRange(value, min?.year, max?.year);
+    const isInSelectedRange = isRangePicker && isDateWithinRange(dateValue, selectedValue);
+    const isFirstInSelectedRange = isRangePicker && selectedValue[0] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, selectedValue[0]);
+    const isLastInSelectedRange = isRangePicker && selectedValue[1] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, selectedValue[1]);
+    const hasHoveredRange = isRangePicker && hoveredRangeValue.length > 0;
+    const isInHoveredRange = hasHoveredRange && isDateWithinRange(dateValue, hoveredRangeValue);
+    const isFirstInHoveredRange = hasHoveredRange && hoveredRangeValue[0] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, hoveredRangeValue[0]);
+    const isLastInHoveredRange = hasHoveredRange && hoveredRangeValue[1] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, hoveredRangeValue[1]);
     const cellState = {
       focused: focusedValue.year === props.value,
-      selectable: isOutsideVisibleRange || isOutsideRange,
+      selectable: !isOutsideVisibleRange && isWithinMinMax,
       outsideRange: isOutsideVisibleRange,
       selected: !!selectedValue.find((date) => date && date.year === value),
       valueText: value.toString(),
-      inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
+      inRange: isInSelectedRange || isInHoveredRange,
+      firstInRange: !!isFirstInSelectedRange,
+      lastInRange: !!isLastInSelectedRange,
+      inHoveredRange: !!isInHoveredRange,
+      firstInHoveredRange: !!isFirstInHoveredRange,
+      lastInHoveredRange: !!isLastInHoveredRange,
       value: dateValue,
       get disabled() {
         return disabled2 || !cellState.selectable;
@@ -2166,12 +2189,25 @@ function connect(service, normalize) {
     const { value, disabled: disabled2 } = props;
     const dateValue = focusedValue.set({ month: value });
     const formatter = getMonthFormatter(locale, timeZone, focusedValue);
+    const isInSelectedRange = isRangePicker && isDateWithinRange(dateValue, selectedValue);
+    const isFirstInSelectedRange = isRangePicker && selectedValue[0] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, selectedValue[0]);
+    const isLastInSelectedRange = isRangePicker && selectedValue[1] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, selectedValue[1]);
+    const hasHoveredRange = isRangePicker && hoveredRangeValue.length > 0;
+    const isInHoveredRange = hasHoveredRange && isDateWithinRange(dateValue, hoveredRangeValue);
+    const isFirstInHoveredRange = hasHoveredRange && hoveredRangeValue[0] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, hoveredRangeValue[0]);
+    const isLastInHoveredRange = hasHoveredRange && hoveredRangeValue[1] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, hoveredRangeValue[1]);
     const cellState = {
       focused: focusedValue.month === props.value,
       selectable: !isDateOutsideRange(dateValue, min, max),
       selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
       valueText: formatter.format(dateValue.toDate(timeZone)),
-      inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
+      inRange: isInSelectedRange || isInHoveredRange,
+      firstInRange: !!isFirstInSelectedRange,
+      lastInRange: !!isLastInSelectedRange,
+      inHoveredRange: !!isInHoveredRange,
+      firstInHoveredRange: !!isFirstInHoveredRange,
+      lastInHoveredRange: !!isLastInHoveredRange,
+      outsideRange: false,
       value: dateValue,
       get disabled() {
         return disabled2 || !cellState.selectable;
@@ -2203,12 +2239,10 @@ function connect(service, normalize) {
       outsideRange: isOutsideRange,
       today: $14e0f24ef4ac5c92$export$629b0a497aa65267(value, timeZone),
       weekend: $14e0f24ef4ac5c92$export$618d60ea299da42(value, locale),
-      formattedDate: formatter.format(value.toDate(timeZone)),
+      value,
+      valueText: formatter.format(value.toDate(timeZone)),
       get focused() {
         return isDateEqual(value, focusedValue) && (!cellState.outsideRange || outsideDaySelectable);
-      },
-      get ariaLabel() {
-        return translations.dayCell(cellState);
       },
       get selectable() {
         return !cellState.disabled && !cellState.unavailable;
@@ -2561,7 +2595,7 @@ function connect(service, normalize) {
         role: "button",
         dir: prop("dir"),
         tabIndex: cellState.focused ? 0 : -1,
-        "aria-label": cellState.ariaLabel,
+        "aria-label": translations.dayCell(cellState),
         "aria-disabled": ariaAttr(!cellState.selectable),
         "aria-invalid": ariaAttr(cellState.invalid),
         "data-disabled": dataAttr(!cellState.selectable),
@@ -2613,19 +2647,24 @@ function connect(service, normalize) {
       const cellState = getMonthTableCellState(props);
       return normalize.element({
         ...parts.tableCellTrigger.attrs,
-        dir: prop("dir"),
-        role: "button",
         id: getCellTriggerId(scope, value.toString()),
-        "data-selected": dataAttr(cellState.selected),
+        role: "button",
+        dir: prop("dir"),
+        tabIndex: cellState.focused ? 0 : -1,
+        "aria-label": cellState.valueText,
         "aria-disabled": ariaAttr(!cellState.selectable),
         "data-disabled": dataAttr(!cellState.selectable),
-        "data-focus": dataAttr(cellState.focused),
-        "data-in-range": dataAttr(cellState.inRange),
-        "data-outside-range": dataAttr(cellState.outsideRange),
-        "aria-label": cellState.valueText,
-        "data-view": "month",
+        "data-selected": dataAttr(cellState.selected),
         "data-value": value,
-        tabIndex: cellState.focused ? 0 : -1,
+        "data-view": "month",
+        "data-focus": dataAttr(cellState.focused),
+        "data-outside-range": dataAttr(cellState.outsideRange),
+        "data-range-start": dataAttr(cellState.firstInRange),
+        "data-range-end": dataAttr(cellState.lastInRange),
+        "data-in-range": dataAttr(cellState.inRange),
+        "data-in-hover-range": dataAttr(cellState.inHoveredRange),
+        "data-hover-range-start": dataAttr(cellState.firstInHoveredRange),
+        "data-hover-range-end": dataAttr(cellState.lastInHoveredRange),
         onClick(event) {
           if (event.defaultPrevented) return;
           if (!cellState.selectable) return;
@@ -2649,7 +2688,7 @@ function connect(service, normalize) {
         dir: prop("dir"),
         colSpan: columns,
         role: "gridcell",
-        "aria-selected": ariaAttr(cellState.selected),
+        "aria-selected": ariaAttr(cellState.selected || cellState.inRange),
         "data-selected": dataAttr(cellState.selected),
         "aria-disabled": ariaAttr(!cellState.selectable),
         "data-value": value
@@ -2660,19 +2699,24 @@ function connect(service, normalize) {
       const cellState = getYearTableCellState(props);
       return normalize.element({
         ...parts.tableCellTrigger.attrs,
-        dir: prop("dir"),
-        role: "button",
         id: getCellTriggerId(scope, value.toString()),
-        "data-selected": dataAttr(cellState.selected),
-        "data-focus": dataAttr(cellState.focused),
-        "data-in-range": dataAttr(cellState.inRange),
+        role: "button",
+        dir: prop("dir"),
+        tabIndex: cellState.focused ? 0 : -1,
+        "aria-label": cellState.valueText,
         "aria-disabled": ariaAttr(!cellState.selectable),
         "data-disabled": dataAttr(!cellState.selectable),
-        "aria-label": cellState.valueText,
-        "data-outside-range": dataAttr(cellState.outsideRange),
+        "data-selected": dataAttr(cellState.selected),
         "data-value": value,
         "data-view": "year",
-        tabIndex: cellState.focused ? 0 : -1,
+        "data-focus": dataAttr(cellState.focused),
+        "data-outside-range": dataAttr(cellState.outsideRange),
+        "data-range-start": dataAttr(cellState.firstInRange),
+        "data-range-end": dataAttr(cellState.lastInRange),
+        "data-in-range": dataAttr(cellState.inRange),
+        "data-in-hover-range": dataAttr(cellState.inHoveredRange),
+        "data-hover-range-start": dataAttr(cellState.firstInHoveredRange),
+        "data-hover-range-end": dataAttr(cellState.lastInHoveredRange),
         onClick(event) {
           if (event.defaultPrevented) return;
           if (!cellState.selectable) return;
@@ -2900,53 +2944,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+live-region@1.36.0/node_modules/@zag-js/live-region/dist/index.mjs
-var ID = "__live-region__";
-function createLiveRegion(opts = {}) {
-  const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
-  const win = doc.defaultView ?? window;
-  const parent = root ?? doc.body;
-  function announce(message, delay) {
-    const oldRegion = doc.getElementById(ID);
-    oldRegion?.remove();
-    delay = delay ?? _delay;
-    const region = doc.createElement("span");
-    region.id = ID;
-    region.dataset.liveAnnouncer = "true";
-    const role = level !== "assertive" ? "status" : "alert";
-    region.setAttribute("aria-live", level);
-    region.setAttribute("role", role);
-    Object.assign(region.style, {
-      border: "0",
-      clip: "rect(0 0 0 0)",
-      height: "1px",
-      margin: "-1px",
-      overflow: "hidden",
-      padding: "0",
-      position: "absolute",
-      width: "1px",
-      whiteSpace: "nowrap",
-      wordWrap: "normal"
-    });
-    parent.appendChild(region);
-    win.setTimeout(() => {
-      region.textContent = message;
-    }, delay);
-  }
-  function destroy() {
-    const oldRegion = doc.getElementById(ID);
-    oldRegion?.remove();
-  }
-  return {
-    announce,
-    destroy,
-    toJSON() {
-      return ID;
-    }
-  };
-}
-
-// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.machine.mjs
 var { and } = createGuards();
 function isDateArrayEqual(a, b) {
   if (a?.length !== b?.length) return false;
@@ -4085,7 +4083,7 @@ function setAdjustedValue(ctx, value) {
   context.set("focusedValue", value.focusedDate);
 }
 
-// ../node_modules/.pnpm/@zag-js+date-picker@1.36.0_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
+// ../node_modules/.pnpm/@zag-js+date-picker@1.39.1_@internationalized+date@3.12.0/node_modules/@zag-js/date-picker/dist/date-picker.parse.mjs
 function parse(value) {
   if (Array.isArray(value)) {
     return value.map((v) => parse(v));
@@ -4097,13 +4095,80 @@ function parse(value) {
 }
 
 // components/date-picker.ts
+var pickViewLabel = (view, day, month, year) => view === "year" ? year ?? "" : view === "month" ? month ?? "" : day ?? "";
+var formatWeek = (template, n) => template.split("__N__").join(String(n));
+function buildZagDatePickerTranslations(m) {
+  const t = {};
+  if (m.content) t.content = m.content;
+  if (m.monthSelect) t.monthSelect = m.monthSelect;
+  if (m.yearSelect) t.yearSelect = m.yearSelect;
+  if (m.clearTrigger) t.clearTrigger = m.clearTrigger;
+  if (m.weekColumnHeader) t.weekColumnHeader = m.weekColumnHeader;
+  if (m.weekNumber) t.weekNumberCell = (n) => formatWeek(m.weekNumber, n);
+  if (m.openCalendar && m.closeCalendar) {
+    t.trigger = (open) => open ? m.closeCalendar : m.openCalendar;
+  }
+  if (m.viewTriggerDay || m.viewTriggerMonth || m.viewTriggerYear) {
+    t.viewTrigger = (view) => pickViewLabel(
+      view,
+      m.viewTriggerDay,
+      m.viewTriggerMonth,
+      m.viewTriggerYear
+    );
+  }
+  if (m.prevTriggerDay || m.prevTriggerMonth || m.prevTriggerYear) {
+    t.prevTrigger = (view) => pickViewLabel(
+      view,
+      m.prevTriggerDay,
+      m.prevTriggerMonth,
+      m.prevTriggerYear
+    );
+  }
+  if (m.nextTriggerDay || m.nextTriggerMonth || m.nextTriggerYear) {
+    t.nextTrigger = (view) => pickViewLabel(
+      view,
+      m.nextTriggerDay,
+      m.nextTriggerMonth,
+      m.nextTriggerYear
+    );
+  }
+  if (m.placeholderDay && m.placeholderMonth && m.placeholderYear) {
+    t.placeholder = () => ({
+      day: m.placeholderDay,
+      month: m.placeholderMonth,
+      year: m.placeholderYear
+    });
+  }
+  return t;
+}
+function applyInputAriaIfNeeded(el, inputs, selectionMode) {
+  if (selectionMode === "range" || el.querySelector('[data-scope="date-picker"][data-part="label"]')) {
+    return;
+  }
+  let tr = null;
+  const raw = el.dataset.translation;
+  if (raw) {
+    try {
+      tr = JSON.parse(raw);
+    } catch {
+      tr = null;
+    }
+  }
+  const value = tr?.input;
+  if (!value) return;
+  for (const input of inputs) {
+    if (!input.getAttribute("aria-labelledby")) {
+      input.setAttribute("aria-label", value);
+    }
+  }
+}
 var DatePicker = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   getDayView = () => this.el.querySelector('[data-part="day-view"]');
   getMonthView = () => this.el.querySelector('[data-part="month-view"]');
@@ -4201,12 +4266,29 @@ var DatePicker = class extends Component {
       '[data-scope="date-picker"][data-part="control"]'
     );
     if (control) this.spreadProps(control, this.api.getControlProps());
-    const input = this.el.querySelector(
-      '[data-scope="date-picker"][data-part="input"]'
+    const inputs = Array.from(
+      this.el.querySelectorAll('[data-scope="date-picker"][data-part="input"]')
     );
-    if (input) {
-      this.spreadProps(input, this.api.getInputProps());
+    const selectionMode = this.api.selectionMode;
+    for (let i = 0; i < inputs.length; i += 1) {
+      this.spreadProps(inputs[i], this.api.getInputProps({ index: i }));
     }
+    if (selectionMode === "multiple" && inputs.length > 0) {
+      const input = inputs[0];
+      const applyMultipleDisplay = () => {
+        const vs = this.api.valueAsString;
+        const parts2 = Array.isArray(vs) ? vs : vs == null || vs === "" ? [] : [String(vs)];
+        const joined = parts2.filter(Boolean).join(", ");
+        if (input.value !== joined) {
+          input.value = joined;
+        }
+      };
+      applyMultipleDisplay();
+      queueMicrotask(() => {
+        requestAnimationFrame(applyMultipleDisplay);
+      });
+    }
+    applyInputAriaIfNeeded(this.el, inputs, this.api.selectionMode);
     const trigger = this.el.querySelector(
       '[data-scope="date-picker"][data-part="trigger"]'
     );
@@ -4289,26 +4371,41 @@ var DatePicker = class extends Component {
 };
 
 // hooks/date-picker.ts
-function toISOString(d) {
-  const pad = (n) => String(n).padStart(2, "0");
-  return `${d.year}-${pad(d.month)}-${pad(d.day)}`;
+function valueToIsoString(d) {
+  if (d == null) return "";
+  return String(d);
+}
+function resolveZagDatePickerTranslations(el) {
+  const raw = el.dataset.translation;
+  if (!raw) {
+    return {};
+  }
+  try {
+    const tr = JSON.parse(raw);
+    return { translations: buildZagDatePickerTranslations(tr) };
+  } catch {
+    return {};
+  }
+}
+function resolveCloseOnSelect(el) {
+  return getBoolean(el, "closeOnSelect");
 }
 var DatePickerHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
     const liveSocket = this.liveSocket;
+    const canPush = () => canPushEvent(this.liveSocket);
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const positioningJson = getString(el, "positioning");
     const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
     const parseOne = (v) => v ? parse(v) : void 0;
     const datePickerInstance = new DatePicker(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
       defaultFocusedValue: parseOne(getString(el, "focusedValue")),
-      defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      defaultView: getString(el, "defaultView"),
+      dir: getString(el, "dir"),
       locale: getString(el, "locale"),
       timeZone: getString(el, "timeZone"),
       disabled: getBoolean(el, "disabled"),
@@ -4316,37 +4413,35 @@ var DatePickerHook = {
       required: getBoolean(el, "required"),
       invalid: getBoolean(el, "invalid"),
       outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
-      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      closeOnSelect: resolveCloseOnSelect(el),
       min: min ? parse(min) : void 0,
       max: max ? parse(max) : void 0,
-      numOfMonths: getNumber(el, "numOfMonths"),
       startOfWeek: getNumber(el, "startOfWeek"),
       fixedWeeks: getBoolean(el, "fixedWeeks"),
-      selectionMode: getString(el, "selectionMode", [
-        "single",
-        "multiple",
-        "range"
-      ]),
+      selectionMode: getString(el, "selectionMode"),
+      maxSelectedDates: getNumber(el, "maxSelectedDates"),
       placeholder: getString(el, "placeholder"),
-      minView: getString(el, "minView", ["day", "month", "year"]),
-      maxView: getString(el, "maxView", ["day", "month", "year"]),
+      minView: getString(el, "minView"),
+      maxView: getString(el, "maxView"),
       inline: getBoolean(el, "inline"),
-      positioning: positioningJson ? JSON.parse(positioningJson) : void 0,
+      positioning: readPositioningOptions(el),
+      ...resolveZagDatePickerTranslations(el),
       onValueChange: (details) => {
-        const isoStr = details.value?.length ? details.value.map((d) => toISOString(d)).join(",") : "";
+        const isoStr = details.value?.length ? details.value.map((d) => valueToIsoString(d)).filter(Boolean).join(",") : "";
         const hiddenInput = el.querySelector(`#${el.id}-value`);
         if (hiddenInput && hiddenInput.value !== isoStr) {
           hiddenInput.value = isoStr;
           hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
           hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
-        const eventName = getString(el, "onValueChange");
-        if (eventName && liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: isoStr || null
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, value: isoStr || null },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       },
       onFocusChange: (details) => {
         const eventName = getString(el, "onFocusChange");
@@ -4377,13 +4472,14 @@ var DatePickerHook = {
         }
       },
       onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open
-          });
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, open: details.open },
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
       }
     });
     datePickerInstance.init();
@@ -4409,7 +4505,7 @@ var DatePickerHook = {
         datePickerInstance.api.setValue([parse(value)]);
       }
     };
-    el.addEventListener("phx:date-picker:set-value", this.onSetValue);
+    el.addEventListener("corex:date-picker:set-value", this.onSetValue);
   },
   updated() {
     const el = this.el;
@@ -4417,55 +4513,43 @@ var DatePickerHook = {
       '[data-scope="date-picker"][data-part="input-wrapper"]'
     );
     if (inputWrapper) inputWrapper.removeAttribute("data-loading");
-    const parseList = (v) => v ? v.map((x) => parse(x)) : void 0;
     const min = getString(el, "min");
     const max = getString(el, "max");
-    const positioningJson = getString(el, "positioning");
-    const isControlled = getBoolean(el, "controlled");
     const focusedStr = getString(el, "focusedValue");
+    const controlled = getBoolean(el, "controlled");
+    const valueList = getStringList(el, "value");
     this.datePicker?.updateProps({
-      ...getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) },
+      ...controlled ? {
+        value: (valueList ?? []).map((x) => parse(x))
+      } : {},
       defaultFocusedValue: focusedStr ? parse(focusedStr) : void 0,
-      defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-      dir: getString(this.el, "dir", ["ltr", "rtl"]),
-      locale: getString(this.el, "locale"),
-      timeZone: getString(this.el, "timeZone"),
-      disabled: getBoolean(this.el, "disabled"),
-      readOnly: getBoolean(this.el, "readOnly"),
-      required: getBoolean(this.el, "required"),
-      invalid: getBoolean(this.el, "invalid"),
-      outsideDaySelectable: getBoolean(this.el, "outsideDaySelectable"),
-      closeOnSelect: getBoolean(this.el, "closeOnSelect"),
+      defaultView: getString(el, "defaultView"),
+      dir: getString(el, "dir"),
+      locale: getString(el, "locale"),
+      timeZone: getString(el, "timeZone"),
+      disabled: getBoolean(el, "disabled"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      invalid: getBoolean(el, "invalid"),
+      outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
+      closeOnSelect: resolveCloseOnSelect(el),
       min: min ? parse(min) : void 0,
       max: max ? parse(max) : void 0,
-      numOfMonths: getNumber(this.el, "numOfMonths"),
-      startOfWeek: getNumber(this.el, "startOfWeek"),
-      fixedWeeks: getBoolean(this.el, "fixedWeeks"),
-      selectionMode: getString(this.el, "selectionMode", [
-        "single",
-        "multiple",
-        "range"
-      ]),
-      placeholder: getString(this.el, "placeholder"),
-      minView: getString(this.el, "minView", ["day", "month", "year"]),
-      maxView: getString(this.el, "maxView", ["day", "month", "year"]),
-      inline: getBoolean(this.el, "inline"),
-      positioning: positioningJson ? JSON.parse(positioningJson) : void 0
+      startOfWeek: getNumber(el, "startOfWeek"),
+      fixedWeeks: getBoolean(el, "fixedWeeks"),
+      selectionMode: getString(el, "selectionMode"),
+      maxSelectedDates: getNumber(el, "maxSelectedDates"),
+      placeholder: getString(el, "placeholder"),
+      minView: getString(el, "minView"),
+      maxView: getString(el, "maxView"),
+      inline: getBoolean(el, "inline"),
+      positioning: readPositioningOptions(el),
+      ...resolveZagDatePickerTranslations(el)
     });
-    if (isControlled && this.datePicker) {
-      const serverValues = getStringList(el, "value");
-      const serverIso = serverValues?.join(",") ?? "";
-      const zagValue = this.datePicker.api.value;
-      const zagIso = zagValue?.length ? zagValue.map((d) => toISOString(d)).join(",") : "";
-      if (serverIso !== zagIso) {
-        const parsed = serverValues?.length ? serverValues.map((x) => parse(x)) : [];
-        this.datePicker.api.setValue(parsed);
-      }
-    }
   },
   destroyed() {
     if (this.onSetValue) {
-      this.el.removeEventListener("phx:date-picker:set-value", this.onSetValue);
+      this.el.removeEventListener("corex:date-picker:set-value", this.onSetValue);
     }
     if (this.handlers) {
       for (const handler of this.handlers) {

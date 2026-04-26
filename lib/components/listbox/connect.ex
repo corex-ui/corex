@@ -1,5 +1,7 @@
 defmodule Corex.Listbox.Connect do
   @moduledoc false
+  alias Corex.Selectors
+
   alias Corex.Listbox.Anatomy.{
     Content,
     Item,
@@ -9,43 +11,18 @@ defmodule Corex.Listbox.Connect do
     ItemText,
     Label,
     Props,
-    Root,
-    ValueText
+    Root
   }
 
-  import Corex.Helpers, only: [validate_value!: 1]
+  alias Phoenix.LiveView.JS
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
-
-  defp encode_collection(items) when is_list(items) do
-    Enum.map(items, fn
-      %Corex.List.Item{} = item ->
-        %{
-          "id" => item.id,
-          "value" => item.id,
-          "label" => item.label,
-          "disabled" => !!item.disabled,
-          "group" => item.group
-        }
-
-      m when is_map(m) ->
-        %{
-          "id" => Map.get(m, :id) || Map.get(m, "id"),
-          "value" => Map.get(m, :value) || Map.get(m, "value") || Map.get(m, :id),
-          "label" => Map.get(m, :label) || Map.get(m, "label"),
-          "disabled" => !!Map.get(m, :disabled, false),
-          "group" => Map.get(m, :group)
-        }
-    end)
-  end
+  import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-items" => Corex.Json.encode!(encode_collection(assigns.items)),
+      "data-items" => Corex.Json.encode!(assigns.items),
       "data-value" =>
         if assigns.controlled do
           Enum.join(validate_value!(assigns.value), ",")
@@ -58,17 +35,18 @@ defmodule Corex.Listbox.Connect do
         else
           Enum.join(validate_value!(assigns.value), ",")
         end,
-      "data-controlled" => data_attr(assigns.controlled),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-dir" => assigns.dir,
-      "data-orientation" => assigns.orientation,
-      "data-loop-focus" => data_attr(assigns.loop_focus),
+      "data-controlled" => get_boolean(assigns.controlled),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "data-loop-focus" => get_boolean(assigns.loop_focus),
       "data-selection-mode" => assigns.selection_mode,
-      "data-select-on-highlight" => data_attr(assigns.select_on_highlight),
-      "data-deselectable" => data_attr(assigns.deselectable),
-      "data-typeahead" => data_attr(assigns.typeahead),
+      "data-select-on-highlight" => get_boolean(assigns.select_on_highlight),
+      "data-deselectable" => get_boolean(assigns.deselectable),
+      "data-typeahead" => get_boolean(assigns.typeahead),
       "data-on-value-change" => assigns.on_value_change,
-      "data-on-value-change-client" => assigns.on_value_change_client
+      "data-on-value-change-client" => assigns.on_value_change_client,
+      "data-redirect" => get_boolean(assigns.redirect)
     }
   end
 
@@ -77,9 +55,16 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "root",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}"
     }
+  end
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}")
+    )
   end
 
   @spec label(Label.t()) :: map()
@@ -87,18 +72,16 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "label",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:label"
     }
   end
 
-  @spec value_text(ValueText.t()) :: map()
-  def value_text(assigns) do
-    %{
-      "data-scope" => "listbox",
-      "data-part" => "value-text",
-      "id" => "listbox:#{assigns.id}:value-text"
-    }
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:label")
+    )
   end
 
   @spec content(Content.t()) :: map()
@@ -106,9 +89,16 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "content",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:content"
     }
+  end
+
+  def ignore_content(assigns) do
+    JS.ignore_attributes(Content.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:content")
+    )
   end
 
   @spec item_group(ItemGroup.t()) :: map()
@@ -117,8 +107,18 @@ defmodule Corex.Listbox.Connect do
       "data-scope" => "listbox",
       "data-part" => "item-group",
       "data-id" => assigns.group_id,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-group:#{assigns.group_id}"
     }
+  end
+
+  def item_group_template(assigns), do: Map.drop(item_group(assigns), ["id"])
+
+  def ignore_item_group(assigns) do
+    JS.ignore_attributes(ItemGroup.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:item-group:#{assigns.group_id}")
+    )
   end
 
   @spec item_group_label(ItemGroupLabel.t()) :: map()
@@ -126,18 +126,54 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "item-group-label",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-group-label:#{assigns.html_for}"
     }
   end
 
+  def item_group_label_template(assigns), do: Map.drop(item_group_label(assigns), ["id"])
+
+  def ignore_item_group_label(assigns) do
+    JS.ignore_attributes(ItemGroupLabel.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:item-group-label:#{assigns.html_for}")
+    )
+  end
+
   @spec item(Item.t()) :: map()
   def item(assigns) do
-    %{
+    base = %{
       "data-scope" => "listbox",
       "data-part" => "item",
       "data-value" => assigns.value,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item:#{assigns.value}"
     }
+
+    base = if Map.get(assigns, :to), do: Map.put(base, "data-to", assigns.to), else: base
+
+    base =
+      case Map.get(assigns, :redirect) do
+        false ->
+          Map.put(base, "data-redirect", "false")
+
+        mode when mode in [:href, :patch, :navigate] ->
+          Map.put(base, "data-redirect", Atom.to_string(mode))
+
+        _ ->
+          base
+      end
+
+    if Map.get(assigns, :new_tab), do: Map.put(base, "data-new-tab", ""), else: base
+  end
+
+  def item_template(assigns), do: Map.drop(item(assigns), ["id"])
+
+  def ignore_item(assigns) do
+    JS.ignore_attributes(Item.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:item:#{assigns.value}")
+    )
   end
 
   defp item_value(item) do
@@ -152,8 +188,20 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "item-text",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-text:#{val}"
     }
+  end
+
+  def item_text_template(assigns), do: Map.drop(item_text(assigns), ["id"])
+
+  def ignore_item_text(assigns) do
+    val = item_value(assigns.item)
+
+    JS.ignore_attributes(ItemText.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:item-text:#{val}")
+    )
   end
 
   @spec item_indicator(ItemIndicator.t()) :: map()
@@ -163,7 +211,19 @@ defmodule Corex.Listbox.Connect do
     %{
       "data-scope" => "listbox",
       "data-part" => "item-indicator",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "listbox:#{assigns.id}:item-indicator:#{val}"
     }
+  end
+
+  def item_indicator_template(assigns), do: Map.drop(item_indicator(assigns), ["id"])
+
+  def ignore_item_indicator(assigns) do
+    val = item_value(assigns.item)
+
+    JS.ignore_attributes(ItemIndicator.ignored_attrs(),
+      to: Selectors.css_id("listbox:#{assigns.id}:item-indicator:#{val}")
+    )
   end
 end

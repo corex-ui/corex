@@ -15,6 +15,7 @@ defmodule Corex.Switch.Anatomy do
       disabled: false,
       value: "true",
       dir: "ltr",
+      orientation: "horizontal",
       read_only: false,
       invalid: false,
       required: false,
@@ -29,11 +30,10 @@ defmodule Corex.Switch.Anatomy do
             name: String.t(),
             form: String.t(),
             label: String.t(),
-            checked: boolean(),
-            controlled: boolean(),
             disabled: boolean(),
             value: String.t(),
             dir: String.t(),
+            orientation: String.t(),
             read_only: boolean(),
             invalid: boolean(),
             required: boolean(),
@@ -44,13 +44,25 @@ defmodule Corex.Switch.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir, :checked, orientation: "vertical"]
+    defstruct [:id, :dir, :checked, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t(),
-            checked: boolean()
-          }
+    @ignored_attrs [
+      "data-state",
+      "data-orientation",
+      "dir",
+      "id",
+      "htmlFor",
+      "for",
+      "data-active",
+      "data-focus",
+      "data-focus-visible",
+      "data-hover",
+      "data-disabled",
+      "data-readonly",
+      "data-invalid",
+      "data-required"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule HiddenInput do
@@ -66,48 +78,84 @@ defmodule Corex.Switch.Anatomy do
       controlled: false
     ]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            name: String.t(),
-            checked: boolean(),
-            disabled: boolean(),
-            required: boolean(),
-            invalid: boolean(),
-            value: String.t(),
-            controlled: boolean()
-          }
+    @ignored_attrs [
+      "checked",
+      "disabled",
+      "aria-invalid",
+      "data-focus",
+      "data-focus-visible",
+      "data-active",
+      "data-hover",
+      "data-disabled",
+      "data-readonly",
+      "data-invalid",
+      "data-required",
+      "data-state",
+      "aria-checked"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, :checked, orientation: "vertical"]
+    defstruct [:id, :dir, :checked, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t(),
-            checked: boolean()
-          }
+    @ignored_attrs [
+      "data-state",
+      "data-orientation",
+      "dir",
+      "id",
+      "data-active",
+      "data-focus",
+      "data-focus-visible",
+      "data-hover",
+      "data-disabled",
+      "data-readonly",
+      "data-invalid",
+      "data-required"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Thumb do
     @moduledoc false
-    defstruct [:id, :dir, :checked, orientation: "vertical"]
+    defstruct [:id, :dir, :checked, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t(),
-            checked: boolean()
-          }
+    @ignored_attrs [
+      "data-state",
+      "data-orientation",
+      "dir",
+      "id",
+      "data-active",
+      "data-focus",
+      "data-focus-visible",
+      "data-hover",
+      "data-disabled",
+      "data-readonly",
+      "data-invalid",
+      "data-required"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, :checked, orientation: "vertical"]
+    defstruct [:id, :dir, :checked, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t(),
-            checked: boolean()
-          }
+    @ignored_attrs [
+      "data-state",
+      "data-orientation",
+      "dir",
+      "id",
+      "data-active",
+      "data-focus",
+      "data-focus-visible",
+      "data-hover",
+      "data-disabled",
+      "data-readonly",
+      "data-invalid",
+      "data-required"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

@@ -11,31 +11,14 @@ defmodule Corex.NumberInput do
   ```heex
   <.number_input id="num" class="number-input">
     <:label>Quantity</:label>
-  </.number_input>
-  ```
-
-  ### With triggers
-
-  ```heex
-  <.number_input id="num" class="number-input">
-    <:label>Quantity</:label>
     <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
     <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
   </.number_input>
   ```
 
-  ### With scrubber
-
-  ```heex
-  <.number_input id="num" scrubber class="number-input">
-    <:label>Quantity</:label>
-    <:scrubber_trigger><.heroicon name="hero-arrows-up-down" class="icon rotate-90" /></:scrubber_trigger>
-  </.number_input>
-  ```
-
   <!-- tabs-close -->
 
-  Optional slots `:decrement_trigger`, `:increment_trigger`, and `:scrubber_trigger` render the button content (e.g. icons). When omitted, no content is shown.
+  Slots `:decrement_trigger` and `:increment_trigger` are required and render the button content (e.g. icons).
 
   ## Phoenix Form Integration
 
@@ -59,6 +42,8 @@ defmodule Corex.NumberInput do
   <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
     <.number_input field={f[:value]} class="number-input">
       <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
@@ -70,7 +55,7 @@ defmodule Corex.NumberInput do
 
   ### Live View with Ecto changeset
 
-  Use a changeset and enable controlled mode so the LiveView stays in sync:
+  Use a changeset and standard form events; the field value is submitted with the form.
 
   ```elixir
   def mount(_params, _session, socket) do
@@ -92,8 +77,10 @@ defmodule Corex.NumberInput do
 
   ```heex
   <.form for={@form} id={Corex.Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
-    <.number_input field={@form[:value]} class="number-input" controlled on_value_change="value_changed">
+    <.number_input field={@form[:value]} class="number-input">
       <:label>Quantity</:label>
+      <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+      <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />
         {msg}
@@ -114,7 +101,6 @@ defmodule Corex.NumberInput do
   [data-scope="number-input"][data-part="trigger-group"] {}
   [data-scope="number-input"][data-part="decrement-trigger"] {}
   [data-scope="number-input"][data-part="increment-trigger"] {}
-  [data-scope="number-input"][data-part="scrubber"] {}
   ```
 
   If you wish to use the default Corex styling, you can use the class `number-input` on the component.
@@ -129,10 +115,12 @@ defmodule Corex.NumberInput do
   You can then use modifiers
 
   ```heex
-  <.number_input class="number-input number-input--accent number-input--lg" />
+  <.number_input class="number-input number-input--accent number-input--lg">
+    <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
+    <:increment_trigger><.heroicon name="hero-chevron-up" class="icon" /></:increment_trigger>
+  </.number_input>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/number-input#modifiers)
   '''
 
   defmodule Translation do
@@ -143,7 +131,7 @@ defmodule Corex.NumberInput do
 
     With gettext: `translation={%NumberInput.Translation{ decrease: gettext("Decrease value") }}`
     """
-    defstruct [:decrease, :increase, :scrub]
+    defstruct [:decrease, :increase]
   end
 
   @doc type: :component
@@ -161,7 +149,6 @@ defmodule Corex.NumberInput do
     Label,
     Props,
     Root,
-    Scrubber,
     TriggerGroup
   }
 
@@ -170,7 +157,6 @@ defmodule Corex.NumberInput do
   attr(:id, :string, required: false)
   attr(:value, :string, default: nil)
   attr(:default_value, :string, default: nil)
-  attr(:controlled, :boolean, default: false)
   attr(:min, :float, default: nil)
   attr(:max, :float, default: nil)
   attr(:step, :float, default: 1.0)
@@ -183,11 +169,8 @@ defmodule Corex.NumberInput do
   attr(:form, :string, default: nil)
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
-
-  attr(:scrubber, :boolean,
-    default: false,
-    doc: "When true, show scrubber instead of increment/decrement buttons"
-  )
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
   attr(:translation, Corex.NumberInput.Translation,
     default: nil,
@@ -202,15 +185,11 @@ defmodule Corex.NumberInput do
     attr(:class, :string, required: false)
   end
 
-  slot :decrement_trigger, required: false do
+  slot :decrement_trigger, required: true do
     attr(:class, :string, required: false)
   end
 
-  slot :increment_trigger, required: false do
-    attr(:class, :string, required: false)
-  end
-
-  slot :scrubber_trigger, required: false do
+  slot :increment_trigger, required: true do
     attr(:class, :string, required: false)
   end
 
@@ -233,15 +212,18 @@ defmodule Corex.NumberInput do
   end
 
   def number_input(assigns) do
+    validate_triggers!(assigns)
+
     default_translation = %Translation{
       decrease: gettext("Decrease value"),
-      increase: gettext("Increase value"),
-      scrub: gettext("Scrub to adjust value")
+      increase: gettext("Increase value")
     }
 
     assigns =
       assigns
       |> assign_new(:id, fn -> "number-input-#{System.unique_integer([:positive])}" end)
+      |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
       |> assign(:value, value_to_string(Form.normalize_value("number", assigns[:value])))
@@ -254,14 +236,12 @@ defmodule Corex.NumberInput do
     <div
       id={@id}
       phx-hook="NumberInput"
-      data-value={if @controlled, do: @value, else: nil}
-      data-default-value={unless @controlled, do: (@default_value || @value), else: nil}
-      {@rest}
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{
         id: @id,
         value: @value,
         default_value: @default_value,
-        controlled: @controlled,
         min: @min,
         max: @max,
         step: @step,
@@ -273,8 +253,11 @@ defmodule Corex.NumberInput do
         name: @name,
         form: @form,
         on_value_change: @on_value_change,
-        on_value_change_client: @on_value_change_client
+        on_value_change_client: @on_value_change_client,
+        dir: @dir,
+        orientation: @orientation
       })}
+      {@rest}
     >
       <input
         :if={@name}
@@ -285,30 +268,37 @@ defmodule Corex.NumberInput do
         data-scope="number-input"
         data-part="value-input"
       />
-      <div phx-update="ignore" {Connect.root(%Root{id: @id})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
-        <div {Connect.control(%Control{id: @id})}>
-          <input type="text" inputmode="decimal" {Connect.input(%Input{id: @id, disabled: @disabled})} />
-          <div {Connect.trigger_group(%TriggerGroup{})}>
-            <button :if={!@scrubber} type="button" {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase})}>
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
+          <input type="text" inputmode="decimal" phx-mounted={Connect.ignore_input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.input(%Input{id: @id, disabled: @disabled, dir: @dir, orientation: @orientation})} />
+          <div {Connect.trigger_group(%TriggerGroup{dir: @dir, orientation: @orientation})}>
+            <button type="button" phx-mounted={Connect.ignore_increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})} {Connect.increment_trigger(%IncrementTrigger{id: @id, aria_label: @translation.increase, dir: @dir, orientation: @orientation})}>
               {render_slot(@increment_trigger)}
             </button>
-            <button :if={!@scrubber} type="button" {Connect.decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease})}>
-            {render_slot(@decrement_trigger)}
-          </button>
-            <button :if={@scrubber} type="button" {Connect.scrubber(%Scrubber{id: @id, aria_label: @translation.scrub})}>
-              {render_slot(@scrubber_trigger)}
+            <button type="button" phx-mounted={Connect.ignore_decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease, dir: @dir, orientation: @orientation})} {Connect.decrement_trigger(%DecrementTrigger{id: @id, aria_label: @translation.decrease, dir: @dir, orientation: @orientation})}>
+              {render_slot(@decrement_trigger)}
             </button>
           </div>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="number-input" data-part="error">
+      <div :if={@error != []} :for={msg <- @errors} data-scope="number-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>
     """
+  end
+
+  defp validate_triggers!(assigns) do
+    inc = Map.get(assigns, :increment_trigger, [])
+    dec = Map.get(assigns, :decrement_trigger, [])
+
+    if inc == [] or dec == [] do
+      raise ArgumentError,
+            "Corex.NumberInput requires non-empty :increment_trigger and :decrement_trigger slots"
+    end
   end
 
   defp value_to_string(nil), do: nil
@@ -319,8 +309,7 @@ defmodule Corex.NumberInput do
   defp merge_translation(partial, default) do
     %Translation{
       decrease: partial.decrease || default.decrease,
-      increase: partial.increase || default.increase,
-      scrub: partial.scrub || default.scrub
+      increase: partial.increase || default.increase
     }
   end
 end

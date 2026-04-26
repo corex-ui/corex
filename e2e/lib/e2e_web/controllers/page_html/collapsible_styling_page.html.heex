@@ -1,0 +1,32 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="collapsible-styling-page"
+    title="Collapsible · Styling"
+    subtitle="Density and trigger colors via modifier classes on the collapsible root."
+  >
+    <.demo_section
+      id="collapsible-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.CollapsibleDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.CollapsibleDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

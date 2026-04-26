@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/toggle-group";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { getString, getBoolean } from "../lib/util";
 
@@ -10,7 +10,7 @@ export class ToggleGroup extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {

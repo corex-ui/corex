@@ -22,6 +22,9 @@ declare module "corex/checkbox" {
 declare module "corex/clipboard" {
   export const Clipboard: CorexHook;
 }
+declare module "corex/code" {
+  export const Code: CorexHook;
+}
 declare module "corex/collapsible" {
   export const Collapsible: CorexHook;
 }

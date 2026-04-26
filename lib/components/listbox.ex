@@ -2,6 +2,8 @@ defmodule Corex.Listbox do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Listbox](https://zagjs.com/components/react/listbox).
 
+  Pass `items={Corex.List.new([...])}`. With `redirect`, use per-item `:to` and `:redirect` (`:href` | `:patch` | `:navigate` | `false`); Zag runs single-select when `redirect` is true.
+
   ## Examples
 
   <!-- tabs-open -->
@@ -12,14 +14,14 @@ defmodule Corex.Listbox do
   <.listbox
     id="my-listbox"
     class="listbox"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
       %{label: "Netherlands", id: "nld"},
       %{label: "Switzerland", id: "che"},
       %{label: "Austria", id: "aut"}
-    ]}
+    ])}
   >
     <:label>Choose a country</:label>
     <:item_indicator>
@@ -33,7 +35,7 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     class="listbox"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -47,7 +49,7 @@ defmodule Corex.Listbox do
       %{label: "USA", id: "usa", group: "North America"},
       %{label: "Canada", id: "can", group: "North America"},
       %{label: "Mexico", id: "mex", group: "North America"}
-    ]}
+    ])}
   >
     <:label>Choose a country</:label>
     <:item_indicator>
@@ -64,14 +66,14 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     class="listbox"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
       %{label: "Netherlands", id: "nld"},
       %{label: "Switzerland", id: "che"},
       %{label: "Austria", id: "aut"}
-    ]}
+    ])}
   >
     <:label>
       Country of residence
@@ -91,14 +93,14 @@ defmodule Corex.Listbox do
   ```heex
   <.listbox
     class="listbox"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
       %{label: "Japan", id: "jpn", group: "Asia"},
       %{label: "China", id: "chn", group: "Asia"},
       %{label: "South Korea", id: "kor", group: "Asia"}
-    ]}
+    ])}
   >
     <:item :let={%{item: entry}}>
       <Flagpack.flag name={String.to_atom(entry.id)} />
@@ -112,7 +114,7 @@ defmodule Corex.Listbox do
 
   ### Stream
 
-  Use with `Phoenix.LiveView.stream/3` to add or remove items dynamically. Keep a list in sync with the stream and pass it as `items`. The listbox uses `phx-update="ignore"` and updates via `data-items`; the JS hook rebuilds the list when items change.
+  Use with `Phoenix.LiveView.stream/3` to add or remove items dynamically. Keep a list in sync with the stream and pass it as `items`. The hook reads `data-items` and rebuilds the list when items change.
 
   For actions inside the `:item` slot (e.g. a remove button), use `data-phx-push` and `data-phx-push-id` so the listbox hook can delegate clicks to LiveView:
 
@@ -193,15 +195,17 @@ defmodule Corex.Listbox do
   You can then use modifiers
 
   ```heex
-  <.listbox class="listbox listbox--accent listbox--lg" items={[]}>
+  <.listbox class="listbox listbox--accent listbox--lg" items={Corex.List.new([])}>
   </.listbox>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/listbox#modifiers)
   '''
 
   @doc type: :component
   use Phoenix.Component
+
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   alias Corex.Listbox.Anatomy.{
     Content,
@@ -212,8 +216,7 @@ defmodule Corex.Listbox do
     ItemText,
     Label,
     Props,
-    Root,
-    ValueText
+    Root
   }
 
   alias Corex.Listbox.Connect
@@ -225,14 +228,15 @@ defmodule Corex.Listbox do
       normalize_groups: 1,
       has_groups?: 1,
       entry_value: 1,
-      entry_selected?: 2
+      entry_selected?: 2,
+      respond_to_fields: 1
     ]
 
   attr(:id, :string, required: false, doc: "The id of the listbox")
 
   attr(:items, :list,
     required: true,
-    doc: "List of Corex.List.Item or maps with id/value, label, disabled, group"
+    doc: "Items from `Corex.List.new/1` (or maps with id/value, label, disabled, group)"
   )
 
   attr(:value, :list, default: [], doc: "Selected value(s)")
@@ -263,6 +267,17 @@ defmodule Corex.Listbox do
   attr(:typeahead, :boolean, default: false, doc: "Enable typeahead search")
   attr(:on_value_change, :string, default: nil, doc: "Server event name on value change")
   attr(:on_value_change_client, :string, default: nil, doc: "Client event name on value change")
+
+  attr(:redirect, :boolean,
+    default: false,
+    doc: """
+    When true, selecting a value triggers redirect-on-select. Each item picks
+    the navigation kind via `:redirect` (`:href` (default) | `:patch` | `:navigate` | `false`).
+    Items may also set `:to` (overrides the destination) and `:new_tab` (opens in a new tab).
+    When true, the client runs single-select in Zag even if `selection_mode` is multiple.
+    """
+  )
+
   attr(:aria_label, :string, default: nil, doc: "Accessible name when no label slot is provided")
   attr(:rest, :global)
 
@@ -291,6 +306,7 @@ defmodule Corex.Listbox do
       assigns
       |> assign_new(:id, fn -> "listbox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:controlled, fn -> false end)
       |> assign(:value, validate_value!(assigns[:value] || []))
       |> assign(:items, items)
       |> assign(:has_groups, has_groups)
@@ -300,6 +316,8 @@ defmodule Corex.Listbox do
     <div
       id={@id}
       phx-hook="Listbox"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -315,88 +333,72 @@ defmodule Corex.Listbox do
         deselectable: @deselectable,
         typeahead: @typeahead,
         on_value_change: @on_value_change,
-        on_value_change_client: @on_value_change_client
+        on_value_change_client: @on_value_change_client,
+        redirect: @redirect
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-         <label {Connect.label(%Label{id: @id, dir: @dir})}>
-          <%= if @label != [] do %>
-            {render_slot(@label)}
-          <% else %>
-            {@aria_label}
-          <% end %>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+         <label phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
+          {if @label != [], do: render_slot(@label), else: @aria_label}
         </label>
-        <span {Connect.value_text(%ValueText{id: @id})} />
-        <div {content_attrs(@id, @dir, @orientation, @label != [] || @aria_label != nil)}>
+        <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {content_attrs(@id, @dir, @orientation, @label != [] || @aria_label != nil)}>
           <div :if={@items == [] && @empty != []} data-scope="listbox" data-part="empty">
-            <%= render_slot(@empty) %>
+            {render_slot(@empty)}
           </div>
-          <div :for={group_id <- @groups} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id})}>
-            <div {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id})}>{group_id}</div>
-            <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs(@id, entry)}>
-              <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
-              <%= for item_slot <- @item || [] do %>
-                <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
-              <% end %>
+          <div :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}>
+            <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
+            <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
+              <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>{entry[:label]}</span>
+              {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
               <span
-                {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+                phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
+                {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
                 hidden={!entry_selected?(entry, @value)}
               >
-                <%= if @item_indicator != [] do %>
-                  <%= render_slot(@item_indicator) %>
-                <% end %>
+                {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
               </span>
             </div>
           </div>
-          <div :for={entry <- if(@has_groups, do: [], else: @items)} {item_attrs(@id, entry)}>
-            <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
-            <%= for item_slot <- @item || [] do %>
-              <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
-            <% end %>
+          <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
+            <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>{entry[:label]}</span>
+            {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
             <span
-              {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+              phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
+              {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
               hidden={!entry_selected?(entry, @value)}
             >
-              <%= if @item_indicator != [] do %>
-                <%= render_slot(@item_indicator) %>
-              <% end %>
+              {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
             </span>
           </div>
         </div>
       </div>
       <div style="display: none;" data-templates="listbox">
         <div :if={@empty != []} data-scope="listbox" data-part="empty" data-template="true">
-          <%= render_slot(@empty) %>
+          {render_slot(@empty)}
         </div>
-        <div :for={group_id <- @groups} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id})} data-template="true">
-          <div {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id})}>{group_id}</div>
-          <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs(@id, entry)} data-template="true">
-            <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
-            <%= for item_slot <- @item || [] do %>
-              <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
-            <% end %>
+        <div :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_template(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} data-template="true">
+          <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label_template(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>{group_id}</div>
+          <div :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
+            <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>{entry[:label]}</span>
+            {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
             <span
-              {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+              phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
+              {Connect.item_indicator_template(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
               hidden={!entry_selected?(entry, @value)}
             >
-              <%= if @item_indicator != [] do %>
-                <%= render_slot(@item_indicator) %>
-              <% end %>
+              {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
             </span>
           </div>
         </div>
-        <div :for={entry <- if(@has_groups, do: [], else: @items)} {item_attrs(@id, entry)} data-template="true">
-          <span :if={@item == []} {Connect.item_text(%ItemText{id: @id, item: entry})}>{entry[:label]}</span>
-          <%= for item_slot <- @item || [] do %>
-            <%= render_slot(item_slot, %{item: entry, value: entry_value(entry), label: entry[:label]}) %>
-          <% end %>
+        <div :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
+          <span :if={@item == []} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>{entry[:label]}</span>
+          {render_slot(@item, %{item: entry, value: entry_value(entry), label: entry[:label]})}
           <span
-            {Connect.item_indicator(%ItemIndicator{id: @id, item: entry})}
+            phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
+            {Connect.item_indicator_template(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}
             hidden={!entry_selected?(entry, @value)}
           >
-            <%= if @item_indicator != [] do %>
-              <%= render_slot(@item_indicator) %>
-            <% end %>
+            {if @item_indicator != [], do: render_slot(@item_indicator), else: nil}
           </span>
         </div>
       </div>
@@ -405,16 +407,25 @@ defmodule Corex.Listbox do
   end
 
   defp content_attrs(id, dir, orientation, has_label) do
-    Connect.content(%Content{id: id, dir: dir})
+    Connect.content(%Content{id: id, dir: dir, orientation: orientation})
     |> Map.put("data-layout", "list")
-    |> Map.put("data-orientation", orientation)
     |> then(fn attrs ->
       if has_label, do: Map.put(attrs, "aria-labelledby", "listbox:#{id}:label"), else: attrs
     end)
   end
 
-  defp item_attrs(id, entry) do
-    base = Connect.item(%Item{id: id, item: entry, value: entry_value(entry)})
+  defp item_attrs(id, entry, dir, orientation) do
+    base =
+      Connect.item(%Item{
+        id: id,
+        item: entry,
+        value: entry_value(entry),
+        dir: dir,
+        orientation: orientation,
+        to: Map.get(entry, :to),
+        redirect: Map.get(entry, :redirect),
+        new_tab: Map.get(entry, :new_tab, false)
+      })
 
     if Map.get(entry, :disabled) do
       base
@@ -423,5 +434,85 @@ defmodule Corex.Listbox do
     else
       base
     end
+  end
+
+  defp item_attrs_template(id, entry, dir, orientation) do
+    base =
+      Connect.item_template(%Item{
+        id: id,
+        item: entry,
+        value: entry_value(entry),
+        dir: dir,
+        orientation: orientation,
+        to: Map.get(entry, :to),
+        redirect: Map.get(entry, :redirect),
+        new_tab: Map.get(entry, :new_tab, false)
+      })
+
+    if Map.get(entry, :disabled) do
+      base
+      |> Map.put("data-disabled", "")
+      |> Map.put("aria-disabled", "true")
+    else
+      base
+    end
+  end
+
+  @doc type: :api
+  @doc """
+  Sets listbox selection from the client. Dispatches `corex:listbox:set-value` on the hook root.
+  """
+  def set_value(listbox_id, value) when is_binary(listbox_id) do
+    JS.dispatch("corex:listbox:set-value",
+      to: "##{listbox_id}",
+      detail: %{value: validate_value!(List.wrap(value))},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets listbox selection from the server via `push_event` (`listbox_set_value`).
+  """
+  def set_value(socket, listbox_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
+    LiveView.push_event(socket, "listbox_set_value", %{
+      id: listbox_id,
+      value: validate_value!(List.wrap(value))
+    })
+  end
+
+  @doc type: :api
+  @doc """
+  Requests the listbox's current selected values from the client. See `value/2` (socket arity) for `:respond_to`.
+  """
+  def value(listbox_id) when is_binary(listbox_id), do: value(listbox_id, [])
+
+  def value(listbox_id, opts) when is_binary(listbox_id) and is_list(opts) do
+    JS.dispatch("corex:listbox:value",
+      to: "##{listbox_id}",
+      detail: respond_to_fields(opts),
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Requests the listbox's current selected values from the client via `push_event` (`listbox_value`).
+
+  The hook responds with `listbox_value_response` and/or dispatches `listbox-value` depending on `:respond_to`.
+  """
+  def value(socket, listbox_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) do
+    value(socket, listbox_id, [])
+  end
+
+  def value(socket, listbox_id, opts)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(listbox_id) and is_list(opts) do
+    LiveView.push_event(
+      socket,
+      "listbox_value",
+      Map.merge(%{id: listbox_id}, respond_to_fields(opts))
+    )
   end
 end

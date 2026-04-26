@@ -11,6 +11,7 @@ defmodule Corex.Tooltip.Anatomy do
       controlled: false,
       disabled: false,
       dir: "ltr",
+      orientation: "horizontal",
       open_delay: nil,
       close_delay: nil,
       placement: nil,
@@ -29,6 +30,7 @@ defmodule Corex.Tooltip.Anatomy do
             controlled: boolean(),
             disabled: boolean(),
             dir: String.t(),
+            orientation: String.t(),
             open_delay: non_neg_integer() | nil,
             close_delay: non_neg_integer() | nil,
             placement: String.t() | nil,
@@ -44,51 +46,72 @@ defmodule Corex.Tooltip.Anatomy do
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, :dir, :open, :disabled]
+    defstruct [:id, :dir, :open, :disabled, orientation: "horizontal", tag: :button]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t(),
-            open: boolean(),
-            disabled: boolean()
-          }
+    @ignored_attrs [
+      "type",
+      "tabindex",
+      "data-disabled",
+      "dir",
+      "data-orientation",
+      "data-state",
+      "id",
+      "data-placement",
+      "aria-describedby",
+      "aria-expanded",
+      "data-focus"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t()
-          }
+    @ignored_attrs [
+      "dir",
+      "data-orientation",
+      "id",
+      "style",
+      "data-state",
+      "data-side",
+      "data-placement"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [:id, :dir, :open, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t(),
-            open: boolean()
-          }
+    @ignored_attrs [
+      "dir",
+      "data-orientation",
+      "data-state",
+      "id",
+      "role",
+      "data-placement",
+      "data-side",
+      "style",
+      "hidden",
+      "data-focus"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Arrow do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{
-            id: String.t(),
-            dir: String.t()
-          }
+    @ignored_attrs ["dir", "data-orientation", "id", "style", "data-side", "data-placement"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule ArrowTip do
     @moduledoc false
-    defstruct [:dir]
+    defstruct [:id, :dir, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{dir: String.t()}
+    @ignored_attrs ["dir", "data-orientation", "id", "style"]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

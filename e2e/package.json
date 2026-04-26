@@ -11,8 +11,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
-    "@adobe/leonardo-contrast-colors": "^1.1.0",
     "@tokens-studio/sd-transforms": "^2.0.3",
+    "motion": "^12.38.0",
     "sd-tailwindcss-transformer": "^2.0.0",
     "style-dictionary": "^5.4.0"
   }

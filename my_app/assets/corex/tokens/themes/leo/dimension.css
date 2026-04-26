@@ -1,0 +1,32 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="leo"] {
+  --theme-spacing: 0.25rem;
+  --theme-container-7xs: 5.93rem;
+  --theme-container-6xs: 7.9rem;
+  --theme-container-5xs: 9.88rem;
+  --theme-container-4xs: 11.86rem;
+  --theme-container-3xs: 15.81rem;
+  --theme-container-2xs: 17.79rem;
+  --theme-container-xs: 19.76rem;
+  --theme-container-sm: 23.71rem;
+  --theme-container-md: 27.66rem;
+  --theme-container-lg: 31.62rem;
+  --theme-container-xl: 35.57rem;
+  --theme-container-2xl: 41.5rem;
+  --theme-container-3xl: 47.42rem;
+  --theme-container-4xl: 55.32rem;
+  --theme-container-5xl: 63.22rem;
+  --theme-container-6xl: 71.12rem;
+  --theme-container-7xl: 79.04rem;
+  --theme-spacing-space-sm: calc(var(--theme-spacing) * 2);
+  --theme-spacing-space-md: calc(var(--theme-spacing) * 3);
+  --theme-spacing-space-lg: calc(var(--theme-spacing) * 4);
+  --theme-spacing-space-xl: calc(var(--theme-spacing) * 5);
+  --theme-spacing-size-sm: calc(var(--theme-spacing) * 8);
+  --theme-spacing-size-md: calc(var(--theme-spacing) * 10);
+  --theme-spacing-size-lg: calc(var(--theme-spacing) * 12);
+  --theme-spacing-size-xl: calc(var(--theme-spacing) * 14);
+}

@@ -1,7 +1,9 @@
 defmodule Corex.DialogTest do
   use CorexTest.ComponentCase, async: true
 
+  alias Corex.Animation.Scale
   alias Corex.Dialog
+  alias Corex.Dialog.Anatomy.Props
   alias Corex.Dialog.Connect
 
   describe "dialog/1" do
@@ -11,6 +13,8 @@ defmodule Corex.DialogTest do
       assert html =~ ~r/data-part="content"/
       assert html =~ ~r/Open/
       assert html =~ ~r/Dialog content/
+      assert html =~ ~r/data-animation="instant"/
+      refute html =~ "data-anim-scale-duration"
     end
   end
 
@@ -65,7 +69,13 @@ defmodule Corex.DialogTest do
     end
 
     test "returns backdrop with hidden when closed" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "instant"}
+      result = Connect.backdrop(assigns)
+      assert result["hidden"] == ""
+    end
+
+    test "returns backdrop with hidden when closed and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "js"}
       result = Connect.backdrop(assigns)
       assert result["hidden"] == ""
     end
@@ -91,9 +101,45 @@ defmodule Corex.DialogTest do
     end
 
     test "returns content with hidden when closed" do
-      assigns = %{id: "test-dialog", dir: "ltr", open: false}
+      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "instant"}
       result = Connect.content(assigns)
       assert result["hidden"] == ""
+    end
+
+    test "returns content with hidden when closed and animation is js" do
+      assigns = %{id: "test-dialog", dir: "ltr", open: false, animation: "js"}
+      result = Connect.content(assigns)
+      assert result["hidden"] == ""
+    end
+  end
+
+  describe "Connect.props/1" do
+    test "merges animation_options into data attributes" do
+      anim = %Scale{duration: 0.5, scale_start: 0.9, scale_end: 1.0}
+
+      m =
+        Connect.props(%Props{
+          id: "d1",
+          animation: "js",
+          animation_options: anim
+        })
+
+      assert m["data-animation"] == "js"
+      assert m["data-anim-scale-duration"] == 0.5
+      assert m["data-anim-transform-scale-start"] == 0.9
+      assert m["data-anim-transform-scale-end"] == 1.0
+    end
+
+    test "does not merge animation_options when animation is not js" do
+      m =
+        Connect.props(%Props{
+          id: "d2",
+          animation: "custom",
+          animation_options: %Scale{duration: 0.9, scale_start: 0.5, scale_end: 1.0}
+        })
+
+      assert m["data-animation"] == "custom"
+      refute Map.has_key?(m, "data-anim-scale-duration")
     end
   end
 

@@ -1,26 +1,27 @@
 import {
   memo
-} from "./chunk-B7UVPCXR.mjs";
+} from "./chunk-7EQLYSUR.mjs";
 import {
   setRafInterval,
   setRafTimeout
-} from "./chunk-OUU6AXP5.mjs";
+} from "./chunk-4ERCYGOM.mjs";
 import {
   clampValue
-} from "./chunk-MV633JPN.mjs";
+} from "./chunk-NX2BOTHE.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createMachine,
   getBoolean,
+  getDir,
   getNumber,
   getString,
-  match,
-  normalizeProps
-} from "./chunk-SNFXM6OQ.mjs";
+  match
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.39.1/node_modules/@zag-js/timer/dist/timer.anatomy.mjs
 var anatomy = createAnatomy("timer").parts(
   "root",
   "area",
@@ -33,11 +34,11 @@ var anatomy = createAnatomy("timer").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.dom.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.39.1/node_modules/@zag-js/timer/dist/timer.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `timer:${ctx.id}:root`;
 var getAreaId = (ctx) => ctx.ids?.area ?? `timer:${ctx.id}:area`;
 
-// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.connect.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.39.1/node_modules/@zag-js/timer/dist/timer.connect.mjs
 var validActions = /* @__PURE__ */ new Set(["start", "pause", "resume", "reset", "restart"]);
 function connect(service, normalize) {
   const { state, send, computed, scope, prop } = service;
@@ -141,7 +142,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+timer@1.36.0/node_modules/@zag-js/timer/dist/timer.machine.mjs
+// ../node_modules/.pnpm/@zag-js+timer@1.39.1/node_modules/@zag-js/timer/dist/timer.machine.mjs
 var machine = createMachine({
   props({ props }) {
     validateProps(props);
@@ -370,7 +371,7 @@ var Timer = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   init = () => {
     this.machine.subscribe(() => {
@@ -420,28 +421,54 @@ var Timer = class extends Component {
 var TimerHook = {
   mounted() {
     const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
     const zag = new Timer(el, {
       id: el.id,
       countdown: getBoolean(el, "countdown"),
       startMs: getNumber(el, "startMs"),
       targetMs: getNumber(el, "targetMs"),
       autoStart: getBoolean(el, "autoStart"),
-      interval: getNumber(el, "interval") ?? 1e3,
+      interval: getNumber(el, "interval"),
+      dir: getDir(el),
+      orientation: getString(el, "orientation"),
       onTick: (details) => {
         const eventName = getString(el, "onTick");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
+        if (eventName && canPushEvent(this.liveSocket)) {
+          pushEvent(eventName, {
             value: details.value,
             time: details.time,
             formattedTime: details.formattedTime,
             id: el.id
           });
         }
+        const eventNameClient = getString(el, "onTickClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: {
+                id: el.id,
+                value: details.value,
+                time: details.time,
+                formattedTime: details.formattedTime
+              }
+            })
+          );
+        }
       },
       onComplete: () => {
         const eventName = getString(el, "onComplete");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { id: el.id });
+        if (eventName && canPushEvent(this.liveSocket)) {
+          pushEvent(eventName, { id: el.id });
+        }
+        const eventNameClient = getString(el, "onCompleteClient");
+        if (eventNameClient) {
+          el.dispatchEvent(
+            new CustomEvent(eventNameClient, {
+              bubbles: true,
+              detail: { id: el.id }
+            })
+          );
         }
       }
     });
@@ -456,7 +483,9 @@ var TimerHook = {
       startMs: getNumber(this.el, "startMs"),
       targetMs: getNumber(this.el, "targetMs"),
       autoStart: getBoolean(this.el, "autoStart"),
-      interval: getNumber(this.el, "interval") ?? 1e3
+      interval: getNumber(this.el, "interval"),
+      dir: getDir(this.el),
+      orientation: getString(this.el, "orientation")
     });
   },
   destroyed() {

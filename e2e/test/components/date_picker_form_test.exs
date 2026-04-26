@@ -10,7 +10,7 @@ defmodule E2eWeb.DatePickerFormTest do
     |> DatePicker.wait(500)
     |> DatePicker.submit_form()
     |> DatePicker.wait(500)
-    |> DatePicker.see_flash("Submitted: date=")
+    |> DatePicker.see_flash("Submitted (changeset): date=")
   end
 
   feature "static form - has no A11y violations", %{session: session} do

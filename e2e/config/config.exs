@@ -11,10 +11,13 @@ config :corex_web,
   ecto_repos: [E2e.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-config :corex,
+config :phoenix,
   json_library: Jason,
-  gettext_backend: E2eWeb.Gettext,
-  rtl_locales: ["ar"]
+  gettext_backend: E2eWeb.Gettext
+
+config :localize,
+  default_locale: :en,
+  supported_locales: [:en, :ar]
 
 # Configure the endpoint
 config :corex_web, E2eWeb.Endpoint,
@@ -77,8 +80,11 @@ config :logger, :default_formatter,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-# Use Jason for JSON parsing in Phoenix
-config :phoenix, :json_library, Jason
+e2e_root = Path.expand("..", __DIR__)
+
+config :corex_web, :theme_generator,
+  e2e_root: e2e_root,
+  source_design: Path.join([e2e_root, "assets", "corex", "design"])
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

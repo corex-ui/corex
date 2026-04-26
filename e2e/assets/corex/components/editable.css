@@ -1,32 +1,45 @@
 @import "../main.css";
 
 @layer components {
+  .editable {
+    width: 100%;
+    max-width: var(--container-3xs);
+  }
+
+  .editable[data-loading] [data-scope="editable"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .editable [data-scope="editable"][data-part="root"] {
     @apply ui-root;
 
     width: 100%;
-    max-width: var(--container-ui);
+    position: relative;
+    padding-inline-end: var(--spacing-space);
+  }
+
+  .editable [data-scope="editable"][data-part="root"][data-readonly],
+  .editable [data-scope="editable"][data-part="root"][data-read-only] {
+    @apply ui-readonly-overlay;
   }
   .editable [data-scope="editable"][data-part="control"] {
     display: flex;
     flex-direction: row;
-    gap: var(--spacing-mini-gap);
-    min-height: var(--spacing-ui);
+    gap: var(--spacing-space);
+    
     width: 100%;
     align-items: center;
     justify-content: start;
-    max-width: var(--container-mini);
 
   }
 
   .editable [data-scope="editable"][data-part="area"] {
     display: flex;
-    min-height: var(--spacing-ui);
+    
     flex: 1 1 auto;
     align-items: center;
     justify-content: start;
-    max-width: var(--container-mini);
-    gap: var(--spacing-mini-gap);
+    gap: var(--spacing-space);
   }
 
   .editable [data-scope="editable"][data-part="input"] {
@@ -50,9 +63,9 @@
   .editable [data-part="triggers"] {
     display: inline-flex;
     align-items: center;
-    min-height: var(--spacing-ui);
+    
     flex: 1 1 auto;
-    gap: var(--spacing-mini-gap);
+    gap: var(--spacing-space);
   }
 
   .editable [data-scope="editable"][data-part="edit-trigger"],
@@ -71,41 +84,37 @@
 }
 
 @utility editable--* {
+
   [data-scope="editable"][data-part="root"] {
-    max-width: --value(--container-mini-*, [length]);
-    gap: --value(--spacing-mini-gap-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="editable"][data-part="edit-trigger"],
   [data-scope="editable"][data-part="cancel-trigger"],
   [data-scope="editable"][data-part="submit-trigger"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
-    padding-inline: --value(--spacing-ui-padding-*, [length]);
-    gap: --value(--spacing-ui-gap-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="editable"][data-part="edit-trigger"]::placeholder,
   [data-scope="editable"][data-part="cancel-trigger"]::placeholder,
   [data-scope="editable"][data-part="submit-trigger"]::placeholder {
-    color: --value(--color-root--*, [color]);
+    color: --value(--color-ink, [color]);
   }
 
-  /* [data-scope="editable"][data-part="area"] {
-    max-height: --value(--spacing-ui-*, [length]);
-  } */
-
   [data-scope="editable"][data-part="preview"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
-    max-width: --value(--container-mini-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
+    max-width: --value(--container-*, [length]);
   }
 
   [data-scope="editable"][data-part="input"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
   }
 }

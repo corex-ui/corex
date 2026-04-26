@@ -12,9 +12,9 @@ defmodule Corex.Carousel.Connect do
     Root
   }
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Corex.Selectors
+  alias Phoenix.LiveView.JS
+  import Corex.Helpers, only: [get_boolean: 1]
 
   defp slides_per_move_value(nil), do: nil
   defp slides_per_move_value("auto"), do: "auto"
@@ -29,19 +29,19 @@ defmodule Corex.Carousel.Connect do
       "data-slide-count" => to_string(assigns.slide_count),
       "data-page" => if(assigns.controlled, do: to_string(assigns.page), else: nil),
       "data-default-page" => if(assigns.controlled, do: nil, else: to_string(assigns.page)),
-      "data-controlled" => data_attr(assigns.controlled),
+      "data-controlled" => get_boolean(assigns.controlled),
       "data-dir" => assigns.dir,
       "data-orientation" => assigns.orientation,
       "data-slides-per-page" => to_string(assigns.slides_per_page),
-      "data-loop" => data_attr(assigns.loop),
-      "data-autoplay" => data_attr(assigns.autoplay),
+      "data-loop" => get_boolean(assigns.loop),
+      "data-autoplay" => get_boolean(assigns.autoplay),
       "data-autoplay-delay" =>
         if(assigns.autoplay, do: to_string(assigns.autoplay_delay), else: nil),
-      "data-allow-mouse-drag" => data_attr(assigns.allow_mouse_drag),
+      "data-allow-mouse-drag" => get_boolean(assigns.allow_mouse_drag),
       "data-spacing" => assigns.spacing,
       "data-in-view-threshold" => to_string(assigns.in_view_threshold),
       "data-snap-type" => assigns.snap_type,
-      "data-auto-size" => data_attr(assigns.auto_size),
+      "data-auto-size" => get_boolean(assigns.auto_size),
       "data-on-page-change" => assigns.on_page_change,
       "data-on-page-change-client" => assigns.on_page_change_client
     }
@@ -80,6 +80,12 @@ defmodule Corex.Carousel.Connect do
     end
   end
 
+  def ignore_root(%Root{} = assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}")
+    )
+  end
+
   @spec control(Control.t()) :: map()
   def control(assigns) do
     %{
@@ -88,6 +94,12 @@ defmodule Corex.Carousel.Connect do
       "data-orientation" => assigns.orientation || "horizontal",
       "id" => "carousel:#{assigns.id}:control"
     }
+  end
+
+  def ignore_control(%Control{} = assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:control")
+    )
   end
 
   @spec item_group(ItemGroup.t()) :: map()
@@ -113,6 +125,12 @@ defmodule Corex.Carousel.Connect do
     }
   end
 
+  def ignore_item_group(%ItemGroup{} = assigns) do
+    JS.ignore_attributes(ItemGroup.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:item-group")
+    )
+  end
+
   @spec item(Item.t()) :: map()
   def item(assigns) do
     horizontal = (assigns.orientation || "horizontal") == "horizontal"
@@ -135,6 +153,12 @@ defmodule Corex.Carousel.Connect do
     }
   end
 
+  def ignore_item(%Item{} = assigns) do
+    JS.ignore_attributes(Item.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:item:#{assigns.index}")
+    )
+  end
+
   @spec prev_trigger(PrevTrigger.t()) :: map()
   def prev_trigger(assigns) do
     base = %{
@@ -150,6 +174,12 @@ defmodule Corex.Carousel.Connect do
     else
       base
     end
+  end
+
+  def ignore_prev_trigger(%PrevTrigger{} = assigns) do
+    JS.ignore_attributes(PrevTrigger.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:prev")
+    )
   end
 
   @spec next_trigger(NextTrigger.t()) :: map()
@@ -169,6 +199,12 @@ defmodule Corex.Carousel.Connect do
     end
   end
 
+  def ignore_next_trigger(%NextTrigger{} = assigns) do
+    JS.ignore_attributes(NextTrigger.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:next")
+    )
+  end
+
   @spec indicator_group(IndicatorGroup.t()) :: map()
   def indicator_group(assigns) do
     %{
@@ -180,6 +216,12 @@ defmodule Corex.Carousel.Connect do
     }
   end
 
+  def ignore_indicator_group(%IndicatorGroup{} = assigns) do
+    JS.ignore_attributes(IndicatorGroup.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:indicator-group")
+    )
+  end
+
   @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
     page = Map.get(assigns, :page, 0)
@@ -188,11 +230,17 @@ defmodule Corex.Carousel.Connect do
       "data-scope" => "carousel",
       "data-part" => "indicator",
       "data-index" => to_string(assigns.index),
-      "data-current" => data_attr(assigns.index == page),
+      "data-current" => get_boolean(assigns.index == page),
       "data-orientation" => assigns.orientation || "horizontal",
       "dir" => assigns.dir || "ltr",
       "type" => "button",
       "id" => "carousel:#{assigns.id}:indicator:#{assigns.index}"
     }
+  end
+
+  def ignore_indicator(%Indicator{} = assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id("carousel:#{assigns.id}:indicator:#{assigns.index}")
+    )
   end
 end

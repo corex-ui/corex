@@ -2,118 +2,43 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Menu</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
+  <.demo_page
+    id="menu-anatomy-page"
+    title="Menu Anatomy"
+    subtitle="Minimal list, grouped sections, nested Corex → Menu, and grouped nested panels."
+  >
+    <.demo_section
+      id="menu-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.MenuDemo.anatomy_minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.MenuDemo.anatomy_minimal_example /></:preview>
+    </.demo_section>
 
-  <.menu
-    class="menu"
-    items={[
-      %Corex.Tree.Item{
-        id: "edit",
-        label: "Edit"
-      },
-      %Corex.Tree.Item{
-        id: "duplicate",
-        label: "Duplicate"
-      },
-      %Corex.Tree.Item{
-        id: "delete",
-        label: "Delete"
-      }
-    ]}
-  >
-    <:trigger>File</:trigger>
-    <:indicator>
-      <.heroicon name="hero-chevron-down" />
-    </:indicator>
-  </.menu>
-  <.menu
-    class="menu"
-    items={[
-      %Corex.Tree.Item{
-        id: "new-tab",
-        label: "New tab"
-      },
-      %Corex.Tree.Item{
-        id: "share",
-        label: "Share",
-        children: [
-          %Corex.Tree.Item{
-            id: "messages",
-            label: "Messages"
-          },
-          %Corex.Tree.Item{
-            id: "airdrop",
-            label: "Airdrop"
-          },
-          %Corex.Tree.Item{
-            id: "whatsapp",
-            label: "WhatsApp"
-          }
-        ]
-      },
-      %Corex.Tree.Item{
-        id: "print",
-        label: "Print..."
-      }
-    ]}
-  >
-    <:trigger>Menu</:trigger>
-    <:indicator>
-      <.heroicon name="hero-chevron-down" />
-    </:indicator>
-    <:nested_indicator>
-      <.heroicon name="hero-chevron-right" />
-    </:nested_indicator>
-  </.menu>
+    <.demo_section
+      id="menu-anatomy-grouped"
+      title="Grouped"
+      code={E2eWeb.Demos.MenuDemo.anatomy_grouped_code()}
+    >
+      <:preview><E2eWeb.Demos.MenuDemo.anatomy_grouped_example /></:preview>
+    </.demo_section>
 
-  <.menu
-    class="menu"
-    items={[
-      %Corex.Tree.Item{
-        id: "edit",
-        label: "Edit",
-        group: "Actions"
-      },
-      %Corex.Tree.Item{
-        id: "duplicate",
-        label: "Duplicate",
-        group: "Actions"
-      },
-      %Corex.Tree.Item{
-        id: "account-1",
-        label: "Account 1",
-        group: "Accounts"
-      },
-      %Corex.Tree.Item{
-        id: "account-2",
-        label: "Account 2",
-        group: "Accounts"
-      }
-    ]}
-  >
-    <:trigger>Actions</:trigger>
-    <:indicator>
-      <.heroicon name="hero-chevron-down" />
-    </:indicator>
-  </.menu>
+    <.demo_section
+      id="menu-anatomy-nested"
+      title="Nested"
+      code={E2eWeb.Demos.MenuDemo.anatomy_nested_code()}
+    >
+      <:preview><E2eWeb.Demos.MenuDemo.anatomy_nested_example /></:preview>
+    </.demo_section>
 
-  <.menu
-    class="menu"
-    redirect
-    items={menu_items(@locale)}
-  >
-    <:trigger>Corex</:trigger>
-    <:indicator>
-      <.heroicon name="hero-chevron-down" />
-    </:indicator>
-    <:item :let={item}>
-      {item.label}
-    </:item>
-  </.menu>
+    <.demo_section
+      id="menu-anatomy-nested-grouped"
+      title="Nested grouped"
+      code={E2eWeb.Demos.MenuDemo.anatomy_nested_grouped_code()}
+    >
+      <:preview><E2eWeb.Demos.MenuDemo.anatomy_nested_grouped_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

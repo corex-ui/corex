@@ -21,6 +21,8 @@ config :corex_web, E2eWeb.Endpoint,
   server: true,
   code_reloader: false
 
+config :corex_web, sql_sandbox: true
+
 # In test we don't send emails
 config :corex_web, E2e.Mailer, adapter: Swoosh.Adapters.Test
 
@@ -46,4 +48,17 @@ config :wallaby,
   otp_app: :corex_web,
   driver: Wallaby.Chrome,
   hackney_options: [timeout: :infinity, recv_timeout: :infinity],
-  max_wait_time: 5_000
+  max_wait_time: 5_000,
+  chromedriver: [
+    capabilities: %{
+      chromeOptions: %{
+        args: [
+          "--no-sandbox",
+          "--disable-dev-shm-usage",
+          "--disable-gpu",
+          "--headless",
+          "window-size=1280,800"
+        ]
+      }
+    }
+  ]

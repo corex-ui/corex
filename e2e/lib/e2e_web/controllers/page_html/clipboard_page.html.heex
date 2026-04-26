@@ -2,46 +2,31 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Clipboard</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-
-  <h3>Client Api</h3>
-  <div class="layout__row">
-    <.action
-      phx-click={Corex.Clipboard.set_value("my-clipboard", "Hello, World!")}
-      class="button button--sm"
-    >
-      Set to "Hello, World!"
-    </.action>
-    <.action
-      phx-click={Corex.Clipboard.set_value("my-clipboard", "info@netoum.com")}
-      class="button button--sm"
-    >
-      Set to "info@netoum.com"
-    </.action>
-    <.action
-      phx-click={Corex.Clipboard.copy("my-clipboard")}
-      class="button button--sm"
-    >
-      Copy
-    </.action>
-  </div>
-  <.clipboard
-    id="my-clipboard"
-    value="info@netoum.com"
-    trigger_aria_label="Copy to clipboard"
-    input_aria_label="Value to copy"
-    class="clipboard"
+  <.demo_page
+    id="clipboard-anatomy-page"
+    title="Clipboard Anatomy"
+    subtitle="Value, optional input, and copy / copied surfaces inside the trigger."
   >
-    <:label>Copy to clipboard</:label>
-    <:trigger>
-      <.heroicon name="hero-clipboard" class="icon data-copy" />
-      <.heroicon name="hero-check" class="icon data-copied" />
-    </:trigger>
-  </.clipboard>
+    <.demo_section
+      id="clipboard-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.ClipboardDemo.minimal_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ClipboardDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="clipboard-anatomy-input-false"
+      title="Trigger only"
+      code={E2eWeb.Demos.ClipboardDemo.input_false_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.ClipboardDemo.input_false_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

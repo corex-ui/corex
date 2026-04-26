@@ -1,36 +1,61 @@
 import {
+  createLiveRegion
+} from "./chunk-MRDCAPRF.mjs";
+import {
+  readPositioningOptions
+} from "./chunk-AFD7D2GA.mjs";
+import {
+  getPlacement,
+  getPlacementStyles
+} from "./chunk-F6MNP3LD.mjs";
+import {
+  trackDismissableElement
+} from "./chunk-JJ4TVKGJ.mjs";
+import "./chunk-DXQBMWMN.mjs";
+import {
+  zagComboboxCollectionConfig
+} from "./chunk-ZZTIKT3S.mjs";
+import {
   ListCollection,
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunk-7ZKQLYA7.mjs";
+} from "./chunk-FLYYJ5XV.mjs";
 import {
-  getPlacement,
-  getPlacementStyles
-} from "./chunk-VXCJNDUG.mjs";
-import {
-  trackDismissableElement
-} from "./chunk-EV6LXBMY.mjs";
-import "./chunk-YCAWAEF3.mjs";
+  performRedirect,
+  readDomItemRedirect
+} from "./chunk-6XKINCJF.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-IAPTZYKE.mjs";
+} from "./chunk-ZKMAU6SY.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunk-WHNMJXTN.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId
+} from "./chunk-GGOQNLHD.mjs";
 import {
   Component,
   VanillaMachine,
   addOrRemove,
   ariaAttr,
+  canPushEvent,
   clickIfLink,
   createAnatomy,
   dataAttr,
   ensure,
   getBoolean,
+  getDir,
   getEventKey,
   getString,
   getStringList,
   isAnchorElement,
+  isApple,
   isBoolean,
   isComposingEvent,
   isContextMenuEvent,
@@ -40,17 +65,17 @@ import {
   isOpeningInNewTab,
   match,
   nextTick,
-  normalizeProps,
   observeAttributes,
   query,
   raf,
   remove,
   scrollIntoView,
   setCaretToEnd,
-  setup
-} from "./chunk-SNFXM6OQ.mjs";
+  setup,
+  templatesContentRoot
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.39.1/node_modules/@zag-js/combobox/dist/combobox.anatomy.mjs
 var anatomy = createAnatomy("combobox").parts(
   "root",
   "clearTrigger",
@@ -69,7 +94,7 @@ var anatomy = createAnatomy("combobox").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.39.1/node_modules/@zag-js/combobox/dist/combobox.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -77,7 +102,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.39.1/node_modules/@zag-js/combobox/dist/combobox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `combobox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `combobox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `combobox:${ctx.id}:control`;
@@ -113,7 +138,7 @@ var focusTriggerEl = (ctx) => {
   triggerEl?.focus({ preventScroll: true });
 };
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.39.1/node_modules/@zag-js/combobox/dist/combobox.connect.mjs
 function connect(service, normalize) {
   const { context, prop, state, send, scope, computed, event } = service;
   const translations = prop("translations");
@@ -525,7 +550,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+combobox@1.36.0/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+combobox@1.39.1/node_modules/@zag-js/combobox/dist/combobox.machine.mjs
 var { guards, createMachine, choose } = setup();
 var { and, not } = guards;
 var machine = createMachine({
@@ -663,7 +688,7 @@ var machine = createMachine({
       action(["syncInputValue"]);
     });
     track([() => context.get("highlightedValue")], () => {
-      action(["syncHighlightedItem", "autofillInputValue"]);
+      action(["syncHighlightedItem", "autofillInputValue", "announceHighlightedItem"]);
     });
     track([() => prop("open")], () => {
       action(["toggleVisibility"]);
@@ -874,7 +899,13 @@ var machine = createMachine({
     open: {
       tags: ["open", "focused"],
       entry: ["setInitialFocus"],
-      effects: ["trackFocusVisible", "scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
+      effects: [
+        "trackFocusVisible",
+        "scrollToHighlightedItem",
+        "trackDismissableLayer",
+        "trackPlacement",
+        "trackLiveRegion"
+      ],
       on: {
         "CONTROLLED.CLOSE": [
           {
@@ -1158,6 +1189,14 @@ var machine = createMachine({
             send({ type: "LAYER.INTERACT_OUTSIDE", src: "interact-outside", restoreFocus: false });
           }
         });
+      },
+      trackLiveRegion({ refs, scope }) {
+        const liveRegion = createLiveRegion({
+          level: "assertive",
+          document: scope.getDoc()
+        });
+        refs.set("liveRegion", liveRegion);
+        return () => liveRegion.destroy();
       },
       trackPlacement({ context, prop, scope }) {
         const anchorEl = () => getControlEl(scope) || getTriggerEl(scope);
@@ -1481,6 +1520,14 @@ var machine = createMachine({
         const item = prop("collection").find(context.get("highlightedValue"));
         context.set("highlightedItem", item);
       },
+      announceHighlightedItem({ context, prop, refs }) {
+        if (!isApple()) return;
+        const value = context.get("highlightedValue");
+        const optionText = value ? prop("collection").stringifyItem(prop("collection").find(value)) : null;
+        if (!optionText) return;
+        const isSelected = value ? context.get("value").includes(value) : false;
+        refs.get("liveRegion")?.announce(isSelected ? `${optionText}, selected` : optionText);
+      },
       toggleVisibility({ event, send, prop }) {
         send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
       }
@@ -1502,21 +1549,7 @@ var Combobox = class extends Component {
   }
   getCollection() {
     const items = this.options || this.allOptions || [];
-    if (this.hasGroups) {
-      return collection({
-        items,
-        itemToValue: (item) => item.id ?? "",
-        itemToString: (item) => item.label,
-        isItemDisabled: (item) => item.disabled ?? false,
-        groupBy: (item) => item.group ?? ""
-      });
-    }
-    return collection({
-      items,
-      itemToValue: (item) => item.id ?? "",
-      itemToString: (item) => item.label,
-      isItemDisabled: (item) => item.disabled ?? false
-    });
+    return collection(zagComboboxCollectionConfig(items, this.hasGroups));
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -1539,9 +1572,11 @@ var Combobox = class extends Component {
           props.onInputValueChange(details);
         }
         if (this.el.hasAttribute("data-filter")) {
-          const filtered = this.allOptions.filter(
-            (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-          );
+          const q = String(details.inputValue ?? "").toLowerCase();
+          const filtered = this.allOptions.filter((item) => {
+            const label = String(item.label ?? "");
+            return label.toLowerCase().includes(q);
+          });
           this.options = filtered.length > 0 ? filtered : this.allOptions;
         } else {
           this.options = this.allOptions;
@@ -1550,34 +1585,11 @@ var Combobox = class extends Component {
     });
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
-  renderItems() {
-    const contentEl = this.el.querySelector(
-      '[data-scope="combobox"][data-part="content"]'
-    );
-    if (!contentEl) return;
-    const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
-    if (!templatesContainer) return;
-    contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
-    contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-    contentEl.querySelectorAll('[data-scope="combobox"][data-part="empty"]:not([data-template])').forEach((el) => el.remove());
-    const items = this.options?.length ? this.options : this.allOptions;
-    if (items.length === 0) {
-      const emptyTemplate = templatesContainer.querySelector(
-        '[data-scope="combobox"][data-part="empty"][data-template]'
-      );
-      if (emptyTemplate) {
-        const emptyEl = emptyTemplate.cloneNode(true);
-        emptyEl.removeAttribute("data-template");
-        contentEl.appendChild(emptyEl);
-      }
-    } else if (this.hasGroups) {
-      const groups = this.api.collection.group?.() ?? [];
-      this.renderGroupedItems(contentEl, templatesContainer, groups);
-    } else {
-      this.renderFlatItems(contentEl, templatesContainer, items);
-    }
+  getItemValue(item) {
+    const v = this.api.collection.getItemValue?.(item);
+    return v ?? item.id ?? "";
   }
   buildOrderedBlocks(items) {
     const blocks = [];
@@ -1600,247 +1612,284 @@ var Combobox = class extends Component {
     }
     return blocks;
   }
-  renderGroupedItems(contentEl, templatesContainer, _groups) {
+  renderItems() {
+    const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+    if (!listEl) return;
+    const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
+    const templatesRoot = templatesContentRoot(this.el, "combobox");
+    if (!templatesRoot) return;
+    ["empty", "item-group", "item"].forEach((part) => {
+      Array.from(
+        listEl.querySelectorAll(
+          `[data-scope="combobox"][data-part="${part}"]:not([data-template])`
+        )
+      ).filter(isOwnedByList).forEach((el) => el.remove());
+    });
     const items = this.options?.length ? this.options : this.allOptions;
+    if (items.length === 0) {
+      const emptyTemplate = templatesRoot.querySelector(
+        '[data-scope="combobox"][data-part="empty"][data-template]'
+      );
+      if (emptyTemplate) {
+        const emptyEl = emptyTemplate.cloneNode(true);
+        emptyEl.removeAttribute("data-template");
+        listEl.appendChild(emptyEl);
+      }
+      return;
+    }
+    if (this.hasGroups) {
+      this.renderGroupedItems(listEl, templatesRoot, items);
+    } else {
+      this.renderFlatItems(listEl, templatesRoot, items);
+    }
+  }
+  renderGroupedItems(listEl, templatesRoot, items) {
     const blocks = this.buildOrderedBlocks(items);
     for (const block of blocks) {
-      const templateId = block.type === "default" ? "default" : block.groupId;
-      const groupTemplate = templatesContainer.querySelector(
-        `[data-scope="combobox"][data-part="item-group"][data-id="${templateId}"][data-template]`
+      if (block.type !== "group") continue;
+      const groupTemplate = templatesRoot.querySelector(
+        `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(block.groupId)}"][data-template]`
       );
       if (!groupTemplate) continue;
       const groupEl = groupTemplate.cloneNode(true);
       groupEl.removeAttribute("data-template");
-      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: templateId }));
+      groupEl.querySelectorAll("[data-template]").forEach((e) => e.removeAttribute("data-template"));
+      const keepValues = new Set(block.items.map((i) => this.getItemValue(i)));
+      groupEl.querySelectorAll('[data-scope="combobox"][data-part="item"]').forEach((itemEl) => {
+        const v = itemEl.dataset.value ?? "";
+        if (!keepValues.has(v)) itemEl.remove();
+      });
+      listEl.appendChild(groupEl);
+    }
+  }
+  renderFlatItems(listEl, templatesRoot, items) {
+    for (const item of items) {
+      const value = this.getItemValue(item);
+      const template = templatesRoot.querySelector(
+        `:scope > [data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"][data-template]`
+      );
+      if (!template) continue;
+      const itemEl = template.cloneNode(true);
+      itemEl.removeAttribute("data-template");
+      listEl.appendChild(itemEl);
+    }
+  }
+  applyItemProps() {
+    const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+    if (!listEl) return;
+    const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
+    listEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]').forEach((groupEl) => {
+      if (!isOwnedByList(groupEl)) return;
+      const groupId = groupEl.dataset.id ?? "";
+      this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
       const labelEl = groupEl.querySelector(
         '[data-scope="combobox"][data-part="item-group-label"]'
       );
       if (labelEl) {
-        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: templateId }));
+        this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
       }
-      const groupContentEl = groupEl.querySelector(
-        '[data-scope="combobox"][data-part="item-group-content"]'
+    });
+    const sourceItems = this.options?.length ? this.options : this.allOptions;
+    const byValue = /* @__PURE__ */ new Map();
+    for (const item of sourceItems) {
+      byValue.set(this.getItemValue(item), item);
+    }
+    for (const item of this.allOptions) {
+      const v = this.getItemValue(item);
+      if (!byValue.has(v)) byValue.set(v, item);
+    }
+    listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]').forEach((itemEl) => {
+      if (!isOwnedByList(itemEl)) return;
+      const value = itemEl.dataset.value ?? "";
+      const item = byValue.get(value);
+      if (!item) return;
+      this.spreadProps(itemEl, this.api.getItemProps({ item }));
+      const textEl = itemEl.querySelector(
+        '[data-scope="combobox"][data-part="item-text"]'
       );
-      if (!groupContentEl) continue;
-      groupContentEl.innerHTML = "";
-      for (const item of block.items) {
-        const itemEl = this.cloneItem(templatesContainer, item);
-        if (itemEl) groupContentEl.appendChild(itemEl);
+      if (textEl) {
+        this.spreadProps(textEl, this.api.getItemTextProps({ item }));
       }
-      contentEl.appendChild(groupEl);
-    }
-  }
-  renderFlatItems(contentEl, templatesContainer, items) {
-    for (const item of items) {
-      const itemEl = this.cloneItem(templatesContainer, item);
-      if (itemEl) contentEl.appendChild(itemEl);
-    }
-  }
-  cloneItem(templatesContainer, item) {
-    const value = this.api.collection.getItemValue?.(item) ?? item.id ?? "";
-    const template = templatesContainer.querySelector(
-      `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
-    );
-    if (!template) return null;
-    const el = template.cloneNode(true);
-    el.removeAttribute("data-template");
-    this.spreadProps(el, this.api.getItemProps({ item }));
-    const textEl = el.querySelector('[data-scope="combobox"][data-part="item-text"]');
-    if (textEl) {
-      this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-      if (textEl.children.length === 0) {
-        textEl.textContent = item.label || "";
+      const indicatorEl = itemEl.querySelector(
+        '[data-scope="combobox"][data-part="item-indicator"]'
+      );
+      if (indicatorEl) {
+        this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
       }
-    }
-    const indicatorEl = el.querySelector(
-      '[data-scope="combobox"][data-part="item-indicator"]'
-    );
-    if (indicatorEl) {
-      this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
-    }
-    return el;
+    });
   }
   render() {
     const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
     if (!root) return;
     this.spreadProps(root, this.api.getRootProps());
-    ["label", "control", "input", "trigger", "clear-trigger", "positioner"].forEach((part) => {
+    [
+      "label",
+      "control",
+      "input",
+      "trigger",
+      "clear-trigger",
+      "positioner",
+      "content",
+      "list"
+    ].forEach((part) => {
       const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
       if (!el) return;
       const apiMethod = "get" + part.split("-").map((s) => s[0].toUpperCase() + s.slice(1)).join("") + "Props";
       this.spreadProps(el, this.api[apiMethod]());
     });
-    const contentEl = this.el.querySelector(
-      '[data-scope="combobox"][data-part="content"]'
-    );
-    if (contentEl) {
-      this.spreadProps(contentEl, this.api.getContentProps());
-      this.renderItems();
-    }
+    this.renderItems();
+    this.applyItemProps();
   }
 };
 
 // hooks/combobox.ts
-function snakeToCamel(str) {
-  return str.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-}
-function transformPositioningOptions(obj) {
-  const result = {};
-  for (const [key, value] of Object.entries(obj)) {
-    const camelKey = snakeToCamel(key);
-    result[camelKey] = value;
+function comboboxValueBinding(el) {
+  const controlled = getBoolean(el, "controlled");
+  if (controlled) {
+    return { value: getStringList(el, "value") ?? [] };
   }
-  return result;
+  return { defaultValue: getStringList(el, "defaultValue") ?? [] };
+}
+function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
+  const redirectOn = getBoolean(el, "redirect");
+  return {
+    id: el.id,
+    disabled: getBoolean(el, "disabled"),
+    placeholder: getString(el, "placeholder"),
+    alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
+    autoFocus: getBoolean(el, "autoFocus"),
+    closeOnSelect: getBoolean(el, "closeOnSelect"),
+    dir: getDir(el),
+    inputBehavior: getString(el, "inputBehavior"),
+    loopFocus: getBoolean(el, "loopFocus"),
+    multiple: redirectOn ? false : getBoolean(el, "multiple"),
+    invalid: getBoolean(el, "invalid"),
+    allowCustomValue: false,
+    selectionBehavior: "replace",
+    name: getString(el, "name"),
+    form: getString(el, "form"),
+    readOnly: getBoolean(el, "readOnly"),
+    required: getBoolean(el, "required"),
+    positioning: readPositioningOptions(el),
+    onOpenChange: (details) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          open: details.open,
+          reason: details.reason,
+          value: details.value
+        },
+        serverEventName: getString(el, "onOpenChange"),
+        clientEventName: getString(el, "onOpenChangeClient")
+      });
+    },
+    onInputValueChange: (details) => {
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.inputValue,
+          reason: details.reason
+        },
+        serverEventName: getString(el, "onInputValueChange"),
+        clientEventName: getString(el, "onInputValueChangeClient")
+      });
+    },
+    onValueChange: (details) => {
+      const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+      if (redirectOn && firstValue) {
+        const itemEl = el.querySelector(
+          `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+        );
+        performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+      }
+      {
+        const hidden = el.querySelector(
+          '[data-scope="combobox"][data-part="hidden-input"]'
+        );
+        if (hidden) {
+          const list = details.value.map((v) => String(v));
+          hidden.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : list[0] ?? "";
+          hidden.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+      notifyChange({
+        el,
+        canPushServer: canPush(),
+        pushEvent,
+        payload: {
+          id: el.id,
+          value: details.value,
+          items: details.items
+        },
+        serverEventName: getString(el, "onValueChange"),
+        clientEventName: getString(el, "onValueChangeClient")
+      });
+    }
+  };
 }
 var ComboboxHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const allItems = JSON.parse(el.dataset.collection || "[]");
+    const canPush = () => canPushEvent(this.liveSocket);
+    const allItems = JSON.parse(el.getAttribute("data-items") ?? "[]");
     const hasGroups = allItems.some((item) => Boolean(item.group));
     const props = {
-      id: el.id,
-      ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
-      disabled: getBoolean(el, "disabled"),
-      placeholder: getString(el, "placeholder"),
-      alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
-      autoFocus: getBoolean(el, "autoFocus"),
-      closeOnSelect: getBoolean(el, "closeOnSelect"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
-      inputBehavior: getString(el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
-      loopFocus: getBoolean(el, "loopFocus"),
-      multiple: getBoolean(el, "multiple"),
-      invalid: getBoolean(el, "invalid"),
-      allowCustomValue: false,
-      selectionBehavior: "replace",
-      name: getString(el, "name"),
-      form: getString(el, "form"),
-      readOnly: getBoolean(el, "readOnly"),
-      required: getBoolean(el, "required"),
-      positioning: (() => {
-        const positioningJson = el.dataset.positioning;
-        if (positioningJson) {
-          try {
-            const parsed = JSON.parse(positioningJson);
-            return transformPositioningOptions(parsed);
-          } catch {
-            return void 0;
-          }
-        }
-        return void 0;
-      })(),
-      onOpenChange: (details) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            open: details.open,
-            reason: details.reason,
-            value: details.value,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: getBoolean(el, "bubble"),
-              detail: {
-                open: details.open,
-                reason: details.reason,
-                value: details.value,
-                id: el.id
-              }
-            })
-          );
-        }
-      },
-      onInputValueChange: (details) => {
-        const eventName = getString(el, "onInputValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            value: details.inputValue,
-            reason: details.reason,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onInputValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: getBoolean(el, "bubble"),
-              detail: {
-                value: details.inputValue,
-                reason: details.reason,
-                id: el.id
-              }
-            })
-          );
-        }
-      },
-      onValueChange: (details) => {
-        const hiddenInput = el.querySelector(
-          '[data-scope="combobox"][data-part="input"]'
-        );
-        if (hiddenInput) {
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            value: details.value,
-            items: details.items,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: getBoolean(el, "bubble"),
-              detail: {
-                value: details.value,
-                items: details.items,
-                id: el.id
-              }
-            })
-          );
-        }
-      }
+      ...buildComboboxProps(el, pushEvent, canPush, this.liveSocket),
+      ...comboboxValueBinding(el)
     };
     const combobox = new Combobox(el, props);
     combobox.hasGroups = hasGroups;
     combobox.setAllOptions(allItems);
     combobox.init();
     this.combobox = combobox;
-    this.handlers = [];
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:combobox:set-value", (event) => {
+      combobox.api.setValue(event.detail.value);
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("combobox_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      combobox.api.setValue(payload.value);
+    });
   },
   updated() {
-    const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+    const newCollection = JSON.parse(this.el.getAttribute("data-items") ?? "[]");
     const hasGroups = newCollection.some((item) => Boolean(item.group));
-    if (this.combobox) {
-      this.combobox.hasGroups = hasGroups;
-      this.combobox.setAllOptions(newCollection);
-      this.combobox.render();
-      this.combobox.updateProps({
-        ...getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") },
-        collection: this.combobox.getCollection(),
-        name: getString(this.el, "name"),
-        form: getString(this.el, "form"),
-        disabled: getBoolean(this.el, "disabled"),
-        multiple: getBoolean(this.el, "multiple"),
-        dir: getString(this.el, "dir", ["ltr", "rtl"]),
-        invalid: getBoolean(this.el, "invalid"),
-        required: getBoolean(this.el, "required"),
-        readOnly: getBoolean(this.el, "readOnly")
-      });
+    if (!this.combobox) return;
+    this.combobox.hasGroups = hasGroups;
+    this.combobox.setAllOptions(newCollection);
+    const redirectOn = getBoolean(this.el, "redirect");
+    const controlled = getBoolean(this.el, "controlled");
+    this.combobox.updateProps({
+      collection: this.combobox.getCollection(),
+      id: this.el.id,
+      ...controlled ? { value: getStringList(this.el, "value") ?? [] } : { defaultValue: getStringList(this.el, "defaultValue") ?? [] },
+      name: getString(this.el, "name"),
+      form: getString(this.el, "form"),
+      dir: getDir(this.el),
+      disabled: getBoolean(this.el, "disabled"),
+      multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
+      invalid: getBoolean(this.el, "invalid"),
+      required: getBoolean(this.el, "required"),
+      readOnly: getBoolean(this.el, "readOnly"),
+      placeholder: getString(this.el, "placeholder")
+    });
+    if (this.combobox.api.open) {
+      this.combobox.api.reposition();
     }
   },
   destroyed() {
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.combobox?.destroy();
   }
 };

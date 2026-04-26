@@ -1,0 +1,32 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="layout-heading-styling-page"
+    title="Layout Heading Style"
+    subtitle="Use the `layout-heading` wrapper class for spacing, then utilities for width and alignment."
+  >
+    <.demo_section
+      id="layout-heading-style-wrapper"
+      title="Wrapper"
+      code={E2eWeb.Demos.LayoutHeadingDemo.styling_wrapper_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.LayoutHeadingDemo.styling_wrapper_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="layout-heading-style-constrained"
+      title="Width utilities"
+      code={E2eWeb.Demos.LayoutHeadingDemo.styling_constrained_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.LayoutHeadingDemo.styling_constrained_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

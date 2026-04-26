@@ -32,8 +32,8 @@ defmodule CorexWeb.Marquee do
   ]
 
   capture variants: [
-            pause_on_hover: %{
-              id: "my-marquee",
+            minimal: %{
+              id: "marquee-anatomy-minimal",
               class: "marquee",
               items: @items_pause_on_hover,
               duration: 20,
@@ -42,12 +42,12 @@ defmodule CorexWeb.Marquee do
               item: [
                 %{
                   let: :item,
-                  inner_block: ~s(<span>{item.item.logo}</span> <span>{item.item.name}</span>)
+                  inner_block: ~s(<span>{item.logo}</span> <span>{item.name}</span>)
                 }
               ]
             },
-            with_components: %{
-              id: "marquee-icons",
+            custom_slots: %{
+              id: "marquee-anatomy-custom-slots",
               class: "marquee",
               items: @items_with_components,
               duration: 25,
@@ -57,12 +57,12 @@ defmodule CorexWeb.Marquee do
                 %{
                   let: :item,
                   inner_block:
-                    ~s(<.heroicon name={item.item.icon} class="icon" /><span>{item.item.name}</span>)
+                    ~s(<.heroicon name={item.icon} class="icon" /><span>{item.name}</span>)
                 }
               ]
             },
-            with_files: %{
-              id: "marquee-tech",
+            with_images: %{
+              id: "marquee-anatomy-with-images",
               class: "marquee",
               items: @items_with_files,
               duration: 30,
@@ -72,7 +72,7 @@ defmodule CorexWeb.Marquee do
                 %{
                   let: :item,
                   inner_block:
-                    ~s(<img src={item.item.src} alt={item.item.name} class="w-10 mx-auto" /><p>{item.item.name}</p>)
+                    ~s(<img src={item.src} alt={item.name} class="w-10 mx-auto" /><p>{item.name}</p>)
                 }
               ]
             }

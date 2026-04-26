@@ -85,6 +85,33 @@ export const getBoolean = (element: HTMLElement, attrName: string): boolean => {
   const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
   return element.hasAttribute(`data-${dashName}`);
 };
+
+export const getBooleanValue = (element: HTMLElement, attrName: string): boolean | undefined => {
+  const raw = element.dataset[attrName];
+  return raw === "true" ? true : raw === "false" ? false : undefined;
+};
+
+export type CheckedState = boolean | "indeterminate";
+
+export function getCheckedState(
+  element: HTMLElement,
+  key: "checked" | "defaultChecked"
+): CheckedState {
+  const raw = element.dataset[key];
+  if (raw === "indeterminate") return "indeterminate";
+  return raw === "true";
+}
+
+export function templatesContentRoot(
+  el: Element,
+  dataTemplates: string
+): DocumentFragment | HTMLElement | null {
+  const host = el.querySelector(`[data-templates="${dataTemplates}"]`);
+  if (!host) return null;
+  if (host instanceof HTMLTemplateElement) return host.content;
+  return host as HTMLElement;
+}
+
 /**
  * Generate a random ID if none is provided
  * @param element - Optional HTML element to get an existing id

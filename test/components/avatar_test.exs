@@ -1,6 +1,7 @@
 defmodule Corex.AvatarTest do
   use CorexTest.ComponentCase, async: true
 
+  alias Corex.Avatar
   alias Corex.Avatar.Connect
 
   describe "avatar/1" do
@@ -8,6 +9,8 @@ defmodule Corex.AvatarTest do
       html = render_component(&CorexTest.ComponentHelpers.render_avatar/1, [])
       assert html =~ ~r/data-scope="avatar"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
       assert html =~ ~r/JD/
     end
 
@@ -19,10 +22,8 @@ defmodule Corex.AvatarTest do
         )
 
       assert html =~ "image.png"
-      # skeleton is visible
-      assert html =~ ~s(data-state="visible")
-      # fallback is hidden
-      assert html =~ ~s(data-state="hidden")
+      assert html =~ ~s(phx-mounted=)
+      assert html =~ ~s(data-part="image")
     end
   end
 
@@ -67,6 +68,42 @@ defmodule Corex.AvatarTest do
       result = Connect.skeleton(assigns)
       assert result["id"] == "avatar:test-avatar:skeleton"
       assert result["data-part"] == "skeleton"
+    end
+  end
+
+  describe "set_src/2" do
+    test "returns JS command" do
+      js = Avatar.set_src("my-avatar", "https://example.com/a.png")
+      assert %Phoenix.LiveView.JS{} = js
+      ops = Map.get(js, :ops, [])
+
+      assert Enum.any?(ops, fn
+               ["dispatch", %{event: "corex:avatar:set-src"}] -> true
+               _ -> false
+             end)
+    end
+  end
+
+  describe "set_src/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Avatar.set_src(socket, "my-avatar", "https://example.com/a.png")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "loaded/1" do
+    test "returns JS command" do
+      js = Avatar.loaded("my-avatar")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "loaded/3" do
+    test "pushes avatar_loaded event with id" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = Avatar.loaded(socket, "my-avatar")
+      assert %Phoenix.LiveView.Socket{} = result
     end
   end
 end

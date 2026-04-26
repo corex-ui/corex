@@ -2,15 +2,25 @@ defmodule Corex do
   @moduledoc false
 
   @components %{
-    accordion: {Corex.Accordion, [accordion: 1, accordion_skeleton: 1]},
+    accordion:
+      {Corex.Accordion,
+       [
+         accordion: 1,
+         accordion_root: 1,
+         accordion_item: 1,
+         accordion_trigger: 1,
+         accordion_indicator: 1,
+         accordion_content: 1,
+         accordion_skeleton: 1
+       ]},
     action: {Corex.Action, [action: 1]},
-    angle_slider: {Corex.AngleSlider, [angle_slider: 1]},
+    angle_slider: {Corex.AngleSlider, [angle_slider: 1, angle_slider_skeleton: 1]},
     avatar: {Corex.Avatar, [avatar: 1]},
     carousel: {Corex.Carousel, [carousel: 1]},
-    checkbox: {Corex.Checkbox, [checkbox: 1]},
+    checkbox: {Corex.Checkbox, [checkbox: 1, checkbox_skeleton: 1]},
     clipboard: {Corex.Clipboard, [clipboard: 1]},
     code: {Corex.Code, [code: 1]},
-    collapsible: {Corex.Collapsible, [collapsible: 1]},
+    collapsible: {Corex.Collapsible, [collapsible: 1, collapsible_skeleton: 1]},
     combobox: {Corex.Combobox, [combobox: 1]},
     color_picker: {Corex.ColorPicker, [color_picker: 1]},
     data_table: {Corex.DataTable, [data_table: 1]},
@@ -36,7 +46,17 @@ defmodule Corex do
     select: {Corex.Select, [select: 1]},
     signature_pad: {Corex.SignaturePad, [signature_pad: 1]},
     switch: {Corex.Switch, [switch: 1]},
-    tabs: {Corex.Tabs, [tabs: 1, tabs_trigger: 1, tabs_content: 1]},
+    tabs:
+      {Corex.Tabs,
+       [
+         tabs: 1,
+         tabs_root: 1,
+         tabs_list: 1,
+         tabs_trigger: 1,
+         tabs_indicator: 1,
+         tabs_content: 1,
+         tabs_skeleton: 1
+       ]},
     timer: {Corex.Timer, [timer: 1]},
     tooltip: {Corex.Tooltip, [tooltip: 1]},
     toast:
@@ -49,7 +69,21 @@ defmodule Corex do
          toast_disconnected: 1
        ]},
     toggle_group: {Corex.ToggleGroup, [toggle_group: 1]},
-    tree_view: {Corex.TreeView, [tree_view: 1, tree_item: 1, tree_branch: 1]}
+    tree_view:
+      {Corex.TreeView,
+       [
+         tree_view: 1,
+         tree_view_root: 1,
+         tree_view_branch: 1,
+         tree_view_branch_trigger: 1,
+         tree_view_branch_indicator: 1,
+         tree_view_branch_content: 1,
+         tree_view_item: 1,
+         tree_view_item_indicator: 1,
+         tree_item: 1,
+         tree_branch: 1,
+         tree_view_skeleton: 1
+       ]}
   }
 
   defmacro __using__(opts \\ []) do
@@ -119,4 +153,46 @@ defmodule Corex do
   defp include?(_name, :all, []), do: true
   defp include?(name, :all, except), do: name not in except
   defp include?(name, only, _except) when is_list(only), do: name in only
+
+  @doc false
+  def component_ids do
+    @components |> Map.keys() |> Enum.sort()
+  end
+
+  @doc false
+  def component_spec(id) when is_atom(id) do
+    case Map.fetch(@components, id) do
+      {:ok, {mod, functions}} ->
+        fns =
+          Enum.map(functions, fn {name, arity} ->
+            %{name: name, arity: arity}
+          end)
+
+        {:ok,
+         %{
+           id: id,
+           module: inspect(mod),
+           function_components: fns
+         }}
+
+      :error ->
+        :error
+    end
+  end
+
+  @doc false
+  def component_module_for_mcp_id(id) when is_binary(id) do
+    allowed = MapSet.new(for a <- component_ids(), do: to_string(a))
+
+    if MapSet.member?(allowed, id) do
+      atom_id = String.to_existing_atom(id)
+
+      case Map.fetch(@components, atom_id) do
+        {:ok, {mod, _}} -> {:ok, mod}
+        :error -> :error
+      end
+    else
+      :error
+    end
+  end
 end

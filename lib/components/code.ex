@@ -100,6 +100,8 @@ defmodule Corex.Code do
       "The language name in Makeup's registry (e.g. :elixir, :html). Add the lexer package to deps; otherwise renders as plain escaped text."
   )
 
+  attr(:inline, :boolean, default: false, doc: "Whether to display the code inline")
+
   attr(:rest, :global)
 
   def code(assigns) do
@@ -123,11 +125,18 @@ defmodule Corex.Code do
       |> then(&assign(&1, :highlighted_html, highlight_code(&1)))
 
     ~H"""
-    <div data-scope="code" data-part="root" {@rest}>
-      <div data-scope="code" data-part="content">
-        <pre class="highlight" tabindex="0"><code>{Phoenix.HTML.raw(@highlighted_html)}</code></pre>
-      </div>
-    </div>
+      <pre
+        :if={!@inline}
+        data-scope="code"
+        data-part="root"
+        tabindex="0"
+        {@rest}
+      >
+        <code data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</code>
+      </pre>
+      <code :if={@inline} data-scope="code" data-part="root" {@rest}>
+        <span data-scope="code" data-part="content">{Phoenix.HTML.raw(@highlighted_html)}</span>
+      </code>
     """
   end
 

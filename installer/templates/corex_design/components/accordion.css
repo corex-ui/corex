@@ -2,15 +2,49 @@
 
 @layer components {
 
-  .accordion {
-    @apply ui-root;
-    width: 100%;
-    max-width: var(--container-ui);
-
+  .accordion[data-loading] [data-scope="accordion"][data-part="root"] {
+    @apply ui-loading;
   }
+
+  .accordion {
+    width: 100%;
+    max-width: var(--container-md);
+  }
+
+
   .accordion [data-scope="accordion"][data-part="root"] {
     @apply ui-root;
-    
+  }
+
+  .accordion [data-scope="accordion"][data-part="root"][data-orientation="horizontal"] {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item"] {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item"][data-orientation="horizontal"] {
+    display: contents;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item"][data-orientation="horizontal"] > h3 {
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    align-self: stretch;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item"][data-orientation="horizontal"] > h3 > [data-scope="accordion"][data-part="item-trigger"] {
+    flex: 1 1 auto;
   }
 
   .accordion [data-scope="accordion"][data-part="item"] h3 {
@@ -19,138 +53,159 @@
   }
 
   .accordion [data-scope="accordion"][data-part="item-trigger"] {
-    @apply ui-item;
-
-    border-radius: var(--radius-ui);
-    border: 1px solid var(--color-ui--border);
+    @apply ui-trigger;
+    width: 100%;
+    margin-bottom: var(--spacing-space);
   }
 
-  .accordion [data-scope="accordion"][data-part="item"] {
-    gap: var(--spacing-ui-gap);
-    display: flex;
-    flex-direction: column;
+  .accordion [data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] {
+    box-sizing: border-box;
+    height: 100%;
     width: 100%;
+    margin-bottom: 0;
   }
 
   .accordion [data-scope="accordion"][data-part="item-text"] {
-
     width: 100%;
     display: flex;
     align-items: center;
-    gap: var(--spacing-ui-gap);
+    gap: var(--spacing-space);
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-trigger"][data-orientation="horizontal"] [data-scope="accordion"][data-part="item-text"] {
+    flex: 1 1 auto;
+    min-width: 0;
+    align-items: center;
+  }
+
+
+  .accordion [data-scope="accordion"][data-part="item-indicator"] {
+    flex-shrink: 0;
+    transform: rotate(0deg);
+    transition: transform 0.2s ease;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-indicator"][data-state="open"] {
+    transform: rotate(90deg);
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-indicator"][dir="rtl"][data-state="open"] {
+    transform: rotate(-90deg);
   }
 
   .accordion [data-scope="accordion"][data-part="item"][data-state="closed"] [data-scope="accordion"][data-part="item-indicator"] .state-open,
   .accordion [data-scope="accordion"][data-part="item"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"] .state-closed {
     @apply ui-icon;
-
-    display: none!important;
-    
+    display: none;
   }
 
   .accordion [data-scope="accordion"][data-part="item"][data-state="open"] [data-scope="accordion"][data-part="item-indicator"] .state-open,
   .accordion [data-scope="accordion"][data-part="item"][data-state="closed"] [data-scope="accordion"][data-part="item-indicator"] .state-closed {
     @apply ui-icon;
-
     display: inline-block;
-    transform: rotate(-90deg)!important;
   }
+
 
   .accordion [data-scope="accordion"][data-part="item-content"] {
+    overflow: hidden;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-content"][data-orientation="horizontal"] {
+    grid-row: 2;
+    display: flex;
+  }
+
+  .accordion [data-scope="accordion"][data-part="item-content"] > p {
     @apply ui-content;
+    margin: 0;
+    margin-bottom: var(--spacing-space);
   }
 
-  .accordion [data-scope="accordion"][data-part="root"][data-loading] {
-    pointer-events: none;
-    user-select: none;
-    min-width: var(--container-ui);
 
+  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"] > *,
+  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-indicator"] > * {
+    animation: corex-skeleton 1.4s ease-in-out infinite;
   }
 
-  .accordion [data-scope="accordion"][data-part="root"][data-loading] [data-scope="accordion"][data-part="item-text"]>*,
-  .accordion [data-scope="accordion"][data-part="root"][data-loading] [data-scope="accordion"][data-part="item-indicator"]>* {
-    animation: accordion-skeleton 1.4s ease-in-out infinite;
-  }
-
-  @keyframes accordion-skeleton {
-    0% {
-      opacity: 0.6;
-    }
-
-    50% {
-      opacity: 1;
-    }
-
-    100% {
-      opacity: 0.6;
-    }
-  }
-
-  .accordion [data-scope="accordion"][data-part="root"][data-loading] [data-scope="accordion"][data-part="item-text"]::before,
-  .accordion [data-scope="accordion"][data-part="root"][data-loading] [data-scope="accordion"][data-part="item-text"]::after {
+  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"]::before,
+  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"]::after {
     content: "";
     display: block;
-    height: var(--spacing-micro);
-    background: var(--color-ui-active);
-    border-radius: var(--radius-ui);
+    height: var(--spacing-space);
+    background-color: var(--color-ui-active);
+    border-radius: var(--radius-md);
   }
 
-  .accordion [data-scope="accordion"][data-part="root"][data-loading] [data-scope="accordion"][data-part="item-text"]::before {
-    width: var(--spacing-ui);
-    margin-block: var(--spacing-ui-padding);
+  .accordion [data-scope="accordion"][data-part="root"][data-async] [data-scope="accordion"][data-part="item-text"]::before {
+    width: --spacing(32);
+    margin-block: var(--spacing-space);
   }
+
 }
 
 @utility accordion--* {
-  [data-scope="accordion"][data-part="root"] {
-    max-width: --value(--container-ui-*, [length]);
-    gap: --value(--spacing-ui-gap-*, [length]);
+  
+  [data-scope="accordion"][data-part="item-trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    margin-bottom: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
+    color: --value(--color-ink-*, [color]);
   }
 
-  [data-scope="accordion"][data-part="item"] {
-    gap: --value(--spacing-ui-gap-*, [length]);
+  [data-scope="accordion"][data-part="item-text"] {
+    gap: --value(--spacing-space-*, [length]);
+  }
+  [data-scope="accordion"][data-part="item-trigger"][data-state="open"] {
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
+
+    &:hover {
+      background-color: --value(--color-*-hover, [color]);
+    }
+  
+    &:active {
+      background-color: --value(--color-*-active, [color]);
+    }  
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+      outline: none;
+    }
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
+      background-color: --value(--color-*-muted, [color]);
+    }
   }
 
-  [data-scope="accordion"][data-part="item"][data-disabled] [data-scope="accordion"][data-part="item-trigger"] {
-    color: --value(--color-ui-* --muted, [color]);
+  [data-scope="accordion"][data-part="item-content"] > p {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding: --value(--spacing-space-*, [length]);
+    margin-bottom: --value(--spacing-space-*, [length]);
   }
+}
+
+@utility accordion--rounded-* {
 
   [data-scope="accordion"][data-part="item-trigger"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+    border-radius: --value(--radius-*, [length]);
   }
-
-  [data-scope="accordion"][data-part="item-trigger"][data-disabled] {
-    background-color: --alpha(--value(--color-ui-*, [color]) / 60%);
-    color: --value(--color-ui-* --muted, [color]);
+  [data-scope="accordion"][data-part="item-content"] > p {
+    border-radius: --value(--radius-*, [length]);
   }
+}
 
-  [data-scope="accordion"][data-part="item-trigger"][data-selected],
-  [data-scope="accordion"][data-part="item-trigger"][data-in-range],
-  [data-scope="accordion"][data-part="item-trigger"][data-highlighted],
-  [data-scope="accordion"][data-part="item-trigger"][data-state="checked"],
-  [data-scope="accordion"][data-part="item-trigger"][data-state="on"],
-  [data-scope="accordion"][data-part="item-trigger"][data-state="open"],
-  [data-scope="accordion"][data-part="item-trigger"]:hover,
-  [data-scope="accordion"][data-part="item-trigger"]:active {
-    background-color: --value(--color-ui-*, [color]);
-    color: --value(--color-ui-* --text, [color]);
+@utility accordion--text-* {
+
+  [data-scope="accordion"][data-part="item-trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
-
-  [data-scope="accordion"][data-part="item-trigger"][data-highlighted]:not( :hover) {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
-  }
-
-  [data-scope="accordion"][data-part="item-content"] {
-    padding: --value(--spacing-ui-padding-*, [length]);
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-  }
-
-  [data-scope="accordion"][data-part="item-content"]>p {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
+  [data-scope="accordion"][data-part="item-content"] > p {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 }

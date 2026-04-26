@@ -60,7 +60,9 @@ defmodule Corex.ToastTest do
 
   describe "toast_group/1" do
     test "renders toast group" do
-      result = render_component(&Corex.Toast.toast_group/1, id: "layout-toast")
+      result =
+        render_component(&Corex.Toast.toast_group/1, id: "layout-toast")
+
       assert [_] = find_in_html(result, ~s([data-scope="toast"][data-part="group"]))
     end
 

@@ -1,6 +1,7 @@
 ## mix corex.new
 
-Provides `corex.new` installer as an archive.
+Provides `corex.new` installer as an archive. 
+It runs `mix phx.new` and then `mix igniter.install corex`
 
 To install from Hex, run:
 

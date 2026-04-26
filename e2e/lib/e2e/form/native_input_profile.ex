@@ -49,6 +49,39 @@ defmodule E2e.Form.NativeInputProfile do
     |> validate_acceptance(:agree)
   end
 
+  def changeset_validate(profile, attrs \\ %{}) do
+    profile
+    |> cast(attrs, [
+      :name,
+      :email,
+      :bio,
+      :birth_date,
+      :datetime,
+      :reminder_time,
+      :month,
+      :week,
+      :website,
+      :phone,
+      :q,
+      :color,
+      :count,
+      :password,
+      :role,
+      :tags,
+      :size,
+      :agree
+    ])
+    |> validate_required([:name, :email, :role, :count, :agree], message: "can't be blank")
+    |> validate_format(:email, ~r/@/, message: "must look like an email address")
+    |> validate_length(:bio, min: 3, message: "must be at least 3 characters")
+    |> validate_number(:count,
+      greater_than: 0,
+      less_than: 99,
+      message: "must be between 1 and 98"
+    )
+    |> validate_acceptance(:agree, message: "must be accepted to continue")
+  end
+
   def format_for_toast(data) when is_map(data) do
     [
       "name=#{inspect(Map.get(data, :name) || Map.get(data, "name"))}",

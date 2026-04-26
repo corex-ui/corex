@@ -13,15 +13,13 @@ defmodule Corex.FloatingPanel.Anatomy do
       :default_position,
       :min_size,
       :max_size,
-      open: false,
-      default_open: false,
-      controlled: false,
       draggable: true,
       resizable: true,
       allow_overflow: true,
       close_on_escape: true,
       disabled: false,
       dir: "ltr",
+      orientation: "vertical",
       persist_rect: false,
       grid_size: 1,
       on_open_change: nil,
@@ -33,15 +31,13 @@ defmodule Corex.FloatingPanel.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            open: boolean(),
-            default_open: boolean(),
-            controlled: boolean(),
             draggable: boolean(),
             resizable: boolean(),
             allow_overflow: boolean(),
             close_on_escape: boolean(),
             disabled: boolean(),
             dir: String.t(),
+            orientation: String.t(),
             size: map() | nil,
             default_size: map() | nil,
             position: map() | nil,
@@ -60,85 +56,209 @@ defmodule Corex.FloatingPanel.Anatomy do
 
   defmodule Root do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["data-state", "dir", "data-orientation", "id", "data-focus"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Trigger do
     @moduledoc false
-    defstruct [:id, initial_open: true]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t(), initial_open: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "type",
+      "tabindex",
+      "dir",
+      "data-orientation",
+      "data-state",
+      "id",
+      "data-focus",
+      "aria-expanded",
+      "aria-controls",
+      "disabled",
+      "aria-disabled"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "dir",
+      "data-orientation",
+      "id",
+      "data-state",
+      "style",
+      "data-focus",
+      "hidden"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, initial_open: true]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t(), initial_open: boolean()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "hidden",
+      "dir",
+      "data-orientation",
+      "id",
+      "data-state",
+      "style",
+      "data-focus",
+      "role",
+      "tabindex",
+      "data-placement",
+      "data-side"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Title do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "dir", "data-orientation", "data-state", "data-focus"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Header do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "dir", "data-orientation", "data-state", "data-focus"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Body do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "dir", "data-orientation", "data-state", "data-focus"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule DragTrigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-state",
+      "data-focus",
+      "tabindex",
+      "role"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule ResizeTrigger do
     @moduledoc false
-    defstruct [:id, :axis]
+    defstruct [:id, :axis, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t(), axis: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            axis: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-state",
+      "data-focus",
+      "data-axis",
+      "role",
+      "tabindex"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule CloseTrigger do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs [
+      "type",
+      "tabindex",
+      "id",
+      "dir",
+      "data-orientation",
+      "data-state",
+      "data-focus",
+      "aria-label"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id]
+    defstruct [:id, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t()}
+    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "dir", "data-orientation", "data-state", "data-focus", "role"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule StageTrigger do
     @moduledoc false
-    defstruct [:id, :stage]
+    defstruct [:id, :stage, :dir, orientation: "vertical"]
 
-    @type t :: %__MODULE__{id: String.t(), stage: String.t()}
+    @type t :: %__MODULE__{
+            id: String.t(),
+            stage: String.t(),
+            dir: String.t(),
+            orientation: String.t()
+          }
+
+    @ignored_attrs [
+      "type",
+      "tabindex",
+      "id",
+      "dir",
+      "data-orientation",
+      "data-state",
+      "data-focus",
+      "data-stage",
+      "aria-label",
+      "aria-pressed",
+      "disabled"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

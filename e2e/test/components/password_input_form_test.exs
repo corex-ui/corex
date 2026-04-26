@@ -4,7 +4,7 @@ defmodule E2eWeb.PasswordInputFormTest do
 
   alias E2eWeb.PasswordInputModel, as: PasswordInput
 
-  feature "static form - submit empty includes password", %{session: session} do
+  feature "static form - submit empty native password", %{session: session} do
     session
     |> PasswordInput.goto_form(:static)
     |> PasswordInput.wait(500)
@@ -13,7 +13,7 @@ defmodule E2eWeb.PasswordInputFormTest do
     |> PasswordInput.see_flash("Submitted: password=")
   end
 
-  feature "static form - fill password then submit", %{session: session} do
+  feature "static form - fill native password then submit", %{session: session} do
     session
     |> PasswordInput.goto_form(:static)
     |> PasswordInput.wait(500)
@@ -31,20 +31,23 @@ defmodule E2eWeb.PasswordInputFormTest do
     |> PasswordInput.check_accessibility()
   end
 
-  feature "live form - submit empty password", %{session: session} do
-    session
-    |> PasswordInput.goto_form(:live)
-    |> PasswordInput.wait(500)
-    |> PasswordInput.submit_form(:live)
-    |> PasswordInput.wait(2000)
-    |> PasswordInput.see_flash("password=")
+  feature "live form - submit empty password does not show success", %{session: session} do
+    session =
+      session
+      |> PasswordInput.goto_form(:live)
+      |> PasswordInput.wait(500)
+      |> PasswordInput.submit_form(:live)
+      |> PasswordInput.wait(1500)
+
+    refute_has(session, Wallaby.Query.text("password=***"))
+    assert_has(session, Wallaby.Query.css("#password-input-live-changeset", visible: true))
   end
 
   feature "live form - fill password then submit", %{session: session} do
     session
     |> PasswordInput.goto_form(:live)
     |> PasswordInput.wait(500)
-    |> PasswordInput.fill_password_input("secret123")
+    |> PasswordInput.fill_live_password_input("secret123")
     |> PasswordInput.wait(500)
     |> PasswordInput.submit_form(:live)
     |> PasswordInput.wait(2000)

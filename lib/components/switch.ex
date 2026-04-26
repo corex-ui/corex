@@ -13,6 +13,14 @@ defmodule Corex.Switch do
   </.switch>
   ```
 
+  ### Label before control
+
+  ```heex
+  <.switch id="my-switch">
+    <:label position={:pre}>Enable notifications</:label>
+  </.switch>
+  ```
+
   ### Controlled Mode
 
   ```heex
@@ -173,7 +181,6 @@ defmodule Corex.Switch do
   <.switch class="switch switch--accent switch--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/switch#modifiers)
   '''
 
   @doc type: :component
@@ -224,8 +231,8 @@ defmodule Corex.Switch do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the switch. When nil, derived from document (html lang + config :rtl_locales)"
   )
@@ -275,6 +282,13 @@ defmodule Corex.Switch do
 
   slot :label, required: false do
     attr(:class, :string, required: false)
+
+    attr(:position, :atom,
+      required: false,
+      values: [:pre, :post],
+      doc:
+        "Place the label before (:pre) or after (:post) the control. Defaults to :post when omitted."
+    )
   end
 
   slot :error, required: false do
@@ -307,7 +321,8 @@ defmodule Corex.Switch do
     <div
       id={@id}
       phx-hook="Switch"
-      data-js="pending"
+      data-loading      
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -316,6 +331,7 @@ defmodule Corex.Switch do
         name: @name,
         form: @form,
         dir: @dir,
+        orientation: @orientation,
         read_only: @read_only,
         invalid: @invalid,
         required: @required,
@@ -327,15 +343,38 @@ defmodule Corex.Switch do
       })}
     >
       <input type="hidden" name={@name} value="false" form={@form} disabled={@disabled}/>
-      <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value})} />
-      <label phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-        <span {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
-          <span {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}></span>
-        </span>
-        <span :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+      <input
+        phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+        {Connect.hidden_input(%HiddenInput{id: @id, name: @name, checked: @checked, disabled: @disabled, required: @required, invalid: @invalid, value: @value, controlled: @controlled})}
+      />
+      <label phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+        <span
+          :for={label <- @label}
+          :if={Map.get(label, :position, :post) == :pre}
+          class={Map.get(label, :class, nil)}
+          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        >
           {render_slot(@label)}
         </span>
-        <span :if={@label == [] && @aria_label} class="sr-only" {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+        <span phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}>
+          <span phx-mounted={Connect.ignore_thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})} {Connect.thumb(%Thumb{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}></span>
+        </span>
+        <span
+          :for={label <- @label}
+          :if={Map.get(label, :position, :post) == :post}
+          class={Map.get(label, :class, nil)}
+          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        >
+          {render_slot(@label)}
+        </span>
+        <span
+          :if={@label == [] and @aria_label}
+          class="sr-only"
+          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+          {Connect.label(%Label{id: @id, dir: @dir, checked: @checked, orientation: @orientation})}
+        >
           {@aria_label}
         </span>
       </label>
@@ -361,7 +400,7 @@ defmodule Corex.Switch do
       </button>
   """
   def set_checked(switch_id, checked) when is_binary(switch_id) and is_boolean(checked) do
-    JS.dispatch("phx:switch:set-checked",
+    JS.dispatch("corex:switch:set-checked",
       to: "##{switch_id}",
       detail: %{checked: checked},
       bubbles: false
@@ -399,7 +438,7 @@ defmodule Corex.Switch do
       </button>
   """
   def toggle_checked(switch_id) when is_binary(switch_id) do
-    JS.dispatch("phx:switch:toggle-checked",
+    JS.dispatch("corex:switch:toggle-checked",
       to: "##{switch_id}",
       bubbles: false
     )

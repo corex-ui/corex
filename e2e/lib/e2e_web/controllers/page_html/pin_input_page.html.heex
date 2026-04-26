@@ -2,14 +2,27 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Pin Input</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <.pin_input id="my-pin-input" count={4} class="pin-input">
-    <:label>Code</:label>
-  </.pin_input>
+  <.demo_page
+    id="pin-input-anatomy-page"
+    title="Pin Input Anatomy"
+    subtitle="Minimal pin input and an initial value via the value assign."
+  >
+    <.demo_section
+      id="pin-input-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.PinInputDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.PinInputDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="pin-input-anatomy-default"
+      title="Initial value"
+      code={E2eWeb.Demos.PinInputDemo.with_default_code()}
+    >
+      <:preview><E2eWeb.Demos.PinInputDemo.with_default_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

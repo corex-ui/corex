@@ -1,0 +1,4 @@
+/* corex:design-imports */
+@import "../corex/main.css";
+@import "../corex/theme/neo.css";
+@import "../corex/components/typo.css";

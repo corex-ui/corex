@@ -1,26 +1,41 @@
 defmodule E2eWeb.PagesA11yTest do
   use E2eWeb.ConnCase, async: false
   use Wallaby.Feature
+  use E2eWeb, :verified_routes
 
   import E2e.AccountsFixtures
 
-  @locale "en"
+  setup do
+    Localize.put_locale(:en)
+    :ok
+  end
 
   @static_pages [
-    {"Home", "/#{@locale}"},
-    {"Users index", "/#{@locale}/users"},
-    {"Users new", "/#{@locale}/users/new"},
-    {"Admins index", "/#{@locale}/admins"},
-    {"Admins new", "/#{@locale}/admins/new"}
+    {"Home", :home},
+    {"Users index", :users_index},
+    {"Users new", :users_new},
+    {"Admins index", :admins_index},
+    {"Admins new", :admins_new}
   ]
 
-  for {name, path} <- @static_pages do
+  @locale_path "/" <> E2eWeb.DocA11yRoutes.locale()
+
+  for {name, key} <- @static_pages do
     @name name
-    @path path
+    @key key
 
     feature "#{@name} has no A11y violations", %{session: session} do
+      path =
+        case @key do
+          :home -> @locale_path
+          :users_index -> ~p"/users"
+          :users_new -> ~p"/users/new"
+          :admins_index -> ~p"/admins"
+          :admins_new -> ~p"/admins/new"
+        end
+
       session
-      |> Wallaby.Browser.visit(@path)
+      |> Wallaby.Browser.visit(path)
       |> E2eWeb.Model.wait(500)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
@@ -34,7 +49,7 @@ defmodule E2eWeb.PagesA11yTest do
     end
 
     feature "Users show has no A11y violations", %{session: session, user: user} do
-      path = "/#{@locale}/users/#{user.id}"
+      path = ~p"/users/#{user.id}"
 
       session
       |> Wallaby.Browser.visit(path)
@@ -43,7 +58,7 @@ defmodule E2eWeb.PagesA11yTest do
     end
 
     feature "Users edit has no A11y violations", %{session: session, user: user} do
-      path = "/#{@locale}/users/#{user.id}/edit"
+      path = ~p"/users/#{user.id}/edit"
 
       session
       |> Wallaby.Browser.visit(path)
@@ -60,7 +75,7 @@ defmodule E2eWeb.PagesA11yTest do
     end
 
     feature "Admins show has no A11y violations", %{session: session, admin: admin} do
-      path = "/#{@locale}/admins/#{admin.id}"
+      path = ~p"/admins/#{admin.id}"
 
       session
       |> Wallaby.Browser.visit(path)
@@ -69,7 +84,7 @@ defmodule E2eWeb.PagesA11yTest do
     end
 
     feature "Admins edit has no A11y violations", %{session: session, admin: admin} do
-      path = "/#{@locale}/admins/#{admin.id}/edit"
+      path = ~p"/admins/#{admin.id}/edit"
 
       session
       |> Wallaby.Browser.visit(path)

@@ -2,7 +2,8 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { PasswordInput } from "../components/password-input";
 import type { Props, VisibilityChangeDetails } from "@zag-js/password-input";
-import { getString, getBoolean, getDir } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { notifyChange } from "../lib/respond-to";
 
 type PasswordInputHookState = {
   passwordInput?: PasswordInput;
@@ -12,11 +13,11 @@ type PasswordInputHookState = {
 const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
     const el = this.el;
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new PasswordInput(el, {
       id: el.id,
-      ...(getBoolean(el, "controlledVisible")
-        ? { visible: getBoolean(el, "visible") }
-        : { defaultVisible: getBoolean(el, "defaultVisible") }),
+      defaultVisible: getBoolean(el, "defaultVisible"),
       disabled: getBoolean(el, "disabled"),
       invalid: getBoolean(el, "invalid"),
       readOnly: getBoolean(el, "readOnly"),
@@ -24,24 +25,16 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
       ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
       name: getString(el, "name"),
       dir: getDir(el),
-      autoComplete: getString<"current-password" | "new-password">(el, "autoComplete", [
-        "current-password",
-        "new-password",
-      ]),
+      autoComplete: getString<"current-password" | "new-password">(el, "autoComplete"),
       onVisibilityChange: (details: VisibilityChangeDetails) => {
-        const eventName = getString(el, "onVisibilityChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, { visible: details.visible, id: el.id });
-        }
-        const clientName = getString(el, "onVisibilityChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: { id: el.id, visible: details.visible } as Record<string, unknown>,
+          serverEventName: getString(el, "onVisibilityChange"),
+          clientEventName: getString(el, "onVisibilityChangeClient"),
+        });
       },
     } as Props);
     zag.init();
@@ -52,9 +45,6 @@ const PasswordInputHook: Hook<object & PasswordInputHookState, HTMLElement> = {
   updated(this: object & HookInterface<HTMLElement> & PasswordInputHookState) {
     this.passwordInput?.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlledVisible")
-        ? { visible: getBoolean(this.el, "visible") }
-        : {}),
       disabled: getBoolean(this.el, "disabled"),
       invalid: getBoolean(this.el, "invalid"),
       readOnly: getBoolean(this.el, "readOnly"),

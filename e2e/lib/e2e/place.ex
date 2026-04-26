@@ -110,6 +110,25 @@ defmodule E2e.Place do
     |> Repo.all()
   end
 
+  def search_cities(term, limit, offset)
+      when is_binary(term) and is_integer(limit) and is_integer(offset) do
+    term = normalize_search_term(term)
+
+    if term == "" do
+      from(c in City, order_by: [asc: c.name], limit: ^limit, offset: ^offset)
+      |> Repo.all()
+    else
+      search = "%#{term}%"
+
+      City
+      |> where([c], ilike(c.name, ^search) or ilike(c.iata_code, ^search))
+      |> order_by([c], asc: c.name)
+      |> limit(^limit)
+      |> offset(^offset)
+      |> Repo.all()
+    end
+  end
+
   def list_airports(query) when is_binary(query) do
     Airport
     |> where([a], ilike(a.name, ^"#{query}%") or ilike(a.iata_code, ^"#{query}%"))
@@ -165,14 +184,21 @@ defmodule E2e.Place do
 
   def search_airports(term, limit, offset)
       when is_binary(term) and is_integer(limit) and is_integer(offset) do
-    search = "%#{term}%"
+    term = normalize_search_term(term)
 
-    Airport
-    |> where([a], ilike(a.name, ^search) or ilike(a.iata_code, ^search))
-    |> order_by([a], asc: a.name)
-    |> limit(^limit)
-    |> offset(^offset)
-    |> Repo.all()
+    if term == "" do
+      from(Airport, order_by: [asc: :name], limit: ^limit, offset: ^offset)
+      |> Repo.all()
+    else
+      search = "%#{term}%"
+
+      Airport
+      |> where([a], ilike(a.name, ^search) or ilike(a.iata_code, ^search))
+      |> order_by([a], asc: a.name)
+      |> limit(^limit)
+      |> offset(^offset)
+      |> Repo.all()
+    end
   end
 
   @doc """
@@ -278,5 +304,13 @@ defmodule E2e.Place do
 
   def search_airports(term) do
     search_airports(term, 20, 0)
+  end
+
+  defp normalize_search_term(term) when is_binary(term) do
+    term
+    |> String.replace(~r/\s+/, " ")
+    |> String.trim()
+    |> String.trim_trailing("(")
+    |> String.trim()
   end
 end

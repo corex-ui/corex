@@ -2,7 +2,8 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Marquee } from "../components/marquee";
 import type { Props } from "@zag-js/marquee";
-import { getString, getBoolean, getNumber, getDir } from "../lib/util";
+import { getBoolean, getDir, getNumber, getString } from "../lib/util";
+import { idMatches, readPayloadId } from "../lib/respond-to";
 
 type MarqueeHookState = {
   marquee?: Marquee;
@@ -12,33 +13,31 @@ type MarqueeHookState = {
   onTogglePause?: (event: Event) => void;
 };
 
+function readMarqueeProps(el: HTMLElement) {
+  return {
+    id: el.id,
+    translations: { root: getString(el, "ariaLabel") },
+    duration: getNumber(el, "duration"),
+    side: getString<"start" | "end" | "top" | "bottom">(el, "side"),
+    speed: getNumber(el, "speed"),
+    spacing: getString(el, "spacing"),
+    autoFill: getBoolean(el, "autoFill"),
+    pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
+    defaultPaused: getBoolean(el, "defaultPaused"),
+    delay: getNumber(el, "delay"),
+    loopCount: getNumber(el, "loopCount"),
+    reverse: getBoolean(el, "reverse"),
+    dir: getDir(el),
+  };
+}
+
 const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & MarqueeHookState) {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
-    const ariaLabel = getString(el, "ariaLabel") ?? `Marquee: ${el.id}`;
-
     const zag = new Marquee(el, {
-      id: el.id,
-      translations: { root: ariaLabel },
-      duration: getNumber(el, "duration") ?? 20,
-      side:
-        getString<"start" | "end" | "top" | "bottom">(el, "side", [
-          "start",
-          "end",
-          "top",
-          "bottom",
-        ]) ?? "end",
-      speed: getNumber(el, "speed") ?? 50,
-      spacing: getString(el, "spacing") ?? "1rem",
-      autoFill: getBoolean(el, "autoFill"),
-      pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
-      defaultPaused: getBoolean(el, "defaultPaused"),
-      delay: getNumber(el, "delay") ?? 0,
-      loopCount: getNumber(el, "loopCount") ?? 0,
-      reverse: getBoolean(el, "reverse"),
-      dir: getDir(el),
+      ...readMarqueeProps(el),
       onPauseChange: (details) => {
         const eventName = getString(el, "onPauseChange");
         if (eventName && this.liveSocket.main.isConnected()) {
@@ -79,72 +78,50 @@ const MarqueeHook: Hook<object & MarqueeHookState, HTMLElement> = {
         }
       },
     } as Props);
+
+    zag.buildDom();
     zag.init();
+
     this.marquee = zag;
 
     this.onPause = () => zag.api.pause();
     this.onResume = () => zag.api.resume();
     this.onTogglePause = () => zag.api.togglePause();
 
-    el.addEventListener("phx:marquee:pause", this.onPause);
-    el.addEventListener("phx:marquee:resume", this.onResume);
-    el.addEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+    el.addEventListener("corex:marquee:pause", this.onPause);
+    el.addEventListener("corex:marquee:resume", this.onResume);
+    el.addEventListener("corex:marquee:toggle-pause", this.onTogglePause);
 
     this.handlers = [];
     this.handlers.push(
-      this.handleEvent("marquee_pause", (payload: { marquee_id?: string }) => {
-        const targetId = payload.marquee_id;
-        if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+      this.handleEvent("marquee_pause", (payload: unknown) => {
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         zag.api.pause();
       })
     );
     this.handlers.push(
-      this.handleEvent("marquee_resume", (payload: { marquee_id?: string }) => {
-        const targetId = payload.marquee_id;
-        if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+      this.handleEvent("marquee_resume", (payload: unknown) => {
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         zag.api.resume();
       })
     );
     this.handlers.push(
-      this.handleEvent("marquee_toggle_pause", (payload: { marquee_id?: string }) => {
-        const targetId = payload.marquee_id;
-        if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+      this.handleEvent("marquee_toggle_pause", (payload: unknown) => {
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         zag.api.togglePause();
       })
     );
   },
 
   updated(this: object & HookInterface<HTMLElement> & MarqueeHookState) {
-    const ariaLabel = getString(this.el, "ariaLabel") ?? `Marquee: ${this.el.id}`;
-
-    this.marquee?.updateProps({
-      id: this.el.id,
-      translations: { root: ariaLabel },
-      duration: getNumber(this.el, "duration") ?? 20,
-      side:
-        getString<"start" | "end" | "top" | "bottom">(this.el, "side", [
-          "start",
-          "end",
-          "top",
-          "bottom",
-        ]) ?? "end",
-      speed: getNumber(this.el, "speed") ?? 50,
-      spacing: getString(this.el, "spacing") ?? "1rem",
-      autoFill: getBoolean(this.el, "autoFill"),
-      pauseOnInteraction: getBoolean(this.el, "pauseOnInteraction"),
-      defaultPaused: getBoolean(this.el, "defaultPaused"),
-      delay: getNumber(this.el, "delay") ?? 0,
-      loopCount: getNumber(this.el, "loopCount") ?? 0,
-      reverse: getBoolean(this.el, "reverse"),
-      dir: getDir(this.el),
-    } as Partial<Props>);
+    this.marquee?.updateProps(readMarqueeProps(this.el) as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & MarqueeHookState) {
-    if (this.onPause) this.el.removeEventListener("phx:marquee:pause", this.onPause);
-    if (this.onResume) this.el.removeEventListener("phx:marquee:resume", this.onResume);
+    if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);
+    if (this.onResume) this.el.removeEventListener("corex:marquee:resume", this.onResume);
     if (this.onTogglePause)
-      this.el.removeEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+      this.el.removeEventListener("corex:marquee:toggle-pause", this.onTogglePause);
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }

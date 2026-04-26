@@ -1,10 +1,10 @@
 import {
-  setRafTimeout
-} from "./chunk-OUU6AXP5.mjs";
-import {
   trackDismissableBranch
-} from "./chunk-EV6LXBMY.mjs";
-import "./chunk-YCAWAEF3.mjs";
+} from "./chunk-JJ4TVKGJ.mjs";
+import "./chunk-DXQBMWMN.mjs";
+import {
+  setRafTimeout
+} from "./chunk-4ERCYGOM.mjs";
 import {
   AnimationFrame,
   Component,
@@ -20,17 +20,17 @@ import {
   ensureProps,
   generateId,
   getBoolean,
+  getDir,
   getNumber,
   getString,
-  normalizeProps,
   raf,
   runIfFn,
   setup,
   uuid,
   warn
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast.anatomy.mjs
 var anatomy = createAnatomy("toast").parts(
   "group",
   "root",
@@ -41,7 +41,7 @@ var anatomy = createAnatomy("toast").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast.dom.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast.dom.mjs
 var getRegionId = (placement) => `toast-group:${placement}`;
 var getRegionEl = (ctx, placement) => ctx.getById(`toast-group:${placement}`);
 var getRootId = (ctx) => `toast:${ctx.id}`;
@@ -50,12 +50,13 @@ var getTitleId = (ctx) => `toast:${ctx.id}:title`;
 var getDescriptionId = (ctx) => `toast:${ctx.id}:description`;
 var getCloseTriggerId = (ctx) => `toast${ctx.id}:close`;
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast.utils.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast.utils.mjs
 var defaultTimeouts = {
   info: 5e3,
   error: 5e3,
   success: 2e3,
   loading: Infinity,
+  warning: 5e3,
   DEFAULT: 5e3
 };
 function getToastDuration(duration, type) {
@@ -221,7 +222,7 @@ function getGhostAfterStyle() {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast-group.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast-group.connect.mjs
 function groupConnect(service, normalize) {
   const { context, prop, send, refs, computed } = service;
   return {
@@ -241,13 +242,15 @@ function groupConnect(service, normalize) {
         ...parts.group.attrs,
         dir: prop("dir"),
         tabIndex: -1,
-        "aria-label": `${placement} ${label} ${hotkeyLabel}`,
+        role: "region",
+        "aria-label": `${label}, ${placement} (${hotkeyLabel})`,
         id: getRegionId(placement),
         "data-placement": placement,
         "data-side": side,
         "data-align": align,
         "aria-live": "polite",
-        role: "region",
+        "aria-relevant": "additions text",
+        "aria-atomic": "false",
         style: getGroupPlacementStyle(service, placement),
         onMouseEnter() {
           if (refs.get("ignoreMouseTimer").isActive()) return;
@@ -278,7 +281,7 @@ function groupConnect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast-group.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast-group.machine.mjs
 var { guards, createMachine: createMachine2 } = setup();
 var { and } = guards;
 var groupMachine = createMachine2({
@@ -528,7 +531,7 @@ var groupMachine = createMachine2({
   }
 });
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast.connect.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope, context, computed } = service;
   const translations = prop("translations");
@@ -643,7 +646,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast.machine.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -896,9 +899,28 @@ function setHeight(parent, item) {
   });
 }
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/toast.store.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/toast.store.mjs
 var withDefaults = (options, defaults) => {
   return { ...defaults, ...compact(options) };
+};
+var priorities = {
+  error: [1, 2],
+  warning: [3, 6],
+  loading: [4, 5],
+  success: [5, 7],
+  info: [6, 8]
+};
+var DEFAULT_TYPE = "info";
+var getPriorityForType = (type, hasAction) => {
+  const [actionable, nonActionable] = priorities[type ?? DEFAULT_TYPE];
+  return hasAction ? actionable : nonActionable;
+};
+var sortToastsByPriority = (toastArray) => {
+  return toastArray.sort((a, b) => {
+    const priorityA = a.priority ?? getPriorityForType(a.type, !!a.action);
+    const priorityB = b.priority ?? getPriorityForType(b.type, !!b.action);
+    return priorityA - priorityB;
+  });
 };
 function createToastStore(props = {}) {
   const attrs = withDefaults(props, {
@@ -935,6 +957,7 @@ function createToastStore(props = {}) {
     toasts.unshift(data);
   };
   const processQueue = () => {
+    toastQueue = sortToastsByPriority(toastQueue);
     while (toastQueue.length > 0 && toasts.length < attrs.max) {
       const nextToast = toastQueue.shift();
       if (nextToast) {
@@ -955,15 +978,17 @@ function createToastStore(props = {}) {
         return toast;
       });
     } else {
-      addToast({
+      const newToast = {
         id,
         duration: attrs.duration,
         removeDelay: attrs.removeDelay,
-        type: "info",
+        type: DEFAULT_TYPE,
         ...data,
         stacked: !attrs.overlap,
         gap: attrs.gap
-      });
+      };
+      const priority = newToast.priority ?? getPriorityForType(newToast.type, !!newToast.action);
+      addToast({ ...newToast, priority });
     }
     return id;
   };
@@ -1025,7 +1050,7 @@ function createToastStore(props = {}) {
       } else if (options.success !== void 0) {
         removable = false;
         const successOptions = runIfFn(options.success, response);
-        create({ ...shared, ...successOptions, id, type: "success" });
+        create({ ...shared, ...successOptions, id, type: successOptions.type ?? "success" });
       }
     }).catch(async (error2) => {
       result = ["reject", error2];
@@ -1117,7 +1142,7 @@ var isHttpResponse = (data) => {
   return data && typeof data === "object" && "ok" in data && typeof data.ok === "boolean" && "status" in data && typeof data.status === "number";
 };
 
-// ../node_modules/.pnpm/@zag-js+toast@1.36.0/node_modules/@zag-js/toast/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+toast@1.39.1/node_modules/@zag-js/toast/dist/index.mjs
 var group = {
   connect: groupConnect,
   machine: groupMachine
@@ -1134,32 +1159,30 @@ var ToastItem = class extends Component {
     this.duration = props.duration;
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
+    this.el.classList.add("toast-item");
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
       <div data-scope="toast" data-part="progressbar"></div>
-      <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
 
       <div data-scope="toast" data-part="content">
-        <div data-scope="toast" data-part="title"></div>
+        <div data-scope="toast" data-part="header">
+          <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
+          <div data-scope="toast" data-part="title"></div>
+          <button data-scope="toast" data-part="close-trigger"></button>
+        </div>
         <div data-scope="toast" data-part="description"></div>
       </div>
-
-      <button data-scope="toast" data-part="close-trigger">
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M4.293 4.293 10 8.586l5.707-5.707 1.414 1.414L11.414 10l5.707 5.707-1.414 1.414L10 11.414l-5.707 5.707-1.414-1.414L8.586 10 2.879 4.293z"/>
-        </svg>
-      </button>
 
       <span data-scope="toast" data-part="ghost-after"></span>
     `;
     this.parts = {
-      title: this.el.querySelector('[data-scope="toast"][data-part="title"]'),
-      description: this.el.querySelector('[data-scope="toast"][data-part="description"]'),
-      close: this.el.querySelector('[data-scope="toast"][data-part="close-trigger"]'),
-      ghostBefore: this.el.querySelector('[data-scope="toast"][data-part="ghost-before"]'),
-      ghostAfter: this.el.querySelector('[data-scope="toast"][data-part="ghost-after"]'),
-      progressbar: this.el.querySelector('[data-scope="toast"][data-part="progressbar"]'),
-      loadingSpinner: this.el.querySelector('[data-scope="toast"][data-part="loading-spinner"]')
+      title: this.el.querySelector('[data-part="title"]'),
+      description: this.el.querySelector('[data-part="description"]'),
+      close: this.el.querySelector('[data-part="close-trigger"]'),
+      ghostBefore: this.el.querySelector('[data-part="ghost-before"]'),
+      ghostAfter: this.el.querySelector('[data-part="ghost-after"]'),
+      progressbar: this.el.querySelector('[data-part="progressbar"]'),
+      loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')
     };
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1167,13 +1190,31 @@ var ToastItem = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     this.spreadProps(this.el, this.api.getRootProps());
     this.spreadProps(this.parts.close, this.api.getCloseTriggerProps());
     this.spreadProps(this.parts.ghostBefore, this.api.getGhostBeforeProps());
     this.spreadProps(this.parts.ghostAfter, this.api.getGhostAfterProps());
+    const toastGroup = this.el.closest('[phx-hook="Toast"]');
+    const loadingIconTemplate = toastGroup?.querySelector(
+      "[data-loading-icon-template]"
+    );
+    const closeIconTemplate = toastGroup?.querySelector(
+      "[data-close-icon-template]"
+    );
+    const loadingIcon = loadingIconTemplate?.innerHTML;
+    const closeIcon = closeIconTemplate?.innerHTML;
+    if (closeIcon) {
+      if (this.parts.close.innerHTML !== closeIcon) {
+        this.parts.close.innerHTML = closeIcon;
+      }
+    } else {
+      if (!this.parts.close.innerHTML) {
+        this.parts.close.innerHTML = "\xD7";
+      }
+    }
     if (this.parts.title.textContent !== this.api.title) {
       this.parts.title.textContent = this.api.title ?? "";
     }
@@ -1184,11 +1225,6 @@ var ToastItem = class extends Component {
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
     const duration = this.duration;
     const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
-    const toastGroup = this.el.closest('[phx-hook="Toast"]');
-    const loadingIconTemplate = toastGroup?.querySelector(
-      "[data-loading-icon-template]"
-    );
-    const loadingIcon = loadingIconTemplate?.innerHTML;
     if (isInfinity) {
       this.parts.progressbar.style.display = "none";
       this.parts.loadingSpinner.style.display = "flex";
@@ -1227,7 +1263,7 @@ var ToastGroup = class extends Component {
     return new VanillaMachine(group.machine, props);
   }
   initApi() {
-    return group.connect(this.machine.service, normalizeProps);
+    return this.zagConnect(group.connect);
   }
   render() {
     this.spreadProps(this.groupEl, this.api.getGroupProps());
@@ -1237,6 +1273,7 @@ var ToastGroup = class extends Component {
       let item = this.toastComponents.get(toastData.id);
       if (!item) {
         const el = document.createElement("div");
+        el.classList.add("toast-item");
         el.setAttribute("data-scope", "toast");
         el.setAttribute("data-part", "root");
         this.groupEl.appendChild(el);
@@ -1272,7 +1309,7 @@ var ToastGroup = class extends Component {
   };
 };
 function createToastGroup(container, options) {
-  const groupId = options?.id ?? generateId(container, "toast");
+  const groupId = options?.id ?? container.id;
   const store = options?.store ?? createToastStore({
     placement: options?.placement ?? "bottom",
     overlap: options?.overlap,
@@ -1281,7 +1318,7 @@ function createToastGroup(container, options) {
     offsets: options?.offsets,
     pauseOnPageIdle: options?.pauseOnPageIdle
   });
-  const group2 = new ToastGroup(container, { id: groupId, store });
+  const group2 = new ToastGroup(container, { id: groupId, store, dir: getDir(container) });
   group2.init();
   toastGroups.set(groupId, group2);
   toastStores.set(groupId, store);

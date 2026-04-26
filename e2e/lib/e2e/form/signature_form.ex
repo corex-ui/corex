@@ -9,5 +9,12 @@ defmodule E2e.Form.SignatureForm do
   def changeset(form, attrs \\ %{}) do
     form
     |> cast(attrs, [:signature])
+    |> validate_required([:signature])
+  end
+
+  def changeset_validate(form, attrs \\ %{}) do
+    form
+    |> cast(attrs, [:signature])
+    |> validate_required([:signature], message: "can't be blank")
   end
 end

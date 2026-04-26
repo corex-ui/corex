@@ -9,6 +9,8 @@ defmodule Corex.SignaturePadTest do
       html = render_component(&CorexTest.ComponentHelpers.render_signature_pad/1, [])
       assert html =~ ~r/data-scope="signature-pad"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
     end
   end
 
@@ -46,9 +48,9 @@ defmodule Corex.SignaturePadTest do
   end
 
   describe "signature_pad/1 with options" do
-    test "renders with controlled" do
+    test "renders with empty default paths" do
       html = render_component(&CorexTest.ComponentHelpers.render_signature_pad_controlled/1, [])
-      assert html =~ ~r/data-controlled/
+      refute html =~ ~r/data-controlled/
     end
 
     test "renders with drawing options" do
@@ -65,6 +67,16 @@ defmodule Corex.SignaturePadTest do
       html = render_component(&CorexTest.ComponentHelpers.render_signature_pad_with_field/1, [])
       assert html =~ ~r/data-scope="signature-pad"/
       assert html =~ ~r/name="user\[signature\]"/
+    end
+
+    test "hidden value is empty string when field is blank, not json []" do
+      html =
+        render_component(&CorexTest.ComponentHelpers.render_signature_pad_with_field/1,
+          params: %{"signature" => ""}
+        )
+
+      assert html =~ ~r/value=""/
+      refute html =~ ~s(value="[]")
     end
 
     test "renders with field value as list" do
@@ -86,13 +98,14 @@ defmodule Corex.SignaturePadTest do
       assert html =~ ~r/M0 0 L10 10/
     end
 
-    test "renders with paths as JSON string" do
+    test "renders with paths as newline-separated d strings" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_signature_pad_with_paths/1,
-          paths: ~s(["M0 0 L10 10"])
+          paths: "M0 0 L5 5\nM10 10 L15 15"
         )
 
       assert html =~ ~r/data-scope="signature-pad"/
+      assert html =~ "M0 0 L5 5"
     end
 
     test "renders with errors slot" do
@@ -113,7 +126,6 @@ defmodule Corex.SignaturePadTest do
             <Corex.SignaturePad.signature_pad
               id="sig1"
               name="sig1_name"
-              controlled={true}
               drawing_fill="red"
               drawing_size={3}
               drawing_simulate_pressure={true}
@@ -180,7 +192,7 @@ defmodule Corex.SignaturePadTest do
             _ = assigns
 
             ~H"""
-            <Corex.SignaturePad.signature_pad paths={"invalid_json"} />
+            <Corex.SignaturePad.signature_pad paths=" \n " />
             """
           end,
           %{}

@@ -2,42 +2,29 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Radio Group</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <div>
-    <h3>Without indicator</h3>
-    <.radio_group
-      id="radio-group-plain"
-      name="choice-plain"
-      items={[
-        %{value: "a", label: "Option A"},
-        %{value: "b", label: "Option B"},
-        %{value: "c", label: "Option C"}
-      ]}
-      class="radio-group"
+  <.demo_page
+    id="radio-group-anatomy-page"
+    title="Radio Group Anatomy"
+    subtitle="Minimal items and optional item indicator."
+  >
+    <.demo_section
+      id="radio-group-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.RadioGroupDemo.minimal_code()}
     >
-      <:label>Choose one</:label>
-    </.radio_group>
-  </div>
-  <div>
-    <h3>With indicator</h3>
-    <.radio_group
-      id="radio-group-indicator"
-      name="choice-indicator"
-      items={[
-        %{value: "a", label: "Option A"},
-        %{value: "b", label: "Option B"},
-        %{value: "c", label: "Option C"}
-      ]}
-      class="radio-group"
+      <:preview>
+        <E2eWeb.Demos.RadioGroupDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="radio-group-anatomy-indicator"
+      title="With indicator"
+      code={E2eWeb.Demos.RadioGroupDemo.indicator_code()}
     >
-      <:label>Choose one</:label>
-      <:item_control><.heroicon name="hero-check" class="data-checked" /></:item_control>
-    </.radio_group>
-  </div>
+      <:preview><E2eWeb.Demos.RadioGroupDemo.indicator_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

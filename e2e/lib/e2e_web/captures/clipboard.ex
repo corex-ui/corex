@@ -10,12 +10,8 @@ defmodule CorexWeb.Clipboard do
               class: "clipboard",
               value: "Text to copy",
               label: [%{inner_block: "Copy to clipboard"}],
-              trigger: [
-                %{
-                  inner_block:
-                    ~s(<.heroicon name="hero-clipboard" class="icon data-copy" /><.heroicon name="hero-check" class="icon data-copied" />)
-                }
-              ]
+              copy: [%{inner_block: ~s(<.heroicon name="hero-clipboard" />)}],
+              copied: [%{inner_block: ~s(<.heroicon name="hero-check" />)}]
             }
           ]
 

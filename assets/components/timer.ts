@@ -1,6 +1,6 @@
 import { connect, machine, type Props, type Api } from "@zag-js/timer";
 import type { ItemProps, ActionTriggerProps } from "@zag-js/timer";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class Timer extends Component<Props, Api> {
@@ -10,7 +10,7 @@ export class Timer extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   init = (): void => {

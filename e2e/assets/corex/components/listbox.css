@@ -1,11 +1,16 @@
 @import "../main.css";
 
 @layer components {
+  .listbox {
+    width: 100%;
+    max-width: var(--container-5xs);
+  }
+
   .listbox [data-scope="listbox"][data-part="root"] {
     @apply ui-root;
 
-    width: var(--container-mini);
-    gap: var(--spacing-mini-gap);
+    width: 100%;
+    gap: var(--spacing-space);
   }
 
   .listbox [data-scope="listbox"][data-part="label"] {
@@ -13,18 +18,18 @@
   }
 
   .listbox [data-scope="listbox"][data-part="label"][data-disabled] {
-    color: var(--color-ui--muted);
+    color: var(--color-ink-muted);
   }
 
   .listbox [data-scope="listbox"][data-part="item-group-label"] {
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
     text-align: start;
-    padding-inline: var(--spacing-ui-padding);
-    padding-block: var(--spacing-mini-padding-sm);
+    padding-inline: --spacing(4);
+    padding-block: --spacing(4);
     background-color: var(--color-root);
-    color: var(--color-root--text);
-    border-bottom: 1px solid var(--color-ui--border);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .listbox
@@ -55,7 +60,7 @@
   .listbox [data-scope="listbox"][data-part="item-group"] {
     display: flex;
     flex-direction: column;
-    margin-block: var(--spacing-micro);
+    margin-block: var(--spacing-space);
   }
 
   .listbox
@@ -63,9 +68,9 @@
       :has([data-part="item-group"])
     ),
   .listbox [data-scope="listbox"][data-part="item-group"] {
-    background-color: var(--color-ui--border);
-    border: 1px solid var(--color-ui--border);
-    border-radius: var(--radius-ui);
+    background-color: var(--color-border);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     overflow: hidden;
     gap: 1px;
   }
@@ -86,32 +91,39 @@
 }
 
 @utility listbox--* {
+  max-width: --value(--container-*, [length]);
+
   [data-scope="listbox"][data-part="root"] {
-    width: --value(--container-mini-*, [length]);
-    gap: --value(--spacing-mini-gap-*, [length]);
+    width: 100%;
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="listbox"][data-part="label"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="listbox"][data-part="item"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
   }
 
   [data-scope="listbox"][data-part="item"][data-selected] {
-    background-color: --value(--color-ui-*, [color]);
-    color: --value(--color-ui-* --text, [color]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
   }
 
   [data-scope="listbox"][data-part="item"][data-selected]:hover {
-    background-color: --value(--color-ui-* -hover, [color]);
+    background-color: --value(--color-*-hover, [color]);
   }
 
   [data-scope="listbox"][data-part="item"][data-selected]:active {
-    background-color: --value(--color-ui-* -active, [color]);
+    background-color: --value(--color-*-active, [color]);
+  }
+
+  [data-scope="listbox"][data-part="item"][data-selected]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
   }
 }

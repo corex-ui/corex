@@ -7,7 +7,6 @@ defmodule Corex.SignaturePad.Anatomy do
 
     defstruct [
       :id,
-      controlled: false,
       paths: nil,
       drawing_fill: "black",
       drawing_size: 2,
@@ -24,7 +23,6 @@ defmodule Corex.SignaturePad.Anatomy do
 
     @type t :: %__MODULE__{
             id: String.t(),
-            controlled: boolean(),
             paths: list() | String.t() | nil,
             drawing_fill: String.t(),
             drawing_size: integer(),
@@ -48,6 +46,9 @@ defmodule Corex.SignaturePad.Anatomy do
             id: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["id", "dir", "data-state", "data-focus"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Label do
@@ -58,6 +59,9 @@ defmodule Corex.SignaturePad.Anatomy do
             id: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["id", "dir", "data-disabled"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
@@ -68,6 +72,9 @@ defmodule Corex.SignaturePad.Anatomy do
             id: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["id", "dir", "data-state", "data-disabled"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Segment do
@@ -78,6 +85,19 @@ defmodule Corex.SignaturePad.Anatomy do
             id: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["id", "dir", "data-state", "viewBox", "width", "height", "style"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Path do
+    @moduledoc false
+    defstruct [:id, :index]
+
+    @type t :: %__MODULE__{id: String.t(), index: non_neg_integer()}
+
+    @ignored_attrs ["id", "d", "data-scope", "data-part", "style", "stroke", "fill", "opacity"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Guide do
@@ -88,6 +108,9 @@ defmodule Corex.SignaturePad.Anatomy do
             id: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["id", "dir", "data-state", "style", "hidden"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule ClearTrigger do
@@ -100,16 +123,33 @@ defmodule Corex.SignaturePad.Anatomy do
             aria_label: String.t() | nil,
             has_paths: boolean()
           }
+
+    @ignored_attrs ["id", "dir", "type", "hidden", "disabled", "aria-label", "data-state"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule HiddenInput do
     @moduledoc false
-    defstruct [:id, :dir, :name]
+    defstruct [:id, :dir, :name, :form]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            name: String.t() | nil
+            name: String.t() | nil,
+            form: String.t() | nil
           }
+
+    @ignored_attrs ["id", "dir", "name", "form", "value", "data-value", "type", "readonly", "hidden"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Error do
+    @moduledoc false
+    defstruct [:id, :index]
+
+    @type t :: %__MODULE__{id: String.t(), index: non_neg_integer()}
+
+    @ignored_attrs ["id", "data-scope", "data-part", "role", "aria-live"]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

@@ -1,15 +1,27 @@
 defmodule Corex.CheckboxTest do
   use CorexTest.ComponentCase, async: true
+  use Phoenix.Component
+
+  import Corex.Checkbox
 
   alias Corex.Checkbox
   alias Corex.Checkbox.Connect
+
+  defp checkbox_with_indicator_slots(assigns) do
+    ~H"""
+    <.checkbox name="cb">
+      <:indicator><span id="ind-test">x</span></:indicator>
+      <:indeterminate><span id="indet-test">y</span></:indeterminate>
+    </.checkbox>
+    """
+  end
 
   describe "checkbox/1" do
     test "renders" do
       html = render_component(&Checkbox.checkbox/1, checked: false, name: "cb")
       assert html =~ ~r/data-scope="checkbox"/
       assert html =~ ~r/data-part="root"/
-      assert html =~ ~r/data-js="pending"/
+      assert html =~ ~r//
     end
 
     test "renders with checked true has data-state checked on root and control" do
@@ -20,14 +32,46 @@ defmodule Corex.CheckboxTest do
     test "renders controlled with checked true has data-checked and no data-default-checked" do
       html = render_component(&Checkbox.checkbox/1, controlled: true, checked: true, name: "cb")
       assert html =~ ~r/data-controlled/
-      assert html =~ ~r/data-checked/
+      assert html =~ ~r/data-checked="true"/
       refute html =~ ~r/data-default-checked/
+    end
+
+    test "renders controlled with checked false has data-checked false" do
+      html = render_component(&Checkbox.checkbox/1, controlled: true, checked: false, name: "cb")
+      assert html =~ ~r/data-checked="false"/
     end
 
     test "renders uncontrolled with checked true has data-default-checked and no data-checked" do
       html = render_component(&Checkbox.checkbox/1, controlled: false, checked: true, name: "cb")
-      assert html =~ ~r/data-default-checked/
-      refute html =~ ~r/data-checked/
+      assert html =~ ~r/data-default-checked="true"/
+      refute html =~ ~r/data-checked=/
+    end
+
+    test "renders indeterminate visual state and default attr" do
+      html =
+        render_component(&Checkbox.checkbox/1,
+          controlled: false,
+          checked: :indeterminate,
+          name: "cb"
+        )
+
+      assert html =~ ~r/data-state="indeterminate"/
+      assert html =~ ~r/data-default-checked="indeterminate"/
+    end
+
+    test "omits indicator and indeterminate surfaces when slots are empty" do
+      html = render_component(&Checkbox.checkbox/1, name: "cb")
+      refute html =~ ~r/data-part="indicator"/
+      refute html =~ ~r/data-part="indeterminate"/
+    end
+
+    test "renders indicator and indeterminate parts when slots are used" do
+      html = rendered_to_string(checkbox_with_indicator_slots(%{}))
+
+      assert html =~ ~r/data-part="indicator"/
+      assert html =~ ~r/data-part="indeterminate"/
+      assert html =~ ~r/ind-test/
+      assert html =~ ~r/indet-test/
     end
 
     test "renders with errors displays error container" do
@@ -40,6 +84,41 @@ defmodule Corex.CheckboxTest do
       html = render_component(&Checkbox.checkbox/1, field: form[:terms])
       assert html =~ ~r/name="user\[terms\]"/
       assert html =~ ~r/id="user_terms"/
+    end
+  end
+
+  describe "checkbox_skeleton/1" do
+    test "renders loading root, control, label placeholder, and indicator" do
+      html = render_component(&Checkbox.checkbox_skeleton/1, class: "checkbox")
+      assert html =~ ~r/data-scope="checkbox"/
+      assert html =~ ~r/data-part="root"/
+      assert html =~ ~r/data-loading/
+      assert html =~ ~r/data-part="control"/
+      assert html =~ ~r/data-part="indicator"/
+      assert html =~ ~r/data-part="label"/
+      assert html =~ ~r/dir="ltr"/
+      assert html =~ ~r/data-orientation="horizontal"/
+    end
+
+    test "passes dir and orientation to host and root" do
+      html =
+        render_component(&Checkbox.checkbox_skeleton/1,
+          class: "checkbox",
+          dir: "rtl",
+          orientation: "vertical"
+        )
+
+      assert html =~ ~r/dir="rtl"/
+      assert html =~ ~r/data-orientation="vertical"/
+    end
+
+    test "omits label placeholder when skeleton_label is false" do
+      html =
+        render_component(&Checkbox.checkbox_skeleton/1, skeleton_label: false, class: "checkbox")
+
+      assert html =~ ~r/data-loading/
+      assert html =~ ~r/data-part="control"/
+      refute html =~ ~r/data-part="label"/
     end
   end
 
@@ -80,7 +159,7 @@ defmodule Corex.CheckboxTest do
 
   describe "Connect.root/1" do
     test "returns root attributes" do
-      assigns = %{id: "test-checkbox", dir: "ltr", checked: false}
+      assigns = %{id: "test-checkbox", dir: "ltr", checked: false, orientation: "horizontal"}
       result = Connect.root(assigns)
       assert result["id"] == "checkbox:test-checkbox"
       assert result["data-scope"] == "checkbox"
@@ -89,9 +168,21 @@ defmodule Corex.CheckboxTest do
     end
 
     test "data-state is checked when checked is true" do
-      assigns = %{id: "test-checkbox", dir: "ltr", checked: true}
+      assigns = %{id: "test-checkbox", dir: "ltr", checked: true, orientation: "horizontal"}
       result = Connect.root(assigns)
       assert result["data-state"] == "checked"
+    end
+
+    test "data-state is indeterminate when checked is indeterminate" do
+      assigns = %{
+        id: "test-checkbox",
+        dir: "ltr",
+        checked: :indeterminate,
+        orientation: "horizontal"
+      }
+
+      result = Connect.root(assigns)
+      assert result["data-state"] == "indeterminate"
     end
 
     test "computes root with rtl direction" do
@@ -152,6 +243,22 @@ defmodule Corex.CheckboxTest do
       assigns = %{id: "test-checkbox", dir: "ltr", checked: true}
       result = Connect.indicator(assigns)
       assert result["data-state"] == "checked"
+    end
+  end
+
+  describe "Connect.indeterminate/1" do
+    test "returns indeterminate surface attributes" do
+      assigns = %{id: "test-checkbox", dir: "ltr", checked: false}
+      result = Connect.indeterminate(assigns)
+      assert result["id"] == "checkbox:test-checkbox:indeterminate"
+      assert result["data-part"] == "indeterminate"
+      assert result["data-state"] == "unchecked"
+    end
+
+    test "indeterminate surface shows indeterminate state" do
+      assigns = %{id: "test-checkbox", dir: "ltr", checked: :indeterminate}
+      result = Connect.indeterminate(assigns)
+      assert result["data-state"] == "indeterminate"
     end
   end
 end

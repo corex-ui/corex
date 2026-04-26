@@ -16,7 +16,9 @@ defmodule Corex.Dialog.Anatomy do
       restore_focus: true,
       dir: "ltr",
       on_open_change: nil,
-      on_open_change_client: nil
+      on_open_change_client: nil,
+      animation: "instant",
+      animation_options: %Corex.Animation.Scale{scale_start: 0.96, scale_end: 1.0}
     ]
 
     @type t :: %__MODULE__{
@@ -30,7 +32,9 @@ defmodule Corex.Dialog.Anatomy do
             restore_focus: boolean(),
             dir: String.t(),
             on_open_change: String.t() | nil,
-            on_open_change_client: String.t() | nil
+            on_open_change_client: String.t() | nil,
+            animation: String.t(),
+            animation_options: Corex.Animation.Scale.t()
           }
   end
 
@@ -43,17 +47,44 @@ defmodule Corex.Dialog.Anatomy do
             dir: String.t(),
             open: boolean()
           }
+
+    @ignored_attrs [
+      "type",
+      "tabindex",
+      "aria-expanded",
+      "aria-controls",
+      "aria-haspopup",
+      "data-state",
+      "dir",
+      "id",
+      "data-focus",
+      "aria-disabled",
+      "disabled"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Backdrop do
     @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [:id, :dir, :open, animation: "instant"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean()
+            open: boolean(),
+            animation: String.t()
           }
+
+    @ignored_attrs [
+      "hidden",
+      "data-state",
+      "dir",
+      "id",
+      "style",
+      "data-focus",
+      "aria-hidden"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Positioner do
@@ -65,17 +96,47 @@ defmodule Corex.Dialog.Anatomy do
             dir: String.t(),
             open: boolean()
           }
+
+    @ignored_attrs [
+      "hidden",
+      "data-state",
+      "dir",
+      "id",
+      "style",
+      "data-focus",
+      "data-side",
+      "data-placement"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Content do
     @moduledoc false
-    defstruct [:id, :dir, :open]
+    defstruct [:id, :dir, :open, animation: "instant"]
 
     @type t :: %__MODULE__{
             id: String.t(),
             dir: String.t(),
-            open: boolean()
+            open: boolean(),
+            animation: String.t()
           }
+
+    @ignored_attrs [
+      "hidden",
+      "data-state",
+      "dir",
+      "id",
+      "role",
+      "aria-modal",
+      "aria-labelledby",
+      "aria-describedby",
+      "tabindex",
+      "style",
+      "data-focus",
+      "data-placement",
+      "data-side"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Title do
@@ -87,6 +148,16 @@ defmodule Corex.Dialog.Anatomy do
             dir: String.t(),
             open: boolean()
           }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-state",
+      "data-focus",
+      "tabindex",
+      "aria-hidden"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Description do
@@ -98,6 +169,9 @@ defmodule Corex.Dialog.Anatomy do
             dir: String.t(),
             open: boolean()
           }
+
+    @ignored_attrs ["id", "dir", "data-state", "data-focus", "aria-hidden"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule CloseTrigger do
@@ -110,5 +184,16 @@ defmodule Corex.Dialog.Anatomy do
             open: boolean(),
             aria_label: String.t() | nil
           }
+
+    @ignored_attrs [
+      "type",
+      "tabindex",
+      "dir",
+      "id",
+      "data-focus",
+      "aria-label",
+      "data-state"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

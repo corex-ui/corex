@@ -40,7 +40,8 @@ defmodule Corex.PinInput do
   </.pin_input>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/pin-input#modifiers)
+  The `value` assign is the initial cell contents; it is serialized to `data-default-value` for Zag’s uncontrolled `defaultValue`.
+
   '''
 
   defmodule Translation do
@@ -59,13 +60,19 @@ defmodule Corex.PinInput do
 
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
   alias Corex.PinInput.Connect
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
   import Corex.Gettext, only: [gettext: 2]
-  import Corex.Helpers, only: [validate_value!: 1]
+  import Corex.Helpers, only: [validate_value!: 1, respond_to_fields: 1]
 
   attr(:id, :string, required: false)
-  attr(:value, :list, default: [], doc: "Controlled value (list of single chars)")
-  attr(:default_value, :list, default: [], doc: "Uncontrolled initial value")
-  attr(:controlled, :boolean, default: false)
+
+  attr(:value, :list,
+    default: [],
+    doc:
+      "Initial value (list of single-character strings). Sent as `data-default-value` for Zag `defaultValue`."
+  )
+
   attr(:count, :integer, default: 4, doc: "Number of input boxes")
   attr(:disabled, :boolean, default: false)
   attr(:invalid, :boolean, default: false)
@@ -77,7 +84,8 @@ defmodule Corex.PinInput do
   attr(:select_on_focus, :boolean, default: false)
   attr(:name, :string, default: nil)
   attr(:form, :string, default: nil)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:type, :string, default: "numeric", values: ["alphanumeric", "numeric", "alphabetic"])
   attr(:placeholder, :string, default: "○")
   attr(:on_value_change, :string, default: nil)
@@ -98,27 +106,33 @@ defmodule Corex.PinInput do
   def pin_input(assigns) do
     default_translation = %Translation{digit: "Digit %{digit}"}
 
+    value =
+      case assigns[:value] do
+        v when is_binary(v) -> String.graphemes(v)
+        v -> v
+      end
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
-      |> assign(:value, validate_value!(assigns[:value] || []))
-      |> assign(:default_value, validate_value!(assigns[:default_value] || []))
+      |> assign(:value, validate_value!(value || []))
 
-    value_str = Enum.join(assigns.value, "")
-    default_value_str = Enum.join(assigns.default_value, "")
+    assigns = assign(assigns, :value_str, Enum.join(assigns.value, ""))
 
     ~H"""
     <div
       id={@id}
       phx-hook="PinInput"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
         value: @value,
-        controlled: @controlled,
         count: @count,
         disabled: @disabled,
         invalid: @invalid,
@@ -131,6 +145,7 @@ defmodule Corex.PinInput do
         name: @name,
         form: @form,
         dir: @dir,
+        orientation: @orientation,
         type: @type,
         placeholder: @placeholder,
         on_value_change: @on_value_change,
@@ -138,19 +153,20 @@ defmodule Corex.PinInput do
         on_value_complete: @on_value_complete
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
-        <input {Connect.hidden_input(%HiddenInput{id: @id, name: @name, value: if(@controlled, do: value_str, else: default_value_str)})} />
-        <div {Connect.control(%Control{id: @id, dir: @dir})}>
+        <input phx-mounted={Connect.ignore_hidden_input(%HiddenInput{id: @id, name: @name, value: @value_str})} {Connect.hidden_input(%HiddenInput{id: @id, name: @name, value: @value_str})} />
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
           <input
             :for={i <- 0..(@count - 1)}
             type="text"
             inputmode={@type}
             maxlength="1"
             autocomplete={if(@otp, do: "one-time-code", else: "off")}
-            {Connect.input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1)})}
+            phx-mounted={Connect.ignore_input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
+            {Connect.input(%Input{id: @id, index: i, aria_label: gettext(@translation.digit, digit: i + 1), dir: @dir, orientation: @orientation})}
           />
         </div>
       </div>
@@ -164,5 +180,127 @@ defmodule Corex.PinInput do
     %Translation{
       digit: partial.digit || default.digit
     }
+  end
+
+  @doc type: :api
+  @doc """
+  Sets the pin input value from client-side. Returns a `Phoenix.LiveView.JS` command.
+
+  Pass a list of single-character strings, or a binary: comma-separated cells (e.g. `"1,2,,4"`) or a continuous string whose graphemes fill the fields (e.g. `"1234"`).
+
+  #### From Client JS
+
+      ```javascript
+      const el = document.getElementById("my-pin");
+      el?.dispatchEvent(
+        new CustomEvent("corex:pin-input:set-value", {
+          bubbles: false,
+          detail: { value: ["1", "2", "3", "4"] },
+        })
+      );
+      ```
+  """
+  def set_value(pin_input_id, value) when is_binary(pin_input_id) do
+    JS.dispatch("corex:pin-input:set-value",
+      to: "##{pin_input_id}",
+      detail: %{value: normalize_pin_set_value!(value)},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets the pin value from the server. Pushes a LiveView event handled by the hook.
+
+      def handle_event("fill_pin", _params, socket) do
+        {:noreply, Corex.PinInput.set_value(socket, "my-pin", ["1", "2", "3", "4"])}
+      end
+  """
+  def set_value(socket, pin_input_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
+    LiveView.push_event(socket, "pin_input_set_value", %{
+      id: pin_input_id,
+      value: normalize_pin_set_value!(value)
+    })
+  end
+
+  defp normalize_pin_set_value!(value) when is_list(value), do: validate_value!(value)
+
+  defp normalize_pin_set_value!(value) when is_binary(value) do
+    trimmed = String.trim(value)
+
+    if String.contains?(trimmed, ",") do
+      trimmed |> String.split(",", trim: true) |> validate_value!()
+    else
+      trimmed |> String.graphemes() |> validate_value!()
+    end
+  end
+
+  @doc type: :api
+  @doc """
+  Clears the pin input from client-side.
+
+      ```javascript
+      document.getElementById("my-pin")?.dispatchEvent(
+        new CustomEvent("corex:pin-input:clear", { bubbles: false })
+      );
+      ```
+  """
+  def clear(pin_input_id) when is_binary(pin_input_id) do
+    JS.dispatch("corex:pin-input:clear", to: "##{pin_input_id}", bubbles: false)
+  end
+
+  @doc type: :api
+  @doc """
+  Clears the pin from the server via a LiveView push.
+
+      def handle_event("clear_pin", _params, socket) do
+        {:noreply, Corex.PinInput.clear(socket, "my-pin")}
+      end
+  """
+  def clear(socket, pin_input_id)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) do
+    LiveView.push_event(socket, "pin_input_clear", %{id: pin_input_id})
+  end
+
+  @doc type: :api
+  @doc """
+  Requests the current value from the browser. Returns `Phoenix.LiveView.JS`.
+
+  Options: `:respond_to` — `:server` (default, `pin_input_value_response` only), `:both`, or `:client` (DOM `pin-input-value` only).
+
+      <.action phx-click={Corex.PinInput.value("my-pin")} class="button button--sm">Value</.action>
+
+      ```javascript
+      const el = document.getElementById("my-pin");
+      el?.addEventListener("pin-input-value", (e) => console.log(e.detail));
+      ```
+  """
+  def value(pin_input_id) when is_binary(pin_input_id), do: value(pin_input_id, [])
+
+  def value(pin_input_id, opts) when is_binary(pin_input_id) and is_list(opts) do
+    JS.dispatch("corex:pin-input:value",
+      to: "##{pin_input_id}",
+      detail: respond_to_fields(opts),
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Requests the current value from the client. Pushes `pin_input_value` for the hook.
+
+      def handle_event("pin_input_value_response", %{"id" => id, "value" => value, "valueAsString" => s}, socket) do
+        {:noreply, assign(socket, :pin, {id, value, s})}
+      end
+  """
+  def value(socket, pin_input_id, opts \\ [])
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(pin_input_id) and
+             is_list(opts) do
+    LiveView.push_event(
+      socket,
+      "pin_input_value",
+      Map.merge(%{id: pin_input_id}, respond_to_fields(opts))
+    )
   end
 end

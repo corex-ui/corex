@@ -1,4 +1,4 @@
-import { VanillaMachine, spreadProps } from "@zag-js/vanilla";
+import { VanillaMachine, spreadProps, normalizeProps } from "@zag-js/vanilla";
 import type { Attrs } from "@zag-js/vanilla";
 
 interface ComponentInterface<Api> {
@@ -33,16 +33,20 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   abstract render(): void;
 
   init = () => {
-    this.render();
+    try {
+      this.machine.start();
+      this.render();
+    } finally {
+      this.el.removeAttribute("data-loading");
+    }
     this.machine.subscribe(() => {
       this.api = this.initApi();
       this.render();
     });
-    this.machine.start();
-    this.el.removeAttribute("data-js");
   };
 
   destroy = () => {
+    this.el.removeAttribute("data-loading");
     this.machine.stop();
   };
 
@@ -53,4 +57,11 @@ export abstract class Component<Props, Api> implements ComponentInterface<Api> {
   updateProps = (props: Attrs) => {
     this.machine.updateProps(props);
   };
+
+  protected zagConnect<A>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    connectFn: (service: any, np: typeof normalizeProps) => A
+  ): A {
+    return connectFn(this.machine.service, normalizeProps);
+  }
 }

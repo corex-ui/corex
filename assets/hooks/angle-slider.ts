@@ -1,178 +1,160 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { AngleSlider } from "../components/angle-slider";
 import type { Props, ValueChangeDetails } from "@zag-js/angle-slider";
-import { getString, getBoolean, getNumber } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { readNumberControlledZagProps } from "../lib/read-props";
+import {
+  parseRespondTo,
+  emitResponse,
+  idMatches,
+  readPayloadId,
+  notifyChange,
+  type RespondTo,
+} from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type AngleSliderHookState = {
   angleSlider?: AngleSlider;
-  handlers?: Array<CallbackRef>;
-  onSetValue?: (event: Event) => void;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
+
+function valueChangePayload(el: HTMLElement, details: ValueChangeDetails): Record<string, unknown> {
+  return {
+    id: el.id,
+    value: details.value,
+    valueAsDegree: details.valueAsDegree,
+  };
+}
+
+function queueFormBubblingInputForPhoenix(
+  el: HTMLElement,
+  getZag: () => InstanceType<typeof AngleSlider>
+): void {
+  queueMicrotask(() => {
+    const zag = getZag();
+    const input = el.querySelector<HTMLInputElement>(
+      '[data-scope="angle-slider"][data-part="hidden-input"]'
+    );
+    if (!input) return;
+    const v = zag.api.value;
+    if (String(input.value) !== String(v)) {
+      input.value = String(v);
+    }
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
 
 const AngleSliderHook: Hook<object & AngleSliderHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
     const el = this.el;
-    const value = getNumber(el, "value");
-    const defaultValue = getNumber(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
 
     const zag = new AngleSlider(el, {
       id: el.id,
-      ...(controlled && value !== undefined ? { value } : { defaultValue: defaultValue ?? 0 }),
-      step: getNumber(el, "step") ?? 1,
+      ...readNumberControlledZagProps(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readOnly"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
-      dir: getString<"ltr" | "rtl">(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       "aria-label": getString(el, "aria-label"),
       "aria-labelledby": getString(el, "aria-labelledby"),
 
       onValueChange: (details: ValueChangeDetails) => {
-        // if (skipNextOnValueChange) {
-        //   skipNextOnValueChange = false;
-        //   return;
-        // }
-        // if (controlled) {
-        //   skipNextOnValueChange = true;
-        //   zag.api.setValue(details.value);
-        // } else {
-        //   const hiddenInput = el.querySelector<HTMLInputElement>(
-        //     '[data-scope="angle-slider"][data-part="hidden-input"]'
-        //   );
-        //   if (hiddenInput) {
-        //     hiddenInput.value = String(details.value);
-        //     hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-        //     hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        //   }
-        // }
-        //  if (skipNextOnValueChange) {
-        //   skipNextOnValueChange = false;
-        //   return;
-        // }
-        // if (controlled) {
-        //   skipNextOnValueChange = true;
-        //   zag.api.setValue(details.value);
-        // }
-        //   const hiddenInput = el.querySelector<HTMLInputElement>(
-        //     '[data-scope="angle-slider"][data-part="hidden-input"]'
-        //   );
-        //    const hiddenInput = el.querySelector<HTMLInputElement>(
-        //   '[data-scope="angle-slider"][data-part="hidden-input"]'
-        // );
-        // if (hiddenInput) {
-        //   hiddenInput.value = String(details.value);
-        //   hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-        //   hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        // }
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            valueAsDegree: details.valueAsDegree,
-            id: el.id,
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient"),
+        });
       },
       onValueChangeEnd: (details: ValueChangeDetails) => {
-        // if (controlled) {
-        //   const hiddenInput = el.querySelector<HTMLInputElement>(
-        //     '[data-scope="angle-slider"][data-part="hidden-input"]'
-        //   );
-        //   if (hiddenInput) {
-        //     hiddenInput.value = String(details.value);
-        //     hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-        //     hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        //   }
-        // }
-        const eventName = getString(el, "onValueChangeEnd");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            valueAsDegree: details.valueAsDegree,
-            id: el.id,
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeEndClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChangeEnd"),
+          clientEventName: getString(el, "onValueChangeEndClient"),
+        });
+        queueFormBubblingInputForPhoenix(el, () => zag);
       },
     } as Props);
     zag.init();
     this.angleSlider = zag;
-    this.handlers = [];
 
-    this.onSetValue = (event: Event) => {
-      const { value } = (event as CustomEvent<{ value: number }>).detail;
-      zag.api.setValue(value);
-    };
-    el.addEventListener("phx:angle-slider:set-value", this.onSetValue);
-
-    this.handlers.push(
-      this.handleEvent(
-        "angle_slider_set_value",
-        (payload: { angle_slider_id?: string; value: number }) => {
-          const targetId = payload.angle_slider_id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `angle-slider:${targetId}`;
-            if (!matches) return;
-          }
-          zag.api.setValue(payload.value);
-        }
-      )
-    );
-
-    this.handlers.push(
-      this.handleEvent("angle_slider_value", () => {
-        this.pushEvent("angle_slider_value_response", {
+    const emitValue = (respondTo: RespondTo) => {
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "angle_slider_value_response",
+        serverPayload: {
+          id: el.id,
           value: zag.api.value,
           valueAsDegree: zag.api.valueAsDegree,
           dragging: zag.api.dragging,
-        });
-      })
-    );
+        } as Record<string, unknown>,
+        el,
+        domEventName: "angle-slider-value",
+        domDetail: {
+          id: el.id,
+          value: zag.api.value,
+          valueAsDegree: zag.api.valueAsDegree,
+          dragging: zag.api.dragging,
+        } as Record<string, unknown>,
+      });
+    };
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add<CustomEvent<{ value: number }>>("corex:angle-slider:set-value", (event) => {
+      zag.api.setValue(event.detail.value);
+      queueFormBubblingInputForPhoenix(el, () => zag);
+    });
+
+    domRegistry.add<CustomEvent>("corex:angle-slider:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+
+    registry.add("angle_slider_set_value", (payload: { id?: string; value: number }) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(payload.value);
+      queueFormBubblingInputForPhoenix(el, () => zag);
+    });
+
+    registry.add("angle_slider_value", (payload: { id?: string; respond_to?: string }) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    const value = getNumber(this.el, "value");
-    const defaultValue = getNumber(this.el, "defaultValue");
-
-    const controlled = getBoolean(this.el, "controlled");
     this.angleSlider?.updateProps({
       id: this.el.id,
-      ...(controlled && value !== undefined ? { value } : { defaultValue: defaultValue ?? 0 }),
-      step: getNumber(this.el, "step") ?? 1,
+      ...readNumberControlledZagProps(this.el),
       disabled: getBoolean(this.el, "disabled"),
       readOnly: getBoolean(this.el, "readOnly"),
       invalid: getBoolean(this.el, "invalid"),
       name: getString(this.el, "name"),
-      dir: getString<"ltr" | "rtl">(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
     } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & AngleSliderHookState) {
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:angle-slider:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.angleSlider?.destroy();
   },
 };

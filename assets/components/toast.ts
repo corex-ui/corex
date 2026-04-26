@@ -11,22 +11,19 @@ import {
   type StoreProps,
   type Options,
 } from "@zag-js/toast";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
-import { generateId } from "../lib/util";
+import { getDir } from "../lib/util";
 
 export const toastGroups = new Map<string, ToastGroup>();
 export const toastStores = new Map<string, Store>();
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ToastItemProps<T = any> = Props<T> & {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  parent: any;
+type ToastItemProps<T = unknown> = Props<T> & {
+  parent: unknown;
   index: number;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class ToastItem<T = any> extends Component<ToastItemProps<T>, Api> {
+export class ToastItem<T = unknown> extends Component<ToastItemProps<T>, Api> {
   private parts!: {
     title: HTMLElement;
     description: HTMLElement;
@@ -36,6 +33,7 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, Api> {
     progressbar: HTMLElement;
     loadingSpinner: HTMLElement;
   };
+
   duration?: number | string;
 
   constructor(el: HTMLElement, props: ToastItemProps<T>) {
@@ -45,34 +43,32 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, Api> {
 
     this.el.setAttribute("data-scope", "toast");
     this.el.setAttribute("data-part", "root");
+    this.el.classList.add("toast-item");
 
     this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
       <div data-scope="toast" data-part="progressbar"></div>
-      <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
 
       <div data-scope="toast" data-part="content">
-        <div data-scope="toast" data-part="title"></div>
+        <div data-scope="toast" data-part="header">
+          <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
+          <div data-scope="toast" data-part="title"></div>
+          <button data-scope="toast" data-part="close-trigger"></button>
+        </div>
         <div data-scope="toast" data-part="description"></div>
       </div>
-
-      <button data-scope="toast" data-part="close-trigger">
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M4.293 4.293 10 8.586l5.707-5.707 1.414 1.414L11.414 10l5.707 5.707-1.414 1.414L10 11.414l-5.707 5.707-1.414-1.414L8.586 10 2.879 4.293z"/>
-        </svg>
-      </button>
 
       <span data-scope="toast" data-part="ghost-after"></span>
     `;
 
     this.parts = {
-      title: this.el.querySelector('[data-scope="toast"][data-part="title"]')!,
-      description: this.el.querySelector('[data-scope="toast"][data-part="description"]')!,
-      close: this.el.querySelector('[data-scope="toast"][data-part="close-trigger"]')!,
-      ghostBefore: this.el.querySelector('[data-scope="toast"][data-part="ghost-before"]')!,
-      ghostAfter: this.el.querySelector('[data-scope="toast"][data-part="ghost-after"]')!,
-      progressbar: this.el.querySelector('[data-scope="toast"][data-part="progressbar"]')!,
-      loadingSpinner: this.el.querySelector('[data-scope="toast"][data-part="loading-spinner"]')!,
+      title: this.el.querySelector('[data-part="title"]')!,
+      description: this.el.querySelector('[data-part="description"]')!,
+      close: this.el.querySelector('[data-part="close-trigger"]')!,
+      ghostBefore: this.el.querySelector('[data-part="ghost-before"]')!,
+      ghostAfter: this.el.querySelector('[data-part="ghost-after"]')!,
+      progressbar: this.el.querySelector('[data-part="progressbar"]')!,
+      loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')!,
     };
   }
 
@@ -82,16 +78,42 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render() {
     this.spreadProps(this.el, this.api.getRootProps());
     this.spreadProps(this.parts.close, this.api.getCloseTriggerProps());
-
     this.spreadProps(this.parts.ghostBefore, this.api.getGhostBeforeProps());
     this.spreadProps(this.parts.ghostAfter, this.api.getGhostAfterProps());
 
+    const toastGroup = this.el.closest('[phx-hook="Toast"]') as HTMLElement;
+
+    // templates
+    const loadingIconTemplate = toastGroup?.querySelector(
+      "[data-loading-icon-template]"
+    ) as HTMLElement;
+
+    const closeIconTemplate = toastGroup?.querySelector(
+      "[data-close-icon-template]"
+    ) as HTMLElement;
+
+    const loadingIcon = loadingIconTemplate?.innerHTML;
+    const closeIcon = closeIconTemplate?.innerHTML;
+
+    // inject close icon
+    if (closeIcon) {
+      if (this.parts.close.innerHTML !== closeIcon) {
+        this.parts.close.innerHTML = closeIcon;
+      }
+    } else {
+      // fallback
+      if (!this.parts.close.innerHTML) {
+        this.parts.close.innerHTML = "×";
+      }
+    }
+
+    // text updates
     if (this.parts.title.textContent !== this.api.title) {
       this.parts.title.textContent = this.api.title ?? "";
     }
@@ -103,19 +125,16 @@ export class ToastItem<T = any> extends Component<ToastItemProps<T>, Api> {
     this.spreadProps(this.parts.title, this.api.getTitleProps());
     this.spreadProps(this.parts.description, this.api.getDescriptionProps());
 
+    // duration logic
     const duration = this.duration;
     const isInfinity =
       duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
-    const toastGroup = this.el.closest('[phx-hook="Toast"]') as HTMLElement;
-    const loadingIconTemplate = toastGroup?.querySelector(
-      "[data-loading-icon-template]"
-    ) as HTMLElement;
-    const loadingIcon = loadingIconTemplate?.innerHTML;
 
     if (isInfinity) {
       this.parts.progressbar.style.display = "none";
       this.parts.loadingSpinner.style.display = "flex";
       this.el.setAttribute("data-duration-infinity", "true");
+
       if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
         this.parts.loadingSpinner.innerHTML = loadingIcon;
       }
@@ -159,7 +178,7 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
   }
 
   initApi(): GroupApi {
-    return group.connect(this.machine.service, normalizeProps);
+    return this.zagConnect(group.connect);
   }
 
   render() {
@@ -176,6 +195,7 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
 
       if (!item) {
         const el = document.createElement("div");
+        el.classList.add("toast-item");
         el.setAttribute("data-scope", "toast");
         el.setAttribute("data-part", "root");
         this.groupEl.appendChild(el);
@@ -222,7 +242,7 @@ export function createToastGroup(
     store?: Store;
   }
 ) {
-  const groupId = options?.id ?? generateId(container, "toast");
+  const groupId = options?.id ?? container.id;
 
   const store =
     options?.store ??
@@ -235,7 +255,7 @@ export function createToastGroup(
       pauseOnPageIdle: options?.pauseOnPageIdle,
     });
 
-  const group = new ToastGroup(container, { id: groupId, store });
+  const group = new ToastGroup(container, { id: groupId, store, dir: getDir(container) });
   group.init();
 
   toastGroups.set(groupId, group);
@@ -245,6 +265,17 @@ export function createToastGroup(
   container.dataset.toastGroupId = groupId;
 
   return { group, store };
+}
+
+export function disposeToastGroup(groupId: string) {
+  const group = toastGroups.get(groupId);
+  if (!group) return;
+  const container = group.el;
+  group.destroy();
+  toastGroups.delete(groupId);
+  toastStores.delete(groupId);
+  delete container.dataset.toastGroup;
+  delete container.dataset.toastGroupId;
 }
 
 export function getToastStore(groupId?: string): Store | undefined {
@@ -257,14 +288,11 @@ export function getToastStore(groupId?: string): Store | undefined {
   return id ? toastStores.get(id) : undefined;
 }
 
-export function createToast(options: Options & { groupId?: string }) {
-  const store = getToastStore(options.groupId);
+export function createToast(options: Options & { id: string; groupId?: string }) {
+  const { groupId, ...rest } = options;
+  const store = getToastStore(groupId);
   if (!store) throw new Error("No toast store found");
-
-  store.create({
-    ...options,
-    id: options.id ?? generateId(undefined, "toast"),
-  });
+  store.create(rest);
 }
 
 export function updateToast(id: string, options: Partial<Props>, groupId?: string) {

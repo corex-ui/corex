@@ -1,69 +1,40 @@
 import { collection, connect, machine, type Props, type Api } from "@zag-js/tree-view";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripHiddenFromProps } from "../lib/animation";
 
 export interface TreeNode {
   id: string;
   name: string;
   children?: TreeNode[];
-  redirect?: boolean;
+  to?: string;
+  redirect?: "href" | "patch" | "navigate" | false;
   new_tab?: boolean;
+  disabled?: boolean;
 }
 
-function buildTreeFromDOM(rootEl: HTMLElement): TreeNode {
-  const selector =
-    '[data-scope="tree-view"][data-part="branch"], [data-scope="tree-view"][data-part="item"]';
-  const elements = rootEl.querySelectorAll<HTMLElement>(selector);
-  const nodes: Array<{
-    pathArr: number[];
-    id: string;
-    name: string;
-    isBranch: boolean;
-  }> = [];
-  for (const el of elements) {
-    const pathRaw = el.getAttribute("data-path");
-    const value = el.getAttribute("data-value");
-    if (pathRaw == null || value == null) continue;
-    const pathArr = pathRaw.split("/").map((s) => parseInt(s, 10));
-    if (pathArr.some(Number.isNaN)) continue;
-    const name = el.getAttribute("data-name") ?? value;
-    const isBranch = el.getAttribute("data-part") === "branch";
-    nodes.push({ pathArr, id: value, name, isBranch });
-  }
-  nodes.sort((a, b) => {
-    const len = Math.min(a.pathArr.length, b.pathArr.length);
-    for (let i = 0; i < len; i++) {
-      if (a.pathArr[i] !== b.pathArr[i]) return a.pathArr[i] - b.pathArr[i];
-    }
-    return a.pathArr.length - b.pathArr.length;
+function createTreeCollection(rootNode: TreeNode) {
+  return collection<TreeNode>({
+    nodeToValue: (node) => node.id,
+    nodeToString: (node) => node.name,
+    rootNode,
   });
-  const root: TreeNode = { id: "ROOT", name: "", children: [] };
-  for (const { pathArr, id, name, isBranch } of nodes) {
-    let parent: TreeNode = root;
-    for (let i = 0; i < pathArr.length - 1; i++) {
-      const idx = pathArr[i];
-      if (!parent.children) parent.children = [];
-      parent = parent.children[idx] as TreeNode;
-    }
-    const lastIdx = pathArr[pathArr.length - 1]!;
-    if (!parent.children) parent.children = [];
-    parent.children[lastIdx] = isBranch ? { id, name, children: [] } : { id, name };
-  }
-  return root;
 }
 
 export class TreeView extends Component<Props, Api> {
   private treeCollection: ReturnType<typeof collection<TreeNode>>;
 
-  constructor(el: HTMLElement | null, props: Omit<Props, "collection"> & { treeData?: TreeNode }) {
-    const treeData = props.treeData ?? buildTreeFromDOM(el as HTMLElement);
-    const treeCollection = collection<TreeNode>({
-      nodeToValue: (node) => node.id,
-      nodeToString: (node) => node.name,
-      rootNode: treeData,
-    });
-    super(el, { ...props, collection: treeCollection } as Props);
+  constructor(el: HTMLElement | null, props: Omit<Props, "collection"> & { rootNode: TreeNode }) {
+    const { rootNode, ...rest } = props;
+    const treeCollection = createTreeCollection(rootNode);
+    super(el, { ...rest, collection: treeCollection } as Props);
     this.treeCollection = treeCollection;
+  }
+
+  replaceRootNode(rootNode: TreeNode): void {
+    const treeCollection = createTreeCollection(rootNode);
+    this.treeCollection = treeCollection;
+    this.updateProps({ collection: treeCollection });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -72,7 +43,7 @@ export class TreeView extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   private getNodeAt(indexPath: number[]): TreeNode | undefined {
@@ -88,10 +59,16 @@ export class TreeView extends Component<Props, Api> {
   private updateExistingTree(treeEl: HTMLElement) {
     this.spreadProps(treeEl, this.api.getTreeProps());
 
+    const animation = this.el.dataset.animation ?? "js";
+
+    const isOwnedByTree = (el: Element) =>
+      el.closest('[data-scope="tree-view"][data-part="tree"]') === treeEl;
+
     const branches = treeEl.querySelectorAll<HTMLElement>(
       '[data-scope="tree-view"][data-part="branch"]'
     );
     for (const branchEl of branches) {
+      if (!isOwnedByTree(branchEl)) continue;
       const pathRaw = branchEl.getAttribute("data-path");
       if (pathRaw == null) continue;
       const indexPath = pathRaw.split("/").map((s) => parseInt(s, 10));
@@ -119,7 +96,18 @@ export class TreeView extends Component<Props, Api> {
       const contentEl = branchEl.querySelector<HTMLElement>(
         '[data-scope="tree-view"][data-part="branch-content"]'
       );
-      if (contentEl) this.spreadProps(contentEl, this.api.getBranchContentProps(nodeProps));
+      if (contentEl) {
+        const contentPropsRaw = this.api.getBranchContentProps(nodeProps);
+        if (animation === "instant") {
+          this.spreadProps(contentEl, contentPropsRaw);
+        } else {
+          this.spreadProps(
+            contentEl,
+            stripHiddenFromProps(contentPropsRaw as Record<string, unknown>)
+          );
+          contentEl.removeAttribute("hidden");
+        }
+      }
 
       const indentGuideEl = branchEl.querySelector<HTMLElement>(
         '[data-scope="tree-view"][data-part="branch-indent-guide"]'
@@ -132,6 +120,7 @@ export class TreeView extends Component<Props, Api> {
       '[data-scope="tree-view"][data-part="item"]'
     );
     for (const itemEl of items) {
+      if (!isOwnedByTree(itemEl)) continue;
       const pathRaw = itemEl.getAttribute("data-path");
       if (pathRaw == null) continue;
       const indexPath = pathRaw.split("/").map((s) => parseInt(s, 10));
@@ -139,6 +128,17 @@ export class TreeView extends Component<Props, Api> {
       if (!node) continue;
       const nodeProps = { indexPath, node };
       this.spreadProps(itemEl, this.api.getItemProps(nodeProps));
+
+      const itemTextEl = itemEl.querySelector<HTMLElement>(
+        '[data-scope="tree-view"][data-part="item-text"]'
+      );
+      if (itemTextEl) this.spreadProps(itemTextEl, this.api.getItemTextProps(nodeProps));
+
+      const itemIndicatorEl = itemEl.querySelector<HTMLElement>(
+        '[data-scope="tree-view"][data-part="item-indicator"]'
+      );
+      if (itemIndicatorEl)
+        this.spreadProps(itemIndicatorEl, this.api.getItemIndicatorProps(nodeProps));
     }
   }
 

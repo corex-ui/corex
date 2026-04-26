@@ -2,54 +2,35 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Tabs</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
+  <.demo_page
+    id="tabs-anatomy-page"
+    title="Tabs · Anatomy"
+    subtitle="Tabs with items and custom triggers."
+  >
+    <.demo_section
+      id="tabs-anatomy-basic"
+      title="Basic"
+      code={E2eWeb.Demos.TabsDemo.anatomy_basic_code()}
+    >
+      <:preview><E2eWeb.Demos.TabsDemo.anatomy_basic_example /></:preview>
+    </.demo_section>
 
-  <h3>Client Api</h3>
-  <div class="layout__row">
-    <.action
-      phx-click={Corex.Tabs.set_value("my-tabs", "lorem")}
-      class="button button--sm"
+    <.demo_section
+      id="tabs-anatomy-indicator"
+      title="With indicator"
+      code={E2eWeb.Demos.TabsDemo.anatomy_indicator_code()}
     >
-      Open Lorem
-    </.action>
-    <.action
-      phx-click={Corex.Tabs.set_value("my-tabs", "duis")}
-      class="button button--sm"
+      <:preview><E2eWeb.Demos.TabsDemo.anatomy_indicator_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-anatomy-nested"
+      title="Nested"
+      code={E2eWeb.Demos.TabsDemo.anatomy_nested_code()}
     >
-      Open Duis
-    </.action>
-    <.action phx-click={Corex.Tabs.set_value("my-tabs", nil)} class="button button--sm">
-      Close all Tabs
-    </.action>
-  </div>
-  <.tabs
-    id="my-tabs"
-    class="tabs"
-    value="lorem"
-    items={
-      Corex.Content.new([
-        [
-          id: "lorem",
-          trigger: "Lorem",
-          content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
-        ],
-        [
-          id: "duis",
-          trigger: "Duis",
-          content: "Nullam eget vestibulum ligula, at interdum tellus."
-        ],
-        [
-          id: "donec",
-          trigger: "Donec",
-          content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
-        ]
-      ])
-    }
-  />
+      <:preview><E2eWeb.Demos.TabsDemo.anatomy_nested_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

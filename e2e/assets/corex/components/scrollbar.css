@@ -2,8 +2,8 @@
 
 @utility scrollbar {
   &::-webkit-scrollbar {
-    width: var(--spacing-micro);
-    height: var(--spacing-micro);
+    width: var(--spacing-space);
+    height: var(--spacing-space);
   }
 
   &::-webkit-scrollbar-track {
@@ -11,25 +11,25 @@
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--color-ui--border);
+    background: var(--color-border);
   }
 
   &::-webkit-scrollbar-corner {
-    background: var(--color-ui--border);
+    background: var(--color-border);
   }
 }
 
 @utility scrollbar--* {
   &::-webkit-scrollbar {
-    width: --value(--spacing-micro-*, [integer]);
-    height: --value(--spacing-micro-*, [integer]);
+    width: --value(--spacing-space-*, [length]);
+    height: --value(--spacing-space-*, [length]);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: --value(--color-ui-*, [color]);
+    background: --value(--color-*, [color]);
   }
 
   &::-webkit-scrollbar-corner {
-    background: --value(--color-ui-*, [color]);
+    background: --value(--color-*, [color]);
   }
 }

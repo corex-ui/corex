@@ -2,12 +2,26 @@
 @import "./scrollbar.css";
 
 @layer components {
+  .combobox {
+    width: 100%;
+    max-width: var(--container-3xs);
+  }
+
+  .combobox[data-orientation="horizontal"] {
+    max-width: var(--container-md);
+  }
+
+  .combobox[data-loading] [data-scope="combobox"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .combobox [data-scope="combobox"][data-part="root"] {
     @apply ui-root;
 
-    max-width: var(--container-mini);
-    gap: var(--spacing-ui-gap);
-    width: auto;
+    gap: var(--spacing-space);
+    width: 100%;
+    position: relative;
+    padding-inline-end: var(--spacing-space);
   }
 
   .combobox [data-scope="combobox"][data-part="label"] {
@@ -18,22 +32,20 @@
     @apply ui-label;
 
     list-style: none;
-    padding-inline: var(--spacing-ui-padding);
-    padding-block: var(--spacing-mini-padding-sm);
+    padding-inline: var(--spacing-space);
+    padding-block: var(--spacing-space);
   }
 
   .combobox [data-scope="combobox"][data-part="control"] {
     display: flex;
-    width: 100%;
     position: relative;
   }
 
   .combobox [data-scope="combobox"][data-part="input"] {
     @apply ui-input;
 
-    max-width: 100%;
-    width: 100%;
-    padding-inline: var(--spacing-ui-padding);
+    width: var(--container-5xs);
+    padding-inline: var(--spacing-space);
     border-inline-end: none;
     border-end-end-radius: 0;
     border-start-end-radius: 0;
@@ -77,112 +89,117 @@
     min-height: fit-content;
   }
 
-  .combobox [data-scope="combobox"][data-part="item-group-content"] {
+  .combobox [data-scope="combobox"][data-part="list"] {
     min-height: fit-content;
     display: flex;
     flex-direction: column;
   }
 
   .combobox [data-scope="combobox"][data-part="item-group-label"] {
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
     text-align: start;
-    padding-inline: var(--spacing-ui-padding);
-    padding-block: var(--spacing-mini-padding-sm);
+    padding-inline: var(--spacing-space);
+    padding-block: var(--spacing-space);
     background-color: var(--color-root);
-    color: var(--color-root--text);
-    border-bottom: 1px solid var(--color-ui--border);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
   }
 
   .combobox [data-scope="combobox"][data-part="item"] {
     @apply ui-item;
-
-    align-items: flex-start;
-    min-height: fit-content;
-  }
-
-  .combobox [data-scope="combobox"][data-part="item"] [data-part="item-text"] {
-    min-height: fit-content;
   }
 
   .combobox [data-scope="combobox"][data-part="error"] {
     @apply ui-error;
   }
+
+  .combobox [data-scope="combobox"][data-part="root"][data-read-only],
+  .combobox [data-scope="combobox"][data-part="root"][data-readonly] {
+    @apply ui-readonly-overlay;
+  }
 }
 
 @utility combobox--* {
+
   [data-scope="combobox"][data-part="root"] {
-    max-width: --value(--container-mini-*, [length]);
-    gap: --value(--spacing-mini-gap-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="combobox"][data-part="label"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="combobox"][data-part="input"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
-    color: --value(--color-root--*, [color]);
-    border-color: --value(--color-root-* --border, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
+    color: --value(--color-ink, [color]);
+    border-color: --value(--color-border, [color]);
 
     ::placeholder {
-      color: --value(--color-root--*, [color]);
+      color: --value(--color-ink, [color]);
     }
   }
 
   [data-scope="combobox"][data-part="trigger"],
   [data-scope="combobox"][data-part="clear-trigger"] {
-    color: --value(--color-root--*, [color]);
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
-    padding-inline: --value(--spacing-ui-padding-*, [length]);
-    gap: --value(--spacing-ui-gap-*, [length]);
+    color: --value(--color-ink, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="combobox"][data-part="item"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
   }
 
   [data-scope="combobox"][data-part="item"][data-selected],
   [data-scope="combobox"][data-part="item"][data-state="checked"] {
-    background-color: --value(--color-ui-*, [color]);
-    color: --value(--color-ui-* --text, [color]);
+    background-color: --value(--color-*, [color]);
+    color: --value(--color-*-ink, [color]);
   }
 
   [data-scope="combobox"][data-part="item"][data-selected]:hover,
   [data-scope="combobox"][data-part="item"][data-state="checked"]:hover {
-    background-color: --value(--color-ui-* -hover, [color]);
-    color: --value(--color-ui-* --text, [color]);
+    background-color: --value(--color-*-hover, [color]);
+    color: --value(--color-*-ink, [color]);
   }
 
-  [data-scope="combobox"][data-part="item"][data-selected]:active {
-    background-color: --value(--color-ui-* -active, [color]);
-    color: --value(--color-ui-* --text, [color]);
+  [data-scope="combobox"][data-part="item"][data-selected]:active,
+  [data-scope="combobox"][data-part="item"][data-state="checked"]:active {
+    background-color: --value(--color-*-active, [color]);
+    color: --value(--color-*-ink, [color]);
+  }
+
+  [data-scope="combobox"][data-part="item"][data-selected]:focus-visible,
+  [data-scope="combobox"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
   }
 
   [data-scope="combobox"][data-part="item"][data-highlighted]:not(:hover) {
     outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
-    background-color: --value(--color-ui-* -hover, [color]);
-    color: --value(--color-ui-* --text, [color]);
+    box-shadow: inset 0 0 0 2px --value(--color-ink, [color]);
+    background-color: --value(--color-ui-hover, [color]);
+    color: --value(--color-ink, [color]);
   }
 
   [data-scope="combobox"][data-part="item"][data-selected][data-highlighted],
   [data-scope="combobox"][data-part="item"][data-state="checked"][data-highlighted] {
     outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
-    background-color: --value(--color-ui-* -hover, [color]);
-    color: --value(--color-ui-* --text, [color]);
+    box-shadow: inset 0 0 0 2px --value(--color-*-ink, [color]);
+    background-color: --value(--color-*-hover, [color]);
+    color: --value(--color-*-ink, [color]);
   }
 
   [data-scope="combobox"][data-part="trigger"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 }

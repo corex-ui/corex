@@ -1,5 +1,8 @@
 import Config
 
+config :localize,
+  supported_locales: Gettext.known_locales(E2eWeb.Gettext) |> Enum.map(&String.to_atom/1)
+
 # config/runtime.exs is executed for all environments, including
 # during releases. It is executed after compilation and before the
 # system starts, so it is typically used to load production configuration
@@ -20,8 +23,10 @@ if System.get_env("PHX_SERVER") do
   config :corex_web, E2eWeb.Endpoint, server: true
 end
 
-config :corex_web, E2eWeb.Endpoint,
-  http: [port: String.to_integer(System.get_env("PORT", "4000"))]
+unless config_env() == :test do
+  config :corex_web, E2eWeb.Endpoint,
+    http: [port: String.to_integer(System.get_env("PORT", "4000"))]
+end
 
 if config_env() == :prod do
   database_url =

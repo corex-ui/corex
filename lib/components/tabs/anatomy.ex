@@ -43,6 +43,9 @@ defmodule Corex.Tabs.Anatomy do
             orientation: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs ["data-orientation", "dir", "id"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule List do
@@ -54,6 +57,18 @@ defmodule Corex.Tabs.Anatomy do
             orientation: String.t(),
             dir: String.t()
           }
+
+    @ignored_attrs [
+      "data-orientation",
+      "dir",
+      "id",
+      "role",
+      "tabindex",
+      "aria-label",
+      "aria-labelledby",
+      "aria-orientation"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Trigger do
@@ -77,6 +92,47 @@ defmodule Corex.Tabs.Anatomy do
             disabled: boolean(),
             values: list(String.t())
           }
+
+    @ignored_attrs [
+      "aria-expanded",
+      "aria-selected",
+      "aria-disabled",
+      "aria-controls",
+      "disabled",
+      "tabindex",
+      "data-disabled",
+      "data-selected",
+      "data-state",
+      "data-focus",
+      "data-orientation",
+      "dir"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Indicator do
+    @moduledoc false
+    defstruct [:id, values: [], orientation: "vertical", dir: "ltr"]
+
+    @type t :: %__MODULE__{
+            id: String.t(),
+            values: list(String.t()),
+            orientation: String.t(),
+            dir: String.t()
+          }
+
+    @ignored_attrs [
+      "id",
+      "aria-hidden",
+      "data-state",
+      "data-disabled",
+      "data-focus",
+      "data-orientation",
+      "dir",
+      "hidden",
+      "style"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Content do
@@ -100,5 +156,17 @@ defmodule Corex.Tabs.Anatomy do
             disabled: boolean(),
             values: list(String.t())
           }
+
+    @ignored_attrs [
+      "hidden",
+      "data-state",
+      "data-disabled",
+      "data-focus",
+      "data-orientation",
+      "dir",
+      "role",
+      "tabindex"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

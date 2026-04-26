@@ -1,6 +1,13 @@
 @import "../main.css";
 
 @layer components {
+  .carousel {
+    width: 100%;
+    max-width: var(--container-md);
+    max-height: var(--container-md);
+
+  }
+
   .carousel [data-scope="carousel"][data-part="root"] {
     @apply ui-root;
 
@@ -8,9 +15,7 @@
     aspect-ratio: 4/3;
     overflow: hidden;
     min-height: 0;
-    max-width: var(--container-ui);
-    max-height: var(--container-ui);
-    gap: var(--spacing-ui-gap);
+    gap: --spacing(4);
     justify-content: center;
     position: relative;
   }
@@ -20,37 +25,33 @@
     position: absolute;
     flex-direction: column;
     width: auto;
-    padding: var(--spacing-mini-padding-sm);
-    max-width: var(--container-mini);
+    padding: --spacing(4);
     overflow: hidden;
-    gap: var(--spacing-mini-gap);
+    gap: var(--spacing-space);
     justify-content: center;
-    border-radius: var(--radius-ui);
+    border-radius: var(--radius-md);
 
     &[data-orientation="horizontal"] {
       flex-direction: row;
-      bottom: var(--spacing-mini-padding);
+      bottom: var(--spacing-space);
     }
 
     &[data-orientation="vertical"] {
       flex-flow: column nowrap;
-      max-height: var(--container-mini);
-      right: var(--spacing-mini-padding);
+      right: var(--spacing-space);
     }
   }
 
   .carousel [data-scope="carousel"][data-part="prev-trigger"],
   .carousel [data-scope="carousel"][data-part="next-trigger"],
   .carousel [data-scope="carousel"][data-part="autoplay-trigger"] {
-    @apply ui-trigger;
-
+    @apply ui-trigger ui-trigger--circle ui-trigger--sm;
+    min-height: --spacing(6);
     padding: 0;
-    aspect-ratio: 1/1;
-    gap: var(--spacing-min-gap);
-    min-height: var(--spacing-mini);
-    border: 0;
 
-    &[disabled="true"] {
+    &:disabled,
+    &[data-disabled],
+    &[disabled] {
       visibility: hidden;
     }
   }
@@ -60,7 +61,7 @@
     align-self: stretch;
     min-width: 0;
     min-height: 0;
-    border-radius: var(--radius-ui);
+    border-radius: var(--radius-md);
     scrollbar-width: none;
     -webkit-scrollbar-width: none;
     -ms-overflow-style: none;
@@ -75,15 +76,15 @@
     justify-content: center;
     align-items: center;
     font-size: 24px;
-    border: 1px solid var(--color-ui--border);
-    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     background-color: var(--color-ui);
   }
 
   .carousel [data-scope="carousel"][data-part="item"] img {
     margin: 0;
     object-fit: cover;
-    border-radius: var(--radius-ui);
+    border-radius: var(--radius-md);
   }
 
   .carousel
@@ -105,7 +106,7 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: var(--spacing-mini-gap);
+    gap: var(--spacing-space);
 
     &[data-orientation="horizontal"] {
       flex-direction: row;
@@ -119,19 +120,15 @@
   }
 
   .carousel [data-scope="carousel"][data-part="indicator"] {
-    @apply ui-trigger;
+    @apply ui-trigger ui-trigger--circle;
 
-    min-height: var(--spacing-micro-xl);
-    min-width: var(--spacing-micro-xl);
-    aspect-ratio: 1/1;
-    border-radius: var(--radius-full);
-    background-color: var(--color-ui);
+    min-height: --spacing(4);
+    min-width: --spacing(4);
     padding: 0;
-    transition: background-color 0.2s ease-in-out;
   }
 
   .carousel [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: var(--color-ui-accent);
+    background-color: var(--color-accent);
   }
 
   .carousel
@@ -148,55 +145,54 @@
 }
 
 @utility carousel--* {
+
   [data-scope="carousel"][data-part="root"] {
-    max-width: --value(--container-ui-*, [length]);
-    max-height: --value(--container-ui-*, [length]);
-    gap: --value(--spacing-ui-gap-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="carousel"][data-part="control"] {
-    max-width: --value(--container-mini-*, [length]);
-    padding: --value(--spacing-mini-padding-*, [length]);
-    gap: --value(--spacing-mini-gap-*, [length]);
+    max-width: --value(--container-*, [length]);
+    padding: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"],
   [data-scope="carousel"][data-part="prev-trigger"],
   [data-scope="carousel"][data-part="autoplay-trigger"] {
-    gap: --value(--spacing-mini-gap-*, [length]);
-    min-height: --value(--spacing-mini-*, [length]);
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    background-color: --value(--color-ui-*, [color]);
-    color: --value(--color-ui-* --text, [color]);
-    border-color: --value(--color-ui-* --border, [color]);
+    gap: --value(--spacing-space-*, [length]);
+    
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    background-color: --value(--color-ui, [color]);
+    color: --value(--color-ink, [color]);
+    border-color: --value(--color-border, [color]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"]:hover,
   [data-scope="carousel"][data-part="prev-trigger"]:hover,
   [data-scope="carousel"][data-part="autoplay-trigger"]:hover {
-    background-color: --value(--color-ui-* -hover, [color]);
+    background-color: --value(--color-ui-hover, [color]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"]:active,
   [data-scope="carousel"][data-part="prev-trigger"]:active,
   [data-scope="carousel"][data-part="autoplay-trigger"]:active {
-    background-color: --value(--color-ui-* -active, [color]);
+    background-color: --value(--color-ui-active, [color]);
   }
 
   [data-scope="carousel"][data-part="next-trigger"]:focus-visible,
   [data-scope="carousel"][data-part="prev-trigger"]:focus-visible,
   [data-scope="carousel"][data-part="autoplay-trigger"]:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
+    box-shadow: inset 0 0 0 2px --value(--color-ink, [color]);
   }
 
   [data-scope="carousel"][data-part="indicator"] {
-    min-height: --value(--spacing-micro-*, [length]);
-    min-width: --value(--spacing-micro-*, [length]);
+    min-height: calc(--value(--spacing-*, [length]) * 4);
+    min-width: calc(--value(--spacing-*, [length]) * 4);
   }
 
   [data-scope="carousel"][data-part="indicator"][data-current] {
-    background-color: --value(--color-ui-*, [color]);
+    background-color: --value(--color-*, [color]);
   }
 }

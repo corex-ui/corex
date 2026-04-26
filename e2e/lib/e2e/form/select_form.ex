@@ -11,4 +11,10 @@ defmodule E2e.Form.SelectForm do
     |> cast(attrs, [:country])
     |> validate_required([:country])
   end
+
+  def changeset_validate(select_form, attrs \\ %{}) do
+    select_form
+    |> cast(attrs, [:country])
+    |> validate_required([:country], message: "can't be blank")
+  end
 end

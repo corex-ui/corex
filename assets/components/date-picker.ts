@@ -1,6 +1,126 @@
 import { connect, machine, type Props, type Api } from "@zag-js/date-picker";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+
+type ZagDatePickerTranslations = NonNullable<Props["translations"]>;
+
+export type DatePickerMessageMap = {
+  content?: string;
+  monthSelect?: string;
+  yearSelect?: string;
+  clearTrigger?: string;
+  weekColumnHeader?: string;
+  openCalendar?: string;
+  closeCalendar?: string;
+  viewTriggerYear?: string;
+  viewTriggerMonth?: string;
+  viewTriggerDay?: string;
+  prevTriggerYear?: string;
+  prevTriggerMonth?: string;
+  prevTriggerDay?: string;
+  nextTriggerYear?: string;
+  nextTriggerMonth?: string;
+  nextTriggerDay?: string;
+  weekNumber?: string;
+  placeholderDay?: string;
+  placeholderMonth?: string;
+  placeholderYear?: string;
+  input?: string;
+  rangeStart?: string;
+  rangeEnd?: string;
+};
+
+type DatePickerView = "day" | "month" | "year";
+
+const pickViewLabel = <T>(
+  view: DatePickerView,
+  day: T | undefined,
+  month: T | undefined,
+  year: T | undefined
+): T | "" => (view === "year" ? (year ?? "") : view === "month" ? (month ?? "") : (day ?? ""));
+
+const formatWeek = (template: string, n: number): string => template.split("__N__").join(String(n));
+
+export function buildZagDatePickerTranslations(m: DatePickerMessageMap): ZagDatePickerTranslations {
+  const t: Record<string, unknown> = {};
+  if (m.content) t.content = m.content;
+  if (m.monthSelect) t.monthSelect = m.monthSelect;
+  if (m.yearSelect) t.yearSelect = m.yearSelect;
+  if (m.clearTrigger) t.clearTrigger = m.clearTrigger;
+  if (m.weekColumnHeader) t.weekColumnHeader = m.weekColumnHeader;
+  if (m.weekNumber) t.weekNumberCell = (n: number) => formatWeek(m.weekNumber!, n);
+
+  if (m.openCalendar && m.closeCalendar) {
+    t.trigger = (open: boolean) => (open ? m.closeCalendar! : m.openCalendar!);
+  }
+
+  if (m.viewTriggerDay || m.viewTriggerMonth || m.viewTriggerYear) {
+    t.viewTrigger = (view: string) =>
+      pickViewLabel(
+        view as DatePickerView,
+        m.viewTriggerDay,
+        m.viewTriggerMonth,
+        m.viewTriggerYear
+      );
+  }
+  if (m.prevTriggerDay || m.prevTriggerMonth || m.prevTriggerYear) {
+    t.prevTrigger = (view: string) =>
+      pickViewLabel(
+        view as DatePickerView,
+        m.prevTriggerDay,
+        m.prevTriggerMonth,
+        m.prevTriggerYear
+      );
+  }
+  if (m.nextTriggerDay || m.nextTriggerMonth || m.nextTriggerYear) {
+    t.nextTrigger = (view: string) =>
+      pickViewLabel(
+        view as DatePickerView,
+        m.nextTriggerDay,
+        m.nextTriggerMonth,
+        m.nextTriggerYear
+      );
+  }
+
+  if (m.placeholderDay && m.placeholderMonth && m.placeholderYear) {
+    t.placeholder = () => ({
+      day: m.placeholderDay!,
+      month: m.placeholderMonth!,
+      year: m.placeholderYear!,
+    });
+  }
+
+  return t as unknown as ZagDatePickerTranslations;
+}
+
+export function applyInputAriaIfNeeded(
+  el: HTMLElement,
+  inputs: HTMLInputElement[],
+  selectionMode: string | undefined
+): void {
+  if (
+    selectionMode === "range" ||
+    el.querySelector('[data-scope="date-picker"][data-part="label"]')
+  ) {
+    return;
+  }
+  let tr: DatePickerMessageMap | null = null;
+  const raw = el.dataset.translation;
+  if (raw) {
+    try {
+      tr = JSON.parse(raw) as DatePickerMessageMap;
+    } catch {
+      tr = null;
+    }
+  }
+  const value = tr?.input;
+  if (!value) return;
+  for (const input of inputs) {
+    if (!input.getAttribute("aria-labelledby")) {
+      input.setAttribute("aria-label", value);
+    }
+  }
+}
 
 export class DatePicker extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,7 +129,7 @@ export class DatePicker extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   private getDayView = () => this.el.querySelector<HTMLElement>('[data-part="day-view"]');
@@ -116,12 +236,30 @@ export class DatePicker extends Component<Props, Api> {
     );
     if (control) this.spreadProps(control, this.api.getControlProps());
 
-    const input = this.el.querySelector<HTMLInputElement>(
-      '[data-scope="date-picker"][data-part="input"]'
+    const inputs = Array.from(
+      this.el.querySelectorAll<HTMLInputElement>('[data-scope="date-picker"][data-part="input"]')
     );
-    if (input) {
-      this.spreadProps(input, this.api.getInputProps());
+    const selectionMode = this.api.selectionMode;
+    for (let i = 0; i < inputs.length; i += 1) {
+      this.spreadProps(inputs[i]!, this.api.getInputProps({ index: i }));
     }
+    if (selectionMode === "multiple" && inputs.length > 0) {
+      const input = inputs[0]!;
+      const applyMultipleDisplay = () => {
+        const vs = this.api.valueAsString;
+        const parts = Array.isArray(vs) ? vs : vs == null || vs === "" ? [] : [String(vs)];
+        const joined = parts.filter(Boolean).join(", ");
+        if (input.value !== joined) {
+          input.value = joined;
+        }
+      };
+      applyMultipleDisplay();
+      queueMicrotask(() => {
+        requestAnimationFrame(applyMultipleDisplay);
+      });
+    }
+
+    applyInputAriaIfNeeded(this.el, inputs, this.api.selectionMode);
 
     const trigger = this.el.querySelector<HTMLElement>(
       '[data-scope="date-picker"][data-part="trigger"]'

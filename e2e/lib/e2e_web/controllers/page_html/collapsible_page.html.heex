@@ -2,36 +2,42 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Collapsible</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <h3>Client Api</h3>
-  <section class="layout__section">
-    <div class="layout__row">
-      <.action
-        phx-click={Corex.Collapsible.set_open("my-collapsible", true)}
-        class="button button--sm"
-      >
-        Open
-      </.action>
-      <.action
-        phx-click={Corex.Collapsible.set_open("my-collapsible", false)}
-        class="button button--sm"
-      >
-        Close
-      </.action>
-    </div>
-  </section>
-  <section class="layout__section">
-    <.collapsible id="my-collapsible" class="collapsible">
-      <:trigger>Toggle Content</:trigger>
-      <:content>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla.
-      </:content>
-    </.collapsible>
-  </section>
+  <.demo_page
+    id="collapsible-anatomy-page"
+    title="Collapsible"
+    subtitle="Toggle content visibility."
+    heading_class="layout-heading"
+  >
+    <.demo_section
+      id="collapsible-anatomy-basic"
+      title="Basic"
+      code={E2eWeb.Demos.CollapsibleDemo.anatomy_basic_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.anatomy_basic_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-anatomy-with-indicator"
+      title="With indicator"
+      code={E2eWeb.Demos.CollapsibleDemo.with_indicator_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.with_indicator_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="collapsible-anatomy-custom-slots"
+      title="Custom slots"
+      code={E2eWeb.Demos.CollapsibleDemo.custom_slots_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.CollapsibleDemo.custom_slots_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

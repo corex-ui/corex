@@ -1,304 +1,184 @@
 {
   "color": {
-    "root": {
-      "default": {
-        "value": "{theme.color.root.default}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.root.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.root.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.root.-muted.default}",
-          "type": "color"
-        }
-      },
-      "-accent": {
-        "default": {
-          "value": "{theme.color.root.-accent.default}",
-          "type": "color"
-        }
-      },
-      "-brand": {
-        "default": {
-          "value": "{theme.color.root.-brand.default}",
-          "type": "color"
-        }
-      },
-      "-alert": {
-        "default": {
-          "value": "{theme.color.root.-alert.default}",
-          "type": "color"
-        }
-      },
-      "-info": {
-        "default": {
-          "value": "{theme.color.root.-info.default}",
-          "type": "color"
-        }
-      },
-      "-success": {
-        "default": {
-          "value": "{theme.color.root.-success.default}",
-          "type": "color"
-        }
-      }
+    "selected-ink": {
+      "type": "color",
+      "value": "{theme.color.selected-ink}"
+    },
+    "ink-success": {
+      "type": "color",
+      "value": "{theme.color.ink-success}"
+    },
+    "ui-active": {
+      "type": "color",
+      "value": "{theme.color.ui-active}"
+    },
+    "brand-muted": {
+      "type": "color",
+      "value": "{theme.color.brand-muted}"
+    },
+    "alert-muted": {
+      "type": "color",
+      "value": "{theme.color.alert-muted}"
+    },
+    "accent-muted": {
+      "type": "color",
+      "value": "{theme.color.accent-muted}"
+    },
+    "accent-ink": {
+      "type": "color",
+      "value": "{theme.color.accent-ink}"
+    },
+    "ui-hover": {
+      "type": "color",
+      "value": "{theme.color.ui-hover}"
+    },
+    "selected-hover": {
+      "type": "color",
+      "value": "{theme.color.selected-hover}"
+    },
+    "ink-accent": {
+      "type": "color",
+      "value": "{theme.color.ink-accent}"
     },
     "layer": {
-      "default": {
-        "value": "{theme.color.layer.default}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.layer.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.layer.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.layer.-muted.default}",
-          "type": "color"
-        }
-      },
-      "-accent": {
-        "default": {
-          "value": "{theme.color.layer.-accent.default}",
-          "type": "color"
-        }
-      },
-      "-brand": {
-        "default": {
-          "value": "{theme.color.layer.-brand.default}",
-          "type": "color"
-        }
-      },
-      "-alert": {
-        "default": {
-          "value": "{theme.color.layer.-alert.default}",
-          "type": "color"
-        }
-      },
-      "-info": {
-        "default": {
-          "value": "{theme.color.layer.-info.default}",
-          "type": "color"
-        }
-      },
-      "-success": {
-        "default": {
-          "value": "{theme.color.layer.-success.default}",
-          "type": "color"
-        }
-      }
+      "type": "color",
+      "value": "{theme.color.layer}"
+    },
+    "brand-ink": {
+      "type": "color",
+      "value": "{theme.color.brand-ink}"
+    },
+    "accent-active": {
+      "type": "color",
+      "value": "{theme.color.accent-active}"
+    },
+    "alert-ink": {
+      "type": "color",
+      "value": "{theme.color.alert-ink}"
+    },
+    "alert": {
+      "type": "color",
+      "value": "{theme.color.alert}"
+    },
+    "brand-active": {
+      "type": "color",
+      "value": "{theme.color.brand-active}"
+    },
+    "selected-active": {
+      "type": "color",
+      "value": "{theme.color.selected-active}"
+    },
+    "ink-alert": {
+      "type": "color",
+      "value": "{theme.color.ink-alert}"
+    },
+    "alert-active": {
+      "type": "color",
+      "value": "{theme.color.alert-active}"
+    },
+    "success": {
+      "type": "color",
+      "value": "{theme.color.success}"
+    },
+    "info": {
+      "type": "color",
+      "value": "{theme.color.info}"
+    },
+    "success-active": {
+      "type": "color",
+      "value": "{theme.color.success-active}"
+    },
+    "success-muted": {
+      "type": "color",
+      "value": "{theme.color.success-muted}"
+    },
+    "selected-muted": {
+      "type": "color",
+      "value": "{theme.color.selected-muted}"
+    },
+    "selected": {
+      "type": "color",
+      "value": "{theme.color.selected}"
+    },
+    "ui-muted": {
+      "type": "color",
+      "value": "{theme.color.ui-muted}"
+    },
+    "root": {
+      "type": "color",
+      "value": "{theme.color.root}"
+    },
+    "brand": {
+      "type": "color",
+      "value": "{theme.color.brand}"
+    },
+    "shadow": {
+      "type": "color",
+      "value": "{theme.color.shadow}"
+    },
+    "ink": {
+      "type": "color",
+      "value": "{theme.color.ink}"
+    },
+    "accent": {
+      "type": "color",
+      "value": "{theme.color.accent}"
+    },
+    "alert-hover": {
+      "type": "color",
+      "value": "{theme.color.alert-hover}"
+    },
+    "success-ink": {
+      "type": "color",
+      "value": "{theme.color.success-ink}"
+    },
+    "ink-brand": {
+      "type": "color",
+      "value": "{theme.color.ink-brand}"
+    },
+    "info-active": {
+      "type": "color",
+      "value": "{theme.color.info-active}"
+    },
+    "success-hover": {
+      "type": "color",
+      "value": "{theme.color.success-hover}"
+    },
+    "info-ink": {
+      "type": "color",
+      "value": "{theme.color.info-ink}"
+    },
+    "brand-hover": {
+      "type": "color",
+      "value": "{theme.color.brand-hover}"
+    },
+    "ink-muted": {
+      "type": "color",
+      "value": "{theme.color.ink-muted}"
+    },
+    "info-hover": {
+      "type": "color",
+      "value": "{theme.color.info-hover}"
+    },
+    "ink-info": {
+      "type": "color",
+      "value": "{theme.color.ink-info}"
+    },
+    "info-muted": {
+      "type": "color",
+      "value": "{theme.color.info-muted}"
+    },
+    "accent-hover": {
+      "type": "color",
+      "value": "{theme.color.accent-hover}"
     },
     "ui": {
-      "default": {
-        "value": "{theme.color.ui.default}",
-        "type": "color"
-      },
-      "hover": {
-        "value": "{theme.color.ui.hover}",
-        "type": "color"
-      },
-      "active": {
-        "value": "{theme.color.ui.active}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.ui.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.ui.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.ui.-muted.default}",
-          "type": "color"
-        }
-      }
+      "type": "color",
+      "value": "{theme.color.ui}"
     },
-    "ui-accent": {
-      "default": {
-        "value": "{theme.color.ui-accent.default}",
-        "type": "color"
-      },
-      "hover": {
-        "value": "{theme.color.ui-accent.hover}",
-        "type": "color"
-      },
-      "active": {
-        "value": "{theme.color.ui-accent.active}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.ui-accent.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.ui-accent.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.ui-accent.-muted.default}",
-          "type": "color"
-        }
-      }
-    },
-    "ui-brand": {
-      "default": {
-        "value": "{theme.color.ui-brand.default}",
-        "type": "color"
-      },
-      "hover": {
-        "value": "{theme.color.ui-brand.hover}",
-        "type": "color"
-      },
-      "active": {
-        "value": "{theme.color.ui-brand.active}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.ui-brand.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.ui-brand.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.ui-brand.-muted.default}",
-          "type": "color"
-        }
-      }
-    },
-    "ui-alert": {
-      "default": {
-        "value": "{theme.color.ui-alert.default}",
-        "type": "color"
-      },
-      "hover": {
-        "value": "{theme.color.ui-alert.hover}",
-        "type": "color"
-      },
-      "active": {
-        "value": "{theme.color.ui-alert.active}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.ui-alert.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.ui-alert.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.ui-alert.-muted.default}",
-          "type": "color"
-        }
-      }
-    },
-    "ui-info": {
-      "default": {
-        "value": "{theme.color.ui-info.default}",
-        "type": "color"
-      },
-      "hover": {
-        "value": "{theme.color.ui-info.hover}",
-        "type": "color"
-      },
-      "active": {
-        "value": "{theme.color.ui-info.active}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.ui-info.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.ui-info.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.ui-info.-muted.default}",
-          "type": "color"
-        }
-      }
-    },
-    "ui-success": {
-      "default": {
-        "value": "{theme.color.ui-success.default}",
-        "type": "color"
-      },
-      "hover": {
-        "value": "{theme.color.ui-success.hover}",
-        "type": "color"
-      },
-      "active": {
-        "value": "{theme.color.ui-success.active}",
-        "type": "color"
-      },
-      "-border": {
-        "default": {
-          "value": "{theme.color.ui-success.-border.default}",
-          "type": "color"
-        }
-      },
-      "-text": {
-        "default": {
-          "value": "{theme.color.ui-success.-text.default}",
-          "type": "color"
-        }
-      },
-      "-muted": {
-        "default": {
-          "value": "{theme.color.ui-success.-muted.default}",
-          "type": "color"
-        }
-      }
+    "border": {
+      "type": "color",
+      "value": "{theme.color.border}"
     }
   }
 }

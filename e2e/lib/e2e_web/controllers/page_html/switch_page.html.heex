@@ -2,14 +2,21 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Switch</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <.switch class="switch">
-    <:label>Enable notifications</:label>
-  </.switch>
+  <.demo_page
+    id="switch-anatomy-page"
+    title="Switch · Anatomy"
+    subtitle="Label with the control (error states appear on the Form page)."
+  >
+    <.demo_section
+      id="switch-anatomy-minimal"
+      title="Minimal with label"
+      code={E2eWeb.Demos.SwitchDemo.minimal_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SwitchDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

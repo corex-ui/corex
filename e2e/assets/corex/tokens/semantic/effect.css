@@ -3,8 +3,41 @@
  */
 
 @theme inline {
-  --shadow-layer: 0 1px 1px 0 var(--color-layer--border), 0 1px 1px 0 var(--color-layer--border);
-  --shadow-ui: 0 1px 2px 0 var(--color-ui--border), 0 2px 4px 0 var(--color-ui--border);
-  --shadow-ui-hover: 0 3px 4px 0 var(--color-ui--border), 0 2px 4px 0 var(--color-ui--border);
-  --shadow-ui-active: 0 1px 2px 0 var(--color-ui--border), 0 1px 1px 0 var(--color-ui--border);
+  --blur-xs: 4px;
+  --blur-sm: 8px;
+  --blur-md: 12px;
+  --blur-lg: 16px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+  --blur-3xl: 64px;
+  --perspective-dramatic: 100px;
+  --perspective-near: 300px;
+  --perspective-normal: 500px;
+  --perspective-midrange: 800px;
+  --perspective-distant: 1200px;
+  --aspect-video: 1.7778;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --animate-spin: spin 1s linear infinite;
+  --animate-ping: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-bounce: bounce 1s infinite;
+  --shadow-2xs: 0 1px var(--color-shadow);
+  --shadow-xs: 0 1px 2px 0 var(--color-shadow);
+  --shadow-sm: 0 1px 3px 0 var(--color-shadow), 0 1px 2px -1px var(--color-shadow);
+  --shadow-md: 0 4px 6px -1px var(--color-shadow), 0 2px 4px -2px var(--color-shadow);
+  --shadow-lg: 0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow);
+  --shadow-xl: 0 20px 25px -5px var(--color-shadow), 0 8px 10px -6px var(--color-shadow);
+  --shadow-2xl: 0 25px 50px -12px var(--color-shadow);
+  --shadow-layer: 0 1px 1px 0 var(--color-shadow), 0 1px 1px 0 var(--color-shadow);
+  --inset-shadow-2xs: inset 0 1px var(--color-shadow);
+  --inset-shadow-xs: inset 0 1px 1px var(--color-shadow);
+  --inset-shadow-sm: inset 0 2px 4px var(--color-shadow);
+  --drop-shadow-xs: 0 1px 1px var(--color-shadow);
+  --drop-shadow-sm: 0 1px 2px var(--color-shadow);
+  --drop-shadow-md: 0 3px 3px var(--color-shadow);
+  --drop-shadow-lg: 0 4px 4px var(--color-shadow);
+  --drop-shadow-xl: 0 9px 7px var(--color-shadow);
+  --drop-shadow-2xl: 0 25px 25px var(--color-shadow);
 }

@@ -2,14 +2,13 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
+  <.layout_heading class="layout-heading">
     <:title>New User</:title>
     <:subtitle>Use this form to manage user records in your database.</:subtitle>
     <:actions>
-      <.navigate to={~p"/#{@locale}/users"} type="href" class="button">
+      <.navigate to={~p"/users"} type="href" class="button">
         <.heroicon name="hero-arrow-left" class="icon" /> Cancel
       </.navigate>
     </:actions>
@@ -17,7 +16,7 @@
 
   <.user_form
     changeset={@changeset}
-    action={~p"/#{@locale}/users"}
-    return_to={~p"/#{@locale}/users"}
+    action={~p"/users"}
+    return_to={~p"/users"}
   />
 </Layouts.app>

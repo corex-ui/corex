@@ -107,7 +107,7 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
-  // ../priv/static/chunk-SNFXM6OQ.mjs
+  // ../priv/static/chunk-SJ37CZDS.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
     if (fromEl !== void 0 && DIR_VALUES.includes(fromEl)) {
@@ -117,19 +117,19 @@ var Corex = (() => {
     if (fromDoc === "ltr" || fromDoc === "rtl") return fromDoc;
     return "ltr";
   }
+  function getCheckedState(element, key) {
+    const raw = element.dataset[key];
+    if (raw === "indeterminate") return "indeterminate";
+    return raw === "true";
+  }
+  function templatesContentRoot(el, dataTemplates) {
+    const host = el.querySelector(`[data-templates="${dataTemplates}"]`);
+    if (!host) return null;
+    if (host instanceof HTMLTemplateElement) return host.content;
+    return host;
+  }
   function canPushEvent(liveSocket) {
     return !liveSocket.main.isDead && liveSocket.main.isConnected();
-  }
-  function createNormalizer(fn) {
-    return new Proxy({}, {
-      get(_target, key) {
-        if (key === "style")
-          return (props) => {
-            return fn({ style: props }).style;
-          };
-        return fn;
-      }
-    });
   }
   function toArray(v2) {
     if (v2 == null) return [];
@@ -261,6 +261,9 @@ var Corex = (() => {
   function isExplicitAbsoluteStatePath(value) {
     return value.startsWith(ABSOLUTE_PREFIX);
   }
+  function isChildTarget(value) {
+    return value.startsWith(STATE_DELIMITER);
+  }
   function stripAbsolutePrefix(value) {
     return isExplicitAbsoluteStatePath(value) ? value.slice(ABSOLUTE_PREFIX.length) : value;
   }
@@ -275,12 +278,18 @@ var Corex = (() => {
       const stateId = state2.id;
       if (stateId) {
         if (idIndex.has(stateId)) {
-          throw new Error(`Duplicate state id: ${stateId}`);
+          invariant(`[zag-js] Duplicate state id: "${stateId}"`);
         }
         idIndex.set(stateId, basePath);
       }
       const childStates = state2.states;
       if (!childStates) return;
+      ensure(state2.initial, () => `[zag-js] Compound state "${basePath}" has child states but no "initial" property`);
+      if (!(state2.initial in childStates)) {
+        invariant(
+          `[zag-js] Compound state "${basePath}" has initial "${String(state2.initial)}" which is not a child state`
+        );
+      }
       for (const [childKey, childState] of Object.entries(childStates)) {
         if (!childState) continue;
         const childPath = appendStatePath(basePath, childKey);
@@ -355,18 +364,21 @@ var Corex = (() => {
     if (isExplicitAbsoluteStatePath(stateValue)) {
       const stateId = stripAbsolutePrefix(stateValue);
       const statePath = getStatePathById(machine30, stateId);
-      if (!statePath) {
-        throw new Error(`Unknown state id: ${stateId}`);
-      }
+      ensure(statePath, () => `[zag-js] Unknown state id: "${stateId}"`);
       return resolveAbsoluteStateValue(machine30, statePath);
+    }
+    if (isChildTarget(stateValue) && source) {
+      const childPath = appendStatePath(source, stateValue.slice(1));
+      return resolveAbsoluteStateValue(machine30, childPath);
     }
     if (!isAbsoluteStatePath(stateValue) && source) {
       const sourceSegments = toSegments(source);
-      for (let index = sourceSegments.length; index >= 1; index--) {
+      for (let index = sourceSegments.length - 1; index >= 1; index--) {
         const base = sourceSegments.slice(0, index).join(STATE_DELIMITER);
         const candidate = appendStatePath(base, stateValue);
         if (hasStatePath(machine30, candidate)) return resolveAbsoluteStateValue(machine30, candidate);
       }
+      if (hasStatePath(machine30, stateValue)) return resolveAbsoluteStateValue(machine30, stateValue);
     }
     return resolveAbsoluteStateValue(machine30, stateValue);
   }
@@ -473,10 +485,10 @@ var Corex = (() => {
   function contains(parent, child) {
     var _a;
     if (!parent || !child) return false;
-    if (!isHTMLElement(parent) || !isHTMLElement(child)) return false;
-    const rootNode = (_a = child.getRootNode) == null ? void 0 : _a.call(child);
-    if (parent === child) return true;
+    if (!isHTMLElement(parent) || !isNode(child)) return false;
+    if (isHTMLElement(child) && parent === child) return true;
     if (parent.contains(child)) return true;
+    const rootNode = (_a = child.getRootNode) == null ? void 0 : _a.call(child);
     if (rootNode && isShadowRoot(rootNode)) {
       let next2 = child;
       while (next2) {
@@ -833,6 +845,22 @@ var Corex = (() => {
     if (!attr) return NaN;
     return parseInt(attr, 10);
   }
+  function isRadioInput(element) {
+    return isInputElement(element) && element.type === "radio";
+  }
+  function isTabbableRadio(element) {
+    var _a;
+    if (!isRadioInput(element) || !element.name) return true;
+    if (element.checked) return true;
+    const selector = `input[type="radio"][name="${CSS.escape(element.name)}"]`;
+    const scope = (_a = element.form) != null ? _a : element.ownerDocument;
+    const group2 = Array.from(scope.querySelectorAll(selector)).filter(
+      (radio) => radio.form === element.form && isFocusable(radio)
+    );
+    const checked = group2.find((radio) => radio.checked);
+    if (checked) return checked === element;
+    return group2[0] === element;
+  }
   function getShadowRootForNode(element, getShadowRoot) {
     if (!getShadowRoot) return null;
     if (getShadowRoot === true) {
@@ -912,7 +940,8 @@ var Corex = (() => {
   }
   function isTabbable(el) {
     if (isHTMLElement(el) && el.tabIndex > 0) return true;
-    return isFocusable(el) && !hasNegativeTabIndex(el);
+    if (!isFocusable(el) || hasNegativeTabIndex(el)) return false;
+    return isTabbableRadio(el);
   }
   function getTabbableEdges(container, options = {}) {
     const elements = getTabbables(container, options);
@@ -1442,7 +1471,7 @@ var Corex = (() => {
       }, timeout);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
-        reject(new Error("Promise aborted"));
+        reject(new DOMException("Promise aborted", "AbortError"));
       });
       promise.then((result) => {
         if (!signal.aborted) {
@@ -1629,6 +1658,17 @@ var Corex = (() => {
     }
     return result;
   }
+  function createNormalizer(fn) {
+    return new Proxy({}, {
+      get(_target, key) {
+        if (key === "style")
+          return (props) => {
+            return fn({ style: props }).style;
+          };
+        return fn;
+      }
+    });
+  }
   function spreadProps(node, attrs, machineId) {
     const scopeKey = machineId || "default";
     let machineMap = prevAttrsMap.get(node);
@@ -1708,9 +1748,9 @@ var Corex = (() => {
       }
     };
   }
-  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, generateId, __defProp2, __defNormalProp2, __publicField2, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
-  var init_chunk_SNFXM6OQ = __esm({
-    "../priv/static/chunk-SNFXM6OQ.mjs"() {
+  var DIR_VALUES, getString, getStringList, getNumber, getBoolean, getBooleanValue, generateId, __defProp2, __defNormalProp2, __publicField2, __defProp22, __typeError2, __defNormalProp22, __publicField22, __accessCheck, __privateGet, __privateAdd, first, last, has, add, remove, uniq, diff, addOrRemove, isArrayLike, isArrayEqual, isEqual, isArray, isBoolean, isObjectLike, isObject, isString, isFunction, isNull, hasProp, baseGetTag, fnToString, objectCtorString, isPlainObject, isReactElement, isVueElement, isFrameworkElement, runIfFn, cast, identity, noop, callAll, uuid, tryCatch, STATE_DELIMITER, ABSOLUTE_PREFIX, stateIndexCache, stateIdIndexCache, MachineStatus, INIT_STATE, __defProp3, __defNormalProp3, __publicField3, clamp, wrap, pipe, noop2, isObject2, MAX_Z_INDEX, dataAttr, ariaAttr, ELEMENT_NODE, DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE, isHTMLElement, isDocument, isWindow, getNodeName, isNode, isShadowRoot, isInputElement, isAnchorElement, isElementVisible, TEXTAREA_SELECT_REGEX, styleCache, INTERACTIVE_CONTAINER_ROLE, isInteractiveContainerRole, getAriaControls, isDom, pt, ua, vn, isTouchDevice, isIPhone, isIPad, isIos, isApple, isMac, isSafari, isFirefox, isAndroid, isLeftClick, isContextMenuEvent, isModifierKey, isTouchEvent, keyMap, rtlKeyMap, pageKeys, arrowKeys, addDomEvent, INTERNAL_CHANGE_EVENT, isFrame, NATURALLY_TABBABLE_REGEX, hasTabIndex, hasNegativeTabIndex, focusableSelector, getFocusables, AnimationFrame, OVERFLOW_RE, nonOverflowValues, state, userSelect, elementMap, defaultItemToId, resizeObserverBorderBox, sanitize, getValueText, match2, getByTypeahead, visuallyHiddenStyle, refSet, isReactElement2, isVueElement2, isDOMElement, isElement, isObject3, canProxy, isDev, TRACK_MEMO_SYMBOL, GET_ORIGINAL_SYMBOL, getProto, objectsToTrack, isObjectToTrack, getUntracked, markToTrack, proxyStateMap, buildProxyFunction, proxyFunction, VanillaMachine, propMap, caseSensitiveSvgAttrs, toStyleString, normalizeProps, prevAttrsMap, assignableProps, caseSensitiveSvgAttrs2, isSvgElement, getAttributeName, Component, createAnatomy, toKebabCase, isEmpty;
+  var init_chunk_SJ37CZDS = __esm({
+    "../priv/static/chunk-SJ37CZDS.mjs"() {
       "use strict";
       DIR_VALUES = ["ltr", "rtl"];
       getString = (element, attrName, validValues) => {
@@ -1739,6 +1779,10 @@ var Corex = (() => {
         const dashName = attrName.replace(/([A-Z])/g, "-$1").toLowerCase();
         return element.hasAttribute(`data-${dashName}`);
       };
+      getBooleanValue = (element, attrName) => {
+        const raw = element.dataset[attrName];
+        return raw === "true" ? true : raw === "false" ? false : void 0;
+      };
       generateId = (element, fallbackId = "element") => {
         if (element == null ? void 0 : element.id) return element.id;
         return `${fallbackId}-${Math.random().toString(36).substring(2, 9)}`;
@@ -1746,42 +1790,6 @@ var Corex = (() => {
       __defProp2 = Object.defineProperty;
       __defNormalProp2 = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
       __publicField2 = (obj, key, value) => __defNormalProp2(obj, typeof key !== "symbol" ? key + "" : key, value);
-      propMap = {
-        onFocus: "onFocusin",
-        onBlur: "onFocusout",
-        onChange: "onInput",
-        onDoubleClick: "onDblclick",
-        htmlFor: "for",
-        className: "class",
-        defaultValue: "value",
-        defaultChecked: "checked"
-      };
-      caseSensitiveSvgAttrs = /* @__PURE__ */ new Set(["viewBox", "preserveAspectRatio"]);
-      toStyleString = (style) => {
-        let string = "";
-        for (let key in style) {
-          const value = style[key];
-          if (value === null || value === void 0) continue;
-          if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match32) => `-${match32.toLowerCase()}`);
-          string += `${key}:${value};`;
-        }
-        return string;
-      };
-      normalizeProps = createNormalizer((props) => {
-        return Object.entries(props).reduce((acc, [key, value]) => {
-          if (value === void 0) return acc;
-          if (key in propMap) {
-            key = propMap[key];
-          }
-          if (key === "style" && typeof value === "object") {
-            acc.style = toStyleString(value);
-            return acc;
-          }
-          const normalizedKey = caseSensitiveSvgAttrs.has(key) ? key : key.toLowerCase();
-          acc[normalizedKey] = value;
-          return acc;
-        }, {});
-      });
       __defProp22 = Object.defineProperty;
       __typeError2 = (msg) => {
         throw TypeError(msg);
@@ -2556,6 +2564,42 @@ var Corex = (() => {
           };
         }
       };
+      propMap = {
+        onFocus: "onFocusin",
+        onBlur: "onFocusout",
+        onChange: "onInput",
+        onDoubleClick: "onDblclick",
+        htmlFor: "for",
+        className: "class",
+        defaultValue: "value",
+        defaultChecked: "checked"
+      };
+      caseSensitiveSvgAttrs = /* @__PURE__ */ new Set(["viewBox", "preserveAspectRatio"]);
+      toStyleString = (style) => {
+        let string = "";
+        for (let key in style) {
+          const value = style[key];
+          if (value === null || value === void 0) continue;
+          if (!key.startsWith("--")) key = key.replace(/[A-Z]/g, (match32) => `-${match32.toLowerCase()}`);
+          string += `${key}:${value};`;
+        }
+        return string;
+      };
+      normalizeProps = createNormalizer((props) => {
+        return Object.entries(props).reduce((acc, [key, value]) => {
+          if (value === void 0) return acc;
+          if (key in propMap) {
+            key = propMap[key];
+          }
+          if (key === "style" && typeof value === "object") {
+            acc.style = toStyleString(value);
+            return acc;
+          }
+          const normalizedKey = caseSensitiveSvgAttrs.has(key) ? key : key.toLowerCase();
+          acc[normalizedKey] = value;
+          return acc;
+        }, {});
+      });
       prevAttrsMap = /* @__PURE__ */ new WeakMap();
       assignableProps = /* @__PURE__ */ new Set(["value", "checked", "selected"]);
       caseSensitiveSvgAttrs2 = /* @__PURE__ */ new Set([
@@ -2586,15 +2630,19 @@ var Corex = (() => {
           __publicField(this, "machine");
           __publicField(this, "api");
           __publicField(this, "init", () => {
-            this.render();
+            try {
+              this.machine.start();
+              this.render();
+            } finally {
+              this.el.removeAttribute("data-loading");
+            }
             this.machine.subscribe(() => {
               this.api = this.initApi();
               this.render();
             });
-            this.machine.start();
-            this.el.removeAttribute("data-js");
           });
           __publicField(this, "destroy", () => {
+            this.el.removeAttribute("data-loading");
             this.machine.stop();
           });
           __publicField(this, "spreadProps", (el, props) => {
@@ -2608,6 +2656,9 @@ var Corex = (() => {
           this.doc = document;
           this.machine = this.initMachine(props);
           this.api = this.initApi();
+        }
+        zagConnect(connectFn) {
+          return connectFn(this.machine.service, normalizeProps);
         }
       };
       createAnatomy = (name, parts30 = []) => ({
@@ -2636,6 +2687,357 @@ var Corex = (() => {
       });
       toKebabCase = (value) => value.replace(/([A-Z])([A-Z])/g, "$1-$2").replace(/([a-z])([A-Z])/g, "$1-$2").replace(/[\s_]+/g, "-").toLowerCase();
       isEmpty = (v2) => v2.length === 0;
+    }
+  });
+
+  // ../priv/static/chunk-EOVQYYEE.mjs
+  function readRequiredAttrString(el, dataAttr2, label) {
+    const raw = el.getAttribute(dataAttr2);
+    if (raw === null) {
+      throw new Error(`[corex] missing ${label} on #${el.id}`);
+    }
+    return raw;
+  }
+  function readRequiredAttrNumber(el, dataAttr2, label) {
+    const raw = readRequiredAttrString(el, dataAttr2, label);
+    const n2 = parseFloat(raw);
+    if (Number.isNaN(n2)) {
+      throw new Error(`[corex] invalid ${label} on #${el.id}`);
+    }
+    return n2;
+  }
+  function readHeightAnimationOptions(el) {
+    return {
+      duration: readRequiredAttrNumber(el, "data-anim-height-duration", "data-anim-height-duration"),
+      easing: readRequiredAttrString(el, "data-anim-height-easing", "data-anim-height-easing"),
+      opacityStart: readRequiredAttrNumber(
+        el,
+        "data-anim-height-opacity-start",
+        "data-anim-height-opacity-start"
+      ),
+      opacityEnd: readRequiredAttrNumber(
+        el,
+        "data-anim-height-opacity-end",
+        "data-anim-height-opacity-end"
+      ),
+      blockInteraction: getBooleanValue(el, "animHeightBlockInteraction") !== false
+    };
+  }
+  function readScaleAnimationOptions(el) {
+    return {
+      duration: readRequiredAttrNumber(el, "data-anim-scale-duration", "data-anim-scale-duration"),
+      easing: readRequiredAttrString(el, "data-anim-scale-easing", "data-anim-scale-easing"),
+      opacityStart: readRequiredAttrNumber(
+        el,
+        "data-anim-scale-opacity-start",
+        "data-anim-scale-opacity-start"
+      ),
+      opacityEnd: readRequiredAttrNumber(
+        el,
+        "data-anim-scale-opacity-end",
+        "data-anim-scale-opacity-end"
+      ),
+      scaleStart: readRequiredAttrNumber(
+        el,
+        "data-anim-transform-scale-start",
+        "data-anim-transform-scale-start"
+      ),
+      scaleEnd: readRequiredAttrNumber(
+        el,
+        "data-anim-transform-scale-end",
+        "data-anim-transform-scale-end"
+      ),
+      blockInteraction: getBooleanValue(el, "animScaleBlockInteraction") !== false
+    };
+  }
+  function beginRootPointerBlock(root) {
+    var _a;
+    const c2 = ((_a = rootPointerBlockCount.get(root)) != null ? _a : 0) + 1;
+    rootPointerBlockCount.set(root, c2);
+    if (c2 === 1) {
+      root.style.pointerEvents = "none";
+    }
+  }
+  function endRootPointerBlock(root) {
+    var _a;
+    const c2 = ((_a = rootPointerBlockCount.get(root)) != null ? _a : 0) - 1;
+    if (c2 <= 0) {
+      rootPointerBlockCount.delete(root);
+      root.style.removeProperty("pointer-events");
+    } else {
+      rootPointerBlockCount.set(root, c2);
+    }
+  }
+  function applyScaleClosedStyles(el, opts, features) {
+    const isBackdrop = el.dataset.part === "backdrop";
+    const sc = (features == null ? void 0 : features.scale) !== false && !isBackdrop && (opts.scaleStart !== opts.scaleEnd || opts.scaleStart !== 1 || opts.scaleEnd !== 1);
+    el.style.opacity = String(opts.opacityStart);
+    if (sc) {
+      el.style.transform = `scale(${opts.scaleStart})`;
+    } else {
+      el.style.removeProperty("transform");
+    }
+  }
+  function applyHeightClosedStyles(el, opts) {
+    el.style.opacity = String(opts.opacityStart);
+    el.style.height = "0px";
+    el.style.overflow = "hidden";
+    el.style.removeProperty("transform");
+  }
+  function stripHiddenFromProps(props) {
+    const next2 = __spreadValues({}, props);
+    delete next2.hidden;
+    return next2;
+  }
+  function clearOpenStyles(el) {
+    el.style.opacity = "";
+    el.style.height = "";
+    el.style.overflow = "";
+    el.style.removeProperty("transform");
+  }
+  function prepareInitialHeightState(rootEl, selector, opts) {
+    rootEl.querySelectorAll(selector).forEach((el) => {
+      if (el.dataset.state === "open") {
+        clearOpenStyles(el);
+      } else {
+        applyHeightClosedStyles(el, opts);
+      }
+    });
+  }
+  function prepareInitialScaleState(rootEl, selector, opts, closedStyleFor) {
+    rootEl.querySelectorAll(selector).forEach((el) => {
+      if (el.dataset.state === "open") {
+        clearOpenStyles(el);
+      } else {
+        applyScaleClosedStyles(el, opts, closedStyleFor == null ? void 0 : closedStyleFor(el));
+      }
+    });
+  }
+  function runOpenStateTransitionsHeight(args) {
+    const { rootEl, selector, opts, isOpen, wasOpen } = args;
+    const blockRoot = opts.blockInteraction ? rootEl : void 0;
+    rootEl.querySelectorAll(selector).forEach((el) => {
+      const previouslyOpen = wasOpen ? wasOpen(el) : el.dataset.state === "open";
+      const nowOpen = isOpen(el);
+      if (previouslyOpen === nowOpen) return;
+      runHeightPanelAnimation(el, nowOpen, opts, blockRoot);
+    });
+  }
+  function runHeightPanelAnimation(targetEl, isOpening, opts, blockRoot) {
+    targetEl.getAnimations().forEach((a2) => a2.cancel());
+    const fromOp = isOpening ? opts.opacityStart : opts.opacityEnd;
+    const toOp = isOpening ? opts.opacityEnd : opts.opacityStart;
+    targetEl.style.overflow = "hidden";
+    targetEl.style.height = "auto";
+    const fullHeight = `${targetEl.scrollHeight}px`;
+    targetEl.style.height = isOpening ? "0px" : fullHeight;
+    const fromFrame = {
+      opacity: fromOp,
+      height: isOpening ? "0px" : fullHeight
+    };
+    const toFrame = {
+      opacity: toOp,
+      height: isOpening ? fullHeight : "0px"
+    };
+    if (blockRoot && opts.blockInteraction) {
+      beginRootPointerBlock(blockRoot);
+    }
+    const anim = targetEl.animate([fromFrame, toFrame], {
+      duration: opts.duration * 1e3,
+      easing: opts.easing,
+      fill: "forwards"
+    });
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      anim.cancel();
+      if (blockRoot && opts.blockInteraction) {
+        endRootPointerBlock(blockRoot);
+      }
+      if (isOpening) {
+        targetEl.style.height = "auto";
+        targetEl.style.opacity = "";
+        targetEl.style.overflow = "";
+      } else {
+        targetEl.style.height = "0px";
+        targetEl.style.opacity = String(opts.opacityStart);
+        targetEl.style.overflow = "hidden";
+      }
+    };
+    anim.onfinish = () => {
+      finish();
+    };
+    anim.oncancel = () => {
+      finish();
+    };
+    return anim;
+  }
+  function runScaleAnimation(targetEl, isOpening, opts) {
+    targetEl.getAnimations().forEach((a2) => a2.cancel());
+    const isBackdrop = targetEl.dataset.part === "backdrop";
+    const useScale = !isBackdrop && (opts.scaleStart !== opts.scaleEnd || opts.scaleStart !== 1 || opts.scaleEnd !== 1);
+    const fromOp = isOpening ? opts.opacityStart : opts.opacityEnd;
+    const toOp = isOpening ? opts.opacityEnd : opts.opacityStart;
+    const fromS = isOpening ? opts.scaleStart : opts.scaleEnd;
+    const toS = isOpening ? opts.scaleEnd : opts.scaleStart;
+    const fromFrame = { opacity: fromOp };
+    const toFrame = { opacity: toOp };
+    if (useScale) {
+      fromFrame.transform = `scale(${fromS})`;
+      toFrame.transform = `scale(${toS})`;
+    }
+    const anim = targetEl.animate([fromFrame, toFrame], {
+      duration: opts.duration * 1e3,
+      easing: opts.easing,
+      fill: "forwards"
+    });
+    anim.onfinish = () => {
+      anim.cancel();
+      if (isOpening) {
+        targetEl.style.opacity = "";
+        if (useScale) {
+          targetEl.style.removeProperty("transform");
+        } else {
+          targetEl.style.removeProperty("transform");
+        }
+      } else {
+        targetEl.style.opacity = String(opts.opacityStart);
+        if (isBackdrop) {
+          targetEl.style.removeProperty("transform");
+        } else if (useScale) {
+          targetEl.style.transform = `scale(${opts.scaleStart})`;
+        } else {
+          targetEl.style.removeProperty("transform");
+        }
+      }
+    };
+    return anim;
+  }
+  var rootPointerBlockCount;
+  var init_chunk_EOVQYYEE = __esm({
+    "../priv/static/chunk-EOVQYYEE.mjs"() {
+      "use strict";
+      init_chunk_SJ37CZDS();
+      rootPointerBlockCount = /* @__PURE__ */ new WeakMap();
+    }
+  });
+
+  // ../priv/static/chunk-WHNMJXTN.mjs
+  function createHookHandleEventRegistry(hook) {
+    const refs = [];
+    return {
+      add(eventName, fn) {
+        refs.push(hook.handleEvent(eventName, fn));
+      },
+      teardown() {
+        for (const ref of refs) {
+          hook.removeHandleEvent(ref);
+        }
+        refs.length = 0;
+      }
+    };
+  }
+  function createDomEventRegistry(target) {
+    const entries = [];
+    return {
+      add(eventName, listener) {
+        const wrapped = listener;
+        target.addEventListener(eventName, wrapped);
+        entries.push({ eventName, listener: wrapped });
+      },
+      teardown() {
+        for (const { eventName, listener } of entries) {
+          target.removeEventListener(eventName, listener);
+        }
+        entries.length = 0;
+      }
+    };
+  }
+  var init_chunk_WHNMJXTN = __esm({
+    "../priv/static/chunk-WHNMJXTN.mjs"() {
+      "use strict";
+    }
+  });
+
+  // ../priv/static/chunk-GGOQNLHD.mjs
+  function parseRespondTo(source) {
+    var _a, _b, _c;
+    if (source && typeof source === "object") {
+      const o2 = source;
+      const raw = (_c = (_b = (_a = o2.respond_to) != null ? _a : o2.respondTo) != null ? _b : typeof o2["respond_to"] === "string" ? o2["respond_to"] : void 0) != null ? _c : typeof o2["respondTo"] === "string" ? o2["respondTo"] : void 0;
+      if (raw === "server" || raw === "client" || raw === "both") return raw;
+    }
+    return "server";
+  }
+  function idMatches(elId, payloadId) {
+    if (payloadId === void 0 || payloadId === null || payloadId === "") return true;
+    return elId === payloadId;
+  }
+  function readPayloadChecked(payload) {
+    var _a;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const c2 = (_a = o2.checked) != null ? _a : o2["checked"];
+    if (c2 === true || c2 === "true" || c2 === 1) return true;
+    if (c2 === false || c2 === "false" || c2 === 0) return false;
+    return void 0;
+  }
+  function readPayloadId(payload) {
+    if (!payload || typeof payload !== "object") return;
+    const o2 = payload;
+    let generic;
+    for (const k2 of Object.keys(o2)) {
+      const v2 = o2[k2];
+      if (typeof v2 !== "string" || v2 === "") continue;
+      if (k2 === "id" || k2 === "Id") {
+        generic = v2;
+      } else if (k2.includes("_id") || k2.length > 2 && k2.endsWith("Id")) {
+        return v2;
+      }
+    }
+    return generic;
+  }
+  function notifyChange(args) {
+    const { el, canPushServer, pushEvent, payload, serverEventName, clientEventName } = args;
+    if (serverEventName && canPushServer) {
+      pushEvent(serverEventName, __spreadValues({}, payload));
+    }
+    if (clientEventName) {
+      el.dispatchEvent(
+        new CustomEvent(clientEventName, {
+          bubbles: true,
+          detail: payload
+        })
+      );
+    }
+  }
+  function emitResponse(args) {
+    const {
+      respondTo,
+      canPushServer,
+      pushEvent,
+      serverEventName,
+      serverPayload,
+      el,
+      domEventName,
+      domDetail
+    } = args;
+    if (respondTo !== "client" && canPushServer) {
+      pushEvent(serverEventName, serverPayload);
+    }
+    if (respondTo !== "server") {
+      el.dispatchEvent(
+        new CustomEvent(domEventName, {
+          bubbles: true,
+          detail: domDetail
+        })
+      );
+    }
+  }
+  var init_chunk_GGOQNLHD = __esm({
+    "../priv/static/chunk-GGOQNLHD.mjs"() {
+      "use strict";
     }
   });
 
@@ -2726,6 +3128,7 @@ var Corex = (() => {
           "data-orientation": prop("orientation"),
           "aria-disabled": itemState.disabled,
           "data-state": itemState.expanded ? "open" : "closed",
+          "data-focus": dataAttr(itemState.focused),
           "data-ownedby": getRootId(scope),
           onFocus() {
             if (itemState.disabled) return;
@@ -2787,7 +3190,10 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_EOVQYYEE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
       getRootId = (ctx) => {
@@ -2955,21 +3361,23 @@ var Corex = (() => {
           return new VanillaMachine(machine, props);
         }
         initApi() {
-          return connect(this.machine.service, normalizeProps);
+          return this.zagConnect(connect);
         }
         render() {
-          var _a;
+          var _a, _b;
           const rootEl = (_a = this.el.querySelector('[data-scope="accordion"][data-part="root"]')) != null ? _a : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const itemsList = this.getItemsList();
+          const scopeId = this.el.id;
+          const itemPrefix = scopeId ? `accordion:${scopeId}:item:` : "";
           const itemEls = rootEl.querySelectorAll(
             '[data-scope="accordion"][data-part="item"]'
           );
-          for (let i2 = 0; i2 < itemEls.length; i2++) {
-            const itemEl = itemEls[i2];
-            const itemData = itemsList[i2];
-            if (!(itemData == null ? void 0 : itemData.value)) continue;
-            const { value, disabled } = itemData;
+          const animation = (_b = this.el.dataset.animation) != null ? _b : "instant";
+          for (const itemEl of itemEls) {
+            if (itemPrefix && !itemEl.id.startsWith(itemPrefix)) continue;
+            const value = itemEl.dataset.value;
+            if (!value) continue;
+            const disabled = itemEl.dataset.disabled === "";
             this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
             const triggerEl = itemEl.querySelector(
               '[data-scope="accordion"][data-part="item-trigger"]'
@@ -2987,17 +3395,18 @@ var Corex = (() => {
               '[data-scope="accordion"][data-part="item-content"]'
             );
             if (contentEl) {
-              this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
+              if (animation === "instant") {
+                this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
+              } else if (animation === "js" || animation === "custom") {
+                this.spreadProps(
+                  contentEl,
+                  stripHiddenFromProps(
+                    this.api.getItemContentProps({ value, disabled })
+                  )
+                );
+                contentEl.removeAttribute("hidden");
+              }
             }
-          }
-        }
-        getItemsList() {
-          const raw = this.el.getAttribute("data-items");
-          if (!raw) return [];
-          try {
-            return JSON.parse(raw);
-          } catch (e2) {
-            return [];
           }
         }
       };
@@ -3005,122 +3414,222 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const accordion = new Accordion(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             collapsible: getBoolean(el, "collapsible"),
             multiple: getBoolean(el, "multiple"),
-            orientation: getString(el, "orientation", ["horizontal", "vertical"]),
+            orientation: getString(el, "orientation"),
             dir: getDir(el),
             onValueChange: (details) => {
-              var _a, _b;
-              const eventName = getString(el, "onValueChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: (_a = details.value) != null ? _a : null
+              var _a;
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: (_a = details.value) != null ? _a : null },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
+              if (el.dataset.animation === "js" && !getBoolean(el, "controlled")) {
+                runOpenStateTransitionsHeight({
+                  rootEl: el,
+                  selector: '[data-scope="accordion"][data-part="item-content"]',
+                  opts: readHeightAnimationOptions(el),
+                  isOpen: (contentEl) => {
+                    var _a2;
+                    const itemEl = contentEl.closest(
+                      '[data-scope="accordion"][data-part="item"]'
+                    );
+                    const value = itemEl == null ? void 0 : itemEl.dataset.value;
+                    return !!value && ((_a2 = details.value) != null ? _a2 : []).includes(value);
+                  }
                 });
-              }
-              const eventNameClient = getString(el, "onValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: (_b = details.value) != null ? _b : null
-                    }
-                  })
-                );
               }
             },
             onFocusChange: (details) => {
-              var _a, _b;
-              const eventName = getString(el, "onFocusChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: (_a = details.value) != null ? _a : null
-                });
-              }
-              const eventNameClient = getString(el, "onFocusChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: (_b = details.value) != null ? _b : null
-                    }
-                  })
-                );
-              }
+              var _a;
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: (_a = details.value) != null ? _a : null },
+                serverEventName: getString(el, "onFocusChange"),
+                clientEventName: getString(el, "onFocusChangeClient")
+              });
             }
           }));
           accordion.init();
           this.accordion = accordion;
-          this.onSetValue = (event) => {
-            const { value } = event.detail;
-            accordion.api.setValue(value);
+          if (el.dataset.animation === "js") {
+            const opts = readHeightAnimationOptions(el);
+            prepareInitialHeightState(el, '[data-scope="accordion"][data-part="item-content"]', opts);
+          }
+          const emitValue = (respondTo) => {
+            const value = accordion.api.value;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "accordion_value_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "accordion-value",
+              domDetail: { id: el.id, value }
+            });
           };
-          el.addEventListener("phx:accordion:set-value", this.onSetValue);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("accordion_set_value", (payload) => {
-              const targetId = payload.id;
-              if (targetId) {
-                const matches = el.id === targetId || el.id === `accordion:${targetId}`;
-                if (!matches) return;
-              }
-              accordion.api.setValue(payload.value);
-            })
+          const emitFocusedValue = (respondTo) => {
+            const value = accordion.api.focusedValue;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "accordion_focused_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "accordion-focused",
+              domDetail: { id: el.id, value }
+            });
+          };
+          const emitItemState = (itemValue, disabled, respondTo) => {
+            const props = { value: itemValue, disabled };
+            const state2 = accordion.api.getItemState(props);
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "accordion_item_state_response",
+              serverPayload: {
+                id: el.id,
+                value: itemValue,
+                state: {
+                  expanded: state2.expanded,
+                  focused: state2.focused,
+                  disabled: state2.disabled
+                }
+              },
+              el,
+              domEventName: "accordion-item-state",
+              domDetail: { id: el.id, value: itemValue, state: state2 }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:accordion:set-value", (event) => {
+            accordion.api.setValue(event.detail.value);
+          });
+          domRegistry.add("corex:accordion:value", (event) => {
+            emitValue(parseRespondTo(event.detail));
+          });
+          domRegistry.add("corex:accordion:focused", (event) => {
+            emitFocusedValue(parseRespondTo(event.detail));
+          });
+          domRegistry.add(
+            "corex:accordion:item-state",
+            (event) => {
+              const d2 = event.detail;
+              const v2 = d2 == null ? void 0 : d2.value;
+              if (typeof v2 !== "string" || v2 === "") return;
+              emitItemState(v2, (d2 == null ? void 0 : d2.disabled) === true, parseRespondTo(d2));
+            }
           );
-          this.handlers.push(
-            this.handleEvent("accordion_value", () => {
-              this.pushEvent("accordion_value_response", {
-                value: accordion.api.value
-              });
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("accordion_focused_value", () => {
-              this.pushEvent("accordion_focused_value_response", {
-                value: accordion.api.focusedValue
-              });
-            })
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("accordion_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            accordion.api.setValue(payload.value);
+          });
+          registry.add("accordion_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitValue(parseRespondTo(payload));
+          });
+          registry.add("accordion_focused", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitFocusedValue(parseRespondTo(payload));
+          });
+          registry.add(
+            "accordion_item_state",
+            (payload) => {
+              if (!idMatches(el.id, readPayloadId(payload))) return;
+              if (typeof (payload == null ? void 0 : payload.value) !== "string" || payload.value === "") return;
+              emitItemState(payload.value, payload.disabled === true, parseRespondTo(payload));
+            }
           );
         },
+        beforeUpdate() {
+          var _a;
+          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+            this.previousValue = (_a = getStringList(this.el, "value")) != null ? _a : [];
+          }
+        },
         updated() {
-          var _a, _b, _c, _d;
+          var _a, _b, _c;
           const controlled = getBoolean(this.el, "controlled");
-          (_d = this.accordion) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
+          if (controlled && this.el.dataset.animation === "js") {
+            const prevValue = (_a = this.previousValue) != null ? _a : [];
+            const nextValue = (_b = getStringList(this.el, "value")) != null ? _b : [];
+            this.previousValue = void 0;
+            runOpenStateTransitionsHeight({
+              rootEl: this.el,
+              selector: '[data-scope="accordion"][data-part="item-content"]',
+              opts: readHeightAnimationOptions(this.el),
+              wasOpen: (contentEl) => {
+                const itemEl = contentEl.closest(
+                  '[data-scope="accordion"][data-part="item"]'
+                );
+                const value = itemEl == null ? void 0 : itemEl.dataset.value;
+                return !!value && prevValue.includes(value);
+              },
+              isOpen: (contentEl) => {
+                const itemEl = contentEl.closest(
+                  '[data-scope="accordion"][data-part="item"]'
+                );
+                const value = itemEl == null ? void 0 : itemEl.dataset.value;
+                return !!value && nextValue.includes(value);
+              }
+            });
+          }
+          (_c = this.accordion) == null ? void 0 : _c.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled ? { value: getStringList(this.el, "value") } : {
-            defaultValue: (_c = (_b = (_a = this.accordion) == null ? void 0 : _a.api) == null ? void 0 : _b.value) != null ? _c : getStringList(this.el, "defaultValue")
-          }), {
+          }, controlled ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
             collapsible: getBoolean(this.el, "collapsible"),
             multiple: getBoolean(this.el, "multiple"),
-            orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
+            orientation: getString(this.el, "orientation"),
             dir: getDir(this.el)
           }));
         },
         destroyed() {
-          var _a;
-          if (this.onSetValue) {
-            this.el.removeEventListener("phx:accordion:set-value", this.onSetValue);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.accordion) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.accordion) == null ? void 0 : _c.destroy();
         }
       };
     }
   });
 
-  // ../priv/static/chunk-ZZKFCQSP.mjs
+  // ../priv/static/chunk-DQ6PDFVK.mjs
+  function readStringControlledZagProps(el, valueKey, defaultKey) {
+    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+  }
+  function readStringControlledZagUpdate(el, valueKey, defaultKey) {
+    return getBoolean(el, "controlled") ? { value: z(getString(el, valueKey)) } : { defaultValue: z(getString(el, defaultKey)) };
+  }
+  function readNumberControlledZagProps(el) {
+    const step = getNumber(el, "step");
+    return getBoolean(el, "controlled") ? { value: getNumber(el, "value"), step } : { defaultValue: getNumber(el, "defaultValue"), step };
+  }
+  var z;
+  var init_chunk_DQ6PDFVK = __esm({
+    "../priv/static/chunk-DQ6PDFVK.mjs"() {
+      "use strict";
+      init_chunk_SJ37CZDS();
+      z = (s2) => s2 === void 0 ? null : s2;
+    }
+  });
+
+  // ../priv/static/chunk-MPNHBCLD.mjs
   function createRect(r2) {
     const { x: x2, y: y2, width, height } = r2;
     const midX = x2 + width / 2;
@@ -3147,8 +3656,8 @@ var Corex = (() => {
     return { top, right, bottom, left };
   }
   var __defProp4, __defNormalProp4, __publicField4, createPoint, subtractPoints, addPoints;
-  var init_chunk_ZZKFCQSP = __esm({
-    "../priv/static/chunk-ZZKFCQSP.mjs"() {
+  var init_chunk_MPNHBCLD = __esm({
+    "../priv/static/chunk-MPNHBCLD.mjs"() {
       "use strict";
       __defProp4 = Object.defineProperty;
       __defNormalProp4 = (obj, key, value) => key in obj ? __defProp4(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
@@ -3162,10 +3671,10 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-MV633JPN.mjs
+  // ../priv/static/chunk-NX2BOTHE.mjs
   var floor, abs, round, min, max, pow, sign, isNaN2, nan, mod, wrap2, isValueAtMax, isValueAtMin, isValueWithinRange, roundValue, clampValue, getValuePercent, getPercentValue, roundToStepPrecision, roundToDpr, snapValueToStep, setValueAtIndex, toFixedNumber, countDecimals, decimalOp, incrementValue, decrementValue, toPx;
-  var init_chunk_MV633JPN = __esm({
-    "../priv/static/chunk-MV633JPN.mjs"() {
+  var init_chunk_NX2BOTHE = __esm({
+    "../priv/static/chunk-NX2BOTHE.mjs"() {
       "use strict";
       ({ floor, abs, round, min, max, pow, sign } = Math);
       isNaN2 = (v2) => Number.isNaN(v2);
@@ -3475,13 +3984,38 @@ var Corex = (() => {
       }
     };
   }
+  function valueChangePayload(el, details) {
+    return {
+      id: el.id,
+      value: details.value,
+      valueAsDegree: details.valueAsDegree
+    };
+  }
+  function queueFormBubblingInputForPhoenix(el, getZag) {
+    queueMicrotask(() => {
+      const zag = getZag();
+      const input = el.querySelector(
+        '[data-scope="angle-slider"][data-part="hidden-input"]'
+      );
+      if (!input) return;
+      const v2 = zag.api.value;
+      if (String(input.value) !== String(v2)) {
+        input.value = String(v2);
+      }
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
   var anatomy2, parts2, getRootId2, getThumbId, getHiddenInputId, getControlId, getValueTextId, getLabelId, getHiddenInputEl, getControlEl, getThumbEl, MIN_VALUE, MAX_VALUE, machine2, AngleSlider, AngleSliderHook;
   var init_angle_slider = __esm({
     "../priv/static/angle-slider.mjs"() {
       "use strict";
-      init_chunk_ZZKFCQSP();
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_DQ6PDFVK();
+      init_chunk_MPNHBCLD();
+      init_chunk_NX2BOTHE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
         "label",
@@ -3686,10 +4220,10 @@ var Corex = (() => {
           return new VanillaMachine(machine2, props);
         }
         initApi() {
-          return connect2(this.machine.service, normalizeProps);
+          return this.zagConnect(connect2);
         }
         render() {
-          var _a;
+          var _a, _b;
           const rootEl = (_a = this.el.querySelector('[data-scope="angle-slider"][data-part="root"]')) != null ? _a : this.el;
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector(
@@ -3716,9 +4250,9 @@ var Corex = (() => {
             const valueSpan = valueTextEl.querySelector(
               '[data-scope="angle-slider"][data-part="value"]'
             );
-            if (valueSpan && valueSpan.textContent !== String(this.api.value)) {
-              valueSpan.textContent = String(this.api.value);
-            }
+            const format = this.el.dataset.valueTextAs;
+            const nextValue = format === "raw" ? String(this.api.value) : String((_b = this.api.valueAsDegree) != null ? _b : this.api.value);
+            if (valueSpan && valueSpan.textContent !== nextValue) valueSpan.textContent = nextValue;
           }
           const markerGroupEl = this.el.querySelector(
             '[data-scope="angle-slider"][data-part="marker-group"]'
@@ -3735,117 +4269,103 @@ var Corex = (() => {
       };
       AngleSliderHook = {
         mounted() {
-          var _a;
           const el = this.el;
-          const value = getNumber(el, "value");
-          const defaultValue = getNumber(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const zag = new AngleSlider(el, __spreadProps(__spreadValues({
             id: el.id
-          }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : 0 }), {
-            step: (_a = getNumber(el, "step")) != null ? _a : 1,
+          }, readNumberControlledZagProps(el)), {
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readOnly"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             "aria-label": getString(el, "aria-label"),
             "aria-labelledby": getString(el, "aria-labelledby"),
             onValueChange: (details) => {
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  value: details.value,
-                  valueAsDegree: details.valueAsDegree,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: valueChangePayload(el, details),
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             },
             onValueChangeEnd: (details) => {
-              const eventName = getString(el, "onValueChangeEnd");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  value: details.value,
-                  valueAsDegree: details.valueAsDegree,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeEndClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: valueChangePayload(el, details),
+                serverEventName: getString(el, "onValueChangeEnd"),
+                clientEventName: getString(el, "onValueChangeEndClient")
+              });
+              queueFormBubblingInputForPhoenix(el, () => zag);
             }
           }));
           zag.init();
           this.angleSlider = zag;
-          this.handlers = [];
-          this.onSetValue = (event) => {
-            const { value: value2 } = event.detail;
-            zag.api.setValue(value2);
-          };
-          el.addEventListener("phx:angle-slider:set-value", this.onSetValue);
-          this.handlers.push(
-            this.handleEvent(
-              "angle_slider_set_value",
-              (payload) => {
-                const targetId = payload.angle_slider_id;
-                if (targetId) {
-                  const matches = el.id === targetId || el.id === `angle-slider:${targetId}`;
-                  if (!matches) return;
-                }
-                zag.api.setValue(payload.value);
-              }
-            )
-          );
-          this.handlers.push(
-            this.handleEvent("angle_slider_value", () => {
-              this.pushEvent("angle_slider_value_response", {
+          const emitValue = (respondTo) => {
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "angle_slider_value_response",
+              serverPayload: {
+                id: el.id,
                 value: zag.api.value,
                 valueAsDegree: zag.api.valueAsDegree,
                 dragging: zag.api.dragging
-              });
-            })
-          );
+              },
+              el,
+              domEventName: "angle-slider-value",
+              domDetail: {
+                id: el.id,
+                value: zag.api.value,
+                valueAsDegree: zag.api.valueAsDegree,
+                dragging: zag.api.dragging
+              }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:angle-slider:set-value", (event) => {
+            zag.api.setValue(event.detail.value);
+            queueFormBubblingInputForPhoenix(el, () => zag);
+          });
+          domRegistry.add("corex:angle-slider:value", (event) => {
+            emitValue(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("angle_slider_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setValue(payload.value);
+            queueFormBubblingInputForPhoenix(el, () => zag);
+          });
+          registry.add("angle_slider_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitValue(parseRespondTo(payload));
+          });
         },
         updated() {
-          var _a, _b;
-          const value = getNumber(this.el, "value");
-          const defaultValue = getNumber(this.el, "defaultValue");
-          const controlled = getBoolean(this.el, "controlled");
-          (_b = this.angleSlider) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
+          var _a;
+          (_a = this.angleSlider) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : 0 }), {
-            step: (_a = getNumber(this.el, "step")) != null ? _a : 1,
+          }, readNumberControlledZagProps(this.el)), {
             disabled: getBoolean(this.el, "disabled"),
             readOnly: getBoolean(this.el, "readOnly"),
             invalid: getBoolean(this.el, "invalid"),
             name: getString(this.el, "name"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
+            dir: getDir(this.el)
           }));
         },
         destroyed() {
-          var _a;
-          if (this.onSetValue) {
-            this.el.removeEventListener("phx:angle-slider:set-value", this.onSetValue);
-          }
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a = this.angleSlider) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.angleSlider) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -3904,11 +4424,16 @@ var Corex = (() => {
   function hasLoaded(image) {
     return image.complete && image.naturalWidth !== 0 && image.naturalHeight !== 0;
   }
+  function statusPayload(el, details) {
+    return { id: el.id, status: details.status };
+  }
   var anatomy3, parts3, getRootId3, getImageId, getFallbackId, getRootEl2, getImageEl, machine3, Avatar, AvatarHook;
   var init_avatar = __esm({
     "../priv/static/avatar.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
       getRootId3 = (ctx) => {
@@ -4019,7 +4544,7 @@ var Corex = (() => {
           return new VanillaMachine(machine3, props);
         }
         initApi() {
-          return connect3(this.machine.service, normalizeProps);
+          return this.zagConnect(connect3);
         }
         render() {
           var _a;
@@ -4046,44 +4571,86 @@ var Corex = (() => {
       AvatarHook = {
         mounted() {
           const el = this.el;
-          const src = getString(el, "src");
-          const zag = new Avatar(el, __spreadValues({
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const initialSrc = getString(el, "src");
+          const zag = new Avatar(el, {
             id: el.id,
+            dir: getString(el, "dir"),
             onStatusChange: (details) => {
-              const eventName = getString(el, "onStatusChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { status: details.status, id: el.id });
-              }
-              const clientName = getString(el, "onStatusChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              const flat = statusPayload(el, details);
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: flat,
+                serverEventName: getString(el, "onStatusChange"),
+                clientEventName: getString(el, "onStatusChangeClient")
+              });
             }
-          }, src !== void 0 ? {} : {}));
+          });
           zag.init();
           this.avatar = zag;
-          if (src !== void 0) {
-            zag.api.setSrc(src);
-          }
-          this.handlers = [];
+          this.lastSrc = initialSrc;
+          const emitLoaded = (respondTo) => {
+            const loaded = zag.api.loaded;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "avatar_loaded_response",
+              serverPayload: { id: el.id, loaded },
+              el,
+              domEventName: "avatar-loaded",
+              domDetail: { id: el.id, loaded }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:avatar:set-src", (event) => {
+            var _a;
+            const next2 = (_a = event.detail) == null ? void 0 : _a.src;
+            if (typeof next2 !== "string") return;
+            zag.api.setSrc(next2);
+            this.lastSrc = next2;
+            el.dataset.src = next2;
+          });
+          domRegistry.add("corex:avatar:loaded", (event) => {
+            emitLoaded(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("avatar_set_src", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setSrc(payload.src);
+            this.lastSrc = payload.src;
+            el.dataset.src = payload.src;
+          });
+          registry.add("avatar_loaded", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitLoaded(parseRespondTo(payload));
+          });
         },
         updated() {
           const src = getString(this.el, "src");
-          if (src !== void 0 && this.avatar) {
+          const dir = getString(this.el, "dir");
+          if (this.avatar) {
+            this.avatar.updateProps(__spreadValues({}, dir !== void 0 ? { dir } : {}));
+          }
+          if (this.avatar && src !== void 0 && src !== this.lastSrc) {
             this.avatar.api.setSrc(src);
+            this.lastSrc = src;
+          }
+          if (this.avatar && src === void 0 && this.lastSrc !== void 0) {
+            this.avatar.api.setSrc("");
+            this.lastSrc = void 0;
           }
         },
         destroyed() {
-          var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a = this.avatar) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.avatar) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -4520,12 +5087,21 @@ var Corex = (() => {
     }
     return snapPoints;
   }
+  function readInstant(detail) {
+    if (detail && typeof detail === "object" && "instant" in detail) {
+      const v2 = detail.instant;
+      return v2 === true || v2 === "true";
+    }
+    return false;
+  }
   var anatomy4, parts4, getRootId4, getItemId2, getItemGroupId, getNextTriggerId, getPrevTriggerId, getIndicatorGroupId, getIndicatorId, getItemGroupEl, getItemEls, getIndicatorEl, syncTabIndex, getDirection, convert, uniq2, clamp2, DRIFT_THRESHOLD, machine4, Carousel, CarouselHook;
   var init_carousel = __esm({
     "../priv/static/carousel.mjs"() {
       "use strict";
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_NX2BOTHE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
         "itemGroup",
@@ -5112,7 +5688,7 @@ var Corex = (() => {
           return new VanillaMachine(machine4, props);
         }
         initApi() {
-          return connect4(this.machine.service, normalizeProps);
+          return this.zagConnect(connect4);
         }
         render() {
           var _a;
@@ -5165,10 +5741,9 @@ var Corex = (() => {
       };
       CarouselHook = {
         mounted() {
-          var _a, _b, _c, _d;
           const el = this.el;
-          const page = getNumber(el, "page");
-          const defaultPage = getNumber(el, "defaultPage");
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const controlled = getBoolean(el, "controlled");
           const slideCount = getNumber(el, "slideCount");
           if (slideCount == null || slideCount < 1) {
@@ -5177,88 +5752,103 @@ var Corex = (() => {
           const zag = new Carousel(el, __spreadProps(__spreadValues({
             id: el.id,
             slideCount
-          }, controlled && page !== void 0 ? { page } : { defaultPage: defaultPage != null ? defaultPage : 0 }), {
+          }, controlled ? { page: getNumber(el, "page") } : { defaultPage: getNumber(el, "defaultPage") }), {
             dir: getDir(el),
-            orientation: getString(el, "orientation", [
-              "horizontal",
-              "vertical"
-            ]),
-            slidesPerPage: (_a = getNumber(el, "slidesPerPage")) != null ? _a : 1,
+            orientation: getString(el, "orientation"),
+            slidesPerPage: getNumber(el, "slidesPerPage"),
             slidesPerMove: getString(el, "slidesPerMove") === "auto" ? "auto" : getNumber(el, "slidesPerMove"),
             loop: getBoolean(el, "loop"),
-            autoplay: getBoolean(el, "autoplay") ? { delay: (_b = getNumber(el, "autoplayDelay")) != null ? _b : 4e3 } : false,
+            autoplay: getBoolean(el, "autoplay") ? { delay: getNumber(el, "autoplayDelay") } : false,
             allowMouseDrag: getBoolean(el, "allowMouseDrag"),
-            spacing: (_c = getString(el, "spacing")) != null ? _c : "0px",
+            spacing: getString(el, "spacing"),
             padding: getString(el, "padding"),
-            inViewThreshold: (_d = getNumber(el, "inViewThreshold")) != null ? _d : 0.6,
-            snapType: getString(el, "snapType", ["proximity", "mandatory"]),
+            inViewThreshold: getNumber(el, "inViewThreshold"),
+            snapType: getString(el, "snapType"),
             autoSize: getBoolean(el, "autoSize"),
             onPageChange: (details) => {
-              const eventName = getString(el, "onPageChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
                   page: details.page,
-                  pageSnapPoint: details.pageSnapPoint,
-                  id: el.id
-                });
-              }
-              const clientName = getString(el, "onPageChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+                  pageSnapPoint: details.pageSnapPoint
+                },
+                serverEventName: getString(el, "onPageChange"),
+                clientEventName: getString(el, "onPageChangeClient")
+              });
             }
           }));
           zag.init();
           this.carousel = zag;
-          this.handlers = [];
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:carousel:play", () => {
+            zag.api.play();
+          });
+          domRegistry.add("corex:carousel:pause", () => {
+            zag.api.pause();
+          });
+          domRegistry.add("corex:carousel:scroll-next", (event) => {
+            zag.api.scrollNext(readInstant(event.detail));
+          });
+          domRegistry.add("corex:carousel:scroll-prev", (event) => {
+            zag.api.scrollPrev(readInstant(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("carousel_play", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.play();
+          });
+          registry.add("carousel_pause", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.pause();
+          });
+          registry.add("carousel_scroll_next", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.scrollNext(readInstant(payload));
+          });
+          registry.add("carousel_scroll_prev", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.scrollPrev(readInstant(payload));
+          });
         },
         updated() {
-          var _a, _b, _c, _d, _e;
+          var _a;
           const slideCount = getNumber(this.el, "slideCount");
           if (slideCount == null || slideCount < 1) return;
-          const page = getNumber(this.el, "page");
           const controlled = getBoolean(this.el, "controlled");
-          (_e = this.carousel) == null ? void 0 : _e.updateProps(__spreadProps(__spreadValues({
+          (_a = this.carousel) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id,
             slideCount
-          }, controlled && page !== void 0 ? { page } : {}), {
+          }, controlled ? { page: getNumber(this.el, "page") } : { defaultPage: getNumber(this.el, "defaultPage") }), {
             dir: getDir(this.el),
-            orientation: getString(this.el, "orientation", [
-              "horizontal",
-              "vertical"
-            ]),
-            slidesPerPage: (_a = getNumber(this.el, "slidesPerPage")) != null ? _a : 1,
+            orientation: getString(this.el, "orientation"),
+            slidesPerPage: getNumber(this.el, "slidesPerPage"),
             slidesPerMove: getString(this.el, "slidesPerMove") === "auto" ? "auto" : getNumber(this.el, "slidesPerMove"),
             loop: getBoolean(this.el, "loop"),
-            autoplay: getBoolean(this.el, "autoplay") ? { delay: (_b = getNumber(this.el, "autoplayDelay")) != null ? _b : 4e3 } : false,
+            autoplay: getBoolean(this.el, "autoplay") ? { delay: getNumber(this.el, "autoplayDelay") } : false,
             allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
-            spacing: (_c = getString(this.el, "spacing")) != null ? _c : "0px",
+            spacing: getString(this.el, "spacing"),
             padding: getString(this.el, "padding"),
-            inViewThreshold: (_d = getNumber(this.el, "inViewThreshold")) != null ? _d : 0.6,
-            snapType: getString(this.el, "snapType", [
-              "proximity",
-              "mandatory"
-            ]),
+            inViewThreshold: getNumber(this.el, "inViewThreshold"),
+            snapType: getString(this.el, "snapType"),
             autoSize: getBoolean(this.el, "autoSize")
           }));
         },
         destroyed() {
-          var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a = this.carousel) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.carousel) == null ? void 0 : _c.destroy();
         }
       };
     }
   });
 
-  // ../priv/static/chunk-IAPTZYKE.mjs
+  // ../priv/static/chunk-ZKMAU6SY.mjs
   function isValidKey(e2) {
     return !(e2.metaKey || !isMac() && e2.altKey || e2.ctrlKey || e2.key === "Control" || e2.key === "Shift" || e2.key === "Meta");
   }
@@ -5377,10 +5967,10 @@ var Corex = (() => {
     };
   }
   var nonTextInputTypes, currentModality, changeHandlers, listenerMap, hasEventBeforeFocus, hasBlurredWindowRecently, ignoreFocusEvent, FOCUS_VISIBLE_INPUT_KEYS, tearDownWindowFocusTracking;
-  var init_chunk_IAPTZYKE = __esm({
-    "../priv/static/chunk-IAPTZYKE.mjs"() {
+  var init_chunk_ZKMAU6SY = __esm({
+    "../priv/static/chunk-ZKMAU6SY.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_SJ37CZDS();
       nonTextInputTypes = /* @__PURE__ */ new Set(["checkbox", "radio", "range", "color", "file", "image", "button", "submit", "reset"]);
       currentModality = null;
       changeHandlers = /* @__PURE__ */ new Set();
@@ -5545,12 +6135,20 @@ var Corex = (() => {
   function isChecked(checked) {
     return isIndeterminate(checked) ? false : !!checked;
   }
+  function checkedChangePayload(el, details) {
+    return {
+      id: el.id,
+      checked: details.checked
+    };
+  }
   var anatomy5, parts5, getRootId5, getLabelId2, getControlId2, getHiddenInputId2, getRootEl3, getHiddenInputEl2, not2, machine5, Checkbox, CheckboxHook;
   var init_checkbox = __esm({
     "../priv/static/checkbox.mjs"() {
       "use strict";
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_ZKMAU6SY();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
       getRootId5 = (ctx) => {
@@ -5713,7 +6311,7 @@ var Corex = (() => {
           return new VanillaMachine(machine5, props);
         }
         initApi() {
-          return connect5(this.machine.service, normalizeProps);
+          return this.zagConnect(connect5);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="checkbox"][data-part="root"]');
@@ -5749,9 +6347,10 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const zagCheckbox = new Checkbox(el, __spreadProps(__spreadValues({
             id: el.id
-          }, getBoolean(el, "controlled") ? { checked: getBoolean(el, "checked") } : { defaultChecked: getBoolean(el, "defaultChecked") }), {
+          }, getBoolean(el, "controlled") ? { checked: getCheckedState(el, "checked") } : { defaultChecked: getCheckedState(el, "defaultChecked") }), {
             disabled: getBoolean(el, "disabled"),
             name: getString(el, "name"),
             form: getString(el, "form"),
@@ -5761,80 +6360,68 @@ var Corex = (() => {
             required: getBoolean(el, "required"),
             readOnly: getBoolean(el, "readOnly"),
             onCheckedChange: (details) => {
-              const eventName = getString(el, "onCheckedChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  checked: details.checked,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onCheckedChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      checked: details.checked
-                    }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: checkedChangePayload(el, details),
+                serverEventName: getString(el, "onCheckedChange"),
+                clientEventName: getString(el, "onCheckedChangeClient")
+              });
             }
           }));
           zagCheckbox.init();
           this.checkbox = zagCheckbox;
-          this.onSetChecked = (event) => {
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:checkbox:set-checked", (event) => {
             const { checked } = event.detail;
             zagCheckbox.api.setChecked(checked);
-          };
-          el.addEventListener("phx:checkbox:set-checked", this.onSetChecked);
-          this.onToggleChecked = () => {
+          });
+          domRegistry.add("corex:checkbox:toggle-checked", () => {
             zagCheckbox.api.toggleChecked();
-          };
-          el.addEventListener("phx:checkbox:toggle-checked", this.onToggleChecked);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("checkbox_set_checked", (payload) => {
-              const targetId = payload.id;
-              if (targetId && targetId !== el.id) return;
-              zagCheckbox.api.setChecked(payload.checked);
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("checkbox_toggle_checked", (payload) => {
-              const targetId = payload.id;
-              if (targetId && targetId !== el.id) return;
-              zagCheckbox.api.toggleChecked();
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("checkbox_checked", () => {
-              this.pushEvent("checkbox_checked_response", {
-                value: zagCheckbox.api.checked
-              });
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("checkbox_focused", () => {
-              this.pushEvent("checkbox_focused_response", {
-                value: zagCheckbox.api.focused
-              });
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("checkbox_disabled", () => {
-              this.pushEvent("checkbox_disabled_response", {
-                value: zagCheckbox.api.disabled
-              });
-            })
-          );
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("checkbox_set_checked", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const checked = readPayloadChecked(payload);
+            if (typeof checked === "boolean") zagCheckbox.api.setChecked(checked);
+          });
+          registry.add("checkbox_toggle_checked", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zagCheckbox.api.toggleChecked();
+          });
+          registry.add("checkbox_checked", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("checkbox_checked_response", {
+              id: el.id,
+              value: zagCheckbox.api.checked
+            });
+          });
+          registry.add("checkbox_focused", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("checkbox_focused_response", {
+              id: el.id,
+              value: zagCheckbox.api.focused
+            });
+          });
+          registry.add("checkbox_disabled", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("checkbox_disabled_response", {
+              id: el.id,
+              value: zagCheckbox.api.disabled
+            });
+          });
         },
         updated() {
           var _a;
           (_a = this.checkbox) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { checked: getBoolean(this.el, "checked") } : { defaultChecked: getBoolean(this.el, "defaultChecked") }), {
+          }, getBoolean(this.el, "controlled") ? { checked: getCheckedState(this.el, "checked") } : { defaultChecked: getCheckedState(this.el, "defaultChecked") }), {
             disabled: getBoolean(this.el, "disabled"),
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
@@ -5842,30 +6429,20 @@ var Corex = (() => {
             dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            label: getString(this.el, "label")
+            readOnly: getBoolean(this.el, "readOnly")
           }));
         },
         destroyed() {
-          var _a;
-          if (this.onSetChecked) {
-            this.el.removeEventListener("phx:checkbox:set-checked", this.onSetChecked);
-          }
-          if (this.onToggleChecked) {
-            this.el.removeEventListener("phx:checkbox:toggle-checked", this.onToggleChecked);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.checkbox) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.checkbox) == null ? void 0 : _c.destroy();
         }
       };
     }
   });
 
-  // ../priv/static/chunk-OUU6AXP5.mjs
+  // ../priv/static/chunk-4ERCYGOM.mjs
   function setRafInterval(fn, intervalMs) {
     const timer = new Timer(({ now, deltaMs }) => {
       if (deltaMs >= intervalMs) {
@@ -5888,10 +6465,10 @@ var Corex = (() => {
     return () => timer.stop();
   }
   var currentTime, _tick, Timer;
-  var init_chunk_OUU6AXP5 = __esm({
-    "../priv/static/chunk-OUU6AXP5.mjs"() {
+  var init_chunk_4ERCYGOM = __esm({
+    "../priv/static/chunk-4ERCYGOM.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_SJ37CZDS();
       currentTime = () => performance.now();
       Timer = class {
         constructor(onTick) {
@@ -6065,8 +6642,10 @@ var Corex = (() => {
   var init_clipboard = __esm({
     "../priv/static/clipboard.mjs"() {
       "use strict";
-      init_chunk_OUU6AXP5();
-      init_chunk_SNFXM6OQ();
+      init_chunk_4ERCYGOM();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
       getRootId6 = (ctx) => {
@@ -6181,7 +6760,7 @@ var Corex = (() => {
           return new VanillaMachine(machine6, props);
         }
         initApi() {
-          return connect6(this.machine.service, normalizeProps);
+          return this.zagConnect(connect6);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="clipboard"][data-part="root"]');
@@ -6228,99 +6807,101 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const liveSocket = this.liveSocket;
-          const clipboard = new Clipboard(el, __spreadProps(__spreadValues({
+          const canPush = () => canPushEvent(this.liveSocket);
+          const clipboard = new Clipboard(el, {
             id: el.id,
-            timeout: getNumber(el, "timeout")
-          }, getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") }), {
-            onValueChange: (details) => {
-              var _a;
-              const eventName = getString(el, "onValueChange");
-              if (eventName && liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: (_a = details.value) != null ? _a : null
-                });
-              }
-            },
+            timeout: getNumber(el, "timeout"),
+            defaultValue: getString(el, "defaultValue"),
             onStatusChange: (details) => {
-              const eventName = getString(el, "onStatusChange");
-              if (eventName && liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  copied: details.copied
-                });
-              }
-              const eventNameClient = getString(el, "onStatusChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true
-                  })
-                );
-              }
+              var _a;
+              if ((details == null ? void 0 : details.copied) !== true) return;
+              const value = (_a = clipboard.api.value) != null ? _a : getString(el, "defaultValue");
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value },
+                serverEventName: getString(el, "onCopy"),
+                clientEventName: getString(el, "onCopyClient")
+              });
             }
-          }));
+          });
           clipboard.init();
           this.clipboard = clipboard;
-          this.onCopy = () => {
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:clipboard:copy", () => {
             clipboard.api.copy();
-          };
-          el.addEventListener("phx:clipboard:copy", this.onCopy);
-          this.onSetValue = (event) => {
-            const { value } = event.detail;
-            clipboard.api.setValue(value);
-          };
-          el.addEventListener("phx:clipboard:set-value", this.onSetValue);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("clipboard_copy", (payload) => {
-              const targetId = payload.clipboard_id;
-              if (targetId && targetId !== el.id) return;
-              clipboard.api.copy();
-            })
-          );
-          this.handlers.push(
-            this.handleEvent(
-              "clipboard_set_value",
-              (payload) => {
-                const targetId = payload.clipboard_id;
-                if (targetId && targetId !== el.id) return;
-                clipboard.api.setValue(payload.value);
-              }
-            )
-          );
-          this.handlers.push(
-            this.handleEvent("clipboard_copied", () => {
-              this.pushEvent("clipboard_copied_response", {
-                value: clipboard.api.copied
-              });
-            })
-          );
+          });
+          domRegistry.add("corex:clipboard:set-value", (event) => {
+            var _a;
+            const v2 = (_a = event.detail) == null ? void 0 : _a.value;
+            if (typeof v2 === "string") clipboard.api.setValue(v2);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("clipboard_copy", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            clipboard.api.copy();
+          });
+          registry.add("clipboard_set_value", (payload) => {
+            var _a;
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!payload || typeof payload !== "object") return;
+            const o2 = payload;
+            const v2 = (_a = o2.value) != null ? _a : o2["value"];
+            if (typeof v2 === "string") clipboard.api.setValue(v2);
+          });
         },
         updated() {
           var _a;
-          (_a = this.clipboard) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
+          (_a = this.clipboard) == null ? void 0 : _a.updateProps({
             id: this.el.id,
-            timeout: getNumber(this.el, "timeout")
-          }, getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "value") }), {
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
-          }));
+            timeout: getNumber(this.el, "timeout"),
+            defaultValue: getString(this.el, "defaultValue")
+          });
         },
         destroyed() {
-          var _a;
-          if (this.onCopy) {
-            this.el.removeEventListener("phx:clipboard:copy", this.onCopy);
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.clipboard) == null ? void 0 : _c.destroy();
+        }
+      };
+    }
+  });
+
+  // ../priv/static/code.mjs
+  var code_exports = {};
+  __export(code_exports, {
+    Code: () => CodeHook
+  });
+  var CodeHook;
+  var init_code = __esm({
+    "../priv/static/code.mjs"() {
+      "use strict";
+      CodeHook = {
+        mounted() {
+          if (this.el.tagName === "PRE") {
+            this._scrollTop = this.el.scrollTop;
+            this._scrollLeft = this.el.scrollLeft;
           }
-          if (this.onSetValue) {
-            this.el.removeEventListener("phx:clipboard:set-value", this.onSetValue);
+        },
+        beforeUpdate() {
+          if (this.el.tagName === "PRE") {
+            this._scrollTop = this.el.scrollTop;
+            this._scrollLeft = this.el.scrollLeft;
           }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.clipboard) == null ? void 0 : _a.destroy();
+        },
+        updated() {
+          var _a, _b;
+          if (this.el.tagName !== "PRE") return;
+          const st = (_a = this._scrollTop) != null ? _a : 0;
+          const sl = (_b = this._scrollLeft) != null ? _b : 0;
+          requestAnimationFrame(() => {
+            this.el.scrollTop = st;
+            this.el.scrollLeft = sl;
+          });
         }
       };
     }
@@ -6413,12 +6994,20 @@ var Corex = (() => {
       }
     };
   }
+  function openChangePayload(el, details) {
+    return {
+      id: el.id,
+      open: details.open
+    };
+  }
   var anatomy7, parts7, getRootId7, getContentId, getTriggerId, getContentEl, machine7, Collapsible, CollapsibleHook;
   var init_collapsible = __esm({
     "../priv/static/collapsible.mjs"() {
       "use strict";
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_NX2BOTHE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
       getRootId7 = (ctx) => {
@@ -6690,7 +7279,7 @@ var Corex = (() => {
           return new VanillaMachine(machine7, props);
         }
         initApi() {
-          return connect7(this.machine.service, normalizeProps);
+          return this.zagConnect(connect7);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -6717,58 +7306,64 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const collapsible = new Collapsible(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
             disabled: getBoolean(el, "disabled"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  open: details.open
-                });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      open: details.open
-                    }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: openChangePayload(el, details),
+                serverEventName: getString(el, "onOpenChange"),
+                clientEventName: getString(el, "onOpenChangeClient")
+              });
             }
           }));
           collapsible.init();
           this.collapsible = collapsible;
-          this.onSetOpen = (event) => {
+          const emitOpen = (respondTo) => {
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "collapsible_open_response",
+              serverPayload: {
+                id: el.id,
+                open: collapsible.api.open,
+                disabled: collapsible.api.disabled
+              },
+              el,
+              domEventName: "collapsible-open",
+              domDetail: {
+                id: el.id,
+                open: collapsible.api.open,
+                disabled: collapsible.api.disabled
+              }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:collapsible:set-open", (event) => {
             const { open } = event.detail;
             collapsible.api.setOpen(open);
-          };
-          el.addEventListener("phx:collapsible:set-open", this.onSetOpen);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent(
-              "collapsible_set_open",
-              (payload) => {
-                const targetId = payload.collapsible_id;
-                if (targetId && targetId !== el.id) return;
-                collapsible.api.setOpen(payload.open);
-              }
-            )
-          );
-          this.handlers.push(
-            this.handleEvent("collapsible_open", () => {
-              this.pushEvent("collapsible_open_response", {
-                value: collapsible.api.open
-              });
-            })
-          );
+          });
+          domRegistry.add("corex:collapsible:open", (event) => {
+            emitOpen(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("collapsible_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            collapsible.api.setOpen(payload.open);
+          });
+          registry.add("collapsible_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitOpen(parseRespondTo(payload));
+          });
         },
         updated() {
           var _a;
@@ -6776,1426 +7371,117 @@ var Corex = (() => {
             id: this.el.id
           }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
             disabled: getBoolean(this.el, "disabled"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
+            dir: getDir(this.el)
           }));
         },
         destroyed() {
-          var _a;
-          if (this.onSetOpen) {
-            this.el.removeEventListener("phx:collapsible:set-open", this.onSetOpen);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.collapsible) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.collapsible) == null ? void 0 : _c.destroy();
         }
       };
     }
   });
 
-  // ../priv/static/chunk-7ZKQLYA7.mjs
-  function insert(items, index, ...values) {
-    return [...items.slice(0, index), ...values, ...items.slice(index)];
-  }
-  function move(items, indices, toIndex) {
-    indices = [...indices].sort((a2, b2) => a2 - b2);
-    const itemsToMove = indices.map((i2) => items[i2]);
-    for (let i2 = indices.length - 1; i2 >= 0; i2--) {
-      items = [...items.slice(0, indices[i2]), ...items.slice(indices[i2] + 1)];
-    }
-    toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
-    return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
-  }
-  function isGridCollection(v2) {
-    return hasProp(v2, "columnCount") && hasProp(v2, "getRows");
-  }
-  function resolveSelectedItems({
-    values,
-    collection: collection5,
-    selectedItemMap
-  }) {
+  // ../priv/static/chunk-MRDCAPRF.mjs
+  function createLiveRegion(opts = {}) {
     var _a;
-    const result = [];
-    for (const value of values) {
-      const item = (_a = collection5.find(value)) != null ? _a : selectedItemMap.get(value);
-      if (item != null) result.push(item);
-    }
-    return result;
-  }
-  function updateSelectedItemMap({
-    selectedItemMap,
-    values,
-    selectedItems,
-    collection: collection5
-  }) {
-    const nextMap = new Map(selectedItemMap);
-    for (const item of selectedItems) {
-      const value = collection5.getItemValue(item);
-      if (value != null) nextMap.set(value, item);
-    }
-    const allowedValues = new Set(values);
-    for (const value of nextMap.keys()) {
-      if (!allowedValues.has(value)) nextMap.delete(value);
-    }
-    return nextMap;
-  }
-  function deriveSelectionState({
-    values,
-    collection: collection5,
-    selectedItemMap
-  }) {
-    const selectedItems = resolveSelectedItems({ values, collection: collection5, selectedItemMap });
-    const nextSelectedItemMap = updateSelectedItemMap({
-      selectedItemMap,
-      values,
-      selectedItems,
-      collection: collection5
-    });
-    return { selectedItems, nextSelectedItemMap };
-  }
-  function createSelectedItemMap({
-    selectedItems,
-    collection: collection5
-  }) {
-    return updateSelectedItemMap({
-      selectedItemMap: /* @__PURE__ */ new Map(),
-      values: selectedItems.map((item) => collection5.getItemValue(item)).filter(Boolean),
-      selectedItems,
-      collection: collection5
-    });
-  }
-  function access(node, indexPath, options) {
-    for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
-    return node;
-  }
-  function ancestorIndexPaths(indexPaths) {
-    const sortedPaths = sortIndexPaths(indexPaths);
-    const result = [];
-    const seen = /* @__PURE__ */ new Set();
-    for (const indexPath of sortedPaths) {
-      const key = indexPath.join();
-      if (!seen.has(key)) {
-        seen.add(key);
-        result.push(indexPath);
-      }
-    }
-    return result;
-  }
-  function compareIndexPaths(a2, b2) {
-    for (let i2 = 0; i2 < Math.min(a2.length, b2.length); i2++) {
-      if (a2[i2] < b2[i2]) return -1;
-      if (a2[i2] > b2[i2]) return 1;
-    }
-    return a2.length - b2.length;
-  }
-  function sortIndexPaths(indexPaths) {
-    return indexPaths.sort(compareIndexPaths);
-  }
-  function find(node, options) {
-    let found;
-    visit(node, __spreadProps(__spreadValues({}, options), {
-      onEnter: (child, indexPath) => {
-        if (options.predicate(child, indexPath)) {
-          found = child;
-          return "stop";
-        }
-      }
-    }));
-    return found;
-  }
-  function findAll(node, options) {
-    const found = [];
-    visit(node, {
-      onEnter: (child, indexPath) => {
-        if (options.predicate(child, indexPath)) found.push(child);
-      },
-      getChildren: options.getChildren
-    });
-    return found;
-  }
-  function findIndexPath(node, options) {
-    let found;
-    visit(node, {
-      onEnter: (child, indexPath) => {
-        if (options.predicate(child, indexPath)) {
-          found = [...indexPath];
-          return "stop";
-        }
-      },
-      getChildren: options.getChildren
-    });
-    return found;
-  }
-  function reduce(node, options) {
-    let result = options.initialResult;
-    visit(node, __spreadProps(__spreadValues({}, options), {
-      onEnter: (child, indexPath) => {
-        result = options.nextResult(result, child, indexPath);
-      }
-    }));
-    return result;
-  }
-  function flatMap(node, options) {
-    return reduce(node, __spreadProps(__spreadValues({}, options), {
-      initialResult: [],
-      nextResult: (result, child, indexPath) => {
-        result.push(...options.transform(child, indexPath));
-        return result;
-      }
-    }));
-  }
-  function filter(node, options) {
-    const { predicate, create, getChildren } = options;
-    const filterRecursive = (node2, indexPath) => {
-      const children = getChildren(node2, indexPath);
-      const filteredChildren = [];
-      children.forEach((child, index) => {
-        const childIndexPath = [...indexPath, index];
-        const filteredChild = filterRecursive(child, childIndexPath);
-        if (filteredChild) filteredChildren.push(filteredChild);
+    const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
+    const win = (_a = doc.defaultView) != null ? _a : window;
+    const parent = root != null ? root : doc.body;
+    function announce(message, delay2) {
+      const oldRegion = doc.getElementById(ID);
+      oldRegion == null ? void 0 : oldRegion.remove();
+      delay2 = delay2 != null ? delay2 : _delay;
+      const region = doc.createElement("span");
+      region.id = ID;
+      region.dataset.liveAnnouncer = "true";
+      const role = level !== "assertive" ? "status" : "alert";
+      region.setAttribute("aria-live", level);
+      region.setAttribute("role", role);
+      Object.assign(region.style, {
+        border: "0",
+        clip: "rect(0 0 0 0)",
+        height: "1px",
+        margin: "-1px",
+        overflow: "hidden",
+        padding: "0",
+        position: "absolute",
+        width: "1px",
+        whiteSpace: "nowrap",
+        wordWrap: "normal"
       });
-      const isRoot = indexPath.length === 0;
-      const nodeMatches = predicate(node2, indexPath);
-      const hasFilteredChildren = filteredChildren.length > 0;
-      if (isRoot || nodeMatches || hasFilteredChildren) {
-        return create(node2, filteredChildren, indexPath);
+      parent.appendChild(region);
+      win.setTimeout(() => {
+        region.textContent = message;
+      }, delay2);
+    }
+    function destroy() {
+      const oldRegion = doc.getElementById(ID);
+      oldRegion == null ? void 0 : oldRegion.remove();
+    }
+    return {
+      announce,
+      destroy,
+      toJSON() {
+        return ID;
       }
-      return null;
     };
-    return filterRecursive(node, []) || create(node, [], []);
   }
-  function flatten(rootNode, options) {
-    const nodes = [];
-    let idx = 0;
-    const idxMap = /* @__PURE__ */ new Map();
-    const parentMap = /* @__PURE__ */ new Map();
-    visit(rootNode, {
-      getChildren: options.getChildren,
-      onEnter: (node, indexPath) => {
-        if (!idxMap.has(node)) {
-          idxMap.set(node, idx++);
-        }
-        const children = options.getChildren(node, indexPath);
-        children.forEach((child) => {
-          if (!parentMap.has(child)) {
-            parentMap.set(child, node);
-          }
-          if (!idxMap.has(child)) {
-            idxMap.set(child, idx++);
-          }
-        });
-        const _children = children.length > 0 ? children.map((child) => idxMap.get(child)) : void 0;
-        const parent = parentMap.get(node);
-        const _parent = parent ? idxMap.get(parent) : void 0;
-        const _index = idxMap.get(node);
-        nodes.push(__spreadProps(__spreadValues({}, node), { _children, _parent, _index }));
-      }
-    });
-    return nodes;
-  }
-  function insertOperation(index, nodes) {
-    return { type: "insert", index, nodes };
-  }
-  function removeOperation(indexes) {
-    return { type: "remove", indexes };
-  }
-  function replaceOperation() {
-    return { type: "replace" };
-  }
-  function splitIndexPath(indexPath) {
-    return [indexPath.slice(0, -1), indexPath[indexPath.length - 1]];
-  }
-  function getInsertionOperations(indexPath, nodes, operations = /* @__PURE__ */ new Map()) {
-    var _a;
-    const [parentIndexPath, index] = splitIndexPath(indexPath);
-    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
-      const parentKey = parentIndexPath.slice(0, i2).join();
-      switch ((_a = operations.get(parentKey)) == null ? void 0 : _a.type) {
-        case "remove":
-          continue;
-      }
-      operations.set(parentKey, replaceOperation());
-    }
-    const operation = operations.get(parentIndexPath.join());
-    switch (operation == null ? void 0 : operation.type) {
-      case "remove":
-        operations.set(parentIndexPath.join(), {
-          type: "removeThenInsert",
-          removeIndexes: operation.indexes,
-          insertIndex: index,
-          insertNodes: nodes
-        });
-        break;
-      default:
-        operations.set(parentIndexPath.join(), insertOperation(index, nodes));
-    }
-    return operations;
-  }
-  function getRemovalOperations(indexPaths) {
-    var _a;
-    const operations = /* @__PURE__ */ new Map();
-    const indexesToRemove = /* @__PURE__ */ new Map();
-    for (const indexPath of indexPaths) {
-      const parentKey = indexPath.slice(0, -1).join();
-      const value = (_a = indexesToRemove.get(parentKey)) != null ? _a : [];
-      value.push(indexPath[indexPath.length - 1]);
-      indexesToRemove.set(
-        parentKey,
-        value.sort((a2, b2) => a2 - b2)
-      );
-    }
-    for (const indexPath of indexPaths) {
-      for (let i2 = indexPath.length - 2; i2 >= 0; i2--) {
-        const parentKey = indexPath.slice(0, i2).join();
-        if (!operations.has(parentKey)) {
-          operations.set(parentKey, replaceOperation());
-        }
-      }
-    }
-    for (const [parentKey, indexes] of indexesToRemove) {
-      operations.set(parentKey, removeOperation(indexes));
-    }
-    return operations;
-  }
-  function getReplaceOperations(indexPath, node) {
-    const operations = /* @__PURE__ */ new Map();
-    const [parentIndexPath, index] = splitIndexPath(indexPath);
-    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
-      const parentKey = parentIndexPath.slice(0, i2).join();
-      operations.set(parentKey, replaceOperation());
-    }
-    operations.set(parentIndexPath.join(), {
-      type: "removeThenInsert",
-      removeIndexes: [index],
-      insertIndex: index,
-      insertNodes: [node]
-    });
-    return operations;
-  }
-  function mutate(node, operations, options) {
-    return map(node, __spreadProps(__spreadValues({}, options), {
-      getChildren: (node2, indexPath) => {
-        const key = indexPath.join();
-        const operation = operations.get(key);
-        switch (operation == null ? void 0 : operation.type) {
-          case "replace":
-          case "remove":
-          case "removeThenInsert":
-          case "insert":
-            return options.getChildren(node2, indexPath);
-          default:
-            return [];
-        }
-      },
-      transform: (node2, children, indexPath) => {
-        const key = indexPath.join();
-        const operation = operations.get(key);
-        switch (operation == null ? void 0 : operation.type) {
-          case "remove":
-            return options.create(
-              node2,
-              children.filter((_2, index) => !operation.indexes.includes(index)),
-              indexPath
-            );
-          case "removeThenInsert":
-            const updatedChildren = children.filter((_2, index) => !operation.removeIndexes.includes(index));
-            const adjustedIndex = operation.removeIndexes.reduce(
-              (index, removedIndex) => removedIndex < index ? index - 1 : index,
-              operation.insertIndex
-            );
-            return options.create(node2, splice(updatedChildren, adjustedIndex, 0, ...operation.insertNodes), indexPath);
-          case "insert":
-            return options.create(node2, splice(children, operation.index, 0, ...operation.nodes), indexPath);
-          case "replace":
-            return options.create(node2, children, indexPath);
-          default:
-            return node2;
-        }
-      }
-    }));
-  }
-  function splice(array, start, deleteCount, ...items) {
-    return [...array.slice(0, start), ...items, ...array.slice(start + deleteCount)];
-  }
-  function map(node, options) {
-    const childrenMap = {};
-    visit(node, __spreadProps(__spreadValues({}, options), {
-      onLeave: (child, indexPath) => {
-        var _a, _b;
-        const keyIndexPath = [0, ...indexPath];
-        const key = keyIndexPath.join();
-        const transformed = options.transform(child, (_a = childrenMap[key]) != null ? _a : [], indexPath);
-        const parentKey = keyIndexPath.slice(0, -1).join();
-        const parentChildren = (_b = childrenMap[parentKey]) != null ? _b : [];
-        parentChildren.push(transformed);
-        childrenMap[parentKey] = parentChildren;
-      }
-    }));
-    return childrenMap[""][0];
-  }
-  function insert2(node, options) {
-    const { nodes, at } = options;
-    if (at.length === 0) throw new Error(`Can't insert nodes at the root`);
-    const state2 = getInsertionOperations(at, nodes);
-    return mutate(node, state2, options);
-  }
-  function replace(node, options) {
-    if (options.at.length === 0) return options.node;
-    const operations = getReplaceOperations(options.at, options.node);
-    return mutate(node, operations, options);
-  }
-  function remove2(node, options) {
-    if (options.indexPaths.length === 0) return node;
-    for (const indexPath of options.indexPaths) {
-      if (indexPath.length === 0) throw new Error(`Can't remove the root node`);
-    }
-    const operations = getRemovalOperations(options.indexPaths);
-    return mutate(node, operations, options);
-  }
-  function move2(node, options) {
-    if (options.indexPaths.length === 0) return node;
-    for (const indexPath of options.indexPaths) {
-      if (indexPath.length === 0) throw new Error(`Can't move the root node`);
-    }
-    if (options.to.length === 0) throw new Error(`Can't move nodes to the root`);
-    const _ancestorIndexPaths = ancestorIndexPaths(options.indexPaths);
-    const nodesToInsert = _ancestorIndexPaths.map((indexPath) => access(node, indexPath, options));
-    const operations = getInsertionOperations(options.to, nodesToInsert, getRemovalOperations(_ancestorIndexPaths));
-    return mutate(node, operations, options);
-  }
-  function visit(node, options) {
-    const { onEnter, onLeave, getChildren } = options;
-    let indexPath = [];
-    let stack = [{ node }];
-    const getIndexPath = options.reuseIndexPath ? () => indexPath : () => indexPath.slice();
-    while (stack.length > 0) {
-      let wrapper = stack[stack.length - 1];
-      if (wrapper.state === void 0) {
-        const enterResult = onEnter == null ? void 0 : onEnter(wrapper.node, getIndexPath());
-        if (enterResult === "stop") return;
-        wrapper.state = enterResult === "skip" ? -1 : 0;
-      }
-      const children = wrapper.children || getChildren(wrapper.node, getIndexPath());
-      wrapper.children || (wrapper.children = children);
-      if (wrapper.state !== -1) {
-        if (wrapper.state < children.length) {
-          let currentIndex = wrapper.state;
-          indexPath.push(currentIndex);
-          stack.push({ node: children[currentIndex] });
-          wrapper.state = currentIndex + 1;
-          continue;
-        }
-        const leaveResult = onLeave == null ? void 0 : onLeave(wrapper.node, getIndexPath());
-        if (leaveResult === "stop") return;
-      }
-      indexPath.pop();
-      stack.pop();
-    }
-  }
-  var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
-  var init_chunk_7ZKQLYA7 = __esm({
-    "../priv/static/chunk-7ZKQLYA7.mjs"() {
+  var ID;
+  var init_chunk_MRDCAPRF = __esm({
+    "../priv/static/chunk-MRDCAPRF.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
-      __defProp5 = Object.defineProperty;
-      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
-      fallback = {
-        itemToValue(item) {
-          if (typeof item === "string") return item;
-          if (isObject(item) && hasProp(item, "value")) return item.value;
-          return "";
-        },
-        itemToString(item) {
-          if (typeof item === "string") return item;
-          if (isObject(item) && hasProp(item, "label")) return item.label;
-          return fallback.itemToValue(item);
-        },
-        isItemDisabled(item) {
-          if (isObject(item) && hasProp(item, "disabled")) return !!item.disabled;
-          return false;
-        }
-      };
-      ListCollection = class _ListCollection {
-        constructor(options) {
-          this.options = options;
-          __publicField5(this, "items");
-          __publicField5(this, "indexMap", null);
-          __publicField5(this, "copy", (items) => {
-            return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
-          });
-          __publicField5(this, "isEqual", (other) => {
-            return isEqual(this.items, other.items);
-          });
-          __publicField5(this, "setItems", (items) => {
-            return this.copy(items);
-          });
-          __publicField5(this, "getValues", (items = this.items) => {
-            const values = [];
-            for (const item of items) {
-              const value = this.getItemValue(item);
-              if (value != null) values.push(value);
-            }
-            return values;
-          });
-          __publicField5(this, "find", (value) => {
-            if (value == null) return null;
-            const index = this.indexOf(value);
-            return index !== -1 ? this.at(index) : null;
-          });
-          __publicField5(this, "findMany", (values) => {
-            const result = [];
-            for (const value of values) {
-              const item = this.find(value);
-              if (item != null) result.push(item);
-            }
-            return result;
-          });
-          __publicField5(this, "at", (index) => {
-            var _a;
-            if (!this.options.groupBy && !this.options.groupSort) {
-              return (_a = this.items[index]) != null ? _a : null;
-            }
-            let idx = 0;
-            const groups = this.group();
-            for (const [, items] of groups) {
-              for (const item of items) {
-                if (idx === index) return item;
-                idx++;
-              }
-            }
-            return null;
-          });
-          __publicField5(this, "sortFn", (valueA, valueB) => {
-            const indexA = this.indexOf(valueA);
-            const indexB = this.indexOf(valueB);
-            return (indexA != null ? indexA : 0) - (indexB != null ? indexB : 0);
-          });
-          __publicField5(this, "sort", (values) => {
-            return [...values].sort(this.sortFn.bind(this));
-          });
-          __publicField5(this, "getItemValue", (item) => {
-            var _a, _b, _c;
-            if (item == null) return null;
-            return (_c = (_b = (_a = this.options).itemToValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToValue(item);
-          });
-          __publicField5(this, "getItemDisabled", (item) => {
-            var _a, _b, _c;
-            if (item == null) return false;
-            return (_c = (_b = (_a = this.options).isItemDisabled) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.isItemDisabled(item);
-          });
-          __publicField5(this, "stringifyItem", (item) => {
-            var _a, _b, _c;
-            if (item == null) return null;
-            return (_c = (_b = (_a = this.options).itemToString) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToString(item);
-          });
-          __publicField5(this, "stringify", (value) => {
-            if (value == null) return null;
-            return this.stringifyItem(this.find(value));
-          });
-          __publicField5(this, "stringifyItems", (items, separator = ", ") => {
-            const strs = [];
-            for (const item of items) {
-              const str = this.stringifyItem(item);
-              if (str != null) strs.push(str);
-            }
-            return strs.join(separator);
-          });
-          __publicField5(this, "stringifyMany", (value, separator) => {
-            return this.stringifyItems(this.findMany(value), separator);
-          });
-          __publicField5(this, "has", (value) => {
-            return this.indexOf(value) !== -1;
-          });
-          __publicField5(this, "hasItem", (item) => {
-            if (item == null) return false;
-            return this.has(this.getItemValue(item));
-          });
-          __publicField5(this, "group", () => {
-            const { groupBy, groupSort } = this.options;
-            if (!groupBy) return [["", [...this.items]]];
-            const groups = /* @__PURE__ */ new Map();
-            this.items.forEach((item, index) => {
-              const groupKey = groupBy(item, index);
-              if (!groups.has(groupKey)) {
-                groups.set(groupKey, []);
-              }
-              groups.get(groupKey).push(item);
-            });
-            let entries = Array.from(groups.entries());
-            if (groupSort) {
-              entries.sort(([a2], [b2]) => {
-                if (typeof groupSort === "function") return groupSort(a2, b2);
-                if (Array.isArray(groupSort)) {
-                  const indexA = groupSort.indexOf(a2);
-                  const indexB = groupSort.indexOf(b2);
-                  if (indexA === -1) return 1;
-                  if (indexB === -1) return -1;
-                  return indexA - indexB;
-                }
-                if (groupSort === "asc") return a2.localeCompare(b2);
-                if (groupSort === "desc") return b2.localeCompare(a2);
-                return 0;
-              });
-            }
-            return entries;
-          });
-          __publicField5(this, "getNextValue", (value, step = 1, clamp5 = false) => {
-            let index = this.indexOf(value);
-            if (index === -1) return null;
-            index = clamp5 ? Math.min(index + step, this.size - 1) : index + step;
-            while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
-            return this.getItemValue(this.at(index));
-          });
-          __publicField5(this, "getPreviousValue", (value, step = 1, clamp5 = false) => {
-            let index = this.indexOf(value);
-            if (index === -1) return null;
-            index = clamp5 ? Math.max(index - step, 0) : index - step;
-            while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
-            return this.getItemValue(this.at(index));
-          });
-          __publicField5(this, "indexOf", (value) => {
-            var _a;
-            if (value == null) return -1;
-            if (!this.options.groupBy && !this.options.groupSort) {
-              return this.items.findIndex((item) => this.getItemValue(item) === value);
-            }
-            if (!this.indexMap) {
-              this.indexMap = /* @__PURE__ */ new Map();
-              let idx = 0;
-              const groups = this.group();
-              for (const [, items] of groups) {
-                for (const item of items) {
-                  const itemValue = this.getItemValue(item);
-                  if (itemValue != null) {
-                    this.indexMap.set(itemValue, idx);
-                  }
-                  idx++;
-                }
-              }
-            }
-            return (_a = this.indexMap.get(value)) != null ? _a : -1;
-          });
-          __publicField5(this, "getByText", (text, current) => {
-            const currentIndex = current != null ? this.indexOf(current) : -1;
-            const isSingleKey = text.length === 1;
-            for (let i2 = 0; i2 < this.items.length; i2++) {
-              const item = this.items[(currentIndex + i2 + 1) % this.items.length];
-              if (isSingleKey && this.getItemValue(item) === current) continue;
-              if (this.getItemDisabled(item)) continue;
-              if (match3(this.stringifyItem(item), text)) return item;
-            }
-            return void 0;
-          });
-          __publicField5(this, "search", (queryString, options2) => {
-            const { state: state2, currentValue, timeout = 350 } = options2;
-            const search = state2.keysSoFar + queryString;
-            const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
-            const query2 = isRepeated ? search[0] : search;
-            const item = this.getByText(query2, currentValue);
-            const value = this.getItemValue(item);
-            function cleanup() {
-              clearTimeout(state2.timer);
-              state2.timer = -1;
-            }
-            function update(value2) {
-              state2.keysSoFar = value2;
-              cleanup();
-              if (value2 !== "") {
-                state2.timer = +setTimeout(() => {
-                  update("");
-                  cleanup();
-                }, timeout);
-              }
-            }
-            update(search);
-            return value;
-          });
-          __publicField5(this, "update", (value, item) => {
-            let index = this.indexOf(value);
-            if (index === -1) return this;
-            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
-          });
-          __publicField5(this, "upsert", (value, item, mode = "append") => {
-            let index = this.indexOf(value);
-            if (index === -1) {
-              const fn = mode === "append" ? this.append : this.prepend;
-              return fn(item);
-            }
-            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
-          });
-          __publicField5(this, "insert", (index, ...items) => {
-            return this.copy(insert(this.items, index, ...items));
-          });
-          __publicField5(this, "insertBefore", (value, ...items) => {
-            let toIndex = this.indexOf(value);
-            if (toIndex === -1) {
-              if (this.items.length === 0) toIndex = 0;
-              else return this;
-            }
-            return this.copy(insert(this.items, toIndex, ...items));
-          });
-          __publicField5(this, "insertAfter", (value, ...items) => {
-            let toIndex = this.indexOf(value);
-            if (toIndex === -1) {
-              if (this.items.length === 0) toIndex = 0;
-              else return this;
-            }
-            return this.copy(insert(this.items, toIndex + 1, ...items));
-          });
-          __publicField5(this, "prepend", (...items) => {
-            return this.copy(insert(this.items, 0, ...items));
-          });
-          __publicField5(this, "append", (...items) => {
-            return this.copy(insert(this.items, this.items.length, ...items));
-          });
-          __publicField5(this, "filter", (fn) => {
-            const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
-            return this.copy(filteredItems);
-          });
-          __publicField5(this, "remove", (...itemsOrValues) => {
-            const values = itemsOrValues.map(
-              (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
-            );
-            return this.copy(
-              this.items.filter((item) => {
-                const value = this.getItemValue(item);
-                if (value == null) return false;
-                return !values.includes(value);
-              })
-            );
-          });
-          __publicField5(this, "move", (value, toIndex) => {
-            const fromIndex = this.indexOf(value);
-            if (fromIndex === -1) return this;
-            return this.copy(move(this.items, [fromIndex], toIndex));
-          });
-          __publicField5(this, "moveBefore", (value, ...values) => {
-            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
-            if (toIndex === -1) return this;
-            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
-            return this.copy(move(this.items, indices, toIndex));
-          });
-          __publicField5(this, "moveAfter", (value, ...values) => {
-            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
-            if (toIndex === -1) return this;
-            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
-            return this.copy(move(this.items, indices, toIndex + 1));
-          });
-          __publicField5(this, "reorder", (fromIndex, toIndex) => {
-            return this.copy(move(this.items, [fromIndex], toIndex));
-          });
-          __publicField5(this, "compareValue", (a2, b2) => {
-            const indexA = this.indexOf(a2);
-            const indexB = this.indexOf(b2);
-            if (indexA < indexB) return -1;
-            if (indexA > indexB) return 1;
-            return 0;
-          });
-          __publicField5(this, "range", (from, to) => {
-            let keys = [];
-            let key = from;
-            while (key != null) {
-              let item = this.find(key);
-              if (item) keys.push(key);
-              if (key === to) return keys;
-              key = this.getNextValue(key);
-            }
-            return [];
-          });
-          __publicField5(this, "getValueRange", (from, to) => {
-            if (from && to) {
-              if (this.compareValue(from, to) <= 0) {
-                return this.range(from, to);
-              }
-              return this.range(to, from);
-            }
-            return [];
-          });
-          __publicField5(this, "toString", () => {
-            let result = "";
-            for (const item of this.items) {
-              const value = this.getItemValue(item);
-              const label = this.stringifyItem(item);
-              const disabled = this.getItemDisabled(item);
-              const itemString = [value, label, disabled].filter(Boolean).join(":");
-              result += itemString + ",";
-            }
-            return result;
-          });
-          __publicField5(this, "toJSON", () => {
-            return {
-              size: this.size,
-              first: this.firstValue,
-              last: this.lastValue
-            };
-          });
-          this.items = [...options.items];
-        }
-        /**
-         * Returns the number of items in the collection
-         */
-        get size() {
-          return this.items.length;
-        }
-        /**
-         * Returns the first value in the collection
-         */
-        get firstValue() {
-          let index = 0;
-          while (this.getItemDisabled(this.at(index))) index++;
-          return this.getItemValue(this.at(index));
-        }
-        /**
-         * Returns the last value in the collection
-         */
-        get lastValue() {
-          let index = this.size - 1;
-          while (this.getItemDisabled(this.at(index))) index--;
-          return this.getItemValue(this.at(index));
-        }
-        *[Symbol.iterator]() {
-          yield* __yieldStar(this.items);
-        }
-      };
-      match3 = (label, query2) => {
-        return !!(label == null ? void 0 : label.toLowerCase().startsWith(query2.toLowerCase()));
-      };
-      GridCollection = class extends ListCollection {
-        constructor(options) {
-          const { columnCount } = options;
-          super(options);
-          __publicField5(this, "columnCount");
-          __publicField5(this, "rows", null);
-          __publicField5(this, "getRows", () => {
-            if (!this.rows) {
-              this.rows = chunk([...this.items], this.columnCount);
-            }
-            return this.rows;
-          });
-          __publicField5(this, "getRowCount", () => {
-            return Math.ceil(this.items.length / this.columnCount);
-          });
-          __publicField5(this, "getCellIndex", (row, column) => {
-            return row * this.columnCount + column;
-          });
-          __publicField5(this, "getCell", (row, column) => {
-            return this.at(this.getCellIndex(row, column));
-          });
-          __publicField5(this, "getValueCell", (value) => {
-            const index = this.indexOf(value);
-            if (index === -1) return null;
-            const row = Math.floor(index / this.columnCount);
-            const column = index % this.columnCount;
-            return { row, column };
-          });
-          __publicField5(this, "getLastEnabledColumnIndex", (row) => {
-            for (let col = this.columnCount - 1; col >= 0; col--) {
-              const cell = this.getCell(row, col);
-              if (cell && !this.getItemDisabled(cell)) {
-                return col;
-              }
-            }
-            return null;
-          });
-          __publicField5(this, "getFirstEnabledColumnIndex", (row) => {
-            for (let col = 0; col < this.columnCount; col++) {
-              const cell = this.getCell(row, col);
-              if (cell && !this.getItemDisabled(cell)) {
-                return col;
-              }
-            }
-            return null;
-          });
-          __publicField5(this, "getPreviousRowValue", (value, loop = false) => {
-            const currentCell = this.getValueCell(value);
-            if (currentCell === null) return null;
-            const rows = this.getRows();
-            const rowCount = rows.length;
-            let prevRowIndex = currentCell.row;
-            let prevColumnIndex = currentCell.column;
-            for (let i2 = 1; i2 <= rowCount; i2++) {
-              prevRowIndex = prevIndex(rows, prevRowIndex, { loop });
-              const prevRow = rows[prevRowIndex];
-              if (!prevRow) continue;
-              const prevCell = prevRow[prevColumnIndex];
-              if (!prevCell) {
-                const lastColumnIndex = this.getLastEnabledColumnIndex(prevRowIndex);
-                if (lastColumnIndex != null) {
-                  prevColumnIndex = lastColumnIndex;
-                }
-              }
-              const cell = this.getCell(prevRowIndex, prevColumnIndex);
-              if (!this.getItemDisabled(cell)) {
-                return this.getItemValue(cell);
-              }
-            }
-            return this.firstValue;
-          });
-          __publicField5(this, "getNextRowValue", (value, loop = false) => {
-            const currentCell = this.getValueCell(value);
-            if (currentCell === null) return null;
-            const rows = this.getRows();
-            const rowCount = rows.length;
-            let nextRowIndex = currentCell.row;
-            let nextColumnIndex = currentCell.column;
-            for (let i2 = 1; i2 <= rowCount; i2++) {
-              nextRowIndex = nextIndex(rows, nextRowIndex, { loop });
-              const nextRow = rows[nextRowIndex];
-              if (!nextRow) continue;
-              const nextCell = nextRow[nextColumnIndex];
-              if (!nextCell) {
-                const lastColumnIndex = this.getLastEnabledColumnIndex(nextRowIndex);
-                if (lastColumnIndex != null) {
-                  nextColumnIndex = lastColumnIndex;
-                }
-              }
-              const cell = this.getCell(nextRowIndex, nextColumnIndex);
-              if (!this.getItemDisabled(cell)) {
-                return this.getItemValue(cell);
-              }
-            }
-            return this.lastValue;
-          });
-          this.columnCount = columnCount;
-        }
-      };
-      Selection = class _Selection extends Set {
-        constructor(values = []) {
-          super(values);
-          __publicField5(this, "selectionMode", "single");
-          __publicField5(this, "deselectable", true);
-          __publicField5(this, "copy", () => {
-            const clone = new _Selection([...this]);
-            return this.sync(clone);
-          });
-          __publicField5(this, "sync", (other) => {
-            other.selectionMode = this.selectionMode;
-            other.deselectable = this.deselectable;
-            return other;
-          });
-          __publicField5(this, "isEmpty", () => {
-            return this.size === 0;
-          });
-          __publicField5(this, "isSelected", (value) => {
-            if (this.selectionMode === "none" || value == null) {
-              return false;
-            }
-            return this.has(value);
-          });
-          __publicField5(this, "canSelect", (collection5, value) => {
-            return this.selectionMode !== "none" || !collection5.getItemDisabled(collection5.find(value));
-          });
-          __publicField5(this, "firstSelectedValue", (collection5) => {
-            let firstValue = null;
-            for (let value of this) {
-              if (!firstValue || collection5.compareValue(value, firstValue) < 0) {
-                firstValue = value;
-              }
-            }
-            return firstValue;
-          });
-          __publicField5(this, "lastSelectedValue", (collection5) => {
-            let lastValue = null;
-            for (let value of this) {
-              if (!lastValue || collection5.compareValue(value, lastValue) > 0) {
-                lastValue = value;
-              }
-            }
-            return lastValue;
-          });
-          __publicField5(this, "extendSelection", (collection5, anchorValue, targetValue) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (this.selectionMode === "single") {
-              return this.replaceSelection(collection5, targetValue);
-            }
-            const selection = this.copy();
-            const lastSelected = Array.from(this).pop();
-            for (let key of collection5.getValueRange(anchorValue, lastSelected != null ? lastSelected : targetValue)) {
-              selection.delete(key);
-            }
-            for (let key of collection5.getValueRange(targetValue, anchorValue)) {
-              if (this.canSelect(collection5, key)) {
-                selection.add(key);
-              }
-            }
-            return selection;
-          });
-          __publicField5(this, "toggleSelection", (collection5, value) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (this.selectionMode === "single" && !this.isSelected(value)) {
-              return this.replaceSelection(collection5, value);
-            }
-            const selection = this.copy();
-            if (selection.has(value)) {
-              selection.delete(value);
-            } else if (selection.canSelect(collection5, value)) {
-              selection.add(value);
-            }
-            return selection;
-          });
-          __publicField5(this, "replaceSelection", (collection5, value) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (value == null) {
-              return this;
-            }
-            if (!this.canSelect(collection5, value)) {
-              return this;
-            }
-            const selection = new _Selection([value]);
-            return this.sync(selection);
-          });
-          __publicField5(this, "setSelection", (values2) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            let selection = new _Selection();
-            for (let value of values2) {
-              if (value != null) {
-                selection.add(value);
-                if (this.selectionMode === "single") {
-                  break;
-                }
-              }
-            }
-            return this.sync(selection);
-          });
-          __publicField5(this, "clearSelection", () => {
-            const selection = this.copy();
-            if (selection.deselectable && selection.size > 0) {
-              selection.clear();
-            }
-            return selection;
-          });
-          __publicField5(this, "select", (collection5, value, forceToggle) => {
-            if (this.selectionMode === "none") {
-              return this;
-            }
-            if (this.selectionMode === "single") {
-              if (this.isSelected(value) && this.deselectable) {
-                return this.toggleSelection(collection5, value);
-              } else {
-                return this.replaceSelection(collection5, value);
-              }
-            } else if (this.selectionMode === "multiple" || forceToggle) {
-              return this.toggleSelection(collection5, value);
-            } else {
-              return this.replaceSelection(collection5, value);
-            }
-          });
-          __publicField5(this, "deselect", (value) => {
-            const selection = this.copy();
-            selection.delete(value);
-            return selection;
-          });
-          __publicField5(this, "isEqual", (other) => {
-            return isEqual(Array.from(this), Array.from(other));
-          });
-        }
-      };
-      TreeCollection = class _TreeCollection {
-        constructor(options) {
-          this.options = options;
-          __publicField5(this, "rootNode");
-          __publicField5(this, "isEqual", (other) => {
-            return isEqual(this.rootNode, other.rootNode);
-          });
-          __publicField5(this, "getNodeChildren", (node) => {
-            var _a, _b, _c, _d;
-            return (_d = (_c = (_b = (_a = this.options).nodeToChildren) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
-          });
-          __publicField5(this, "resolveIndexPath", (valueOrIndexPath) => {
-            return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
-          });
-          __publicField5(this, "resolveNode", (valueOrIndexPath) => {
-            const indexPath = this.resolveIndexPath(valueOrIndexPath);
-            return indexPath ? this.at(indexPath) : void 0;
-          });
-          __publicField5(this, "getNodeChildrenCount", (node) => {
-            var _a, _b, _c;
-            return (_c = (_b = (_a = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
-          });
-          __publicField5(this, "getNodeValue", (node) => {
-            var _a, _b, _c;
-            return (_c = (_b = (_a = this.options).nodeToValue) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToValue(node);
-          });
-          __publicField5(this, "getNodeDisabled", (node) => {
-            var _a, _b, _c;
-            return (_c = (_b = (_a = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
-          });
-          __publicField5(this, "stringify", (value) => {
-            const node = this.findNode(value);
-            if (!node) return null;
-            return this.stringifyNode(node);
-          });
-          __publicField5(this, "stringifyNode", (node) => {
-            var _a, _b, _c;
-            return (_c = (_b = (_a = this.options).nodeToString) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToString(node);
-          });
-          __publicField5(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
-            let firstChild;
-            visit(rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a;
-                if (this.isSameNode(node, rootNode)) return;
-                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
-                if (!firstChild && indexPath.length > 0 && !this.getNodeDisabled(node)) {
-                  firstChild = node;
-                  return "stop";
-                }
-              }
-            });
-            return firstChild;
-          });
-          __publicField5(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
-            let lastChild;
-            visit(rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a;
-                if (this.isSameNode(node, rootNode)) return;
-                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
-                if (indexPath.length > 0 && !this.getNodeDisabled(node)) {
-                  lastChild = node;
-                }
-              }
-            });
-            return lastChild;
-          });
-          __publicField5(this, "at", (indexPath) => {
-            return access(this.rootNode, indexPath, {
-              getChildren: this.getNodeChildren
-            });
-          });
-          __publicField5(this, "findNode", (value, rootNode = this.rootNode) => {
-            return find(rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === value
-            });
-          });
-          __publicField5(this, "findNodes", (values, rootNode = this.rootNode) => {
-            const v2 = new Set(values.filter((v22) => v22 != null));
-            return findAll(rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => v2.has(this.getNodeValue(node))
-            });
-          });
-          __publicField5(this, "sort", (values) => {
-            return values.reduce((acc, value) => {
-              const indexPath = this.getIndexPath(value);
-              if (indexPath) acc.push({ value, indexPath });
-              return acc;
-            }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
-          });
-          __publicField5(this, "getValue", (indexPath) => {
-            const node = this.at(indexPath);
-            return node ? this.getNodeValue(node) : void 0;
-          });
-          __publicField5(this, "getValuePath", (indexPath) => {
-            if (!indexPath) return [];
-            const valuePath = [];
-            let currentPath = [...indexPath];
-            while (currentPath.length > 0) {
-              const node = this.at(currentPath);
-              if (node) valuePath.unshift(this.getNodeValue(node));
-              currentPath.pop();
-            }
-            return valuePath;
-          });
-          __publicField5(this, "getDepth", (value) => {
-            var _a;
-            const indexPath = findIndexPath(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === value
-            });
-            return (_a = indexPath == null ? void 0 : indexPath.length) != null ? _a : 0;
-          });
-          __publicField5(this, "isSameNode", (node, other) => {
-            return this.getNodeValue(node) === this.getNodeValue(other);
-          });
-          __publicField5(this, "isRootNode", (node) => {
-            return this.isSameNode(node, this.rootNode);
-          });
-          __publicField5(this, "contains", (parentIndexPath, valueIndexPath) => {
-            if (!parentIndexPath || !valueIndexPath) return false;
-            return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
-          });
-          __publicField5(this, "getNextNode", (value, opts = {}) => {
-            let found = false;
-            let nextNode;
-            visit(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a;
-                if (this.isRootNode(node)) return;
-                const nodeValue = this.getNodeValue(node);
-                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) {
-                  if (nodeValue === value) {
-                    found = true;
-                  }
-                  return "skip";
-                }
-                if (found && !this.getNodeDisabled(node)) {
-                  nextNode = node;
-                  return "stop";
-                }
-                if (nodeValue === value) {
-                  found = true;
-                }
-              }
-            });
-            return nextNode;
-          });
-          __publicField5(this, "getPreviousNode", (value, opts = {}) => {
-            let previousNode;
-            let found = false;
-            visit(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a;
-                if (this.isRootNode(node)) return;
-                const nodeValue = this.getNodeValue(node);
-                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) {
-                  return "skip";
-                }
-                if (nodeValue === value) {
-                  found = true;
-                  return "stop";
-                }
-                if (!this.getNodeDisabled(node)) {
-                  previousNode = node;
-                }
-              }
-            });
-            return found ? previousNode : void 0;
-          });
-          __publicField5(this, "getParentNodes", (valueOrIndexPath) => {
-            var _a;
-            const indexPath = (_a = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a.slice();
-            if (!indexPath) return [];
-            const result = [];
-            while (indexPath.length > 0) {
-              indexPath.pop();
-              const parentNode = this.at(indexPath);
-              if (parentNode && !this.isRootNode(parentNode)) {
-                result.unshift(parentNode);
-              }
-            }
-            return result;
-          });
-          __publicField5(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
-            const parentNode = this.resolveNode(valueOrIndexPath);
-            if (!parentNode) return [];
-            const result = [];
-            visit(parentNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, nodeIndexPath) => {
-                if (nodeIndexPath.length === 0) return;
-                if (!(options2 == null ? void 0 : options2.withBranch) && this.isBranchNode(node)) return;
-                result.push(node);
-              }
-            });
-            return result;
-          });
-          __publicField5(this, "getDescendantValues", (valueOrIndexPath, options2) => {
-            const children = this.getDescendantNodes(valueOrIndexPath, options2);
-            return children.map((child) => this.getNodeValue(child));
-          });
-          __publicField5(this, "getParentIndexPath", (indexPath) => {
-            return indexPath.slice(0, -1);
-          });
-          __publicField5(this, "getParentNode", (valueOrIndexPath) => {
-            const indexPath = this.resolveIndexPath(valueOrIndexPath);
-            return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
-          });
-          __publicField5(this, "visit", (opts) => {
-            const _a = opts, { skip } = _a, rest = __objRest(_a, ["skip"]);
-            visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a2;
-                if (this.isRootNode(node)) return;
-                if (skip == null ? void 0 : skip({ value: this.getNodeValue(node), node, indexPath })) return "skip";
-                return (_a2 = rest.onEnter) == null ? void 0 : _a2.call(rest, node, indexPath);
-              }
-            }));
-          });
-          __publicField5(this, "getPreviousSibling", (indexPath) => {
-            const parentNode = this.getParentNode(indexPath);
-            if (!parentNode) return;
-            const siblings = this.getNodeChildren(parentNode);
-            let idx = indexPath[indexPath.length - 1];
-            while (--idx >= 0) {
-              const sibling = siblings[idx];
-              if (!this.getNodeDisabled(sibling)) return sibling;
-            }
-            return;
-          });
-          __publicField5(this, "getNextSibling", (indexPath) => {
-            const parentNode = this.getParentNode(indexPath);
-            if (!parentNode) return;
-            const siblings = this.getNodeChildren(parentNode);
-            let idx = indexPath[indexPath.length - 1];
-            while (++idx < siblings.length) {
-              const sibling = siblings[idx];
-              if (!this.getNodeDisabled(sibling)) return sibling;
-            }
-            return;
-          });
-          __publicField5(this, "getSiblingNodes", (indexPath) => {
-            const parentNode = this.getParentNode(indexPath);
-            return parentNode ? this.getNodeChildren(parentNode) : [];
-          });
-          __publicField5(this, "getValues", (rootNode = this.rootNode) => {
-            const values = flatMap(rootNode, {
-              getChildren: this.getNodeChildren,
-              transform: (node) => [this.getNodeValue(node)]
-            });
-            return values.slice(1);
-          });
-          __publicField5(this, "isValidDepth", (indexPath, depth) => {
-            if (depth == null) return true;
-            if (typeof depth === "function") return depth(indexPath.length);
-            return indexPath.length === depth;
-          });
-          __publicField5(this, "isBranchNode", (node) => {
-            return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
-          });
-          __publicField5(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
-            let values = [];
-            visit(rootNode, {
-              getChildren: this.getNodeChildren,
-              onEnter: (node, indexPath) => {
-                var _a;
-                if (indexPath.length === 0) return;
-                const nodeValue = this.getNodeValue(node);
-                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) return "skip";
-                if (this.isBranchNode(node) && this.isValidDepth(indexPath, opts.depth)) {
-                  values.push(this.getNodeValue(node));
-                }
-              }
-            });
-            return values;
-          });
-          __publicField5(this, "flatten", (rootNode = this.rootNode) => {
-            return flatten(rootNode, { getChildren: this.getNodeChildren });
-          });
-          __publicField5(this, "_create", (node, children) => {
-            if (this.getNodeChildren(node).length > 0 || children.length > 0) {
-              return __spreadProps(__spreadValues({}, node), { children });
-            }
-            return __spreadValues({}, node);
-          });
-          __publicField5(this, "_insert", (rootNode, indexPath, nodes) => {
-            return this.copy(
-              insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
-            );
-          });
-          __publicField5(this, "copy", (rootNode) => {
-            return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
-          });
-          __publicField5(this, "_replace", (rootNode, indexPath, node) => {
-            return this.copy(
-              replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
-            );
-          });
-          __publicField5(this, "_move", (rootNode, indexPaths, to) => {
-            return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
-          });
-          __publicField5(this, "_remove", (rootNode, indexPaths) => {
-            return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
-          });
-          __publicField5(this, "replace", (indexPath, node) => {
-            return this._replace(this.rootNode, indexPath, node);
-          });
-          __publicField5(this, "remove", (indexPaths) => {
-            return this._remove(this.rootNode, indexPaths);
-          });
-          __publicField5(this, "insertBefore", (indexPath, nodes) => {
-            const parentNode = this.getParentNode(indexPath);
-            return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
-          });
-          __publicField5(this, "insertAfter", (indexPath, nodes) => {
-            const parentNode = this.getParentNode(indexPath);
-            if (!parentNode) return;
-            const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
-            return this._insert(this.rootNode, nextIndex2, nodes);
-          });
-          __publicField5(this, "move", (fromIndexPaths, toIndexPath) => {
-            return this._move(this.rootNode, fromIndexPaths, toIndexPath);
-          });
-          __publicField5(this, "filter", (predicate) => {
-            const filteredRoot = filter(this.rootNode, {
-              predicate,
-              getChildren: this.getNodeChildren,
-              create: this._create
-            });
-            return this.copy(filteredRoot);
-          });
-          __publicField5(this, "toJSON", () => {
-            return this.getValues(this.rootNode);
-          });
-          this.rootNode = options.rootNode;
-        }
-        getIndexPath(valueOrValuePath) {
-          if (Array.isArray(valueOrValuePath)) {
-            if (valueOrValuePath.length === 0) return [];
-            const indexPath = [];
-            let currentChildren = this.getNodeChildren(this.rootNode);
-            for (let i2 = 0; i2 < valueOrValuePath.length; i2++) {
-              const currentValue = valueOrValuePath[i2];
-              const matchingChildIndex = currentChildren.findIndex((child) => this.getNodeValue(child) === currentValue);
-              if (matchingChildIndex === -1) break;
-              indexPath.push(matchingChildIndex);
-              if (i2 < valueOrValuePath.length - 1) {
-                const currentNode = currentChildren[matchingChildIndex];
-                currentChildren = this.getNodeChildren(currentNode);
-              }
-            }
-            return indexPath;
-          } else {
-            return findIndexPath(this.rootNode, {
-              getChildren: this.getNodeChildren,
-              predicate: (node) => this.getNodeValue(node) === valueOrValuePath
-            });
-          }
-        }
-      };
-      fallbackMethods = {
-        nodeToValue(node) {
-          if (typeof node === "string") return node;
-          if (isObject(node) && hasProp(node, "value")) return node.value;
-          return "";
-        },
-        nodeToString(node) {
-          if (typeof node === "string") return node;
-          if (isObject(node) && hasProp(node, "label")) return node.label;
-          return fallbackMethods.nodeToValue(node);
-        },
-        isNodeDisabled(node) {
-          if (isObject(node) && hasProp(node, "disabled")) return !!node.disabled;
-          return false;
-        },
-        nodeToChildren(node) {
-          return node.children;
-        },
-        nodeToChildrenCount(node) {
-          if (isObject(node) && hasProp(node, "childrenCount")) return node.childrenCount;
-        }
-      };
+      ID = "__live-region__";
     }
   });
 
-  // ../priv/static/chunk-VXCJNDUG.mjs
+  // ../priv/static/chunk-AFD7D2GA.mjs
+  function readFlipAttr(el) {
+    const raw = el.dataset.positionFlip;
+    if (raw == null) return void 0;
+    if (raw === "true") return true;
+    if (raw === "false") return false;
+    const list = raw.split(",").map((v2) => v2.trim()).filter(Boolean);
+    return list.length > 0 ? list : void 0;
+  }
+  function readPositioningOptions(el) {
+    const options = {};
+    const strategy = getString(el, "positionStrategy");
+    if (strategy) options.strategy = strategy;
+    const placement = getString(el, "positionPlacement");
+    if (placement) options.placement = placement;
+    const gutter = getNumber(el, "positionGutter");
+    if (gutter !== void 0) options.gutter = gutter;
+    const shift3 = getNumber(el, "positionShift");
+    if (shift3 !== void 0) options.shift = shift3;
+    const overflowPadding = getNumber(el, "positionOverflowPadding");
+    if (overflowPadding !== void 0) options.overflowPadding = overflowPadding;
+    const arrowPadding = getNumber(el, "positionArrowPadding");
+    if (arrowPadding !== void 0) options.arrowPadding = arrowPadding;
+    const flip3 = readFlipAttr(el);
+    if (flip3 !== void 0) options.flip = flip3;
+    const slide = getBooleanValue(el, "positionSlide");
+    if (slide !== void 0) options.slide = slide;
+    const overlap = getBooleanValue(el, "positionOverlap");
+    if (overlap !== void 0) options.overlap = overlap;
+    const sameWidth = getBooleanValue(el, "positionSameWidth");
+    if (sameWidth !== void 0) options.sameWidth = sameWidth;
+    const fitViewport = getBooleanValue(el, "positionFitViewport");
+    if (fitViewport !== void 0) options.fitViewport = fitViewport;
+    const hideWhenDetached = getBooleanValue(el, "positionHideWhenDetached");
+    if (hideWhenDetached !== void 0) options.hideWhenDetached = hideWhenDetached;
+    return Object.keys(options).length > 0 ? options : void 0;
+  }
+  var init_chunk_AFD7D2GA = __esm({
+    "../priv/static/chunk-AFD7D2GA.mjs"() {
+      "use strict";
+      init_chunk_SJ37CZDS();
+    }
+  });
+
+  // ../priv/static/chunk-F6MNP3LD.mjs
   function getPlacementDetails(placement) {
     const [side, align] = placement.split("-");
     return { side, align, hasAlign: align != null };
@@ -9356,83 +8642,155 @@ var Corex = (() => {
     }
     return opts;
   }
-  function getPlacementImpl(referenceOrVirtual, floating, opts = {}) {
-    var _a, _b;
-    const anchor = (_b = (_a = opts.getAnchorElement) == null ? void 0 : _a.call(opts)) != null ? _b : referenceOrVirtual;
-    const reference = getAnchorElement(anchor, opts.getAnchorRect);
-    if (!floating || !reference) return;
+  function createStyleCleanup(el, props) {
+    if (!el) return noop;
+    const prev2 = new Map(props.map((prop) => [prop, el.style.getPropertyValue(prop)]));
+    return () => {
+      prev2.forEach((value, prop) => {
+        if (value) el.style.setProperty(prop, value);
+        else el.style.removeProperty(prop);
+      });
+      if (el.style.length === 0) {
+        el.removeAttribute("style");
+      }
+    };
+  }
+  function anchorIdentity(anchor) {
+    if (anchor == null) return null;
+    if (isHTMLElement(anchor)) return anchor;
+    if (typeof anchor === "object" && anchor && "contextElement" in anchor && anchor.contextElement) {
+      return anchor.contextElement;
+    }
+    return anchor;
+  }
+  function getPlacementImpl(referenceOrVirtual, floatingOrVirtual, opts = {}) {
+    const resolveFloating = () => {
+      const raw = typeof floatingOrVirtual === "function" ? floatingOrVirtual() : floatingOrVirtual;
+      return raw != null ? raw : null;
+    };
+    const resolveAnchor = () => {
+      var _a, _b;
+      const raw = typeof referenceOrVirtual === "function" ? referenceOrVirtual() : referenceOrVirtual;
+      return (_b = (_a = opts.getAnchorElement) == null ? void 0 : _a.call(opts)) != null ? _b : raw;
+    };
+    const resolveReference = () => {
+      const anchor = resolveAnchor();
+      if (!anchor && !opts.getAnchorRect) return null;
+      return getAnchorElement(anchor, opts.getAnchorRect);
+    };
     const options = Object.assign({}, defaultOptions, opts);
-    const arrowEl = floating.querySelector("[data-part=arrow]");
-    const middleware = [
-      getOffsetMiddleware(arrowEl, options),
-      getFlipMiddleware(options),
-      getShiftMiddleware(options),
-      getArrowMiddleware(arrowEl, floating.ownerDocument, options),
-      shiftArrowMiddleware(arrowEl),
-      createTransformOriginMiddleware(
-        { gutter: options.gutter, offset: options.offset, overlap: options.overlap },
-        arrowEl
-      ),
-      getSizeMiddleware(options),
-      hideWhenDetachedMiddleware(options),
-      rectMiddleware
-    ];
+    let middleware = [];
+    let cachedMiddlewareFloating = null;
+    let restoreFloatingStyles;
+    let restoreArrowStyles;
+    function rebuildMiddlewareForFloating(floating) {
+      restoreFloatingStyles == null ? void 0 : restoreFloatingStyles();
+      restoreArrowStyles == null ? void 0 : restoreArrowStyles();
+      cachedMiddlewareFloating = floating;
+      restoreFloatingStyles = options.restoreStyles ? createStyleCleanup(floating, floatingStyleProps) : void 0;
+      const arrowEl = floating.querySelector("[data-part=arrow]");
+      restoreArrowStyles = options.restoreStyles ? createStyleCleanup(arrowEl, arrowStyleProps) : void 0;
+      middleware = [
+        getOffsetMiddleware(arrowEl, options),
+        getFlipMiddleware(options),
+        getShiftMiddleware(options),
+        getArrowMiddleware(arrowEl, floating.ownerDocument, options),
+        shiftArrowMiddleware(arrowEl),
+        createTransformOriginMiddleware(
+          { gutter: options.gutter, offset: options.offset, overlap: options.overlap },
+          arrowEl
+        ),
+        getSizeMiddleware(options),
+        hideWhenDetachedMiddleware(options),
+        rectMiddleware
+      ];
+    }
     const { placement, strategy, onComplete, onPositioned } = options;
     let lastX;
     let lastY;
     let zIndexComputed = false;
-    const updatePosition = () => __async(null, null, function* () {
-      var _a2;
-      if (!reference || !floating) return;
-      const pos = yield computePosition2(reference, floating, {
-        placement,
-        middleware,
-        strategy
-      });
-      onComplete == null ? void 0 : onComplete(pos);
-      const win = getWindow(floating);
-      const x2 = roundByDpr(win, pos.x);
-      const y2 = roundByDpr(win, pos.y);
-      floating.style.transform = `translate3d(${x2}px, ${y2}px, 0)`;
-      if (!isApproximatelyEqual(lastX, x2)) {
-        floating.style.setProperty("--x", `${x2}px`);
-        lastX = x2;
-      }
-      if (!isApproximatelyEqual(lastY, y2)) {
-        floating.style.setProperty("--y", `${y2}px`);
-        lastY = y2;
-      }
-      if (options.hideWhenDetached) {
-        const isHidden = (_a2 = pos.middlewareData.hide) == null ? void 0 : _a2.referenceHidden;
-        if (isHidden) {
-          floating.style.setProperty("visibility", "hidden");
-          floating.style.setProperty("pointer-events", "none");
-        } else {
-          floating.style.removeProperty("visibility");
-          floating.style.removeProperty("pointer-events");
-        }
-      }
-      if (!zIndexComputed) {
-        const contentEl = floating.firstElementChild;
-        if (contentEl) {
-          floating.style.setProperty("--z-index", getComputedStyle2(contentEl).zIndex);
-          zIndexComputed = true;
-        }
-      }
-    });
-    const update = () => __async(null, null, function* () {
-      if (opts.updatePosition) {
-        yield opts.updatePosition({ updatePosition, floatingElement: floating });
-        onPositioned == null ? void 0 : onPositioned({ placed: true });
-      } else {
-        yield updatePosition();
-      }
-    });
+    let lastAnchorForObserve = void 0;
+    let lastFloatingForObserve = void 0;
+    let cancelAutoUpdate = noop;
     const autoUpdateOptions = getAutoUpdateOptions(options.listeners);
-    const cancelAutoUpdate = options.listeners ? autoUpdate(reference, floating, update, autoUpdateOptions) : noop;
-    update();
+    function syncAutoUpdateObservers() {
+      if (!options.listeners) return;
+      const anchor = resolveAnchor();
+      const reference = resolveReference();
+      const floating = resolveFloating();
+      if (!reference || !floating) return;
+      const anchorChanged = anchorIdentity(anchor) !== anchorIdentity(lastAnchorForObserve);
+      const floatingChanged = floating !== lastFloatingForObserve;
+      if (anchorChanged || floatingChanged) {
+        cancelAutoUpdate();
+        lastAnchorForObserve = anchor;
+        lastFloatingForObserve = floating;
+        cancelAutoUpdate = autoUpdate(reference, floating, runUpdate, autoUpdateOptions);
+      }
+    }
+    function updatePosition() {
+      return __async(this, null, function* () {
+        var _a;
+        syncAutoUpdateObservers();
+        const floating = resolveFloating();
+        if (!floating) return;
+        if (floating !== cachedMiddlewareFloating) {
+          rebuildMiddlewareForFloating(floating);
+          zIndexComputed = false;
+        }
+        const reference = resolveReference();
+        if (!reference) return;
+        const pos = yield computePosition2(reference, floating, {
+          placement,
+          middleware,
+          strategy
+        });
+        onComplete == null ? void 0 : onComplete(pos);
+        const win = getWindow(floating);
+        const x2 = roundByDpr(win, pos.x);
+        const y2 = roundByDpr(win, pos.y);
+        if (!isApproximatelyEqual(lastX, x2)) {
+          floating.style.setProperty("--x", `${x2}px`);
+          lastX = x2;
+        }
+        if (!isApproximatelyEqual(lastY, y2)) {
+          floating.style.setProperty("--y", `${y2}px`);
+          lastY = y2;
+        }
+        if (options.hideWhenDetached) {
+          const isHidden = (_a = pos.middlewareData.hide) == null ? void 0 : _a.referenceHidden;
+          if (isHidden) {
+            floating.style.setProperty("visibility", "hidden");
+            floating.style.setProperty("pointer-events", "none");
+          } else {
+            floating.style.removeProperty("visibility");
+            floating.style.removeProperty("pointer-events");
+          }
+        }
+        if (!zIndexComputed) {
+          const contentEl = floating.firstElementChild;
+          if (contentEl) {
+            floating.style.setProperty("--z-index", getComputedStyle2(contentEl).zIndex);
+            zIndexComputed = true;
+          }
+        }
+      });
+    }
+    function runUpdate() {
+      return __async(this, null, function* () {
+        if (opts.updatePosition) {
+          yield opts.updatePosition({ updatePosition, floatingElement: resolveFloating() });
+          onPositioned == null ? void 0 : onPositioned({ placed: true });
+        } else {
+          yield updatePosition();
+        }
+      });
+    }
+    runUpdate();
     return () => {
-      cancelAutoUpdate == null ? void 0 : cancelAutoUpdate();
+      cancelAutoUpdate();
+      restoreArrowStyles == null ? void 0 : restoreArrowStyles();
+      restoreFloatingStyles == null ? void 0 : restoreFloatingStyles();
       onPositioned == null ? void 0 : onPositioned({ placed: false });
     };
   }
@@ -9442,9 +8800,7 @@ var Corex = (() => {
     const cleanups = [];
     cleanups.push(
       func(() => {
-        const reference = typeof referenceOrFn === "function" ? referenceOrFn() : referenceOrFn;
-        const floating = typeof floatingOrFn === "function" ? floatingOrFn() : floatingOrFn;
-        cleanups.push(getPlacementImpl(reference, floating, options));
+        cleanups.push(getPlacementImpl(referenceOrFn, floatingOrFn, options));
       })
     );
     return () => {
@@ -9488,11 +8844,11 @@ var Corex = (() => {
       }
     };
   }
-  var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, ARROW_FLOATING_STYLE;
-  var init_chunk_VXCJNDUG = __esm({
-    "../priv/static/chunk-VXCJNDUG.mjs"() {
+  var sides, min2, max2, round2, floor2, createCoords, oppositeSideMap, lrPlacement, rlPlacement, tbPlacement, btPlacement, MAX_RESET_COUNT, computePosition, arrow, flip, hide, originSides, offset, shift, limitShift, size, willChangeRe, containRe, isNotNone, isWebKitValue, noOffsets, SCROLLBAR_MAX, getElementRects, platform, offset2, shift2, flip2, size2, hide2, arrow2, limitShift2, computePosition2, toVar, cssVars, getSideAxis2, rectMiddleware, shiftArrowMiddleware, defaultOptions, floatingStyleProps, arrowStyleProps, ARROW_FLOATING_STYLE;
+  var init_chunk_F6MNP3LD = __esm({
+    "../priv/static/chunk-F6MNP3LD.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_SJ37CZDS();
       sides = ["top", "right", "bottom", "left"];
       min2 = Math.min;
       max2 = Math.max;
@@ -10169,6 +9525,7 @@ var Corex = (() => {
         strategy: "absolute",
         placement: "bottom",
         listeners: true,
+        restoreStyles: false,
         gutter: 8,
         flip: true,
         slide: true,
@@ -10178,6 +9535,20 @@ var Corex = (() => {
         overflowPadding: 8,
         arrowPadding: 4
       };
+      floatingStyleProps = [
+        "transform",
+        "visibility",
+        "pointer-events",
+        "--x",
+        "--y",
+        "--z-index",
+        "--reference-width",
+        "--reference-height",
+        "--available-width",
+        "--available-height",
+        "--transform-origin"
+      ];
+      arrowStyleProps = ["top", "right", "bottom", "left"];
       ARROW_FLOATING_STYLE = {
         bottom: "rotate(45deg)",
         left: "rotate(135deg)",
@@ -10187,7 +9558,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-YCAWAEF3.mjs
+  // ../priv/static/chunk-DXQBMWMN.mjs
   function getWindowFrames(win) {
     const frames = {
       each(cb) {
@@ -10310,7 +9681,14 @@ var Corex = (() => {
     }
     const pointerdownCleanups = /* @__PURE__ */ new Set();
     const isInShadowRoot = isShadowRoot(node == null ? void 0 : node.getRootNode());
+    let isPointerDown = false;
     function onPointerDown(event) {
+      isPointerDown = true;
+      const onPointerUp = () => {
+        isPointerDown = false;
+      };
+      doc.addEventListener("pointerup", onPointerUp, { once: true });
+      win.addEventListener("pointerup", onPointerUp, { once: true });
       function handler(clickEvent) {
         var _a, _b;
         const func = defer && !isTouchDevice() ? raf : (v2) => v2();
@@ -10351,6 +9729,7 @@ var Corex = (() => {
       cleanups.add(frames.addEventListener("pointerdown", onPointerDown, true));
     }, 0);
     function onFocusin(event) {
+      if (isPointerDown) return;
       const func = defer ? raf : (v2) => v2();
       func(() => {
         var _a, _b;
@@ -10404,17 +9783,17 @@ var Corex = (() => {
     return el.dispatchEvent(event);
   }
   var POINTER_OUTSIDE_EVENT, FOCUS_OUTSIDE_EVENT, isPointerEvent;
-  var init_chunk_YCAWAEF3 = __esm({
-    "../priv/static/chunk-YCAWAEF3.mjs"() {
+  var init_chunk_DXQBMWMN = __esm({
+    "../priv/static/chunk-DXQBMWMN.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_SJ37CZDS();
       POINTER_OUTSIDE_EVENT = "pointerdown.outside";
       FOCUS_OUTSIDE_EVENT = "focus.outside";
       isPointerEvent = (event) => "clientY" in event;
     }
   });
 
-  // ../priv/static/chunk-EV6LXBMY.mjs
+  // ../priv/static/chunk-JJ4TVKGJ.mjs
   function trackEscapeKeydown(node, fn) {
     const handleKeyDown = (event) => {
       if (event.key !== "Escape") return;
@@ -10573,11 +9952,11 @@ var Corex = (() => {
     };
   }
   var LAYER_REQUEST_DISMISS_EVENT, layerStack, originalBodyPointerEvents;
-  var init_chunk_EV6LXBMY = __esm({
-    "../priv/static/chunk-EV6LXBMY.mjs"() {
+  var init_chunk_JJ4TVKGJ = __esm({
+    "../priv/static/chunk-JJ4TVKGJ.mjs"() {
       "use strict";
-      init_chunk_YCAWAEF3();
-      init_chunk_SNFXM6OQ();
+      init_chunk_DXQBMWMN();
+      init_chunk_SJ37CZDS();
       LAYER_REQUEST_DISMISS_EVENT = "layer:request-dismiss";
       layerStack = {
         layers: [],
@@ -10698,6 +10077,1506 @@ var Corex = (() => {
           this.remove(this.layers[0].node);
         }
       };
+    }
+  });
+
+  // ../priv/static/chunk-ZZTIKT3S.mjs
+  function itemToIdOrValue(item) {
+    var _a, _b;
+    return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
+  }
+  function zagIdValueLabelCollectionConfig(items, hasGroups) {
+    if (hasGroups) {
+      return {
+        items,
+        itemToValue: (item) => itemToIdOrValue(item),
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => {
+          var _a;
+          return (_a = item.group) != null ? _a : "";
+        }
+      };
+    }
+    return {
+      items,
+      itemToValue: (item) => itemToIdOrValue(item),
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    };
+  }
+  function zagComboboxCollectionConfig(items, hasGroups) {
+    if (hasGroups) {
+      return {
+        items,
+        itemToValue: (item) => {
+          var _a;
+          return (_a = item.id) != null ? _a : "";
+        },
+        itemToString: (item) => item.label,
+        isItemDisabled: (item) => !!item.disabled,
+        groupBy: (item) => {
+          var _a;
+          return (_a = item.group) != null ? _a : "";
+        }
+      };
+    }
+    return {
+      items,
+      itemToValue: (item) => {
+        var _a;
+        return (_a = item.id) != null ? _a : "";
+      },
+      itemToString: (item) => item.label,
+      isItemDisabled: (item) => !!item.disabled
+    };
+  }
+  var init_chunk_ZZTIKT3S = __esm({
+    "../priv/static/chunk-ZZTIKT3S.mjs"() {
+      "use strict";
+    }
+  });
+
+  // ../priv/static/chunk-FLYYJ5XV.mjs
+  function insert(items, index, ...values) {
+    return [...items.slice(0, index), ...values, ...items.slice(index)];
+  }
+  function move(items, indices, toIndex) {
+    indices = [...indices].sort((a2, b2) => a2 - b2);
+    const itemsToMove = indices.map((i2) => items[i2]);
+    for (let i2 = indices.length - 1; i2 >= 0; i2--) {
+      items = [...items.slice(0, indices[i2]), ...items.slice(indices[i2] + 1)];
+    }
+    toIndex = Math.max(0, toIndex - indices.filter((i2) => i2 < toIndex).length);
+    return [...items.slice(0, toIndex), ...itemsToMove, ...items.slice(toIndex)];
+  }
+  function isGridCollection(v2) {
+    return hasProp(v2, "columnCount") && hasProp(v2, "getRows");
+  }
+  function resolveSelectedItems({
+    values,
+    collection: collection5,
+    selectedItemMap
+  }) {
+    var _a;
+    const result = [];
+    for (const value of values) {
+      const item = (_a = collection5.find(value)) != null ? _a : selectedItemMap.get(value);
+      if (item != null) result.push(item);
+    }
+    return result;
+  }
+  function updateSelectedItemMap({
+    selectedItemMap,
+    values,
+    selectedItems,
+    collection: collection5
+  }) {
+    const nextMap = new Map(selectedItemMap);
+    for (const item of selectedItems) {
+      const value = collection5.getItemValue(item);
+      if (value != null) nextMap.set(value, item);
+    }
+    const allowedValues = new Set(values);
+    for (const value of nextMap.keys()) {
+      if (!allowedValues.has(value)) nextMap.delete(value);
+    }
+    return nextMap;
+  }
+  function deriveSelectionState({
+    values,
+    collection: collection5,
+    selectedItemMap
+  }) {
+    const selectedItems = resolveSelectedItems({ values, collection: collection5, selectedItemMap });
+    const nextSelectedItemMap = updateSelectedItemMap({
+      selectedItemMap,
+      values,
+      selectedItems,
+      collection: collection5
+    });
+    return { selectedItems, nextSelectedItemMap };
+  }
+  function createSelectedItemMap({
+    selectedItems,
+    collection: collection5
+  }) {
+    return updateSelectedItemMap({
+      selectedItemMap: /* @__PURE__ */ new Map(),
+      values: selectedItems.map((item) => collection5.getItemValue(item)).filter(Boolean),
+      selectedItems,
+      collection: collection5
+    });
+  }
+  function access(node, indexPath, options) {
+    for (let i2 = 0; i2 < indexPath.length; i2++) node = options.getChildren(node, indexPath.slice(i2 + 1))[indexPath[i2]];
+    return node;
+  }
+  function ancestorIndexPaths(indexPaths) {
+    const sortedPaths = sortIndexPaths(indexPaths);
+    const result = [];
+    const seen = /* @__PURE__ */ new Set();
+    for (const indexPath of sortedPaths) {
+      const key = indexPath.join();
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push(indexPath);
+      }
+    }
+    return result;
+  }
+  function compareIndexPaths(a2, b2) {
+    for (let i2 = 0; i2 < Math.min(a2.length, b2.length); i2++) {
+      if (a2[i2] < b2[i2]) return -1;
+      if (a2[i2] > b2[i2]) return 1;
+    }
+    return a2.length - b2.length;
+  }
+  function sortIndexPaths(indexPaths) {
+    return indexPaths.sort(compareIndexPaths);
+  }
+  function find(node, options) {
+    let found;
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) {
+          found = child;
+          return "stop";
+        }
+      }
+    }));
+    return found;
+  }
+  function findAll(node, options) {
+    const found = [];
+    visit(node, {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) found.push(child);
+      },
+      getChildren: options.getChildren
+    });
+    return found;
+  }
+  function findIndexPath(node, options) {
+    let found;
+    visit(node, {
+      onEnter: (child, indexPath) => {
+        if (options.predicate(child, indexPath)) {
+          found = [...indexPath];
+          return "stop";
+        }
+      },
+      getChildren: options.getChildren
+    });
+    return found;
+  }
+  function reduce(node, options) {
+    let result = options.initialResult;
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onEnter: (child, indexPath) => {
+        result = options.nextResult(result, child, indexPath);
+      }
+    }));
+    return result;
+  }
+  function flatMap(node, options) {
+    return reduce(node, __spreadProps(__spreadValues({}, options), {
+      initialResult: [],
+      nextResult: (result, child, indexPath) => {
+        result.push(...options.transform(child, indexPath));
+        return result;
+      }
+    }));
+  }
+  function filter(node, options) {
+    const { predicate, create, getChildren } = options;
+    const filterRecursive = (node2, indexPath) => {
+      const children = getChildren(node2, indexPath);
+      const filteredChildren = [];
+      children.forEach((child, index) => {
+        const childIndexPath = [...indexPath, index];
+        const filteredChild = filterRecursive(child, childIndexPath);
+        if (filteredChild) filteredChildren.push(filteredChild);
+      });
+      const isRoot = indexPath.length === 0;
+      const nodeMatches = predicate(node2, indexPath);
+      const hasFilteredChildren = filteredChildren.length > 0;
+      if (isRoot || nodeMatches || hasFilteredChildren) {
+        return create(node2, filteredChildren, indexPath);
+      }
+      return null;
+    };
+    return filterRecursive(node, []) || create(node, [], []);
+  }
+  function flatten(rootNode, options) {
+    const nodes = [];
+    let idx = 0;
+    const idxMap = /* @__PURE__ */ new Map();
+    const parentMap = /* @__PURE__ */ new Map();
+    visit(rootNode, {
+      getChildren: options.getChildren,
+      onEnter: (node, indexPath) => {
+        if (!idxMap.has(node)) {
+          idxMap.set(node, idx++);
+        }
+        const children = options.getChildren(node, indexPath);
+        children.forEach((child) => {
+          if (!parentMap.has(child)) {
+            parentMap.set(child, node);
+          }
+          if (!idxMap.has(child)) {
+            idxMap.set(child, idx++);
+          }
+        });
+        const _children = children.length > 0 ? children.map((child) => idxMap.get(child)) : void 0;
+        const parent = parentMap.get(node);
+        const _parent = parent ? idxMap.get(parent) : void 0;
+        const _index = idxMap.get(node);
+        nodes.push(__spreadProps(__spreadValues({}, node), { _children, _parent, _index }));
+      }
+    });
+    return nodes;
+  }
+  function insertOperation(index, nodes) {
+    return { type: "insert", index, nodes };
+  }
+  function removeOperation(indexes) {
+    return { type: "remove", indexes };
+  }
+  function replaceOperation() {
+    return { type: "replace" };
+  }
+  function splitIndexPath(indexPath) {
+    return [indexPath.slice(0, -1), indexPath[indexPath.length - 1]];
+  }
+  function getInsertionOperations(indexPath, nodes, operations = /* @__PURE__ */ new Map()) {
+    var _a;
+    const [parentIndexPath, index] = splitIndexPath(indexPath);
+    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
+      const parentKey = parentIndexPath.slice(0, i2).join();
+      switch ((_a = operations.get(parentKey)) == null ? void 0 : _a.type) {
+        case "remove":
+          continue;
+      }
+      operations.set(parentKey, replaceOperation());
+    }
+    const operation = operations.get(parentIndexPath.join());
+    switch (operation == null ? void 0 : operation.type) {
+      case "remove":
+        operations.set(parentIndexPath.join(), {
+          type: "removeThenInsert",
+          removeIndexes: operation.indexes,
+          insertIndex: index,
+          insertNodes: nodes
+        });
+        break;
+      default:
+        operations.set(parentIndexPath.join(), insertOperation(index, nodes));
+    }
+    return operations;
+  }
+  function getRemovalOperations(indexPaths) {
+    var _a;
+    const operations = /* @__PURE__ */ new Map();
+    const indexesToRemove = /* @__PURE__ */ new Map();
+    for (const indexPath of indexPaths) {
+      const parentKey = indexPath.slice(0, -1).join();
+      const value = (_a = indexesToRemove.get(parentKey)) != null ? _a : [];
+      value.push(indexPath[indexPath.length - 1]);
+      indexesToRemove.set(
+        parentKey,
+        value.sort((a2, b2) => a2 - b2)
+      );
+    }
+    for (const indexPath of indexPaths) {
+      for (let i2 = indexPath.length - 2; i2 >= 0; i2--) {
+        const parentKey = indexPath.slice(0, i2).join();
+        if (!operations.has(parentKey)) {
+          operations.set(parentKey, replaceOperation());
+        }
+      }
+    }
+    for (const [parentKey, indexes] of indexesToRemove) {
+      operations.set(parentKey, removeOperation(indexes));
+    }
+    return operations;
+  }
+  function getReplaceOperations(indexPath, node) {
+    const operations = /* @__PURE__ */ new Map();
+    const [parentIndexPath, index] = splitIndexPath(indexPath);
+    for (let i2 = parentIndexPath.length - 1; i2 >= 0; i2--) {
+      const parentKey = parentIndexPath.slice(0, i2).join();
+      operations.set(parentKey, replaceOperation());
+    }
+    operations.set(parentIndexPath.join(), {
+      type: "removeThenInsert",
+      removeIndexes: [index],
+      insertIndex: index,
+      insertNodes: [node]
+    });
+    return operations;
+  }
+  function mutate(node, operations, options) {
+    return map(node, __spreadProps(__spreadValues({}, options), {
+      getChildren: (node2, indexPath) => {
+        const key = indexPath.join();
+        const operation = operations.get(key);
+        switch (operation == null ? void 0 : operation.type) {
+          case "replace":
+          case "remove":
+          case "removeThenInsert":
+          case "insert":
+            return options.getChildren(node2, indexPath);
+          default:
+            return [];
+        }
+      },
+      transform: (node2, children, indexPath) => {
+        const key = indexPath.join();
+        const operation = operations.get(key);
+        switch (operation == null ? void 0 : operation.type) {
+          case "remove":
+            return options.create(
+              node2,
+              children.filter((_2, index) => !operation.indexes.includes(index)),
+              indexPath
+            );
+          case "removeThenInsert":
+            const updatedChildren = children.filter((_2, index) => !operation.removeIndexes.includes(index));
+            const adjustedIndex = operation.removeIndexes.reduce(
+              (index, removedIndex) => removedIndex < index ? index - 1 : index,
+              operation.insertIndex
+            );
+            return options.create(node2, splice(updatedChildren, adjustedIndex, 0, ...operation.insertNodes), indexPath);
+          case "insert":
+            return options.create(node2, splice(children, operation.index, 0, ...operation.nodes), indexPath);
+          case "replace":
+            return options.create(node2, children, indexPath);
+          default:
+            return node2;
+        }
+      }
+    }));
+  }
+  function splice(array, start, deleteCount, ...items) {
+    return [...array.slice(0, start), ...items, ...array.slice(start + deleteCount)];
+  }
+  function map(node, options) {
+    const childrenMap = {};
+    visit(node, __spreadProps(__spreadValues({}, options), {
+      onLeave: (child, indexPath) => {
+        var _a, _b;
+        const keyIndexPath = [0, ...indexPath];
+        const key = keyIndexPath.join();
+        const transformed = options.transform(child, (_a = childrenMap[key]) != null ? _a : [], indexPath);
+        const parentKey = keyIndexPath.slice(0, -1).join();
+        const parentChildren = (_b = childrenMap[parentKey]) != null ? _b : [];
+        parentChildren.push(transformed);
+        childrenMap[parentKey] = parentChildren;
+      }
+    }));
+    return childrenMap[""][0];
+  }
+  function insert2(node, options) {
+    const { nodes, at } = options;
+    if (at.length === 0) throw new Error(`Can't insert nodes at the root`);
+    const state2 = getInsertionOperations(at, nodes);
+    return mutate(node, state2, options);
+  }
+  function replace(node, options) {
+    if (options.at.length === 0) return options.node;
+    const operations = getReplaceOperations(options.at, options.node);
+    return mutate(node, operations, options);
+  }
+  function remove2(node, options) {
+    if (options.indexPaths.length === 0) return node;
+    for (const indexPath of options.indexPaths) {
+      if (indexPath.length === 0) throw new Error(`Can't remove the root node`);
+    }
+    const operations = getRemovalOperations(options.indexPaths);
+    return mutate(node, operations, options);
+  }
+  function move2(node, options) {
+    if (options.indexPaths.length === 0) return node;
+    for (const indexPath of options.indexPaths) {
+      if (indexPath.length === 0) throw new Error(`Can't move the root node`);
+    }
+    if (options.to.length === 0) throw new Error(`Can't move nodes to the root`);
+    const _ancestorIndexPaths = ancestorIndexPaths(options.indexPaths);
+    const nodesToInsert = _ancestorIndexPaths.map((indexPath) => access(node, indexPath, options));
+    const operations = getInsertionOperations(options.to, nodesToInsert, getRemovalOperations(_ancestorIndexPaths));
+    return mutate(node, operations, options);
+  }
+  function visit(node, options) {
+    const { onEnter, onLeave, getChildren } = options;
+    let indexPath = [];
+    let stack = [{ node }];
+    const getIndexPath = options.reuseIndexPath ? () => indexPath : () => indexPath.slice();
+    while (stack.length > 0) {
+      let wrapper = stack[stack.length - 1];
+      if (wrapper.state === void 0) {
+        const enterResult = onEnter == null ? void 0 : onEnter(wrapper.node, getIndexPath());
+        if (enterResult === "stop") return;
+        wrapper.state = enterResult === "skip" ? -1 : 0;
+      }
+      const children = wrapper.children || getChildren(wrapper.node, getIndexPath());
+      wrapper.children || (wrapper.children = children);
+      if (wrapper.state !== -1) {
+        if (wrapper.state < children.length) {
+          let currentIndex = wrapper.state;
+          indexPath.push(currentIndex);
+          stack.push({ node: children[currentIndex] });
+          wrapper.state = currentIndex + 1;
+          continue;
+        }
+        const leaveResult = onLeave == null ? void 0 : onLeave(wrapper.node, getIndexPath());
+        if (leaveResult === "stop") return;
+      }
+      indexPath.pop();
+      stack.pop();
+    }
+  }
+  var __defProp5, __defNormalProp5, __publicField5, fallback, ListCollection, match3, GridCollection, Selection, TreeCollection, fallbackMethods;
+  var init_chunk_FLYYJ5XV = __esm({
+    "../priv/static/chunk-FLYYJ5XV.mjs"() {
+      "use strict";
+      init_chunk_SJ37CZDS();
+      __defProp5 = Object.defineProperty;
+      __defNormalProp5 = (obj, key, value) => key in obj ? __defProp5(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+      __publicField5 = (obj, key, value) => __defNormalProp5(obj, typeof key !== "symbol" ? key + "" : key, value);
+      fallback = {
+        itemToValue(item) {
+          if (typeof item === "string") return item;
+          if (isObject(item) && hasProp(item, "value")) return item.value;
+          return "";
+        },
+        itemToString(item) {
+          if (typeof item === "string") return item;
+          if (isObject(item) && hasProp(item, "label")) return item.label;
+          return fallback.itemToValue(item);
+        },
+        isItemDisabled(item) {
+          if (isObject(item) && hasProp(item, "disabled")) return !!item.disabled;
+          return false;
+        }
+      };
+      ListCollection = class _ListCollection {
+        constructor(options) {
+          this.options = options;
+          __publicField5(this, "items");
+          __publicField5(this, "indexMap", null);
+          __publicField5(this, "copy", (items) => {
+            return new _ListCollection(__spreadProps(__spreadValues({}, this.options), { items: items != null ? items : [...this.items] }));
+          });
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual(this.items, other.items);
+          });
+          __publicField5(this, "setItems", (items) => {
+            return this.copy(items);
+          });
+          __publicField5(this, "getValues", (items = this.items) => {
+            const values = [];
+            for (const item of items) {
+              const value = this.getItemValue(item);
+              if (value != null) values.push(value);
+            }
+            return values;
+          });
+          __publicField5(this, "find", (value) => {
+            if (value == null) return null;
+            const index = this.indexOf(value);
+            return index !== -1 ? this.at(index) : null;
+          });
+          __publicField5(this, "findMany", (values) => {
+            const result = [];
+            for (const value of values) {
+              const item = this.find(value);
+              if (item != null) result.push(item);
+            }
+            return result;
+          });
+          __publicField5(this, "at", (index) => {
+            var _a;
+            if (!this.options.groupBy && !this.options.groupSort) {
+              return (_a = this.items[index]) != null ? _a : null;
+            }
+            let idx = 0;
+            const groups = this.group();
+            for (const [, items] of groups) {
+              for (const item of items) {
+                if (idx === index) return item;
+                idx++;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "sortFn", (valueA, valueB) => {
+            const indexA = this.indexOf(valueA);
+            const indexB = this.indexOf(valueB);
+            return (indexA != null ? indexA : 0) - (indexB != null ? indexB : 0);
+          });
+          __publicField5(this, "sort", (values) => {
+            return [...values].sort(this.sortFn.bind(this));
+          });
+          __publicField5(this, "getItemValue", (item) => {
+            var _a, _b, _c;
+            if (item == null) return null;
+            return (_c = (_b = (_a = this.options).itemToValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToValue(item);
+          });
+          __publicField5(this, "getItemDisabled", (item) => {
+            var _a, _b, _c;
+            if (item == null) return false;
+            return (_c = (_b = (_a = this.options).isItemDisabled) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.isItemDisabled(item);
+          });
+          __publicField5(this, "stringifyItem", (item) => {
+            var _a, _b, _c;
+            if (item == null) return null;
+            return (_c = (_b = (_a = this.options).itemToString) == null ? void 0 : _b.call(_a, item)) != null ? _c : fallback.itemToString(item);
+          });
+          __publicField5(this, "stringify", (value) => {
+            if (value == null) return null;
+            return this.stringifyItem(this.find(value));
+          });
+          __publicField5(this, "stringifyItems", (items, separator = ", ") => {
+            const strs = [];
+            for (const item of items) {
+              const str = this.stringifyItem(item);
+              if (str != null) strs.push(str);
+            }
+            return strs.join(separator);
+          });
+          __publicField5(this, "stringifyMany", (value, separator) => {
+            return this.stringifyItems(this.findMany(value), separator);
+          });
+          __publicField5(this, "has", (value) => {
+            return this.indexOf(value) !== -1;
+          });
+          __publicField5(this, "hasItem", (item) => {
+            if (item == null) return false;
+            return this.has(this.getItemValue(item));
+          });
+          __publicField5(this, "group", () => {
+            const { groupBy, groupSort } = this.options;
+            if (!groupBy) return [["", [...this.items]]];
+            const groups = /* @__PURE__ */ new Map();
+            this.items.forEach((item, index) => {
+              const groupKey = groupBy(item, index);
+              if (!groups.has(groupKey)) {
+                groups.set(groupKey, []);
+              }
+              groups.get(groupKey).push(item);
+            });
+            let entries = Array.from(groups.entries());
+            if (groupSort) {
+              entries.sort(([a2], [b2]) => {
+                if (typeof groupSort === "function") return groupSort(a2, b2);
+                if (Array.isArray(groupSort)) {
+                  const indexA = groupSort.indexOf(a2);
+                  const indexB = groupSort.indexOf(b2);
+                  if (indexA === -1) return 1;
+                  if (indexB === -1) return -1;
+                  return indexA - indexB;
+                }
+                if (groupSort === "asc") return a2.localeCompare(b2);
+                if (groupSort === "desc") return b2.localeCompare(a2);
+                return 0;
+              });
+            }
+            return entries;
+          });
+          __publicField5(this, "getNextValue", (value, step = 1, clamp5 = false) => {
+            let index = this.indexOf(value);
+            if (index === -1) return null;
+            index = clamp5 ? Math.min(index + step, this.size - 1) : index + step;
+            while (index <= this.size && this.getItemDisabled(this.at(index))) index++;
+            return this.getItemValue(this.at(index));
+          });
+          __publicField5(this, "getPreviousValue", (value, step = 1, clamp5 = false) => {
+            let index = this.indexOf(value);
+            if (index === -1) return null;
+            index = clamp5 ? Math.max(index - step, 0) : index - step;
+            while (index >= 0 && this.getItemDisabled(this.at(index))) index--;
+            return this.getItemValue(this.at(index));
+          });
+          __publicField5(this, "indexOf", (value) => {
+            var _a;
+            if (value == null) return -1;
+            if (!this.options.groupBy && !this.options.groupSort) {
+              return this.items.findIndex((item) => this.getItemValue(item) === value);
+            }
+            if (!this.indexMap) {
+              this.indexMap = /* @__PURE__ */ new Map();
+              let idx = 0;
+              const groups = this.group();
+              for (const [, items] of groups) {
+                for (const item of items) {
+                  const itemValue = this.getItemValue(item);
+                  if (itemValue != null) {
+                    this.indexMap.set(itemValue, idx);
+                  }
+                  idx++;
+                }
+              }
+            }
+            return (_a = this.indexMap.get(value)) != null ? _a : -1;
+          });
+          __publicField5(this, "getByText", (text, current) => {
+            const currentIndex = current != null ? this.indexOf(current) : -1;
+            const isSingleKey = text.length === 1;
+            for (let i2 = 0; i2 < this.items.length; i2++) {
+              const item = this.items[(currentIndex + i2 + 1) % this.items.length];
+              if (isSingleKey && this.getItemValue(item) === current) continue;
+              if (this.getItemDisabled(item)) continue;
+              if (match3(this.stringifyItem(item), text)) return item;
+            }
+            return void 0;
+          });
+          __publicField5(this, "search", (queryString, options2) => {
+            const { state: state2, currentValue, timeout = 350 } = options2;
+            const search = state2.keysSoFar + queryString;
+            const isRepeated = search.length > 1 && Array.from(search).every((char) => char === search[0]);
+            const query2 = isRepeated ? search[0] : search;
+            const item = this.getByText(query2, currentValue);
+            const value = this.getItemValue(item);
+            function cleanup() {
+              clearTimeout(state2.timer);
+              state2.timer = -1;
+            }
+            function update(value2) {
+              state2.keysSoFar = value2;
+              cleanup();
+              if (value2 !== "") {
+                state2.timer = +setTimeout(() => {
+                  update("");
+                  cleanup();
+                }, timeout);
+              }
+            }
+            update(search);
+            return value;
+          });
+          __publicField5(this, "update", (value, item) => {
+            let index = this.indexOf(value);
+            if (index === -1) return this;
+            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
+          });
+          __publicField5(this, "upsert", (value, item, mode = "append") => {
+            let index = this.indexOf(value);
+            if (index === -1) {
+              const fn = mode === "append" ? this.append : this.prepend;
+              return fn(item);
+            }
+            return this.copy([...this.items.slice(0, index), item, ...this.items.slice(index + 1)]);
+          });
+          __publicField5(this, "insert", (index, ...items) => {
+            return this.copy(insert(this.items, index, ...items));
+          });
+          __publicField5(this, "insertBefore", (value, ...items) => {
+            let toIndex = this.indexOf(value);
+            if (toIndex === -1) {
+              if (this.items.length === 0) toIndex = 0;
+              else return this;
+            }
+            return this.copy(insert(this.items, toIndex, ...items));
+          });
+          __publicField5(this, "insertAfter", (value, ...items) => {
+            let toIndex = this.indexOf(value);
+            if (toIndex === -1) {
+              if (this.items.length === 0) toIndex = 0;
+              else return this;
+            }
+            return this.copy(insert(this.items, toIndex + 1, ...items));
+          });
+          __publicField5(this, "prepend", (...items) => {
+            return this.copy(insert(this.items, 0, ...items));
+          });
+          __publicField5(this, "append", (...items) => {
+            return this.copy(insert(this.items, this.items.length, ...items));
+          });
+          __publicField5(this, "filter", (fn) => {
+            const filteredItems = this.items.filter((item, index) => fn(this.stringifyItem(item), index, item));
+            return this.copy(filteredItems);
+          });
+          __publicField5(this, "remove", (...itemsOrValues) => {
+            const values = itemsOrValues.map(
+              (itemOrValue) => typeof itemOrValue === "string" ? itemOrValue : this.getItemValue(itemOrValue)
+            );
+            return this.copy(
+              this.items.filter((item) => {
+                const value = this.getItemValue(item);
+                if (value == null) return false;
+                return !values.includes(value);
+              })
+            );
+          });
+          __publicField5(this, "move", (value, toIndex) => {
+            const fromIndex = this.indexOf(value);
+            if (fromIndex === -1) return this;
+            return this.copy(move(this.items, [fromIndex], toIndex));
+          });
+          __publicField5(this, "moveBefore", (value, ...values) => {
+            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
+            if (toIndex === -1) return this;
+            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
+            return this.copy(move(this.items, indices, toIndex));
+          });
+          __publicField5(this, "moveAfter", (value, ...values) => {
+            let toIndex = this.items.findIndex((item) => this.getItemValue(item) === value);
+            if (toIndex === -1) return this;
+            let indices = values.map((value2) => this.items.findIndex((item) => this.getItemValue(item) === value2)).sort((a2, b2) => a2 - b2);
+            return this.copy(move(this.items, indices, toIndex + 1));
+          });
+          __publicField5(this, "reorder", (fromIndex, toIndex) => {
+            return this.copy(move(this.items, [fromIndex], toIndex));
+          });
+          __publicField5(this, "compareValue", (a2, b2) => {
+            const indexA = this.indexOf(a2);
+            const indexB = this.indexOf(b2);
+            if (indexA < indexB) return -1;
+            if (indexA > indexB) return 1;
+            return 0;
+          });
+          __publicField5(this, "range", (from, to) => {
+            let keys = [];
+            let key = from;
+            while (key != null) {
+              let item = this.find(key);
+              if (item) keys.push(key);
+              if (key === to) return keys;
+              key = this.getNextValue(key);
+            }
+            return [];
+          });
+          __publicField5(this, "getValueRange", (from, to) => {
+            if (from && to) {
+              if (this.compareValue(from, to) <= 0) {
+                return this.range(from, to);
+              }
+              return this.range(to, from);
+            }
+            return [];
+          });
+          __publicField5(this, "toString", () => {
+            let result = "";
+            for (const item of this.items) {
+              const value = this.getItemValue(item);
+              const label = this.stringifyItem(item);
+              const disabled = this.getItemDisabled(item);
+              const itemString = [value, label, disabled].filter(Boolean).join(":");
+              result += itemString + ",";
+            }
+            return result;
+          });
+          __publicField5(this, "toJSON", () => {
+            return {
+              size: this.size,
+              first: this.firstValue,
+              last: this.lastValue
+            };
+          });
+          this.items = [...options.items];
+        }
+        /**
+         * Returns the number of items in the collection
+         */
+        get size() {
+          return this.items.length;
+        }
+        /**
+         * Returns the first value in the collection
+         */
+        get firstValue() {
+          let index = 0;
+          while (this.getItemDisabled(this.at(index))) index++;
+          return this.getItemValue(this.at(index));
+        }
+        /**
+         * Returns the last value in the collection
+         */
+        get lastValue() {
+          let index = this.size - 1;
+          while (this.getItemDisabled(this.at(index))) index--;
+          return this.getItemValue(this.at(index));
+        }
+        *[Symbol.iterator]() {
+          yield* __yieldStar(this.items);
+        }
+      };
+      match3 = (label, query2) => {
+        return !!(label == null ? void 0 : label.toLowerCase().startsWith(query2.toLowerCase()));
+      };
+      GridCollection = class extends ListCollection {
+        constructor(options) {
+          const { columnCount } = options;
+          super(options);
+          __publicField5(this, "columnCount");
+          __publicField5(this, "rows", null);
+          __publicField5(this, "getRows", () => {
+            if (!this.rows) {
+              this.rows = chunk([...this.items], this.columnCount);
+            }
+            return this.rows;
+          });
+          __publicField5(this, "getRowCount", () => {
+            return Math.ceil(this.items.length / this.columnCount);
+          });
+          __publicField5(this, "getCellIndex", (row, column) => {
+            return row * this.columnCount + column;
+          });
+          __publicField5(this, "getCell", (row, column) => {
+            return this.at(this.getCellIndex(row, column));
+          });
+          __publicField5(this, "getValueCell", (value) => {
+            const index = this.indexOf(value);
+            if (index === -1) return null;
+            const row = Math.floor(index / this.columnCount);
+            const column = index % this.columnCount;
+            return { row, column };
+          });
+          __publicField5(this, "getLastEnabledColumnIndex", (row) => {
+            for (let col = this.columnCount - 1; col >= 0; col--) {
+              const cell = this.getCell(row, col);
+              if (cell && !this.getItemDisabled(cell)) {
+                return col;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "getFirstEnabledColumnIndex", (row) => {
+            for (let col = 0; col < this.columnCount; col++) {
+              const cell = this.getCell(row, col);
+              if (cell && !this.getItemDisabled(cell)) {
+                return col;
+              }
+            }
+            return null;
+          });
+          __publicField5(this, "getPreviousRowValue", (value, loop = false) => {
+            const currentCell = this.getValueCell(value);
+            if (currentCell === null) return null;
+            const rows = this.getRows();
+            const rowCount = rows.length;
+            let prevRowIndex = currentCell.row;
+            let prevColumnIndex = currentCell.column;
+            for (let i2 = 1; i2 <= rowCount; i2++) {
+              prevRowIndex = prevIndex(rows, prevRowIndex, { loop });
+              const prevRow = rows[prevRowIndex];
+              if (!prevRow) continue;
+              const prevCell = prevRow[prevColumnIndex];
+              if (!prevCell) {
+                const lastColumnIndex = this.getLastEnabledColumnIndex(prevRowIndex);
+                if (lastColumnIndex != null) {
+                  prevColumnIndex = lastColumnIndex;
+                }
+              }
+              const cell = this.getCell(prevRowIndex, prevColumnIndex);
+              if (!this.getItemDisabled(cell)) {
+                return this.getItemValue(cell);
+              }
+            }
+            return this.firstValue;
+          });
+          __publicField5(this, "getNextRowValue", (value, loop = false) => {
+            const currentCell = this.getValueCell(value);
+            if (currentCell === null) return null;
+            const rows = this.getRows();
+            const rowCount = rows.length;
+            let nextRowIndex = currentCell.row;
+            let nextColumnIndex = currentCell.column;
+            for (let i2 = 1; i2 <= rowCount; i2++) {
+              nextRowIndex = nextIndex(rows, nextRowIndex, { loop });
+              const nextRow = rows[nextRowIndex];
+              if (!nextRow) continue;
+              const nextCell = nextRow[nextColumnIndex];
+              if (!nextCell) {
+                const lastColumnIndex = this.getLastEnabledColumnIndex(nextRowIndex);
+                if (lastColumnIndex != null) {
+                  nextColumnIndex = lastColumnIndex;
+                }
+              }
+              const cell = this.getCell(nextRowIndex, nextColumnIndex);
+              if (!this.getItemDisabled(cell)) {
+                return this.getItemValue(cell);
+              }
+            }
+            return this.lastValue;
+          });
+          this.columnCount = columnCount;
+        }
+      };
+      Selection = class _Selection extends Set {
+        constructor(values = []) {
+          super(values);
+          __publicField5(this, "selectionMode", "single");
+          __publicField5(this, "deselectable", true);
+          __publicField5(this, "copy", () => {
+            const clone = new _Selection([...this]);
+            return this.sync(clone);
+          });
+          __publicField5(this, "sync", (other) => {
+            other.selectionMode = this.selectionMode;
+            other.deselectable = this.deselectable;
+            return other;
+          });
+          __publicField5(this, "isEmpty", () => {
+            return this.size === 0;
+          });
+          __publicField5(this, "isSelected", (value) => {
+            if (this.selectionMode === "none" || value == null) {
+              return false;
+            }
+            return this.has(value);
+          });
+          __publicField5(this, "canSelect", (collection5, value) => {
+            return this.selectionMode !== "none" || !collection5.getItemDisabled(collection5.find(value));
+          });
+          __publicField5(this, "firstSelectedValue", (collection5) => {
+            let firstValue = null;
+            for (let value of this) {
+              if (!firstValue || collection5.compareValue(value, firstValue) < 0) {
+                firstValue = value;
+              }
+            }
+            return firstValue;
+          });
+          __publicField5(this, "lastSelectedValue", (collection5) => {
+            let lastValue = null;
+            for (let value of this) {
+              if (!lastValue || collection5.compareValue(value, lastValue) > 0) {
+                lastValue = value;
+              }
+            }
+            return lastValue;
+          });
+          __publicField5(this, "extendSelection", (collection5, anchorValue, targetValue) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single") {
+              return this.replaceSelection(collection5, targetValue);
+            }
+            const selection = this.copy();
+            const lastSelected = Array.from(this).pop();
+            for (let key of collection5.getValueRange(anchorValue, lastSelected != null ? lastSelected : targetValue)) {
+              selection.delete(key);
+            }
+            for (let key of collection5.getValueRange(targetValue, anchorValue)) {
+              if (this.canSelect(collection5, key)) {
+                selection.add(key);
+              }
+            }
+            return selection;
+          });
+          __publicField5(this, "toggleSelection", (collection5, value) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single" && !this.isSelected(value)) {
+              return this.replaceSelection(collection5, value);
+            }
+            const selection = this.copy();
+            if (selection.has(value)) {
+              selection.delete(value);
+            } else if (selection.canSelect(collection5, value)) {
+              selection.add(value);
+            }
+            return selection;
+          });
+          __publicField5(this, "replaceSelection", (collection5, value) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (value == null) {
+              return this;
+            }
+            if (!this.canSelect(collection5, value)) {
+              return this;
+            }
+            const selection = new _Selection([value]);
+            return this.sync(selection);
+          });
+          __publicField5(this, "setSelection", (values2) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            let selection = new _Selection();
+            for (let value of values2) {
+              if (value != null) {
+                selection.add(value);
+                if (this.selectionMode === "single") {
+                  break;
+                }
+              }
+            }
+            return this.sync(selection);
+          });
+          __publicField5(this, "clearSelection", () => {
+            const selection = this.copy();
+            if (selection.deselectable && selection.size > 0) {
+              selection.clear();
+            }
+            return selection;
+          });
+          __publicField5(this, "select", (collection5, value, forceToggle) => {
+            if (this.selectionMode === "none") {
+              return this;
+            }
+            if (this.selectionMode === "single") {
+              if (this.isSelected(value) && this.deselectable) {
+                return this.toggleSelection(collection5, value);
+              } else {
+                return this.replaceSelection(collection5, value);
+              }
+            } else if (this.selectionMode === "multiple" || forceToggle) {
+              return this.toggleSelection(collection5, value);
+            } else {
+              return this.replaceSelection(collection5, value);
+            }
+          });
+          __publicField5(this, "deselect", (value) => {
+            const selection = this.copy();
+            selection.delete(value);
+            return selection;
+          });
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual(Array.from(this), Array.from(other));
+          });
+        }
+      };
+      TreeCollection = class _TreeCollection {
+        constructor(options) {
+          this.options = options;
+          __publicField5(this, "rootNode");
+          __publicField5(this, "isEqual", (other) => {
+            return isEqual(this.rootNode, other.rootNode);
+          });
+          __publicField5(this, "getNodeChildren", (node) => {
+            var _a, _b, _c, _d;
+            return (_d = (_c = (_b = (_a = this.options).nodeToChildren) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildren(node)) != null ? _d : [];
+          });
+          __publicField5(this, "resolveIndexPath", (valueOrIndexPath) => {
+            return typeof valueOrIndexPath === "string" ? this.getIndexPath(valueOrIndexPath) : valueOrIndexPath;
+          });
+          __publicField5(this, "resolveNode", (valueOrIndexPath) => {
+            const indexPath = this.resolveIndexPath(valueOrIndexPath);
+            return indexPath ? this.at(indexPath) : void 0;
+          });
+          __publicField5(this, "getNodeChildrenCount", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).nodeToChildrenCount) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToChildrenCount(node);
+          });
+          __publicField5(this, "getNodeValue", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).nodeToValue) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToValue(node);
+          });
+          __publicField5(this, "getNodeDisabled", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).isNodeDisabled) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.isNodeDisabled(node);
+          });
+          __publicField5(this, "stringify", (value) => {
+            const node = this.findNode(value);
+            if (!node) return null;
+            return this.stringifyNode(node);
+          });
+          __publicField5(this, "stringifyNode", (node) => {
+            var _a, _b, _c;
+            return (_c = (_b = (_a = this.options).nodeToString) == null ? void 0 : _b.call(_a, node)) != null ? _c : fallbackMethods.nodeToString(node);
+          });
+          __publicField5(this, "getFirstNode", (rootNode = this.rootNode, opts = {}) => {
+            let firstChild;
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isSameNode(node, rootNode)) return;
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
+                if (!firstChild && indexPath.length > 0 && !this.getNodeDisabled(node)) {
+                  firstChild = node;
+                  return "stop";
+                }
+              }
+            });
+            return firstChild;
+          });
+          __publicField5(this, "getLastNode", (rootNode = this.rootNode, opts = {}) => {
+            let lastChild;
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isSameNode(node, rootNode)) return;
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: this.getNodeValue(node), node, indexPath })) return "skip";
+                if (indexPath.length > 0 && !this.getNodeDisabled(node)) {
+                  lastChild = node;
+                }
+              }
+            });
+            return lastChild;
+          });
+          __publicField5(this, "at", (indexPath) => {
+            return access(this.rootNode, indexPath, {
+              getChildren: this.getNodeChildren
+            });
+          });
+          __publicField5(this, "findNode", (value, rootNode = this.rootNode) => {
+            return find(rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+          });
+          __publicField5(this, "findNodes", (values, rootNode = this.rootNode) => {
+            const v2 = new Set(values.filter((v22) => v22 != null));
+            return findAll(rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => v2.has(this.getNodeValue(node))
+            });
+          });
+          __publicField5(this, "sort", (values) => {
+            return values.reduce((acc, value) => {
+              const indexPath = this.getIndexPath(value);
+              if (indexPath) acc.push({ value, indexPath });
+              return acc;
+            }, []).sort((a2, b2) => compareIndexPaths(a2.indexPath, b2.indexPath)).map(({ value }) => value);
+          });
+          __publicField5(this, "getValue", (indexPath) => {
+            const node = this.at(indexPath);
+            return node ? this.getNodeValue(node) : void 0;
+          });
+          __publicField5(this, "getValuePath", (indexPath) => {
+            if (!indexPath) return [];
+            const valuePath = [];
+            let currentPath = [...indexPath];
+            while (currentPath.length > 0) {
+              const node = this.at(currentPath);
+              if (node) valuePath.unshift(this.getNodeValue(node));
+              currentPath.pop();
+            }
+            return valuePath;
+          });
+          __publicField5(this, "getDepth", (value) => {
+            var _a;
+            const indexPath = findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === value
+            });
+            return (_a = indexPath == null ? void 0 : indexPath.length) != null ? _a : 0;
+          });
+          __publicField5(this, "isSameNode", (node, other) => {
+            return this.getNodeValue(node) === this.getNodeValue(other);
+          });
+          __publicField5(this, "isRootNode", (node) => {
+            return this.isSameNode(node, this.rootNode);
+          });
+          __publicField5(this, "contains", (parentIndexPath, valueIndexPath) => {
+            if (!parentIndexPath || !valueIndexPath) return false;
+            return valueIndexPath.slice(0, parentIndexPath.length).every((_2, i2) => parentIndexPath[i2] === valueIndexPath[i2]);
+          });
+          __publicField5(this, "getNextNode", (value, opts = {}) => {
+            let found = false;
+            let nextNode;
+            visit(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isRootNode(node)) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) {
+                  if (nodeValue === value) {
+                    found = true;
+                  }
+                  return "skip";
+                }
+                if (found && !this.getNodeDisabled(node)) {
+                  nextNode = node;
+                  return "stop";
+                }
+                if (nodeValue === value) {
+                  found = true;
+                }
+              }
+            });
+            return nextNode;
+          });
+          __publicField5(this, "getPreviousNode", (value, opts = {}) => {
+            let previousNode;
+            let found = false;
+            visit(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (this.isRootNode(node)) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) {
+                  return "skip";
+                }
+                if (nodeValue === value) {
+                  found = true;
+                  return "stop";
+                }
+                if (!this.getNodeDisabled(node)) {
+                  previousNode = node;
+                }
+              }
+            });
+            return found ? previousNode : void 0;
+          });
+          __publicField5(this, "getParentNodes", (valueOrIndexPath) => {
+            var _a;
+            const indexPath = (_a = this.resolveIndexPath(valueOrIndexPath)) == null ? void 0 : _a.slice();
+            if (!indexPath) return [];
+            const result = [];
+            while (indexPath.length > 0) {
+              indexPath.pop();
+              const parentNode = this.at(indexPath);
+              if (parentNode && !this.isRootNode(parentNode)) {
+                result.unshift(parentNode);
+              }
+            }
+            return result;
+          });
+          __publicField5(this, "getDescendantNodes", (valueOrIndexPath, options2) => {
+            const parentNode = this.resolveNode(valueOrIndexPath);
+            if (!parentNode) return [];
+            const result = [];
+            visit(parentNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, nodeIndexPath) => {
+                if (nodeIndexPath.length === 0) return;
+                if (!(options2 == null ? void 0 : options2.withBranch) && this.isBranchNode(node)) return;
+                result.push(node);
+              }
+            });
+            return result;
+          });
+          __publicField5(this, "getDescendantValues", (valueOrIndexPath, options2) => {
+            const children = this.getDescendantNodes(valueOrIndexPath, options2);
+            return children.map((child) => this.getNodeValue(child));
+          });
+          __publicField5(this, "getParentIndexPath", (indexPath) => {
+            return indexPath.slice(0, -1);
+          });
+          __publicField5(this, "getParentNode", (valueOrIndexPath) => {
+            const indexPath = this.resolveIndexPath(valueOrIndexPath);
+            return indexPath ? this.at(this.getParentIndexPath(indexPath)) : void 0;
+          });
+          __publicField5(this, "visit", (opts) => {
+            const _a = opts, { skip } = _a, rest = __objRest(_a, ["skip"]);
+            visit(this.rootNode, __spreadProps(__spreadValues({}, rest), {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a2;
+                if (this.isRootNode(node)) return;
+                if (skip == null ? void 0 : skip({ value: this.getNodeValue(node), node, indexPath })) return "skip";
+                return (_a2 = rest.onEnter) == null ? void 0 : _a2.call(rest, node, indexPath);
+              }
+            }));
+          });
+          __publicField5(this, "getPreviousSibling", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const siblings = this.getNodeChildren(parentNode);
+            let idx = indexPath[indexPath.length - 1];
+            while (--idx >= 0) {
+              const sibling = siblings[idx];
+              if (!this.getNodeDisabled(sibling)) return sibling;
+            }
+            return;
+          });
+          __publicField5(this, "getNextSibling", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const siblings = this.getNodeChildren(parentNode);
+            let idx = indexPath[indexPath.length - 1];
+            while (++idx < siblings.length) {
+              const sibling = siblings[idx];
+              if (!this.getNodeDisabled(sibling)) return sibling;
+            }
+            return;
+          });
+          __publicField5(this, "getSiblingNodes", (indexPath) => {
+            const parentNode = this.getParentNode(indexPath);
+            return parentNode ? this.getNodeChildren(parentNode) : [];
+          });
+          __publicField5(this, "getValues", (rootNode = this.rootNode) => {
+            const values = flatMap(rootNode, {
+              getChildren: this.getNodeChildren,
+              transform: (node) => [this.getNodeValue(node)]
+            });
+            return values.slice(1);
+          });
+          __publicField5(this, "isValidDepth", (indexPath, depth) => {
+            if (depth == null) return true;
+            if (typeof depth === "function") return depth(indexPath.length);
+            return indexPath.length === depth;
+          });
+          __publicField5(this, "isBranchNode", (node) => {
+            return this.getNodeChildren(node).length > 0 || this.getNodeChildrenCount(node) != null;
+          });
+          __publicField5(this, "getBranchValues", (rootNode = this.rootNode, opts = {}) => {
+            let values = [];
+            visit(rootNode, {
+              getChildren: this.getNodeChildren,
+              onEnter: (node, indexPath) => {
+                var _a;
+                if (indexPath.length === 0) return;
+                const nodeValue = this.getNodeValue(node);
+                if ((_a = opts.skip) == null ? void 0 : _a.call(opts, { value: nodeValue, node, indexPath })) return "skip";
+                if (this.isBranchNode(node) && this.isValidDepth(indexPath, opts.depth)) {
+                  values.push(this.getNodeValue(node));
+                }
+              }
+            });
+            return values;
+          });
+          __publicField5(this, "flatten", (rootNode = this.rootNode) => {
+            return flatten(rootNode, { getChildren: this.getNodeChildren });
+          });
+          __publicField5(this, "_create", (node, children) => {
+            if (this.getNodeChildren(node).length > 0 || children.length > 0) {
+              return __spreadProps(__spreadValues({}, node), { children });
+            }
+            return __spreadValues({}, node);
+          });
+          __publicField5(this, "_insert", (rootNode, indexPath, nodes) => {
+            return this.copy(
+              insert2(rootNode, { at: indexPath, nodes, getChildren: this.getNodeChildren, create: this._create })
+            );
+          });
+          __publicField5(this, "copy", (rootNode) => {
+            return new _TreeCollection(__spreadProps(__spreadValues({}, this.options), { rootNode }));
+          });
+          __publicField5(this, "_replace", (rootNode, indexPath, node) => {
+            return this.copy(
+              replace(rootNode, { at: indexPath, node, getChildren: this.getNodeChildren, create: this._create })
+            );
+          });
+          __publicField5(this, "_move", (rootNode, indexPaths, to) => {
+            return this.copy(move2(rootNode, { indexPaths, to, getChildren: this.getNodeChildren, create: this._create }));
+          });
+          __publicField5(this, "_remove", (rootNode, indexPaths) => {
+            return this.copy(remove2(rootNode, { indexPaths, getChildren: this.getNodeChildren, create: this._create }));
+          });
+          __publicField5(this, "replace", (indexPath, node) => {
+            return this._replace(this.rootNode, indexPath, node);
+          });
+          __publicField5(this, "remove", (indexPaths) => {
+            return this._remove(this.rootNode, indexPaths);
+          });
+          __publicField5(this, "insertBefore", (indexPath, nodes) => {
+            const parentNode = this.getParentNode(indexPath);
+            return parentNode ? this._insert(this.rootNode, indexPath, nodes) : void 0;
+          });
+          __publicField5(this, "insertAfter", (indexPath, nodes) => {
+            const parentNode = this.getParentNode(indexPath);
+            if (!parentNode) return;
+            const nextIndex2 = [...indexPath.slice(0, -1), indexPath[indexPath.length - 1] + 1];
+            return this._insert(this.rootNode, nextIndex2, nodes);
+          });
+          __publicField5(this, "move", (fromIndexPaths, toIndexPath) => {
+            return this._move(this.rootNode, fromIndexPaths, toIndexPath);
+          });
+          __publicField5(this, "filter", (predicate) => {
+            const filteredRoot = filter(this.rootNode, {
+              predicate,
+              getChildren: this.getNodeChildren,
+              create: this._create
+            });
+            return this.copy(filteredRoot);
+          });
+          __publicField5(this, "toJSON", () => {
+            return this.getValues(this.rootNode);
+          });
+          this.rootNode = options.rootNode;
+        }
+        getIndexPath(valueOrValuePath) {
+          if (Array.isArray(valueOrValuePath)) {
+            if (valueOrValuePath.length === 0) return [];
+            const indexPath = [];
+            let currentChildren = this.getNodeChildren(this.rootNode);
+            for (let i2 = 0; i2 < valueOrValuePath.length; i2++) {
+              const currentValue = valueOrValuePath[i2];
+              const matchingChildIndex = currentChildren.findIndex((child) => this.getNodeValue(child) === currentValue);
+              if (matchingChildIndex === -1) break;
+              indexPath.push(matchingChildIndex);
+              if (i2 < valueOrValuePath.length - 1) {
+                const currentNode = currentChildren[matchingChildIndex];
+                currentChildren = this.getNodeChildren(currentNode);
+              }
+            }
+            return indexPath;
+          } else {
+            return findIndexPath(this.rootNode, {
+              getChildren: this.getNodeChildren,
+              predicate: (node) => this.getNodeValue(node) === valueOrValuePath
+            });
+          }
+        }
+      };
+      fallbackMethods = {
+        nodeToValue(node) {
+          if (typeof node === "string") return node;
+          if (isObject(node) && hasProp(node, "value")) return node.value;
+          return "";
+        },
+        nodeToString(node) {
+          if (typeof node === "string") return node;
+          if (isObject(node) && hasProp(node, "label")) return node.label;
+          return fallbackMethods.nodeToValue(node);
+        },
+        isNodeDisabled(node) {
+          if (isObject(node) && hasProp(node, "disabled")) return !!node.disabled;
+          return false;
+        },
+        nodeToChildren(node) {
+          return node.children;
+        },
+        nodeToChildrenCount(node) {
+          if (isObject(node) && hasProp(node, "childrenCount")) return node.childrenCount;
+        }
+      };
+    }
+  });
+
+  // ../priv/static/chunk-6XKINCJF.mjs
+  function readDomItemRedirect(itemEl, fallback2) {
+    if (!itemEl) {
+      if (!fallback2) return null;
+      return { destination: fallback2 };
+    }
+    const dataRedirect = itemEl.getAttribute("data-redirect");
+    if (dataRedirect === "false") return null;
+    const destination = itemEl.getAttribute("data-to") || fallback2 || itemEl.getAttribute("data-value") || "";
+    if (!destination) return null;
+    const mode = REDIRECT_MODES.includes(dataRedirect) ? dataRedirect : void 0;
+    const newTab = itemEl.hasAttribute("data-new-tab");
+    return { destination, mode, newTab };
+  }
+  function performRedirect(input, ctx) {
+    if (!input || !input.destination) return false;
+    const { destination, newTab, mode } = input;
+    if (newTab) {
+      window.open(destination, "_blank", "noopener,noreferrer");
+      return true;
+    }
+    const main = ctx.liveSocket.main;
+    const connected = !main.isDead && main.isConnected();
+    if (!connected || !mode || mode === "href") {
+      window.location.href = destination;
+      return true;
+    }
+    const js = ctx.liveSocket.js();
+    if (mode === "patch") {
+      js.patch(destination);
+    } else {
+      js.navigate(destination);
+    }
+    return true;
+  }
+  var REDIRECT_MODES;
+  var init_chunk_6XKINCJF = __esm({
+    "../priv/static/chunk-6XKINCJF.mjs"() {
+      "use strict";
+      REDIRECT_MODES = ["href", "patch", "navigate"];
     }
   });
 
@@ -11108,27 +11987,114 @@ var Corex = (() => {
   function getOpenChangeReason(event) {
     return (event.previousEvent || event).src;
   }
-  function snakeToCamel(str) {
-    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
-  }
-  function transformPositioningOptions(obj) {
-    const result = {};
-    for (const [key, value] of Object.entries(obj)) {
-      const camelKey = snakeToCamel(key);
-      result[camelKey] = value;
+  function comboboxValueBinding(el) {
+    var _a, _b;
+    const controlled = getBoolean(el, "controlled");
+    if (controlled) {
+      return { value: (_a = getStringList(el, "value")) != null ? _a : [] };
     }
-    return result;
+    return { defaultValue: (_b = getStringList(el, "defaultValue")) != null ? _b : [] };
+  }
+  function buildComboboxProps(el, pushEvent, canPush, liveSocket) {
+    const redirectOn = getBoolean(el, "redirect");
+    return {
+      id: el.id,
+      disabled: getBoolean(el, "disabled"),
+      placeholder: getString(el, "placeholder"),
+      alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
+      autoFocus: getBoolean(el, "autoFocus"),
+      closeOnSelect: getBoolean(el, "closeOnSelect"),
+      dir: getDir(el),
+      inputBehavior: getString(el, "inputBehavior"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      multiple: redirectOn ? false : getBoolean(el, "multiple"),
+      invalid: getBoolean(el, "invalid"),
+      allowCustomValue: false,
+      selectionBehavior: "replace",
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      readOnly: getBoolean(el, "readOnly"),
+      required: getBoolean(el, "required"),
+      positioning: readPositioningOptions(el),
+      onOpenChange: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            open: details.open,
+            reason: details.reason,
+            value: details.value
+          },
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient")
+        });
+      },
+      onInputValueChange: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.inputValue,
+            reason: details.reason
+          },
+          serverEventName: getString(el, "onInputValueChange"),
+          clientEventName: getString(el, "onInputValueChangeClient")
+        });
+      },
+      onValueChange: (details) => {
+        var _a;
+        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+        if (redirectOn && firstValue) {
+          const itemEl = el.querySelector(
+            `[data-scope="combobox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+          );
+          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+        }
+        {
+          const hidden = el.querySelector(
+            '[data-scope="combobox"][data-part="hidden-input"]'
+          );
+          if (hidden) {
+            const list = details.value.map((v2) => String(v2));
+            hidden.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a = list[0]) != null ? _a : "";
+            hidden.dispatchEvent(new Event("change", { bubbles: true }));
+          }
+        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            items: details.items
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+      }
+    };
   }
   var anatomy8, parts8, collection, getRootId8, getLabelId4, getControlId3, getInputId2, getContentId2, getPositionerId, getTriggerId2, getClearTriggerId, getItemGroupId2, getItemGroupLabelId, getItemId3, getContentEl2, getInputEl2, getPositionerEl, getControlEl2, getTriggerEl, getClearTriggerEl, getItemEl, focusInputEl, focusTriggerEl, guards, createMachine2, choose, and2, not3, machine8, Combobox, ComboboxHook;
   var init_combobox = __esm({
     "../priv/static/combobox.mjs"() {
       "use strict";
-      init_chunk_7ZKQLYA7();
-      init_chunk_VXCJNDUG();
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_MRDCAPRF();
+      init_chunk_AFD7D2GA();
+      init_chunk_F6MNP3LD();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_ZZTIKT3S();
+      init_chunk_FLYYJ5XV();
+      init_chunk_6XKINCJF();
+      init_chunk_ZKMAU6SY();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
         "clearTrigger",
@@ -11358,7 +12324,7 @@ var Corex = (() => {
             action(["syncInputValue"]);
           });
           track([() => context.get("highlightedValue")], () => {
-            action(["syncHighlightedItem", "autofillInputValue"]);
+            action(["syncHighlightedItem", "autofillInputValue", "announceHighlightedItem"]);
           });
           track([() => prop("open")], () => {
             action(["toggleVisibility"]);
@@ -11569,7 +12535,13 @@ var Corex = (() => {
           open: {
             tags: ["open", "focused"],
             entry: ["setInitialFocus"],
-            effects: ["trackFocusVisible", "scrollToHighlightedItem", "trackDismissableLayer", "trackPlacement"],
+            effects: [
+              "trackFocusVisible",
+              "scrollToHighlightedItem",
+              "trackDismissableLayer",
+              "trackPlacement",
+              "trackLiveRegion"
+            ],
             on: {
               "CONTROLLED.CLOSE": [
                 {
@@ -11858,6 +12830,14 @@ var Corex = (() => {
                   send({ type: "LAYER.INTERACT_OUTSIDE", src: "interact-outside", restoreFocus: false });
                 }
               });
+            },
+            trackLiveRegion({ refs, scope }) {
+              const liveRegion = createLiveRegion({
+                level: "assertive",
+                document: scope.getDoc()
+              });
+              refs.set("liveRegion", liveRegion);
+              return () => liveRegion.destroy();
             },
             trackPlacement({ context, prop, scope }) {
               const anchorEl = () => getControlEl2(scope) || getTriggerEl(scope);
@@ -12182,6 +13162,15 @@ var Corex = (() => {
               const item = prop("collection").find(context.get("highlightedValue"));
               context.set("highlightedItem", item);
             },
+            announceHighlightedItem({ context, prop, refs }) {
+              var _a;
+              if (!isApple()) return;
+              const value = context.get("highlightedValue");
+              const optionText = value ? prop("collection").stringifyItem(prop("collection").find(value)) : null;
+              if (!optionText) return;
+              const isSelected = value ? context.get("value").includes(value) : false;
+              (_a = refs.get("liveRegion")) == null ? void 0 : _a.announce(isSelected ? `${optionText}, selected` : optionText);
+            },
             toggleVisibility({ event, send, prop }) {
               send({ type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE", previousEvent: event });
             }
@@ -12201,36 +13190,7 @@ var Corex = (() => {
         }
         getCollection() {
           const items = this.options || this.allOptions || [];
-          if (this.hasGroups) {
-            return collection({
-              items,
-              itemToValue: (item) => {
-                var _a;
-                return (_a = item.id) != null ? _a : "";
-              },
-              itemToString: (item) => item.label,
-              isItemDisabled: (item) => {
-                var _a;
-                return (_a = item.disabled) != null ? _a : false;
-              },
-              groupBy: (item) => {
-                var _a;
-                return (_a = item.group) != null ? _a : "";
-              }
-            });
-          }
-          return collection({
-            items,
-            itemToValue: (item) => {
-              var _a;
-              return (_a = item.id) != null ? _a : "";
-            },
-            itemToString: (item) => item.label,
-            isItemDisabled: (item) => {
-              var _a;
-              return (_a = item.disabled) != null ? _a : false;
-            }
-          });
+          return collection(zagComboboxCollectionConfig(items, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -12248,13 +13208,17 @@ var Corex = (() => {
               }
             },
             onInputValueChange: (details) => {
+              var _a;
               if (props.onInputValueChange) {
                 props.onInputValueChange(details);
               }
               if (this.el.hasAttribute("data-filter")) {
-                const filtered = this.allOptions.filter(
-                  (item) => item.label.toLowerCase().includes(details.inputValue.toLowerCase())
-                );
+                const q = String((_a = details.inputValue) != null ? _a : "").toLowerCase();
+                const filtered = this.allOptions.filter((item) => {
+                  var _a2;
+                  const label = String((_a2 = item.label) != null ? _a2 : "");
+                  return label.toLowerCase().includes(q);
+                });
                 this.options = filtered.length > 0 ? filtered : this.allOptions;
               } else {
                 this.options = this.allOptions;
@@ -12263,35 +13227,12 @@ var Corex = (() => {
           }));
         }
         initApi() {
-          return connect8(this.machine.service, normalizeProps);
+          return this.zagConnect(connect8);
         }
-        renderItems() {
-          var _a, _b, _c, _d;
-          const contentEl = this.el.querySelector(
-            '[data-scope="combobox"][data-part="content"]'
-          );
-          if (!contentEl) return;
-          const templatesContainer = this.el.querySelector('[data-templates="combobox"]');
-          if (!templatesContainer) return;
-          contentEl.querySelectorAll('[data-scope="combobox"][data-part="item"]:not([data-template])').forEach((el) => el.remove());
-          contentEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]:not([data-template])').forEach((el) => el.remove());
-          contentEl.querySelectorAll('[data-scope="combobox"][data-part="empty"]:not([data-template])').forEach((el) => el.remove());
-          const items = ((_a = this.options) == null ? void 0 : _a.length) ? this.options : this.allOptions;
-          if (items.length === 0) {
-            const emptyTemplate = templatesContainer.querySelector(
-              '[data-scope="combobox"][data-part="empty"][data-template]'
-            );
-            if (emptyTemplate) {
-              const emptyEl = emptyTemplate.cloneNode(true);
-              emptyEl.removeAttribute("data-template");
-              contentEl.appendChild(emptyEl);
-            }
-          } else if (this.hasGroups) {
-            const groups = (_d = (_c = (_b = this.api.collection).group) == null ? void 0 : _c.call(_b)) != null ? _d : [];
-            this.renderGroupedItems(contentEl, templatesContainer, groups);
-          } else {
-            this.renderFlatItems(contentEl, templatesContainer, items);
-          }
+        getItemValue(item) {
+          var _a, _b, _c;
+          const v2 = (_b = (_a = this.api.collection).getItemValue) == null ? void 0 : _b.call(_a, item);
+          return (_c = v2 != null ? v2 : item.id) != null ? _c : "";
         }
         buildOrderedBlocks(items) {
           var _a;
@@ -12315,237 +13256,198 @@ var Corex = (() => {
           }
           return blocks;
         }
-        renderGroupedItems(contentEl, templatesContainer, _groups) {
+        renderItems() {
           var _a;
+          const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+          if (!listEl) return;
+          const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
+          const templatesRoot = templatesContentRoot(this.el, "combobox");
+          if (!templatesRoot) return;
+          ["empty", "item-group", "item"].forEach((part) => {
+            Array.from(
+              listEl.querySelectorAll(
+                `[data-scope="combobox"][data-part="${part}"]:not([data-template])`
+              )
+            ).filter(isOwnedByList).forEach((el) => el.remove());
+          });
           const items = ((_a = this.options) == null ? void 0 : _a.length) ? this.options : this.allOptions;
+          if (items.length === 0) {
+            const emptyTemplate = templatesRoot.querySelector(
+              '[data-scope="combobox"][data-part="empty"][data-template]'
+            );
+            if (emptyTemplate) {
+              const emptyEl = emptyTemplate.cloneNode(true);
+              emptyEl.removeAttribute("data-template");
+              listEl.appendChild(emptyEl);
+            }
+            return;
+          }
+          if (this.hasGroups) {
+            this.renderGroupedItems(listEl, templatesRoot, items);
+          } else {
+            this.renderFlatItems(listEl, templatesRoot, items);
+          }
+        }
+        renderGroupedItems(listEl, templatesRoot, items) {
           const blocks = this.buildOrderedBlocks(items);
           for (const block of blocks) {
-            const templateId = block.type === "default" ? "default" : block.groupId;
-            const groupTemplate = templatesContainer.querySelector(
-              `[data-scope="combobox"][data-part="item-group"][data-id="${templateId}"][data-template]`
+            if (block.type !== "group") continue;
+            const groupTemplate = templatesRoot.querySelector(
+              `[data-scope="combobox"][data-part="item-group"][data-id="${CSS.escape(block.groupId)}"][data-template]`
             );
             if (!groupTemplate) continue;
             const groupEl = groupTemplate.cloneNode(true);
             groupEl.removeAttribute("data-template");
-            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: templateId }));
+            groupEl.querySelectorAll("[data-template]").forEach((e2) => e2.removeAttribute("data-template"));
+            const keepValues = new Set(block.items.map((i2) => this.getItemValue(i2)));
+            groupEl.querySelectorAll('[data-scope="combobox"][data-part="item"]').forEach((itemEl) => {
+              var _a;
+              const v2 = (_a = itemEl.dataset.value) != null ? _a : "";
+              if (!keepValues.has(v2)) itemEl.remove();
+            });
+            listEl.appendChild(groupEl);
+          }
+        }
+        renderFlatItems(listEl, templatesRoot, items) {
+          for (const item of items) {
+            const value = this.getItemValue(item);
+            const template = templatesRoot.querySelector(
+              `:scope > [data-scope="combobox"][data-part="item"][data-value="${CSS.escape(value)}"][data-template]`
+            );
+            if (!template) continue;
+            const itemEl = template.cloneNode(true);
+            itemEl.removeAttribute("data-template");
+            listEl.appendChild(itemEl);
+          }
+        }
+        applyItemProps() {
+          var _a;
+          const listEl = this.el.querySelector('[data-scope="combobox"][data-part="list"]');
+          if (!listEl) return;
+          const isOwnedByList = (el) => el.closest('[data-scope="combobox"][data-part="list"]') === listEl;
+          listEl.querySelectorAll('[data-scope="combobox"][data-part="item-group"]').forEach((groupEl) => {
+            var _a2;
+            if (!isOwnedByList(groupEl)) return;
+            const groupId = (_a2 = groupEl.dataset.id) != null ? _a2 : "";
+            this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
             const labelEl = groupEl.querySelector(
               '[data-scope="combobox"][data-part="item-group-label"]'
             );
             if (labelEl) {
-              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: templateId }));
+              this.spreadProps(labelEl, this.api.getItemGroupLabelProps({ htmlFor: groupId }));
             }
-            const groupContentEl = groupEl.querySelector(
-              '[data-scope="combobox"][data-part="item-group-content"]'
+          });
+          const sourceItems = ((_a = this.options) == null ? void 0 : _a.length) ? this.options : this.allOptions;
+          const byValue = /* @__PURE__ */ new Map();
+          for (const item of sourceItems) {
+            byValue.set(this.getItemValue(item), item);
+          }
+          for (const item of this.allOptions) {
+            const v2 = this.getItemValue(item);
+            if (!byValue.has(v2)) byValue.set(v2, item);
+          }
+          listEl.querySelectorAll('[data-scope="combobox"][data-part="item"]').forEach((itemEl) => {
+            var _a2;
+            if (!isOwnedByList(itemEl)) return;
+            const value = (_a2 = itemEl.dataset.value) != null ? _a2 : "";
+            const item = byValue.get(value);
+            if (!item) return;
+            this.spreadProps(itemEl, this.api.getItemProps({ item }));
+            const textEl = itemEl.querySelector(
+              '[data-scope="combobox"][data-part="item-text"]'
             );
-            if (!groupContentEl) continue;
-            groupContentEl.innerHTML = "";
-            for (const item of block.items) {
-              const itemEl = this.cloneItem(templatesContainer, item);
-              if (itemEl) groupContentEl.appendChild(itemEl);
+            if (textEl) {
+              this.spreadProps(textEl, this.api.getItemTextProps({ item }));
             }
-            contentEl.appendChild(groupEl);
-          }
-        }
-        renderFlatItems(contentEl, templatesContainer, items) {
-          for (const item of items) {
-            const itemEl = this.cloneItem(templatesContainer, item);
-            if (itemEl) contentEl.appendChild(itemEl);
-          }
-        }
-        cloneItem(templatesContainer, item) {
-          var _a, _b, _c, _d;
-          const value = (_d = (_c = (_b = (_a = this.api.collection).getItemValue) == null ? void 0 : _b.call(_a, item)) != null ? _c : item.id) != null ? _d : "";
-          const template = templatesContainer.querySelector(
-            `[data-scope="combobox"][data-part="item"][data-value="${value}"][data-template]`
-          );
-          if (!template) return null;
-          const el = template.cloneNode(true);
-          el.removeAttribute("data-template");
-          this.spreadProps(el, this.api.getItemProps({ item }));
-          const textEl = el.querySelector('[data-scope="combobox"][data-part="item-text"]');
-          if (textEl) {
-            this.spreadProps(textEl, this.api.getItemTextProps({ item }));
-            if (textEl.children.length === 0) {
-              textEl.textContent = item.label || "";
+            const indicatorEl = itemEl.querySelector(
+              '[data-scope="combobox"][data-part="item-indicator"]'
+            );
+            if (indicatorEl) {
+              this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
             }
-          }
-          const indicatorEl = el.querySelector(
-            '[data-scope="combobox"][data-part="item-indicator"]'
-          );
-          if (indicatorEl) {
-            this.spreadProps(indicatorEl, this.api.getItemIndicatorProps({ item }));
-          }
-          return el;
+          });
         }
         render() {
           const root = this.el.querySelector('[data-scope="combobox"][data-part="root"]');
           if (!root) return;
           this.spreadProps(root, this.api.getRootProps());
-          ["label", "control", "input", "trigger", "clear-trigger", "positioner"].forEach((part) => {
+          [
+            "label",
+            "control",
+            "input",
+            "trigger",
+            "clear-trigger",
+            "positioner",
+            "content",
+            "list"
+          ].forEach((part) => {
             const el = this.el.querySelector(`[data-scope="combobox"][data-part="${part}"]`);
             if (!el) return;
             const apiMethod = "get" + part.split("-").map((s2) => s2[0].toUpperCase() + s2.slice(1)).join("") + "Props";
             this.spreadProps(el, this.api[apiMethod]());
           });
-          const contentEl = this.el.querySelector(
-            '[data-scope="combobox"][data-part="content"]'
-          );
-          if (contentEl) {
-            this.spreadProps(contentEl, this.api.getContentProps());
-            this.renderItems();
-          }
+          this.renderItems();
+          this.applyItemProps();
         }
       };
       ComboboxHook = {
         mounted() {
+          var _a;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const allItems = JSON.parse(el.dataset.collection || "[]");
+          const canPush = () => canPushEvent(this.liveSocket);
+          const allItems = JSON.parse((_a = el.getAttribute("data-items")) != null ? _a : "[]");
           const hasGroups = allItems.some((item) => Boolean(item.group));
-          const props = __spreadProps(__spreadValues({
-            id: el.id
-          }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-            disabled: getBoolean(el, "disabled"),
-            placeholder: getString(el, "placeholder"),
-            alwaysSubmitOnEnter: getBoolean(el, "alwaysSubmitOnEnter"),
-            autoFocus: getBoolean(el, "autoFocus"),
-            closeOnSelect: getBoolean(el, "closeOnSelect"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
-            inputBehavior: getString(el, "inputBehavior", ["autohighlight", "autocomplete", "none"]),
-            loopFocus: getBoolean(el, "loopFocus"),
-            multiple: getBoolean(el, "multiple"),
-            invalid: getBoolean(el, "invalid"),
-            allowCustomValue: false,
-            selectionBehavior: "replace",
-            name: getString(el, "name"),
-            form: getString(el, "form"),
-            readOnly: getBoolean(el, "readOnly"),
-            required: getBoolean(el, "required"),
-            positioning: (() => {
-              const positioningJson = el.dataset.positioning;
-              if (positioningJson) {
-                try {
-                  const parsed = JSON.parse(positioningJson);
-                  return transformPositioningOptions(parsed);
-                } catch (e2) {
-                  return void 0;
-                }
-              }
-              return void 0;
-            })(),
-            onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  open: details.open,
-                  reason: details.reason,
-                  value: details.value,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: getBoolean(el, "bubble"),
-                    detail: {
-                      open: details.open,
-                      reason: details.reason,
-                      value: details.value,
-                      id: el.id
-                    }
-                  })
-                );
-              }
-            },
-            onInputValueChange: (details) => {
-              const eventName = getString(el, "onInputValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  value: details.inputValue,
-                  reason: details.reason,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onInputValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: getBoolean(el, "bubble"),
-                    detail: {
-                      value: details.inputValue,
-                      reason: details.reason,
-                      id: el.id
-                    }
-                  })
-                );
-              }
-            },
-            onValueChange: (details) => {
-              const hiddenInput = el.querySelector(
-                '[data-scope="combobox"][data-part="input"]'
-              );
-              if (hiddenInput) {
-                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-              }
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  value: details.value,
-                  items: details.items,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: getBoolean(el, "bubble"),
-                    detail: {
-                      value: details.value,
-                      items: details.items,
-                      id: el.id
-                    }
-                  })
-                );
-              }
-            }
-          });
+          const props = __spreadValues(__spreadValues({}, buildComboboxProps(el, pushEvent, canPush, this.liveSocket)), comboboxValueBinding(el));
           const combobox = new Combobox(el, props);
           combobox.hasGroups = hasGroups;
           combobox.setAllOptions(allItems);
           combobox.init();
           this.combobox = combobox;
-          this.handlers = [];
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:combobox:set-value", (event) => {
+            combobox.api.setValue(event.detail.value);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("combobox_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            combobox.api.setValue(payload.value);
+          });
         },
         updated() {
-          const newCollection = JSON.parse(this.el.dataset.collection || "[]");
+          var _a, _b, _c;
+          const newCollection = JSON.parse((_a = this.el.getAttribute("data-items")) != null ? _a : "[]");
           const hasGroups = newCollection.some((item) => Boolean(item.group));
-          if (this.combobox) {
-            this.combobox.hasGroups = hasGroups;
-            this.combobox.setAllOptions(newCollection);
-            this.combobox.render();
-            this.combobox.updateProps(__spreadProps(__spreadValues({}, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
-              collection: this.combobox.getCollection(),
-              name: getString(this.el, "name"),
-              form: getString(this.el, "form"),
-              disabled: getBoolean(this.el, "disabled"),
-              multiple: getBoolean(this.el, "multiple"),
-              dir: getString(this.el, "dir", ["ltr", "rtl"]),
-              invalid: getBoolean(this.el, "invalid"),
-              required: getBoolean(this.el, "required"),
-              readOnly: getBoolean(this.el, "readOnly")
-            }));
+          if (!this.combobox) return;
+          this.combobox.hasGroups = hasGroups;
+          this.combobox.setAllOptions(newCollection);
+          const redirectOn = getBoolean(this.el, "redirect");
+          const controlled = getBoolean(this.el, "controlled");
+          this.combobox.updateProps(__spreadProps(__spreadValues({
+            collection: this.combobox.getCollection(),
+            id: this.el.id
+          }, controlled ? { value: (_b = getStringList(this.el, "value")) != null ? _b : [] } : { defaultValue: (_c = getStringList(this.el, "defaultValue")) != null ? _c : [] }), {
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form"),
+            dir: getDir(this.el),
+            disabled: getBoolean(this.el, "disabled"),
+            multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
+            invalid: getBoolean(this.el, "invalid"),
+            required: getBoolean(this.el, "required"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            placeholder: getString(this.el, "placeholder")
+          }));
+          if (this.combobox.api.open) {
+            this.combobox.api.reposition();
           }
         },
         destroyed() {
-          var _a;
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.combobox) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.combobox) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -13324,23 +14226,21 @@ var Corex = (() => {
     if (!selectEl) return;
     raf(() => setElementValue(selectEl, format));
   }
-  function parsePositioning(val) {
-    if (!val) return void 0;
-    try {
-      return JSON.parse(val);
-    } catch (e2) {
-      return void 0;
-    }
+  function readValueProps(el) {
+    const defaultVal = getString(el, "defaultValue");
+    return { defaultValue: defaultVal ? parse(defaultVal) : void 0 };
   }
   var anatomy9, parts9, __defProp6, __defNormalProp6, __publicField6, generateRGB_R, generateRGB_G, generateRGB_B, generateHSL_H, generateHSL_S, generateHSL_L, generateHSB_H, generateHSB_S, generateHSB_B, isEqualObject, Color, HEX_COLOR_REGEX, RGB_COLOR_REGEX, HEX_STARTING_REGEX, _RGBColor, RGBColor, HSL_REGEX, _HSLColor, HSLColor, HSB_REGEX, _HSBColor, HSBColor, nativeColors, makeMap, nativeColorMap, parseColor, normalizeColor, getRootId9, getLabelId5, getHiddenInputId3, getControlId4, getTriggerId3, getContentId3, getPositionerId2, getFormatSelectId, getAreaId, getAreaGradientId, getAreaThumbId, getChannelSliderTrackId, getChannelSliderThumbId, getContentEl3, getAreaThumbEl, getChannelSliderThumbEl, getFormatSelectEl, getHiddenInputEl3, getAreaEl, getAreaValueFromPoint, getControlEl3, getTriggerEl2, getPositionerEl2, getChannelSliderTrackEl, getChannelSliderValueFromPoint, getChannelInputEls, getSliderBackground, formats, formatRegex, parse, HEX_REGEX, and3, hashObject, DEFAULT_COLOR, machine9, ColorPicker, ColorPickerHook;
   var init_color_picker = __esm({
     "../priv/static/color-picker.mjs"() {
       "use strict";
-      init_chunk_MV633JPN();
-      init_chunk_VXCJNDUG();
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_SNFXM6OQ();
+      init_chunk_AFD7D2GA();
+      init_chunk_F6MNP3LD();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_NX2BOTHE();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy9 = createAnatomy("color-picker", [
         "root",
         "label",
@@ -14727,7 +15627,7 @@ var Corex = (() => {
           return new VanillaMachine(machine9, props);
         }
         initApi() {
-          return connect9(this.machine.service, normalizeProps);
+          return this.zagConnect(connect9);
         }
         render() {
           const rootEl = this.el.querySelector('[data-part="root"]');
@@ -14850,211 +15750,136 @@ var Corex = (() => {
       };
       ColorPickerHook = {
         mounted() {
-          var _a, _b;
           const el = this.el;
-          const controlled = getBoolean(el, "controlled");
-          const defaultVal = getString(el, "defaultValue");
-          const valueVal = getString(el, "value");
-          const zag = new ColorPicker(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const valueProps = readValueProps(el);
+          const zag = new ColorPicker(el, __spreadProps(__spreadValues({
             id: el.id
-          }, controlled ? { value: valueVal ? parse(valueVal) : void 0 } : { defaultValue: defaultVal ? parse(defaultVal) : void 0 }), {
-            name: (_a = getString(el, "name")) != null ? _a : el.id,
-            format: (_b = getString(el, "format", [
-              "rgba",
-              "hsla",
-              "hsba",
-              "hex"
-            ])) != null ? _b : "rgba",
-            defaultFormat: getString(el, "defaultFormat", [
-              "rgba",
-              "hsla",
-              "hsba",
-              "hex"
-            ]),
-            closeOnSelect: getBoolean(el, "closeOnSelect") !== false
-          }), controlled ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
-            openAutoFocus: getBoolean(el, "openAutoFocus") !== false,
+          }, valueProps), {
+            name: getString(el, "name"),
+            defaultFormat: "rgba",
+            closeOnSelect: getBoolean(el, "closeOnSelect"),
+            defaultOpen: false,
+            openAutoFocus: getBoolean(el, "openAutoFocus"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
             dir: getDir(el),
-            positioning: parsePositioning(el.dataset.positioning),
+            positioning: readPositioningOptions(el),
             onValueChange: (details) => {
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  valueAsString: details.valueAsString,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
+                  valueAsString: details.valueAsString
+                },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             },
             onValueChangeEnd: (details) => {
-              const eventName = getString(el, "onValueChangeEnd");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  valueAsString: details.valueAsString,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeEndClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
+                  valueAsString: details.valueAsString
+                },
+                serverEventName: getString(el, "onValueChangeEnd"),
+                clientEventName: getString(el, "onValueChangeEndClient")
+              });
             },
             onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { open: details.open, id: el.id });
-              }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: { open: details.open, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, open: details.open },
+                serverEventName: getString(el, "onOpenChange"),
+                clientEventName: getString(el, "onOpenChangeClient")
+              });
             },
             onFormatChange: (details) => {
-              const eventName = getString(el, "onFormatChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { format: details.format, id: el.id });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, format: details.format },
+                serverEventName: getString(el, "onFormatChange"),
+                clientEventName: getString(el, "onFormatChangeClient")
+              });
             },
             onPointerDownOutside: () => {
-              const eventName = getString(el, "onPointerDownOutside");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { id: el.id });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id },
+                serverEventName: getString(el, "onPointerDownOutside"),
+                clientEventName: getString(el, "onPointerDownOutsideClient")
+              });
             },
             onFocusOutside: () => {
-              const eventName = getString(el, "onFocusOutside");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { id: el.id });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id },
+                serverEventName: getString(el, "onFocusOutside"),
+                clientEventName: getString(el, "onFocusOutsideClient")
+              });
             },
             onInteractOutside: () => {
-              const eventName = getString(el, "onInteractOutside");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { id: el.id });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id },
+                serverEventName: getString(el, "onInteractOutside"),
+                clientEventName: getString(el, "onInteractOutsideClient")
+              });
             }
           }));
           zag.init();
           this.colorPicker = zag;
           this.handlers = [];
-          this.onSetOpen = (event) => {
-            const { open } = event.detail;
-            zag.api.setOpen(open);
-          };
-          el.addEventListener("phx:color-picker:set-open", this.onSetOpen);
           this.onSetValue = (event) => {
             const { value } = event.detail;
             zag.api.setValue(value);
           };
-          el.addEventListener("phx:color-picker:set-value", this.onSetValue);
-          this.onSetFormat = (event) => {
-            const { format } = event.detail;
-            zag.api.setFormat(format);
-          };
-          el.addEventListener("phx:color-picker:set-format", this.onSetFormat);
+          el.addEventListener("corex:color-picker:set-value", this.onSetValue);
           this.handlers.push(
-            this.handleEvent(
-              "color_picker_set_open",
-              (payload) => {
-                const targetId = payload.color_picker_id;
-                if (targetId) {
-                  const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
-                  if (!matches) return;
-                }
-                zag.api.setOpen(payload.open);
-              }
-            )
-          );
-          this.handlers.push(
-            this.handleEvent(
-              "color_picker_set_value",
-              (payload) => {
-                const targetId = payload.color_picker_id;
-                if (targetId) {
-                  const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
-                  if (!matches) return;
-                }
-                zag.api.setValue(payload.value);
-              }
-            )
-          );
-          this.handlers.push(
-            this.handleEvent(
-              "color_picker_set_format",
-              (payload) => {
-                const targetId = payload.color_picker_id;
-                if (targetId) {
-                  const matches = el.id === targetId || el.id === `color-picker:${targetId}`;
-                  if (!matches) return;
-                }
-                zag.api.setFormat(payload.format);
-              }
-            )
+            this.handleEvent("color_picker_set_value", (payload) => {
+              if (!idMatches(el.id, readPayloadId(payload))) return;
+              zag.api.setValue(payload.value);
+            })
           );
         },
         updated() {
-          var _a, _b, _c;
+          var _a;
           const el = this.el;
-          const controlled = getBoolean(el, "controlled");
-          const defaultVal = getString(el, "defaultValue");
-          const valueVal = getString(el, "value");
-          (_c = this.colorPicker) == null ? void 0 : _c.updateProps(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, controlled ? { value: valueVal ? parse(valueVal) : void 0 } : { defaultValue: defaultVal ? parse(defaultVal) : void 0 }), {
-            name: (_a = getString(el, "name")) != null ? _a : el.id,
-            format: (_b = getString(el, "format", [
-              "rgba",
-              "hsla",
-              "hsba",
-              "hex"
-            ])) != null ? _b : "rgba",
-            defaultFormat: getString(el, "defaultFormat", [
-              "rgba",
-              "hsla",
-              "hsba",
-              "hex"
-            ]),
-            closeOnSelect: getBoolean(el, "closeOnSelect") !== false
-          }), controlled ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
-            openAutoFocus: getBoolean(el, "openAutoFocus") !== false,
+          const valueProps = readValueProps(el);
+          (_a = this.colorPicker) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({}, valueProps), {
+            name: getString(el, "name"),
+            closeOnSelect: getBoolean(el, "closeOnSelect"),
+            openAutoFocus: getBoolean(el, "openAutoFocus"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
             dir: getDir(el),
-            positioning: parsePositioning(el.dataset.positioning)
+            positioning: readPositioningOptions(el)
           }));
         },
         destroyed() {
           var _a;
-          if (this.onSetOpen) {
-            this.el.removeEventListener("phx:color-picker:set-open", this.onSetOpen);
-          }
           if (this.onSetValue) {
-            this.el.removeEventListener("phx:color-picker:set-value", this.onSetValue);
-          }
-          if (this.onSetFormat) {
-            this.el.removeEventListener("phx:color-picker:set-format", this.onSetFormat);
+            this.el.removeEventListener("corex:color-picker:set-value", this.onSetValue);
           }
           if (this.handlers) {
             for (const h2 of this.handlers) {
@@ -15067,7 +15892,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-B7UVPCXR.mjs
+  // ../priv/static/chunk-7EQLYSUR.mjs
   function memo(getDeps, fn, opts) {
     let deps = [];
     let result;
@@ -15082,10 +15907,10 @@ var Corex = (() => {
       return result;
     };
   }
-  var init_chunk_B7UVPCXR = __esm({
-    "../priv/static/chunk-B7UVPCXR.mjs"() {
+  var init_chunk_7EQLYSUR = __esm({
+    "../priv/static/chunk-7EQLYSUR.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_SJ37CZDS();
     }
   });
 
@@ -16458,14 +17283,26 @@ var Corex = (() => {
       const dateValue = focusedValue.set({ year: value });
       const decadeYears = getDecadeRange(startValue.year, { strict: true });
       const isOutsideVisibleRange = !decadeYears.includes(value);
-      const isOutsideRange = isValueWithinRange(value, min4 == null ? void 0 : min4.year, max3 == null ? void 0 : max3.year);
+      const isWithinMinMax = isValueWithinRange(value, min4 == null ? void 0 : min4.year, max3 == null ? void 0 : max3.year);
+      const isInSelectedRange = isRangePicker && isDateWithinRange(dateValue, selectedValue);
+      const isFirstInSelectedRange = isRangePicker && selectedValue[0] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, selectedValue[0]);
+      const isLastInSelectedRange = isRangePicker && selectedValue[1] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, selectedValue[1]);
+      const hasHoveredRange = isRangePicker && hoveredRangeValue.length > 0;
+      const isInHoveredRange = hasHoveredRange && isDateWithinRange(dateValue, hoveredRangeValue);
+      const isFirstInHoveredRange = hasHoveredRange && hoveredRangeValue[0] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, hoveredRangeValue[0]);
+      const isLastInHoveredRange = hasHoveredRange && hoveredRangeValue[1] && $14e0f24ef4ac5c92$export$ea840f5a6dda8147(dateValue, hoveredRangeValue[1]);
       const cellState = {
         focused: focusedValue.year === props.value,
-        selectable: isOutsideVisibleRange || isOutsideRange,
+        selectable: !isOutsideVisibleRange && isWithinMinMax,
         outsideRange: isOutsideVisibleRange,
         selected: !!selectedValue.find((date) => date && date.year === value),
         valueText: value.toString(),
-        inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
+        inRange: isInSelectedRange || isInHoveredRange,
+        firstInRange: !!isFirstInSelectedRange,
+        lastInRange: !!isLastInSelectedRange,
+        inHoveredRange: !!isInHoveredRange,
+        firstInHoveredRange: !!isFirstInHoveredRange,
+        lastInHoveredRange: !!isLastInHoveredRange,
         value: dateValue,
         get disabled() {
           return disabled2 || !cellState.selectable;
@@ -16477,12 +17314,25 @@ var Corex = (() => {
       const { value, disabled: disabled2 } = props;
       const dateValue = focusedValue.set({ month: value });
       const formatter = getMonthFormatter(locale, timeZone, focusedValue);
+      const isInSelectedRange = isRangePicker && isDateWithinRange(dateValue, selectedValue);
+      const isFirstInSelectedRange = isRangePicker && selectedValue[0] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, selectedValue[0]);
+      const isLastInSelectedRange = isRangePicker && selectedValue[1] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, selectedValue[1]);
+      const hasHoveredRange = isRangePicker && hoveredRangeValue.length > 0;
+      const isInHoveredRange = hasHoveredRange && isDateWithinRange(dateValue, hoveredRangeValue);
+      const isFirstInHoveredRange = hasHoveredRange && hoveredRangeValue[0] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, hoveredRangeValue[0]);
+      const isLastInHoveredRange = hasHoveredRange && hoveredRangeValue[1] && $14e0f24ef4ac5c92$export$5a8da0c44a3afdf2(dateValue, hoveredRangeValue[1]);
       const cellState = {
         focused: focusedValue.month === props.value,
         selectable: !isDateOutsideRange(dateValue, min4, max3),
         selected: !!selectedValue.find((date) => date && date.month === value && date.year === focusedValue.year),
         valueText: formatter.format(dateValue.toDate(timeZone)),
-        inRange: isRangePicker && (isDateWithinRange(dateValue, selectedValue) || isDateWithinRange(dateValue, hoveredRangeValue)),
+        inRange: isInSelectedRange || isInHoveredRange,
+        firstInRange: !!isFirstInSelectedRange,
+        lastInRange: !!isLastInSelectedRange,
+        inHoveredRange: !!isInHoveredRange,
+        firstInHoveredRange: !!isFirstInHoveredRange,
+        lastInHoveredRange: !!isLastInHoveredRange,
+        outsideRange: false,
         value: dateValue,
         get disabled() {
           return disabled2 || !cellState.selectable;
@@ -16514,12 +17364,10 @@ var Corex = (() => {
         outsideRange: isOutsideRange,
         today: $14e0f24ef4ac5c92$export$629b0a497aa65267(value, timeZone),
         weekend: $14e0f24ef4ac5c92$export$618d60ea299da42(value, locale),
-        formattedDate: formatter.format(value.toDate(timeZone)),
+        value,
+        valueText: formatter.format(value.toDate(timeZone)),
         get focused() {
           return isDateEqual(value, focusedValue) && (!cellState.outsideRange || outsideDaySelectable);
-        },
-        get ariaLabel() {
-          return translations.dayCell(cellState);
         },
         get selectable() {
           return !cellState.disabled && !cellState.unavailable;
@@ -16859,7 +17707,7 @@ var Corex = (() => {
           role: "button",
           dir: prop("dir"),
           tabIndex: cellState.focused ? 0 : -1,
-          "aria-label": cellState.ariaLabel,
+          "aria-label": translations.dayCell(cellState),
           "aria-disabled": ariaAttr(!cellState.selectable),
           "aria-invalid": ariaAttr(cellState.invalid),
           "data-disabled": dataAttr(!cellState.selectable),
@@ -16909,19 +17757,24 @@ var Corex = (() => {
         const { value } = props;
         const cellState = getMonthTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
-          dir: prop("dir"),
-          role: "button",
           id: getCellTriggerId(scope, value.toString()),
-          "data-selected": dataAttr(cellState.selected),
+          role: "button",
+          dir: prop("dir"),
+          tabIndex: cellState.focused ? 0 : -1,
+          "aria-label": cellState.valueText,
           "aria-disabled": ariaAttr(!cellState.selectable),
           "data-disabled": dataAttr(!cellState.selectable),
-          "data-focus": dataAttr(cellState.focused),
-          "data-in-range": dataAttr(cellState.inRange),
-          "data-outside-range": dataAttr(cellState.outsideRange),
-          "aria-label": cellState.valueText,
-          "data-view": "month",
+          "data-selected": dataAttr(cellState.selected),
           "data-value": value,
-          tabIndex: cellState.focused ? 0 : -1,
+          "data-view": "month",
+          "data-focus": dataAttr(cellState.focused),
+          "data-outside-range": dataAttr(cellState.outsideRange),
+          "data-range-start": dataAttr(cellState.firstInRange),
+          "data-range-end": dataAttr(cellState.lastInRange),
+          "data-in-range": dataAttr(cellState.inRange),
+          "data-in-hover-range": dataAttr(cellState.inHoveredRange),
+          "data-hover-range-start": dataAttr(cellState.firstInHoveredRange),
+          "data-hover-range-end": dataAttr(cellState.lastInHoveredRange),
           onClick(event) {
             if (event.defaultPrevented) return;
             if (!cellState.selectable) return;
@@ -16944,7 +17797,7 @@ var Corex = (() => {
           dir: prop("dir"),
           colSpan: columns,
           role: "gridcell",
-          "aria-selected": ariaAttr(cellState.selected),
+          "aria-selected": ariaAttr(cellState.selected || cellState.inRange),
           "data-selected": dataAttr(cellState.selected),
           "aria-disabled": ariaAttr(!cellState.selectable),
           "data-value": value
@@ -16954,19 +17807,24 @@ var Corex = (() => {
         const { value } = props;
         const cellState = getYearTableCellState(props);
         return normalize.element(__spreadProps(__spreadValues({}, parts10.tableCellTrigger.attrs), {
-          dir: prop("dir"),
-          role: "button",
           id: getCellTriggerId(scope, value.toString()),
-          "data-selected": dataAttr(cellState.selected),
-          "data-focus": dataAttr(cellState.focused),
-          "data-in-range": dataAttr(cellState.inRange),
+          role: "button",
+          dir: prop("dir"),
+          tabIndex: cellState.focused ? 0 : -1,
+          "aria-label": cellState.valueText,
           "aria-disabled": ariaAttr(!cellState.selectable),
           "data-disabled": dataAttr(!cellState.selectable),
-          "aria-label": cellState.valueText,
-          "data-outside-range": dataAttr(cellState.outsideRange),
+          "data-selected": dataAttr(cellState.selected),
           "data-value": value,
           "data-view": "year",
-          tabIndex: cellState.focused ? 0 : -1,
+          "data-focus": dataAttr(cellState.focused),
+          "data-outside-range": dataAttr(cellState.outsideRange),
+          "data-range-start": dataAttr(cellState.firstInRange),
+          "data-range-end": dataAttr(cellState.lastInRange),
+          "data-in-range": dataAttr(cellState.inRange),
+          "data-in-hover-range": dataAttr(cellState.inHoveredRange),
+          "data-hover-range-start": dataAttr(cellState.firstInHoveredRange),
+          "data-hover-range-end": dataAttr(cellState.lastInHoveredRange),
           onClick(event) {
             if (event.defaultPrevented) return;
             if (!cellState.selectable) return;
@@ -17182,50 +18040,6 @@ var Corex = (() => {
       }
     };
   }
-  function createLiveRegion(opts = {}) {
-    var _a;
-    const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;
-    const win = (_a = doc.defaultView) != null ? _a : window;
-    const parent = root != null ? root : doc.body;
-    function announce(message, delay2) {
-      const oldRegion = doc.getElementById(ID);
-      oldRegion == null ? void 0 : oldRegion.remove();
-      delay2 = delay2 != null ? delay2 : _delay;
-      const region = doc.createElement("span");
-      region.id = ID;
-      region.dataset.liveAnnouncer = "true";
-      const role = level !== "assertive" ? "status" : "alert";
-      region.setAttribute("aria-live", level);
-      region.setAttribute("role", role);
-      Object.assign(region.style, {
-        border: "0",
-        clip: "rect(0 0 0 0)",
-        height: "1px",
-        margin: "-1px",
-        overflow: "hidden",
-        padding: "0",
-        position: "absolute",
-        width: "1px",
-        whiteSpace: "nowrap",
-        wordWrap: "normal"
-      });
-      parent.appendChild(region);
-      win.setTimeout(() => {
-        region.textContent = message;
-      }, delay2);
-    }
-    function destroy() {
-      const oldRegion = doc.getElementById(ID);
-      oldRegion == null ? void 0 : oldRegion.remove();
-    }
-    return {
-      announce,
-      destroy,
-      toJSON() {
-        return ID;
-      }
-    };
-  }
   function isDateArrayEqual(a2, b2) {
     if ((a2 == null ? void 0 : a2.length) !== (b2 == null ? void 0 : b2.length)) return false;
     const len = Math.max(a2.length, b2.length);
@@ -17269,20 +18083,103 @@ var Corex = (() => {
     }
     return $fae977aafc393c5c$export$6b862160d295c8e(value);
   }
-  function toISOString(d2) {
-    const pad = (n2) => String(n2).padStart(2, "0");
-    return `${d2.year}-${pad(d2.month)}-${pad(d2.day)}`;
+  function buildZagDatePickerTranslations(m2) {
+    const t2 = {};
+    if (m2.content) t2.content = m2.content;
+    if (m2.monthSelect) t2.monthSelect = m2.monthSelect;
+    if (m2.yearSelect) t2.yearSelect = m2.yearSelect;
+    if (m2.clearTrigger) t2.clearTrigger = m2.clearTrigger;
+    if (m2.weekColumnHeader) t2.weekColumnHeader = m2.weekColumnHeader;
+    if (m2.weekNumber) t2.weekNumberCell = (n2) => formatWeek(m2.weekNumber, n2);
+    if (m2.openCalendar && m2.closeCalendar) {
+      t2.trigger = (open) => open ? m2.closeCalendar : m2.openCalendar;
+    }
+    if (m2.viewTriggerDay || m2.viewTriggerMonth || m2.viewTriggerYear) {
+      t2.viewTrigger = (view) => pickViewLabel(
+        view,
+        m2.viewTriggerDay,
+        m2.viewTriggerMonth,
+        m2.viewTriggerYear
+      );
+    }
+    if (m2.prevTriggerDay || m2.prevTriggerMonth || m2.prevTriggerYear) {
+      t2.prevTrigger = (view) => pickViewLabel(
+        view,
+        m2.prevTriggerDay,
+        m2.prevTriggerMonth,
+        m2.prevTriggerYear
+      );
+    }
+    if (m2.nextTriggerDay || m2.nextTriggerMonth || m2.nextTriggerYear) {
+      t2.nextTrigger = (view) => pickViewLabel(
+        view,
+        m2.nextTriggerDay,
+        m2.nextTriggerMonth,
+        m2.nextTriggerYear
+      );
+    }
+    if (m2.placeholderDay && m2.placeholderMonth && m2.placeholderYear) {
+      t2.placeholder = () => ({
+        day: m2.placeholderDay,
+        month: m2.placeholderMonth,
+        year: m2.placeholderYear
+      });
+    }
+    return t2;
   }
-  var anatomy10, parts10, $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$localTimeZoneOverride, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, getLabelId6, getRootId10, getTableId, getContentId4, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl4, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, ID, and4, machine10, normalizeValue, preserveTime, DatePicker, DatePickerHook;
+  function applyInputAriaIfNeeded(el, inputs, selectionMode) {
+    if (selectionMode === "range" || el.querySelector('[data-scope="date-picker"][data-part="label"]')) {
+      return;
+    }
+    let tr = null;
+    const raw = el.dataset.translation;
+    if (raw) {
+      try {
+        tr = JSON.parse(raw);
+      } catch (e2) {
+        tr = null;
+      }
+    }
+    const value = tr == null ? void 0 : tr.input;
+    if (!value) return;
+    for (const input of inputs) {
+      if (!input.getAttribute("aria-labelledby")) {
+        input.setAttribute("aria-label", value);
+      }
+    }
+  }
+  function valueToIsoString(d2) {
+    if (d2 == null) return "";
+    return String(d2);
+  }
+  function resolveZagDatePickerTranslations(el) {
+    const raw = el.dataset.translation;
+    if (!raw) {
+      return {};
+    }
+    try {
+      const tr = JSON.parse(raw);
+      return { translations: buildZagDatePickerTranslations(tr) };
+    } catch (e2) {
+      return {};
+    }
+  }
+  function resolveCloseOnSelect(el) {
+    return getBoolean(el, "closeOnSelect");
+  }
+  var anatomy10, parts10, $3b62074eb05584b2$var$EPOCH, $3b62074eb05584b2$var$daysInMonth, $3b62074eb05584b2$export$80ee6245ec4f29ec, $2fe286d2fb449abb$export$7a5acbd77d414bd9, $14e0f24ef4ac5c92$var$DAY_MAP, $14e0f24ef4ac5c92$var$localTimeZone, $14e0f24ef4ac5c92$var$localTimeZoneOverride, $14e0f24ef4ac5c92$var$cachedRegions, $14e0f24ef4ac5c92$var$cachedWeekInfo, $14e0f24ef4ac5c92$var$WEEKEND_DATA, $11d87f3f76e88657$var$formattersByTimeZone, $11d87f3f76e88657$var$DAYMILLIS, $735220c2d4774dd3$var$ONE_HOUR, $fae977aafc393c5c$var$DATE_RE, $fae977aafc393c5c$var$ABSOLUTE_RE, $fae977aafc393c5c$var$requiredDurationTimeGroups, $fae977aafc393c5c$var$requiredDurationGroups, $35ea8db9cb2ccb90$var$_type, $35ea8db9cb2ccb90$export$99faa760c7908e4f, $35ea8db9cb2ccb90$var$_type2, $35ea8db9cb2ccb90$export$ca871e8dbb80966f, $35ea8db9cb2ccb90$var$_type3, $35ea8db9cb2ccb90$export$d3b7288e7994edea, $fb18d541ea1ad717$var$formatterCache, $fb18d541ea1ad717$export$ad991b66133851cf, $fb18d541ea1ad717$var$hour12Preferences, $fb18d541ea1ad717$var$_hasBuggyHour12Behavior, $fb18d541ea1ad717$var$_hasBuggyResolvedHourCycle, daysOfTheWeek, DEFAULT_MIN_YEAR, DEFAULT_MAX_YEAR, FUTURE_YEAR_COERCION, isValidYear, isValidMonth, isValidDay, getLabelId6, getRootId10, getTableId, getContentId4, getCellTriggerId, getPrevTriggerId2, getNextTriggerId2, getViewTriggerId, getClearTriggerId2, getControlId5, getInputId3, getTriggerId4, getPositionerId3, getMonthSelectId, getYearSelectId, getFocusedCell, getTriggerEl3, getContentEl4, getInputEls, getYearSelectEl, getMonthSelectEl, getClearTriggerEl2, getPositionerEl3, getControlEl4, PLACEHOLDERS, isValidCharacter, isValidDate, ensureValidCharacters, defaultTranslations, views, getVisibleRangeText, and4, machine10, normalizeValue, preserveTime, pickViewLabel, formatWeek, DatePicker, DatePickerHook;
   var init_date_picker = __esm({
     "../priv/static/date-picker.mjs"() {
       "use strict";
-      init_chunk_B7UVPCXR();
-      init_chunk_MV633JPN();
-      init_chunk_VXCJNDUG();
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_SNFXM6OQ();
+      init_chunk_7EQLYSUR();
+      init_chunk_MRDCAPRF();
+      init_chunk_AFD7D2GA();
+      init_chunk_F6MNP3LD();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_NX2BOTHE();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
         "content",
@@ -17939,9 +18836,11 @@ var Corex = (() => {
       };
       defaultTranslations = {
         dayCell(state2) {
-          if (state2.unavailable) return `Not available. ${state2.formattedDate}`;
-          if (state2.selected) return `Selected date. ${state2.formattedDate}`;
-          return `Choose ${state2.formattedDate}`;
+          if (state2.unavailable) return `Not available. ${state2.valueText}`;
+          if (state2.firstInRange) return `Starting range from ${state2.valueText}`;
+          if (state2.lastInRange) return `Range ending at ${state2.valueText}`;
+          if (state2.selected) return `Selected date. ${state2.valueText}`;
+          return `Choose ${state2.valueText}`;
         },
         trigger(open) {
           return open ? "Close calendar" : "Open calendar";
@@ -18018,7 +18917,6 @@ var Corex = (() => {
           return { start, end, formatted };
         }
       );
-      ID = "__live-region__";
       ({ and: and4 } = createGuards());
       machine10 = createMachine({
         props({ props }) {
@@ -19147,6 +20045,8 @@ var Corex = (() => {
           millisecond: existingDate.millisecond
         });
       };
+      pickViewLabel = (view, day, month, year) => view === "year" ? year != null ? year : "" : view === "month" ? month != null ? month : "" : day != null ? day : "";
+      formatWeek = (template, n2) => template.split("__N__").join(String(n2));
       DatePicker = class extends Component {
         constructor() {
           super(...arguments);
@@ -19241,7 +20141,7 @@ var Corex = (() => {
           return new VanillaMachine(machine10, props);
         }
         initApi() {
-          return connect10(this.machine.service, normalizeProps);
+          return this.zagConnect(connect10);
         }
         render() {
           const root = this.el.querySelector('[data-scope="date-picker"][data-part="root"]');
@@ -19254,12 +20154,29 @@ var Corex = (() => {
             '[data-scope="date-picker"][data-part="control"]'
           );
           if (control) this.spreadProps(control, this.api.getControlProps());
-          const input = this.el.querySelector(
-            '[data-scope="date-picker"][data-part="input"]'
+          const inputs = Array.from(
+            this.el.querySelectorAll('[data-scope="date-picker"][data-part="input"]')
           );
-          if (input) {
-            this.spreadProps(input, this.api.getInputProps());
+          const selectionMode = this.api.selectionMode;
+          for (let i2 = 0; i2 < inputs.length; i2 += 1) {
+            this.spreadProps(inputs[i2], this.api.getInputProps({ index: i2 }));
           }
+          if (selectionMode === "multiple" && inputs.length > 0) {
+            const input = inputs[0];
+            const applyMultipleDisplay = () => {
+              const vs = this.api.valueAsString;
+              const parts210 = Array.isArray(vs) ? vs : vs == null || vs === "" ? [] : [String(vs)];
+              const joined = parts210.filter(Boolean).join(", ");
+              if (input.value !== joined) {
+                input.value = joined;
+              }
+            };
+            applyMultipleDisplay();
+            queueMicrotask(() => {
+              requestAnimationFrame(applyMultipleDisplay);
+            });
+          }
+          applyInputAriaIfNeeded(this.el, inputs, this.api.selectionMode);
           const trigger = this.el.querySelector(
             '[data-scope="date-picker"][data-part="trigger"]'
           );
@@ -19345,17 +20262,17 @@ var Corex = (() => {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
           const liveSocket = this.liveSocket;
+          const canPush = () => canPushEvent(this.liveSocket);
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          const positioningJson = getString(el, "positioning");
           const parseList = (v2) => v2 ? v2.map((x2) => parse2(x2)) : void 0;
           const parseOne = (v2) => v2 ? parse2(v2) : void 0;
-          const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues({
+          const datePickerInstance = new DatePicker(el, __spreadProps(__spreadValues(__spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
             defaultFocusedValue: parseOne(getString(el, "focusedValue")),
-            defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            defaultView: getString(el, "defaultView"),
+            dir: getString(el, "dir"),
             locale: getString(el, "locale"),
             timeZone: getString(el, "timeZone"),
             disabled: getBoolean(el, "disabled"),
@@ -19363,38 +20280,36 @@ var Corex = (() => {
             required: getBoolean(el, "required"),
             invalid: getBoolean(el, "invalid"),
             outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
-            closeOnSelect: getBoolean(el, "closeOnSelect"),
+            closeOnSelect: resolveCloseOnSelect(el),
             min: min4 ? parse2(min4) : void 0,
             max: max3 ? parse2(max3) : void 0,
-            numOfMonths: getNumber(el, "numOfMonths"),
             startOfWeek: getNumber(el, "startOfWeek"),
             fixedWeeks: getBoolean(el, "fixedWeeks"),
-            selectionMode: getString(el, "selectionMode", [
-              "single",
-              "multiple",
-              "range"
-            ]),
+            selectionMode: getString(el, "selectionMode"),
+            maxSelectedDates: getNumber(el, "maxSelectedDates"),
             placeholder: getString(el, "placeholder"),
-            minView: getString(el, "minView", ["day", "month", "year"]),
-            maxView: getString(el, "maxView", ["day", "month", "year"]),
+            minView: getString(el, "minView"),
+            maxView: getString(el, "maxView"),
             inline: getBoolean(el, "inline"),
-            positioning: positioningJson ? JSON.parse(positioningJson) : void 0,
+            positioning: readPositioningOptions(el)
+          }), resolveZagDatePickerTranslations(el)), {
             onValueChange: (details) => {
               var _a;
-              const isoStr = ((_a = details.value) == null ? void 0 : _a.length) ? details.value.map((d2) => toISOString(d2)).join(",") : "";
+              const isoStr = ((_a = details.value) == null ? void 0 : _a.length) ? details.value.map((d2) => valueToIsoString(d2)).filter(Boolean).join(",") : "";
               const hiddenInput = el.querySelector(`#${el.id}-value`);
               if (hiddenInput && hiddenInput.value !== isoStr) {
                 hiddenInput.value = isoStr;
                 hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
                 hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
               }
-              const eventName = getString(el, "onValueChange");
-              if (eventName && liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: isoStr || null
-                });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: isoStr || null },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             },
             onFocusChange: (details) => {
               var _a;
@@ -19426,13 +20341,14 @@ var Corex = (() => {
               }
             },
             onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  open: details.open
-                });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, open: details.open },
+                serverEventName: getString(el, "onOpenChange"),
+                clientEventName: getString(el, "onOpenChangeClient")
+              });
             }
           }));
           datePickerInstance.init();
@@ -19459,64 +20375,51 @@ var Corex = (() => {
               datePickerInstance.api.setValue([parse2(value)]);
             }
           };
-          el.addEventListener("phx:date-picker:set-value", this.onSetValue);
+          el.addEventListener("corex:date-picker:set-value", this.onSetValue);
         },
         updated() {
-          var _a, _b;
+          var _a;
           const el = this.el;
           const inputWrapper = el.querySelector(
             '[data-scope="date-picker"][data-part="input-wrapper"]'
           );
           if (inputWrapper) inputWrapper.removeAttribute("data-loading");
-          const parseList = (v2) => v2 ? v2.map((x2) => parse2(x2)) : void 0;
           const min4 = getString(el, "min");
           const max3 = getString(el, "max");
-          const positioningJson = getString(el, "positioning");
-          const isControlled = getBoolean(el, "controlled");
           const focusedStr = getString(el, "focusedValue");
-          (_a = this.datePicker) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({}, getBoolean(el, "controlled") ? { value: parseList(getStringList(el, "value")) } : { defaultValue: parseList(getStringList(el, "defaultValue")) }), {
+          const controlled = getBoolean(el, "controlled");
+          const valueList = getStringList(el, "value");
+          (_a = this.datePicker) == null ? void 0 : _a.updateProps(__spreadValues(__spreadProps(__spreadValues({}, controlled ? {
+            value: (valueList != null ? valueList : []).map((x2) => parse2(x2))
+          } : {}), {
             defaultFocusedValue: focusedStr ? parse2(focusedStr) : void 0,
-            defaultView: getString(el, "defaultView", ["day", "month", "year"]),
-            dir: getString(this.el, "dir", ["ltr", "rtl"]),
-            locale: getString(this.el, "locale"),
-            timeZone: getString(this.el, "timeZone"),
-            disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            required: getBoolean(this.el, "required"),
-            invalid: getBoolean(this.el, "invalid"),
-            outsideDaySelectable: getBoolean(this.el, "outsideDaySelectable"),
-            closeOnSelect: getBoolean(this.el, "closeOnSelect"),
+            defaultView: getString(el, "defaultView"),
+            dir: getString(el, "dir"),
+            locale: getString(el, "locale"),
+            timeZone: getString(el, "timeZone"),
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            required: getBoolean(el, "required"),
+            invalid: getBoolean(el, "invalid"),
+            outsideDaySelectable: getBoolean(el, "outsideDaySelectable"),
+            closeOnSelect: resolveCloseOnSelect(el),
             min: min4 ? parse2(min4) : void 0,
             max: max3 ? parse2(max3) : void 0,
-            numOfMonths: getNumber(this.el, "numOfMonths"),
-            startOfWeek: getNumber(this.el, "startOfWeek"),
-            fixedWeeks: getBoolean(this.el, "fixedWeeks"),
-            selectionMode: getString(this.el, "selectionMode", [
-              "single",
-              "multiple",
-              "range"
-            ]),
-            placeholder: getString(this.el, "placeholder"),
-            minView: getString(this.el, "minView", ["day", "month", "year"]),
-            maxView: getString(this.el, "maxView", ["day", "month", "year"]),
-            inline: getBoolean(this.el, "inline"),
-            positioning: positioningJson ? JSON.parse(positioningJson) : void 0
-          }));
-          if (isControlled && this.datePicker) {
-            const serverValues = getStringList(el, "value");
-            const serverIso = (_b = serverValues == null ? void 0 : serverValues.join(",")) != null ? _b : "";
-            const zagValue = this.datePicker.api.value;
-            const zagIso = (zagValue == null ? void 0 : zagValue.length) ? zagValue.map((d2) => toISOString(d2)).join(",") : "";
-            if (serverIso !== zagIso) {
-              const parsed = (serverValues == null ? void 0 : serverValues.length) ? serverValues.map((x2) => parse2(x2)) : [];
-              this.datePicker.api.setValue(parsed);
-            }
-          }
+            startOfWeek: getNumber(el, "startOfWeek"),
+            fixedWeeks: getBoolean(el, "fixedWeeks"),
+            selectionMode: getString(el, "selectionMode"),
+            maxSelectedDates: getNumber(el, "maxSelectedDates"),
+            placeholder: getString(el, "placeholder"),
+            minView: getString(el, "minView"),
+            maxView: getString(el, "maxView"),
+            inline: getBoolean(el, "inline"),
+            positioning: readPositioningOptions(el)
+          }), resolveZagDatePickerTranslations(el)));
         },
         destroyed() {
           var _a;
           if (this.onSetValue) {
-            this.el.removeEventListener("phx:date-picker:set-value", this.onSetValue);
+            this.el.removeEventListener("corex:date-picker:set-value", this.onSetValue);
           }
           if (this.handlers) {
             for (const handler of this.handlers) {
@@ -19538,6 +20441,7 @@ var Corex = (() => {
     const { state: state2, send, context, prop, scope } = service;
     const ariaLabel = prop("aria-label");
     const open = state2.matches("open");
+    const triggerValue = context.get("triggerValue");
     return {
       open,
       setOpen(nextOpen) {
@@ -19545,18 +20449,28 @@ var Corex = (() => {
         if (open2 === nextOpen) return;
         send({ type: nextOpen ? "OPEN" : "CLOSE" });
       },
-      getTriggerProps() {
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "TRIGGER_VALUE.SET", value });
+      },
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
         return normalize.button(__spreadProps(__spreadValues({}, parts11.trigger.attrs), {
           dir: prop("dir"),
-          id: getTriggerId5(scope),
+          id: getTriggerId5(scope, value),
+          "data-ownedby": scope.id,
+          "data-value": value,
           "aria-haspopup": "dialog",
           type: "button",
-          "aria-expanded": open,
+          "aria-expanded": value == null ? open : open && current,
           "data-state": open ? "open" : "closed",
           "aria-controls": getContentId5(scope),
+          "data-current": dataAttr(current),
           onClick(event) {
             if (event.defaultPrevented) return;
-            send({ type: "TOGGLE" });
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TOGGLE", value });
           }
         }));
       },
@@ -19572,9 +20486,9 @@ var Corex = (() => {
         return normalize.element(__spreadProps(__spreadValues({}, parts11.positioner.attrs), {
           dir: prop("dir"),
           id: getPositionerId4(scope),
-          style: {
-            pointerEvents: open ? void 0 : "none"
-          }
+          style: compact({
+            pointerEvents: !open || !prop("modal") ? "none" : void 0
+          })
         }));
       },
       getContentProps() {
@@ -19586,10 +20500,13 @@ var Corex = (() => {
           id: getContentId5(scope),
           tabIndex: -1,
           "data-state": open ? "open" : "closed",
-          "aria-modal": true,
+          "aria-modal": prop("modal"),
           "aria-label": ariaLabel || void 0,
           "aria-labelledby": ariaLabel || !rendered.title ? void 0 : getTitleId(scope),
-          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0
+          "aria-describedby": rendered.description ? getDescriptionId(scope) : void 0,
+          style: compact({
+            pointerEvents: prop("modal") ? void 0 : "auto"
+          })
         }));
       },
       getTitleProps() {
@@ -19719,13 +20636,35 @@ var Corex = (() => {
       body.removeAttribute(LOCK_CLASSNAME);
     };
   }
-  var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTriggerEl4, getTitleEl, getDescriptionEl, getCloseTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DialogHook;
+  function openChangePayload2(el, details) {
+    return {
+      id: el.id,
+      open: details.open
+    };
+  }
+  function getDialogUpdatePropsFromEl(el) {
+    const softLock = el.dataset.animInteractionLocked === "true";
+    return __spreadProps(__spreadValues({
+      id: el.id
+    }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
+      modal: getBoolean(el, "modal"),
+      closeOnInteractOutside: softLock ? false : getBoolean(el, "closeOnInteractOutside"),
+      closeOnEscape: softLock ? false : getBoolean(el, "closeOnEscapeKeyDown"),
+      preventScroll: getBoolean(el, "preventScroll"),
+      restoreFocus: getBoolean(el, "restoreFocus"),
+      dir: getDir(el)
+    });
+  }
+  var anatomy11, parts11, getPositionerId4, getBackdropId, getContentId5, getTriggerId5, getTitleId, getDescriptionId, getCloseTriggerId, getContentEl5, getPositionerEl4, getBackdropEl, getTitleEl, getDescriptionEl, getCloseTriggerEl, getTriggerEls2, getActiveTriggerEl, counterMap, uncontrolledNodes, markerMap, lockCount, unwrapHost, correctTargets, ignoreableNodes, isIgnoredNode, walkTreeOutside, getParentNode3, hideOthers, raf2, __defProp7, __defNormalProp7, __publicField7, activeFocusTraps, sharedTrapStack, FocusTrap, isKeyboardEvent, isTabEvent, isKeyForward, isKeyBackward, valueOrHandler, isEscapeEvent, delay, isSelectableInput, LOCK_CLASSNAME, machine11, Dialog, DialogHook;
   var init_dialog = __esm({
     "../priv/static/dialog.mjs"() {
       "use strict";
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_SNFXM6OQ();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_EOVQYYEE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
         "backdrop",
@@ -19748,9 +20687,11 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.content) != null ? _b : `dialog:${ctx.id}:content`;
       };
-      getTriggerId5 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `dialog:${ctx.id}:trigger`;
+      getTriggerId5 = (ctx, value) => {
+        var _a;
+        const customId = (_a = ctx.ids) == null ? void 0 : _a.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `dialog:${ctx.id}:trigger:${value}` : `dialog:${ctx.id}:trigger`;
       };
       getTitleId = (ctx) => {
         var _a, _b;
@@ -19767,10 +20708,13 @@ var Corex = (() => {
       getContentEl5 = (ctx) => ctx.getById(getContentId5(ctx));
       getPositionerEl4 = (ctx) => ctx.getById(getPositionerId4(ctx));
       getBackdropEl = (ctx) => ctx.getById(getBackdropId(ctx));
-      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId5(ctx));
       getTitleEl = (ctx) => ctx.getById(getTitleId(ctx));
       getDescriptionEl = (ctx) => ctx.getById(getDescriptionId(ctx));
       getCloseTriggerEl = (ctx) => ctx.getById(getCloseTriggerId(ctx));
+      getTriggerEls2 = (ctx) => queryAll(ctx.getDoc(), `[data-scope="dialog"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+      getActiveTriggerEl = (ctx, value) => {
+        return value == null ? getTriggerEls2(ctx)[0] : ctx.getById(getTriggerId5(ctx, value));
+      };
       counterMap = /* @__PURE__ */ new WeakMap();
       uncontrolledNodes = /* @__PURE__ */ new WeakMap();
       markerMap = {};
@@ -20116,6 +21060,9 @@ var Corex = (() => {
             }
             if (!node.isConnected) {
               node = this.getNodeForOption("fallbackFocus");
+            }
+            if (!node || !node.isConnected) {
+              throw new Error("Your focus-trap needs to have at least one focusable element");
             }
             return node;
           });
@@ -20484,11 +21431,24 @@ var Corex = (() => {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "closed";
         },
-        context({ bindable: bindable2 }) {
+        context({ bindable: bindable2, prop, scope }) {
           return {
             rendered: bindable2(() => ({
               defaultValue: { title: true, description: true }
-            }))
+            })),
+            triggerValue: bindable2(() => {
+              var _a;
+              return {
+                defaultValue: (_a = prop("defaultTriggerValue")) != null ? _a : null,
+                value: prop("triggerValue"),
+                onChange(value) {
+                  const onTriggerValueChange = prop("onTriggerValueChange");
+                  if (!onTriggerValueChange) return;
+                  const triggerElement = getActiveTriggerEl(scope, value);
+                  onTriggerValueChange({ value, triggerElement });
+                }
+              };
+            })
           };
         },
         watch({ track, action, prop }) {
@@ -20498,7 +21458,7 @@ var Corex = (() => {
         },
         states: {
           open: {
-            entry: ["checkRenderedElements", "syncZIndex"],
+            entry: ["checkRenderedElements", "syncZIndex", "setInitialFocus"],
             effects: ["trackDismissableElement", "trapFocus", "preventScroll", "hideContentBelow"],
             on: {
               "CONTROLLED.CLOSE": {
@@ -20523,7 +21483,10 @@ var Corex = (() => {
                   target: "closed",
                   actions: ["invokeOnClose"]
                 }
-              ]
+              ],
+              "TRIGGER_VALUE.SET": {
+                actions: ["setTriggerValue"]
+              }
             }
           },
           closed: {
@@ -20534,23 +21497,26 @@ var Corex = (() => {
               OPEN: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 }
               ],
               TOGGLE: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 }
-              ]
+              ],
+              "TRIGGER_VALUE.SET": {
+                actions: ["setTriggerValue"]
+              }
             }
           }
         },
@@ -20565,7 +21531,7 @@ var Corex = (() => {
                 type: "dialog",
                 defer: true,
                 pointerBlocking: prop("modal"),
-                exclude: [getTriggerEl4(scope)],
+                exclude: getTriggerEls2(scope),
                 onInteractOutside(event) {
                   var _a;
                   (_a = prop("onInteractOutside")) == null ? void 0 : _a(event);
@@ -20593,7 +21559,7 @@ var Corex = (() => {
               if (!prop("preventScroll")) return;
               return preventBodyScroll(scope.getDoc());
             },
-            trapFocus({ scope, prop }) {
+            trapFocus({ scope, prop, context }) {
               if (!prop("trapFocus")) return;
               const contentEl = () => getContentEl5(scope);
               return trapFocus(contentEl, {
@@ -20601,8 +21567,17 @@ var Corex = (() => {
                 returnFocusOnDeactivate: !!prop("restoreFocus"),
                 initialFocus: prop("initialFocusEl"),
                 setReturnFocus: (el) => {
-                  var _a, _b;
-                  return (_b = (_a = prop("finalFocusEl")) == null ? void 0 : _a()) != null ? _b : el;
+                  var _a;
+                  const finalFocusEl = (_a = prop("finalFocusEl")) == null ? void 0 : _a();
+                  if (finalFocusEl) return finalFocusEl;
+                  const triggerValue = context.get("triggerValue");
+                  if (triggerValue) {
+                    const activeTriggerEl = getActiveTriggerEl(scope, triggerValue);
+                    if (activeTriggerEl) return activeTriggerEl;
+                  }
+                  const fallbackTrigger = getTriggerEls2(scope)[0];
+                  if (fallbackTrigger) return fallbackTrigger;
+                  return el;
                 },
                 getShadowRoot: true
               });
@@ -20614,6 +21589,16 @@ var Corex = (() => {
             }
           },
           actions: {
+            setInitialFocus({ prop, scope }) {
+              if (prop("trapFocus")) return;
+              raf(() => {
+                const element = getInitialFocus({
+                  root: getContentEl5(scope),
+                  getInitialEl: prop("initialFocusEl")
+                });
+                element == null ? void 0 : element.focus({ preventScroll: true });
+              });
+            },
             checkRenderedElements({ context, scope }) {
               raf(() => {
                 context.set("rendered", {
@@ -20642,6 +21627,10 @@ var Corex = (() => {
               var _a;
               (_a = prop("onOpenChange")) == null ? void 0 : _a({ open: true });
             },
+            setTriggerValue({ context, event }) {
+              if (event.value === void 0) return;
+              context.set("triggerValue", event.value);
+            },
             toggleVisibility({ prop, send, event }) {
               send({
                 type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE",
@@ -20657,10 +21646,13 @@ var Corex = (() => {
           return new VanillaMachine(machine11, props);
         }
         initApi() {
-          return connect11(this.machine.service, normalizeProps);
+          return this.zagConnect(connect11);
         }
         render() {
+          var _a;
           const rootEl = this.el;
+          const animation = (_a = rootEl.dataset.animation) != null ? _a : "instant";
+          const open = this.api.open;
           const triggerEl = rootEl.querySelector(
             '[data-scope="dialog"][data-part="trigger"]'
           );
@@ -20668,7 +21660,19 @@ var Corex = (() => {
           const backdropEl = rootEl.querySelector(
             '[data-scope="dialog"][data-part="backdrop"]'
           );
-          if (backdropEl) this.spreadProps(backdropEl, this.api.getBackdropProps());
+          if (backdropEl) {
+            const rawBackdrop = this.api.getBackdropProps();
+            if (animation === "instant") {
+              this.spreadProps(backdropEl, rawBackdrop);
+            } else {
+              this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
+              if (open) {
+                backdropEl.removeAttribute("hidden");
+              } else if (!rootEl.dataset.exitAnim) {
+                backdropEl.setAttribute("hidden", "");
+              }
+            }
+          }
           const positionerEl = rootEl.querySelector(
             '[data-scope="dialog"][data-part="positioner"]'
           );
@@ -20676,7 +21680,19 @@ var Corex = (() => {
           const contentEl = rootEl.querySelector(
             '[data-scope="dialog"][data-part="content"]'
           );
-          if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
+          if (contentEl) {
+            const rawContent = this.api.getContentProps();
+            if (animation === "instant") {
+              this.spreadProps(contentEl, rawContent);
+            } else {
+              this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
+              if (open) {
+                contentEl.removeAttribute("hidden");
+              } else if (!rootEl.dataset.exitAnim) {
+                contentEl.setAttribute("hidden", "");
+              }
+            }
+          }
           const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
           if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
           const descriptionEl = rootEl.querySelector(
@@ -20687,12 +21703,37 @@ var Corex = (() => {
             '[data-scope="dialog"][data-part="close-trigger"]'
           );
           if (closeTriggerEl) this.spreadProps(closeTriggerEl, this.api.getCloseTriggerProps());
+          if (animation !== "instant") {
+            if (rootEl.dataset.animInteractionLocked === "true") {
+              if (backdropEl) backdropEl.style.pointerEvents = "auto";
+              if (positionerEl) positionerEl.style.pointerEvents = "auto";
+              if (contentEl) contentEl.style.pointerEvents = "none";
+            } else {
+              if (contentEl) contentEl.style.removeProperty("pointer-events");
+              if (open) {
+                if (backdropEl) backdropEl.style.pointerEvents = "auto";
+                if (positionerEl) positionerEl.style.pointerEvents = "auto";
+              } else if (animation === "js") {
+                const pe = rootEl.dataset.exitAnim === "running" ? "auto" : "none";
+                if (backdropEl) backdropEl.style.pointerEvents = pe;
+                if (positionerEl) positionerEl.style.pointerEvents = pe;
+              } else if (animation === "custom") {
+                if (backdropEl) backdropEl.style.pointerEvents = "none";
+                if (positionerEl) positionerEl.style.pointerEvents = "none";
+              } else {
+                if (backdropEl) backdropEl.style.pointerEvents = "none";
+                if (positionerEl) positionerEl.style.pointerEvents = "none";
+              }
+            }
+          }
         }
       };
       DialogHook = {
         mounted() {
           const el = this.el;
+          const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const dialog = new Dialog(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
@@ -20701,76 +21742,138 @@ var Corex = (() => {
             closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
             preventScroll: getBoolean(el, "preventScroll"),
             restoreFocus: getBoolean(el, "restoreFocus"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  open: details.open
-                });
+              if (!details.open && (el.dataset.animation === "js" || el.dataset.animation === "custom")) {
+                if (self2.closePointerT !== void 0) clearTimeout(self2.closePointerT);
+                el.setAttribute("data-exit-anim", "running");
+                if (el.dataset.animation === "js") {
+                  const closeOpts = readScaleAnimationOptions(el);
+                  self2.closePointerT = window.setTimeout(
+                    () => {
+                      el.setAttribute("data-exit-anim", "complete");
+                      const backdrop = el.querySelector(
+                        '[data-scope="dialog"][data-part="backdrop"]'
+                      );
+                      const positioner = el.querySelector(
+                        '[data-scope="dialog"][data-part="positioner"]'
+                      );
+                      if (backdrop) backdrop.style.pointerEvents = "none";
+                      if (positioner) positioner.style.pointerEvents = "none";
+                      self2.closePointerT = void 0;
+                    },
+                    Math.max(0, closeOpts.duration * 1e3)
+                  );
+                } else {
+                  self2.closePointerT = window.setTimeout(() => {
+                    el.setAttribute("data-exit-anim", "complete");
+                    self2.closePointerT = void 0;
+                  }, 0);
+                }
+              } else if (details.open) {
+                if (self2.closePointerT !== void 0) {
+                  clearTimeout(self2.closePointerT);
+                  self2.closePointerT = void 0;
+                }
+                el.removeAttribute("data-exit-anim");
+                el.removeAttribute("data-anim-interaction-locked");
+                dialog.updateProps(getDialogUpdatePropsFromEl(el));
+                dialog.render();
               }
-              const eventNameClient = getString(el, "onOpenChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      open: details.open
-                    }
-                  })
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: openChangePayload2(el, details),
+                serverEventName: getString(el, "onOpenChange"),
+                clientEventName: getString(el, "onOpenChangeClient")
+              });
+              if (el.dataset.animation === "js") {
+                const animOpts = readScaleAnimationOptions(el);
+                if (animOpts.blockInteraction) {
+                  el.dataset.animInteractionLocked = "true";
+                  dialog.updateProps(getDialogUpdatePropsFromEl(el));
+                  dialog.render();
+                }
+                const backdrop = el.querySelector(
+                  '[data-scope="dialog"][data-part="backdrop"]'
                 );
+                const content = el.querySelector(
+                  '[data-scope="dialog"][data-part="content"]'
+                );
+                const a1 = backdrop ? runScaleAnimation(backdrop, details.open, animOpts) : null;
+                const a2 = content ? runScaleAnimation(content, details.open, animOpts) : null;
+                const onDone = () => {
+                  if (animOpts.blockInteraction) {
+                    el.removeAttribute("data-anim-interaction-locked");
+                    dialog.updateProps(getDialogUpdatePropsFromEl(el));
+                    dialog.render();
+                  }
+                };
+                const promises = [];
+                if (a1) promises.push(a1.finished);
+                if (a2) promises.push(a2.finished);
+                if (promises.length > 0) {
+                  void Promise.all(promises).then(onDone, onDone);
+                } else {
+                  onDone();
+                }
               }
             }
           }));
           dialog.init();
           this.dialog = dialog;
-          this.onSetOpen = (event) => {
+          if (el.dataset.animation === "js") {
+            const opts = readScaleAnimationOptions(el);
+            prepareInitialScaleState(
+              el,
+              '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
+              opts,
+              (sub) => {
+                if (sub.dataset.part === "backdrop") return { scale: false };
+              }
+            );
+          }
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:dialog:set-open", (event) => {
             const { open } = event.detail;
             dialog.api.setOpen(open);
-          };
-          el.addEventListener("phx:dialog:set-open", this.onSetOpen);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("dialog_set_open", (payload) => {
-              const targetId = payload.dialog_id;
-              if (targetId && targetId !== el.id) return;
-              dialog.api.setOpen(payload.open);
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("dialog_open", () => {
-              this.pushEvent("dialog_open_response", {
-                value: dialog.api.open
-              });
-            })
-          );
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("dialog_set_open", (payload) => {
+            if (!payload || typeof payload !== "object") return;
+            const o2 = payload;
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (typeof o2.open === "boolean") dialog.api.setOpen(o2.open);
+          });
+          registry.add("dialog_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("dialog_open_response", {
+              id: el.id,
+              value: dialog.api.open
+            });
+          });
         },
         updated() {
           var _a;
-          (_a = this.dialog) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
-            modal: getBoolean(this.el, "modal"),
-            closeOnInteractOutside: getBoolean(this.el, "closeOnInteractOutside"),
-            closeOnEscape: getBoolean(this.el, "closeOnEscapeKeyDown"),
-            preventScroll: getBoolean(this.el, "preventScroll"),
-            restoreFocus: getBoolean(this.el, "restoreFocus"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
-          }));
+          (_a = this.dialog) == null ? void 0 : _a.updateProps(getDialogUpdatePropsFromEl(this.el));
         },
         destroyed() {
-          var _a;
-          if (this.onSetOpen) {
-            this.el.removeEventListener("phx:dialog:set-open", this.onSetOpen);
+          var _a, _b, _c, _d;
+          const self2 = this;
+          if (self2.closePointerT !== void 0) {
+            clearTimeout(self2.closePointerT);
+            self2.closePointerT = void 0;
           }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.dialog) == null ? void 0 : _a.destroy();
+          this.el.removeAttribute("data-exit-anim");
+          this.el.removeAttribute("data-anim-interaction-locked");
+          (_a = this.dialog) == null ? void 0 : _a.updateProps(getDialogUpdatePropsFromEl(this.el));
+          (_b = this.domRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.handleRegistry) == null ? void 0 : _c.teardown();
+          (_d = this.dialog) == null ? void 0 : _d.destroy();
         }
       };
     }
@@ -21009,12 +22112,17 @@ var Corex = (() => {
       }
     };
   }
+  function dataDefaultValue(el) {
+    var _a;
+    return (_a = getString(el, "defaultValue")) != null ? _a : "";
+  }
   var anatomy12, parts12, getRootId11, getAreaId2, getLabelId7, getPreviewId, getInputId4, getControlId6, getSubmitTriggerId, getCancelTriggerId, getEditTriggerId, getInputEl3, getPreviewEl, getSubmitTriggerEl, getCancelTriggerEl, getEditTriggerEl, machine12, Editable, EditableHook;
   var init_editable = __esm({
     "../priv/static/editable.mjs"() {
       "use strict";
-      init_chunk_YCAWAEF3();
-      init_chunk_SNFXM6OQ();
+      init_chunk_DXQBMWMN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy12 = createAnatomy("editable").parts(
         "root",
         "area",
@@ -21302,7 +22410,7 @@ var Corex = (() => {
           return new VanillaMachine(machine12, props);
         }
         initApi() {
-          return connect12(this.machine.service, normalizeProps);
+          return this.zagConnect(connect12);
         }
         render() {
           var _a;
@@ -21339,15 +22447,14 @@ var Corex = (() => {
       EditableHook = {
         mounted() {
           const el = this.el;
-          const value = getString(el, "value");
-          const defaultValue = getString(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const placeholder = getString(el, "placeholder");
           const activationMode = getString(el, "activationMode");
           const selectOnFocus = getBoolean(el, "selectOnFocus");
-          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({
-            id: el.id
-          }, controlled && value !== void 0 ? { value } : { defaultValue: defaultValue != null ? defaultValue : "" }), {
+          const zag = new Editable(el, __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({
+            id: el.id,
+            defaultValue: dataDefaultValue(el),
             disabled: getBoolean(el, "disabled"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
@@ -21355,7 +22462,7 @@ var Corex = (() => {
             name: getString(el, "name"),
             form: getString(el, "form"),
             dir: getDir(el)
-          }), placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
+          }, placeholder !== void 0 ? { placeholder } : {}), activationMode !== void 0 ? { activationMode } : {}), selectOnFocus !== void 0 ? { selectOnFocus } : {}), getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }), {
             onValueChange: (details) => {
               const inputEl = el.querySelector('[data-scope="editable"][data-part="input"]');
               if (inputEl) {
@@ -21363,45 +22470,42 @@ var Corex = (() => {
                 inputEl.dispatchEvent(new Event("input", { bubbles: true }));
                 inputEl.dispatchEvent(new Event("change", { bubbles: true }));
               }
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { value: details.value, id: el.id });
-              }
-              const clientName = getString(el, "onValueChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
+                  value: details.value
+                },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             }
           }));
           zag.init();
           this.editable = zag;
-          this.handlers = [];
         },
         updated() {
           var _a;
-          const value = getString(this.el, "value");
-          const controlled = getBoolean(this.el, "controlled");
-          (_a = this.editable) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, controlled && value !== void 0 ? { value } : {}), {
-            disabled: getBoolean(this.el, "disabled"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            required: getBoolean(this.el, "required"),
-            invalid: getBoolean(this.el, "invalid"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form")
-          }));
+          const el = this.el;
+          const dv = dataDefaultValue(el);
+          if (this.editable && !this.editable.api.editing && dv !== this.editable.api.value) {
+            this.editable.api.setValue(dv);
+          }
+          (_a = this.editable) == null ? void 0 : _a.updateProps(__spreadValues({
+            id: el.id,
+            disabled: getBoolean(el, "disabled"),
+            readOnly: getBoolean(el, "readOnly"),
+            required: getBoolean(el, "required"),
+            invalid: getBoolean(el, "invalid"),
+            name: getString(el, "name"),
+            form: getString(el, "form"),
+            dir: getDir(el)
+          }, getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }));
         },
         destroyed() {
           var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
           (_a = this.editable) == null ? void 0 : _a.destroy();
         }
       };
@@ -21703,13 +22807,13 @@ var Corex = (() => {
           },
           onKeyDown(event) {
             if (event.defaultPrevented) return;
+            if (event.key === "Escape" && isTopmost) {
+              send({ type: "ESCAPE" });
+              return;
+            }
             if (event.currentTarget !== getEventTarget(event)) return;
             const step = getEventStep(event) * prop("gridSize");
             const keyMap2 = {
-              Escape() {
-                if (!isTopmost) return;
-                send({ type: "ESCAPE" });
-              },
               ArrowLeft() {
                 send({ type: "MOVE", direction: "left", step });
               },
@@ -21910,13 +23014,15 @@ var Corex = (() => {
     }
     return void 0;
   }
-  var anatomy13, parts13, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl5, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine13, FloatingPanel, FloatingPanelHook;
+  var anatomy13, parts13, AffineTransform, clamp4, clampPoint, defaultMinSize, defaultMaxSize, clampSize, constrainRect, isSizeEqual, isPointEqual, styleCache2, px, sum, compassDirectionMap, oppositeDirectionMap, sign2, abs2, min3, getTriggerId6, getPositionerId5, getContentId6, getTitleId2, getHeaderId, getTriggerEl4, getPositionerEl5, getContentEl6, getHeaderEl, getBoundaryRect, validStages, panelStack, not4, and5, defaultTranslations2, FALLBACK_SIZE, FALLBACK_POSITION, machine13, FloatingPanel, FloatingPanelHook;
   var init_floating_panel = __esm({
     "../priv/static/floating-panel.mjs"() {
       "use strict";
-      init_chunk_ZZKFCQSP();
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_MPNHBCLD();
+      init_chunk_NX2BOTHE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
         "positioner",
@@ -22169,7 +23275,7 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = ctx.ids) == null ? void 0 : _a.header) != null ? _b : `float:${ctx.id}:header`;
       };
-      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId6(ctx));
+      getTriggerEl4 = (ctx) => ctx.getById(getTriggerId6(ctx));
       getPositionerEl5 = (ctx) => ctx.getById(getPositionerId5(ctx));
       getContentEl6 = (ctx) => ctx.getById(getContentId6(ctx));
       getHeaderEl = (ctx) => ctx.getById(getHeaderId(ctx));
@@ -22411,35 +23517,33 @@ var Corex = (() => {
               },
               dragging: {
                 effects: ["trackPointerMove"],
-                exit: ["clearPrevPosition"],
                 on: {
                   DRAG: {
                     actions: ["setPositionFromDrag"]
                   },
                   DRAG_END: {
                     target: "idle",
-                    actions: ["invokeOnDragEnd"]
+                    actions: ["invokeOnDragEnd", "clearPrevPosition"]
                   },
                   ESCAPE: {
                     target: "idle",
-                    actions: ["restorePosition"]
+                    actions: ["restorePosition", "clearPrevPosition"]
                   }
                 }
               },
               resizing: {
                 effects: ["trackPointerMove"],
-                exit: ["clearPrevSize"],
                 on: {
                   DRAG: {
                     actions: ["setSizeFromDrag"]
                   },
                   DRAG_END: {
                     target: "idle",
-                    actions: ["invokeOnResizeEnd"]
+                    actions: ["invokeOnResizeEnd", "clearPrevSize"]
                   },
                   ESCAPE: {
                     target: "idle",
-                    actions: ["restoreSize"]
+                    actions: ["restoreSize", "clearPrevSize"]
                   }
                 }
               }
@@ -22535,7 +23639,7 @@ var Corex = (() => {
               if (computed("hasSpecifiedPosition")) return;
               const hasPrevRect = context.get("prevPosition") || context.get("prevSize");
               if (prop("persistRect") && hasPrevRect) return;
-              const triggerRect = getTriggerEl5(scope);
+              const triggerRect = getTriggerEl4(scope);
               const boundaryRect = getBoundaryRect(scope, (_a = prop("getBoundaryEl")) == null ? void 0 : _a(), false);
               let anchorPosition = (_b = prop("getAnchorPosition")) == null ? void 0 : _b({
                 triggerRect: triggerRect ? DOMRect.fromRect(getElementRect(triggerRect)) : null,
@@ -22727,16 +23831,19 @@ var Corex = (() => {
               var _a;
               (_a = prop("onSizeChangeEnd")) == null ? void 0 : _a({ size: context.get("size") });
             },
-            setFinalFocus({ scope }) {
+            setFinalFocus({ scope, prop }) {
+              if (prop("restoreFocus") === false) return;
               raf(() => {
-                var _a;
-                (_a = getTriggerEl5(scope)) == null ? void 0 : _a.focus();
+                var _a, _b;
+                const element = (_b = (_a = prop("finalFocusEl")) == null ? void 0 : _a()) != null ? _b : getTriggerEl4(scope);
+                element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
-            setInitialFocus({ scope }) {
+            setInitialFocus({ scope, prop }) {
               raf(() => {
-                var _a;
-                (_a = getContentEl6(scope)) == null ? void 0 : _a.focus();
+                var _a, _b;
+                const element = (_b = (_a = prop("initialFocusEl")) == null ? void 0 : _a()) != null ? _b : getContentEl6(scope);
+                element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
             toggleVisibility({ send, prop, event }) {
@@ -22751,7 +23858,7 @@ var Corex = (() => {
           return new VanillaMachine(machine13, props);
         }
         initApi() {
-          return connect13(this.machine.service, normalizeProps);
+          return this.zagConnect(connect13);
         }
         render() {
           const triggerEl = this.el.querySelector(
@@ -22814,16 +23921,15 @@ var Corex = (() => {
       FloatingPanelHook = {
         mounted() {
           const el = this.el;
-          const open = getBoolean(el, "open");
-          const defaultOpen = getBoolean(el, "defaultOpen");
-          const controlled = getBoolean(el, "controlled");
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const size3 = parseSize(el.dataset.size);
           const defaultSize = parseSize(el.dataset.defaultSize);
           const position = parsePoint(el.dataset.position);
           const defaultPosition = parsePoint(el.dataset.defaultPosition);
-          const zag = new FloatingPanel(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, controlled ? { open } : { defaultOpen }), {
+          const zag = new FloatingPanel(el, {
+            id: el.id,
+            defaultOpen: false,
             draggable: getBoolean(el, "draggable") !== false,
             resizable: getBoolean(el, "resizable") !== false,
             allowOverflow: getBoolean(el, "allowOverflow") !== false,
@@ -22839,69 +23945,81 @@ var Corex = (() => {
             persistRect: getBoolean(el, "persistRect"),
             gridSize: Number(el.dataset.gridSize) || 1,
             onOpenChange: (details) => {
-              const eventName = getString(el, "onOpenChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { open: details.open, id: el.id });
-              }
-              const clientName = getString(el, "onOpenChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
+                  open: details.open
+                },
+                serverEventName: getString(el, "onOpenChange"),
+                clientEventName: getString(el, "onOpenChangeClient")
+              });
             },
             onPositionChange: (details) => {
-              const eventName = getString(el, "onPositionChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  position: details.position,
-                  id: el.id
-                });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, position: details.position },
+                serverEventName: getString(el, "onPositionChange"),
+                clientEventName: getString(el, "onPositionChangeClient")
+              });
             },
             onSizeChange: (details) => {
-              const eventName = getString(el, "onSizeChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  size: details.size,
-                  id: el.id
-                });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, size: details.size },
+                serverEventName: getString(el, "onSizeChange"),
+                clientEventName: getString(el, "onSizeChangeClient")
+              });
             },
             onStageChange: (details) => {
-              const eventName = getString(el, "onStageChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  stage: details.stage,
-                  id: el.id
-                });
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, stage: details.stage },
+                serverEventName: getString(el, "onStageChange"),
+                clientEventName: getString(el, "onStageChangeClient")
+              });
             }
-          }));
+          });
           zag.init();
           this.floatingPanel = zag;
-          this.handlers = [];
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:floating-panel:set-open", (event) => {
+            const { open } = event.detail;
+            zag.api.setOpen(open);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("floating_panel_set_open", (payload) => {
+            if (!payload || typeof payload !== "object") return;
+            const o2 = payload;
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (typeof o2.open === "boolean") zag.api.setOpen(o2.open);
+          });
         },
         updated() {
           var _a;
-          const open = getBoolean(this.el, "open");
-          const controlled = getBoolean(this.el, "controlled");
-          (_a = this.floatingPanel) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, controlled ? { open } : {}), {
+          (_a = this.floatingPanel) == null ? void 0 : _a.updateProps({
+            id: this.el.id,
             disabled: getBoolean(this.el, "disabled"),
             dir: getDir(this.el)
-          }));
+          });
         },
         destroyed() {
-          var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a = this.floatingPanel) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          this.domRegistry = void 0;
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          this.handleRegistry = void 0;
+          (_c = this.floatingPanel) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -23326,13 +24444,52 @@ var Corex = (() => {
       isItemDisabled: (item) => !!item.disabled
     });
   }
+  function listboxZagPropsBase(el, liveSocket, pushEvent) {
+    const redirectOn = getBoolean(el, "redirect");
+    return {
+      id: el.id,
+      disabled: getBoolean(el, "disabled"),
+      dir: getDir(el),
+      orientation: getString(el, "orientation"),
+      loopFocus: getBoolean(el, "loopFocus"),
+      selectionMode: redirectOn ? "single" : getString(el, "selectionMode"),
+      selectOnHighlight: getBoolean(el, "selectOnHighlight"),
+      deselectable: getBoolean(el, "deselectable"),
+      typeahead: getBoolean(el, "typeahead"),
+      onValueChange: (details) => {
+        const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
+        if (redirectOn && firstValue) {
+          const itemEl = el.querySelector(
+            `[data-scope="listbox"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+          );
+          performRedirect(readDomItemRedirect(itemEl, firstValue), { liveSocket });
+        }
+        notifyChange({
+          el,
+          canPushServer: canPushEvent(liveSocket),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            items: details.items
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+      }
+    };
+  }
   var anatomy14, parts14, collection2, gridCollection, getRootId12, getContentId7, getLabelId8, getItemId4, getItemGroupId3, getItemGroupLabelId2, getContentEl7, getItemEl2, guards2, createMachine3, or, machine14, diff2, Listbox, ListboxHook;
   var init_listbox = __esm({
     "../priv/static/listbox.mjs"() {
       "use strict";
-      init_chunk_7ZKQLYA7();
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_ZZTIKT3S();
+      init_chunk_FLYYJ5XV();
+      init_chunk_6XKINCJF();
+      init_chunk_ZKMAU6SY();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
         "input",
@@ -23784,6 +24941,7 @@ var Corex = (() => {
           super(el, props);
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
+          __publicField(this, "lastItemsFingerprint", "");
           __publicField(this, "init", () => {
             this.machine.start();
             this.render();
@@ -23801,6 +24959,9 @@ var Corex = (() => {
         setOptions(options) {
           this._options = Array.isArray(options) ? options : [];
         }
+        itemsFingerprint() {
+          return `${this.hasGroups}:${JSON.stringify(this.options)}`;
+        }
         getOrderedGroupIds() {
           var _a;
           const seen = /* @__PURE__ */ new Set();
@@ -23815,31 +24976,7 @@ var Corex = (() => {
           return ids;
         }
         getCollection() {
-          const items = this.options;
-          if (this.hasGroups) {
-            return collection2({
-              items,
-              itemToValue: (item) => {
-                var _a, _b;
-                return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
-              },
-              itemToString: (item) => item.label,
-              isItemDisabled: (item) => !!item.disabled,
-              groupBy: (item) => {
-                var _a;
-                return (_a = item.group) != null ? _a : "";
-              }
-            });
-          }
-          return collection2({
-            items,
-            itemToValue: (item) => {
-              var _a, _b;
-              return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
-            },
-            itemToString: (item) => item.label,
-            isItemDisabled: (item) => !!item.disabled
-          });
+          return collection2(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
@@ -23851,7 +24988,7 @@ var Corex = (() => {
           }));
         }
         initApi() {
-          return connect14(this.machine.service, normalizeProps);
+          return this.zagConnect(connect14);
         }
         renderItems() {
           var _a, _b;
@@ -23859,20 +24996,27 @@ var Corex = (() => {
             '[data-scope="listbox"][data-part="content"]'
           );
           if (!contentEl) return;
-          const templatesContainer = this.el.querySelector('[data-templates="listbox"]');
-          if (!templatesContainer) return;
-          contentEl.querySelectorAll(
-            '[data-scope="listbox"][data-part="empty"]:not([data-template])'
-          ).forEach((el) => el.remove());
-          contentEl.querySelectorAll(
-            '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
-          ).forEach((el) => el.remove());
-          contentEl.querySelectorAll(
-            '[data-scope="listbox"][data-part="item"]:not([data-template])'
-          ).forEach((el) => el.remove());
+          const isOwnedByContent = (el) => el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
+          const templatesRoot = templatesContentRoot(this.el, "listbox");
+          if (!templatesRoot) return;
+          Array.from(
+            contentEl.querySelectorAll(
+              '[data-scope="listbox"][data-part="empty"]:not([data-template])'
+            )
+          ).filter(isOwnedByContent).forEach((el) => el.remove());
+          Array.from(
+            contentEl.querySelectorAll(
+              '[data-scope="listbox"][data-part="item-group"]:not([data-template])'
+            )
+          ).filter(isOwnedByContent).forEach((el) => el.remove());
+          Array.from(
+            contentEl.querySelectorAll(
+              '[data-scope="listbox"][data-part="item"]:not([data-template])'
+            )
+          ).filter(isOwnedByContent).forEach((el) => el.remove());
           const items = this.options;
           if (items.length === 0) {
-            const emptyTemplate = templatesContainer.querySelector(
+            const emptyTemplate = templatesRoot.querySelector(
               '[data-scope="listbox"][data-part="empty"][data-template]'
             );
             if (emptyTemplate) {
@@ -23883,7 +25027,7 @@ var Corex = (() => {
           } else if (this.hasGroups) {
             const groupIds = this.getOrderedGroupIds();
             for (const groupId of groupIds) {
-              const template = templatesContainer.querySelector(
+              const template = templatesRoot.querySelector(
                 `[data-scope="listbox"][data-part="item-group"][data-id="${CSS.escape(groupId)}"][data-template]`
               );
               if (!template) continue;
@@ -23895,7 +25039,7 @@ var Corex = (() => {
           } else {
             for (const item of items) {
               const value = String((_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "");
-              const template = templatesContainer.querySelector(
+              const template = templatesRoot.querySelector(
                 `[data-scope="listbox"][data-part="item"][data-value="${value}"][data-template]`
               );
               if (!template) continue;
@@ -23910,8 +25054,10 @@ var Corex = (() => {
             '[data-scope="listbox"][data-part="content"]'
           );
           if (!contentEl) return;
+          const isOwnedByContent = (el) => el.closest('[data-scope="listbox"][data-part="content"]') === contentEl;
           contentEl.querySelectorAll('[data-scope="listbox"][data-part="item-group"]').forEach((groupEl) => {
             var _a;
+            if (!isOwnedByContent(groupEl)) return;
             const groupId = (_a = groupEl.dataset.id) != null ? _a : "";
             this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
             const labelEl = groupEl.querySelector(
@@ -23923,6 +25069,7 @@ var Corex = (() => {
           });
           contentEl.querySelectorAll('[data-scope="listbox"][data-part="item"]').forEach((itemEl) => {
             var _a;
+            if (!isOwnedByContent(itemEl)) return;
             const value = (_a = itemEl.dataset.value) != null ? _a : "";
             const item = this.options.find((i2) => {
               var _a2, _b;
@@ -23950,10 +25097,6 @@ var Corex = (() => {
           this.spreadProps(rootEl, this.api.getRootProps());
           const labelEl = this.el.querySelector('[data-scope="listbox"][data-part="label"]');
           if (labelEl) this.spreadProps(labelEl, this.api.getLabelProps());
-          const valueTextEl = this.el.querySelector(
-            '[data-scope="listbox"][data-part="value-text"]'
-          );
-          if (valueTextEl) this.spreadProps(valueTextEl, this.api.getValueTextProps());
           const inputEl = this.el.querySelector('[data-scope="listbox"][data-part="input"]');
           if (inputEl) this.spreadProps(inputEl, this.api.getInputProps());
           const contentEl = this.el.querySelector(
@@ -23961,7 +25104,11 @@ var Corex = (() => {
           );
           if (contentEl) {
             this.spreadProps(contentEl, this.api.getContentProps());
-            this.renderItems();
+            const fp = this.itemsFingerprint();
+            if (fp !== this.lastItemsFingerprint) {
+              this.lastItemsFingerprint = fp;
+              this.renderItems();
+            }
             this.applyItemProps();
           }
         }
@@ -23975,63 +25122,46 @@ var Corex = (() => {
           const valueList = getStringList(el, "value");
           const defaultValueList = getStringList(el, "defaultValue");
           const controlled = getBoolean(el, "controlled");
-          const zag = new Listbox(el, __spreadProps(__spreadValues({
-            id: el.id,
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const zag = new Listbox(el, __spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(el, this.liveSocket, pushEvent)), {
             collection: buildCollection(allItems, hasGroups)
-          }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
-            disabled: getBoolean(el, "disabled"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
-            orientation: getString(el, "orientation", [
-              "horizontal",
-              "vertical"
-            ]),
-            loopFocus: getBoolean(el, "loopFocus"),
-            selectionMode: getString(el, "selectionMode", [
-              "single",
-              "multiple",
-              "extended"
-            ]),
-            selectOnHighlight: getBoolean(el, "selectOnHighlight"),
-            deselectable: getBoolean(el, "deselectable"),
-            typeahead: getBoolean(el, "typeahead"),
-            onValueChange: (details) => {
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  value: details.value,
-                  items: details.items,
-                  id: el.id
-                });
-              }
-              const clientName = getString(el, "onValueChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
-            }
-          }));
+          }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
           zag.hasGroups = hasGroups;
           zag.setOptions(allItems);
           zag.init();
           this.listbox = zag;
-          this.handlers = [];
-          this.handleContentClick = (e2) => {
-            var _a2, _b;
-            const btn = (_b = (_a2 = e2.target).closest) == null ? void 0 : _b.call(
-              _a2,
-              "[data-phx-push][data-phx-push-id]"
-            );
-            if (btn && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-              e2.stopPropagation();
-              e2.preventDefault();
-              this.pushEvent(btn.dataset.phxPush, { id: btn.dataset.phxPushId });
-            }
+          const emitValue = (respondTo) => {
+            const value = zag.api.value;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "listbox_value_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "listbox-value",
+              domDetail: { id: el.id, value }
+            });
           };
-          el.addEventListener("click", this.handleContentClick, true);
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:listbox:set-value", (event) => {
+            zag.api.setValue(event.detail.value);
+          });
+          domRegistry.add("corex:listbox:value", (event) => {
+            emitValue(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("listbox_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setValue(payload.value);
+          });
+          registry.add("listbox_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitValue(parseRespondTo(payload));
+          });
         },
         updated() {
           var _a;
@@ -24044,28 +25174,16 @@ var Corex = (() => {
             this.listbox.hasGroups = hasGroups;
             this.listbox.setOptions(newItems);
             this.listbox.render();
-            this.listbox.updateProps(__spreadProps(__spreadValues({
-              collection: this.listbox.getCollection(),
-              id: this.el.id
-            }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
-              disabled: getBoolean(this.el, "disabled"),
-              dir: getString(this.el, "dir", ["ltr", "rtl"]),
-              orientation: getString(this.el, "orientation", [
-                "horizontal",
-                "vertical"
-              ])
-            }));
+            this.listbox.updateProps(__spreadValues(__spreadProps(__spreadValues({}, listboxZagPropsBase(this.el, this.liveSocket, this.pushEvent.bind(this))), {
+              collection: this.listbox.getCollection()
+            }), controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }));
           }
         },
         destroyed() {
-          var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          if (this.handleContentClick) {
-            this.el.removeEventListener("click", this.handleContentClick, true);
-          }
-          (_a = this.listbox) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.listbox) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -24229,11 +25347,29 @@ var Corex = (() => {
     }
     return contentSize < rootSize ? rootSize / speed : contentSize / speed;
   }
+  function readMarqueeProps(el) {
+    return {
+      id: el.id,
+      translations: { root: getString(el, "ariaLabel") },
+      duration: getNumber(el, "duration"),
+      side: getString(el, "side"),
+      speed: getNumber(el, "speed"),
+      spacing: getString(el, "spacing"),
+      autoFill: getBoolean(el, "autoFill"),
+      pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
+      defaultPaused: getBoolean(el, "defaultPaused"),
+      delay: getNumber(el, "delay"),
+      loopCount: getNumber(el, "loopCount"),
+      reverse: getBoolean(el, "reverse"),
+      dir: getDir(el)
+    };
+  }
   var anatomy15, parts15, dom, getEdgePositionStyles, getMarqueeTranslate, machine15, Marquee, MarqueeHook;
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
       dom = {
@@ -24463,67 +25599,101 @@ var Corex = (() => {
         }
       });
       Marquee = class extends Component {
+        constructor() {
+          super(...arguments);
+          __publicField(this, "items", null);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine15, props);
         }
         initApi() {
-          return connect15(this.machine.service, normalizeProps);
+          return this.zagConnect(connect15);
+        }
+        buildDom() {
+          const ssrPreview = this.el.querySelector('[data-part="ssr-preview"]');
+          if (ssrPreview) ssrPreview.remove();
+          const templateEl = this.el.querySelector(
+            'template[data-part="items-template"]'
+          );
+          if (!templateEl) return;
+          this.items = Array.from(templateEl.content.children).map(
+            (el) => el.cloneNode(true)
+          );
+          templateEl.remove();
+          if (this.el.querySelector('[data-scope="marquee"][data-part="root"]')) {
+            return;
+          }
+          const root = document.createElement("div");
+          root.setAttribute("data-scope", "marquee");
+          root.setAttribute("data-part", "root");
+          root.id = `marquee:${this.el.id}`;
+          root.style.cssText = "display:flex;flex-direction:row;position:relative;overflow:hidden;width:100%";
+          this.el.appendChild(root);
+          const edgeStart = document.createElement("div");
+          root.appendChild(edgeStart);
+          this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
+          const viewport = document.createElement("div");
+          viewport.setAttribute("data-scope", "marquee");
+          viewport.setAttribute("data-part", "viewport");
+          viewport.id = `marquee:${this.el.id}:viewport`;
+          viewport.style.cssText = "display:flex;width:100%";
+          root.appendChild(viewport);
+          const content = document.createElement("div");
+          content.setAttribute("data-scope", "marquee");
+          content.setAttribute("data-part", "content");
+          content.setAttribute("data-index", "0");
+          content.id = `marquee:${this.el.id}:content:0`;
+          content.style.cssText = "display:flex;flex-direction:row;flex-shrink:0";
+          viewport.appendChild(content);
+          this.items.forEach((itemEl) => {
+            content.appendChild(itemEl.cloneNode(true));
+          });
+          const edgeEnd = document.createElement("div");
+          root.appendChild(edgeEnd);
+          this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
         }
         render() {
-          var _a;
-          const rootEl = (_a = this.el.querySelector('[data-scope="marquee"][data-part="root"]')) != null ? _a : this.el;
-          this.spreadProps(rootEl, this.api.getRootProps());
-          const edgeStart = this.el.querySelector(
-            '[data-scope="marquee"][data-part="edge"][data-side="start"]'
-          );
+          if (!this.items) return;
+          const root = this.el.querySelector('[data-scope="marquee"][data-part="root"]');
+          if (!root) return;
+          this.spreadProps(root, this.api.getRootProps());
+          const edgeStart = root.querySelector('[data-part="edge"][data-side="start"]');
           if (edgeStart) this.spreadProps(edgeStart, this.api.getEdgeProps({ side: "start" }));
-          const viewport = this.el.querySelector(
-            '[data-scope="marquee"][data-part="viewport"]'
+          const viewport = root.querySelector('[data-part="viewport"]');
+          if (!viewport) return;
+          this.spreadProps(viewport, this.api.getViewportProps());
+          const existingContents = Array.from(
+            viewport.querySelectorAll(':scope > [data-part="content"]')
           );
-          if (viewport) this.spreadProps(viewport, this.api.getViewportProps());
-          const contentEls = this.el.querySelectorAll(
-            '[data-scope="marquee"][data-part="content"]'
-          );
-          contentEls.forEach((contentEl, i2) => {
+          while (existingContents.length > this.api.contentCount) {
+            const el = existingContents.pop();
+            if (el) viewport.removeChild(el);
+          }
+          Array.from({ length: this.api.contentCount }).forEach((_2, i2) => {
+            let contentEl = existingContents[i2];
+            if (!contentEl) {
+              contentEl = document.createElement("div");
+              viewport.appendChild(contentEl);
+              this.items.forEach((itemEl) => {
+                const clone = itemEl.cloneNode(true);
+                contentEl.appendChild(clone);
+              });
+            }
             this.spreadProps(contentEl, this.api.getContentProps({ index: i2 }));
-            const itemEls = contentEl.querySelectorAll(
-              '[data-scope="marquee"][data-part="item"]'
-            );
-            itemEls.forEach((itemEl) => {
+            contentEl.querySelectorAll('[data-part="item"]').forEach((itemEl) => {
               this.spreadProps(itemEl, this.api.getItemProps());
             });
           });
-          const edgeEnd = this.el.querySelector(
-            '[data-scope="marquee"][data-part="edge"][data-side="end"]'
-          );
+          const edgeEnd = root.querySelector('[data-part="edge"][data-side="end"]');
           if (edgeEnd) this.spreadProps(edgeEnd, this.api.getEdgeProps({ side: "end" }));
         }
       };
       MarqueeHook = {
         mounted() {
-          var _a, _b, _c, _d, _e, _f, _g;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const ariaLabel = (_a = getString(el, "ariaLabel")) != null ? _a : `Marquee: ${el.id}`;
-          const zag = new Marquee(el, {
-            id: el.id,
-            translations: { root: ariaLabel },
-            duration: (_b = getNumber(el, "duration")) != null ? _b : 20,
-            side: (_c = getString(el, "side", [
-              "start",
-              "end",
-              "top",
-              "bottom"
-            ])) != null ? _c : "end",
-            speed: (_d = getNumber(el, "speed")) != null ? _d : 50,
-            spacing: (_e = getString(el, "spacing")) != null ? _e : "1rem",
-            autoFill: getBoolean(el, "autoFill"),
-            pauseOnInteraction: getBoolean(el, "pauseOnInteraction"),
-            defaultPaused: getBoolean(el, "defaultPaused"),
-            delay: (_f = getNumber(el, "delay")) != null ? _f : 0,
-            loopCount: (_g = getNumber(el, "loopCount")) != null ? _g : 0,
-            reverse: getBoolean(el, "reverse"),
-            dir: getDir(el),
+          const zag = new Marquee(el, __spreadProps(__spreadValues({}, readMarqueeProps(el)), {
             onPauseChange: (details) => {
               const eventName = getString(el, "onPauseChange");
               if (eventName && this.liveSocket.main.isConnected()) {
@@ -24563,68 +25733,46 @@ var Corex = (() => {
                 );
               }
             }
-          });
+          }));
+          zag.buildDom();
           zag.init();
           this.marquee = zag;
           this.onPause = () => zag.api.pause();
           this.onResume = () => zag.api.resume();
           this.onTogglePause = () => zag.api.togglePause();
-          el.addEventListener("phx:marquee:pause", this.onPause);
-          el.addEventListener("phx:marquee:resume", this.onResume);
-          el.addEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+          el.addEventListener("corex:marquee:pause", this.onPause);
+          el.addEventListener("corex:marquee:resume", this.onResume);
+          el.addEventListener("corex:marquee:toggle-pause", this.onTogglePause);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("marquee_pause", (payload) => {
-              const targetId = payload.marquee_id;
-              if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+              if (!idMatches(el.id, readPayloadId(payload))) return;
               zag.api.pause();
             })
           );
           this.handlers.push(
             this.handleEvent("marquee_resume", (payload) => {
-              const targetId = payload.marquee_id;
-              if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+              if (!idMatches(el.id, readPayloadId(payload))) return;
               zag.api.resume();
             })
           );
           this.handlers.push(
             this.handleEvent("marquee_toggle_pause", (payload) => {
-              const targetId = payload.marquee_id;
-              if (targetId && el.id !== targetId && el.id !== `marquee:${targetId}`) return;
+              if (!idMatches(el.id, readPayloadId(payload))) return;
               zag.api.togglePause();
             })
           );
         },
         updated() {
-          var _a, _b, _c, _d, _e, _f, _g, _h;
-          const ariaLabel = (_a = getString(this.el, "ariaLabel")) != null ? _a : `Marquee: ${this.el.id}`;
-          (_h = this.marquee) == null ? void 0 : _h.updateProps({
-            id: this.el.id,
-            translations: { root: ariaLabel },
-            duration: (_b = getNumber(this.el, "duration")) != null ? _b : 20,
-            side: (_c = getString(this.el, "side", [
-              "start",
-              "end",
-              "top",
-              "bottom"
-            ])) != null ? _c : "end",
-            speed: (_d = getNumber(this.el, "speed")) != null ? _d : 50,
-            spacing: (_e = getString(this.el, "spacing")) != null ? _e : "1rem",
-            autoFill: getBoolean(this.el, "autoFill"),
-            pauseOnInteraction: getBoolean(this.el, "pauseOnInteraction"),
-            defaultPaused: getBoolean(this.el, "defaultPaused"),
-            delay: (_f = getNumber(this.el, "delay")) != null ? _f : 0,
-            loopCount: (_g = getNumber(this.el, "loopCount")) != null ? _g : 0,
-            reverse: getBoolean(this.el, "reverse"),
-            dir: getDir(this.el)
-          });
+          var _a;
+          (_a = this.marquee) == null ? void 0 : _a.updateProps(readMarqueeProps(this.el));
         },
         destroyed() {
           var _a;
-          if (this.onPause) this.el.removeEventListener("phx:marquee:pause", this.onPause);
-          if (this.onResume) this.el.removeEventListener("phx:marquee:resume", this.onResume);
+          if (this.onPause) this.el.removeEventListener("corex:marquee:pause", this.onPause);
+          if (this.onResume) this.el.removeEventListener("corex:marquee:resume", this.onResume);
           if (this.onTogglePause)
-            this.el.removeEventListener("phx:marquee:toggle-pause", this.onTogglePause);
+            this.el.removeEventListener("corex:marquee:toggle-pause", this.onTogglePause);
           if (this.handlers) {
             for (const h2 of this.handlers) this.removeHandleEvent(h2);
           }
@@ -24676,6 +25824,101 @@ var Corex = (() => {
     const event = new win.CustomEvent(itemSelectEvent, { detail: { value } });
     el.dispatchEvent(event);
   }
+  function getPortaledContentEl(scope) {
+    var _a;
+    const contentId = getContentId8(scope);
+    return (_a = getContentEl8(scope)) != null ? _a : scope.getDoc().getElementById(contentId);
+  }
+  function isTargetWithinMenuTree(target, children) {
+    if (!isHTMLElement(target)) return false;
+    for (const id in children) {
+      const child = children[id];
+      const childContent = getPortaledContentEl(child.scope);
+      if (childContent && contains(childContent, target)) return true;
+      const nested = child.refs.get("children");
+      if (Object.keys(nested).length > 0 && isTargetWithinMenuTree(target, nested)) return true;
+    }
+    return false;
+  }
+  function getElementPolygon(rectValue, placement) {
+    const rect = createRect(rectValue);
+    const { top, right, left, bottom } = getRectCorners(rect);
+    const [base] = placement.split("-");
+    return {
+      top: [left, top, right, bottom],
+      right: [top, right, bottom, left],
+      bottom: [top, left, bottom, right],
+      left: [right, top, left, bottom]
+    }[base];
+  }
+  function isPointInPolygon(polygon, point) {
+    const { x: x2, y: y2 } = point;
+    let c2 = false;
+    for (let i2 = 0, j2 = polygon.length - 1; i2 < polygon.length; j2 = i2++) {
+      const xi = polygon[i2].x;
+      const yi = polygon[i2].y;
+      const xj = polygon[j2].x;
+      const yj = polygon[j2].y;
+      if (yi > y2 !== yj > y2 && x2 < (xj - xi) * (y2 - yi) / (yj - yi) + xi) {
+        c2 = !c2;
+      }
+    }
+    return c2;
+  }
+  function closeRootMenu(ctx) {
+    let parent = ctx.parent;
+    while (parent && parent.context.get("isSubmenu")) {
+      parent = parent.refs.get("parent");
+    }
+    parent == null ? void 0 : parent.send({ type: "CLOSE" });
+  }
+  function isWithinPolygon(polygon, point) {
+    if (!polygon) return false;
+    return isPointInPolygon(polygon, point);
+  }
+  function resolveItemId(children, value, scope) {
+    const hasChildren = Object.keys(children).length > 0;
+    if (!value) return null;
+    if (!hasChildren) {
+      return getItemId5(scope, value);
+    }
+    for (const id in children) {
+      const childMenu = children[id];
+      const childTriggerId = getTriggerId7(childMenu.scope);
+      if (childTriggerId === value) {
+        return childTriggerId;
+      }
+    }
+    return getItemId5(scope, value);
+  }
+  function setParentRoutingLock(parent, locked) {
+    if (!parent) return;
+    parent.refs.set("pointerRoutingLocked", locked);
+    parent.context.set("pointerRoutingMode", locked ? "locked" : "interactive");
+  }
+  function isHighlightedItemSubmenuOpen(parent) {
+    const highlighted = parent.context.get("highlightedValue");
+    if (!highlighted) return false;
+    const children = parent.refs.get("children");
+    for (const id in children) {
+      const child = children[id];
+      if (!child.state.hasTag("open")) continue;
+      if (getTriggerId7(child.scope) === highlighted) return true;
+    }
+    return false;
+  }
+  function unlockParentAfterChildClose(parent, childIsSubmenu) {
+    if (!parent) return;
+    if (parent.refs.get("pointerRoutingLocked")) return;
+    if (childIsSubmenu && isHighlightedItemSubmenuOpen(parent)) return;
+    setParentRoutingLock(parent, false);
+  }
+  function unlockParentOnSubmenuClose(parent) {
+    if (!parent) return;
+    if (!isHighlightedItemSubmenuOpen(parent)) {
+      setParentRoutingLock(parent, false);
+    }
+  }
   function connect16(service, normalize) {
     const { context, send, state: state2, computed, prop, scope } = service;
     const open = state2.hasTag("open");
@@ -24685,6 +25928,7 @@ var Corex = (() => {
     const currentPlacement = context.get("currentPlacement");
     const anchorPoint = context.get("anchorPoint");
     const highlightedValue = context.get("highlightedValue");
+    const triggerValue = context.get("triggerValue");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
       placement: anchorPoint ? "bottom" : currentPlacement
     }));
@@ -24762,6 +26006,10 @@ var Corex = (() => {
         if (open2 === nextOpen) return;
         send({ type: nextOpen ? "OPEN" : "CLOSE" });
       },
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "TRIGGER_VALUE.SET", value });
+      },
       setHighlightedValue(value) {
         send({ type: "HIGHLIGHTED.SET", value });
       },
@@ -24784,15 +26032,21 @@ var Corex = (() => {
         node.addEventListener(itemSelectEvent, listener);
         return () => node.removeEventListener(itemSelectEvent, listener);
       },
-      getContextTriggerProps() {
+      getContextTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        const contextTriggerId = getContextTriggerId(scope, value);
         return normalize.element(__spreadProps(__spreadValues({}, parts16.contextTrigger.attrs), {
           dir: prop("dir"),
-          id: getContextTriggerId(scope),
+          id: contextTriggerId,
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "data-current": dataAttr(current),
           "data-state": open ? "open" : "closed",
           onPointerDown(event) {
             if (event.pointerType === "mouse") return;
             const point = getEventPoint(event);
-            send({ type: "CONTEXT_MENU_START", point });
+            send({ type: "CONTEXT_MENU_START", point, value });
           },
           onPointerCancel(event) {
             if (event.pointerType === "mouse") return;
@@ -24808,7 +26062,12 @@ var Corex = (() => {
           },
           onContextMenu(event) {
             const point = getEventPoint(event);
-            send({ type: "CONTEXT_MENU", point });
+            const shouldSwitch = open && value != null && !current;
+            send({
+              type: shouldSwitch ? "TRIGGER_VALUE.SET" : "CONTEXT_MENU",
+              point,
+              value
+            });
             event.preventDefault();
           },
           style: {
@@ -24822,17 +26081,25 @@ var Corex = (() => {
         const triggerProps = childApi.getTriggerProps();
         return mergeProps(getItemProps({ value: triggerProps.id }), triggerProps);
       },
-      getTriggerProps() {
-        return normalize.button(__spreadProps(__spreadValues({}, isSubmenu ? parts16.triggerItem.attrs : parts16.trigger.attrs), {
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        const triggerId = getTriggerId7(scope, value);
+        return normalize.button(__spreadProps(__spreadValues(__spreadProps(__spreadValues({}, isSubmenu ? parts16.triggerItem.attrs : parts16.trigger.attrs), {
           "data-placement": context.get("currentPlacement"),
           type: "button",
           dir: prop("dir"),
-          id: getTriggerId7(scope),
+          id: triggerId
+        }), value != null && {
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "data-current": dataAttr(current)
+        }), {
           "data-uid": prop("id"),
           "aria-haspopup": composite ? "menu" : "dialog",
           "aria-controls": getContentId8(scope),
           "data-controls": getContentId8(scope),
-          "aria-expanded": open,
+          "aria-expanded": value == null ? open : open && current,
           "data-state": open ? "open" : "closed",
           onPointerMove(event) {
             if (event.pointerType !== "mouse") return;
@@ -24845,6 +26112,7 @@ var Corex = (() => {
             if (isTargetDisabled(event.currentTarget)) return;
             if (event.pointerType !== "mouse") return;
             if (!isSubmenu) return;
+            setParentRoutingLock(service.refs.get("parent"), true);
             const point = getEventPoint(event);
             send({
               type: "TRIGGER_POINTERLEAVE",
@@ -24860,7 +26128,12 @@ var Corex = (() => {
           onClick(event) {
             if (event.defaultPrevented) return;
             if (isTargetDisabled(event.currentTarget)) return;
-            send({ type: "TRIGGER_CLICK", target: event.currentTarget });
+            const shouldSwitch = open && value != null && !current;
+            send({
+              type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TRIGGER_CLICK",
+              target: event.currentTarget,
+              value
+            });
           },
           onBlur() {
             send({ type: "TRIGGER_BLUR" });
@@ -24872,16 +26145,16 @@ var Corex = (() => {
             if (event.defaultPrevented) return;
             const keyMap2 = {
               ArrowDown() {
-                send({ type: "ARROW_DOWN" });
+                send({ type: "ARROW_DOWN", value });
               },
               ArrowUp() {
-                send({ type: "ARROW_UP" });
+                send({ type: "ARROW_UP", value });
               },
               Enter() {
-                send({ type: "ARROW_DOWN", src: "enter" });
+                send({ type: "ARROW_DOWN", src: "enter", value });
               },
               Space() {
-                send({ type: "ARROW_DOWN", src: "space" });
+                send({ type: "ARROW_DOWN", src: "space", value });
               }
             };
             const key = getEventKey(event, {
@@ -24933,7 +26206,7 @@ var Corex = (() => {
           tabIndex: 0,
           dir: prop("dir"),
           "aria-activedescendant": computed("highlightedId") || void 0,
-          "aria-labelledby": getTriggerId7(scope),
+          "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue != null ? triggerValue : void 0) : getTriggerId7(scope, triggerValue != null ? triggerValue : void 0),
           "data-placement": currentPlacement,
           onPointerEnter(event) {
             if (event.pointerType !== "mouse") return;
@@ -25069,67 +26342,18 @@ var Corex = (() => {
       }
     };
   }
-  function getElementPolygon(rectValue, placement) {
-    const rect = createRect(rectValue);
-    const { top, right, left, bottom } = getRectCorners(rect);
-    const [base] = placement.split("-");
-    return {
-      top: [left, top, right, bottom],
-      right: [top, right, bottom, left],
-      bottom: [top, left, bottom, right],
-      left: [right, top, left, bottom]
-    }[base];
-  }
-  function isPointInPolygon(polygon, point) {
-    const { x: x2, y: y2 } = point;
-    let c2 = false;
-    for (let i2 = 0, j2 = polygon.length - 1; i2 < polygon.length; j2 = i2++) {
-      const xi = polygon[i2].x;
-      const yi = polygon[i2].y;
-      const xj = polygon[j2].x;
-      const yj = polygon[j2].y;
-      if (yi > y2 !== yj > y2 && x2 < (xj - xi) * (y2 - yi) / (yj - yi) + xi) {
-        c2 = !c2;
-      }
-    }
-    return c2;
-  }
-  function closeRootMenu(ctx) {
-    let parent = ctx.parent;
-    while (parent && parent.context.get("isSubmenu")) {
-      parent = parent.refs.get("parent");
-    }
-    parent == null ? void 0 : parent.send({ type: "CLOSE" });
-  }
-  function isWithinPolygon(polygon, point) {
-    if (!polygon) return false;
-    return isPointInPolygon(polygon, point);
-  }
-  function resolveItemId(children, value, scope) {
-    const hasChildren = Object.keys(children).length > 0;
-    if (!value) return null;
-    if (!hasChildren) {
-      return getItemId5(scope, value);
-    }
-    for (const id in children) {
-      const childMenu = children[id];
-      const childTriggerId = getTriggerId7(childMenu.scope);
-      if (childTriggerId === value) {
-        return childTriggerId;
-      }
-    }
-    return getItemId5(scope, value);
-  }
-  var anatomy16, parts16, clsx, CSS_REGEX, serialize, css, getTriggerId7, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl6, getItemEl3, getContextTriggerEl, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine16, Menu, MenuHook;
+  var anatomy16, parts16, clsx, CSS_REGEX, serialize, css, getTriggerId7, getContextTriggerId, getContentId8, getArrowId, getPositionerId6, getGroupId, getItemId5, getItemValue, getGroupLabelId, getContentEl8, getPositionerEl6, getTriggerEl5, getItemEl3, getContextTriggerEl, getTriggerEls3, getContextTriggerEls, getActiveTriggerEl2, getElements, getFirstEl, getLastEl, isMatch, getNextEl, getPrevEl, getElemByKey, isTargetDisabled, isTriggerItem, itemSelectEvent, not5, and6, or2, machine16, Menu, MenuHook;
   var init_menu = __esm({
     "../priv/static/menu.mjs"() {
       "use strict";
-      init_chunk_ZZKFCQSP();
-      init_chunk_VXCJNDUG();
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_AFD7D2GA();
+      init_chunk_F6MNP3LD();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_6XKINCJF();
+      init_chunk_MPNHBCLD();
+      init_chunk_ZKMAU6SY();
+      init_chunk_SJ37CZDS();
       anatomy16 = createAnatomy("menu").parts(
         "arrow",
         "arrowTip",
@@ -25169,13 +26393,17 @@ var Corex = (() => {
         }
         return Object.assign({}, a2 != null ? a2 : {}, b2 != null ? b2 : {});
       };
-      getTriggerId7 = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.trigger) != null ? _b : `menu:${ctx.id}:trigger`;
+      getTriggerId7 = (ctx, value) => {
+        var _a;
+        const customId = (_a = ctx.ids) == null ? void 0 : _a.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `menu:${ctx.id}:trigger:${value}` : `menu:${ctx.id}:trigger`;
       };
-      getContextTriggerId = (ctx) => {
-        var _a, _b;
-        return (_b = (_a = ctx.ids) == null ? void 0 : _a.contextTrigger) != null ? _b : `menu:${ctx.id}:ctx-trigger`;
+      getContextTriggerId = (ctx, value) => {
+        var _a;
+        const customId = (_a = ctx.ids) == null ? void 0 : _a.contextTrigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `menu:${ctx.id}:ctx-trigger:${value}` : `menu:${ctx.id}:ctx-trigger`;
       };
       getContentId8 = (ctx) => {
         var _a, _b;
@@ -25204,9 +26432,18 @@ var Corex = (() => {
       };
       getContentEl8 = (ctx) => ctx.getById(getContentId8(ctx));
       getPositionerEl6 = (ctx) => ctx.getById(getPositionerId6(ctx));
-      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId7(ctx));
+      getTriggerEl5 = (ctx) => ctx.getById(getTriggerId7(ctx));
       getItemEl3 = (ctx, value) => value ? ctx.getById(getItemId5(ctx, value)) : null;
       getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
+      getTriggerEls3 = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+      getContextTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
+      getActiveTriggerEl2 = (ctx, value) => {
+        var _a;
+        if (value == null) {
+          return (_a = getTriggerEl5(ctx)) != null ? _a : getTriggerEls3(ctx)[0];
+        }
+        return ctx.getById(getTriggerId7(ctx, value));
+      };
       getElements = (ctx) => {
         const ownerId = CSS.escape(getContentId8(ctx));
         const selector = `[role^="menuitem"][data-ownedby=${ownerId}]:not([data-disabled])`;
@@ -25266,11 +26503,8 @@ var Corex = (() => {
           const open = prop("open") || prop("defaultOpen");
           return open ? "open" : "idle";
         },
-        context({ bindable: bindable2, prop }) {
+        context({ bindable: bindable2, prop, scope }) {
           return {
-            suspendPointer: bindable2(() => ({
-              defaultValue: false
-            })),
             highlightedValue: bindable2(() => ({
               defaultValue: prop("defaultHighlightedValue") || null,
               value: prop("highlightedValue"),
@@ -25296,6 +26530,22 @@ var Corex = (() => {
             })),
             isSubmenu: bindable2(() => ({
               defaultValue: false
+            })),
+            triggerValue: bindable2(() => {
+              var _a;
+              return {
+                defaultValue: (_a = prop("defaultTriggerValue")) != null ? _a : null,
+                value: prop("triggerValue"),
+                onChange(value) {
+                  const onTriggerValueChange = prop("onTriggerValueChange");
+                  if (!onTriggerValueChange) return;
+                  const triggerElement = getActiveTriggerEl2(scope, value);
+                  onTriggerValueChange({ value, triggerElement });
+                }
+              };
+            }),
+            pointerRoutingMode: bindable2(() => ({
+              defaultValue: "interactive"
             }))
           };
         },
@@ -25303,6 +26553,7 @@ var Corex = (() => {
           return {
             parent: null,
             children: {},
+            pointerRoutingLocked: false,
             typeaheadState: __spreadValues({}, getByTypeahead.defaultOptions),
             positioningOverride: {}
           };
@@ -25325,6 +26576,9 @@ var Corex = (() => {
           });
         },
         on: {
+          "TRIGGER_VALUE.SET": {
+            actions: ["setTriggerValue", "setAnchorPoint", "reposition", "focusMenu"]
+          },
           "PARENT.SET": {
             actions: ["setParentMenu"]
           },
@@ -25334,32 +26588,32 @@ var Corex = (() => {
           OPEN: [
             {
               guard: "isOpenControlled",
-              actions: ["invokeOnOpen"]
+              actions: ["setTriggerValue", "invokeOnOpen"]
             },
             {
               target: "open",
-              actions: ["invokeOnOpen"]
+              actions: ["setTriggerValue", "invokeOnOpen"]
             }
           ],
           OPEN_AUTOFOCUS: [
             {
               guard: "isOpenControlled",
-              actions: ["invokeOnOpen"]
+              actions: ["setTriggerValue", "invokeOnOpen"]
             },
             {
               // internal: true,
               target: "open",
-              actions: ["highlightFirstItem", "invokeOnOpen"]
+              actions: ["setTriggerValue", "highlightFirstItem", "invokeOnOpen"]
             }
           ],
           CLOSE: [
             {
               guard: "isOpenControlled",
-              actions: ["invokeOnClose"]
+              actions: ["invokeOnClose", "releaseParentRoutingLock"]
             },
             {
               target: "closed",
-              actions: ["invokeOnClose"]
+              actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
             }
           ],
           "HIGHLIGHTED.RESTORE": {
@@ -25367,6 +26621,9 @@ var Corex = (() => {
           },
           "HIGHLIGHTED.SET": {
             actions: ["setHighlightedItem"]
+          },
+          "HIGHLIGHTED.SUGGEST": {
+            actions: ["suggestHighlightedItem"]
           }
         },
         states: {
@@ -25381,26 +26638,26 @@ var Corex = (() => {
               },
               CONTEXT_MENU_START: {
                 target: "opening:contextmenu",
-                actions: ["setAnchorPoint"]
+                actions: ["setAnchorPoint", "setTriggerValue"]
               },
               CONTEXT_MENU: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["setAnchorPoint", "invokeOnOpen"]
+                  actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["setAnchorPoint", "invokeOnOpen"]
+                  actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
                 }
               ],
               TRIGGER_CLICK: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 }
               ],
               TRIGGER_FOCUS: {
@@ -25418,25 +26675,25 @@ var Corex = (() => {
             effects: ["waitForLongPress"],
             on: {
               "CONTROLLED.OPEN": { target: "open" },
-              "CONTROLLED.CLOSE": { target: "closed" },
+              "CONTROLLED.CLOSE": { target: "closed", actions: ["focusTrigger"] },
               CONTEXT_MENU_CANCEL: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   target: "closed",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
                 }
               ],
               "LONG_PRESS.OPEN": [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 }
               ]
             }
@@ -25449,26 +26706,27 @@ var Corex = (() => {
                 target: "open"
               },
               "CONTROLLED.CLOSE": {
-                target: "closed"
+                target: "closed",
+                actions: ["focusTrigger"]
               },
               BLUR: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   target: "closed",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
                 }
               ],
               TRIGGER_POINTERLEAVE: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   target: "closed",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
                 }
               ],
               "DELAY.OPEN": [
@@ -25502,7 +26760,7 @@ var Corex = (() => {
               POINTER_MOVED_AWAY_FROM_SUBMENU: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   target: "closed",
@@ -25512,18 +26770,18 @@ var Corex = (() => {
               "DELAY.CLOSE": [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   target: "closed",
-                  actions: ["focusParentMenu", "restoreParentHighlightedItem", "invokeOnClose"]
+                  actions: ["focusParentMenu", "restoreParentHighlightedItem", "invokeOnClose", "releaseParentRoutingLock"]
                 }
               ]
             }
           },
           closed: {
             tags: ["closed"],
-            entry: ["clearHighlightedItem", "focusTrigger", "resumePointer", "clearAnchorPoint"],
+            entry: ["clearHighlightedItem", "unlockParentOnClose", "clearAnchorPoint"],
             on: {
               "CONTROLLED.OPEN": [
                 {
@@ -25542,26 +26800,26 @@ var Corex = (() => {
               ],
               CONTEXT_MENU_START: {
                 target: "opening:contextmenu",
-                actions: ["setAnchorPoint"]
+                actions: ["setAnchorPoint", "setTriggerValue"]
               },
               CONTEXT_MENU: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["setAnchorPoint", "invokeOnOpen"]
+                  actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["setAnchorPoint", "invokeOnOpen"]
+                  actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
                 }
               ],
               TRIGGER_CLICK: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["invokeOnOpen", "setTriggerValue"]
                 }
               ],
               TRIGGER_POINTERMOVE: {
@@ -25572,21 +26830,21 @@ var Corex = (() => {
               ARROW_DOWN: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["highlightFirstItem", "invokeOnOpen"]
+                  actions: ["setTriggerValue", "highlightFirstItem", "invokeOnOpen"]
                 }
               ],
               ARROW_UP: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["highlightLastItem", "invokeOnOpen"]
+                  actions: ["setTriggerValue", "highlightLastItem", "invokeOnOpen"]
                 }
               ]
             }
@@ -25594,7 +26852,7 @@ var Corex = (() => {
           open: {
             tags: ["open"],
             effects: ["trackInteractOutside", "trackFocusVisible", "trackPositioning", "scrollToHighlightedItem"],
-            entry: ["focusMenu", "resumePointer"],
+            entry: ["focusMenu", "unlockParentOnOpen"],
             on: {
               "CONTROLLED.CLOSE": [
                 {
@@ -25603,22 +26861,23 @@ var Corex = (() => {
                   actions: ["focusParentMenu"]
                 },
                 {
-                  target: "closed"
+                  target: "closed",
+                  actions: ["focusTrigger"]
                 }
               ],
               TRIGGER_CLICK: [
                 {
                   guard: and6(not5("isTriggerItem"), "isOpenControlled"),
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   guard: not5("isTriggerItem"),
                   target: "closed",
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
                 }
               ],
               CONTEXT_MENU: {
-                actions: ["setAnchorPoint", "focusMenu"]
+                actions: ["setAnchorPoint", "setTriggerValue", "focusMenu"]
               },
               ARROW_UP: {
                 actions: ["highlightPrevItem", "focusMenu"]
@@ -25629,12 +26888,12 @@ var Corex = (() => {
               ARROW_LEFT: [
                 {
                   guard: and6("isSubmenu", "isOpenControlled"),
-                  actions: ["invokeOnClose"]
+                  actions: ["invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   guard: "isSubmenu",
                   target: "closed",
-                  actions: ["focusParentMenu", "invokeOnClose"]
+                  actions: ["focusParentMenu", "invokeOnClose", "releaseParentRoutingLock"]
                 }
               ],
               HOME: {
@@ -25658,7 +26917,7 @@ var Corex = (() => {
               ],
               ITEM_POINTERMOVE: [
                 {
-                  guard: not5("isPointerSuspended"),
+                  guard: not5("isPointerRoutingLocked"),
                   actions: ["setHighlightedItem", "focusMenu", "closeSiblingMenus"]
                 },
                 {
@@ -25666,7 +26925,7 @@ var Corex = (() => {
                 }
               ],
               ITEM_POINTERLEAVE: {
-                guard: and6(not5("isPointerSuspended"), not5("isTriggerItem")),
+                guard: and6(not5("isPointerRoutingLocked"), not5("isTriggerItem")),
                 actions: ["clearHighlightedItem"]
               },
               ITEM_CLICK: [
@@ -25678,12 +26937,19 @@ var Corex = (() => {
                     "closeOnSelect",
                     "isOpenControlled"
                   ),
-                  actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
+                  actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose", "releaseParentRoutingLock"]
                 },
                 {
                   guard: and6(not5("isTriggerItemHighlighted"), not5("isHighlightedItemEditable"), "closeOnSelect"),
                   target: "closed",
-                  actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
+                  actions: [
+                    "invokeOnSelect",
+                    "setOptionState",
+                    "closeRootMenu",
+                    "invokeOnClose",
+                    "releaseParentRoutingLock",
+                    "focusTrigger"
+                  ]
                 },
                 //
                 {
@@ -25730,7 +26996,7 @@ var Corex = (() => {
               return !!(target == null ? void 0 : target.hasAttribute("data-controls"));
             },
             isSubmenu: ({ context }) => context.get("isSubmenu"),
-            isPointerSuspended: ({ context }) => context.get("suspendPointer"),
+            isPointerRoutingLocked: ({ refs }) => refs.get("pointerRoutingLocked"),
             isHighlightedItemEditable: ({ scope, computed }) => isEditableElement(scope.getById(computed("highlightedId"))),
             // guard assertions (for controlled mode)
             isOpenControlled: ({ prop }) => prop("open") !== void 0,
@@ -25775,11 +27041,13 @@ var Corex = (() => {
               return trackFocusVisible({ root: (_a = scope.getRootNode) == null ? void 0 : _a.call(scope) });
             },
             trackPositioning({ context, prop, scope, refs }) {
-              if (getContextTriggerEl(scope)) return;
+              const hasContextTrigger = getContextTriggerEl(scope) || getContextTriggerEls(scope).length > 0;
+              if (hasContextTrigger) return;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
               context.set("currentPlacement", positioning.placement);
               const getPositionerEl22 = () => getPositionerEl6(scope);
-              return getPlacement(getTriggerEl6(scope), getPositionerEl22, __spreadProps(__spreadValues({}, positioning), {
+              const getTriggerEl22 = () => getActiveTriggerEl2(scope, context.get("triggerValue"));
+              return getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues({}, positioning), {
                 defer: true,
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -25789,18 +27057,24 @@ var Corex = (() => {
             trackInteractOutside({ refs, scope, prop, context, send }) {
               const getContentEl22 = () => getContentEl8(scope);
               let restoreFocus = true;
+              const isWithinAnyContextTrigger = (target) => {
+                return getContextTriggerEls(scope).some((el) => contains(el, target));
+              };
               return trackDismissableElement(getContentEl22, {
                 type: "menu",
                 defer: true,
-                exclude: [getTriggerEl6(scope)],
+                exclude: [getTriggerEl5(scope), ...getTriggerEls3(scope)].filter(Boolean),
                 onInteractOutside: prop("onInteractOutside"),
                 onRequestDismiss: prop("onRequestDismiss"),
                 onFocusOutside(event) {
                   var _a;
                   (_a = prop("onFocusOutside")) == null ? void 0 : _a(event);
                   const target = getEventTarget(event.detail.originalEvent);
-                  const isWithinContextTrigger = contains(getContextTriggerEl(scope), target);
-                  if (isWithinContextTrigger) {
+                  if (isWithinAnyContextTrigger(target)) {
+                    event.preventDefault();
+                    return;
+                  }
+                  if (isTargetWithinMenuTree(target, refs.get("children"))) {
                     event.preventDefault();
                     return;
                   }
@@ -25815,8 +27089,7 @@ var Corex = (() => {
                   var _a;
                   (_a = prop("onPointerDownOutside")) == null ? void 0 : _a(event);
                   const target = getEventTarget(event.detail.originalEvent);
-                  const isWithinContextTrigger = contains(getContextTriggerEl(scope), target);
-                  if (isWithinContextTrigger && event.detail.contextmenu) {
+                  if (isWithinAnyContextTrigger(target) && event.detail.contextmenu) {
                     event.preventDefault();
                     return;
                   }
@@ -25827,11 +27100,10 @@ var Corex = (() => {
                 }
               });
             },
-            trackPointerMove({ context, scope, send, refs, flush }) {
+            trackPointerMove({ context, scope, send, refs }) {
               const parent = refs.get("parent");
-              flush(() => {
-                parent.context.set("suspendPointer", true);
-              });
+              if (!parent) return;
+              setParentRoutingLock(parent, true);
               const doc = scope.getDoc();
               return addDomEvent(doc, "pointermove", (e2) => {
                 const isMovingToSubmenu = isWithinPolygon(context.get("intentPolygon"), {
@@ -25840,7 +27112,7 @@ var Corex = (() => {
                 });
                 if (!isMovingToSubmenu) {
                   send({ type: "POINTER_MOVED_AWAY_FROM_SUBMENU" });
-                  parent.context.set("suspendPointer", false);
+                  setParentRoutingLock(parent, false);
                 }
               });
             },
@@ -25874,15 +27146,17 @@ var Corex = (() => {
               refs.set("positioningOverride", { placement, gutter: 0 });
             },
             reposition({ context, scope, prop, event, refs }) {
-              var _a;
+              var _a, _b, _c;
               const getPositionerEl22 = () => getPositionerEl6(scope);
-              const anchorPoint = context.get("anchorPoint");
+              const anchorPoint = (_a = event.point) != null ? _a : context.get("anchorPoint");
               const getAnchorRect = anchorPoint ? () => __spreadValues({ width: 0, height: 0 }, anchorPoint) : void 0;
               const positioning = __spreadValues(__spreadValues({}, prop("positioning")), refs.get("positioningOverride"));
-              getPlacement(getTriggerEl6(scope), getPositionerEl22, __spreadProps(__spreadValues(__spreadProps(__spreadValues({}, positioning), {
+              const triggerValue = (_b = event.value) != null ? _b : context.get("triggerValue");
+              const getTriggerEl22 = () => getActiveTriggerEl2(scope, triggerValue);
+              getPlacement(getTriggerEl22, getPositionerEl22, __spreadProps(__spreadValues(__spreadProps(__spreadValues({}, positioning), {
                 defer: true,
                 getAnchorRect
-              }), (_a = event.options) != null ? _a : {}), {
+              }), (_c = event.options) != null ? _c : {}), {
                 listeners: false,
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -25926,12 +27200,16 @@ var Corex = (() => {
             clearAnchorPoint({ context }) {
               context.set("anchorPoint", null);
             },
-            resumePointer({ refs, flush }) {
+            unlockParentOnOpen({ refs, context, scope }) {
               const parent = refs.get("parent");
-              if (!parent) return;
-              flush(() => {
-                parent.context.set("suspendPointer", false);
-              });
+              if (context.get("isSubmenu")) {
+                const value = getTriggerId7(scope);
+                parent == null ? void 0 : parent.send({ type: "HIGHLIGHTED.SUGGEST", value });
+              }
+              setParentRoutingLock(parent, false);
+            },
+            unlockParentOnClose({ refs, context }) {
+              unlockParentAfterChildClose(refs.get("parent"), context.get("isSubmenu"));
             },
             setHighlightedItem({ context, event }) {
               const value = event.value || getItemValue(event.target);
@@ -25997,8 +27275,8 @@ var Corex = (() => {
             focusTrigger({ scope, context, event }) {
               if (context.get("isSubmenu") || context.get("anchorPoint") || event.restoreFocus === false) return;
               queueMicrotask(() => {
-                var _a;
-                return (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+                const triggerEl = getActiveTriggerEl2(scope, context.get("triggerValue"));
+                triggerEl == null ? void 0 : triggerEl.focus({ preventScroll: true });
               });
             },
             highlightMatchedItem({ scope, context, event, refs }) {
@@ -26053,10 +27331,20 @@ var Corex = (() => {
             setLastHighlightedItem({ context, event }) {
               context.set("lastHighlightedValue", getItemValue(event.target));
             },
+            suggestHighlightedItem({ context, event }) {
+              const value = event.value;
+              if (!value) return;
+              if (context.get("highlightedValue") != null) {
+                context.set("lastHighlightedValue", value);
+                return;
+              }
+              context.set("highlightedValue", value);
+            },
             restoreHighlightedItem({ context }) {
-              if (!context.get("lastHighlightedValue")) return;
-              context.set("highlightedValue", context.get("lastHighlightedValue"));
+              const last2 = context.get("lastHighlightedValue");
               context.set("lastHighlightedValue", null);
+              if (!last2) return;
+              context.set("highlightedValue", last2);
             },
             restoreParentHighlightedItem({ refs }) {
               var _a;
@@ -26070,11 +27358,19 @@ var Corex = (() => {
               var _a;
               (_a = prop("onOpenChange")) == null ? void 0 : _a({ open: false });
             },
+            releaseParentRoutingLock({ refs, context }) {
+              if (!context.get("isSubmenu")) return;
+              unlockParentOnSubmenuClose(refs.get("parent"));
+            },
             toggleVisibility({ prop, event, send }) {
               send({
                 type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE",
                 previousEvent: event
               });
+            },
+            setTriggerValue({ context, event }) {
+              if (event.value === void 0) return;
+              context.set("triggerValue", event.value);
             }
           }
         }
@@ -26089,7 +27385,7 @@ var Corex = (() => {
           return new VanillaMachine(machine16, props);
         }
         initApi() {
-          return connect16(this.machine.service, normalizeProps);
+          return this.zagConnect(connect16);
         }
         setChild(child) {
           this.api.setChild(child.machine.service);
@@ -26198,61 +27494,49 @@ var Corex = (() => {
             return;
           }
           const pushEvent = this.pushEvent.bind(this);
-          const getMain = () => {
-            var _a;
-            return (_a = this.liveSocket) == null ? void 0 : _a.main;
+          const liveSocket = this.liveSocket;
+          const buildOnSelect = () => (details) => {
+            var _a, _b;
+            if (getBoolean(el, "redirect") && details.value) {
+              const itemEl = el.querySelector(
+                `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
+              );
+              performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+            }
+            const eventName = getString(el, "onSelect");
+            if (eventName && canPushEvent(liveSocket)) {
+              pushEvent(eventName, {
+                id: el.id,
+                value: (_a = details.value) != null ? _a : null
+              });
+            }
+            const eventNameClient = getString(el, "onSelectClient");
+            if (eventNameClient) {
+              el.dispatchEvent(
+                new CustomEvent(eventNameClient, {
+                  bubbles: true,
+                  detail: {
+                    id: el.id,
+                    value: (_b = details.value) != null ? _b : null
+                  }
+                })
+              );
+            }
           };
           const menu = new Menu(el, {
             id: el.id.replace("menu:", ""),
-            defaultOpen: getBoolean(el, "defaultOpen"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
             loopFocus: getBoolean(el, "loopFocus"),
             typeahead: getBoolean(el, "typeahead"),
             composite: getBoolean(el, "composite"),
             defaultHighlightedValue: getString(el, "defaultHighlightedValue"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
-            onSelect: (details) => {
-              var _a, _b, _c;
-              const redirect = getBoolean(el, "redirect");
-              const itemEl = [
-                ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
-              ].find((node) => node.getAttribute("data-value") === details.value);
-              const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
-              const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
-              const main = getMain();
-              const doRedirect = redirect && details.value && ((_a = main == null ? void 0 : main.isDead) != null ? _a : true) && itemRedirect !== "false";
-              if (doRedirect) {
-                if (itemNewTab) {
-                  window.open(details.value, "_blank", "noopener,noreferrer");
-                } else {
-                  window.location.href = details.value;
-                }
-              }
-              const eventName = getString(el, "onSelect");
-              if (eventName && main && !main.isDead && main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: (_b = details.value) != null ? _b : null
-                });
-              }
-              const eventNameClient = getString(el, "onSelectClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: (_c = details.value) != null ? _c : null
-                    }
-                  })
-                );
-              }
-            },
+            dir: getDir(el),
+            positioning: readPositioningOptions(el),
+            onSelect: buildOnSelect(),
             onOpenChange: (details) => {
               var _a, _b;
-              const main = getMain();
               const eventName = getString(el, "onOpenChange");
-              if (eventName && main && !main.isDead && main.isConnected()) {
+              if (eventName && canPushEvent(liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   open: (_a = details.open) != null ? _a : false
@@ -26286,48 +27570,13 @@ var Corex = (() => {
               const nestedMenuId = `${nestedId}-${index}`;
               const nestedMenu = new Menu(nestedEl, {
                 id: nestedMenuId,
-                dir: getString(nestedEl, "dir", ["ltr", "rtl"]),
+                dir: getDir(nestedEl),
                 closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
                 loopFocus: getBoolean(nestedEl, "loopFocus"),
                 typeahead: getBoolean(nestedEl, "typeahead"),
                 composite: getBoolean(nestedEl, "composite"),
-                onSelect: (details) => {
-                  var _a2, _b, _c;
-                  const redirect = getBoolean(el, "redirect");
-                  const itemEl = [
-                    ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
-                  ].find((node) => node.getAttribute("data-value") === details.value);
-                  const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
-                  const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
-                  const main = getMain();
-                  const doRedirect = redirect && details.value && ((_a2 = main == null ? void 0 : main.isDead) != null ? _a2 : true) && itemRedirect !== "false";
-                  if (doRedirect) {
-                    if (itemNewTab) {
-                      window.open(details.value, "_blank", "noopener,noreferrer");
-                    } else {
-                      window.location.href = details.value;
-                    }
-                  }
-                  const eventName = getString(el, "onSelect");
-                  if (eventName && main && !main.isDead && main.isConnected()) {
-                    pushEvent(eventName, {
-                      id: el.id,
-                      value: (_b = details.value) != null ? _b : null
-                    });
-                  }
-                  const eventNameClient = getString(el, "onSelectClient");
-                  if (eventNameClient) {
-                    el.dispatchEvent(
-                      new CustomEvent(eventNameClient, {
-                        bubbles: true,
-                        detail: {
-                          id: el.id,
-                          value: (_c = details.value) != null ? _c : null
-                        }
-                      })
-                    );
-                  }
-                }
+                positioning: readPositioningOptions(nestedEl),
+                onSelect: buildOnSelect()
               });
               nestedMenu.init();
               (_a = this.nestedMenus) == null ? void 0 : _a.set(nestedId, nestedMenu);
@@ -26349,7 +27598,7 @@ var Corex = (() => {
             const { open } = event.detail;
             if (menu.api.open !== open) menu.api.setOpen(open);
           };
-          el.addEventListener("phx:menu:set-open", this.onSetOpen);
+          el.addEventListener("corex:menu:set-open", this.onSetOpen);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("menu_set_open", (payload) => {
@@ -26370,22 +27619,22 @@ var Corex = (() => {
         updated() {
           var _a;
           if (this.el.hasAttribute("data-nested")) return;
-          (_a = this.menu) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
+          (_a = this.menu) == null ? void 0 : _a.updateProps({
+            id: this.el.id,
             closeOnSelect: getBoolean(this.el, "closeOnSelect"),
             loopFocus: getBoolean(this.el, "loopFocus"),
             typeahead: getBoolean(this.el, "typeahead"),
             composite: getBoolean(this.el, "composite"),
             defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
-          }));
+            dir: getDir(this.el),
+            positioning: readPositioningOptions(this.el)
+          });
         },
         destroyed() {
           var _a;
           if (this.el.hasAttribute("data-nested")) return;
           if (this.onSetOpen) {
-            this.el.removeEventListener("phx:menu:set-open", this.onSetOpen);
+            this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
           }
           if (this.handlers) {
             for (const handler of this.handlers) {
@@ -26873,9 +28122,10 @@ var Corex = (() => {
   var init_number_input = __esm({
     "../priv/static/number-input.mjs"() {
       "use strict";
-      init_chunk_B7UVPCXR();
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_7EQLYSUR();
+      init_chunk_NX2BOTHE();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy17 = createAnatomy("numberInput").parts(
         "root",
         "label",
@@ -27683,7 +28933,7 @@ var Corex = (() => {
           return new VanillaMachine(machine17, props);
         }
         initApi() {
-          return connect17(this.machine.service, normalizeProps);
+          return this.zagConnect(connect17);
         }
         render() {
           var _a;
@@ -27713,25 +28963,17 @@ var Corex = (() => {
             '[data-scope="number-input"][data-part="increment-trigger"]'
           );
           if (incrementEl) this.spreadProps(incrementEl, this.api.getIncrementTriggerProps());
-          const scrubberEl = this.el.querySelector(
-            '[data-scope="number-input"][data-part="scrubber"]'
-          );
-          if (scrubberEl) {
-            this.spreadProps(scrubberEl, this.api.getScrubberProps());
-            scrubberEl.setAttribute("aria-label", "Scrub to adjust value");
-            scrubberEl.removeAttribute("role");
-          }
         }
       };
       NumberInputHook = {
         mounted() {
           const el = this.el;
-          const valueStr = getString(el, "value");
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const defaultValueStr = getString(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
-          const zag = new NumberInput(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr }), {
+          const zag = new NumberInput(el, {
+            id: el.id,
+            defaultValue: defaultValueStr,
             min: getNumber(el, "min"),
             max: getNumber(el, "max"),
             step: getNumber(el, "step"),
@@ -27742,6 +28984,7 @@ var Corex = (() => {
             allowMouseWheel: getBoolean(el, "allowMouseWheel"),
             name: getString(el, "name"),
             form: getString(el, "form"),
+            dir: getDir(el),
             onValueChange: (details) => {
               var _a;
               if (details.value !== void 0) {
@@ -27752,37 +28995,29 @@ var Corex = (() => {
                   valueInput.value = (_a = details.value) != null ? _a : "";
                 }
               }
-              const eventName = getString(el, "onValueChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                this.pushEvent(eventName, {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
                   value: details.value,
-                  valueAsNumber: details.valueAsNumber,
-                  id: el.id
-                });
-              }
-              const clientName = getString(el, "onValueChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+                  valueAsNumber: details.valueAsNumber
+                },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             }
-          }));
+          });
           zag.init();
           this.numberInput = zag;
-          this.handlers = [];
         },
         updated() {
           var _a;
-          const valueStr = getString(this.el, "value");
-          const controlled = getBoolean(this.el, "controlled");
           const defaultValueStr = getString(this.el, "defaultValue");
-          (_a = this.numberInput) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, controlled && valueStr !== void 0 ? { value: valueStr } : { defaultValue: defaultValueStr }), {
+          (_a = this.numberInput) == null ? void 0 : _a.updateProps({
+            id: this.el.id,
+            defaultValue: defaultValueStr,
             min: getNumber(this.el, "min"),
             max: getNumber(this.el, "max"),
             step: getNumber(this.el, "step"),
@@ -27791,14 +29026,12 @@ var Corex = (() => {
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
             name: getString(this.el, "name"),
-            form: getString(this.el, "form")
-          }));
+            form: getString(this.el, "form"),
+            dir: getDir(this.el)
+          });
         },
         destroyed() {
           var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
           (_a = this.numberInput) == null ? void 0 : _a.destroy();
         }
       };
@@ -27910,7 +29143,8 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
         "input",
@@ -28026,7 +29260,7 @@ var Corex = (() => {
           return new VanillaMachine(machine18, props);
         }
         initApi() {
-          return connect18(this.machine.service, normalizeProps);
+          return this.zagConnect(connect18);
         }
         render() {
           var _a;
@@ -28057,9 +29291,11 @@ var Corex = (() => {
       PasswordInputHook = {
         mounted() {
           const el = this.el;
-          const zag = new PasswordInput(el, __spreadProps(__spreadValues({
-            id: el.id
-          }, getBoolean(el, "controlledVisible") ? { visible: getBoolean(el, "visible") } : { defaultVisible: getBoolean(el, "defaultVisible") }), {
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const zag = new PasswordInput(el, {
+            id: el.id,
+            defaultVisible: getBoolean(el, "defaultVisible"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             readOnly: getBoolean(el, "readOnly"),
@@ -28067,35 +29303,26 @@ var Corex = (() => {
             ignorePasswordManagers: getBoolean(el, "ignorePasswordManagers"),
             name: getString(el, "name"),
             dir: getDir(el),
-            autoComplete: getString(el, "autoComplete", [
-              "current-password",
-              "new-password"
-            ]),
+            autoComplete: getString(el, "autoComplete"),
             onVisibilityChange: (details) => {
-              const eventName = getString(el, "onVisibilityChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { visible: details.visible, id: el.id });
-              }
-              const clientName = getString(el, "onVisibilityChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, visible: details.visible },
+                serverEventName: getString(el, "onVisibilityChange"),
+                clientEventName: getString(el, "onVisibilityChangeClient")
+              });
             }
-          }));
+          });
           zag.init();
           this.passwordInput = zag;
           this.handlers = [];
         },
         updated() {
           var _a;
-          (_a = this.passwordInput) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id
-          }, getBoolean(this.el, "controlledVisible") ? { visible: getBoolean(this.el, "visible") } : {}), {
+          (_a = this.passwordInput) == null ? void 0 : _a.updateProps({
+            id: this.el.id,
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),
             readOnly: getBoolean(this.el, "readOnly"),
@@ -28103,7 +29330,7 @@ var Corex = (() => {
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
             dir: getDir(this.el)
-          }));
+          });
         },
         destroyed() {
           var _a;
@@ -28216,11 +29443,15 @@ var Corex = (() => {
         var _a;
         const { index } = props;
         const inputType = prop("type") === "numeric" ? "tel" : "text";
+        const valueLength = computed("valueLength");
+        const tabbableIndex = focusedIndex !== -1 ? focusedIndex : Math.min(computed("filledValueLength"), valueLength - 1);
         return normalize.input(__spreadProps(__spreadValues({}, parts19.input.attrs), {
           dir: prop("dir"),
           disabled,
+          tabIndex: index === tabbableIndex ? 0 : -1,
           "data-disabled": dataAttr(disabled),
           "data-complete": dataAttr(complete),
+          "data-filled": dataAttr(context.get("value")[index] !== ""),
           id: getInputId7(scope, index.toString()),
           "data-index": index,
           "data-ownedby": getRootId14(scope),
@@ -28228,6 +29459,7 @@ var Corex = (() => {
           inputMode: prop("otp") || prop("type") === "numeric" ? "numeric" : "text",
           "aria-invalid": ariaAttr(invalid),
           "data-invalid": dataAttr(invalid),
+          enterKeyHint: index === valueLength - 1 ? "done" : "next",
           type: prop("mask") ? "password" : inputType,
           defaultValue: context.get("value")[index] || "",
           readOnly,
@@ -28236,8 +29468,10 @@ var Corex = (() => {
           placeholder: focusedIndex === index ? "" : prop("placeholder"),
           onPaste(event) {
             var _a2;
-            const pastedValue = (_a2 = event.clipboardData) == null ? void 0 : _a2.getData("text/plain");
+            let pastedValue = (_a2 = event.clipboardData) == null ? void 0 : _a2.getData("text/plain");
             if (!pastedValue) return;
+            const transformer = prop("sanitizeValue");
+            if (transformer) pastedValue = transformer(pastedValue);
             const isValid = isValidValue(pastedValue, prop("type"), prop("pattern"));
             if (!isValid) {
               send({ type: "VALUE.INVALID", value: pastedValue });
@@ -28278,6 +29512,10 @@ var Corex = (() => {
               send({ type: "INPUT.BACKSPACE" });
               return;
             }
+            if (evt.inputType === "deleteByCut") {
+              send({ type: "INPUT.DELETE" });
+              return;
+            }
             if (value === computed("focusedValue")) return;
             send({ type: "INPUT.CHANGE", value, index });
           },
@@ -28285,6 +29523,11 @@ var Corex = (() => {
             if (event.defaultPrevented) return;
             if (isComposingEvent(event)) return;
             if (isModifierKey(event)) return;
+            if (event.key.length === 1 && computed("focusedValue") === event.key) {
+              event.preventDefault();
+              send({ type: "INPUT.ADVANCE" });
+              return;
+            }
             const keyMap2 = {
               Backspace() {
                 send({ type: "INPUT.BACKSPACE" });
@@ -28300,6 +29543,12 @@ var Corex = (() => {
               },
               Enter() {
                 send({ type: "INPUT.ENTER" });
+              },
+              Home() {
+                send({ type: "INPUT.HOME" });
+              },
+              End() {
+                send({ type: "INPUT.END" });
               }
             };
             const exec = keyMap2[getEventKey(event, {
@@ -28345,12 +29594,78 @@ var Corex = (() => {
     while (copy.length < count) copy.push("");
     return copy.slice(0, count);
   }
+  function readDefaultValueList(el, count) {
+    const raw = el.dataset.defaultValue;
+    if (raw === void 0 || raw === "") {
+      return [];
+    }
+    return padToCount(parseValueWithEmpties(raw), count);
+  }
+  function buildMachineProps(el, pushEvent, canPush) {
+    const count = getNumber(el, "count");
+    return {
+      id: el.id,
+      count,
+      defaultValue: readDefaultValueList(el, count != null ? count : 0),
+      disabled: getBoolean(el, "disabled"),
+      invalid: getBoolean(el, "invalid"),
+      required: getBoolean(el, "required"),
+      readOnly: getBoolean(el, "readOnly"),
+      mask: getBoolean(el, "mask"),
+      otp: getBoolean(el, "otp"),
+      blurOnComplete: getBoolean(el, "blurOnComplete"),
+      selectOnFocus: getBoolean(el, "selectOnFocus"),
+      name: getString(el, "name"),
+      form: getString(el, "form"),
+      dir: getDir(el),
+      type: getString(el, "type"),
+      placeholder: getString(el, "placeholder"),
+      onValueChange: (details) => {
+        const hiddenInput = el.querySelector(
+          '[data-scope="pin-input"][data-part="hidden-input"]'
+        );
+        if (hiddenInput) {
+          hiddenInput.value = details.valueAsString;
+          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
+          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            valueAsString: details.valueAsString
+          },
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
+      },
+      onValueComplete: (details) => {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
+            value: details.value,
+            valueAsString: details.valueAsString
+          },
+          serverEventName: getString(el, "onValueComplete"),
+          clientEventName: getString(el, "onValueCompleteClient")
+        });
+      }
+    };
+  }
   var anatomy19, parts19, getRootId14, getInputId7, getHiddenInputId4, getLabelId10, getControlId7, getRootEl4, getInputEls2, getInputElAtIndex, getFirstInputEl, getHiddenInputEl4, setInputValue, REGEX, choose3, createMachine5, machine19, PinInput, PinInputHook;
   var init_pin_input = __esm({
     "../priv/static/pin-input.mjs"() {
       "use strict";
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_NX2BOTHE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
       getRootId14 = (ctx) => {
@@ -28452,7 +29767,7 @@ var Corex = (() => {
             action(["syncInputElements", "dispatchInputEvent"]);
           });
           track([() => computed("isValueComplete")], () => {
-            action(["invokeOnComplete", "blurFocusedInputIfNeeded"]);
+            action(["invokeOnComplete", "blurFocusedInputIfNeeded", "autoSubmitIfNeeded"]);
           });
         },
         on: {
@@ -28479,13 +29794,16 @@ var Corex = (() => {
           focused: {
             on: {
               "INPUT.CHANGE": {
-                actions: ["setFocusedValue", "syncInputValue", "setNextFocusedIndex"]
+                actions: ["setFocusedValue", "syncInputValue", "advanceFocusedIndex"]
+              },
+              "INPUT.ADVANCE": {
+                actions: ["advanceFocusedIndex"]
               },
               "INPUT.PASTE": {
                 actions: ["setPastedValue", "setLastValueFocusIndex"]
               },
               "INPUT.FOCUS": {
-                actions: ["setFocusedIndex"]
+                actions: ["setFocusedIndex", "focusInput"]
               },
               "INPUT.BLUR": {
                 target: "idle",
@@ -28501,10 +29819,16 @@ var Corex = (() => {
               "INPUT.ARROW_RIGHT": {
                 actions: ["setNextFocusedIndex"]
               },
+              "INPUT.HOME": {
+                actions: ["setFocusIndexToFirst"]
+              },
+              "INPUT.END": {
+                actions: ["setFocusIndexToLast"]
+              },
               "INPUT.BACKSPACE": [
                 {
                   guard: "hasValue",
-                  actions: ["clearFocusedValue"]
+                  actions: ["clearFocusedValue", "setPrevFocusedIndex"]
                 },
                 {
                   actions: ["setPrevFocusedIndex", "clearFocusedValue"]
@@ -28538,10 +29862,12 @@ var Corex = (() => {
               context.set("count", inputEls.length);
             },
             focusInput({ context, scope }) {
-              var _a;
               const focusedIndex = context.get("focusedIndex");
               if (focusedIndex === -1) return;
-              (_a = getInputElAtIndex(scope, focusedIndex)) == null ? void 0 : _a.focus({ preventScroll: true });
+              queueMicrotask(() => {
+                var _a;
+                (_a = getInputElAtIndex(scope, focusedIndex)) == null ? void 0 : _a.focus({ preventScroll: true });
+              });
             },
             selectInputIfNeeded({ context, prop, scope }) {
               const focusedIndex = context.get("focusedIndex");
@@ -28569,8 +29895,9 @@ var Corex = (() => {
             clearFocusedIndex({ context }) {
               context.set("focusedIndex", -1);
             },
-            setFocusedIndex({ context, event }) {
-              context.set("focusedIndex", event.index);
+            setFocusedIndex({ context, event, computed }) {
+              const maxIndex = Math.min(computed("filledValueLength"), computed("valueLength") - 1);
+              context.set("focusedIndex", Math.min(event.index, maxIndex));
             },
             setValue({ context, event }) {
               const value = fill(event.value, context.get("count"));
@@ -28628,13 +29955,24 @@ var Corex = (() => {
             clearFocusedValue({ context, computed }) {
               const focusedIndex = context.get("focusedIndex");
               if (focusedIndex === -1) return;
-              context.set("value", setValueAtIndex(computed("_value"), focusedIndex, ""));
+              const value = [...computed("_value")];
+              value.splice(focusedIndex, 1);
+              value.push("");
+              context.set("value", value);
             },
             setFocusIndexToFirst({ context }) {
               context.set("focusedIndex", 0);
             },
-            setNextFocusedIndex({ context, computed }) {
+            setFocusIndexToLast({ context, computed }) {
+              context.set("focusedIndex", Math.max(computed("filledValueLength") - 1, 0));
+            },
+            advanceFocusedIndex({ context, computed }) {
               context.set("focusedIndex", Math.min(context.get("focusedIndex") + 1, computed("valueLength") - 1));
+            },
+            setNextFocusedIndex({ context, computed }) {
+              const nextIndex2 = context.get("focusedIndex") + 1;
+              const maxIndex = Math.min(computed("filledValueLength"), computed("valueLength") - 1);
+              context.set("focusedIndex", Math.min(nextIndex2, maxIndex));
             },
             setPrevFocusedIndex({ context }) {
               context.set("focusedIndex", Math.max(context.get("focusedIndex") - 1, 0));
@@ -28644,8 +29982,8 @@ var Corex = (() => {
                 context.set("focusedIndex", Math.min(computed("filledValueLength"), computed("valueLength") - 1));
               });
             },
-            blurFocusedInputIfNeeded({ context, prop, scope }) {
-              if (!prop("blurOnComplete")) return;
+            blurFocusedInputIfNeeded({ context, computed, prop, scope }) {
+              if (!prop("blurOnComplete") || !computed("isValueComplete")) return;
               raf(() => {
                 var _a;
                 (_a = getInputElAtIndex(scope, context.get("focusedIndex"))) == null ? void 0 : _a.blur();
@@ -28654,6 +29992,12 @@ var Corex = (() => {
             requestFormSubmit({ computed, prop, scope }) {
               var _a;
               if (!prop("name") || !computed("isValueComplete")) return;
+              const inputEl = getHiddenInputEl4(scope);
+              (_a = inputEl == null ? void 0 : inputEl.form) == null ? void 0 : _a.requestSubmit();
+            },
+            autoSubmitIfNeeded({ computed, prop, scope }) {
+              var _a;
+              if (!prop("autoSubmit") || !computed("isValueComplete")) return;
               const inputEl = getHiddenInputEl4(scope);
               (_a = inputEl == null ? void 0 : inputEl.form) == null ? void 0 : _a.requestSubmit();
             }
@@ -28666,7 +30010,7 @@ var Corex = (() => {
           return new VanillaMachine(machine19, props);
         }
         initApi() {
-          return connect19(this.machine.service, normalizeProps);
+          return this.zagConnect(connect19);
         }
         render() {
           var _a;
@@ -28694,17 +30038,63 @@ var Corex = (() => {
       };
       PinInputHook = {
         mounted() {
+          const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const zag = new PinInput(el, buildMachineProps(el, pushEvent, canPush));
+          zag.init();
+          this.pinInput = zag;
+          const emitValue = (respondTo) => {
+            const api = zag.api;
+            const value = api.value;
+            const valueAsString = api.valueAsString;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "pin_input_value_response",
+              serverPayload: { id: el.id, value, valueAsString },
+              el,
+              domEventName: "pin-input-value",
+              domDetail: { id: el.id, value, valueAsString }
+            });
+          };
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:pin-input:set-value", (event) => {
+            var _a;
+            const v2 = (_a = event.detail) == null ? void 0 : _a.value;
+            if (Array.isArray(v2)) zag.api.setValue(v2);
+          });
+          domRegistry.add("corex:pin-input:clear", () => {
+            zag.api.clearValue();
+          });
+          domRegistry.add("corex:pin-input:value", (event) => {
+            emitValue(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("pin_input_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (Array.isArray(payload.value)) zag.api.setValue(payload.value);
+          });
+          registry.add("pin_input_clear", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.clearValue();
+          });
+          registry.add("pin_input_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitValue(parseRespondTo(payload));
+          });
+        },
+        updated() {
           var _a;
           const el = this.el;
-          const count = (_a = getNumber(el, "count")) != null ? _a : 4;
-          const rawValue = el.dataset.value;
-          const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
-          const defaultValueList = getStringList(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
-          const zag = new PinInput(el, __spreadProps(__spreadValues({
+          const count = getNumber(el, "count");
+          (_a = this.pinInput) == null ? void 0 : _a.updateProps({
             id: el.id,
-            count
-          }, controlled && valueList ? { value: valueList } : { defaultValue: defaultValueList != null ? defaultValueList : [] }), {
+            count,
+            defaultValue: readDefaultValueList(el, count != null ? count : 0),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
@@ -28715,79 +30105,16 @@ var Corex = (() => {
             selectOnFocus: getBoolean(el, "selectOnFocus"),
             name: getString(el, "name"),
             form: getString(el, "form"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
-            type: getString(el, "type", [
-              "alphanumeric",
-              "numeric",
-              "alphabetic"
-            ]),
-            placeholder: getString(el, "placeholder"),
-            onValueChange: (details) => {
-              const hiddenInput = el.querySelector(
-                '[data-scope="pin-input"][data-part="hidden-input"]'
-              );
-              if (hiddenInput) {
-                hiddenInput.value = details.valueAsString;
-                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-              }
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  value: details.value,
-                  valueAsString: details.valueAsString,
-                  id: el.id
-                });
-              }
-              const clientName = getString(el, "onValueChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
-            },
-            onValueComplete: (details) => {
-              const eventName = getString(el, "onValueComplete");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  value: details.value,
-                  valueAsString: details.valueAsString,
-                  id: el.id
-                });
-              }
-            }
-          }));
-          zag.init();
-          this.pinInput = zag;
-          this.handlers = [];
-        },
-        updated() {
-          var _a, _b, _c, _d;
-          const count = (_c = (_b = getNumber(this.el, "count")) != null ? _b : (_a = this.pinInput) == null ? void 0 : _a.api.count) != null ? _c : 4;
-          const rawValue = this.el.dataset.value;
-          const valueList = rawValue != null ? padToCount(parseValueWithEmpties(rawValue), count) : void 0;
-          const controlled = getBoolean(this.el, "controlled");
-          (_d = this.pinInput) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
-            id: this.el.id,
-            count
-          }, controlled && valueList ? { value: valueList } : {}), {
-            disabled: getBoolean(this.el, "disabled"),
-            invalid: getBoolean(this.el, "invalid"),
-            required: getBoolean(this.el, "required"),
-            readOnly: getBoolean(this.el, "readOnly"),
-            name: getString(this.el, "name"),
-            form: getString(this.el, "form")
-          }));
+            dir: getDir(el),
+            type: getString(el, "type"),
+            placeholder: getString(el, "placeholder")
+          });
         },
         destroyed() {
-          var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
-          (_a = this.pinInput) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.pinInput) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -28935,6 +30262,7 @@ var Corex = (() => {
           form: prop("form"),
           value: props.value,
           required: prop("required"),
+          "aria-labelledby": getItemLabelId(scope, props.value),
           "aria-invalid": itemState.invalid || void 0,
           onClick(event) {
             if (readOnly) {
@@ -29000,13 +30328,21 @@ var Corex = (() => {
       }
     };
   }
+  function valueChangePayload2(el, details) {
+    return {
+      id: el.id,
+      value: details.value
+    };
+  }
   var anatomy20, parts20, getRootId15, getLabelId11, getItemId6, getItemHiddenInputId, getItemControlId, getItemLabelId, getIndicatorId2, getRootEl5, getItemHiddenInputEl, getIndicatorEl2, getFirstEnabledInputEl, getFirstEnabledAndCheckedInputEl, getInputEls3, getRadioEl, getOffsetRect, isRectEmpty, not7, machine20, RadioGroup, RadioGroupHook;
   var init_radio_group = __esm({
     "../priv/static/radio-group.mjs"() {
       "use strict";
-      init_chunk_MV633JPN();
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_DQ6PDFVK();
+      init_chunk_ZKMAU6SY();
+      init_chunk_NX2BOTHE();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
         "label",
@@ -29259,7 +30595,7 @@ var Corex = (() => {
           return new VanillaMachine(machine20, props);
         }
         initApi() {
-          return connect20(this.machine.service, normalizeProps);
+          return this.zagConnect(connect20);
         }
         render() {
           var _a;
@@ -29317,70 +30653,50 @@ var Corex = (() => {
       RadioGroupHook = {
         mounted() {
           const el = this.el;
-          const value = getString(el, "value");
-          const defaultValue = getString(el, "defaultValue");
-          const controlled = getBoolean(el, "controlled");
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const zag = new RadioGroup(el, __spreadProps(__spreadValues({
             id: el.id
-          }, controlled && value !== void 0 ? { value: value != null ? value : null } : { defaultValue: defaultValue != null ? defaultValue : null }), {
+          }, readStringControlledZagProps(el, "value", "defaultValue")), {
             name: getString(el, "name"),
             form: getString(el, "form"),
             disabled: getBoolean(el, "disabled"),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             readOnly: getBoolean(el, "readOnly"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
-            orientation: getString(el, "orientation", [
-              "horizontal",
-              "vertical"
-            ]),
+            dir: getDir(el),
+            orientation: getString(el, "orientation"),
             onValueChange: (details) => {
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
-                  value: details.value,
-                  id: el.id
-                });
-              }
-              const clientName = getString(el, "onValueChangeClient");
-              if (clientName) {
-                el.dispatchEvent(
-                  new CustomEvent(clientName, {
-                    bubbles: true,
-                    detail: { value: details, id: el.id }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: valueChangePayload2(el, details),
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             }
           }));
           zag.init();
           this.radioGroup = zag;
-          this.handlers = [];
         },
         updated() {
           var _a;
-          const value = getString(this.el, "value");
-          const controlled = getBoolean(this.el, "controlled");
           (_a = this.radioGroup) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
-          }, controlled && value !== void 0 ? { value: value != null ? value : null } : {}), {
+          }, readStringControlledZagUpdate(this.el, "value", "defaultValue")), {
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
             disabled: getBoolean(this.el, "disabled"),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
             readOnly: getBoolean(this.el, "readOnly"),
-            orientation: getString(this.el, "orientation", [
-              "horizontal",
-              "vertical"
-            ])
+            orientation: getString(this.el, "orientation"),
+            dir: getDir(this.el)
           }));
         },
         destroyed() {
           var _a;
-          if (this.handlers) {
-            for (const h2 of this.handlers) this.removeHandleEvent(h2);
-          }
           (_a = this.radioGroup) == null ? void 0 : _a.destroy();
         }
       };
@@ -29442,7 +30758,7 @@ var Corex = (() => {
       },
       focus() {
         var _a;
-        (_a = getTriggerEl7(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+        (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
       },
       setOpen(nextOpen) {
         const open2 = state2.hasTag("open");
@@ -29494,7 +30810,7 @@ var Corex = (() => {
             var _a;
             if (event.defaultPrevented) return;
             if (disabled) return;
-            (_a = getTriggerEl7(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+            (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
           }
         }));
       },
@@ -29716,7 +31032,7 @@ var Corex = (() => {
           // Let's forward the focus to the trigger.
           onFocus() {
             var _a;
-            (_a = getTriggerEl7(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
+            (_a = getTriggerEl6(scope)) == null ? void 0 : _a.focus({ preventScroll: true });
           },
           "aria-labelledby": getLabelId12(scope)
         });
@@ -29836,27 +31152,21 @@ var Corex = (() => {
       isItemDisabled: (item) => !!item.disabled
     });
   }
-  function snakeToCamel2(str) {
-    return str.replace(/_([a-z])/g, (_2, letter) => letter.toUpperCase());
-  }
-  function transformPositioningOptions2(obj) {
-    const result = {};
-    for (const [key, value] of Object.entries(obj)) {
-      const camelKey = snakeToCamel2(key);
-      result[camelKey] = value;
-    }
-    return result;
-  }
-  var anatomy21, parts21, collection3, getRootId16, getContentId9, getTriggerId8, getClearTriggerId3, getLabelId12, getControlId8, getItemId7, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl7, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine21, Select, SelectHook;
+  var anatomy21, parts21, collection3, getRootId16, getContentId9, getTriggerId8, getClearTriggerId3, getLabelId12, getControlId8, getItemId7, getHiddenSelectId, getPositionerId7, getItemGroupId4, getItemGroupLabelId3, getHiddenSelectEl, getContentEl9, getTriggerEl6, getClearTriggerEl3, getPositionerEl7, getItemEl4, getSelectedValues, and8, not8, or3, machine21, Select, SelectHook;
   var init_select = __esm({
     "../priv/static/select.mjs"() {
       "use strict";
-      init_chunk_7ZKQLYA7();
-      init_chunk_VXCJNDUG();
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_AFD7D2GA();
+      init_chunk_F6MNP3LD();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_ZZTIKT3S();
+      init_chunk_FLYYJ5XV();
+      init_chunk_6XKINCJF();
+      init_chunk_ZKMAU6SY();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy21 = createAnatomy("select").parts(
         "label",
         "positioner",
@@ -29927,7 +31237,7 @@ var Corex = (() => {
       };
       getHiddenSelectEl = (ctx) => ctx.getById(getHiddenSelectId(ctx));
       getContentEl9 = (ctx) => ctx.getById(getContentId9(ctx));
-      getTriggerEl7 = (ctx) => ctx.getById(getTriggerId8(ctx));
+      getTriggerEl6 = (ctx) => ctx.getById(getTriggerId8(ctx));
       getClearTriggerEl3 = (ctx) => ctx.getById(getClearTriggerId3(ctx));
       getPositionerEl7 = (ctx) => ctx.getById(getPositionerId7(ctx));
       getItemEl4 = (ctx, id) => {
@@ -30384,7 +31694,7 @@ var Corex = (() => {
               return trackDismissableElement(contentEl, {
                 type: "listbox",
                 defer: true,
-                exclude: [getTriggerEl7(scope), getClearTriggerEl3(scope)],
+                exclude: [getTriggerEl6(scope), getClearTriggerEl3(scope)],
                 onFocusOutside: prop("onFocusOutside"),
                 onPointerDownOutside: prop("onPointerDownOutside"),
                 onInteractOutside(event) {
@@ -30400,7 +31710,7 @@ var Corex = (() => {
             computePlacement({ context, prop, scope }) {
               const positioning = prop("positioning");
               context.set("currentPlacement", positioning.placement);
-              const triggerEl = () => getTriggerEl7(scope);
+              const triggerEl = () => getTriggerEl6(scope);
               const positionerEl = () => getPositionerEl7(scope);
               return getPlacement(triggerEl, positionerEl, __spreadProps(__spreadValues({
                 defer: true
@@ -30447,7 +31757,7 @@ var Corex = (() => {
           actions: {
             reposition({ context, prop, scope, event }) {
               const positionerEl = () => getPositionerEl7(scope);
-              getPlacement(getTriggerEl7(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
+              getPlacement(getTriggerEl6(scope), positionerEl, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 defer: true,
                 listeners: false,
                 onComplete(data) {
@@ -30491,7 +31801,7 @@ var Corex = (() => {
             focusTriggerEl({ event, scope }) {
               if (!restoreFocusFn(event)) return;
               raf(() => {
-                const element = getTriggerEl7(scope);
+                const element = getTriggerEl6(scope);
                 element == null ? void 0 : element.focus({ preventScroll: true });
               });
             },
@@ -30662,15 +31972,6 @@ var Corex = (() => {
           __publicField(this, "_options", []);
           __publicField(this, "hasGroups", false);
           __publicField(this, "placeholder", "");
-          __publicField(this, "init", () => {
-            this.machine.start();
-            this.render();
-            this.machine.subscribe(() => {
-              this.api = this.initApi();
-              this.render();
-            });
-            this.el.removeAttribute("data-js");
-          });
           const collectionFromProps = props.collection;
           this._options = (_a = collectionFromProps == null ? void 0 : collectionFromProps.items) != null ? _a : [];
           this.placeholder = getString(this.el, "placeholder") || "";
@@ -30682,52 +31983,29 @@ var Corex = (() => {
           this._options = Array.isArray(options) ? options : [];
         }
         getCollection() {
-          const items = this.options;
-          if (this.hasGroups) {
-            return collection3({
-              items,
-              itemToValue: (item) => {
-                var _a, _b;
-                return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
-              },
-              itemToString: (item) => item.label,
-              isItemDisabled: (item) => !!item.disabled,
-              groupBy: (item) => {
-                var _a;
-                return (_a = item.group) != null ? _a : "";
-              }
-            });
-          }
-          return collection3({
-            items,
-            itemToValue: (item) => {
-              var _a, _b;
-              return (_b = (_a = item.id) != null ? _a : item.value) != null ? _b : "";
-            },
-            itemToString: (item) => item.label,
-            isItemDisabled: (item) => !!item.disabled
-          });
+          return collection3(zagIdValueLabelCollectionConfig(this.options, this.hasGroups));
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           const getCollection = this.getCollection.bind(this);
-          const collectionFromProps = props.collection;
           return new VanillaMachine(machine21, __spreadProps(__spreadValues({}, props), {
             get collection() {
-              return collectionFromProps != null ? collectionFromProps : getCollection();
+              return getCollection();
             }
           }));
         }
         initApi() {
-          return connect21(this.machine.service, normalizeProps);
+          return this.zagConnect(connect21);
         }
         applyItemProps() {
           const contentEl = this.el.querySelector(
             '[data-scope="select"][data-part="content"]'
           );
           if (!contentEl) return;
+          const isOwnedByContent = (el) => el.closest('[data-scope="select"][data-part="content"]') === contentEl;
           contentEl.querySelectorAll('[data-scope="select"][data-part="item-group"]').forEach((groupEl) => {
             var _a;
+            if (!isOwnedByContent(groupEl)) return;
             const groupId = (_a = groupEl.dataset.id) != null ? _a : "";
             this.spreadProps(groupEl, this.api.getItemGroupProps({ id: groupId }));
             const labelEl = groupEl.querySelector(
@@ -30739,7 +32017,9 @@ var Corex = (() => {
           });
           contentEl.querySelectorAll('[data-scope="select"][data-part="item"]').forEach((itemEl) => {
             var _a;
+            if (!isOwnedByContent(itemEl)) return;
             const value = (_a = itemEl.dataset.value) != null ? _a : "";
+            if (!value) return;
             const item = this.options.find((i2) => {
               var _a2, _b;
               return String((_b = (_a2 = i2.id) != null ? _a2 : i2.value) != null ? _b : "") === String(value);
@@ -30761,24 +32041,19 @@ var Corex = (() => {
           });
         }
         render() {
-          var _a;
+          var _a, _b;
           const root = (_a = this.el.querySelector('[data-scope="select"][data-part="root"]')) != null ? _a : this.el;
           this.spreadProps(root, this.api.getRootProps());
-          const hiddenSelect = this.el.querySelector(
-            '[data-scope="select"][data-part="hidden-select"]'
-          );
           const valueInput = this.el.querySelector(
             '[data-scope="select"][data-part="value-input"]'
           );
           if (valueInput) {
-            if (!this.api.value || this.api.value.length === 0) {
-              valueInput.value = "";
-            } else if (this.api.value.length === 1) {
-              valueInput.value = String(this.api.value[0]);
-            } else {
-              valueInput.value = this.api.value.map(String).join(",");
-            }
+            const valueStr = ((_b = this.api.value) == null ? void 0 : _b.length) ? this.api.value.map(String).join(",") : "";
+            valueInput.value = valueStr;
           }
+          const hiddenSelect = this.el.querySelector(
+            '[data-scope="select"][data-part="hidden-select"]'
+          );
           if (hiddenSelect) {
             this.spreadProps(hiddenSelect, this.api.getHiddenSelectProps());
           }
@@ -30796,17 +32071,13 @@ var Corex = (() => {
             if (this.api.value && this.api.value.length > 0 && !valueAsString) {
               const selectedValue = this.api.value[0];
               const selectedItem = this.options.find((item) => {
-                var _a2, _b;
-                const itemValue = (_b = (_a2 = item.id) != null ? _a2 : item.value) != null ? _b : "";
+                var _a2, _b2;
+                const itemValue = (_b2 = (_a2 = item.id) != null ? _a2 : item.value) != null ? _b2 : "";
                 return String(itemValue) === String(selectedValue);
               });
-              if (selectedItem) {
-                valueText.textContent = selectedItem.label;
-              } else {
-                valueText.textContent = this.placeholder || "";
-              }
+              valueText.textContent = (selectedItem == null ? void 0 : selectedItem.label) || this.placeholder;
             } else {
-              valueText.textContent = valueAsString || this.placeholder || "";
+              valueText.textContent = valueAsString || this.placeholder;
             }
           }
           const contentEl = this.el.querySelector(
@@ -30821,50 +32092,37 @@ var Corex = (() => {
       SelectHook = {
         mounted() {
           const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const allItems = JSON.parse(el.dataset.items || "[]");
-          const hasGroups = allItems.some((item) => item.group !== void 0);
+          const hasGroups = allItems.some((item) => Boolean(item.group));
           const initialCollection = buildCollection2(allItems, hasGroups);
+          const redirectOn = getBoolean(el, "redirect");
           const selectComponent = new Select(el, __spreadProps(__spreadValues({
             id: el.id,
             collection: initialCollection
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
             disabled: getBoolean(el, "disabled"),
             closeOnSelect: getBoolean(el, "closeOnSelect"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             loopFocus: getBoolean(el, "loopFocus"),
-            multiple: getBoolean(el, "multiple"),
+            multiple: redirectOn ? false : getBoolean(el, "multiple"),
             invalid: getBoolean(el, "invalid"),
             name: getString(el, "name"),
             form: getString(el, "form"),
             readOnly: getBoolean(el, "readOnly"),
             required: getBoolean(el, "required"),
-            positioning: (() => {
-              const positioningJson = el.dataset.positioning;
-              if (positioningJson) {
-                try {
-                  const parsed = JSON.parse(positioningJson);
-                  return transformPositioningOptions2(parsed);
-                } catch (e2) {
-                  return void 0;
-                }
-              }
-              return void 0;
-            })(),
+            deselectable: getBoolean(el, "deselectable"),
+            positioning: readPositioningOptions(el),
             onValueChange: (details) => {
-              var _a;
-              const redirect = getBoolean(el, "redirect");
               const firstValue = details.value.length > 0 ? String(details.value[0]) : null;
-              const firstItem = ((_a = details.items) == null ? void 0 : _a.length) ? details.items[0] : null;
-              const itemRedirect = firstItem && typeof firstItem === "object" && firstItem !== null && "redirect" in firstItem ? firstItem.redirect : void 0;
-              const itemNewTab = firstItem && typeof firstItem === "object" && firstItem !== null && "new_tab" in firstItem ? firstItem.new_tab : void 0;
-              const doRedirect = redirect && firstValue && this.liveSocket.main.isDead && itemRedirect !== false;
-              const openInNewTab = itemNewTab === true;
-              if (doRedirect) {
-                if (openInNewTab) {
-                  window.open(firstValue, "_blank", "noopener,noreferrer");
-                } else {
-                  window.location.href = firstValue;
-                }
+              if (getBoolean(el, "redirect") && firstValue) {
+                const itemEl = el.querySelector(
+                  `[data-scope="select"][data-part="item"][data-value="${CSS.escape(firstValue)}"]`
+                );
+                performRedirect(readDomItemRedirect(itemEl, firstValue), {
+                  liveSocket: this.liveSocket
+                });
               }
               const valueInput = el.querySelector(
                 '[data-scope="select"][data-part="value-input"]'
@@ -30873,19 +32131,18 @@ var Corex = (() => {
                 valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
                 valueInput.dispatchEvent(new Event("change", { bubbles: true }));
               }
-              const payload = {
-                value: details.value,
-                items: details.items,
-                id: el.id
-              };
-              const clientEventName = getString(el, "onValueChangeClient");
-              if (clientEventName) {
-                el.dispatchEvent(new CustomEvent(clientEventName, { bubbles: true, detail: payload }));
-              }
-              const serverEventName = getString(el, "onValueChange");
-              if (serverEventName && canPushEvent(this.liveSocket)) {
-                this.pushEvent(serverEventName, payload);
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
+                  id: el.id,
+                  value: details.value,
+                  items: details.items
+                },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             }
           }));
           selectComponent.hasGroups = hasGroups;
@@ -30893,36 +32150,69 @@ var Corex = (() => {
           selectComponent.init();
           this.select = selectComponent;
           this.handlers = [];
+          this.lastItemsJson = el.dataset.items || "[]";
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:select:set-value", (event) => {
+            selectComponent.api.setValue(event.detail.value);
+          });
+          domRegistry.add("corex:select:set-open", (event) => {
+            selectComponent.api.setOpen(event.detail.open);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("select_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            selectComponent.api.setValue(payload.value);
+          });
+          registry.add("select_set_open", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (typeof payload.open !== "boolean") return;
+            selectComponent.api.setOpen(payload.open);
+          });
         },
         updated() {
-          const newItems = JSON.parse(this.el.dataset.items || "[]");
-          const hasGroups = newItems.some((item) => item.group !== void 0);
+          const itemsJson = this.el.dataset.items || "[]";
+          const itemsUnchanged = itemsJson === this.lastItemsJson;
+          const redirectOn = getBoolean(this.el, "redirect");
+          const nextProps = __spreadProps(__spreadValues({
+            id: this.el.id
+          }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
+            name: getString(this.el, "name"),
+            form: getString(this.el, "form"),
+            disabled: getBoolean(this.el, "disabled"),
+            multiple: redirectOn ? false : getBoolean(this.el, "multiple"),
+            dir: getDir(this.el),
+            invalid: getBoolean(this.el, "invalid"),
+            required: getBoolean(this.el, "required"),
+            readOnly: getBoolean(this.el, "readOnly"),
+            positioning: readPositioningOptions(this.el)
+          });
+          if (this.select && itemsUnchanged) {
+            this.select.updateProps(nextProps);
+            return;
+          }
+          this.lastItemsJson = itemsJson;
+          const newItems = JSON.parse(itemsJson);
+          const hasGroups = newItems.some((item) => Boolean(item.group));
           if (this.select) {
             this.select.hasGroups = hasGroups;
             this.select.setOptions(newItems);
-            this.select.updateProps(__spreadProps(__spreadValues({
-              collection: buildCollection2(newItems, hasGroups),
-              id: this.el.id
-            }, getBoolean(this.el, "controlled") ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
-              name: getString(this.el, "name"),
-              form: getString(this.el, "form"),
-              disabled: getBoolean(this.el, "disabled"),
-              multiple: getBoolean(this.el, "multiple"),
-              dir: getString(this.el, "dir", ["ltr", "rtl"]),
-              invalid: getBoolean(this.el, "invalid"),
-              required: getBoolean(this.el, "required"),
-              readOnly: getBoolean(this.el, "readOnly")
+            this.select.updateProps(__spreadProps(__spreadValues({}, nextProps), {
+              collection: buildCollection2(newItems, hasGroups)
             }));
           }
         },
         destroyed() {
-          var _a;
+          var _a, _b, _c;
           if (this.handlers) {
             for (const handler of this.handlers) {
               this.removeHandleEvent(handler);
             }
           }
-          (_a = this.select) == null ? void 0 : _a.destroy();
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.select) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -31166,7 +32456,7 @@ var Corex = (() => {
   function P(e2, n2 = {}) {
     let { size: r2 = 16, smoothing: a2 = 0.5, thinning: f2 = 0.5, simulatePressure: m2 = true, easing: _2 = (e3) => e3, start: v2 = {}, end: b2 = {}, last: x2 = false } = n2, { cap: S2 = true, easing: w2 = (e3) => e3 * (2 - e3) } = v2, { cap: T2 = true, easing: P2 = (e3) => --e3 * e3 * e3 + 1 } = b2;
     if (e2.length === 0 || r2 <= 0) return [];
-    let F2 = e2[e2.length - 1].runningLength, I2 = N(v2.taper, r2, F2), L2 = N(b2.taper, r2, F2), R2 = (r2 * a2) ** 2, z2 = [], B = [], V = re(e2, m2, r2), H = i(r2, f2, e2[e2.length - 1].pressure, _2), U, W = e2[0].vector, G = e2[0].point, K = G, q = G, J = K, Y = false;
+    let F2 = e2[e2.length - 1].runningLength, I2 = N(v2.taper, r2, F2), L2 = N(b2.taper, r2, F2), R2 = (r2 * a2) ** 2, z22 = [], B = [], V = re(e2, m2, r2), H = i(r2, f2, e2[e2.length - 1].pressure, _2), U, W = e2[0].vector, G = e2[0].point, K = G, q = G, J = K, Y = false;
     for (let n3 = 0; n3 < e2.length; n3++) {
       let { pressure: a3 } = e2[n3], { point: s2, vector: h2, distance: v3, runningLength: b3 } = e2[n3], x3 = n3 === e2.length - 1;
       if (!x3 && F2 - b3 < 3) continue;
@@ -31176,25 +32466,25 @@ var Corex = (() => {
       let k2 = (x3 ? e2[n3] : e2[n3 + 1]).vector, A2 = x3 ? 1 : ee(h2, k2), j2 = ee(h2, W) < 0 && !Y, M2 = A2 !== null && A2 < 0;
       if (j2 || M2) {
         g(E, W), p(E, E, H);
-        for (let e3 = 0; e3 <= 1; e3 += 0.07692307692307693) d(D, s2, E), C(D, D, s2, t * e3), q = [D[0], D[1]], z2.push(q), l(O, s2, E), C(O, O, s2, t * -e3), J = [O[0], O[1]], B.push(J);
+        for (let e3 = 0; e3 <= 1; e3 += 0.07692307692307693) d(D, s2, E), C(D, D, s2, t * e3), q = [D[0], D[1]], z22.push(q), l(O, s2, E), C(O, O, s2, t * -e3), J = [O[0], O[1]], B.push(J);
         G = q, K = J, M2 && (Y = true);
         continue;
       }
       if (Y = false, x3) {
-        g(E, h2), p(E, E, H), z2.push(u(s2, E)), B.push(c(s2, E));
+        g(E, h2), p(E, E, H), z22.push(u(s2, E)), B.push(c(s2, E));
         continue;
       }
-      te(E, k2, h2, A2), g(E, E), p(E, E, H), d(D, s2, E), q = [D[0], D[1]], (n3 <= 1 || y(G, q) > R2) && (z2.push(q), G = q), l(O, s2, E), J = [O[0], O[1]], (n3 <= 1 || y(K, J) > R2) && (B.push(J), K = J), V = a3, W = h2;
+      te(E, k2, h2, A2), g(E, E), p(E, E, H), d(D, s2, E), q = [D[0], D[1]], (n3 <= 1 || y(G, q) > R2) && (z22.push(q), G = q), l(O, s2, E), J = [O[0], O[1]], (n3 <= 1 || y(K, J) > R2) && (B.push(J), K = J), V = a3, W = h2;
     }
     let X = [e2[0].point[0], e2[0].point[1]], Z = e2.length > 1 ? [e2[e2.length - 1].point[0], e2[e2.length - 1].point[1]] : c(e2[0].point, [1, 1]), Q = [], $ = [];
     if (e2.length === 1) {
       if (!(I2 || L2) || x2) return k(X, U || H);
     } else {
-      I2 || L2 && e2.length === 1 || (S2 ? Q.push(...A(X, B[0], 13)) : Q.push(...j(X, z2[0], B[0])));
+      I2 || L2 && e2.length === 1 || (S2 ? Q.push(...A(X, B[0], 13)) : Q.push(...j(X, z22[0], B[0])));
       let t2 = h(s(e2[e2.length - 1].vector));
       L2 || I2 && e2.length === 1 ? $.push(Z) : T2 ? $.push(...M(Z, t2, H, 29)) : $.push(...ne(Z, t2, H));
     }
-    return z2.concat($, B.reverse(), Q);
+    return z22.concat($, B.reverse(), Q);
   }
   function I(e2) {
     return e2 != null && e2 >= 0;
@@ -31248,31 +32538,44 @@ var Corex = (() => {
     }
     return result;
   }
-  function getPaths(el, attr) {
-    const value = el.dataset[attr];
-    if (!value) return [];
-    try {
-      return JSON.parse(value);
-    } catch (e2) {
-      return [];
-    }
+  function parsePathsFromDataset(el, key) {
+    const raw = el.dataset[key];
+    if (!raw) return [];
+    return raw.split("\n").map((line) => line.trim()).filter(Boolean);
   }
   function buildDrawingOptions(el) {
-    var _a, _b, _c, _d;
-    return {
-      fill: getString(el, "drawingFill") || "black",
-      size: (_a = getNumber(el, "drawingSize")) != null ? _a : 2,
+    const o2 = {
+      fill: getString(el, "drawingFill"),
+      size: getNumber(el, "drawingSize"),
       simulatePressure: getBoolean(el, "drawingSimulatePressure"),
-      smoothing: (_b = getNumber(el, "drawingSmoothing")) != null ? _b : 0.5,
-      thinning: (_c = getNumber(el, "drawingThinning")) != null ? _c : 0.7,
-      streamline: (_d = getNumber(el, "drawingStreamline")) != null ? _d : 0.65
+      smoothing: getNumber(el, "drawingSmoothing"),
+      thinning: getNumber(el, "drawingThinning"),
+      streamline: getNumber(el, "drawingStreamline")
     };
+    const easing = getString(el, "drawingEasing");
+    if (easing) o2.easing = easing;
+    return o2;
   }
-  var anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z, average, machine22, SignaturePad, SignaturePadHook;
+  function queueFormBubblingInputForPhoenix2(el, getValue) {
+    queueMicrotask(() => {
+      const input = el.querySelector(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
+      if (!input) return;
+      const v2 = getValue();
+      if (String(input.value) !== String(v2)) {
+        input.value = v2;
+      }
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+  }
+  var anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine22, SignaturePad, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
         "control",
@@ -31313,7 +32616,7 @@ var Corex = (() => {
       D = [0, 0];
       O = [0, 0];
       F = [0, 0];
-      z = R;
+      z2 = R;
       average = (a2, b2) => (a2 + b2) / 2;
       machine22 = createMachine({
         props({ props }) {
@@ -31407,7 +32710,7 @@ var Corex = (() => {
             addPoint({ context, event, prop }) {
               const nextPoints = [...context.get("currentPoints"), event.point];
               context.set("currentPoints", nextPoints);
-              const stroke = z(nextPoints, prop("drawing"));
+              const stroke = z2(nextPoints, prop("drawing"));
               context.set("currentPath", getSvgPathFromStroke(stroke));
             },
             endStroke({ context }) {
@@ -31497,7 +32800,7 @@ var Corex = (() => {
           this.paths = paths;
         }
         initApi() {
-          return connect22(this.machine.service, normalizeProps);
+          return this.zagConnect(connect22);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -31534,7 +32837,7 @@ var Corex = (() => {
             this.spreadProps(
               hiddenInput,
               this.api.getHiddenInputProps({
-                value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : ""
+                value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
               })
             );
           }
@@ -31545,24 +32848,18 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const controlled = getBoolean(el, "controlled");
-          const paths = getPaths(el, "paths");
-          const defaultPaths = getPaths(el, "defaultPaths");
-          const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues(__spreadValues({
+          const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
+          const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues({
             id: el.id,
             name: getString(el, "name")
-          }, controlled && paths.length > 0 ? { paths } : void 0), !controlled && defaultPaths.length > 0 ? { defaultPaths } : void 0), {
+          }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
             drawing: buildDrawingOptions(el),
             onDrawEnd: (details) => {
               signaturePad.setPaths(details.paths);
-              const hiddenInput = el.querySelector(
-                '[data-scope="signature-pad"][data-part="hidden-input"]'
+              queueFormBubblingInputForPhoenix2(
+                el,
+                () => details.paths.length > 0 ? details.paths.join("\n") : ""
               );
-              if (hiddenInput) {
-                hiddenInput.value = details.paths.length > 0 ? JSON.stringify(details.paths) : "";
-                hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-                hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-              }
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
                 const eventName = getString(el, "onDrawEnd");
@@ -31595,37 +32892,37 @@ var Corex = (() => {
             const { id: targetId } = event.detail;
             if (targetId && targetId !== el.id) return;
             signaturePad.api.clear();
+            queueFormBubblingInputForPhoenix2(el, () => "");
           };
-          el.addEventListener("phx:signature-pad:clear", this.onClear);
+          el.addEventListener("corex:signature-pad:clear", this.onClear);
           this.handlers = [];
           this.handlers.push(
             this.handleEvent("signature_pad_clear", (payload) => {
-              const targetId = payload.signature_pad_id;
-              if (targetId && targetId !== el.id) return;
+              if (!idMatches(el.id, readPayloadId(payload))) return;
               signaturePad.api.clear();
+              queueFormBubblingInputForPhoenix2(el, () => "");
             })
           );
         },
         updated() {
           var _a, _b;
-          const controlled = getBoolean(this.el, "controlled");
-          const paths = getPaths(this.el, "paths");
-          const defaultPaths = getPaths(this.el, "defaultPaths");
-          const name = getString(this.el, "name");
+          const el = this.el;
+          const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
+          const name = getString(el, "name");
           if (name) {
             (_a = this.signaturePad) == null ? void 0 : _a.setName(name);
           }
-          (_b = this.signaturePad) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues(__spreadValues({
-            id: this.el.id,
+          (_b = this.signaturePad) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
+            id: el.id,
             name
-          }, controlled && paths.length > 0 ? { paths } : {}), !controlled && defaultPaths.length > 0 ? { defaultPaths } : {}), {
-            drawing: buildDrawingOptions(this.el)
+          }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
+            drawing: buildDrawingOptions(el)
           }));
         },
         destroyed() {
           var _a;
           if (this.onClear) {
-            this.el.removeEventListener("phx:signature-pad:clear", this.onClear);
+            this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
           }
           if (this.handlers) {
             for (const handler of this.handlers) {
@@ -31751,12 +33048,20 @@ var Corex = (() => {
       }
     };
   }
+  function checkedChangePayload2(el, details) {
+    return {
+      id: el.id,
+      checked: details.checked
+    };
+  }
   var anatomy23, parts23, getRootId18, getLabelId14, getThumbId2, getControlId10, getHiddenInputId6, getRootEl6, getHiddenInputEl5, not9, machine23, Switch, SwitchHook;
   var init_switch = __esm({
     "../priv/static/switch.mjs"() {
       "use strict";
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_ZKMAU6SY();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
       getRootId18 = (ctx) => {
@@ -31927,7 +33232,7 @@ var Corex = (() => {
           return new VanillaMachine(machine23, props);
         }
         initApi() {
-          return connect23(this.machine.service, normalizeProps);
+          return this.zagConnect(connect23);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -31959,6 +33264,7 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           this.wasFocused = false;
           const zagSwitch = new Switch(el, __spreadProps(__spreadValues({
             id: el.id
@@ -31967,76 +33273,68 @@ var Corex = (() => {
             name: getString(el, "name"),
             form: getString(el, "form"),
             value: getString(el, "value"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             invalid: getBoolean(el, "invalid"),
             required: getBoolean(el, "required"),
             readOnly: getBoolean(el, "readOnly"),
             label: getString(el, "label"),
             onCheckedChange: (details) => {
-              const eventName = getString(el, "onCheckedChange");
-              if (eventName && canPushEvent(this.liveSocket)) {
-                pushEvent(eventName, {
-                  checked: details.checked,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onCheckedChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      checked: details.checked
-                    }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: checkedChangePayload2(el, details),
+                serverEventName: getString(el, "onCheckedChange"),
+                clientEventName: getString(el, "onCheckedChangeClient")
+              });
             }
           }));
           zagSwitch.init();
           this.zagSwitch = zagSwitch;
-          this.onSetChecked = (event) => {
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:switch:set-checked", (event) => {
             const { checked } = event.detail;
             zagSwitch.api.setChecked(checked);
-          };
-          el.addEventListener("phx:switch:set-checked", this.onSetChecked);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("switch_set_checked", (payload) => {
-              const targetId = payload.id;
-              if (targetId && targetId !== el.id) return;
-              zagSwitch.api.setChecked(payload.checked);
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("switch_toggle_checked", (payload) => {
-              const targetId = payload.id;
-              if (targetId && targetId !== el.id) return;
-              zagSwitch.api.toggleChecked();
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("switch_checked", () => {
-              this.pushEvent("switch_checked_response", {
-                value: zagSwitch.api.checked
-              });
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("switch_focused", () => {
-              this.pushEvent("switch_focused_response", {
-                value: zagSwitch.api.focused
-              });
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("switch_disabled", () => {
-              this.pushEvent("switch_disabled_response", {
-                value: zagSwitch.api.disabled
-              });
-            })
-          );
+          });
+          domRegistry.add("corex:switch:toggle-checked", () => {
+            zagSwitch.api.toggleChecked();
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("switch_set_checked", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const checked = readPayloadChecked(payload);
+            if (typeof checked === "boolean") zagSwitch.api.setChecked(checked);
+          });
+          registry.add("switch_toggle_checked", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zagSwitch.api.toggleChecked();
+          });
+          registry.add("switch_checked", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("switch_checked_response", {
+              id: el.id,
+              value: zagSwitch.api.checked
+            });
+          });
+          registry.add("switch_focused", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("switch_focused_response", {
+              id: el.id,
+              value: zagSwitch.api.focused
+            });
+          });
+          registry.add("switch_disabled", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("switch_disabled_response", {
+              id: el.id,
+              value: zagSwitch.api.disabled
+            });
+          });
         },
         beforeUpdate() {
           var _a, _b;
@@ -32051,7 +33349,7 @@ var Corex = (() => {
             name: getString(this.el, "name"),
             form: getString(this.el, "form"),
             value: getString(this.el, "value"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"]),
+            dir: getDir(this.el),
             invalid: getBoolean(this.el, "invalid"),
             required: getBoolean(this.el, "required"),
             readOnly: getBoolean(this.el, "readOnly"),
@@ -32065,16 +33363,10 @@ var Corex = (() => {
           }
         },
         destroyed() {
-          var _a;
-          if (this.onSetChecked) {
-            this.el.removeEventListener("phx:switch:set-checked", this.onSetChecked);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.zagSwitch) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.zagSwitch) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -32127,7 +33419,7 @@ var Corex = (() => {
         var _a;
         const value = context.get("value");
         if (!value) return;
-        (_a = getTriggerEl8(scope, value)) == null ? void 0 : _a.focus();
+        (_a = getTriggerEl7(scope, value)) == null ? void 0 : _a.focus();
       },
       getRootProps() {
         return normalize.element(__spreadProps(__spreadValues({}, parts24.root.attrs), {
@@ -32273,12 +33565,23 @@ var Corex = (() => {
       }
     };
   }
-  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl8, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine24, Tabs, TabsHook;
+  function tabsDomIds(rootId) {
+    return {
+      root: `tabs-${rootId}-root`,
+      list: `tabs-${rootId}-list`,
+      indicator: `tabs-${rootId}-indicator`,
+      content: (value) => `tabs-${rootId}-content-${value}`,
+      trigger: (value) => `tabs-${rootId}-trigger-${value}`
+    };
+  }
+  var anatomy24, parts24, getRootId19, getListId, getContentId10, getTriggerId9, getIndicatorId3, getListEl, getContentEl10, getTriggerEl7, getIndicatorEl3, getElements2, getFirstTriggerEl2, getLastTriggerEl2, getNextTriggerEl2, getPrevTriggerEl2, getOffsetRect2, getRectByValue, isRectEmpty2, createMachine6, machine24, Tabs, TabsHook;
   var init_tabs = __esm({
     "../priv/static/tabs.mjs"() {
       "use strict";
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_NX2BOTHE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
       getRootId19 = (ctx) => {
@@ -32303,7 +33606,7 @@ var Corex = (() => {
       };
       getListEl = (ctx) => ctx.getById(getListId(ctx));
       getContentEl10 = (ctx, value) => ctx.getById(getContentId10(ctx, value));
-      getTriggerEl8 = (ctx, value) => value != null ? ctx.getById(getTriggerId9(ctx, value)) : null;
+      getTriggerEl7 = (ctx, value) => value != null ? ctx.getById(getTriggerId9(ctx, value)) : null;
       getIndicatorEl3 = (ctx) => ctx.getById(getIndicatorId3(ctx));
       getElements2 = (ctx) => {
         const ownerId = CSS.escape(getListId(ctx));
@@ -32568,7 +33871,7 @@ var Corex = (() => {
               const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               if (!value) return;
-              const triggerEl = getTriggerEl8(scope, value);
+              const triggerEl = getTriggerEl7(scope, value);
               if (!triggerEl) return;
               context.set("indicatorRect", getRectByValue(scope, value));
             },
@@ -32594,7 +33897,7 @@ var Corex = (() => {
               const indicatorEl = getIndicatorEl3(scope);
               if (!indicatorEl) return;
               const exec = () => {
-                const triggerEl = getTriggerEl8(scope, context.get("value"));
+                const triggerEl = getTriggerEl7(scope, context.get("value"));
                 if (!triggerEl) return;
                 const rect = getOffsetRect2(triggerEl);
                 context.set("indicatorRect", (prev2) => isEqual(prev2, rect) ? prev2 : rect);
@@ -32608,7 +33911,7 @@ var Corex = (() => {
               var _a;
               const value = context.get("value");
               if (!value) return;
-              const triggerEl = getTriggerEl8(scope, value);
+              const triggerEl = getTriggerEl7(scope, value);
               if (isAnchorElement(triggerEl)) {
                 (_a = prop("navigate")) == null ? void 0 : _a({ value, node: triggerEl, href: triggerEl.href });
               }
@@ -32617,147 +33920,129 @@ var Corex = (() => {
         }
       });
       Tabs = class extends Component {
+        constructor() {
+          super(...arguments);
+          __publicField(this, "updateProps", (attrs) => {
+            var _a;
+            const props = attrs;
+            const id = (_a = props.id) != null ? _a : this.el.id;
+            this.machine.updateProps(__spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
+          });
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
-          return new VanillaMachine(machine24, props);
+          var _a;
+          const id = (_a = props.id) != null ? _a : this.el.id;
+          return new VanillaMachine(machine24, __spreadProps(__spreadValues({}, props), { id, ids: tabsDomIds(id) }));
         }
         initApi() {
-          return connect24(this.machine.service, normalizeProps);
+          return this.zagConnect(connect24);
         }
         render() {
           const rootEl = this.el.querySelector('[data-scope="tabs"][data-part="root"]');
           if (!rootEl) return;
           this.spreadProps(rootEl, this.api.getRootProps());
-          const listEl = rootEl.querySelector('[data-scope="tabs"][data-part="list"]');
+          const listEl = rootEl.querySelector(
+            ':scope > [data-scope="tabs"][data-part="list"]'
+          );
           if (!listEl) return;
           this.spreadProps(listEl, this.api.getListProps());
-          const itemsData = this.el.getAttribute("data-items");
-          const items = itemsData ? JSON.parse(itemsData) : [];
           const triggers = listEl.querySelectorAll(
-            '[data-scope="tabs"][data-part="trigger"]'
+            ':scope > [data-scope="tabs"][data-part="trigger"]'
           );
-          for (let i2 = 0; i2 < triggers.length && i2 < items.length; i2++) {
-            const triggerEl = triggers[i2];
-            const item = items[i2];
-            this.spreadProps(
-              triggerEl,
-              this.api.getTriggerProps({ value: item.value, disabled: item.disabled })
-            );
-          }
+          triggers.forEach((triggerEl) => {
+            const value = triggerEl.dataset.value;
+            const disabled = triggerEl.dataset.disabled == "";
+            if (!value) return;
+            this.spreadProps(triggerEl, this.api.getTriggerProps({ value, disabled }));
+          });
           const contents = rootEl.querySelectorAll(
-            '[data-scope="tabs"][data-part="content"]'
+            ':scope > [data-scope="tabs"][data-part="content"]'
           );
-          for (let i2 = 0; i2 < contents.length && i2 < items.length; i2++) {
-            const contentEl = contents[i2];
-            const item = items[i2];
-            this.spreadProps(contentEl, this.api.getContentProps({ value: item.value }));
-          }
+          contents.forEach((contentEl) => {
+            const value = contentEl.dataset.value;
+            if (!value) return;
+            this.spreadProps(contentEl, this.api.getContentProps({ value }));
+          });
         }
       };
       TabsHook = {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const tabs = new Tabs(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getString(el, "value") } : { defaultValue: getString(el, "defaultValue") }), {
-            orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            orientation: getString(el, "orientation"),
+            dir: getString(el, "dir"),
             onValueChange: (details) => {
-              var _a, _b;
-              const eventName = getString(el, "onValueChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: (_a = details.value) != null ? _a : null
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: (_b = details.value) != null ? _b : null
-                    }
-                  })
-                );
-              }
+              var _a;
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: (_a = details.value) != null ? _a : null },
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             },
             onFocusChange: (details) => {
-              var _a, _b;
-              const eventName = getString(el, "onFocusChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  id: el.id,
-                  value: (_a = details.focusedValue) != null ? _a : null
-                });
-              }
-              const eventNameClient = getString(el, "onFocusChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      id: el.id,
-                      value: (_b = details.focusedValue) != null ? _b : null
-                    }
-                  })
-                );
-              }
+              var _a;
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: { id: el.id, value: (_a = details.focusedValue) != null ? _a : null },
+                serverEventName: getString(el, "onFocusChange"),
+                clientEventName: getString(el, "onFocusChangeClient")
+              });
             }
           }));
           tabs.init();
           this.tabs = tabs;
-          this.onSetValue = (event) => {
-            const { value } = event.detail;
-            tabs.api.setValue(value);
-          };
-          el.addEventListener("phx:tabs:set-value", this.onSetValue);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("tabs_set_value", (payload) => {
-              const targetId = payload.tabs_id;
-              if (targetId && targetId !== el.id) return;
-              tabs.api.setValue(payload.value);
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("tabs_value", () => {
-              this.pushEvent("tabs_value_response", {
-                value: tabs.api.value
-              });
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("tabs_focused_value", () => {
-              this.pushEvent("tabs_focused_value_response", {
-                value: tabs.api.focusedValue
-              });
-            })
-          );
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:tabs:set-value", (event) => {
+            tabs.api.setValue(event.detail.value);
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("tabs_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            tabs.api.setValue(payload.value);
+          });
+          registry.add("tabs_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("tabs_value_response", {
+              id: el.id,
+              value: tabs.api.value
+            });
+          });
+          registry.add("tabs_focused_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("tabs_focused_value_response", {
+              id: el.id,
+              value: tabs.api.focusedValue
+            });
+          });
         },
         updated() {
           var _a;
           (_a = this.tabs) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
           }, getBoolean(this.el, "controlled") ? { value: getString(this.el, "value") } : { defaultValue: getString(this.el, "defaultValue") }), {
-            orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
+            orientation: getString(this.el, "orientation"),
+            dir: getString(this.el, "dir")
           }));
         },
         destroyed() {
-          var _a;
-          if (this.onSetValue) {
-            this.el.removeEventListener("phx:tabs:set-value", this.onSetValue);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.tabs) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.tabs) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -32932,10 +34217,10 @@ var Corex = (() => {
   var init_timer = __esm({
     "../priv/static/timer.mjs"() {
       "use strict";
-      init_chunk_B7UVPCXR();
-      init_chunk_OUU6AXP5();
-      init_chunk_MV633JPN();
-      init_chunk_SNFXM6OQ();
+      init_chunk_7EQLYSUR();
+      init_chunk_4ERCYGOM();
+      init_chunk_NX2BOTHE();
+      init_chunk_SJ37CZDS();
       anatomy25 = createAnatomy("timer").parts(
         "root",
         "area",
@@ -33129,7 +34414,7 @@ var Corex = (() => {
           return new VanillaMachine(machine25, props);
         }
         initApi() {
-          return connect25(this.machine.service, normalizeProps);
+          return this.zagConnect(connect25);
         }
         render() {
           var _a;
@@ -33168,30 +34453,55 @@ var Corex = (() => {
       };
       TimerHook = {
         mounted() {
-          var _a;
           const el = this.el;
+          const pushEvent = this.pushEvent.bind(this);
           const zag = new Timer2(el, {
             id: el.id,
             countdown: getBoolean(el, "countdown"),
             startMs: getNumber(el, "startMs"),
             targetMs: getNumber(el, "targetMs"),
             autoStart: getBoolean(el, "autoStart"),
-            interval: (_a = getNumber(el, "interval")) != null ? _a : 1e3,
+            interval: getNumber(el, "interval"),
+            dir: getDir(el),
+            orientation: getString(el, "orientation"),
             onTick: (details) => {
               const eventName = getString(el, "onTick");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, {
+              if (eventName && canPushEvent(this.liveSocket)) {
+                pushEvent(eventName, {
                   value: details.value,
                   time: details.time,
                   formattedTime: details.formattedTime,
                   id: el.id
                 });
               }
+              const eventNameClient = getString(el, "onTickClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: {
+                      id: el.id,
+                      value: details.value,
+                      time: details.time,
+                      formattedTime: details.formattedTime
+                    }
+                  })
+                );
+              }
             },
             onComplete: () => {
               const eventName = getString(el, "onComplete");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                this.pushEvent(eventName, { id: el.id });
+              if (eventName && canPushEvent(this.liveSocket)) {
+                pushEvent(eventName, { id: el.id });
+              }
+              const eventNameClient = getString(el, "onCompleteClient");
+              if (eventNameClient) {
+                el.dispatchEvent(
+                  new CustomEvent(eventNameClient, {
+                    bubbles: true,
+                    detail: { id: el.id }
+                  })
+                );
               }
             }
           });
@@ -33200,14 +34510,16 @@ var Corex = (() => {
           this.handlers = [];
         },
         updated() {
-          var _a, _b;
-          (_b = this.timer) == null ? void 0 : _b.updateProps({
+          var _a;
+          (_a = this.timer) == null ? void 0 : _a.updateProps({
             id: this.el.id,
             countdown: getBoolean(this.el, "countdown"),
             startMs: getNumber(this.el, "startMs"),
             targetMs: getNumber(this.el, "targetMs"),
             autoStart: getBoolean(this.el, "autoStart"),
-            interval: (_a = getNumber(this.el, "interval")) != null ? _a : 1e3
+            interval: getNumber(this.el, "interval"),
+            dir: getDir(this.el),
+            orientation: getString(this.el, "orientation")
           });
         },
         destroyed() {
@@ -33407,13 +34719,15 @@ var Corex = (() => {
         return normalize.element(__spreadProps(__spreadValues({}, parts26.group.attrs), {
           dir: prop("dir"),
           tabIndex: -1,
-          "aria-label": `${placement} ${label} ${hotkeyLabel}`,
+          role: "region",
+          "aria-label": `${label}, ${placement} (${hotkeyLabel})`,
           id: getRegionId(placement),
           "data-placement": placement,
           "data-side": side,
           "data-align": align,
           "aria-live": "polite",
-          role: "region",
+          "aria-relevant": "additions text",
+          "aria-atomic": "false",
           style: getGroupPlacementStyle(service, placement),
           onMouseEnter() {
             if (refs.get("ignoreMouseTimer").isActive()) return;
@@ -33599,6 +34913,7 @@ var Corex = (() => {
       toasts.unshift(data);
     };
     const processQueue = () => {
+      toastQueue = sortToastsByPriority(toastQueue);
       while (toastQueue.length > 0 && toasts.length < attrs.max) {
         const nextToast = toastQueue.shift();
         if (nextToast) {
@@ -33608,7 +34923,7 @@ var Corex = (() => {
       }
     };
     const create = (data) => {
-      var _a;
+      var _a, _b;
       const id = (_a = data.id) != null ? _a : `toast:${uuid()}`;
       const exists = toasts.find((toast) => toast.id === id);
       if (dismissedToasts.has(id)) dismissedToasts.delete(id);
@@ -33620,15 +34935,17 @@ var Corex = (() => {
           return toast;
         });
       } else {
-        addToast(__spreadProps(__spreadValues({
+        const newToast = __spreadProps(__spreadValues({
           id,
           duration: attrs.duration,
           removeDelay: attrs.removeDelay,
-          type: "info"
+          type: DEFAULT_TYPE
         }, data), {
           stacked: !attrs.overlap,
           gap: attrs.gap
-        }));
+        });
+        const priority = (_b = newToast.priority) != null ? _b : getPriorityForType(newToast.type, !!newToast.action);
+        addToast(__spreadProps(__spreadValues({}, newToast), { priority }));
       }
       return id;
     };
@@ -33680,6 +34997,7 @@ var Corex = (() => {
       let removable = true;
       let result;
       const prom = runIfFn(promise2).then((response) => __async(null, null, function* () {
+        var _a;
         result = ["resolve", response];
         if (isHttpResponse(response) && !response.ok) {
           removable = false;
@@ -33688,7 +35006,7 @@ var Corex = (() => {
         } else if (options.success !== void 0) {
           removable = false;
           const successOptions = runIfFn(options.success, response);
-          create(__spreadProps(__spreadValues(__spreadValues({}, shared), successOptions), { id, type: "success" }));
+          create(__spreadProps(__spreadValues(__spreadValues({}, shared), successOptions), { id, type: (_a = successOptions.type) != null ? _a : "success" }));
         }
       })).catch((error2) => __async(null, null, function* () {
         result = ["reject", error2];
@@ -33779,7 +35097,7 @@ var Corex = (() => {
   }
   function createToastGroup(container, options) {
     var _a, _b, _c;
-    const groupId = (_a = options == null ? void 0 : options.id) != null ? _a : generateId(container, "toast");
+    const groupId = (_a = options == null ? void 0 : options.id) != null ? _a : container.id;
     const store2 = (_c = options == null ? void 0 : options.store) != null ? _c : createToastStore({
       placement: (_b = options == null ? void 0 : options.placement) != null ? _b : "bottom",
       overlap: options == null ? void 0 : options.overlap,
@@ -33788,7 +35106,7 @@ var Corex = (() => {
       offsets: options == null ? void 0 : options.offsets,
       pauseOnPageIdle: options == null ? void 0 : options.pauseOnPageIdle
     });
-    const group2 = new ToastGroup(container, { id: groupId, store: store2 });
+    const group2 = new ToastGroup(container, { id: groupId, store: store2, dir: getDir(container) });
     group2.init();
     toastGroups.set(groupId, group2);
     toastStores.set(groupId, store2);
@@ -33803,14 +35121,14 @@ var Corex = (() => {
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
-  var anatomy26, parts26, getRegionId, getRegionEl, getRootId21, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine26, withDefaults, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
+  var anatomy26, parts26, getRegionId, getRegionEl, getRootId21, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine26, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
-      init_chunk_OUU6AXP5();
-      init_chunk_EV6LXBMY();
-      init_chunk_YCAWAEF3();
-      init_chunk_SNFXM6OQ();
+      init_chunk_JJ4TVKGJ();
+      init_chunk_DXQBMWMN();
+      init_chunk_4ERCYGOM();
+      init_chunk_SJ37CZDS();
       anatomy26 = createAnatomy("toast").parts(
         "group",
         "root",
@@ -33832,6 +35150,7 @@ var Corex = (() => {
         error: 5e3,
         success: 2e3,
         loading: Infinity,
+        warning: 5e3,
         DEFAULT: 5e3
       };
       getOffsets = (offsets) => typeof offsets === "string" ? { left: offsets, right: offsets, bottom: offsets, top: offsets } : offsets;
@@ -34335,6 +35654,26 @@ var Corex = (() => {
       withDefaults = (options, defaults) => {
         return __spreadValues(__spreadValues({}, defaults), compact(options));
       };
+      priorities = {
+        error: [1, 2],
+        warning: [3, 6],
+        loading: [4, 5],
+        success: [5, 7],
+        info: [6, 8]
+      };
+      DEFAULT_TYPE = "info";
+      getPriorityForType = (type, hasAction) => {
+        const [actionable, nonActionable] = priorities[type != null ? type : DEFAULT_TYPE];
+        return hasAction ? actionable : nonActionable;
+      };
+      sortToastsByPriority = (toastArray) => {
+        return toastArray.sort((a2, b2) => {
+          var _a, _b;
+          const priorityA = (_a = a2.priority) != null ? _a : getPriorityForType(a2.type, !!a2.action);
+          const priorityB = (_b = b2.priority) != null ? _b : getPriorityForType(b2.type, !!b2.action);
+          return priorityA - priorityB;
+        });
+      };
       isHttpResponse = (data) => {
         return data && typeof data === "object" && "ok" in data && typeof data.ok === "boolean" && "status" in data && typeof data.status === "number";
       };
@@ -34356,32 +35695,30 @@ var Corex = (() => {
           this.duration = props.duration;
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
+          this.el.classList.add("toast-item");
           this.el.innerHTML = `
       <span data-scope="toast" data-part="ghost-before"></span>
       <div data-scope="toast" data-part="progressbar"></div>
-      <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
 
       <div data-scope="toast" data-part="content">
-        <div data-scope="toast" data-part="title"></div>
+        <div data-scope="toast" data-part="header">
+          <div data-scope="toast" data-part="loading-spinner" style="display: none;"></div>
+          <div data-scope="toast" data-part="title"></div>
+          <button data-scope="toast" data-part="close-trigger"></button>
+        </div>
         <div data-scope="toast" data-part="description"></div>
       </div>
-
-      <button data-scope="toast" data-part="close-trigger">
-        <svg viewBox="0 0 20 20" aria-hidden="true">
-          <path d="M4.293 4.293 10 8.586l5.707-5.707 1.414 1.414L11.414 10l5.707 5.707-1.414 1.414L10 11.414l-5.707 5.707-1.414-1.414L8.586 10 2.879 4.293z"/>
-        </svg>
-      </button>
 
       <span data-scope="toast" data-part="ghost-after"></span>
     `;
           this.parts = {
-            title: this.el.querySelector('[data-scope="toast"][data-part="title"]'),
-            description: this.el.querySelector('[data-scope="toast"][data-part="description"]'),
-            close: this.el.querySelector('[data-scope="toast"][data-part="close-trigger"]'),
-            ghostBefore: this.el.querySelector('[data-scope="toast"][data-part="ghost-before"]'),
-            ghostAfter: this.el.querySelector('[data-scope="toast"][data-part="ghost-after"]'),
-            progressbar: this.el.querySelector('[data-scope="toast"][data-part="progressbar"]'),
-            loadingSpinner: this.el.querySelector('[data-scope="toast"][data-part="loading-spinner"]')
+            title: this.el.querySelector('[data-part="title"]'),
+            description: this.el.querySelector('[data-part="description"]'),
+            close: this.el.querySelector('[data-part="close-trigger"]'),
+            ghostBefore: this.el.querySelector('[data-part="ghost-before"]'),
+            ghostAfter: this.el.querySelector('[data-part="ghost-after"]'),
+            progressbar: this.el.querySelector('[data-part="progressbar"]'),
+            loadingSpinner: this.el.querySelector('[data-part="loading-spinner"]')
           };
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -34389,7 +35726,7 @@ var Corex = (() => {
           return new VanillaMachine(machine26, props);
         }
         initApi() {
-          return connect26(this.machine.service, normalizeProps);
+          return this.zagConnect(connect26);
         }
         render() {
           var _a, _b;
@@ -34397,6 +35734,24 @@ var Corex = (() => {
           this.spreadProps(this.parts.close, this.api.getCloseTriggerProps());
           this.spreadProps(this.parts.ghostBefore, this.api.getGhostBeforeProps());
           this.spreadProps(this.parts.ghostAfter, this.api.getGhostAfterProps());
+          const toastGroup = this.el.closest('[phx-hook="Toast"]');
+          const loadingIconTemplate = toastGroup == null ? void 0 : toastGroup.querySelector(
+            "[data-loading-icon-template]"
+          );
+          const closeIconTemplate = toastGroup == null ? void 0 : toastGroup.querySelector(
+            "[data-close-icon-template]"
+          );
+          const loadingIcon = loadingIconTemplate == null ? void 0 : loadingIconTemplate.innerHTML;
+          const closeIcon = closeIconTemplate == null ? void 0 : closeIconTemplate.innerHTML;
+          if (closeIcon) {
+            if (this.parts.close.innerHTML !== closeIcon) {
+              this.parts.close.innerHTML = closeIcon;
+            }
+          } else {
+            if (!this.parts.close.innerHTML) {
+              this.parts.close.innerHTML = "\xD7";
+            }
+          }
           if (this.parts.title.textContent !== this.api.title) {
             this.parts.title.textContent = (_a = this.api.title) != null ? _a : "";
           }
@@ -34407,11 +35762,6 @@ var Corex = (() => {
           this.spreadProps(this.parts.description, this.api.getDescriptionProps());
           const duration = this.duration;
           const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
-          const toastGroup = this.el.closest('[phx-hook="Toast"]');
-          const loadingIconTemplate = toastGroup == null ? void 0 : toastGroup.querySelector(
-            "[data-loading-icon-template]"
-          );
-          const loadingIcon = loadingIconTemplate == null ? void 0 : loadingIconTemplate.innerHTML;
           if (isInfinity) {
             this.parts.progressbar.style.display = "none";
             this.parts.loadingSpinner.style.display = "flex";
@@ -34454,7 +35804,7 @@ var Corex = (() => {
           return new VanillaMachine(group.machine, props);
         }
         initApi() {
-          return group.connect(this.machine.service, normalizeProps);
+          return this.zagConnect(group.connect);
         }
         render() {
           this.spreadProps(this.groupEl, this.api.getGroupProps());
@@ -34464,6 +35814,7 @@ var Corex = (() => {
             let item = this.toastComponents.get(toastData.id);
             if (!item) {
               const el = document.createElement("div");
+              el.classList.add("toast-item");
               el.setAttribute("data-scope", "toast");
               el.setAttribute("data-part", "root");
               this.groupEl.appendChild(el);
@@ -34687,7 +36038,7 @@ var Corex = (() => {
     const id = prop("id");
     const hasAriaLabel = !!prop("aria-label");
     const open = state2.matches("open", "closing");
-    const triggerId = getTriggerId10(scope);
+    const triggerValue = context.get("triggerValue");
     const contentId = getContentId11(scope);
     const disabled = prop("disabled");
     const popperStyles = getPlacementStyles(__spreadProps(__spreadValues({}, prop("positioning")), {
@@ -34700,12 +36051,22 @@ var Corex = (() => {
         if (open2 === nextOpen) return;
         send({ type: nextOpen ? "open" : "close" });
       },
+      triggerValue,
+      setTriggerValue(value) {
+        send({ type: "triggerValue.set", value: value != null ? value : void 0 });
+      },
       reposition(options = {}) {
         send({ type: "positioning.set", options });
       },
-      getTriggerProps() {
+      getTriggerProps(props = {}) {
+        const { value } = props;
+        const current = value == null ? false : triggerValue === value;
+        const triggerId = getTriggerId10(scope, value);
         return normalize.button(__spreadProps(__spreadValues({}, parts27.trigger.attrs), {
           id: triggerId,
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "data-current": dataAttr(current),
           dir: prop("dir"),
           "data-expanded": dataAttr(open),
           "data-state": open ? "open" : "closed",
@@ -34714,22 +36075,25 @@ var Corex = (() => {
             if (event.defaultPrevented) return;
             if (disabled) return;
             if (!prop("closeOnClick")) return;
-            send({ type: "close", src: "trigger.click" });
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "triggerValue.set" : "close", src: "trigger.click", value, triggerId });
           },
           onFocus(event) {
-            queueMicrotask(() => {
-              if (event.defaultPrevented) return;
-              if (disabled) return;
-              if (_event.src === "trigger.pointerdown") return;
-              if (!isFocusVisible()) return;
-              send({ type: "open", src: "trigger.focus" });
-            });
-          },
-          onBlur(event) {
             if (event.defaultPrevented) return;
             if (disabled) return;
-            if (id === store.get("id")) {
-              send({ type: "close", src: "trigger.blur" });
+            if (!isFocusVisible()) return;
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "triggerValue.set" : "open", src: "trigger.focus", value, triggerId });
+          },
+          onBlur(event) {
+            var _a;
+            if (event.defaultPrevented) return;
+            if (disabled) return;
+            if (id !== store.get("id")) return;
+            const activeEl = (_a = event.relatedTarget) != null ? _a : scope.getDoc().activeElement;
+            const focusedAnotherTrigger = (activeEl == null ? void 0 : activeEl.closest(`[data-ownedby="${scope.id}"]`)) != null;
+            if (!focusedAnotherTrigger) {
+              send({ type: "close", src: "trigger.blur", value, triggerId });
             }
           },
           onPointerDown(event) {
@@ -34738,20 +36102,21 @@ var Corex = (() => {
             if (!isLeftClick(event)) return;
             if (!prop("closeOnPointerDown")) return;
             if (id === store.get("id")) {
-              send({ type: "close", src: "trigger.pointerdown" });
+              send({ type: "close", src: "trigger.pointerdown", value, triggerId });
             }
           },
           onPointerMove(event) {
             if (event.defaultPrevented) return;
             if (disabled) return;
             if (event.pointerType === "touch") return;
-            send({ type: "pointer.move" });
+            const shouldSwitch = open && value != null && !current;
+            send({ type: shouldSwitch ? "triggerValue.set" : "pointer.move", value, triggerId });
           },
           onPointerOver(event) {
             if (event.defaultPrevented) return;
             if (disabled) return;
             if (event.pointerType === "touch") return;
-            send({ type: "pointer.move" });
+            send({ type: "pointer.move", value, triggerId });
           },
           onPointerLeave() {
             if (disabled) return;
@@ -34816,18 +36181,21 @@ var Corex = (() => {
     if (interactive && (raw === void 0 || raw === 0)) return 400;
     return raw;
   }
-  var anatomy27, parts27, getTriggerId10, getContentId11, getArrowId2, getPositionerId8, getTriggerEl9, getPositionerEl8, store, and10, not11, machine27, Tooltip, PLACEMENTS, TooltipHook;
+  var anatomy27, parts27, getTriggerId10, getContentId11, getArrowId2, getPositionerId8, getPositionerEl8, getTriggerEls4, getActiveTriggerEl3, store, and10, not11, machine27, Tooltip, TooltipHook;
   var init_tooltip = __esm({
     "../priv/static/tooltip.mjs"() {
       "use strict";
-      init_chunk_VXCJNDUG();
-      init_chunk_IAPTZYKE();
-      init_chunk_SNFXM6OQ();
+      init_chunk_F6MNP3LD();
+      init_chunk_ZKMAU6SY();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy27 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts27 = anatomy27.build();
-      getTriggerId10 = (scope) => {
-        var _a, _b;
-        return (_b = (_a = scope.ids) == null ? void 0 : _a.trigger) != null ? _b : `tooltip:${scope.id}:trigger`;
+      getTriggerId10 = (scope, value) => {
+        var _a;
+        const customId = (_a = scope.ids) == null ? void 0 : _a.trigger;
+        if (customId != null) return isFunction(customId) ? customId(value) : customId;
+        return value ? `tooltip:${scope.id}:trigger:${value}` : `tooltip:${scope.id}:trigger`;
       };
       getContentId11 = (scope) => {
         var _a, _b;
@@ -34841,8 +36209,11 @@ var Corex = (() => {
         var _a, _b;
         return (_b = (_a = scope.ids) == null ? void 0 : _a.positioner) != null ? _b : `tooltip:${scope.id}:popper`;
       };
-      getTriggerEl9 = (scope) => scope.getById(getTriggerId10(scope));
       getPositionerEl8 = (scope) => scope.getById(getPositionerId8(scope));
+      getTriggerEls4 = (scope) => queryAll(scope.getDoc(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
+      getActiveTriggerEl3 = (scope, value) => {
+        return value == null ? getTriggerEls4(scope)[0] : scope.getById(getTriggerId10(scope, value));
+      };
       store = createStore({
         id: null,
         prevId: null,
@@ -34875,9 +36246,22 @@ var Corex = (() => {
           });
         },
         effects: ["trackFocusVisible", "trackStore"],
-        context: ({ bindable: bindable2 }) => ({
+        context: ({ bindable: bindable2, prop, scope }) => ({
           currentPlacement: bindable2(() => ({ defaultValue: void 0 })),
-          hasPointerMoveOpened: bindable2(() => ({ defaultValue: false }))
+          hasPointerMoveOpened: bindable2(() => ({ defaultValue: null })),
+          triggerValue: bindable2(() => {
+            var _a;
+            return {
+              defaultValue: (_a = prop("defaultTriggerValue")) != null ? _a : null,
+              value: prop("triggerValue"),
+              onChange(value) {
+                const onTriggerValueChange = prop("onTriggerValueChange");
+                if (!onTriggerValueChange) return;
+                const triggerElement = getActiveTriggerEl3(scope, value);
+                onTriggerValueChange({ value, triggerElement });
+              }
+            };
+          })
         }),
         watch({ track, action, prop }) {
           track([() => prop("disabled")], () => {
@@ -34886,6 +36270,14 @@ var Corex = (() => {
           track([() => prop("open")], () => {
             action(["toggleVisibility"]);
           });
+          track([() => prop("triggerValue")], () => {
+            action(["repositionImmediate"]);
+          });
+        },
+        on: {
+          "triggerValue.set": {
+            actions: ["setTriggerValue", "repositionImmediate"]
+          }
         },
         states: {
           closed: {
@@ -34897,11 +36289,11 @@ var Corex = (() => {
               open: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 }
               ],
               "pointer.leave": {
@@ -34910,12 +36302,13 @@ var Corex = (() => {
               "pointer.move": [
                 {
                   guard: and10("noVisibleTooltip", not11("hasPointerMoveOpened")),
-                  target: "opening"
+                  target: "opening",
+                  actions: ["setTriggerValue"]
                 },
                 {
                   guard: not11("hasPointerMoveOpened"),
                   target: "open",
-                  actions: ["setPointerMoveOpened", "invokeOnOpen"]
+                  actions: ["setPointerMoveOpened", "invokeOnOpen", "setTriggerValue"]
                 }
               ]
             }
@@ -34942,11 +36335,11 @@ var Corex = (() => {
               open: [
                 {
                   guard: "isOpenControlled",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 },
                 {
                   target: "open",
-                  actions: ["invokeOnOpen"]
+                  actions: ["setTriggerValue", "invokeOnOpen"]
                 }
               ],
               "pointer.leave": [
@@ -35012,6 +36405,12 @@ var Corex = (() => {
               },
               "positioning.set": {
                 actions: ["reposition"]
+              },
+              "triggerValue.set": {
+                // Transition to closing (which cleans up trackPositioning) then immediately back to open
+                // This re-creates the positioning effect with the new trigger
+                target: "closing",
+                actions: ["setTriggerValue", "immediateReopen"]
               }
             }
           },
@@ -35048,13 +36447,20 @@ var Corex = (() => {
                 {
                   guard: "isOpenControlled",
                   // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
-                  actions: ["setPointerMoveOpened", "invokeOnOpen", "toggleVisibility"]
+                  actions: ["setPointerMoveOpened", "setTriggerValue", "invokeOnOpen", "toggleVisibility"]
                 },
                 {
                   target: "open",
-                  actions: ["setPointerMoveOpened", "invokeOnOpen"]
+                  actions: ["setPointerMoveOpened", "setTriggerValue", "invokeOnOpen"]
                 }
               ],
+              "triggerValue.set": {
+                target: "open",
+                actions: ["setTriggerValue", "repositionImmediate"]
+              },
+              reopen: {
+                target: "open"
+              },
               "content.pointer.move": {
                 guard: "isInteractive",
                 target: "open"
@@ -35070,7 +36476,7 @@ var Corex = (() => {
             noVisibleTooltip: () => store.get("id") === null,
             isVisible: ({ prop }) => prop("id") === store.get("id"),
             isInteractive: ({ prop }) => !!prop("interactive"),
-            hasPointerMoveOpened: ({ context }) => context.get("hasPointerMoveOpened"),
+            hasPointerMoveOpened: ({ context }) => !!context.get("hasPointerMoveOpened"),
             isOpenControlled: ({ prop }) => prop("open") !== void 0
           },
           actions: {
@@ -35099,9 +36505,20 @@ var Corex = (() => {
             reposition: ({ context, event, prop, scope }) => {
               if (event.type !== "positioning.set") return;
               const getPositionerEl22 = () => getPositionerEl8(scope);
-              return getPlacement(getTriggerEl9(scope), getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
-                defer: true,
+              const getTriggerEl8 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              getPlacement(getTriggerEl8, getPositionerEl22, __spreadProps(__spreadValues(__spreadValues({}, prop("positioning")), event.options), {
                 listeners: false,
+                onComplete(data) {
+                  context.set("currentPlacement", data.placement);
+                }
+              }));
+            },
+            repositionImmediate: ({ context, event, prop, scope }) => {
+              var _a;
+              const triggerValue = (_a = event.value) != null ? _a : context.get("triggerValue");
+              const getPositionerEl22 = () => getPositionerEl8(scope);
+              const getTriggerEl8 = () => getActiveTriggerEl3(scope, triggerValue);
+              return getPlacement(getTriggerEl8, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
                 }
@@ -35115,11 +36532,22 @@ var Corex = (() => {
                 });
               });
             },
-            setPointerMoveOpened: ({ context }) => {
-              context.set("hasPointerMoveOpened", true);
+            setPointerMoveOpened: ({ context, event }) => {
+              var _a, _b;
+              const triggerId = (_b = event.triggerId) != null ? _b : (_a = event.previousEvent) == null ? void 0 : _a.triggerId;
+              context.set("hasPointerMoveOpened", triggerId != null ? triggerId : null);
             },
             clearPointerMoveOpened: ({ context }) => {
-              context.set("hasPointerMoveOpened", false);
+              context.set("hasPointerMoveOpened", null);
+            },
+            setTriggerValue: ({ context, event }) => {
+              if (event.value === void 0) return;
+              context.set("triggerValue", event.value);
+            },
+            immediateReopen: ({ send }) => {
+              queueMicrotask(() => {
+                send({ type: "reopen" });
+              });
             }
           },
           effects: {
@@ -35132,7 +36560,8 @@ var Corex = (() => {
                 context.set("currentPlacement", prop("positioning").placement);
               }
               const getPositionerEl22 = () => getPositionerEl8(scope);
-              return getPlacement(getTriggerEl9(scope), getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
+              const getTriggerEl8 = () => getActiveTriggerEl3(scope, context.get("triggerValue"));
+              return getPlacement(getTriggerEl8, getPositionerEl22, __spreadProps(__spreadValues({}, prop("positioning")), {
                 defer: true,
                 onComplete(data) {
                   context.set("currentPlacement", data.placement);
@@ -35144,9 +36573,10 @@ var Corex = (() => {
               const onChange = () => send({ type: "close", src: "pointerlock:change" });
               return addDomEvent(doc, "pointerlockchange", onChange, false);
             },
-            trackScroll: ({ send, prop, scope }) => {
+            trackScroll: ({ send, prop, scope, context }) => {
               if (!prop("closeOnScroll")) return;
-              const triggerEl = getTriggerEl9(scope);
+              const triggerValue = context.get("triggerValue");
+              const triggerEl = getActiveTriggerEl3(scope, triggerValue);
               if (!triggerEl) return;
               const overflowParents = getOverflowAncestors(triggerEl);
               const cleanups = overflowParents.map((overflowParent) => {
@@ -35183,15 +36613,15 @@ var Corex = (() => {
               };
               return addDomEvent(document, "keydown", onKeyDown, true);
             },
-            waitForOpenDelay: ({ send, prop }) => {
+            waitForOpenDelay: ({ send, prop, event }) => {
               const id = setTimeout(() => {
-                send({ type: "after.openDelay" });
+                send({ type: "after.openDelay", previousEvent: event });
               }, prop("openDelay"));
               return () => clearTimeout(id);
             },
-            waitForCloseDelay: ({ send, prop }) => {
+            waitForCloseDelay: ({ send, prop, event }) => {
               const id = setTimeout(() => {
-                send({ type: "after.closeDelay" });
+                send({ type: "after.closeDelay", previousEvent: event });
               }, prop("closeDelay"));
               return () => clearTimeout(id);
             }
@@ -35204,7 +36634,7 @@ var Corex = (() => {
           return new VanillaMachine(machine27, props);
         }
         initApi() {
-          return connect27(this.machine.service, normalizeProps);
+          return this.zagConnect(connect27);
         }
         render() {
           const rootEl = this.el;
@@ -35220,9 +36650,7 @@ var Corex = (() => {
             '[data-scope="tooltip"][data-part="content"]'
           );
           if (contentEl) this.spreadProps(contentEl, this.api.getContentProps());
-          const arrowEl = rootEl.querySelector(
-            '[data-scope="tooltip"][data-part="arrow"]'
-          );
+          const arrowEl = rootEl.querySelector('[data-scope="tooltip"][data-part="arrow"]');
           if (arrowEl) this.spreadProps(arrowEl, this.api.getArrowProps());
           const arrowTipEl = rootEl.querySelector(
             '[data-scope="tooltip"][data-part="arrow-tip"]'
@@ -35230,31 +36658,17 @@ var Corex = (() => {
           if (arrowTipEl) this.spreadProps(arrowTipEl, this.api.getArrowTipProps());
         }
       };
-      PLACEMENTS = [
-        "top",
-        "top-start",
-        "top-end",
-        "bottom",
-        "bottom-start",
-        "bottom-end",
-        "left",
-        "left-start",
-        "left-end",
-        "right",
-        "right-start",
-        "right-end"
-      ];
       TooltipHook = {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
-          const placement = getString(el, "placement", PLACEMENTS);
+          const placement = getString(el, "placement");
           const positioning = placement ? { placement } : void 0;
           const tooltip = new Tooltip(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
             disabled: getBoolean(el, "disabled"),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            dir: getDir(el),
             openDelay: getNumber(el, "openDelay"),
             closeDelay: getCloseDelay(el),
             positioning,
@@ -35265,7 +36679,7 @@ var Corex = (() => {
             interactive: getBoolean(el, "interactive"),
             onOpenChange: (details) => {
               const eventName = getString(el, "onOpenChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
+              if (eventName && canPushEvent(this.liveSocket)) {
                 pushEvent(eventName, {
                   id: el.id,
                   open: details.open
@@ -35291,28 +36705,24 @@ var Corex = (() => {
             const { open } = event.detail;
             tooltip.api.setOpen(open);
           };
-          el.addEventListener("phx:tooltip:set-open", this.onSetOpen);
+          el.addEventListener("corex:tooltip:set-open", this.onSetOpen);
           this.handlers = [];
           this.handlers.push(
-            this.handleEvent(
-              "tooltip_set_open",
-              (payload) => {
-                const targetId = payload.tooltip_id;
-                if (targetId && targetId !== el.id) return;
-                tooltip.api.setOpen(payload.open);
-              }
-            )
+            this.handleEvent("tooltip_set_open", (payload) => {
+              if (!idMatches(el.id, readPayloadId(payload))) return;
+              tooltip.api.setOpen(payload.open);
+            })
           );
         },
         updated() {
           var _a;
-          const placement = getString(this.el, "placement", PLACEMENTS);
+          const placement = getString(this.el, "placement");
           const positioning = placement ? { placement } : void 0;
           (_a = this.tooltip) == null ? void 0 : _a.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
           }, getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") }), {
             disabled: getBoolean(this.el, "disabled"),
-            dir: getString(this.el, "dir", ["ltr", "rtl"]),
+            dir: getDir(this.el),
             openDelay: getNumber(this.el, "openDelay"),
             closeDelay: getCloseDelay(this.el),
             positioning,
@@ -35326,7 +36736,7 @@ var Corex = (() => {
         destroyed() {
           var _a;
           if (this.onSetOpen) {
-            this.el.removeEventListener("phx:tooltip:set-open", this.onSetOpen);
+            this.el.removeEventListener("corex:tooltip:set-open", this.onSetOpen);
           }
           if (this.handlers) {
             for (const handler of this.handlers) {
@@ -35469,11 +36879,27 @@ var Corex = (() => {
       }
     };
   }
+  function valueChangePayload3(el, details) {
+    return {
+      id: el.id,
+      value: details.value
+    };
+  }
+  function readPayloadValue(payload) {
+    var _a;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const v2 = (_a = o2.value) != null ? _a : o2["value"];
+    if (Array.isArray(v2) && v2.every((x2) => typeof x2 === "string")) return v2;
+    return void 0;
+  }
   var anatomy28, parts28, getRootId22, getItemId8, getRootEl8, getElements3, getFirstEl2, getLastEl2, getNextEl2, getPrevEl2, not12, and11, machine28, ToggleGroup, ToggleGroupHook;
   var init_toggle_group = __esm({
     "../priv/static/toggle-group.mjs"() {
       "use strict";
-      init_chunk_SNFXM6OQ();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy28 = createAnatomy("toggle-group").parts("root", "item");
       parts28 = anatomy28.build();
       getRootId22 = (ctx) => {
@@ -35678,7 +37104,7 @@ var Corex = (() => {
           return new VanillaMachine(machine28, props);
         }
         initApi() {
-          return connect28(this.machine.service, normalizeProps);
+          return this.zagConnect(connect28);
         }
         render() {
           const rootEl = this.el.querySelector(
@@ -35702,62 +37128,52 @@ var Corex = (() => {
         mounted() {
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
           const props = __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
-            defaultValue: getStringList(el, "defaultValue"),
             deselectable: getBoolean(el, "deselectable"),
             loopFocus: getBoolean(el, "loopFocus"),
             rovingFocus: getBoolean(el, "rovingFocus"),
             disabled: getBoolean(el, "disabled"),
             multiple: getBoolean(el, "multiple"),
-            orientation: getString(el, "orientation", ["horizontal", "vertical"]),
-            dir: getString(el, "dir", ["ltr", "rtl"]),
+            orientation: getString(el, "orientation"),
+            dir: getDir(el),
             onValueChange: (details) => {
-              const eventName = getString(el, "onValueChange");
-              if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
-                  value: details.value,
-                  id: el.id
-                });
-              }
-              const eventNameClient = getString(el, "onValueChangeClient");
-              if (eventNameClient) {
-                el.dispatchEvent(
-                  new CustomEvent(eventNameClient, {
-                    bubbles: true,
-                    detail: {
-                      value: details.value,
-                      id: el.id
-                    }
-                  })
-                );
-              }
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: valueChangePayload3(el, details),
+                serverEventName: getString(el, "onValueChange"),
+                clientEventName: getString(el, "onValueChangeClient")
+              });
             }
           });
           const toggleGroup = new ToggleGroup(el, props);
           toggleGroup.init();
           this.toggleGroup = toggleGroup;
-          this.onSetValue = (event) => {
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:toggle-group:set-value", (event) => {
             const { value } = event.detail;
             toggleGroup.api.setValue(value);
-          };
-          el.addEventListener("phx:toggle-group:set-value", this.onSetValue);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent("toggle-group_set_value", (payload) => {
-              const targetId = payload.id;
-              if (targetId && targetId !== el.id) return;
-              toggleGroup.api.setValue(payload.value);
-            })
-          );
-          this.handlers.push(
-            this.handleEvent("toggle-group:value", () => {
-              this.pushEvent("toggle-group:value_response", {
-                value: toggleGroup.api.value
-              });
-            })
-          );
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("toggle-group_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const value = readPayloadValue(payload);
+            if (value) toggleGroup.api.setValue(value);
+          });
+          registry.add("toggle-group:value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            if (!canPush()) return;
+            this.pushEvent("toggle-group:value_response", {
+              id: el.id,
+              value: toggleGroup.api.value
+            });
+          });
         },
         updated() {
           var _a;
@@ -35767,21 +37183,15 @@ var Corex = (() => {
             rovingFocus: getBoolean(this.el, "rovingFocus"),
             disabled: getBoolean(this.el, "disabled"),
             multiple: getBoolean(this.el, "multiple"),
-            orientation: getString(this.el, "orientation", ["horizontal", "vertical"]),
-            dir: getString(this.el, "dir", ["ltr", "rtl"])
+            orientation: getString(this.el, "orientation"),
+            dir: getDir(this.el)
           }));
         },
         destroyed() {
-          var _a;
-          if (this.onSetValue) {
-            this.el.removeEventListener("phx:toggle-group:set-value", this.onSetValue);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.toggleGroup) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.toggleGroup) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -35792,7 +37202,7 @@ var Corex = (() => {
   __export(tree_view_exports, {
     TreeView: () => TreeViewHook
   });
-  function getCheckedState(collection22, node, checkedValue) {
+  function getCheckedState2(collection22, node, checkedValue) {
     const value = collection22.getNodeValue(node);
     if (!collection22.isBranchNode(node)) {
       return checkedValue.includes(value);
@@ -35813,7 +37223,7 @@ var Corex = (() => {
       onEnter: (node) => {
         const value = collection22.getNodeValue(node);
         const isBranch = collection22.isBranchNode(node);
-        const checked = getCheckedState(collection22, node, checkedValue);
+        const checked = getCheckedState2(collection22, node, checkedValue);
         map2.set(value, {
           type: isBranch ? "branch" : "leaf",
           checked
@@ -35856,7 +37266,7 @@ var Corex = (() => {
         isBranch: collection22.isBranchNode(node),
         renaming: renamingValue === value,
         get checked() {
-          return getCheckedState(collection22, node, checkedValue);
+          return getCheckedState2(collection22, node, checkedValue);
         }
       };
     }
@@ -36061,6 +37471,8 @@ var Corex = (() => {
           "aria-disabled": ariaAttr(nodeState.disabled),
           "data-disabled": dataAttr(nodeState.disabled),
           "data-renaming": dataAttr(nodeState.renaming),
+          "data-checked": dataAttr(nodeState.checked === true),
+          "data-indeterminate": dataAttr(nodeState.checked === "indeterminate"),
           "aria-level": nodeState.depth,
           "data-depth": nodeState.depth,
           style: {
@@ -36166,6 +37578,8 @@ var Corex = (() => {
           "data-selected": dataAttr(nodeState.selected),
           "data-focus": dataAttr(nodeState.focused),
           "data-renaming": dataAttr(nodeState.renaming),
+          "data-checked": dataAttr(nodeState.checked === true),
+          "data-indeterminate": dataAttr(nodeState.checked === "indeterminate"),
           "data-value": nodeState.value,
           "data-depth": nodeState.depth,
           "data-loading": dataAttr(nodeState.loading),
@@ -36358,48 +37772,30 @@ var Corex = (() => {
     }
     return false;
   }
-  function buildTreeFromDOM(rootEl) {
-    var _a;
-    const selector = '[data-scope="tree-view"][data-part="branch"], [data-scope="tree-view"][data-part="item"]';
-    const elements = rootEl.querySelectorAll(selector);
-    const nodes = [];
-    for (const el of elements) {
-      const pathRaw = el.getAttribute("data-path");
-      const value = el.getAttribute("data-value");
-      if (pathRaw == null || value == null) continue;
-      const pathArr = pathRaw.split("/").map((s2) => parseInt(s2, 10));
-      if (pathArr.some(Number.isNaN)) continue;
-      const name = (_a = el.getAttribute("data-name")) != null ? _a : value;
-      const isBranch = el.getAttribute("data-part") === "branch";
-      nodes.push({ pathArr, id: value, name, isBranch });
-    }
-    nodes.sort((a2, b2) => {
-      const len = Math.min(a2.pathArr.length, b2.pathArr.length);
-      for (let i2 = 0; i2 < len; i2++) {
-        if (a2.pathArr[i2] !== b2.pathArr[i2]) return a2.pathArr[i2] - b2.pathArr[i2];
-      }
-      return a2.pathArr.length - b2.pathArr.length;
+  function createTreeCollection(rootNode) {
+    return collection4({
+      nodeToValue: (node) => node.id,
+      nodeToString: (node) => node.name,
+      rootNode
     });
-    const root = { id: "ROOT", name: "", children: [] };
-    for (const { pathArr, id, name, isBranch } of nodes) {
-      let parent = root;
-      for (let i2 = 0; i2 < pathArr.length - 1; i2++) {
-        const idx = pathArr[i2];
-        if (!parent.children) parent.children = [];
-        parent = parent.children[idx];
-      }
-      const lastIdx = pathArr[pathArr.length - 1];
-      if (!parent.children) parent.children = [];
-      parent.children[lastIdx] = isBranch ? { id, name, children: [] } : { id, name };
+  }
+  function parseRootNode(el) {
+    const raw = el.dataset.tree;
+    if (raw == null || raw === "") {
+      throw new Error("TreeView: missing data-tree");
     }
-    return root;
+    return JSON.parse(raw);
   }
   var anatomy29, parts29, collection4, getRootId23, getLabelId15, getNodeId, getTreeId, focusNode, getRenameInputId, getRenameInputEl, and12, machine29, TreeView, TreeViewHook;
   var init_tree_view = __esm({
     "../priv/static/tree-view.mjs"() {
       "use strict";
-      init_chunk_7ZKQLYA7();
-      init_chunk_SNFXM6OQ();
+      init_chunk_FLYYJ5XV();
+      init_chunk_6XKINCJF();
+      init_chunk_EOVQYYEE();
+      init_chunk_WHNMJXTN();
+      init_chunk_GGOQNLHD();
+      init_chunk_SJ37CZDS();
       anatomy29 = createAnatomy("tree-view").parts(
         "branch",
         "branchContent",
@@ -37071,14 +38467,9 @@ var Corex = (() => {
       });
       TreeView = class extends Component {
         constructor(el, props) {
-          var _a;
-          const treeData = (_a = props.treeData) != null ? _a : buildTreeFromDOM(el);
-          const treeCollection = collection4({
-            nodeToValue: (node) => node.id,
-            nodeToString: (node) => node.name,
-            rootNode: treeData
-          });
-          super(el, __spreadProps(__spreadValues({}, props), { collection: treeCollection }));
+          const _a = props, { rootNode } = _a, rest = __objRest(_a, ["rootNode"]);
+          const treeCollection = createTreeCollection(rootNode);
+          super(el, __spreadProps(__spreadValues({}, rest), { collection: treeCollection }));
           __publicField(this, "treeCollection");
           __publicField(this, "syncTree", () => {
             const treeEl = this.el.querySelector('[data-scope="tree-view"][data-part="tree"]');
@@ -37088,12 +38479,17 @@ var Corex = (() => {
           });
           this.treeCollection = treeCollection;
         }
+        replaceRootNode(rootNode) {
+          const treeCollection = createTreeCollection(rootNode);
+          this.treeCollection = treeCollection;
+          this.updateProps({ collection: treeCollection });
+        }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initMachine(props) {
           return new VanillaMachine(machine29, __spreadValues({}, props));
         }
         initApi() {
-          return connect29(this.machine.service, normalizeProps);
+          return this.zagConnect(connect29);
         }
         getNodeAt(indexPath) {
           var _a;
@@ -37106,11 +38502,15 @@ var Corex = (() => {
           return current;
         }
         updateExistingTree(treeEl) {
+          var _a;
           this.spreadProps(treeEl, this.api.getTreeProps());
+          const animation = (_a = this.el.dataset.animation) != null ? _a : "js";
+          const isOwnedByTree = (el) => el.closest('[data-scope="tree-view"][data-part="tree"]') === treeEl;
           const branches = treeEl.querySelectorAll(
             '[data-scope="tree-view"][data-part="branch"]'
           );
           for (const branchEl of branches) {
+            if (!isOwnedByTree(branchEl)) continue;
             const pathRaw = branchEl.getAttribute("data-path");
             if (pathRaw == null) continue;
             const indexPath = pathRaw.split("/").map((s2) => parseInt(s2, 10));
@@ -37133,7 +38533,18 @@ var Corex = (() => {
             const contentEl = branchEl.querySelector(
               '[data-scope="tree-view"][data-part="branch-content"]'
             );
-            if (contentEl) this.spreadProps(contentEl, this.api.getBranchContentProps(nodeProps));
+            if (contentEl) {
+              const contentPropsRaw = this.api.getBranchContentProps(nodeProps);
+              if (animation === "instant") {
+                this.spreadProps(contentEl, contentPropsRaw);
+              } else {
+                this.spreadProps(
+                  contentEl,
+                  stripHiddenFromProps(contentPropsRaw)
+                );
+                contentEl.removeAttribute("hidden");
+              }
+            }
             const indentGuideEl = branchEl.querySelector(
               '[data-scope="tree-view"][data-part="branch-indent-guide"]'
             );
@@ -37144,6 +38555,7 @@ var Corex = (() => {
             '[data-scope="tree-view"][data-part="item"]'
           );
           for (const itemEl of items) {
+            if (!isOwnedByTree(itemEl)) continue;
             const pathRaw = itemEl.getAttribute("data-path");
             if (pathRaw == null) continue;
             const indexPath = pathRaw.split("/").map((s2) => parseInt(s2, 10));
@@ -37151,6 +38563,15 @@ var Corex = (() => {
             if (!node) continue;
             const nodeProps = { indexPath, node };
             this.spreadProps(itemEl, this.api.getItemProps(nodeProps));
+            const itemTextEl = itemEl.querySelector(
+              '[data-scope="tree-view"][data-part="item-text"]'
+            );
+            if (itemTextEl) this.spreadProps(itemTextEl, this.api.getItemTextProps(nodeProps));
+            const itemIndicatorEl = itemEl.querySelector(
+              '[data-scope="tree-view"][data-part="item-indicator"]'
+            );
+            if (itemIndicatorEl)
+              this.spreadProps(itemIndicatorEl, this.api.getItemIndicatorProps(nodeProps));
           }
         }
         render() {
@@ -37164,128 +38585,193 @@ var Corex = (() => {
       };
       TreeViewHook = {
         mounted() {
-          var _a;
+          var _a, _b, _c, _d, _e;
           const el = this.el;
           const pushEvent = this.pushEvent.bind(this);
+          const canPush = () => canPushEvent(this.liveSocket);
+          const rootNode = parseRootNode(el);
+          this.lastDataTree = el.dataset.tree;
           const treeView = new TreeView(el, __spreadProps(__spreadValues({
-            id: el.id
+            id: el.id,
+            rootNode
           }, getBoolean(el, "controlled") ? {
-            expandedValue: getStringList(el, "expandedValue"),
-            selectedValue: getStringList(el, "selectedValue")
+            expandedValue: (_a = getStringList(el, "expandedValue")) != null ? _a : [],
+            selectedValue: (_b = getStringList(el, "selectedValue")) != null ? _b : []
           } : {
-            defaultExpandedValue: getStringList(el, "defaultExpandedValue"),
-            defaultSelectedValue: getStringList(el, "defaultSelectedValue")
+            defaultExpandedValue: (_c = getStringList(el, "defaultExpandedValue")) != null ? _c : [],
+            defaultSelectedValue: (_d = getStringList(el, "defaultSelectedValue")) != null ? _d : []
           }), {
-            selectionMode: (_a = getString(el, "selectionMode", ["single", "multiple"])) != null ? _a : "single",
+            selectionMode: (_e = getString(el, "selectionMode")) != null ? _e : "single",
+            typeahead: el.dataset.typeahead !== "false",
             dir: getDir(el),
             onSelectionChange: (details) => {
               var _a2;
-              const redirect = getBoolean(el, "redirect");
+              const redirectOn = getBoolean(el, "redirect");
               const value = ((_a2 = details.selectedValue) == null ? void 0 : _a2.length) ? details.selectedValue[0] : void 0;
-              const itemEl = [
-                ...el.querySelectorAll(
-                  '[data-scope="tree-view"][data-part="item"], [data-scope="tree-view"][data-part="branch"]'
-                )
-              ].find((node) => node.getAttribute("data-value") === value);
-              const isItem = (itemEl == null ? void 0 : itemEl.getAttribute("data-part")) === "item";
-              const itemRedirect = itemEl == null ? void 0 : itemEl.getAttribute("data-redirect");
-              const itemNewTab = itemEl == null ? void 0 : itemEl.hasAttribute("data-new-tab");
-              const doRedirect = redirect && value && isItem && this.liveSocket.main.isDead && itemRedirect !== "false";
-              if (doRedirect) {
-                if (itemNewTab) {
-                  window.open(value, "_blank", "noopener,noreferrer");
-                } else {
-                  window.location.href = value;
-                }
+              const itemEl = value ? el.querySelector(
+                `[data-scope="tree-view"][data-part="item"][data-value="${CSS.escape(value)}"]`
+              ) : null;
+              const isItem = !!itemEl;
+              if (redirectOn && isItem) {
+                performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
               }
-              const eventName = getString(el, "onSelectionChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
                   id: el.id,
-                  value: __spreadProps(__spreadValues({}, details), { isItem: isItem != null ? isItem : false })
-                });
-              }
+                  value: {
+                    selectedValue: details.selectedValue,
+                    focusedValue: details.focusedValue,
+                    isItem
+                  }
+                },
+                serverEventName: getString(el, "onSelectionChange"),
+                clientEventName: getString(el, "onSelectionChangeClient")
+              });
             },
             onExpandedChange: (details) => {
-              const eventName = getString(el, "onExpandedChange");
-              if (eventName && this.liveSocket.main.isConnected()) {
-                pushEvent(eventName, {
+              notifyChange({
+                el,
+                canPushServer: canPush(),
+                pushEvent,
+                payload: {
                   id: el.id,
-                  value: details
+                  value: { expandedValue: details.expandedValue }
+                },
+                serverEventName: getString(el, "onExpandedChange"),
+                clientEventName: getString(el, "onExpandedChangeClient")
+              });
+              if (el.dataset.animation === "js") {
+                runOpenStateTransitionsHeight({
+                  rootEl: el,
+                  selector: '[data-scope="tree-view"][data-part="branch-content"]',
+                  opts: readHeightAnimationOptions(el),
+                  isOpen: (contentEl) => {
+                    const value = contentEl.dataset.value;
+                    return !!value && details.expandedValue.includes(value);
+                  }
                 });
               }
             }
           }));
           treeView.init();
           this.treeView = treeView;
-          this.onSetExpandedValue = (event) => {
-            const { value } = event.detail;
-            treeView.api.setExpandedValue(value);
+          if (el.dataset.animation === "js") {
+            const opts = readHeightAnimationOptions(el);
+            prepareInitialHeightState(el, '[data-scope="tree-view"][data-part="branch-content"]', opts);
+          }
+          const emitSelectedValue = (respondTo) => {
+            const value = treeView.api.selectedValue;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "tree_view_value_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "tree-view-value",
+              domDetail: { id: el.id, value }
+            });
           };
-          el.addEventListener("phx:tree-view:set-expanded-value", this.onSetExpandedValue);
-          this.onSetSelectedValue = (event) => {
-            const { value } = event.detail;
-            treeView.api.setSelectedValue(value);
+          const emitExpandedValue = (respondTo) => {
+            const value = treeView.api.expandedValue;
+            emitResponse({
+              respondTo,
+              canPushServer: canPush(),
+              pushEvent,
+              serverEventName: "tree_view_expanded_value_response",
+              serverPayload: { id: el.id, value },
+              el,
+              domEventName: "tree-view-expanded-value",
+              domDetail: { id: el.id, value }
+            });
           };
-          el.addEventListener("phx:tree-view:set-selected-value", this.onSetSelectedValue);
-          this.handlers = [];
-          this.handlers.push(
-            this.handleEvent(
-              "tree_view_set_expanded_value",
-              (payload) => {
-                const targetId = payload.tree_view_id;
-                if (targetId && el.id !== targetId && el.id !== `tree-view:${targetId}`) return;
-                treeView.api.setExpandedValue(payload.value);
-              }
-            )
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add(
+            "corex:tree-view:set-expanded-value",
+            (event) => {
+              treeView.api.setExpandedValue(event.detail.value);
+            }
           );
-          this.handlers.push(
-            this.handleEvent(
-              "tree_view_set_selected_value",
-              (payload) => {
-                const targetId = payload.tree_view_id;
-                if (targetId && el.id !== targetId && el.id !== `tree-view:${targetId}`) return;
-                treeView.api.setSelectedValue(payload.value);
-              }
-            )
+          domRegistry.add(
+            "corex:tree-view:set-selected-value",
+            (event) => {
+              treeView.api.setSelectedValue(event.detail.value);
+            }
           );
-          this.handlers.push(
-            this.handleEvent("tree_view_expanded_value", () => {
-              pushEvent("tree_view_expanded_value_response", {
-                value: treeView.api.expandedValue
-              });
-            })
+          domRegistry.add("corex:tree-view:value", (event) => {
+            emitSelectedValue(parseRespondTo(event.detail));
+          });
+          domRegistry.add("corex:tree-view:expanded-value", (event) => {
+            emitExpandedValue(parseRespondTo(event.detail));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add(
+            "tree_view_set_expanded_value",
+            (payload) => {
+              if (!idMatches(el.id, readPayloadId(payload))) return;
+              treeView.api.setExpandedValue(payload.value);
+            }
           );
-          this.handlers.push(
-            this.handleEvent("tree_view_selected_value", () => {
-              pushEvent("tree_view_selected_value_response", {
-                value: treeView.api.selectedValue
-              });
-            })
+          registry.add(
+            "tree_view_set_selected_value",
+            (payload) => {
+              if (!idMatches(el.id, readPayloadId(payload))) return;
+              treeView.api.setSelectedValue(payload.value);
+            }
           );
-        },
-        updated() {
-          var _a;
-          if (!getBoolean(this.el, "controlled")) return;
-          (_a = this.treeView) == null ? void 0 : _a.updateProps({
-            expandedValue: getStringList(this.el, "expandedValue"),
-            selectedValue: getStringList(this.el, "selectedValue")
+          registry.add("tree_view_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitSelectedValue(parseRespondTo(payload));
+          });
+          registry.add("tree_view_expanded_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            emitExpandedValue(parseRespondTo(payload));
           });
         },
+        updated() {
+          var _a, _b, _c, _d, _e;
+          const el = this.el;
+          const tv = this.treeView;
+          if (!tv) return;
+          const rawTree = el.dataset.tree;
+          if (rawTree != null && rawTree !== this.lastDataTree) {
+            this.lastDataTree = rawTree;
+            tv.replaceRootNode(parseRootNode(el));
+          }
+          const controlled = getBoolean(el, "controlled");
+          const selected = controlled ? (_a = getStringList(el, "selectedValue")) != null ? _a : [] : (_b = getStringList(el, "defaultSelectedValue")) != null ? _b : [];
+          const expanded = controlled ? (_c = getStringList(el, "expandedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultExpandedValue")) != null ? _d : [];
+          const selectionMode = (_e = getString(el, "selectionMode")) != null ? _e : "single";
+          const typeahead = el.dataset.typeahead !== "false";
+          const dir = getDir(el);
+          if (controlled) {
+            tv.updateProps({
+              expandedValue: expanded,
+              selectedValue: selected,
+              selectionMode,
+              typeahead,
+              dir
+            });
+          } else {
+            tv.updateProps({
+              selectionMode,
+              typeahead,
+              dir
+            });
+            tv.api.setExpandedValue(expanded);
+            tv.api.setSelectedValue(selected);
+          }
+        },
         destroyed() {
-          var _a;
-          if (this.onSetExpandedValue) {
-            this.el.removeEventListener("phx:tree-view:set-expanded-value", this.onSetExpandedValue);
-          }
-          if (this.onSetSelectedValue) {
-            this.el.removeEventListener("phx:tree-view:set-selected-value", this.onSetSelectedValue);
-          }
-          if (this.handlers) {
-            for (const handler of this.handlers) {
-              this.removeHandleEvent(handler);
-            }
-          }
-          (_a = this.treeView) == null ? void 0 : _a.destroy();
+          var _a, _b, _c;
+          (_a = this.domRegistry) == null ? void 0 : _a.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.treeView) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -37337,6 +38823,7 @@ var Corex = (() => {
     Carousel: createLazyHook(() => Promise.resolve().then(() => (init_carousel(), carousel_exports)), "Carousel"),
     Checkbox: createLazyHook(() => Promise.resolve().then(() => (init_checkbox(), checkbox_exports)), "Checkbox"),
     Clipboard: createLazyHook(() => Promise.resolve().then(() => (init_clipboard(), clipboard_exports)), "Clipboard"),
+    Code: createLazyHook(() => Promise.resolve().then(() => (init_code(), code_exports)), "Code"),
     Collapsible: createLazyHook(() => Promise.resolve().then(() => (init_collapsible(), collapsible_exports)), "Collapsible"),
     Combobox: createLazyHook(() => Promise.resolve().then(() => (init_combobox(), combobox_exports)), "Combobox"),
     ColorPicker: createLazyHook(() => Promise.resolve().then(() => (init_color_picker(), color_picker_exports)), "ColorPicker"),

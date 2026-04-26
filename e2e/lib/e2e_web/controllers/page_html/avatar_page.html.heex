@@ -2,22 +2,27 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Avatar</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <div class="layout__row gap-ui-gap">
-    <.avatar id="avatar-fallback" src="" class="avatar">
-      <:fallback>JD</:fallback>
-    </.avatar>
-    <.avatar id="avatar-cat" src={~p"/images/avatar.png"} alt="Avatar" class="avatar">
-      <:fallback>?</:fallback>
-    </.avatar>
-    <.avatar id="avatar-favicon" src={~p"/images/favicon.ico"} alt="Favicon" class="avatar">
-      <:fallback>FX</:fallback>
-    </.avatar>
-  </div>
+  <.demo_page
+    id="avatar-anatomy-page"
+    title="Avatar Anatomy"
+    subtitle="Minimal usage and custom slots"
+  >
+    <.demo_section
+      id="avatar-anatomy-basic"
+      title="Minimal"
+      code={E2eWeb.Demos.AvatarDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.AvatarDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="avatar-anatomy-custom-slots"
+      title="Custom slots"
+      code_tabs={E2eWeb.Demos.AvatarDemo.anatomy_custom_slots_code_tabs()}
+    >
+      <:preview><E2eWeb.Demos.AvatarDemo.anatomy_custom_slots_preview /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

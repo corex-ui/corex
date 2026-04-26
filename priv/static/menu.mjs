@@ -1,27 +1,35 @@
 import {
-  createRect,
-  getRectCorners
-} from "./chunk-ZZKFCQSP.mjs";
+  readPositioningOptions
+} from "./chunk-AFD7D2GA.mjs";
 import {
   getPlacement,
   getPlacementSide,
   getPlacementStyles
-} from "./chunk-VXCJNDUG.mjs";
+} from "./chunk-F6MNP3LD.mjs";
 import {
   trackDismissableElement
-} from "./chunk-EV6LXBMY.mjs";
-import "./chunk-YCAWAEF3.mjs";
+} from "./chunk-JJ4TVKGJ.mjs";
+import "./chunk-DXQBMWMN.mjs";
+import {
+  performRedirect,
+  readDomItemRedirect
+} from "./chunk-6XKINCJF.mjs";
+import {
+  createRect,
+  getRectCorners
+} from "./chunk-MPNHBCLD.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-IAPTZYKE.mjs";
+} from "./chunk-ZKMAU6SY.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
   ariaAttr,
   callAll,
+  canPushEvent,
   cast,
   clickIfLink,
   contains,
@@ -32,6 +40,7 @@ import {
   first,
   getBoolean,
   getByTypeahead,
+  getDir,
   getEventKey,
   getEventPoint,
   getEventTarget,
@@ -44,6 +53,7 @@ import {
   isDownloadingEvent,
   isEditableElement,
   isEqual,
+  isFunction,
   isHTMLElement,
   isModifierKey,
   isOpeningInNewTab,
@@ -52,15 +62,14 @@ import {
   isValidTabEvent,
   last,
   next,
-  normalizeProps,
   observeAttributes,
   prev,
   queryAll,
   raf,
   scrollIntoView
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.39.1/node_modules/@zag-js/menu/dist/menu.anatomy.mjs
 var anatomy = createAnatomy("menu").parts(
   "arrow",
   "arrowTip",
@@ -79,7 +88,7 @@ var anatomy = createAnatomy("menu").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+core@1.36.0/node_modules/@zag-js/core/dist/merge-props.mjs
+// ../node_modules/.pnpm/@zag-js+core@1.39.1/node_modules/@zag-js/core/dist/merge-props.mjs
 var clsx = (...args) => args.map((str) => str?.trim?.()).filter(Boolean).join(" ");
 var CSS_REGEX = /((?:--)?(?:\w+-?)+)\s*:\s*([^;]*)/g;
 var serialize = (style) => {
@@ -131,9 +140,17 @@ function mergeProps(...args) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.dom.mjs
-var getTriggerId = (ctx) => ctx.ids?.trigger ?? `menu:${ctx.id}:trigger`;
-var getContextTriggerId = (ctx) => ctx.ids?.contextTrigger ?? `menu:${ctx.id}:ctx-trigger`;
+// ../node_modules/.pnpm/@zag-js+menu@1.39.1/node_modules/@zag-js/menu/dist/menu.dom.mjs
+var getTriggerId = (ctx, value) => {
+  const customId = ctx.ids?.trigger;
+  if (customId != null) return isFunction(customId) ? customId(value) : customId;
+  return value ? `menu:${ctx.id}:trigger:${value}` : `menu:${ctx.id}:trigger`;
+};
+var getContextTriggerId = (ctx, value) => {
+  const customId = ctx.ids?.contextTrigger;
+  if (customId != null) return isFunction(customId) ? customId(value) : customId;
+  return value ? `menu:${ctx.id}:ctx-trigger:${value}` : `menu:${ctx.id}:ctx-trigger`;
+};
 var getContentId = (ctx) => ctx.ids?.content ?? `menu:${ctx.id}:content`;
 var getArrowId = (ctx) => ctx.ids?.arrow ?? `menu:${ctx.id}:arrow`;
 var getPositionerId = (ctx) => ctx.ids?.positioner ?? `menu:${ctx.id}:popper`;
@@ -146,6 +163,14 @@ var getPositionerEl = (ctx) => ctx.getById(getPositionerId(ctx));
 var getTriggerEl = (ctx) => ctx.getById(getTriggerId(ctx));
 var getItemEl = (ctx, value) => value ? ctx.getById(getItemId(ctx, value)) : null;
 var getContextTriggerEl = (ctx) => ctx.getById(getContextTriggerId(ctx));
+var getTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="trigger"][data-ownedby="${ctx.id}"]`);
+var getContextTriggerEls = (ctx) => queryAll(ctx.getDoc(), `[data-scope="menu"][data-part="context-trigger"][data-ownedby="${ctx.id}"]`);
+var getActiveTriggerEl = (ctx, value) => {
+  if (value == null) {
+    return getTriggerEl(ctx) ?? getTriggerEls(ctx)[0];
+  }
+  return ctx.getById(getTriggerId(ctx, value));
+};
 var getElements = (ctx) => {
   const ownerId = CSS.escape(getContentId(ctx));
   const selector = `[role^="menuitem"][data-ownedby=${ownerId}]:not([data-disabled])`;
@@ -185,8 +210,106 @@ function dispatchSelectionEvent(el, value) {
   const event = new win.CustomEvent(itemSelectEvent, { detail: { value } });
   el.dispatchEvent(event);
 }
+function getPortaledContentEl(scope) {
+  const contentId = getContentId(scope);
+  return getContentEl(scope) ?? scope.getDoc().getElementById(contentId);
+}
+function isTargetWithinMenuTree(target, children) {
+  if (!isHTMLElement(target)) return false;
+  for (const id in children) {
+    const child = children[id];
+    const childContent = getPortaledContentEl(child.scope);
+    if (childContent && contains(childContent, target)) return true;
+    const nested = child.refs.get("children");
+    if (Object.keys(nested).length > 0 && isTargetWithinMenuTree(target, nested)) return true;
+  }
+  return false;
+}
 
-// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.connect.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.39.1/node_modules/@zag-js/rect-utils/dist/polygon.mjs
+function getElementPolygon(rectValue, placement) {
+  const rect = createRect(rectValue);
+  const { top, right, left, bottom } = getRectCorners(rect);
+  const [base] = placement.split("-");
+  return {
+    top: [left, top, right, bottom],
+    right: [top, right, bottom, left],
+    bottom: [top, left, bottom, right],
+    left: [right, top, left, bottom]
+  }[base];
+}
+function isPointInPolygon(polygon, point) {
+  const { x, y } = point;
+  let c = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x;
+    const yi = polygon[i].y;
+    const xj = polygon[j].x;
+    const yj = polygon[j].y;
+    if (yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+      c = !c;
+    }
+  }
+  return c;
+}
+
+// ../node_modules/.pnpm/@zag-js+menu@1.39.1/node_modules/@zag-js/menu/dist/menu.utils.mjs
+function closeRootMenu(ctx) {
+  let parent = ctx.parent;
+  while (parent && parent.context.get("isSubmenu")) {
+    parent = parent.refs.get("parent");
+  }
+  parent?.send({ type: "CLOSE" });
+}
+function isWithinPolygon(polygon, point) {
+  if (!polygon) return false;
+  return isPointInPolygon(polygon, point);
+}
+function resolveItemId(children, value, scope) {
+  const hasChildren = Object.keys(children).length > 0;
+  if (!value) return null;
+  if (!hasChildren) {
+    return getItemId(scope, value);
+  }
+  for (const id in children) {
+    const childMenu = children[id];
+    const childTriggerId = getTriggerId(childMenu.scope);
+    if (childTriggerId === value) {
+      return childTriggerId;
+    }
+  }
+  return getItemId(scope, value);
+}
+function setParentRoutingLock(parent, locked) {
+  if (!parent) return;
+  parent.refs.set("pointerRoutingLocked", locked);
+  parent.context.set("pointerRoutingMode", locked ? "locked" : "interactive");
+}
+function isHighlightedItemSubmenuOpen(parent) {
+  const highlighted = parent.context.get("highlightedValue");
+  if (!highlighted) return false;
+  const children = parent.refs.get("children");
+  for (const id in children) {
+    const child = children[id];
+    if (!child.state.hasTag("open")) continue;
+    if (getTriggerId(child.scope) === highlighted) return true;
+  }
+  return false;
+}
+function unlockParentAfterChildClose(parent, childIsSubmenu) {
+  if (!parent) return;
+  if (parent.refs.get("pointerRoutingLocked")) return;
+  if (childIsSubmenu && isHighlightedItemSubmenuOpen(parent)) return;
+  setParentRoutingLock(parent, false);
+}
+function unlockParentOnSubmenuClose(parent) {
+  if (!parent) return;
+  if (!isHighlightedItemSubmenuOpen(parent)) {
+    setParentRoutingLock(parent, false);
+  }
+}
+
+// ../node_modules/.pnpm/@zag-js+menu@1.39.1/node_modules/@zag-js/menu/dist/menu.connect.mjs
 function connect(service, normalize) {
   const { context, send, state, computed, prop, scope } = service;
   const open = state.hasTag("open");
@@ -196,6 +319,7 @@ function connect(service, normalize) {
   const currentPlacement = context.get("currentPlacement");
   const anchorPoint = context.get("anchorPoint");
   const highlightedValue = context.get("highlightedValue");
+  const triggerValue = context.get("triggerValue");
   const popperStyles = getPlacementStyles({
     ...prop("positioning"),
     placement: anchorPoint ? "bottom" : currentPlacement
@@ -274,6 +398,10 @@ function connect(service, normalize) {
       if (open2 === nextOpen) return;
       send({ type: nextOpen ? "OPEN" : "CLOSE" });
     },
+    triggerValue,
+    setTriggerValue(value) {
+      send({ type: "TRIGGER_VALUE.SET", value });
+    },
     setHighlightedValue(value) {
       send({ type: "HIGHLIGHTED.SET", value });
     },
@@ -293,16 +421,22 @@ function connect(service, normalize) {
       node.addEventListener(itemSelectEvent, listener);
       return () => node.removeEventListener(itemSelectEvent, listener);
     },
-    getContextTriggerProps() {
+    getContextTriggerProps(props = {}) {
+      const { value } = props;
+      const current = value == null ? false : triggerValue === value;
+      const contextTriggerId = getContextTriggerId(scope, value);
       return normalize.element({
         ...parts.contextTrigger.attrs,
         dir: prop("dir"),
-        id: getContextTriggerId(scope),
+        id: contextTriggerId,
+        "data-ownedby": scope.id,
+        "data-value": value,
+        "data-current": dataAttr(current),
         "data-state": open ? "open" : "closed",
         onPointerDown(event) {
           if (event.pointerType === "mouse") return;
           const point = getEventPoint(event);
-          send({ type: "CONTEXT_MENU_START", point });
+          send({ type: "CONTEXT_MENU_START", point, value });
         },
         onPointerCancel(event) {
           if (event.pointerType === "mouse") return;
@@ -318,7 +452,12 @@ function connect(service, normalize) {
         },
         onContextMenu(event) {
           const point = getEventPoint(event);
-          send({ type: "CONTEXT_MENU", point });
+          const shouldSwitch = open && value != null && !current;
+          send({
+            type: shouldSwitch ? "TRIGGER_VALUE.SET" : "CONTEXT_MENU",
+            point,
+            value
+          });
           event.preventDefault();
         },
         style: {
@@ -332,18 +471,27 @@ function connect(service, normalize) {
       const triggerProps = childApi.getTriggerProps();
       return mergeProps(getItemProps({ value: triggerProps.id }), triggerProps);
     },
-    getTriggerProps() {
+    getTriggerProps(props = {}) {
+      const { value } = props;
+      const current = value == null ? false : triggerValue === value;
+      const triggerId = getTriggerId(scope, value);
       return normalize.button({
         ...isSubmenu ? parts.triggerItem.attrs : parts.trigger.attrs,
         "data-placement": context.get("currentPlacement"),
         type: "button",
         dir: prop("dir"),
-        id: getTriggerId(scope),
+        id: triggerId,
+        // Multi-trigger attributes - only included when value is provided
+        ...value != null && {
+          "data-ownedby": scope.id,
+          "data-value": value,
+          "data-current": dataAttr(current)
+        },
         "data-uid": prop("id"),
         "aria-haspopup": composite ? "menu" : "dialog",
         "aria-controls": getContentId(scope),
         "data-controls": getContentId(scope),
-        "aria-expanded": open,
+        "aria-expanded": value == null ? open : open && current,
         "data-state": open ? "open" : "closed",
         onPointerMove(event) {
           if (event.pointerType !== "mouse") return;
@@ -356,6 +504,7 @@ function connect(service, normalize) {
           if (isTargetDisabled(event.currentTarget)) return;
           if (event.pointerType !== "mouse") return;
           if (!isSubmenu) return;
+          setParentRoutingLock(service.refs.get("parent"), true);
           const point = getEventPoint(event);
           send({
             type: "TRIGGER_POINTERLEAVE",
@@ -371,7 +520,12 @@ function connect(service, normalize) {
         onClick(event) {
           if (event.defaultPrevented) return;
           if (isTargetDisabled(event.currentTarget)) return;
-          send({ type: "TRIGGER_CLICK", target: event.currentTarget });
+          const shouldSwitch = open && value != null && !current;
+          send({
+            type: shouldSwitch ? "TRIGGER_VALUE.SET" : "TRIGGER_CLICK",
+            target: event.currentTarget,
+            value
+          });
         },
         onBlur() {
           send({ type: "TRIGGER_BLUR" });
@@ -383,16 +537,16 @@ function connect(service, normalize) {
           if (event.defaultPrevented) return;
           const keyMap = {
             ArrowDown() {
-              send({ type: "ARROW_DOWN" });
+              send({ type: "ARROW_DOWN", value });
             },
             ArrowUp() {
-              send({ type: "ARROW_UP" });
+              send({ type: "ARROW_UP", value });
             },
             Enter() {
-              send({ type: "ARROW_DOWN", src: "enter" });
+              send({ type: "ARROW_DOWN", src: "enter", value });
             },
             Space() {
-              send({ type: "ARROW_DOWN", src: "space" });
+              send({ type: "ARROW_DOWN", src: "space", value });
             }
           };
           const key = getEventKey(event, {
@@ -448,7 +602,7 @@ function connect(service, normalize) {
         tabIndex: 0,
         dir: prop("dir"),
         "aria-activedescendant": computed("highlightedId") || void 0,
-        "aria-labelledby": getTriggerId(scope),
+        "aria-labelledby": anchorPoint ? getContextTriggerId(scope, triggerValue ?? void 0) : getTriggerId(scope, triggerValue ?? void 0),
         "data-placement": currentPlacement,
         onPointerEnter(event) {
           if (event.pointerType !== "mouse") return;
@@ -591,34 +745,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/polygon.mjs
-function getElementPolygon(rectValue, placement) {
-  const rect = createRect(rectValue);
-  const { top, right, left, bottom } = getRectCorners(rect);
-  const [base] = placement.split("-");
-  return {
-    top: [left, top, right, bottom],
-    right: [top, right, bottom, left],
-    bottom: [top, left, bottom, right],
-    left: [right, top, left, bottom]
-  }[base];
-}
-function isPointInPolygon(polygon, point) {
-  const { x, y } = point;
-  let c = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x;
-    const yi = polygon[i].y;
-    const xj = polygon[j].x;
-    const yj = polygon[j].y;
-    if (yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
-      c = !c;
-    }
-  }
-  return c;
-}
-
-// ../node_modules/.pnpm/@zag-js+menu@1.36.0/node_modules/@zag-js/menu/dist/menu.machine.mjs
+// ../node_modules/.pnpm/@zag-js+menu@1.39.1/node_modules/@zag-js/menu/dist/menu.machine.mjs
 var { not, and, or } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -642,11 +769,8 @@ var machine = createMachine({
     const open = prop("open") || prop("defaultOpen");
     return open ? "open" : "idle";
   },
-  context({ bindable, prop }) {
+  context({ bindable, prop, scope }) {
     return {
-      suspendPointer: bindable(() => ({
-        defaultValue: false
-      })),
       highlightedValue: bindable(() => ({
         defaultValue: prop("defaultHighlightedValue") || null,
         value: prop("highlightedValue"),
@@ -671,6 +795,19 @@ var machine = createMachine({
       })),
       isSubmenu: bindable(() => ({
         defaultValue: false
+      })),
+      triggerValue: bindable(() => ({
+        defaultValue: prop("defaultTriggerValue") ?? null,
+        value: prop("triggerValue"),
+        onChange(value) {
+          const onTriggerValueChange = prop("onTriggerValueChange");
+          if (!onTriggerValueChange) return;
+          const triggerElement = getActiveTriggerEl(scope, value);
+          onTriggerValueChange({ value, triggerElement });
+        }
+      })),
+      pointerRoutingMode: bindable(() => ({
+        defaultValue: "interactive"
       }))
     };
   },
@@ -678,6 +815,7 @@ var machine = createMachine({
     return {
       parent: null,
       children: {},
+      pointerRoutingLocked: false,
       typeaheadState: { ...getByTypeahead.defaultOptions },
       positioningOverride: {}
     };
@@ -700,6 +838,9 @@ var machine = createMachine({
     });
   },
   on: {
+    "TRIGGER_VALUE.SET": {
+      actions: ["setTriggerValue", "setAnchorPoint", "reposition", "focusMenu"]
+    },
     "PARENT.SET": {
       actions: ["setParentMenu"]
     },
@@ -709,32 +850,32 @@ var machine = createMachine({
     OPEN: [
       {
         guard: "isOpenControlled",
-        actions: ["invokeOnOpen"]
+        actions: ["setTriggerValue", "invokeOnOpen"]
       },
       {
         target: "open",
-        actions: ["invokeOnOpen"]
+        actions: ["setTriggerValue", "invokeOnOpen"]
       }
     ],
     OPEN_AUTOFOCUS: [
       {
         guard: "isOpenControlled",
-        actions: ["invokeOnOpen"]
+        actions: ["setTriggerValue", "invokeOnOpen"]
       },
       {
         // internal: true,
         target: "open",
-        actions: ["highlightFirstItem", "invokeOnOpen"]
+        actions: ["setTriggerValue", "highlightFirstItem", "invokeOnOpen"]
       }
     ],
     CLOSE: [
       {
         guard: "isOpenControlled",
-        actions: ["invokeOnClose"]
+        actions: ["invokeOnClose", "releaseParentRoutingLock"]
       },
       {
         target: "closed",
-        actions: ["invokeOnClose"]
+        actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
       }
     ],
     "HIGHLIGHTED.RESTORE": {
@@ -742,6 +883,9 @@ var machine = createMachine({
     },
     "HIGHLIGHTED.SET": {
       actions: ["setHighlightedItem"]
+    },
+    "HIGHLIGHTED.SUGGEST": {
+      actions: ["suggestHighlightedItem"]
     }
   },
   states: {
@@ -756,26 +900,26 @@ var machine = createMachine({
         },
         CONTEXT_MENU_START: {
           target: "opening:contextmenu",
-          actions: ["setAnchorPoint"]
+          actions: ["setAnchorPoint", "setTriggerValue"]
         },
         CONTEXT_MENU: [
           {
             guard: "isOpenControlled",
-            actions: ["setAnchorPoint", "invokeOnOpen"]
+            actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["setAnchorPoint", "invokeOnOpen"]
+            actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
           }
         ],
         TRIGGER_CLICK: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           }
         ],
         TRIGGER_FOCUS: {
@@ -793,25 +937,25 @@ var machine = createMachine({
       effects: ["waitForLongPress"],
       on: {
         "CONTROLLED.OPEN": { target: "open" },
-        "CONTROLLED.CLOSE": { target: "closed" },
+        "CONTROLLED.CLOSE": { target: "closed", actions: ["focusTrigger"] },
         CONTEXT_MENU_CANCEL: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             target: "closed",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
           }
         ],
         "LONG_PRESS.OPEN": [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           }
         ]
       }
@@ -824,26 +968,27 @@ var machine = createMachine({
           target: "open"
         },
         "CONTROLLED.CLOSE": {
-          target: "closed"
+          target: "closed",
+          actions: ["focusTrigger"]
         },
         BLUR: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             target: "closed",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
           }
         ],
         TRIGGER_POINTERLEAVE: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             target: "closed",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
           }
         ],
         "DELAY.OPEN": [
@@ -877,7 +1022,7 @@ var machine = createMachine({
         POINTER_MOVED_AWAY_FROM_SUBMENU: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             target: "closed",
@@ -887,18 +1032,18 @@ var machine = createMachine({
         "DELAY.CLOSE": [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             target: "closed",
-            actions: ["focusParentMenu", "restoreParentHighlightedItem", "invokeOnClose"]
+            actions: ["focusParentMenu", "restoreParentHighlightedItem", "invokeOnClose", "releaseParentRoutingLock"]
           }
         ]
       }
     },
     closed: {
       tags: ["closed"],
-      entry: ["clearHighlightedItem", "focusTrigger", "resumePointer", "clearAnchorPoint"],
+      entry: ["clearHighlightedItem", "unlockParentOnClose", "clearAnchorPoint"],
       on: {
         "CONTROLLED.OPEN": [
           {
@@ -917,26 +1062,26 @@ var machine = createMachine({
         ],
         CONTEXT_MENU_START: {
           target: "opening:contextmenu",
-          actions: ["setAnchorPoint"]
+          actions: ["setAnchorPoint", "setTriggerValue"]
         },
         CONTEXT_MENU: [
           {
             guard: "isOpenControlled",
-            actions: ["setAnchorPoint", "invokeOnOpen"]
+            actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["setAnchorPoint", "invokeOnOpen"]
+            actions: ["setAnchorPoint", "setTriggerValue", "invokeOnOpen"]
           }
         ],
         TRIGGER_CLICK: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["invokeOnOpen", "setTriggerValue"]
           }
         ],
         TRIGGER_POINTERMOVE: {
@@ -947,21 +1092,21 @@ var machine = createMachine({
         ARROW_DOWN: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["highlightFirstItem", "invokeOnOpen"]
+            actions: ["setTriggerValue", "highlightFirstItem", "invokeOnOpen"]
           }
         ],
         ARROW_UP: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["highlightLastItem", "invokeOnOpen"]
+            actions: ["setTriggerValue", "highlightLastItem", "invokeOnOpen"]
           }
         ]
       }
@@ -969,7 +1114,7 @@ var machine = createMachine({
     open: {
       tags: ["open"],
       effects: ["trackInteractOutside", "trackFocusVisible", "trackPositioning", "scrollToHighlightedItem"],
-      entry: ["focusMenu", "resumePointer"],
+      entry: ["focusMenu", "unlockParentOnOpen"],
       on: {
         "CONTROLLED.CLOSE": [
           {
@@ -978,22 +1123,23 @@ var machine = createMachine({
             actions: ["focusParentMenu"]
           },
           {
-            target: "closed"
+            target: "closed",
+            actions: ["focusTrigger"]
           }
         ],
         TRIGGER_CLICK: [
           {
             guard: and(not("isTriggerItem"), "isOpenControlled"),
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             guard: not("isTriggerItem"),
             target: "closed",
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock", "focusTrigger"]
           }
         ],
         CONTEXT_MENU: {
-          actions: ["setAnchorPoint", "focusMenu"]
+          actions: ["setAnchorPoint", "setTriggerValue", "focusMenu"]
         },
         ARROW_UP: {
           actions: ["highlightPrevItem", "focusMenu"]
@@ -1004,12 +1150,12 @@ var machine = createMachine({
         ARROW_LEFT: [
           {
             guard: and("isSubmenu", "isOpenControlled"),
-            actions: ["invokeOnClose"]
+            actions: ["invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             guard: "isSubmenu",
             target: "closed",
-            actions: ["focusParentMenu", "invokeOnClose"]
+            actions: ["focusParentMenu", "invokeOnClose", "releaseParentRoutingLock"]
           }
         ],
         HOME: {
@@ -1033,7 +1179,7 @@ var machine = createMachine({
         ],
         ITEM_POINTERMOVE: [
           {
-            guard: not("isPointerSuspended"),
+            guard: not("isPointerRoutingLocked"),
             actions: ["setHighlightedItem", "focusMenu", "closeSiblingMenus"]
           },
           {
@@ -1041,7 +1187,7 @@ var machine = createMachine({
           }
         ],
         ITEM_POINTERLEAVE: {
-          guard: and(not("isPointerSuspended"), not("isTriggerItem")),
+          guard: and(not("isPointerRoutingLocked"), not("isTriggerItem")),
           actions: ["clearHighlightedItem"]
         },
         ITEM_CLICK: [
@@ -1053,12 +1199,19 @@ var machine = createMachine({
               "closeOnSelect",
               "isOpenControlled"
             ),
-            actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
+            actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose", "releaseParentRoutingLock"]
           },
           {
             guard: and(not("isTriggerItemHighlighted"), not("isHighlightedItemEditable"), "closeOnSelect"),
             target: "closed",
-            actions: ["invokeOnSelect", "setOptionState", "closeRootMenu", "invokeOnClose"]
+            actions: [
+              "invokeOnSelect",
+              "setOptionState",
+              "closeRootMenu",
+              "invokeOnClose",
+              "releaseParentRoutingLock",
+              "focusTrigger"
+            ]
           },
           //
           {
@@ -1101,7 +1254,7 @@ var machine = createMachine({
         return !!target?.hasAttribute("data-controls");
       },
       isSubmenu: ({ context }) => context.get("isSubmenu"),
-      isPointerSuspended: ({ context }) => context.get("suspendPointer"),
+      isPointerRoutingLocked: ({ refs }) => refs.get("pointerRoutingLocked"),
       isHighlightedItemEditable: ({ scope, computed }) => isEditableElement(scope.getById(computed("highlightedId"))),
       // guard assertions (for controlled mode)
       isOpenControlled: ({ prop }) => prop("open") !== void 0,
@@ -1133,14 +1286,16 @@ var machine = createMachine({
         return trackFocusVisible({ root: scope.getRootNode?.() });
       },
       trackPositioning({ context, prop, scope, refs }) {
-        if (getContextTriggerEl(scope)) return;
+        const hasContextTrigger = getContextTriggerEl(scope) || getContextTriggerEls(scope).length > 0;
+        if (hasContextTrigger) return;
         const positioning = {
           ...prop("positioning"),
           ...refs.get("positioningOverride")
         };
         context.set("currentPlacement", positioning.placement);
         const getPositionerEl2 = () => getPositionerEl(scope);
-        return getPlacement(getTriggerEl(scope), getPositionerEl2, {
+        const getTriggerEl2 = () => getActiveTriggerEl(scope, context.get("triggerValue"));
+        return getPlacement(getTriggerEl2, getPositionerEl2, {
           ...positioning,
           defer: true,
           onComplete(data) {
@@ -1151,17 +1306,23 @@ var machine = createMachine({
       trackInteractOutside({ refs, scope, prop, context, send }) {
         const getContentEl2 = () => getContentEl(scope);
         let restoreFocus = true;
+        const isWithinAnyContextTrigger = (target) => {
+          return getContextTriggerEls(scope).some((el) => contains(el, target));
+        };
         return trackDismissableElement(getContentEl2, {
           type: "menu",
           defer: true,
-          exclude: [getTriggerEl(scope)],
+          exclude: [getTriggerEl(scope), ...getTriggerEls(scope)].filter(Boolean),
           onInteractOutside: prop("onInteractOutside"),
           onRequestDismiss: prop("onRequestDismiss"),
           onFocusOutside(event) {
             prop("onFocusOutside")?.(event);
             const target = getEventTarget(event.detail.originalEvent);
-            const isWithinContextTrigger = contains(getContextTriggerEl(scope), target);
-            if (isWithinContextTrigger) {
+            if (isWithinAnyContextTrigger(target)) {
+              event.preventDefault();
+              return;
+            }
+            if (isTargetWithinMenuTree(target, refs.get("children"))) {
               event.preventDefault();
               return;
             }
@@ -1174,8 +1335,7 @@ var machine = createMachine({
           onPointerDownOutside(event) {
             prop("onPointerDownOutside")?.(event);
             const target = getEventTarget(event.detail.originalEvent);
-            const isWithinContextTrigger = contains(getContextTriggerEl(scope), target);
-            if (isWithinContextTrigger && event.detail.contextmenu) {
+            if (isWithinAnyContextTrigger(target) && event.detail.contextmenu) {
               event.preventDefault();
               return;
             }
@@ -1186,11 +1346,10 @@ var machine = createMachine({
           }
         });
       },
-      trackPointerMove({ context, scope, send, refs, flush }) {
+      trackPointerMove({ context, scope, send, refs }) {
         const parent = refs.get("parent");
-        flush(() => {
-          parent.context.set("suspendPointer", true);
-        });
+        if (!parent) return;
+        setParentRoutingLock(parent, true);
         const doc = scope.getDoc();
         return addDomEvent(doc, "pointermove", (e) => {
           const isMovingToSubmenu = isWithinPolygon(context.get("intentPolygon"), {
@@ -1199,7 +1358,7 @@ var machine = createMachine({
           });
           if (!isMovingToSubmenu) {
             send({ type: "POINTER_MOVED_AWAY_FROM_SUBMENU" });
-            parent.context.set("suspendPointer", false);
+            setParentRoutingLock(parent, false);
           }
         });
       },
@@ -1234,13 +1393,15 @@ var machine = createMachine({
       },
       reposition({ context, scope, prop, event, refs }) {
         const getPositionerEl2 = () => getPositionerEl(scope);
-        const anchorPoint = context.get("anchorPoint");
+        const anchorPoint = event.point ?? context.get("anchorPoint");
         const getAnchorRect = anchorPoint ? () => ({ width: 0, height: 0, ...anchorPoint }) : void 0;
         const positioning = {
           ...prop("positioning"),
           ...refs.get("positioningOverride")
         };
-        getPlacement(getTriggerEl(scope), getPositionerEl2, {
+        const triggerValue = event.value ?? context.get("triggerValue");
+        const getTriggerEl2 = () => getActiveTriggerEl(scope, triggerValue);
+        getPlacement(getTriggerEl2, getPositionerEl2, {
           ...positioning,
           defer: true,
           getAnchorRect,
@@ -1287,12 +1448,16 @@ var machine = createMachine({
       clearAnchorPoint({ context }) {
         context.set("anchorPoint", null);
       },
-      resumePointer({ refs, flush }) {
+      unlockParentOnOpen({ refs, context, scope }) {
         const parent = refs.get("parent");
-        if (!parent) return;
-        flush(() => {
-          parent.context.set("suspendPointer", false);
-        });
+        if (context.get("isSubmenu")) {
+          const value = getTriggerId(scope);
+          parent?.send({ type: "HIGHLIGHTED.SUGGEST", value });
+        }
+        setParentRoutingLock(parent, false);
+      },
+      unlockParentOnClose({ refs, context }) {
+        unlockParentAfterChildClose(refs.get("parent"), context.get("isSubmenu"));
       },
       setHighlightedItem({ context, event }) {
         const value = event.value || getItemValue(event.target);
@@ -1355,7 +1520,10 @@ var machine = createMachine({
       },
       focusTrigger({ scope, context, event }) {
         if (context.get("isSubmenu") || context.get("anchorPoint") || event.restoreFocus === false) return;
-        queueMicrotask(() => getTriggerEl(scope)?.focus({ preventScroll: true }));
+        queueMicrotask(() => {
+          const triggerEl = getActiveTriggerEl(scope, context.get("triggerValue"));
+          triggerEl?.focus({ preventScroll: true });
+        });
       },
       highlightMatchedItem({ scope, context, event, refs }) {
         const node = getElemByKey(scope, {
@@ -1407,10 +1575,20 @@ var machine = createMachine({
       setLastHighlightedItem({ context, event }) {
         context.set("lastHighlightedValue", getItemValue(event.target));
       },
+      suggestHighlightedItem({ context, event }) {
+        const value = event.value;
+        if (!value) return;
+        if (context.get("highlightedValue") != null) {
+          context.set("lastHighlightedValue", value);
+          return;
+        }
+        context.set("highlightedValue", value);
+      },
       restoreHighlightedItem({ context }) {
-        if (!context.get("lastHighlightedValue")) return;
-        context.set("highlightedValue", context.get("lastHighlightedValue"));
+        const last2 = context.get("lastHighlightedValue");
         context.set("lastHighlightedValue", null);
+        if (!last2) return;
+        context.set("highlightedValue", last2);
       },
       restoreParentHighlightedItem({ refs }) {
         refs.get("parent")?.send({ type: "HIGHLIGHTED.RESTORE" });
@@ -1421,41 +1599,23 @@ var machine = createMachine({
       invokeOnClose({ prop }) {
         prop("onOpenChange")?.({ open: false });
       },
+      releaseParentRoutingLock({ refs, context }) {
+        if (!context.get("isSubmenu")) return;
+        unlockParentOnSubmenuClose(refs.get("parent"));
+      },
       toggleVisibility({ prop, event, send }) {
         send({
           type: prop("open") ? "CONTROLLED.OPEN" : "CONTROLLED.CLOSE",
           previousEvent: event
         });
+      },
+      setTriggerValue({ context, event }) {
+        if (event.value === void 0) return;
+        context.set("triggerValue", event.value);
       }
     }
   }
 });
-function closeRootMenu(ctx) {
-  let parent = ctx.parent;
-  while (parent && parent.context.get("isSubmenu")) {
-    parent = parent.refs.get("parent");
-  }
-  parent?.send({ type: "CLOSE" });
-}
-function isWithinPolygon(polygon, point) {
-  if (!polygon) return false;
-  return isPointInPolygon(polygon, point);
-}
-function resolveItemId(children, value, scope) {
-  const hasChildren = Object.keys(children).length > 0;
-  if (!value) return null;
-  if (!hasChildren) {
-    return getItemId(scope, value);
-  }
-  for (const id in children) {
-    const childMenu = children[id];
-    const childTriggerId = getTriggerId(childMenu.scope);
-    if (childTriggerId === value) {
-      return childTriggerId;
-    }
-  }
-  return getItemId(scope, value);
-}
 
 // components/menu.ts
 var Menu = class extends Component {
@@ -1465,7 +1625,7 @@ var Menu = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   setChild(child) {
     this.api.setChild(child.machine.service);
@@ -1576,56 +1736,47 @@ var MenuHook = {
       return;
     }
     const pushEvent = this.pushEvent.bind(this);
-    const getMain = () => this.liveSocket?.main;
+    const liveSocket = this.liveSocket;
+    const buildOnSelect = () => (details) => {
+      if (getBoolean(el, "redirect") && details.value) {
+        const itemEl = el.querySelector(
+          `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
+        );
+        performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+      }
+      const eventName = getString(el, "onSelect");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: details.value ?? null
+        });
+      }
+      const eventNameClient = getString(el, "onSelectClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              value: details.value ?? null
+            }
+          })
+        );
+      }
+    };
     const menu = new Menu(el, {
       id: el.id.replace("menu:", ""),
-      defaultOpen: getBoolean(el, "defaultOpen"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       loopFocus: getBoolean(el, "loopFocus"),
       typeahead: getBoolean(el, "typeahead"),
       composite: getBoolean(el, "composite"),
       defaultHighlightedValue: getString(el, "defaultHighlightedValue"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
-      onSelect: (details) => {
-        const redirect = getBoolean(el, "redirect");
-        const itemEl = [
-          ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
-        ].find((node) => node.getAttribute("data-value") === details.value);
-        const itemRedirect = itemEl?.getAttribute("data-redirect");
-        const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-        const main = getMain();
-        const doRedirect = redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
-        if (doRedirect) {
-          if (itemNewTab) {
-            window.open(details.value, "_blank", "noopener,noreferrer");
-          } else {
-            window.location.href = details.value;
-          }
-        }
-        const eventName = getString(el, "onSelect");
-        if (eventName && main && !main.isDead && main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null
-          });
-        }
-        const eventNameClient = getString(el, "onSelectClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value ?? null
-              }
-            })
-          );
-        }
-      },
+      dir: getDir(el),
+      positioning: readPositioningOptions(el),
+      onSelect: buildOnSelect(),
       onOpenChange: (details) => {
-        const main = getMain();
         const eventName = getString(el, "onOpenChange");
-        if (eventName && main && !main.isDead && main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             open: details.open ?? false
@@ -1658,47 +1809,13 @@ var MenuHook = {
         const nestedMenuId = `${nestedId}-${index}`;
         const nestedMenu = new Menu(nestedEl, {
           id: nestedMenuId,
-          dir: getString(nestedEl, "dir", ["ltr", "rtl"]),
+          dir: getDir(nestedEl),
           closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
           loopFocus: getBoolean(nestedEl, "loopFocus"),
           typeahead: getBoolean(nestedEl, "typeahead"),
           composite: getBoolean(nestedEl, "composite"),
-          onSelect: (details) => {
-            const redirect = getBoolean(el, "redirect");
-            const itemEl = [
-              ...el.querySelectorAll('[data-scope="menu"][data-part="item"]')
-            ].find((node) => node.getAttribute("data-value") === details.value);
-            const itemRedirect = itemEl?.getAttribute("data-redirect");
-            const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-            const main = getMain();
-            const doRedirect = redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
-            if (doRedirect) {
-              if (itemNewTab) {
-                window.open(details.value, "_blank", "noopener,noreferrer");
-              } else {
-                window.location.href = details.value;
-              }
-            }
-            const eventName = getString(el, "onSelect");
-            if (eventName && main && !main.isDead && main.isConnected()) {
-              pushEvent(eventName, {
-                id: el.id,
-                value: details.value ?? null
-              });
-            }
-            const eventNameClient = getString(el, "onSelectClient");
-            if (eventNameClient) {
-              el.dispatchEvent(
-                new CustomEvent(eventNameClient, {
-                  bubbles: true,
-                  detail: {
-                    id: el.id,
-                    value: details.value ?? null
-                  }
-                })
-              );
-            }
-          }
+          positioning: readPositioningOptions(nestedEl),
+          onSelect: buildOnSelect()
         });
         nestedMenu.init();
         this.nestedMenus?.set(nestedId, nestedMenu);
@@ -1720,7 +1837,7 @@ var MenuHook = {
       const { open } = event.detail;
       if (menu.api.open !== open) menu.api.setOpen(open);
     };
-    el.addEventListener("phx:menu:set-open", this.onSetOpen);
+    el.addEventListener("corex:menu:set-open", this.onSetOpen);
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("menu_set_open", (payload) => {
@@ -1742,19 +1859,19 @@ var MenuHook = {
     if (this.el.hasAttribute("data-nested")) return;
     this.menu?.updateProps({
       id: this.el.id,
-      ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
       closeOnSelect: getBoolean(this.el, "closeOnSelect"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       typeahead: getBoolean(this.el, "typeahead"),
       composite: getBoolean(this.el, "composite"),
       defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"])
+      dir: getDir(this.el),
+      positioning: readPositioningOptions(this.el)
     });
   },
   destroyed() {
     if (this.el.hasAttribute("data-nested")) return;
     if (this.onSetOpen) {
-      this.el.removeEventListener("phx:menu:set-open", this.onSetOpen);
+      this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
     }
     if (this.handlers) {
       for (const handler of this.handlers) {

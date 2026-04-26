@@ -1,4 +1,5 @@
 @import "./tokens/semantic/color.css";
+@import "./tokens/semantic/color-scope.css";
 @import "./tokens/semantic/dimension.css";
 @import "./tokens/semantic/border.css";
 @import "./tokens/semantic/text.css";

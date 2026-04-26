@@ -10,6 +10,8 @@ defmodule Corex.DatePickerTest do
       html = render_component(&CorexTest.ComponentHelpers.render_date_picker/1, [])
       assert html =~ ~r/data-scope="date-picker"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
     end
   end
 
@@ -123,6 +125,7 @@ defmodule Corex.DatePickerTest do
     test "input/1 returns input attributes" do
       result = Connect.input(%{id: "test-dp", dir: "ltr"})
       assert result["data-part"] == "input"
+      assert result["id"] == "date-picker:test-dp:input:0"
     end
 
     test "trigger/1 returns trigger attributes" do
@@ -156,6 +159,60 @@ defmodule Corex.DatePickerTest do
       assert result["data-value"] == nil
     end
 
+    test "props/1 encodes data-translation when a translation is present" do
+      assigns = %{
+        id: "test-dp",
+        controlled: false,
+        value: "2025-02-22",
+        locale: "en",
+        time_zone: "UTC",
+        dir: "ltr",
+        translation: Corex.DatePicker.default_translation()
+      }
+
+      result = Connect.props(Map.merge(default_props(), assigns))
+      assert is_binary(result["data-translation"])
+      assert result["data-translation"] =~ "openCalendar"
+    end
+
+    test "props/1 merges trigger_aria_label and input_aria_label into data-translation JSON" do
+      assigns = %{
+        id: "test-dp",
+        controlled: false,
+        value: "2025-02-22",
+        locale: "en",
+        time_zone: "UTC",
+        dir: "ltr",
+        translation: DatePicker.default_translation(),
+        trigger_aria_label: "Pick a date",
+        input_aria_label: "Event date"
+      }
+
+      result = Connect.props(Map.merge(default_props(), assigns))
+      decoded = Jason.decode!(result["data-translation"])
+      assert decoded["openCalendar"] == "Pick a date"
+      assert decoded["closeCalendar"] == "Pick a date"
+      assert decoded["input"] == "Event date"
+    end
+
+    test "props/1 includes flattened positioning" do
+      assigns = %{
+        id: "test-dp",
+        controlled: false,
+        value: "2025-02-22",
+        locale: "en",
+        time_zone: "UTC",
+        dir: "ltr",
+        positioning: %Corex.Positioning{strategy: "absolute", placement: "top-start", gutter: 12}
+      }
+
+      result = Connect.props(Map.merge(default_props(), assigns))
+      assert result["data-position-strategy"] == "absolute"
+      assert result["data-position-placement"] == "top-start"
+      assert result["data-position-gutter"] == "12"
+      refute result["data-positioning"]
+    end
+
     test "props/1 returns props when controlled" do
       assigns = %{
         id: "test-dp",
@@ -184,12 +241,11 @@ defmodule Corex.DatePickerTest do
       min: nil,
       max: nil,
       focused_value: nil,
-      num_of_months: nil,
       start_of_week: nil,
       fixed_weeks: nil,
       selection_mode: nil,
       placeholder: nil,
-      default_view: nil,
+      view: nil,
       min_view: nil,
       max_view: nil,
       positioning: nil,
@@ -198,8 +254,12 @@ defmodule Corex.DatePickerTest do
       on_view_change: nil,
       on_visible_range_change: nil,
       on_open_change: nil,
+      on_value_change_client: nil,
+      on_open_change_client: nil,
       trigger_aria_label: nil,
-      input_aria_label: nil
+      input_aria_label: nil,
+      max_selected_dates: nil,
+      translation: nil
     }
   end
 end

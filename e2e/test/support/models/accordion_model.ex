@@ -1,37 +1,106 @@
 defmodule E2eWeb.AccordionModel do
+  import ExUnit.Assertions
+  import Wallaby.Query
+
   use E2eWeb.Model, component: "accordion"
 
+  @anatomy_sections ~w(
+    accordion-anatomy-minimal
+    accordion-anatomy-with-indicator
+    accordion-anatomy-custom-slots
+    accordion-anatomy-manual-slots
+    accordion-anatomy-compound
+  )
+
+  def anatomy_section_ids, do: @anatomy_sections
+
+  def wait_root_no_loading(session, id_selector, opts \\ []) do
+    q = css(~s(#{id_selector}[data-loading]))
+    wait_until_refute_has(session, q, opts)
+  end
+
+  def wait_section_accordion_ready(session, section_dom_id, opts \\ []) do
+    q =
+      css(~s(##{section_dom_id} [phx-hook="Accordion"][data-loading]))
+
+    wait_until_refute_has(session, q, opts)
+  end
+
+  defp wait_until_refute_has(session, %Wallaby.Query{} = query, opts) do
+    timeout_ms = Keyword.get(opts, :timeout, 15_000)
+    interval_ms = Keyword.get(opts, :interval, 50)
+    deadline = System.monotonic_time(:millisecond) + timeout_ms
+    wait_until_refute_has_loop(session, query, deadline, interval_ms)
+  end
+
+  defp wait_until_refute_has_loop(session, query, deadline, interval_ms) do
+    if Wallaby.Browser.has?(session, query) do
+      if System.monotonic_time(:millisecond) >= deadline do
+        flunk("expected element to be ready, still matching #{inspect(query)}")
+      else
+        Process.sleep(interval_ms)
+        wait_until_refute_has_loop(session, query, deadline, interval_ms)
+      end
+    else
+      session
+    end
+  end
+
   def click_item(session, trigger_text) do
-    # Click button by text - Wallaby will find it within the page
     click(session, button(trigger_text))
   end
 
-  def see_content(session, content_text) do
-    # Wait for accordion animation/transition to complete
-    session = wait(session, 1000)
+  defp first_item_trigger_query(section_dom_id) do
+    css(
+      ~s|##{section_dom_id} [data-scope="accordion"][data-part="item-trigger"]|,
+      at: 0
+    )
+  end
 
-    # Check if content is visible using JavaScript to check computed styles
-    # This works around CSS-based hiding that Wallaby might not detect
-    content_visible =
-      execute_script(session, """
-        const contentElements = Array.from(document.querySelectorAll('[data-scope="accordion"][data-part="item-content"]'));
-        return contentElements.some(el => {
-          const text = el.textContent || '';
-          const style = window.getComputedStyle(el);
-          const ariaHidden = el.getAttribute('aria-hidden');
-          return text.includes('#{content_text}') && 
-                 style.display !== 'none' && 
-                 style.visibility !== 'hidden' &&
-                 (ariaHidden === null || ariaHidden === 'false');
-        });
-      """)
+  defp nth_item_trigger_query(section_dom_id, n) when is_integer(n) and n > 0 do
+    css(
+      ~s|##{section_dom_id} [data-scope="accordion"][data-part="item-trigger"]|,
+      at: n - 1
+    )
+  end
 
-    if content_visible do
+  def first_trigger_aria_expanded(session, section_dom_id) do
+    el = find(session, first_item_trigger_query(section_dom_id))
+    Wallaby.Element.attr(el, "aria-expanded")
+  end
+
+  def trigger_aria_expanded_at(session, section_dom_id, n) when is_integer(n) and n > 0 do
+    el = find(session, nth_item_trigger_query(section_dom_id, n))
+    Wallaby.Element.attr(el, "aria-expanded")
+  end
+
+  def click_first_trigger_in_section(session, section_dom_id) do
+    click(session, first_item_trigger_query(section_dom_id))
+    session
+  end
+
+  def click_trigger_in_section_at(session, section_dom_id, n) when is_integer(n) and n > 0 do
+    click(session, nth_item_trigger_query(section_dom_id, n))
+    session
+  end
+
+  def assert_first_trigger_toggles(session, section_dom_id) do
+    session = wait_section_accordion_ready(session, section_dom_id)
+    before = first_trigger_aria_expanded(session, section_dom_id)
+
+    session =
       session
-    else
-      # Fallback to Wallaby's text visibility check
-      see(session, content_text)
-    end
+      |> click_first_trigger_in_section(section_dom_id)
+      |> wait(100)
+
+    after_exp = first_trigger_aria_expanded(session, section_dom_id)
+    assert before != after_exp
+    session
+  end
+
+  def see_content(session, content_text) do
+    wait_for_text(session, content_text, timeout: 5_000)
+    session
   end
 
   def dont_see_content(session, content_text) do
@@ -39,7 +108,140 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def content_visible?(session, content_text) do
+    has?(session, Wallaby.Query.text(content_text))
+  end
+
+  def click_open_lorem_api(session) do
+    click(
+      session,
+      xpath(
+        "//*[@id='accordion-api-set-value-binding']//button[contains(normalize-space(), 'Open Lorem')]"
+      )
+    )
+
     session
-    |> has?(Wallaby.Query.text(content_text))
+  end
+
+  def lorem_trigger_expanded?(session) do
+    has?(
+      session,
+      css(~s([id="accordion:api-set-value-client:trigger:lorem"][aria-expanded="true"]))
+    )
+  end
+
+  def click_in_section(session, section_id, button_label) when is_binary(button_label) do
+    if String.contains?(button_label, "'") or String.contains?(button_label, "\"") do
+      raise ArgumentError,
+            "click_in_section/3 label must not include quotes (use a different matcher)"
+    end
+
+    click(
+      session,
+      xpath("//*[@id='#{section_id}']//button[normalize-space(.)='#{button_label}']")
+    )
+
+    session
+  end
+
+  def trigger_expanded?(session, accordion_id, value, expected \\ "true") do
+    has?(
+      session,
+      css(~s([id="accordion:#{accordion_id}:trigger:#{value}"][aria-expanded="#{expected}"]))
+    )
+  end
+
+  def trigger_aria_disabled?(session, accordion_id, value) do
+    has?(
+      session,
+      css(~s([id="accordion:#{accordion_id}:trigger:#{value}"][aria-disabled="true"]))
+    )
+  end
+
+  def item_data_disabled?(session, accordion_id, value) do
+    has?(
+      session,
+      css(~s([id="accordion:#{accordion_id}:item:#{value}"][data-disabled="true"]))
+    )
+  end
+
+  def my_accordion_attribute(session, attr) do
+    el = find(session, css("#my-accordion"))
+    Wallaby.Element.attr(el, attr)
+  end
+
+  def my_accordion_inner_orientation(session) do
+    el =
+      find(
+        session,
+        css(~s(#my-accordion [data-scope="accordion"][data-part="root"]))
+      )
+
+    Wallaby.Element.attr(el, "data-orientation")
+  end
+
+  def click_events_server_duis(session) do
+    click(
+      session,
+      css(
+        ~s|#accordion-events-server [data-scope="accordion"][data-part="item"][data-value="duis"] [data-part="item-trigger"]|
+      )
+    )
+
+    session
+  end
+
+  def click_events_server_lorem(session) do
+    click(
+      session,
+      css(
+        ~s|#accordion-events-server [data-scope="accordion"][data-part="item"][data-value="lorem"] [data-part="item-trigger"]|
+      )
+    )
+
+    session
+  end
+
+  def click_events_client_duis(session) do
+    _ =
+      execute_script(
+        session,
+        "document.getElementById('accordion-events-client')?.scrollIntoView({block: 'center'})"
+      )
+
+    click(
+      session,
+      css(
+        ~s|#accordion-events-client [data-part="item"][data-value="duis"] [data-part="item-trigger"]|
+      )
+    )
+
+    session
+  end
+
+  def events_server_log_has_row?(session) do
+    has?(session, css("#accordion-events-log-server tr[data-part='row']"))
+  end
+
+  def events_client_log_has_row?(session) do
+    has?(session, css("#accordion-events-log-client tr[data-part='row']"))
+  end
+
+  def assert_active_element_inside_id(session, dom_id) when is_binary(dom_id) do
+    if not (String.match?(dom_id, ~r/^[a-zA-Z0-9_-]+$/) and String.length(dom_id) > 0) do
+      raise ArgumentError,
+            "only safe id strings are allowed for assert_active_element_inside_id/2"
+    end
+
+    execute_script(
+      session,
+      """
+      const r = document.getElementById('#{dom_id}');
+      return !!(r && r.contains(document.activeElement));
+      """,
+      [],
+      fn v -> assert v == true end
+    )
+
+    session
   end
 end

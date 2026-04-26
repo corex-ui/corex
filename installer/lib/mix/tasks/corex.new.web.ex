@@ -1,41 +1,128 @@
 defmodule Mix.Tasks.Corex.New.Web do
   @moduledoc """
-  Creates a new Phoenix web application inside an existing umbrella project.
+  Creates a new Phoenix **web** app in an **umbrella** and installs Corex via Igniter. Run from the umbrella **`apps/`** directory.
 
-  This task is only for use within an umbrella project. It must be run from the umbrella's `apps` directory. It creates a new web app (with Corex and Phoenix) that can depend on other apps in the umbrella. For a standalone project, use `mix corex.new` instead.
+  ## 1) Phoenix
 
-  It expects the name of the OTP app as the first argument:
+  See **`mix help phx.new.web`**. `corex.new.web` forwards only those options to `mix phx.new.web`.
 
-      $ cd my_umbrella/apps
-      $ mix corex.new.web APP [--module MODULE] [--app APP]
+  ## 2) Corex (Igniter)
 
-  The generated app is a bare Phoenix web project without database integration by default, which you can then wire to your umbrella's domain app(s).
+  Same as **`mix corex.new`**: plain Corex flags (as in **`mix igniter.install corex -- …`**), plus **`--dev_corex PATH`**. For details see `mix help corex.new` or `Mix.Tasks.Corex.Install`.
 
-  ## Examples
-
-      $ mix corex.new.web hello_web
-
-  Is equivalent to:
-
-      $ mix corex.new.web hello_web --module HelloWeb
-
-  For all available options (e.g. `--umbrella`, `--no-ecto`, `--theme`), see `Mix.Tasks.Corex.New`.
+  Set **`MIX_COREX_IGNITER_INTERACTIVE=1`** to omit non-interactive `--yes` on nested `igniter.install` in some environments.
   """
 
-  @shortdoc "Creates a new Phoenix web project within an umbrella project"
+  @shortdoc "Creates a new Phoenix web app in an umbrella and installs Corex via Igniter"
 
   use Mix.Task
 
+  alias Corex.New.{Cli, Flags, IgniterArgv, PhxWrapper, PostGenerate}
+
+  @version Mix.Project.config()[:version]
+
+  @switches [
+    dev: :boolean,
+    dev_corex: :string,
+    design: :boolean,
+    designex: :boolean,
+    live: :boolean,
+    mode: :boolean,
+    theme: :string,
+    lang: :boolean,
+    ecto: :boolean,
+    no_version_check: :boolean,
+    app: :string,
+    module: :string,
+    web_module: :string,
+    database: :string,
+    binary_id: :boolean,
+    verbose: :boolean,
+    dashboard: :boolean,
+    install: :boolean,
+    prefix: :string,
+    mailer: :boolean,
+    adapter: :string,
+    inside_docker_env: :boolean,
+    assets: :boolean,
+    esbuild: :boolean,
+    tailwind: :boolean,
+    gettext: :boolean,
+    html: :boolean,
+    skills: :boolean,
+    a11y: :boolean,
+    mcp: :boolean,
+    no_design: :boolean,
+    replace: :boolean,
+    no_replace: :boolean
+  ]
+
   @impl true
-  def run([]) do
-    Mix.Tasks.Help.run(["corex.new.web"])
+  def run(argv) do
+    Cli.elixir_version_check!(@version)
+
+    {opts, argv} = OptionParser.parse!(argv, strict: @switches)
+
+    opts =
+      opts
+      |> Keyword.put_new(:lang, false)
+      |> Keyword.put_new(:mcp, true)
+      |> Keyword.put_new(:skills, true)
+
+    Cli.validate_corex_flags!(opts)
+    Cli.validate_phx_new_flags!(opts)
+
+    case argv do
+      [] ->
+        Mix.Tasks.Help.run(["corex.new.web"])
+
+      [app_name | _] ->
+        run_with_app_name(app_name, opts)
+    end
   end
 
-  def run([path | _] = args) do
-    unless Corex.New.Generator.in_umbrella?(path) do
-      Mix.raise "The web task can only be run within an umbrella's apps directory"
+  defp run_with_app_name(app_name, opts) do
+    unless PhxWrapper.in_umbrella?(app_name) do
+      Mix.raise("The web task can only be run within an umbrella's apps directory")
     end
 
-    Mix.Tasks.Corex.New.run(args, Corex.New.Web, :web_path)
+    install_dir = Path.expand(app_name)
+    umbrella_root = Path.expand(Path.join([install_dir, "..", ".."]))
+
+    Cli.confirm_install_path!(install_dir)
+
+    igniter_extra = opts |> then(&Flags.igniter_install_opts/1) |> IgniterArgv.to_argv()
+    PhxWrapper.ensure_igniter_new!()
+
+    pkg = PhxWrapper.corex_igniter_install_target(opts)
+
+    Mix.shell().info([
+      :green,
+      "* running ",
+      :reset,
+      "mix phx.new.web in #{Path.dirname(install_dir)} (then igniter: #{pkg})"
+    ])
+
+    phx_opts =
+      opts
+      |> Flags.phx_new_cli_opts()
+      |> Keyword.put(:install, false)
+      |> Keyword.put(:dev, false)
+
+    phx_argv = ["phx.new.web"] ++ PhxWrapper.build_phx_new_web_argv(phx_opts, app_name)
+
+    PhxWrapper.phx_new_then_igniter_install!(
+      Path.dirname(install_dir),
+      install_dir,
+      phx_argv,
+      pkg,
+      igniter_extra,
+      "phx-new"
+    )
+    PhxWrapper.run_format!(install_dir)
+
+    PostGenerate.copy_cached_build(umbrella_root)
+    PostGenerate.init_git(umbrella_root)
+    PostGenerate.prompt_install(umbrella_root, install_dir, opts)
   end
 end

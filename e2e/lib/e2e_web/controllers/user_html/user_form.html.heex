@@ -4,7 +4,7 @@
   action={@action}
   id={get_form_id(@changeset)}
 >
-  <.native_input field={f[:name]} type="text" class="native-input">
+  <.native_input field={f[:name]} type="text" class="native-input max-w-none">
     <:label>Name</:label>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
@@ -12,11 +12,11 @@
     </:error>
   </.native_input>
   <.select
-    class="select"
+    class="select  max-w-none"
     field={f[:country]}
     placeholder="Select a country"
     items={[
-      %{label: "France", id: "fra", disabled: true},
+      %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
       %{label: "Netherlands", id: "nld"},
@@ -35,7 +35,7 @@
       {msg}
     </:error>
   </.select>
-  <.date_picker field={f[:birth_date]} class="date-picker">
+  <.date_picker field={f[:birth_date]} class="date-picker  max-w-none">
     <:label>Select a date</:label>
     <:trigger>
       <.heroicon name="hero-calendar" class="icon" />
@@ -51,7 +51,7 @@
       {msg}
     </:error>
   </.date_picker>
-  <.signature_pad field={f[:signature]} class="signature-pad">
+  <.signature_pad field={f[:signature]} class="signature-pad  max-w-none">
     <:label>Sign here</:label>
     <:clear_trigger>
       <.heroicon name="hero-x-mark" />
@@ -61,19 +61,19 @@
       {msg}
     </:error>
   </.signature_pad>
-  <.checkbox field={f[:terms]} class="checkbox">
+  <.checkbox field={f[:terms]} class="checkbox  max-w-none">
     <:label>
       Accept the terms
     </:label>
     <:indicator>
-      <.heroicon name="hero-check" class="data-checked" />
+      <.heroicon name="hero-check" />
     </:indicator>
     <:error :let={msg}>
       <.heroicon name="hero-exclamation-circle" class="icon" />
       {msg}
     </:error>
   </.checkbox>
-  <footer class="flex w-full justify-between gap-ui-gap">
+  <footer class="flex w-full justify-between gap-2">
     <.navigate :if={@return_to} to={@return_to} type="href" class="button">Cancel</.navigate>
     <.action type="submit" class="button button--accent">Save User</.action>
   </footer>

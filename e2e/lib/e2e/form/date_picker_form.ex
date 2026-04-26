@@ -10,4 +10,10 @@ defmodule E2e.Form.DatePickerForm do
     form
     |> cast(attrs, [:date])
   end
+
+  def changeset_validate(form, attrs \\ %{}) do
+    form
+    |> cast(attrs, [:date])
+    |> validate_required([:date], message: "can't be blank")
+  end
 end

@@ -2,27 +2,53 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Angle Slider form</:title>
-    <:subtitle>Controller Form</:subtitle>
-  </.layout_heading>
-  <p>Controller Form</p>
-  <form action={~p"/#{@locale}/angle-slider/form"} method="post" id="angle-slider-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-    <.angle_slider
-      name="angle_slider_form[angle]"
-      id="angle-slider-form-angle"
-      value={0.0}
-      marker_values={[0, 90, 180, 270]}
-      class="angle-slider"
+  <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
+  <.demo_page
+    id="angle-slider-form-page"
+    title="Angle Slider · Form"
+    subtitle="Phoenix to_form/2, validation, and plain HTML"
+  >
+    <.demo_section
+      id="angle-slider-form-changeset"
+      title="Phoenix Form (changeset)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
     >
-      <:label>Angle</:label>
-    </.angle_slider>
-    <.action type="submit" id="angle-slider-form-submit" class="button button--accent">
-      Submit
-    </.action>
-  </form>
+      <:preview>
+        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_changeset form={@form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="angle-slider-form-validate"
+      title="Ecto Changeset (validation)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_validate form={@validate_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="angle-slider-form-controller"
+      title="Native form (plain HTML)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.AngleSliderDemo.form_preview_controller_native />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

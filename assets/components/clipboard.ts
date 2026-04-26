@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/clipboard";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class Clipboard extends Component<Props, Api> {
@@ -9,7 +9,7 @@ export class Clipboard extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {

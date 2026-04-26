@@ -31,9 +31,15 @@ defmodule Corex.ListTest do
     end
 
     test "raises for invalid list format" do
-      assert_raise ArgumentError, ~r/invalid item format/, fn ->
+      assert_raise ArgumentError, ~r/Expected keyword lists, maps, or %Corex\.List\.Item/, fn ->
         List.new(["a", "b"])
       end
+    end
+
+    test "passes through existing Item structs" do
+      i1 = Item.new(label: "A", id: "a")
+      i2 = Item.new(label: "B", id: "b")
+      assert List.new([i1, i2]) == [i1, i2]
     end
 
     test "raises for non-list input" do

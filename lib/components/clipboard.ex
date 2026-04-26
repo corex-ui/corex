@@ -2,6 +2,8 @@ defmodule Corex.Clipboard do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Clipboard](https://zagjs.com/components/react/clipboard).
 
+  Value is **uncontrolled** from the server’s perspective: set `value` for the initial string to copy; use `Corex.Clipboard.set_value/2` or the hook’s `corex:clipboard:set-value` event to change it on the client.
+
   ## Examples
 
   <!-- tabs-open -->
@@ -11,10 +13,12 @@ defmodule Corex.Clipboard do
   ```heex
   <.clipboard id="my-clipboard" value="Text to copy">
     <:label>Copy to clipboard</:label>
-     <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-      </:trigger>
+    <:copy>
+      <.heroicon name="hero-clipboard" />
+    </:copy>
+    <:copied>
+      <.heroicon name="hero-check" />
+    </:copied>
   </.clipboard>
   ```
 
@@ -26,10 +30,12 @@ defmodule Corex.Clipboard do
     value="Text to copy"
     on_copy="clipboard_copied">
     <:label>Copy to clipboard</:label>
-            <:trigger>
-          <.heroicon name="hero-clipboard" class="icon data-copy" />
-          <.heroicon name="hero-check" class="icon data-copied" />
-        </:trigger>
+    <:copy>
+      <.heroicon name="hero-clipboard" />
+    </:copy>
+    <:copied>
+      <.heroicon name="hero-check" />
+    </:copied>
   </.clipboard>
   ```
 
@@ -38,6 +44,19 @@ defmodule Corex.Clipboard do
     {:noreply, put_flash(socket, :info, "Copied: #{value}")}
   end
   ```
+
+  ### Trigger only (`input={false}`)
+
+  ```heex
+  <.clipboard id="share-link" value={@url} input={false} trigger_aria_label="Copy link">
+    <:copy><.heroicon name="hero-clipboard" /></:copy>
+    <:copied><.heroicon name="hero-check" /></:copied>
+  </.clipboard>
+  ```
+
+  ### Custom trigger body
+
+  You can still use **`<:trigger>`** for extra markup after the copy/copied surfaces (or alone if you style idle/copied yourself).
 
   <!-- tabs-close -->
 
@@ -70,6 +89,8 @@ defmodule Corex.Clipboard do
   [data-scope="clipboard"][data-part="trigger"] {}
   [data-scope="clipboard"][data-part="control"] {}
   [data-scope="clipboard"][data-part="input"] {}
+  [data-scope="clipboard"][data-part="copy"] {}
+  [data-scope="clipboard"][data-part="copied"] {}
   ```
 
   If you wish to use the default Corex styling, you can use the class `clipboard` on the component.
@@ -87,13 +108,12 @@ defmodule Corex.Clipboard do
   <.clipboard class="clipboard clipboard--accent clipboard--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/clipboard#modifiers)
   '''
 
   @doc type: :component
   use Phoenix.Component
 
-  alias Corex.Clipboard.Anatomy.{Control, Input, Label, Props, Root, Trigger}
+  alias Corex.Clipboard.Anatomy.{Control, Copied, Copy, Input, Label, Props, Root, Trigger}
   alias Corex.Clipboard.Connect
   alias Phoenix.LiveView
   alias Phoenix.LiveView.JS
@@ -109,13 +129,7 @@ defmodule Corex.Clipboard do
 
   attr(:value, :string,
     default: nil,
-    doc: "The initial value or the controlled value to copy to clipboard"
-  )
-
-  attr(:controlled, :boolean,
-    default: false,
-    doc:
-      "Whether the clipboard is controlled. Only in LiveView, the on_value_change event is required"
+    doc: "The value shown in the input and copied (initial or after client set_value)"
   )
 
   attr(:timeout, :integer,
@@ -124,10 +138,16 @@ defmodule Corex.Clipboard do
   )
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc:
       "The direction of the clipboard. When nil, derived from document (html lang + config :rtl_locales)"
+  )
+
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["horizontal", "vertical"],
+    doc: "Layout orientation for CSS."
   )
 
   attr(:on_copy, :string,
@@ -138,11 +158,6 @@ defmodule Corex.Clipboard do
   attr(:on_copy_client, :string,
     default: nil,
     doc: "The client event name when the value is copied"
-  )
-
-  attr(:on_value_change, :string,
-    default: nil,
-    doc: "The server event name when the value changes (for controlled mode)"
   )
 
   attr(:trigger_aria_label, :string,
@@ -168,48 +183,96 @@ defmodule Corex.Clipboard do
     attr(:class, :string, required: false)
   end
 
+  slot :copy, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  slot :copied, required: false do
+    attr(:class, :string, required: false)
+  end
+
   slot :trigger, required: false do
     attr(:class, :string, required: false)
   end
 
+  attr(:input_class, :string, default: nil)
+  attr(:control_class, :string, default: nil)
+  attr(:root_class, :string, default: nil)
+
   def clipboard(assigns) do
+    if assigns.copy == [] and assigns.copied == [] and assigns.trigger == [] do
+      raise ArgumentError,
+            "clipboard requires at least one of :copy, :copied, or :trigger"
+    end
+
     assigns =
       assigns
       |> assign_new(:id, fn -> "clipboard-#{System.unique_integer([:positive])}" end)
+
+    trigger_button_class =
+      case assigns.trigger do
+        [first | _] -> Map.get(first, :class)
+        _ -> nil
+      end
+
+    assigns = assign(assigns, :trigger_button_class, trigger_button_class)
 
     ~H"""
     <div
       id={@id}
       phx-hook="Clipboard"
+      data-loading  
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}    
       {@rest}
       {Connect.props(%Props{
         id: @id,
-        controlled: @controlled,
         value: @value,
         timeout: @timeout,
         dir: @dir,
+        orientation: @orientation,
         on_copy: @on_copy,
         on_copy_client: @on_copy_client,
-        on_value_change: @on_value_change,
         trigger_aria_label: @trigger_aria_label,
         input_aria_label: @input_aria_label
       })}
     >
-      <div {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
-          {render_slot(@label)}
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})} class={@root_class}>
+        <label
+          :for={label <- @label}
+          phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})}
+          {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}
+          class={Map.get(label, :class, nil)}
+        >
+          {render_slot(label)}
         </label>
-        <div {Connect.control(%Control{id: @id, dir: @dir})}>
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})} class={@control_class}>
           <input
             :if={@input}
-            {Connect.input(%Input{id: @id, dir: @dir, value: @value})}
+            class={@input_class}
+            phx-mounted={Connect.ignore_input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
+            {Connect.input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
             aria-label={@input_aria_label}
           />
           <button
-            :if={@trigger != []}
-            {Connect.trigger(%Trigger{id: @id, dir: @dir})}
+            phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
+            {Connect.trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
             aria-label={@trigger_aria_label}
+            class={@trigger_button_class}
           >
+            <span
+              :if={@copy != []}
+              phx-mounted={Connect.ignore_copy_part(%Copy{id: @id, dir: @dir, orientation: @orientation})}
+              {Connect.copy_part(%Copy{id: @id, dir: @dir, orientation: @orientation})}
+            >
+              {render_slot(@copy)}
+            </span>
+            <span
+              :if={@copied != []}
+              phx-mounted={Connect.ignore_copied_part(%Copied{id: @id, dir: @dir, orientation: @orientation})}
+              {Connect.copied_part(%Copied{id: @id, dir: @dir, orientation: @orientation})}
+            >
+              {render_slot(@copied)}
+            </span>
             {render_slot(@trigger)}
           </button>
         </div>
@@ -229,7 +292,7 @@ defmodule Corex.Clipboard do
       </button>
   """
   def copy(clipboard_id) when is_binary(clipboard_id) do
-    JS.dispatch("phx:clipboard:copy",
+    JS.dispatch("corex:clipboard:copy",
       to: "##{clipboard_id}",
       bubbles: false
     )
@@ -264,7 +327,7 @@ defmodule Corex.Clipboard do
       </button>
   """
   def set_value(clipboard_id, value) when is_binary(clipboard_id) and is_binary(value) do
-    JS.dispatch("phx:clipboard:set-value",
+    JS.dispatch("corex:clipboard:set-value",
       to: "##{clipboard_id}",
       detail: %{value: value},
       bubbles: false

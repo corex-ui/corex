@@ -62,6 +62,17 @@ defmodule Corex.Carousel.Anatomy do
             spacing: String.t(),
             aria_label: String.t() | nil
           }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "style",
+      "aria-label",
+      "data-page",
+      "data-slide-count"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
@@ -69,6 +80,9 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [:id, :orientation]
 
     @type t :: %__MODULE__{id: String.t(), orientation: String.t()}
+
+    @ignored_attrs ["id", "data-orientation"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule ItemGroup do
@@ -76,6 +90,18 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [:id, :orientation, :dir]
 
     @type t :: %__MODULE__{id: String.t(), orientation: String.t(), dir: String.t()}
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "style",
+      "tabindex",
+      "aria-live",
+      "scroll-snap-type",
+      "role"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Item do
@@ -88,6 +114,21 @@ defmodule Corex.Carousel.Anatomy do
             orientation: String.t(),
             slide_count: non_neg_integer()
           }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-index",
+      "style",
+      "role",
+      "aria-label",
+      "aria-hidden",
+      "data-current",
+      "data-in-view",
+      "tabindex"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule PrevTrigger do
@@ -95,6 +136,9 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [:id, :disabled]
 
     @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
+
+    @ignored_attrs ["id", "type", "disabled", "aria-label"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule NextTrigger do
@@ -102,6 +146,9 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [:id, :disabled]
 
     @type t :: %__MODULE__{id: String.t(), disabled: boolean()}
+
+    @ignored_attrs ["id", "type", "disabled", "aria-label"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule IndicatorGroup do
@@ -109,6 +156,9 @@ defmodule Corex.Carousel.Anatomy do
     defstruct [:id, :orientation, :dir]
 
     @type t :: %__MODULE__{id: String.t(), orientation: String.t(), dir: String.t()}
+
+    @ignored_attrs ["id", "dir", "data-orientation"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Indicator do
@@ -122,5 +172,18 @@ defmodule Corex.Carousel.Anatomy do
             dir: String.t(),
             page: non_neg_integer()
           }
+
+    @ignored_attrs [
+      "id",
+      "dir",
+      "data-orientation",
+      "data-index",
+      "data-current",
+      "type",
+      "aria-label",
+      "aria-current",
+      "disabled"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

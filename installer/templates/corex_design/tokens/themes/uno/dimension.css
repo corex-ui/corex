@@ -1,0 +1,32 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="uno"] {
+  --theme-spacing: 0.25rem;
+  --theme-container-7xs: 5.52rem;
+  --theme-container-6xs: 7.36rem;
+  --theme-container-5xs: 9.2rem;
+  --theme-container-4xs: 11.04rem;
+  --theme-container-3xs: 14.72rem;
+  --theme-container-2xs: 16.56rem;
+  --theme-container-xs: 18.4rem;
+  --theme-container-sm: 22.08rem;
+  --theme-container-md: 25.76rem;
+  --theme-container-lg: 29.44rem;
+  --theme-container-xl: 33.12rem;
+  --theme-container-2xl: 38.64rem;
+  --theme-container-3xl: 44.16rem;
+  --theme-container-4xl: 51.52rem;
+  --theme-container-5xl: 58.88rem;
+  --theme-container-6xl: 66.24rem;
+  --theme-container-7xl: 73.6rem;
+  --theme-spacing-space-sm: calc(var(--theme-spacing) * 1);
+  --theme-spacing-space-md: calc(var(--theme-spacing) * 2);
+  --theme-spacing-space-lg: calc(var(--theme-spacing) * 3);
+  --theme-spacing-space-xl: calc(var(--theme-spacing) * 4);
+  --theme-spacing-size-sm: calc(var(--theme-spacing) * 7);
+  --theme-spacing-size-md: calc(var(--theme-spacing) * 9);
+  --theme-spacing-size-lg: calc(var(--theme-spacing) * 11);
+  --theme-spacing-size-xl: calc(var(--theme-spacing) * 13);
+}

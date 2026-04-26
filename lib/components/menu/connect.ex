@@ -1,41 +1,50 @@
 defmodule Corex.Menu.Connect do
   @moduledoc false
-  alias Corex.Menu.Anatomy.{Group, Item, Props, Root, Trigger}
+  alias Corex.Selectors
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Corex.Menu.Anatomy.{
+    Content,
+    Group,
+    GroupLabel,
+    Indicator,
+    Item,
+    Positioner,
+    Props,
+    Root,
+    Trigger
+  }
 
-  @spec props(Props.t()) :: map()
+  alias Phoenix.LiveView.JS
+
+  import Corex.Helpers, only: [get_boolean: 1]
+
+  @spec ignore_hook(String.t()) :: JS.t()
+  def ignore_hook(id) when is_binary(id) do
+    JS.ignore_attributes(["data-loading"], to: Selectors.css_id("menu:#{id}"))
+  end
+
+  @spec props(Props.t() | map()) :: map()
   def props(assigns) do
-    %{
+    positioning = Map.get(assigns, :positioning, %Corex.Positioning{})
+
+    base = %{
       "id" => assigns.id,
-      "data-controlled" => data_attr(assigns.controlled),
-      "data-open" =>
-        if assigns.controlled do
-          data_attr(assigns.open)
-        else
-          nil
-        end,
-      "data-default-open" =>
-        if assigns.controlled do
-          nil
-        else
-          data_attr(assigns.open)
-        end,
-      "data-close-on-select" => data_attr(assigns.close_on_select),
-      "data-loop-focus" => data_attr(assigns.loop_focus),
-      "data-typeahead" => data_attr(assigns.typeahead),
-      "data-composite" => data_attr(assigns.composite),
+      "data-close-on-select" => get_boolean(assigns.close_on_select),
+      "data-loop-focus" => get_boolean(assigns.loop_focus),
+      "data-typeahead" => get_boolean(assigns.typeahead),
+      "data-composite" => get_boolean(assigns.composite),
       "data-default-highlighted-value" => assigns.value,
-      "data-dir" => assigns.dir,
+      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "data-aria-label" => assigns.aria_label,
       "data-on-select" => assigns.on_select,
       "data-on-select-client" => assigns.on_select_client,
-      "data-redirect" => data_attr(assigns.redirect),
+      "data-redirect" => get_boolean(assigns.redirect),
       "data-on-open-change" => assigns.on_open_change,
       "data-on-open-change-client" => assigns.on_open_change_client
     }
+
+    Map.merge(base, Corex.Positioning.to_dataset(positioning))
   end
 
   @spec root(Root.t()) :: map()
@@ -43,8 +52,16 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-part" => "root",
-      "dir" => assigns.dir
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "menu:#{assigns.id}:root"
     }
+  end
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:root")
+    )
   end
 
   @spec trigger(Trigger.t()) :: map()
@@ -55,57 +72,73 @@ defmodule Corex.Menu.Connect do
       "type" => "button",
       "tabindex" => if(assigns.disabled, do: -1, else: 0),
       "aria-disabled" => if(assigns.disabled, do: "true", else: "false"),
-      "data-disabled" => data_attr(assigns.disabled),
+      "data-disabled" => get_boolean(assigns.disabled),
       "disabled" => assigns.disabled,
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:trigger"
     }
   end
 
-  @spec indicator(Root.t()) :: map()
+  def ignore_trigger(assigns) do
+    JS.ignore_attributes(Trigger.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:trigger")
+    )
+  end
+
+  @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
     %{
       "data-scope" => "menu",
       "data-part" => "indicator",
-      "dir" => assigns.dir
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "menu:#{assigns.id}:indicator"
     }
   end
 
-  @spec positioner(Root.t()) :: map()
+  def ignore_indicator(assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:indicator")
+    )
+  end
+
+  @spec positioner(Positioner.t()) :: map()
   def positioner(assigns) do
-    base = %{
+    %{
       "data-scope" => "menu",
       "data-part" => "positioner",
-      "dir" => assigns.dir,
-      "id" => "menu:#{assigns.id}:positioner"
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "menu:#{assigns.id}:positioner",
+      "hidden" => "true"
     }
-
-    if initially_open?(assigns.open) do
-      base
-    else
-      Map.put(base, "hidden", "true")
-    end
   end
 
-  @spec content(Root.t()) :: map()
+  def ignore_positioner(assigns) do
+    JS.ignore_attributes(Positioner.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:positioner")
+    )
+  end
+
+  @spec content(Content.t()) :: map()
   def content(assigns) do
-    base = %{
+    %{
       "data-scope" => "menu",
       "data-part" => "content",
       "role" => "menu",
-      "dir" => assigns.dir,
-      "id" => "menu:#{assigns.id}:content"
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
+      "id" => "menu:#{assigns.id}:content",
+      "hidden" => "true"
     }
-
-    if initially_open?(assigns.open) do
-      base
-    else
-      Map.put(base, "hidden", "true")
-    end
   end
 
-  defp initially_open?(true), do: true
-  defp initially_open?(_), do: false
+  def ignore_content(assigns) do
+    JS.ignore_attributes(Content.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:content")
+    )
+  end
 
   @spec item(Item.t()) :: map()
   def item(assigns) do
@@ -113,16 +146,34 @@ defmodule Corex.Menu.Connect do
       "data-scope" => "menu",
       "data-part" => "item",
       "data-value" => assigns.value,
-      "data-disabled" => data_attr(assigns.disabled),
+      "data-disabled" => get_boolean(assigns.disabled),
       "role" => "menuitem",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}:item:#{assigns.value}",
       "data-nested-menu" => assigns.nested_menu_id,
-      "data-has-nested" => data_attr(assigns.has_nested)
+      "data-has-nested" => get_boolean(assigns.has_nested)
     }
 
-    base = if assigns.redirect == false, do: Map.put(base, "data-redirect", "false"), else: base
+    base =
+      case assigns.redirect do
+        false ->
+          Map.put(base, "data-redirect", "false")
+
+        mode when mode in [:href, :patch, :navigate] ->
+          Map.put(base, "data-redirect", Atom.to_string(mode))
+
+        _ ->
+          base
+      end
+
     if assigns.new_tab, do: Map.put(base, "data-new-tab", ""), else: base
+  end
+
+  def ignore_item(assigns) do
+    JS.ignore_attributes(Item.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:item:#{assigns.value}")
+    )
   end
 
   @spec separator(Root.t()) :: map()
@@ -132,18 +183,26 @@ defmodule Corex.Menu.Connect do
       "data-part" => "separator",
       "role" => "separator",
       "aria-orientation" => "horizontal",
-      "dir" => assigns.dir
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
   end
 
-  @spec item_group_label(Group.t()) :: map()
+  @spec item_group_label(GroupLabel.t()) :: map()
   def item_group_label(assigns) do
     %{
       "data-scope" => "menu",
       "data-part" => "item-group-label",
       "id" => "menu:#{assigns.id}:group-label:#{assigns.group_id}",
-      "dir" => assigns.dir
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
+  end
+
+  def ignore_item_group_label(assigns) do
+    JS.ignore_attributes(GroupLabel.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:group-label:#{assigns.group_id}")
+    )
   end
 
   @spec item_group(Group.t()) :: map()
@@ -154,8 +213,15 @@ defmodule Corex.Menu.Connect do
       "id" => "menu:#{assigns.id}:group:#{assigns.group_id}",
       "role" => "group",
       "aria-labelledby" => "menu:#{assigns.id}:group-label:#{assigns.group_id}",
-      "dir" => assigns.dir
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical")
     }
+  end
+
+  def ignore_item_group(assigns) do
+    JS.ignore_attributes(Group.ignored_attrs(),
+      to: Selectors.css_id("menu:#{assigns.id}:group:#{assigns.group_id}")
+    )
   end
 
   @spec nested_menu(Root.t()) :: map()
@@ -163,7 +229,8 @@ defmodule Corex.Menu.Connect do
     %{
       "data-scope" => "menu",
       "data-nested" => "menu",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "menu:#{assigns.id}"
     }
   end

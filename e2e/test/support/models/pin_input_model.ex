@@ -5,10 +5,11 @@ defmodule E2eWeb.PinInputModel do
     path =
       case mode do
         :static -> "/en/pin-input/form"
-        :live -> "/en/live/pin-input/form"
+        :live -> "/en/pin-input/live-form"
       end
 
-    visit(session, path)
+    session = visit_path(session, path)
+    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
   end
 
   def fill_pin_input(session, pin) when is_binary(pin) do
@@ -40,10 +41,10 @@ defmodule E2eWeb.PinInputModel do
   end
 
   def wait_for_redirect(session) do
-    wait_for_text(session, "Pin Input form")
+    wait_for_has(session, css("#pin-input-form-page"), timeout: 10_000)
   end
 
   def see_flash(session, flash_text) do
-    wait_for_text(session, flash_text)
+    wait_for_flash(session, flash_text)
   end
 end

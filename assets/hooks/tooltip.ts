@@ -3,24 +3,9 @@ import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/typ
 import { Tooltip } from "../components/tooltip";
 import type { OpenChangeDetails } from "@zag-js/tooltip";
 import type { Placement } from "@zag-js/popper";
-import type { Direction } from "@zag-js/types";
 
-import { getString, getBoolean, getNumber } from "../lib/util";
-
-const PLACEMENTS: readonly Placement[] = [
-  "top",
-  "top-start",
-  "top-end",
-  "bottom",
-  "bottom-start",
-  "bottom-end",
-  "left",
-  "left-start",
-  "left-end",
-  "right",
-  "right-start",
-  "right-end",
-];
+import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
+import { idMatches, readPayloadId } from "../lib/respond-to";
 
 type TooltipHookState = {
   tooltip?: Tooltip;
@@ -40,7 +25,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
-    const placement = getString<Placement>(el, "placement", PLACEMENTS);
+    const placement = getString<Placement>(el, "placement");
     const positioning = placement ? { placement } : undefined;
 
     const tooltip = new Tooltip(el, {
@@ -49,7 +34,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
         ? { open: getBoolean(el, "open") }
         : { defaultOpen: getBoolean(el, "defaultOpen") }),
       disabled: getBoolean(el, "disabled"),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),
       closeDelay: getCloseDelay(el),
       positioning,
@@ -60,7 +45,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
       interactive: getBoolean(el, "interactive"),
       onOpenChange: (details: OpenChangeDetails) => {
         const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             open: details.open,
@@ -89,21 +74,20 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
       const { open } = (event as CustomEvent<{ open: boolean }>).detail;
       tooltip.api.setOpen(open);
     };
-    el.addEventListener("phx:tooltip:set-open", this.onSetOpen);
+    el.addEventListener("corex:tooltip:set-open", this.onSetOpen);
 
     this.handlers = [];
 
     this.handlers.push(
       this.handleEvent("tooltip_set_open", (payload: { tooltip_id?: string; open: boolean }) => {
-        const targetId = payload.tooltip_id;
-        if (targetId && targetId !== el.id) return;
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         tooltip.api.setOpen(payload.open);
       })
     );
   },
 
   updated(this: object & HookInterface<HTMLElement> & TooltipHookState) {
-    const placement = getString<Placement>(this.el, "placement", PLACEMENTS);
+    const placement = getString<Placement>(this.el, "placement");
     const positioning = placement ? { placement } : undefined;
 
     this.tooltip?.updateProps({
@@ -112,7 +96,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
         ? { open: getBoolean(this.el, "open") }
         : { defaultOpen: getBoolean(this.el, "defaultOpen") }),
       disabled: getBoolean(this.el, "disabled"),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
       openDelay: getNumber(this.el, "openDelay"),
       closeDelay: getCloseDelay(this.el),
       positioning,
@@ -126,7 +110,7 @@ const TooltipHook: Hook<object & TooltipHookState, HTMLElement> = {
 
   destroyed(this: object & HookInterface<HTMLElement> & TooltipHookState) {
     if (this.onSetOpen) {
-      this.el.removeEventListener("phx:tooltip:set-open", this.onSetOpen);
+      this.el.removeEventListener("corex:tooltip:set-open", this.onSetOpen);
     }
 
     if (this.handlers) {

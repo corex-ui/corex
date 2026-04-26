@@ -2,30 +2,53 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Checkbox form</:title>
-    <:subtitle>Controller Form</:subtitle>
-  </.layout_heading>
-  <p>Controller Form (field=)</p>
-  <.form
-    :let={f}
-    for={@form}
-    action={~p"/#{@locale}/checkbox/form"}
-    method="post"
-    id={Corex.Form.get_form_id(@form)}
+  <div :if={is_binary(@scroll_to)} data-scroll-to={@scroll_to} hidden></div>
+  <.demo_page
+    id="checkbox-form-page"
+    title="Checkbox · Form"
+    subtitle="Phoenix to_form/2, stricter validation, and plain HTML"
   >
-    <.checkbox field={f[:terms]} class="checkbox">
-      <:label>Accept terms</:label>
-      <:error :let={msg}>
-        <.heroicon name="hero-exclamation-circle" class="icon" />
-        {msg}
-      </:error>
-    </.checkbox>
-    <.action type="submit" id="checkbox-form-submit" class="button button--accent">
-      Submit
-    </.action>
-  </.form>
+    <.demo_section
+      id="checkbox-form-changeset"
+      title="Phoenix Form (changeset)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @changeset_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @changeset_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.form_preview_controller_changeset form={@form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-form-validate"
+      title="Ecto changeset (validation)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @validate_heex},
+        %{value: "elixir", label: "Elixir", language: :elixir, code: @validate_elixir},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.form_preview_controller_validate form={@validate_form} />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="checkbox-form-controller"
+      title="Native form (plain HTML)"
+      code_tabs={[
+        %{value: "heex", label: "Heex", language: :heex, code: @native_heex},
+        %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+      ]}
+    >
+      <:preview>
+        <E2eWeb.Demos.CheckboxDemo.form_preview_controller_native />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

@@ -1,4 +1,8 @@
 import {
+  idMatches,
+  readPayloadId
+} from "./chunk-GGOQNLHD.mjs";
+import {
   Component,
   VanillaMachine,
   createAnatomy,
@@ -12,12 +16,11 @@ import {
   getString,
   isLeftClick,
   isModifierKey,
-  normalizeProps,
   query,
   trackPointerMove
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.39.1/node_modules/@zag-js/signature-pad/dist/signature-pad.anatomy.mjs
 var anatomy = createAnatomy("signature-pad").parts(
   "root",
   "control",
@@ -29,7 +32,7 @@ var anatomy = createAnatomy("signature-pad").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.39.1/node_modules/@zag-js/signature-pad/dist/signature-pad.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `signature-${ctx.id}`;
 var getControlId = (ctx) => ctx.ids?.control ?? `signature-control-${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `signature-label-${ctx.id}`;
@@ -40,7 +43,7 @@ var getDataUrl2 = (ctx, options) => {
   return getDataUrl(getSegmentEl(ctx), options);
 };
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.39.1/node_modules/@zag-js/signature-pad/dist/signature-pad.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, computed, context, scope } = service;
   const drawing = state.matches("drawing");
@@ -353,7 +356,7 @@ function R(e2, t2 = {}) {
 }
 var z = R;
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.39.1/node_modules/@zag-js/signature-pad/dist/get-svg-path.mjs
 var average = (a2, b2) => (a2 + b2) / 2;
 function getSvgPathFromStroke(points, closed = true) {
   const len = points.length;
@@ -378,7 +381,7 @@ function getSvgPathFromStroke(points, closed = true) {
   return result;
 }
 
-// ../node_modules/.pnpm/@zag-js+signature-pad@1.36.0/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
+// ../node_modules/.pnpm/@zag-js+signature-pad@1.39.1/node_modules/@zag-js/signature-pad/dist/signature-pad.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -526,7 +529,7 @@ var SignaturePad = class extends Component {
     this.paths = paths;
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   syncPaths = () => {
     const segment = this.el.querySelector(
@@ -595,7 +598,7 @@ var SignaturePad = class extends Component {
       this.spreadProps(
         hiddenInput,
         this.api.getHiddenInputProps({
-          value: this.api.paths.length > 0 ? JSON.stringify(this.api.paths) : ""
+          value: this.api.paths.length > 0 ? this.api.paths.join("\n") : ""
         })
       );
     }
@@ -604,48 +607,54 @@ var SignaturePad = class extends Component {
 };
 
 // hooks/signature-pad.ts
-function getPaths(el, attr) {
-  const value = el.dataset[attr];
-  if (!value) return [];
-  try {
-    return JSON.parse(value);
-  } catch {
-    return [];
-  }
+function parsePathsFromDataset(el, key) {
+  const raw = el.dataset[key];
+  if (!raw) return [];
+  return raw.split("\n").map((line) => line.trim()).filter(Boolean);
 }
 function buildDrawingOptions(el) {
-  return {
-    fill: getString(el, "drawingFill") || "black",
-    size: getNumber(el, "drawingSize") ?? 2,
+  const o2 = {
+    fill: getString(el, "drawingFill"),
+    size: getNumber(el, "drawingSize"),
     simulatePressure: getBoolean(el, "drawingSimulatePressure"),
-    smoothing: getNumber(el, "drawingSmoothing") ?? 0.5,
-    thinning: getNumber(el, "drawingThinning") ?? 0.7,
-    streamline: getNumber(el, "drawingStreamline") ?? 0.65
+    smoothing: getNumber(el, "drawingSmoothing"),
+    thinning: getNumber(el, "drawingThinning"),
+    streamline: getNumber(el, "drawingStreamline")
   };
+  const easing = getString(el, "drawingEasing");
+  if (easing) o2.easing = easing;
+  return o2;
+}
+function queueFormBubblingInputForPhoenix(el, getValue) {
+  queueMicrotask(() => {
+    const input = el.querySelector(
+      '[data-scope="signature-pad"][data-part="hidden-input"]'
+    );
+    if (!input) return;
+    const v2 = getValue();
+    if (String(input.value) !== String(v2)) {
+      input.value = v2;
+    }
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 }
 var SignaturePadHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const controlled = getBoolean(el, "controlled");
-    const paths = getPaths(el, "paths");
-    const defaultPaths = getPaths(el, "defaultPaths");
+    const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
     const signaturePad = new SignaturePad(el, {
       id: el.id,
       name: getString(el, "name"),
-      ...controlled && paths.length > 0 ? { paths } : void 0,
-      ...!controlled && defaultPaths.length > 0 ? { defaultPaths } : void 0,
+      ...defaultPaths.length > 0 ? { defaultPaths } : {},
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
-        const hiddenInput = el.querySelector(
-          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        queueFormBubblingInputForPhoenix(
+          el,
+          () => details.paths.length > 0 ? details.paths.join("\n") : ""
         );
-        if (hiddenInput) {
-          hiddenInput.value = details.paths.length > 0 ? JSON.stringify(details.paths) : "";
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
           const eventName = getString(el, "onDrawEnd");
@@ -678,36 +687,35 @@ var SignaturePadHook = {
       const { id: targetId } = event.detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
+      queueFormBubblingInputForPhoenix(el, () => "");
     };
-    el.addEventListener("phx:signature-pad:clear", this.onClear);
+    el.addEventListener("corex:signature-pad:clear", this.onClear);
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("signature_pad_clear", (payload) => {
-        const targetId = payload.signature_pad_id;
-        if (targetId && targetId !== el.id) return;
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         signaturePad.api.clear();
+        queueFormBubblingInputForPhoenix(el, () => "");
       })
     );
   },
   updated() {
-    const controlled = getBoolean(this.el, "controlled");
-    const paths = getPaths(this.el, "paths");
-    const defaultPaths = getPaths(this.el, "defaultPaths");
-    const name = getString(this.el, "name");
+    const el = this.el;
+    const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
+    const name = getString(el, "name");
     if (name) {
       this.signaturePad?.setName(name);
     }
     this.signaturePad?.updateProps({
-      id: this.el.id,
+      id: el.id,
       name,
-      ...controlled && paths.length > 0 ? { paths } : {},
-      ...!controlled && defaultPaths.length > 0 ? { defaultPaths } : {},
-      drawing: buildDrawingOptions(this.el)
+      ...defaultPaths.length > 0 ? { defaultPaths } : {},
+      drawing: buildDrawingOptions(el)
     });
   },
   destroyed() {
     if (this.onClear) {
-      this.el.removeEventListener("phx:signature-pad:clear", this.onClear);
+      this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
     }
     if (this.handlers) {
       for (const handler of this.handlers) {

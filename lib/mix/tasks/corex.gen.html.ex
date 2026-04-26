@@ -346,7 +346,7 @@ defmodule Mix.Tasks.Corex.Gen.Html do
     <.checkbox field={f[#{inspect(key)}]} class="checkbox">
       <:label>#{label(key)}</:label>
       <:indicator>
-        <.heroicon name="hero-check" class="data-checked" />
+        <.heroicon name="hero-check" />
       </:indicator>
       <:error :let={msg}>
         <.heroicon name="hero-exclamation-circle" class="icon" />

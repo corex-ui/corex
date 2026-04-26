@@ -1,34 +1,41 @@
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-VXCJNDUG.mjs";
+} from "./chunk-F6MNP3LD.mjs";
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-IAPTZYKE.mjs";
+} from "./chunk-ZKMAU6SY.mjs";
+import {
+  idMatches,
+  readPayloadId
+} from "./chunk-GGOQNLHD.mjs";
 import {
   Component,
   VanillaMachine,
   addDomEvent,
+  canPushEvent,
   createAnatomy,
   createGuards,
   createMachine,
   dataAttr,
   ensureProps,
   getBoolean,
+  getDir,
   getNumber,
   getOverflowAncestors,
   getString,
   isComposingEvent,
+  isFunction,
   isLeftClick,
-  normalizeProps
-} from "./chunk-SNFXM6OQ.mjs";
+  queryAll
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.36.0/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.39.1/node_modules/@zag-js/tooltip/dist/tooltip.anatomy.mjs
 var anatomy = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+utils@1.36.0/node_modules/@zag-js/utils/dist/store.mjs
+// ../node_modules/.pnpm/@zag-js+utils@1.39.1/node_modules/@zag-js/utils/dist/store.mjs
 function createStore(initialState, compare = Object.is) {
   let state = { ...initialState };
   const listeners = /* @__PURE__ */ new Set();
@@ -71,28 +78,35 @@ function createStore(initialState, compare = Object.is) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.36.0/node_modules/@zag-js/tooltip/dist/tooltip.dom.mjs
-var getTriggerId = (scope) => scope.ids?.trigger ?? `tooltip:${scope.id}:trigger`;
+// ../node_modules/.pnpm/@zag-js+tooltip@1.39.1/node_modules/@zag-js/tooltip/dist/tooltip.dom.mjs
+var getTriggerId = (scope, value) => {
+  const customId = scope.ids?.trigger;
+  if (customId != null) return isFunction(customId) ? customId(value) : customId;
+  return value ? `tooltip:${scope.id}:trigger:${value}` : `tooltip:${scope.id}:trigger`;
+};
 var getContentId = (scope) => scope.ids?.content ?? `tooltip:${scope.id}:content`;
 var getArrowId = (scope) => scope.ids?.arrow ?? `tooltip:${scope.id}:arrow`;
 var getPositionerId = (scope) => scope.ids?.positioner ?? `tooltip:${scope.id}:popper`;
-var getTriggerEl = (scope) => scope.getById(getTriggerId(scope));
 var getPositionerEl = (scope) => scope.getById(getPositionerId(scope));
+var getTriggerEls = (scope) => queryAll(scope.getDoc(), `[data-scope="tooltip"][data-part="trigger"][data-ownedby="${scope.id}"]`);
+var getActiveTriggerEl = (scope, value) => {
+  return value == null ? getTriggerEls(scope)[0] : scope.getById(getTriggerId(scope, value));
+};
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.36.0/node_modules/@zag-js/tooltip/dist/tooltip.store.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.39.1/node_modules/@zag-js/tooltip/dist/tooltip.store.mjs
 var store = createStore({
   id: null,
   prevId: null,
   instant: false
 });
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.36.0/node_modules/@zag-js/tooltip/dist/tooltip.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.39.1/node_modules/@zag-js/tooltip/dist/tooltip.connect.mjs
 function connect(service, normalize) {
   const { state, context, send, scope, prop, event: _event } = service;
   const id = prop("id");
   const hasAriaLabel = !!prop("aria-label");
   const open = state.matches("open", "closing");
-  const triggerId = getTriggerId(scope);
+  const triggerValue = context.get("triggerValue");
   const contentId = getContentId(scope);
   const disabled = prop("disabled");
   const popperStyles = getPlacementStyles({
@@ -106,13 +120,23 @@ function connect(service, normalize) {
       if (open2 === nextOpen) return;
       send({ type: nextOpen ? "open" : "close" });
     },
+    triggerValue,
+    setTriggerValue(value) {
+      send({ type: "triggerValue.set", value: value ?? void 0 });
+    },
     reposition(options = {}) {
       send({ type: "positioning.set", options });
     },
-    getTriggerProps() {
+    getTriggerProps(props = {}) {
+      const { value } = props;
+      const current = value == null ? false : triggerValue === value;
+      const triggerId = getTriggerId(scope, value);
       return normalize.button({
         ...parts.trigger.attrs,
         id: triggerId,
+        "data-ownedby": scope.id,
+        "data-value": value,
+        "data-current": dataAttr(current),
         dir: prop("dir"),
         "data-expanded": dataAttr(open),
         "data-state": open ? "open" : "closed",
@@ -121,22 +145,24 @@ function connect(service, normalize) {
           if (event.defaultPrevented) return;
           if (disabled) return;
           if (!prop("closeOnClick")) return;
-          send({ type: "close", src: "trigger.click" });
+          const shouldSwitch = open && value != null && !current;
+          send({ type: shouldSwitch ? "triggerValue.set" : "close", src: "trigger.click", value, triggerId });
         },
         onFocus(event) {
-          queueMicrotask(() => {
-            if (event.defaultPrevented) return;
-            if (disabled) return;
-            if (_event.src === "trigger.pointerdown") return;
-            if (!isFocusVisible()) return;
-            send({ type: "open", src: "trigger.focus" });
-          });
+          if (event.defaultPrevented) return;
+          if (disabled) return;
+          if (!isFocusVisible()) return;
+          const shouldSwitch = open && value != null && !current;
+          send({ type: shouldSwitch ? "triggerValue.set" : "open", src: "trigger.focus", value, triggerId });
         },
         onBlur(event) {
           if (event.defaultPrevented) return;
           if (disabled) return;
-          if (id === store.get("id")) {
-            send({ type: "close", src: "trigger.blur" });
+          if (id !== store.get("id")) return;
+          const activeEl = event.relatedTarget ?? scope.getDoc().activeElement;
+          const focusedAnotherTrigger = activeEl?.closest(`[data-ownedby="${scope.id}"]`) != null;
+          if (!focusedAnotherTrigger) {
+            send({ type: "close", src: "trigger.blur", value, triggerId });
           }
         },
         onPointerDown(event) {
@@ -145,20 +171,21 @@ function connect(service, normalize) {
           if (!isLeftClick(event)) return;
           if (!prop("closeOnPointerDown")) return;
           if (id === store.get("id")) {
-            send({ type: "close", src: "trigger.pointerdown" });
+            send({ type: "close", src: "trigger.pointerdown", value, triggerId });
           }
         },
         onPointerMove(event) {
           if (event.defaultPrevented) return;
           if (disabled) return;
           if (event.pointerType === "touch") return;
-          send({ type: "pointer.move" });
+          const shouldSwitch = open && value != null && !current;
+          send({ type: shouldSwitch ? "triggerValue.set" : "pointer.move", value, triggerId });
         },
         onPointerOver(event) {
           if (event.defaultPrevented) return;
           if (disabled) return;
           if (event.pointerType === "touch") return;
-          send({ type: "pointer.move" });
+          send({ type: "pointer.move", value, triggerId });
         },
         onPointerLeave() {
           if (disabled) return;
@@ -220,7 +247,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+tooltip@1.36.0/node_modules/@zag-js/tooltip/dist/tooltip.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tooltip@1.39.1/node_modules/@zag-js/tooltip/dist/tooltip.machine.mjs
 var { and, not } = createGuards();
 var machine = createMachine({
   initialState: ({ prop }) => {
@@ -248,9 +275,19 @@ var machine = createMachine({
     };
   },
   effects: ["trackFocusVisible", "trackStore"],
-  context: ({ bindable }) => ({
+  context: ({ bindable, prop, scope }) => ({
     currentPlacement: bindable(() => ({ defaultValue: void 0 })),
-    hasPointerMoveOpened: bindable(() => ({ defaultValue: false }))
+    hasPointerMoveOpened: bindable(() => ({ defaultValue: null })),
+    triggerValue: bindable(() => ({
+      defaultValue: prop("defaultTriggerValue") ?? null,
+      value: prop("triggerValue"),
+      onChange(value) {
+        const onTriggerValueChange = prop("onTriggerValueChange");
+        if (!onTriggerValueChange) return;
+        const triggerElement = getActiveTriggerEl(scope, value);
+        onTriggerValueChange({ value, triggerElement });
+      }
+    }))
   }),
   watch({ track, action, prop }) {
     track([() => prop("disabled")], () => {
@@ -259,6 +296,14 @@ var machine = createMachine({
     track([() => prop("open")], () => {
       action(["toggleVisibility"]);
     });
+    track([() => prop("triggerValue")], () => {
+      action(["repositionImmediate"]);
+    });
+  },
+  on: {
+    "triggerValue.set": {
+      actions: ["setTriggerValue", "repositionImmediate"]
+    }
   },
   states: {
     closed: {
@@ -270,11 +315,11 @@ var machine = createMachine({
         open: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           }
         ],
         "pointer.leave": {
@@ -283,12 +328,13 @@ var machine = createMachine({
         "pointer.move": [
           {
             guard: and("noVisibleTooltip", not("hasPointerMoveOpened")),
-            target: "opening"
+            target: "opening",
+            actions: ["setTriggerValue"]
           },
           {
             guard: not("hasPointerMoveOpened"),
             target: "open",
-            actions: ["setPointerMoveOpened", "invokeOnOpen"]
+            actions: ["setPointerMoveOpened", "invokeOnOpen", "setTriggerValue"]
           }
         ]
       }
@@ -315,11 +361,11 @@ var machine = createMachine({
         open: [
           {
             guard: "isOpenControlled",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           },
           {
             target: "open",
-            actions: ["invokeOnOpen"]
+            actions: ["setTriggerValue", "invokeOnOpen"]
           }
         ],
         "pointer.leave": [
@@ -385,6 +431,12 @@ var machine = createMachine({
         },
         "positioning.set": {
           actions: ["reposition"]
+        },
+        "triggerValue.set": {
+          // Transition to closing (which cleans up trackPositioning) then immediately back to open
+          // This re-creates the positioning effect with the new trigger
+          target: "closing",
+          actions: ["setTriggerValue", "immediateReopen"]
         }
       }
     },
@@ -421,13 +473,20 @@ var machine = createMachine({
           {
             guard: "isOpenControlled",
             // We trigger toggleVisibility manually since the `ctx.open` has not changed yet (at this point)
-            actions: ["setPointerMoveOpened", "invokeOnOpen", "toggleVisibility"]
+            actions: ["setPointerMoveOpened", "setTriggerValue", "invokeOnOpen", "toggleVisibility"]
           },
           {
             target: "open",
-            actions: ["setPointerMoveOpened", "invokeOnOpen"]
+            actions: ["setPointerMoveOpened", "setTriggerValue", "invokeOnOpen"]
           }
         ],
+        "triggerValue.set": {
+          target: "open",
+          actions: ["setTriggerValue", "repositionImmediate"]
+        },
+        reopen: {
+          target: "open"
+        },
         "content.pointer.move": {
           guard: "isInteractive",
           target: "open"
@@ -443,7 +502,7 @@ var machine = createMachine({
       noVisibleTooltip: () => store.get("id") === null,
       isVisible: ({ prop }) => prop("id") === store.get("id"),
       isInteractive: ({ prop }) => !!prop("interactive"),
-      hasPointerMoveOpened: ({ context }) => context.get("hasPointerMoveOpened"),
+      hasPointerMoveOpened: ({ context }) => !!context.get("hasPointerMoveOpened"),
       isOpenControlled: ({ prop }) => prop("open") !== void 0
     },
     actions: {
@@ -470,11 +529,22 @@ var machine = createMachine({
       reposition: ({ context, event, prop, scope }) => {
         if (event.type !== "positioning.set") return;
         const getPositionerEl2 = () => getPositionerEl(scope);
-        return getPlacement(getTriggerEl(scope), getPositionerEl2, {
+        const getTriggerEl = () => getActiveTriggerEl(scope, context.get("triggerValue"));
+        getPlacement(getTriggerEl, getPositionerEl2, {
           ...prop("positioning"),
           ...event.options,
-          defer: true,
           listeners: false,
+          onComplete(data) {
+            context.set("currentPlacement", data.placement);
+          }
+        });
+      },
+      repositionImmediate: ({ context, event, prop, scope }) => {
+        const triggerValue = event.value ?? context.get("triggerValue");
+        const getPositionerEl2 = () => getPositionerEl(scope);
+        const getTriggerEl = () => getActiveTriggerEl(scope, triggerValue);
+        return getPlacement(getTriggerEl, getPositionerEl2, {
+          ...prop("positioning"),
           onComplete(data) {
             context.set("currentPlacement", data.placement);
           }
@@ -488,11 +558,21 @@ var machine = createMachine({
           });
         });
       },
-      setPointerMoveOpened: ({ context }) => {
-        context.set("hasPointerMoveOpened", true);
+      setPointerMoveOpened: ({ context, event }) => {
+        const triggerId = event.triggerId ?? event.previousEvent?.triggerId;
+        context.set("hasPointerMoveOpened", triggerId ?? null);
       },
       clearPointerMoveOpened: ({ context }) => {
-        context.set("hasPointerMoveOpened", false);
+        context.set("hasPointerMoveOpened", null);
+      },
+      setTriggerValue: ({ context, event }) => {
+        if (event.value === void 0) return;
+        context.set("triggerValue", event.value);
+      },
+      immediateReopen: ({ send }) => {
+        queueMicrotask(() => {
+          send({ type: "reopen" });
+        });
       }
     },
     effects: {
@@ -504,7 +584,8 @@ var machine = createMachine({
           context.set("currentPlacement", prop("positioning").placement);
         }
         const getPositionerEl2 = () => getPositionerEl(scope);
-        return getPlacement(getTriggerEl(scope), getPositionerEl2, {
+        const getTriggerEl = () => getActiveTriggerEl(scope, context.get("triggerValue"));
+        return getPlacement(getTriggerEl, getPositionerEl2, {
           ...prop("positioning"),
           defer: true,
           onComplete(data) {
@@ -517,9 +598,10 @@ var machine = createMachine({
         const onChange = () => send({ type: "close", src: "pointerlock:change" });
         return addDomEvent(doc, "pointerlockchange", onChange, false);
       },
-      trackScroll: ({ send, prop, scope }) => {
+      trackScroll: ({ send, prop, scope, context }) => {
         if (!prop("closeOnScroll")) return;
-        const triggerEl = getTriggerEl(scope);
+        const triggerValue = context.get("triggerValue");
+        const triggerEl = getActiveTriggerEl(scope, triggerValue);
         if (!triggerEl) return;
         const overflowParents = getOverflowAncestors(triggerEl);
         const cleanups = overflowParents.map((overflowParent) => {
@@ -556,15 +638,15 @@ var machine = createMachine({
         };
         return addDomEvent(document, "keydown", onKeyDown, true);
       },
-      waitForOpenDelay: ({ send, prop }) => {
+      waitForOpenDelay: ({ send, prop, event }) => {
         const id = setTimeout(() => {
-          send({ type: "after.openDelay" });
+          send({ type: "after.openDelay", previousEvent: event });
         }, prop("openDelay"));
         return () => clearTimeout(id);
       },
-      waitForCloseDelay: ({ send, prop }) => {
+      waitForCloseDelay: ({ send, prop, event }) => {
         const id = setTimeout(() => {
-          send({ type: "after.closeDelay" });
+          send({ type: "after.closeDelay", previousEvent: event });
         }, prop("closeDelay"));
         return () => clearTimeout(id);
       }
@@ -579,7 +661,7 @@ var Tooltip = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el;
@@ -605,20 +687,6 @@ var Tooltip = class extends Component {
 };
 
 // hooks/tooltip.ts
-var PLACEMENTS = [
-  "top",
-  "top-start",
-  "top-end",
-  "bottom",
-  "bottom-start",
-  "bottom-end",
-  "left",
-  "left-start",
-  "left-end",
-  "right",
-  "right-start",
-  "right-end"
-];
 function getCloseDelay(el) {
   const interactive = getBoolean(el, "interactive");
   const raw = getNumber(el, "closeDelay");
@@ -629,13 +697,13 @@ var TooltipHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
-    const placement = getString(el, "placement", PLACEMENTS);
+    const placement = getString(el, "placement");
     const positioning = placement ? { placement } : void 0;
     const tooltip = new Tooltip(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
       disabled: getBoolean(el, "disabled"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       openDelay: getNumber(el, "openDelay"),
       closeDelay: getCloseDelay(el),
       positioning,
@@ -646,7 +714,7 @@ var TooltipHook = {
       interactive: getBoolean(el, "interactive"),
       onOpenChange: (details) => {
         const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
+        if (eventName && canPushEvent(this.liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             open: details.open
@@ -672,24 +740,23 @@ var TooltipHook = {
       const { open } = event.detail;
       tooltip.api.setOpen(open);
     };
-    el.addEventListener("phx:tooltip:set-open", this.onSetOpen);
+    el.addEventListener("corex:tooltip:set-open", this.onSetOpen);
     this.handlers = [];
     this.handlers.push(
       this.handleEvent("tooltip_set_open", (payload) => {
-        const targetId = payload.tooltip_id;
-        if (targetId && targetId !== el.id) return;
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         tooltip.api.setOpen(payload.open);
       })
     );
   },
   updated() {
-    const placement = getString(this.el, "placement", PLACEMENTS);
+    const placement = getString(this.el, "placement");
     const positioning = placement ? { placement } : void 0;
     this.tooltip?.updateProps({
       id: this.el.id,
       ...getBoolean(this.el, "controlled") ? { open: getBoolean(this.el, "open") } : { defaultOpen: getBoolean(this.el, "defaultOpen") },
       disabled: getBoolean(this.el, "disabled"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
       openDelay: getNumber(this.el, "openDelay"),
       closeDelay: getCloseDelay(this.el),
       positioning,
@@ -702,7 +769,7 @@ var TooltipHook = {
   },
   destroyed() {
     if (this.onSetOpen) {
-      this.el.removeEventListener("phx:tooltip:set-open", this.onSetOpen);
+      this.el.removeEventListener("corex:tooltip:set-open", this.onSetOpen);
     }
     if (this.handlers) {
       for (const handler of this.handlers) {

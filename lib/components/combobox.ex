@@ -2,6 +2,8 @@ defmodule Corex.Combobox do
   @moduledoc ~S'''
   Phoenix implementation of [Zag.js Combobox](https://zagjs.com/components/react/combobox).
 
+  Pass options with `Corex.List.new/1`. With `redirect`, use per-item `:to`, `:redirect` (`:href` | `:patch` | `:navigate` | `false`), and `:new_tab`; Zag runs single-select when `redirect` is true.
+
   <!-- tabs-open -->
 
   ### Minimal
@@ -10,14 +12,14 @@ defmodule Corex.Combobox do
   <.combobox
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
-        collection={[
+        items={Corex.List.new([
           %{label: "France", id: "fra", disabled: true},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
           %{label: "Netherlands", id: "nld"},
           %{label: "Switzerland", id: "che"},
           %{label: "Austria", id: "aut"}
-        ]}
+        ])}
       >
         <:trigger>
           <.heroicon name="hero-chevron-down" />
@@ -31,7 +33,7 @@ defmodule Corex.Combobox do
   <.combobox
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
-        collection={[
+        items={Corex.List.new([
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
@@ -45,7 +47,7 @@ defmodule Corex.Combobox do
           %{label: "USA", id: "usa", group: "North America"},
           %{label: "Canada", id: "can", group: "North America"},
           %{label: "Mexico", id: "mex", group: "North America"}
-        ]}
+        ])}
       >
         <:trigger>
           <.heroicon name="hero-chevron-down" />
@@ -61,14 +63,14 @@ defmodule Corex.Combobox do
     <.combobox
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
-        collection={[
+        items={Corex.List.new([
           %{label: "France", id: "fra"},
           %{label: "Belgium", id: "bel"},
           %{label: "Germany", id: "deu"},
           %{label: "Netherlands", id: "nld"},
           %{label: "Switzerland", id: "che"},
           %{label: "Austria", id: "aut"}
-        ]}
+        ])}
       >
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
@@ -94,14 +96,14 @@ defmodule Corex.Combobox do
   <.combobox
         class="combobox"
         translation={%Corex.Combobox.Translation{placeholder: "Select a country", empty: "No results"}}
-        collection={[
+        items={Corex.List.new([
           %{label: "France", id: "fra", group: "Europe"},
           %{label: "Belgium", id: "bel", group: "Europe"},
           %{label: "Germany", id: "deu", group: "Europe"},
           %{label: "Japan", id: "jpn", group: "Asia"},
           %{label: "China", id: "chn", group: "Asia"},
           %{label: "South Korea", id: "kor", group: "Asia"}
-        ]}
+        ])}
       >
         <:item :let={item}>
           <Flagpack.flag name={String.to_atom(item.id)} />
@@ -121,7 +123,7 @@ defmodule Corex.Combobox do
 
   ## Phoenix Form Integration
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. In Live view add controlled mode and use the same changeset pattern. See the Select or NumberInput component docs for the full Controller and Live View examples.
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. The combobox stays uncontrolled in the browser; merge hook-driven updates into changeset params when validating (see Angle Slider form docs). See the Select or NumberInput component docs for full controller and LiveView examples.
 
   ### Server-side Filtering
 
@@ -161,7 +163,7 @@ defmodule Corex.Combobox do
       ~H"""
       <.combobox
         id="country-combobox"
-        collection={@items}
+        items={@items}
         filter={false}
         on_input_value_change="search"
       >
@@ -205,7 +207,7 @@ defmodule Corex.Combobox do
   You can then use modifiers
 
   ```heex
-  <.combobox class="combobox combobox--accent combobox--lg" collection={[]}>
+  <.combobox class="combobox combobox--accent combobox--lg" items={Corex.List.new([])}>
     <:empty>No results</:empty>
     <:trigger>
       <.heroicon name="hero-chevron-down" />
@@ -213,7 +215,6 @@ defmodule Corex.Combobox do
   </.combobox>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/combobox#modifiers)
   '''
 
   defmodule Translation do
@@ -231,7 +232,38 @@ defmodule Corex.Combobox do
   use Phoenix.Component
 
   import Corex.Gettext, only: [gettext: 1]
-  alias Corex.Combobox.Anatomy.{Content, Control, Input, Label, Positioner, Props, Root}
+
+  import Corex.Helpers,
+    only: [
+      validate_value!: 1,
+      normalize_items: 1,
+      has_groups?: 1,
+      normalize_groups: 1,
+      entry_value: 1
+    ]
+
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
+  alias Corex.Combobox.Anatomy.{
+    ClearTrigger,
+    Content,
+    Control,
+    Empty,
+    Input,
+    Item,
+    ItemGroup,
+    ItemGroupLabel,
+    ItemIndicator,
+    ItemText,
+    Label,
+    List,
+    Positioner,
+    Props,
+    Root,
+    Trigger
+  }
+
   alias Corex.Combobox.Connect
 
   @doc """
@@ -243,12 +275,22 @@ defmodule Corex.Combobox do
     doc: "The id of the combobox, useful for API to identify the combobox"
   )
 
-  attr(:collection, :list,
+  attr(:items, :list,
     default: [],
-    doc: "The collection of items to display in the combobox"
+    doc: "Items from `Corex.List.new/1` (or maps with :id and :label)"
   )
 
-  attr(:controlled, :boolean, default: false, doc: "Whether the combobox is controlled")
+  attr(:value, :any,
+    default: nil,
+    doc:
+      "Initial selected item ids (list of strings or a single string); not updated by LiveView after mount"
+  )
+
+  attr(:controlled, :boolean,
+    default: false,
+    doc:
+      "When true (e.g. LiveView playground), selection is driven from the server via `data-value` and the hook passes Zag `value` on updates. When false, only `data-default-value` is used for SSR and hook updates omit selection so client filter/typing stay stable."
+  )
 
   attr(:on_open_change, :string,
     default: nil,
@@ -260,14 +302,16 @@ defmodule Corex.Combobox do
     doc: "The client event name to trigger on open change"
   )
 
-  attr(:bubble, :boolean, default: false, doc: "Whether the client events are bubbled")
   attr(:disabled, :boolean, default: false, doc: "Whether the combobox is disabled")
-  attr(:open, :boolean, default: false, doc: "Whether the combobox is open")
-  attr(:value, :list, default: [], doc: "The value of the combobox")
 
   attr(:translation, Corex.Combobox.Translation,
     default: nil,
     doc: "Override translatable strings"
+  )
+
+  attr(:placeholder, :string,
+    default: nil,
+    doc: "Input placeholder; when nil, uses translation.placeholder"
   )
 
   attr(:always_submit_on_enter, :boolean,
@@ -282,6 +326,12 @@ defmodule Corex.Combobox do
     default: nil,
     doc:
       "The direction of the combobox. When nil, derived from document (html lang + config :rtl_locales)"
+  )
+
+  attr(:orientation, :string,
+    default: "vertical",
+    values: ["horizontal", "vertical"],
+    doc: "Layout orientation for the combobox"
   )
 
   attr(:input_behavior, :string,
@@ -314,7 +364,25 @@ defmodule Corex.Combobox do
     doc: "The server event name to trigger on value change"
   )
 
-  attr(:positioning, :map, default: %Corex.Positioning{}, doc: "The positioning of the combobox")
+  attr(:on_value_change_client, :string,
+    default: nil,
+    doc: "The client event name to trigger on value change"
+  )
+
+  attr(:redirect, :boolean,
+    default: false,
+    doc: """
+    When true, selecting a value triggers redirect-on-select. Each item picks
+    the navigation kind via `:redirect` (`:href` (default) | `:patch` | `:navigate` | `false`).
+    Items may also set `:to` (overrides the destination) and `:new_tab` (opens in a new tab).
+    When true, the client runs single-select in Zag even if `multiple` is set on this component.
+    """
+  )
+
+  attr(:positioning, :map,
+    default: %Corex.Positioning{same_width: true},
+    doc: "The positioning of the combobox"
+  )
 
   attr(:rest, :global)
 
@@ -362,16 +430,19 @@ defmodule Corex.Combobox do
 
   def combobox(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
     errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    items = normalize_items(assigns.items)
     raw_value = get_value(field.value)
-    value = normalize_value_to_ids(assigns.collection, raw_value)
-    selected_label = get_selected_label(assigns.collection, value)
+    value = normalize_value_to_ids(items, raw_value)
+    selected_label = get_selected_label(items, value)
 
     assigns
+    |> assign(:items, items)
     |> assign(field: nil)
     |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
     |> assign_new(:id, fn -> field.id end)
     |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
+    |> assign_new(:controlled, fn -> true end)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
     |> combobox()
@@ -384,7 +455,7 @@ defmodule Corex.Combobox do
     }
 
     translation = assigns[:translation] || default_translation
-    placeholder = translation.placeholder
+    placeholder = assigns[:placeholder] || translation.placeholder
     empty_text = translation.empty
 
     assigns =
@@ -392,59 +463,113 @@ defmodule Corex.Combobox do
       |> assign_new(:id, fn -> "combobox-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:controlled, fn -> false end)
       |> assign(:translation, translation)
       |> assign(:placeholder, placeholder)
       |> assign(:empty_text, empty_text)
 
-    value = Map.get(assigns, :value, [])
-    value_list = get_value(value)
-    value_list = normalize_value_to_ids(assigns.collection, value_list)
+    items = normalize_items(assigns.items)
 
-    grouped_items = Enum.group_by(assigns.collection, &Map.get(&1, :group))
+    raw_initial = Map.get(assigns, :value)
+    value_list = normalize_value_to_ids(items, get_value(raw_initial))
 
-    has_groups =
-      grouped_items
-      |> Map.keys()
-      |> Enum.any?(& &1)
+    has_groups = has_groups?(items)
+    groups = normalize_groups(items)
 
-    selected_label = get_selected_label(assigns.collection, value_list)
+    selected_label = get_selected_label(items, value_list)
 
     assigns =
       assigns
-      |> assign(:grouped_items, grouped_items)
+      |> assign(:items, items)
       |> assign(:has_groups, has_groups)
+      |> assign(:groups, groups)
       |> assign(:value, value_list)
       |> assign(:selected_label, selected_label)
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
-    <div id={@id} phx-hook="Combobox" {@rest} {Connect.props(%Props{
-      id: @id, collection: @collection, controlled: @controlled, placeholder: @placeholder, value: @value, form: @form,
+    <div id={@id} 
+    phx-hook="Combobox" 
+    data-loading
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
+    {@rest}
+    {Connect.props(%Props{
+      id: @id, items: @items, placeholder: @placeholder, value: @value, form: @form,
+      controlled: @controlled,
       always_submit_on_enter: @always_submit_on_enter, auto_focus: @auto_focus, close_on_select: @close_on_select,
-      dir: @dir, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
+      dir: @dir, orientation: @orientation, input_behavior: @input_behavior, loop_focus: @loop_focus, multiple: @multiple, invalid: @invalid,
      name: @name, read_only: @read_only, required: @required,
       on_open_change: @on_open_change, on_open_change_client: @on_open_change_client, on_input_value_change: @on_input_value_change, on_value_change: @on_value_change,
-      open: @open, positioning: @positioning,
-      bubble: @bubble, disabled: @disabled, filter: @filter
+      on_value_change_client: @on_value_change_client,
+      positioning: @positioning,
+      redirect: @redirect,
+      disabled: @disabled, filter: @filter
     })}>
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only})}>
+      <input
+        type="hidden"
+        id={"#{@id}-hidden-value"}
+        name={@name}
+        form={@form}
+        phx-mounted={JS.ignore_attributes(["value"], to: "##{@id}-hidden-value")}
+        data-scope="combobox"
+        data-part="hidden-input"
+        value={@value_for_hidden_input}
+      />
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
-        <div phx-update="ignore" :if={!Enum.empty?(@label)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir})}>
+        <div :if={!Enum.empty?(@label)} phx-mounted={Connect.ignore_label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </div>
-        <div phx-update="ignore" {Connect.control(%Control{id: @id, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled})}>
-          <input {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, open: @open, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus})} />
-          <button :if={!Enum.empty?(@clear_trigger) and !Enum.empty?(@value)} data-scope="combobox" data-part="clear-trigger">
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
+          <input phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
+          <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})}>
             {render_slot(@clear_trigger)}
           </button>
-          <button data-scope="combobox" data-part="trigger">
+          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})}>
             {render_slot(@trigger)}
           </button>
         </div>
 
-        <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
-          <ul phx-update="ignore" {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
-          </ul>
+        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
+          <div phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
+            <ul phx-mounted={Connect.ignore_list(%List{id: @id, dir: @dir, orientation: @orientation})} {Connect.list(%List{id: @id, dir: @dir, orientation: @orientation})}>
+              <li :if={@items == []} phx-mounted={Connect.ignore_empty(%Empty{id: @id, dir: @dir, orientation: @orientation})} {Connect.empty(%Empty{id: @id, dir: @dir, orientation: @orientation})}>
+                {if Enum.empty?(@empty), do: @empty_text, else: render_slot(@empty)}
+              </li>
+
+              <li :if={@has_groups} :for={group_id <- @groups} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})}>
+                <div phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})} {Connect.item_group_label(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>
+                  {group_id}
+                </div>
+                <ul>
+                  <li :for={entry <- Enum.filter(@items, &(&1.group == group_id))} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
+                    <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                      {entry.label}
+                    </span>
+                    <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                      {render_slot(@item, entry)}
+                    </span>
+                    <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                      {render_slot(@item_indicator)}
+                    </span>
+                  </li>
+                </ul>
+              </li>
+
+              <li :for={entry <- if(@has_groups, do: [], else: @items)} phx-mounted={Connect.ignore_item(%Item{id: @id, item: entry, value: entry_value(entry), dir: @dir, orientation: @orientation})} {item_attrs(@id, entry, @dir, @orientation)}>
+                <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                  {entry.label}
+                </span>
+                <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                  {render_slot(@item, entry)}
+                </span>
+                <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                  {render_slot(@item_indicator)}
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="combobox" data-part="error">
@@ -452,45 +577,86 @@ defmodule Corex.Combobox do
       </div>
       <div style="display: none;" data-templates="combobox">
         <li data-scope="combobox" data-part="empty" data-template="true">
-          <%= if Enum.empty?(@empty) do %>
-            {@empty_text}
-          <% else %>
-            {render_slot(@empty)}
-          <% end %>
+          {if Enum.empty?(@empty), do: @empty_text, else: render_slot(@empty)}
         </li>
-        <div :if={@has_groups} :for={{group, items} <- @grouped_items} data-scope="combobox" data-part="item-group" data-id={group || "default"} data-template="true">
-          <div :if={group} data-scope="combobox" data-part="item-group-label" data-id={group}>
-            {group}
+
+        <li :if={@has_groups} :for={group_id <- @groups} {Connect.item_group_template(%ItemGroup{id: @id, group_id: group_id, dir: @dir, orientation: @orientation})} data-template="true">
+          <div {Connect.item_group_label_template(%ItemGroupLabel{id: @id, html_for: group_id, dir: @dir, orientation: @orientation})}>
+            {group_id}
           </div>
-          <div data-scope="combobox" data-part="item-group-content">
-            <li :for={item <- items} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
-              <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                {render_slot(@item, item)}
+          <ul>
+            <li :for={entry <- Enum.filter(@items, &(&1.group == group_id))} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
+              <span :if={Enum.empty?(@item)} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                {entry.label}
               </span>
-              <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-                {item.label}
+              <span :if={!Enum.empty?(@item)} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+                {render_slot(@item, entry)}
               </span>
-              <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
+              <span :if={!Enum.empty?(@item_indicator)} {Connect.item_indicator_template(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
                 {render_slot(@item_indicator)}
               </span>
             </li>
-          </div>
-        </div>
+          </ul>
+        </li>
 
-        <li :if={!@has_groups} :for={item <- @collection} data-scope="combobox" data-part="item" data-value={item.id} data-template="true">
-          <span :if={!Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-            {render_slot(@item, item)}
+        <li :for={entry <- if(@has_groups, do: [], else: @items)} {item_attrs_template(@id, entry, @dir, @orientation)} data-template="true">
+          <span :if={Enum.empty?(@item)} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+            {entry.label}
           </span>
-          <span :if={Enum.empty?(@item)} data-scope="combobox" data-part="item-text">
-            {item.label}
+          <span :if={!Enum.empty?(@item)} {Connect.item_text_template(%ItemText{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
+            {render_slot(@item, entry)}
           </span>
-          <span :if={!Enum.empty?(@item_indicator)} data-scope="combobox" data-part="item-indicator">
+          <span :if={!Enum.empty?(@item_indicator)} {Connect.item_indicator_template(%ItemIndicator{id: @id, item: entry, dir: @dir, orientation: @orientation})}>
             {render_slot(@item_indicator)}
           </span>
         </li>
       </div>
     </div>
     """
+  end
+
+  defp item_attrs(id, entry, dir, orientation) do
+    base =
+      Connect.item(%Item{
+        id: id,
+        item: entry,
+        value: entry_value(entry),
+        dir: dir,
+        orientation: orientation,
+        to: Map.get(entry, :to),
+        redirect: Map.get(entry, :redirect),
+        new_tab: Map.get(entry, :new_tab, false)
+      })
+
+    if Map.get(entry, :disabled) do
+      base
+      |> Map.put("data-disabled", "")
+      |> Map.put("aria-disabled", "true")
+    else
+      base
+    end
+  end
+
+  defp item_attrs_template(id, entry, dir, orientation) do
+    base =
+      Connect.item_template(%Item{
+        id: id,
+        item: entry,
+        value: entry_value(entry),
+        dir: dir,
+        orientation: orientation,
+        to: Map.get(entry, :to),
+        redirect: Map.get(entry, :redirect),
+        new_tab: Map.get(entry, :new_tab, false)
+      })
+
+    if Map.get(entry, :disabled) do
+      base
+      |> Map.put("data-disabled", "")
+      |> Map.put("aria-disabled", "true")
+    else
+      base
+    end
   end
 
   defp get_value(field_value) do
@@ -502,13 +668,13 @@ defmodule Corex.Combobox do
     end
   end
 
-  defp normalize_value_to_ids(collection, value_list) do
-    Enum.map(value_list, &resolve_value_id(collection, &1))
+  defp normalize_value_to_ids(items, value_list) do
+    Enum.map(value_list, &resolve_value_id(items, &1))
   end
 
-  defp resolve_value_id(collection, val) do
-    by_id = Enum.find(collection, &(&1.id == val))
-    by_label = Enum.find(collection, &(&1.label == val))
+  defp resolve_value_id(items, val) do
+    by_id = Enum.find(items, &(&1.id == val))
+    by_label = Enum.find(items, &(&1.label == val))
 
     cond do
       by_id != nil -> val
@@ -517,7 +683,7 @@ defmodule Corex.Combobox do
     end
   end
 
-  defp get_selected_label(collection, value) do
+  defp get_selected_label(items, value) do
     case value do
       [] ->
         nil
@@ -525,7 +691,7 @@ defmodule Corex.Combobox do
       _ ->
         value
         |> Enum.map(fn val ->
-          collection
+          items
           |> Enum.find(&(&1.id == val))
         end)
         |> Enum.filter(& &1)
@@ -538,6 +704,41 @@ defmodule Corex.Combobox do
   end
 
   defp value_for_hidden_input(value_list, _multiple) when value_list == [], do: ""
-  defp value_for_hidden_input(value_list, false), do: List.first(value_list)
+  defp value_for_hidden_input(value_list, false), do: Elixir.List.first(value_list)
   defp value_for_hidden_input(value_list, true), do: Enum.join(value_list, ",")
+
+  @doc type: :api
+  @doc """
+  Sets combobox selection from the client. Dispatches `corex:combobox:set-value` on the hook root.
+  """
+  def set_value(combobox_id, value) when is_binary(combobox_id) do
+    JS.dispatch("corex:combobox:set-value",
+      to: "##{combobox_id}",
+      detail: %{value: normalize_combobox_set_value!(value)},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets combobox selection from the server via `push_event` (`combobox_set_value`).
+  """
+  def set_value(socket, combobox_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(combobox_id) do
+    LiveView.push_event(socket, "combobox_set_value", %{
+      id: combobox_id,
+      value: normalize_combobox_set_value!(value)
+    })
+  end
+
+  defp normalize_combobox_set_value!(value) when is_list(value), do: validate_value!(value)
+
+  defp normalize_combobox_set_value!(value) when is_binary(value) do
+    case String.trim(value) do
+      "" -> []
+      trimmed -> trimmed |> String.split(",", trim: true) |> validate_value!()
+    end
+  end
+
+  defp normalize_combobox_set_value!(value), do: validate_value!(Elixir.List.wrap(value))
 end

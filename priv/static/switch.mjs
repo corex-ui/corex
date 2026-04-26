@@ -1,7 +1,17 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-IAPTZYKE.mjs";
+} from "./chunk-ZKMAU6SY.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunk-WHNMJXTN.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadChecked,
+  readPayloadId
+} from "./chunk-GGOQNLHD.mjs";
 import {
   Component,
   VanillaMachine,
@@ -12,21 +22,21 @@ import {
   dataAttr,
   dispatchInputCheckedEvent,
   getBoolean,
+  getDir,
   getEventTarget,
   getString,
   isSafari,
-  normalizeProps,
   setElementChecked,
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.dom.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
@@ -35,7 +45,7 @@ var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.connect.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const disabled = !!prop("disabled");
@@ -152,7 +162,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+switch@1.36.0/node_modules/@zag-js/switch/dist/switch.machine.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {
@@ -301,7 +311,7 @@ var Switch = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="switch"][data-part="root"]');
@@ -331,10 +341,17 @@ var Switch = class extends Component {
 };
 
 // hooks/switch.ts
+function checkedChangePayload(el, details) {
+  return {
+    id: el.id,
+    checked: details.checked
+  };
+}
 var SwitchHook = {
   mounted() {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     this.wasFocused = false;
     const zagSwitch = new Switch(el, {
       id: el.id,
@@ -343,76 +360,68 @@ var SwitchHook = {
       name: getString(el, "name"),
       form: getString(el, "form"),
       value: getString(el, "value"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       invalid: getBoolean(el, "invalid"),
       required: getBoolean(el, "required"),
       readOnly: getBoolean(el, "readOnly"),
       label: getString(el, "label"),
       onCheckedChange: (details) => {
-        const eventName = getString(el, "onCheckedChange");
-        if (eventName && canPushEvent(this.liveSocket)) {
-          pushEvent(eventName, {
-            checked: details.checked,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onCheckedChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                checked: details.checked
-              }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: checkedChangePayload(el, details),
+          serverEventName: getString(el, "onCheckedChange"),
+          clientEventName: getString(el, "onCheckedChangeClient")
+        });
       }
     });
     zagSwitch.init();
     this.zagSwitch = zagSwitch;
-    this.onSetChecked = (event) => {
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:switch:set-checked", (event) => {
       const { checked } = event.detail;
       zagSwitch.api.setChecked(checked);
-    };
-    el.addEventListener("phx:switch:set-checked", this.onSetChecked);
-    this.handlers = [];
-    this.handlers.push(
-      this.handleEvent("switch_set_checked", (payload) => {
-        const targetId = payload.id;
-        if (targetId && targetId !== el.id) return;
-        zagSwitch.api.setChecked(payload.checked);
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_toggle_checked", (payload) => {
-        const targetId = payload.id;
-        if (targetId && targetId !== el.id) return;
-        zagSwitch.api.toggleChecked();
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_checked", () => {
-        this.pushEvent("switch_checked_response", {
-          value: zagSwitch.api.checked
-        });
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_focused", () => {
-        this.pushEvent("switch_focused_response", {
-          value: zagSwitch.api.focused
-        });
-      })
-    );
-    this.handlers.push(
-      this.handleEvent("switch_disabled", () => {
-        this.pushEvent("switch_disabled_response", {
-          value: zagSwitch.api.disabled
-        });
-      })
-    );
+    });
+    domRegistry.add("corex:switch:toggle-checked", () => {
+      zagSwitch.api.toggleChecked();
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("switch_set_checked", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const checked = readPayloadChecked(payload);
+      if (typeof checked === "boolean") zagSwitch.api.setChecked(checked);
+    });
+    registry.add("switch_toggle_checked", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zagSwitch.api.toggleChecked();
+    });
+    registry.add("switch_checked", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("switch_checked_response", {
+        id: el.id,
+        value: zagSwitch.api.checked
+      });
+    });
+    registry.add("switch_focused", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("switch_focused_response", {
+        id: el.id,
+        value: zagSwitch.api.focused
+      });
+    });
+    registry.add("switch_disabled", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("switch_disabled_response", {
+        id: el.id,
+        value: zagSwitch.api.disabled
+      });
+    });
   },
   beforeUpdate() {
     this.wasFocused = this.zagSwitch?.api.focused ?? false;
@@ -425,7 +434,7 @@ var SwitchHook = {
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),
       value: getString(this.el, "value"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
       invalid: getBoolean(this.el, "invalid"),
       required: getBoolean(this.el, "required"),
       readOnly: getBoolean(this.el, "readOnly"),
@@ -439,14 +448,8 @@ var SwitchHook = {
     }
   },
   destroyed() {
-    if (this.onSetChecked) {
-      this.el.removeEventListener("phx:switch:set-checked", this.onSetChecked);
-    }
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.zagSwitch?.destroy();
   }
 };

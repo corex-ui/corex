@@ -4,7 +4,6 @@ defmodule E2e.Form.Combobox do
   alias E2e.Form.Combobox
 
   embedded_schema do
-    field :name, :string
     field :airport, :string
   end
 
@@ -16,7 +15,13 @@ defmodule E2e.Form.Combobox do
   @doc false
   def changeset(%Combobox{} = combobox, attrs) do
     combobox
-    |> cast(attrs, [:name, :airport])
-    |> validate_required([:name, :airport])
+    |> cast(attrs, [:airport])
+    |> validate_required([:airport])
+  end
+
+  def changeset_validate(%Combobox{} = combobox, attrs \\ %{}) do
+    combobox
+    |> cast(attrs, [:airport])
+    |> validate_required([:airport], message: "can't be blank")
   end
 end

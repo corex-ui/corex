@@ -22,8 +22,8 @@ defmodule Corex.DataListTest do
       assert html =~ ~s(data-scope="data-list")
       assert html =~ ~s(data-part="root")
       assert html =~ ~s(data-part="item")
-      assert html =~ ~s(data-part="content")
       assert html =~ ~s(data-part="title")
+      assert html =~ ~s(data-part="value")
 
       assert html =~ "Name"
       assert html =~ "Alice"

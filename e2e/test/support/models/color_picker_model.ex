@@ -5,18 +5,23 @@ defmodule E2eWeb.ColorPickerModel do
     path =
       case mode do
         :static -> "/en/color-picker/form"
-        :live -> "/en/live/color-picker/form"
+        :live -> "/en/color-picker/live-form"
       end
 
-    visit(session, path)
+    session = visit_path(session, path)
+    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
   end
 
   def submit_form(session, mode \\ :static) do
-    id = if mode == :live, do: "color-picker-form-live-submit", else: "color-picker-form-submit"
+    id =
+      if mode == :live,
+        do: "color-picker-basic-form-live-submit",
+        else: "color-picker-form-submit"
+
     click(session, css("##{id}"))
   end
 
   def see_flash(session, flash_text) do
-    wait_for_text(session, flash_text)
+    wait_for_flash(session, flash_text)
   end
 end

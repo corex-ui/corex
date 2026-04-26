@@ -24,10 +24,10 @@ defmodule Corex.MenuTest do
       assert html =~ ~r/Messages/
     end
 
-    test "renders with controlled" do
-      html = render_component(&CorexTest.ComponentHelpers.render_menu_controlled/1, [])
-      assert html =~ ~r/data-scope="menu"/
-      assert html =~ ~r/data-controlled/
+    test "renders data-loading on hook root" do
+      html = render_component(&CorexTest.ComponentHelpers.render_menu_with_loading/1, [])
+      assert html =~ ~r/data-loading/
+      assert html =~ ~r/phx-mounted/
     end
   end
 
@@ -53,7 +53,7 @@ defmodule Corex.MenuTest do
 
   describe "Connect.root/1" do
     test "returns root attributes" do
-      assigns = %{dir: "ltr"}
+      assigns = %{id: "m1", dir: "ltr"}
       result = Connect.root(assigns)
       assert result["data-scope"] == "menu"
       assert result["data-part"] == "root"
@@ -61,7 +61,7 @@ defmodule Corex.MenuTest do
     end
 
     test "computes root with rtl direction" do
-      assigns = %{dir: "rtl"}
+      assigns = %{id: "m2", dir: "rtl"}
       result = Connect.root(assigns)
       assert result["dir"] == "rtl"
     end
@@ -87,7 +87,7 @@ defmodule Corex.MenuTest do
 
   describe "Connect.indicator/1" do
     test "returns indicator attributes" do
-      assigns = %{dir: "ltr"}
+      assigns = %{id: "test-menu", dir: "ltr"}
       result = Connect.indicator(assigns)
       assert result["data-scope"] == "menu"
       assert result["data-part"] == "indicator"
@@ -95,26 +95,21 @@ defmodule Corex.MenuTest do
   end
 
   describe "Connect.positioner/1" do
-    test "returns positioner attributes when closed" do
-      assigns = %{id: "test-menu", dir: "ltr", open: false}
+    test "returns positioner attributes with hidden until client opens" do
+      assigns = %{id: "test-menu", dir: "ltr"}
       result = Connect.positioner(assigns)
       assert result["id"] == "menu:test-menu:positioner"
       assert result["hidden"] == "true"
-    end
-
-    test "returns positioner without hidden when open" do
-      assigns = %{id: "test-menu", dir: "ltr", open: true}
-      result = Connect.positioner(assigns)
-      refute Map.has_key?(result, "hidden")
     end
   end
 
   describe "Connect.content/1" do
     test "returns content attributes" do
-      assigns = %{id: "test-menu", dir: "ltr", open: true}
+      assigns = %{id: "test-menu", dir: "ltr"}
       result = Connect.content(assigns)
       assert result["id"] == "menu:test-menu:content"
       assert result["role"] == "menu"
+      assert result["hidden"] == "true"
     end
   end
 
@@ -147,11 +142,9 @@ defmodule Corex.MenuTest do
   end
 
   describe "Connect.props/1" do
-    test "returns props when uncontrolled" do
+    test "returns props with positioning dataset" do
       assigns = %{
         id: "test-menu",
-        controlled: false,
-        open: false,
         dir: "ltr",
         close_on_select: true,
         loop_focus: false,
@@ -163,34 +156,13 @@ defmodule Corex.MenuTest do
         on_select_client: nil,
         redirect: false,
         on_open_change: nil,
-        on_open_change_client: nil
+        on_open_change_client: nil,
+        positioning: %Corex.Positioning{placement: "bottom-start"}
       }
 
       result = Connect.props(assigns)
       assert result["id"] == "test-menu"
-    end
-
-    test "returns props when controlled" do
-      assigns = %{
-        id: "test-menu",
-        controlled: true,
-        open: true,
-        dir: "ltr",
-        close_on_select: true,
-        loop_focus: false,
-        typeahead: true,
-        composite: false,
-        value: nil,
-        aria_label: nil,
-        on_select: nil,
-        on_select_client: nil,
-        redirect: false,
-        on_open_change: nil,
-        on_open_change_client: nil
-      }
-
-      result = Connect.props(assigns)
-      assert result["data-open"] == ""
+      assert result["data-position-placement"] == "bottom-start"
     end
   end
 

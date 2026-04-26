@@ -2,7 +2,7 @@ defmodule Corex.Gettext do
   @moduledoc false
 
   def backend do
-    Application.get_env(:corex, :gettext_backend)
+    Application.get_env(:phoenix, :gettext_backend)
   end
 
   @doc """

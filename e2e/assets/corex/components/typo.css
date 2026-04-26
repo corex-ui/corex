@@ -3,86 +3,138 @@
 
 @layer components {
   .typo {
-    font-family: var(--font-ui);
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
-    font-weight: var(--font-weight-ui);
-    color: var(--color-root--text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-ink);
     text-wrap: wrap;
+  }
 
-    &:focus-visible {
-      outline: none;
-    }
+  .typo:focus-visible {
+    outline: none;
   }
 
   .typo h1 {
-    font-size: var(--text-ui-xl);
-    line-height: var(--text-ui-xl--line-height);
-    font-weight: var(--font-weight-ui-xl);
-    color: var(--color-ui--text);
-    margin-block: var(--spacing-ui-padding-xl);
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: var(--text-2xl--line-height);
+    font-weight: var(--font-weight-black);
+    color: var(--color-ink);
+  }
 
-    &:focus-visible {
-      outline: none;
+  @media (min-width: theme("breakpoint.md")) {
+    .typo h1 {
+      font-size: var(--text-3xl);
+      line-height: var(--text-3xl--line-height);
     }
   }
 
   .typo h2 {
-    font-size: var(--text-ui-lg);
-    line-height: var(--text-ui-lg--line-height);
-    font-weight: var(--font-weight-ui-lg);
-    color: var(--color-ui--text);
-    margin-block: var(--spacing-ui-padding-lg);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink);
+  }
 
-    &:focus-visible {
-      outline: none;
+  @media (min-width: theme("breakpoint.md")) {
+    .typo h2 {
+      font-size: var(--text-2xl);
+      line-height: var(--text-2xl--line-height);
     }
   }
 
   .typo h3 {
-    font-size: var(--text-ui-lg);
-    line-height: var(--text-ui-lg--line-height);
-    font-weight: var(--font-weight-ui-lg);
-    color: var(--color-ui--text);
-    margin-block: var(--spacing-ui-padding);
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+  }
 
-    &:focus-visible {
-      outline: none;
+  @media (min-width: theme("breakpoint.md")) {
+    .typo h3 {
+      font-size: var(--text-xl);
+      line-height: var(--text-xl--line-height);
     }
   }
 
   .typo h4 {
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
-    font-weight: var(--font-weight-ui);
-    color: var(--color-ui--text);
-    margin-block: var(--spacing-ui-padding-sm);
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-ink);
   }
 
+  @media (min-width: theme("breakpoint.md")) {
+    .typo h4 {
+      font-size: var(--text-lg);
+      line-height: var(--text-lg--line-height);
+    }
+  }
+
+
   .typo p {
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
-    font-weight: var(--font-weight-ui);
-    color: var(--color-ui--text);
-    margin-block: var(--spacing-ui-padding-sm);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    font-weight: var(--font-weight-normal);
+    color: var(--color-ink);
+    margin-block: var(--spacing-space);
+  }
+
+  @media (min-width: theme("breakpoint.lg")) {
+    .typo p {
+      font-size: var(--text-lg);
+      line-height: var(--text-lg--line-height);
+    }
+  }
+
+  .typo p.display {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    font-weight: var(--font-weight-extralight);
+  }
+
+  @media (min-width: theme("breakpoint.md")) {
+    .typo p.display {
+      font-size: var(--text-2xl);
+      line-height: var(--text-2xl--line-height);
+    }
+  }
+
+  @media (min-width: theme("breakpoint.lg")) {
+    .typo p.display {
+      font-size: var(--text-display-sm);
+      line-height: var(--text-display-sm--line-height);
+    }
   }
 
   .typo small {
-    font-size: var(--text-ui-sm);
-    line-height: var(--text-ui-sm--line-height);
-    font-weight: var(--font-weight-ui-sm);
-    margin-block: var(--spacing-ui-padding-sm);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    font-weight: var(--font-weight-extralight);
+    margin-block: var(--spacing-space);
+  }
+
+  @media (min-width: theme("breakpoint.md")) {
+    .typo small {
+      font-size: var(--text-sm);
+      line-height: var(--text-sm--line-height);
+    }
   }
 
   .typo mark {
-    background: var(--color-ui-success);
-    color: var(--color-ui-success--text);
+    background: var(--color-success);
+    color: var(--color-success-ink);
     padding: 0.1em 0.25em;
     border-radius: 0.25em;
   }
 
   .typo abbr[title] {
-    border-bottom: 1px dotted var(--color-ui--border);
+    border-bottom: 1px dotted var(--color-border);
     cursor: help;
     text-decoration: none;
   }
@@ -106,26 +158,26 @@
   .typo kbd {
     font-family: var(--font-mono);
     background: var(--color-layer);
-    color: var(--color-layer--text);
-    border-radius: var(--radius-ui);
-    border: 1px solid var(--color-layer--border);
-    padding: 0.25em;
-    margin-inline: 0.25em;
+    color: var(--color-ink);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-space-sm);
+    margin-inline: var(--spacing-space-sm);
   }
 
   .typo del {
     text-decoration: line-through;
-    color: var(--color-ui--alert);
+    color: var(--color-alert);
   }
 
   .typo ins {
     text-decoration: underline;
-    color: var(--color-ui--success);
+    color: var(--color-success);
   }
 
   .typo b,
   .typo strong {
-    font-weight: var(--font-weight-ui-lg);
+    font-weight: var(--font-weight-semibold);
   }
 
   .typo i,
@@ -135,50 +187,57 @@
 
   .typo blockquote {
     background: var(--color-layer);
-    color: var(--color-layer--text);
+    color: var(--color-ink);
     box-shadow: var(--shadow-layer);
     font-style: italic;
-    border-end-end-radius: var(--radius-ui);
-    border-start-end-radius: var(--radius-ui);
-    border: 1px solid var(--color-layer--border);
-    border-inline-start: 4px solid var(--color-layer--info);
-    margin-block: var(--spacing-ui);
-    padding: var(--spacing-ui-padding);
-    gap: var(--spacing-ui-gap);
+    border-end-end-radius: var(--radius-md);
+    border-start-end-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    border-inline-start: 4px solid var(--color-info);
+    margin-block: var(--spacing-size);
+    padding: var(--spacing-space);
+    gap: var(--spacing-space);
     width: fit-content;
+  }
 
-    & p {
-      margin-block: 0;
-    }
+  .typo blockquote p {
+    margin-block: 0;
   }
 
   .typo hr {
-    border-top: 1px solid var(--color-ui--border);
+    border-top: 1px solid var(--color-border);
     margin-block: 5em;
     margin-inline: auto;
     width: 80%;
   }
 
   .typo dt {
-    font-weight: var(--font-weight-ui-lg);
+    font-weight: var(--font-weight-semibold);
     font-style: italic;
   }
 
   .typo figcaption {
-    font-size: var(--text-ui-sm);
-    line-height: var(--text-ui-sm--line-height);
-    color: var(--color-ui--muted);
+    font-size: var(--text-xs);
+    line-height: var(--text-xs--line-height);
+    color: var(--color-ink-muted);
     margin-top: 1em;
+  }
+
+  @media (min-width: theme("breakpoint.md")) {
+    .typo figcaption {
+      font-size: var(--text-sm);
+      line-height: var(--text-sm--line-height);
+    }
   }
 
   .typo .list {
     width: 100%;
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
     margin-block: 2em;
     border-collapse: collapse;
-    border: 1px solid var(--color-ui--border);
-    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
     overflow: hidden;
     list-style: none;
     padding: 0;
@@ -186,10 +245,10 @@
 
   .typo .list li {
     text-align: left;
-    padding: var(--spacing-ui-padding);
-    border-bottom: 1px solid var(--color-ui--border);
+    padding: var(--spacing-space);
+    border-bottom: 1px solid var(--color-border);
     white-space: normal;
-    color: var(--color-ui--text);
+    color: var(--color-ink);
   }
 
   .typo .list li:last-child {
@@ -201,14 +260,15 @@
   }
 
   .typo form {
-    width: auto;
+    width: 100%;
+    max-width: var(--container-md);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-ui);
-    padding: var(--spacing-ui-sm);
+    gap: var(--spacing-space);
+    padding: var(--spacing-space-lg);
     background: var(--color-layer);
-    border: 1px solid var(--color-layer--border);
-    color: var(--color-layer--text);
-    border-radius: var(--radius-ui);
+    border: 1px solid var(--color-border);
+    color: var(--color-ink);
+    border-radius: var(--radius-md);
   }
 }

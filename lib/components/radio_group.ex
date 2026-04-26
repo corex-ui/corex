@@ -53,7 +53,6 @@ defmodule Corex.RadioGroup do
   </.radio_group>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/radio-group#modifiers)
   '''
 
   @doc type: :component
@@ -82,7 +81,7 @@ defmodule Corex.RadioGroup do
   attr(:invalid, :boolean, default: false)
   attr(:required, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
   attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
   attr(:on_value_change, :string, default: nil)
   attr(:on_value_change_client, :string, default: nil)
@@ -117,6 +116,8 @@ defmodule Corex.RadioGroup do
     <div
       id={@id}
       phx-hook="RadioGroup"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -134,38 +135,70 @@ defmodule Corex.RadioGroup do
         on_value_change_client: @on_value_change_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != []})}>
-        <div :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != []})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation, has_label: @label != []})}>
+        <div :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </div>
-        <div {Connect.indicator(%Indicator{id: @id, dir: @dir})} />
-        <label :if={@item == []} :for={entry <- @items} {Connect.item(%Item{
+        <div phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})} {Connect.indicator(%Indicator{id: @id, dir: @dir, orientation: @orientation})} />
+        <label :if={@item == []} :for={entry <- @items} phx-mounted={Connect.ignore_item(%Item{
           id: @id,
           value: entry.value,
           disabled: entry.disabled,
           invalid: entry.invalid,
-          checked: @value == entry.value
+          checked: @value == entry.value,
+          dir: @dir,
+          orientation: @orientation
+        })} {Connect.item(%Item{
+          id: @id,
+          value: entry.value,
+          disabled: entry.disabled,
+          invalid: entry.invalid,
+          checked: @value == entry.value,
+          dir: @dir,
+          orientation: @orientation
         })}>
-          <span {Connect.item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid})}>{entry.label}</span>
-          <div {Connect.item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value})}>
+          <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, dir: @dir, orientation: @orientation})}>{entry.label}</span>
+          <div phx-mounted={Connect.ignore_item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value, dir: @dir, orientation: @orientation})} {Connect.item_control(%ItemControl{id: @id, value: entry.value, disabled: entry.disabled, invalid: entry.invalid, checked: @value == entry.value, dir: @dir, orientation: @orientation})}>
             {render_slot(@item_control)}
           </div>
-          <input {Connect.item_hidden_input(%ItemHiddenInput{
+          <input phx-mounted={Connect.ignore_item_hidden_input(%ItemHiddenInput{
             id: @id,
             value: entry.value,
             disabled: entry.disabled,
             invalid: entry.invalid,
             name: @name,
             form: @form,
-            checked: @value == entry.value
+            checked: @value == entry.value,
+            dir: @dir,
+            orientation: @orientation
+          })} {Connect.item_hidden_input(%ItemHiddenInput{
+            id: @id,
+            value: entry.value,
+            disabled: entry.disabled,
+            invalid: entry.invalid,
+            name: @name,
+            form: @form,
+            checked: @value == entry.value,
+            dir: @dir,
+            orientation: @orientation
           })} />
         </label>
-        <label :if={@item != []} :for={{entry, item_slot} <- Enum.zip(@items, @item || [])} {Connect.item(%Item{
+        <label :if={@item != []} :for={{entry, item_slot} <- Enum.zip(@items, @item || [])} phx-mounted={Connect.ignore_item(%Item{
           id: @id,
           value: entry.value,
           disabled: entry.disabled,
           invalid: entry.invalid,
-          checked: @value == entry.value
+          checked: @value == entry.value,
+          dir: @dir,
+          orientation: @orientation
+        })} {Connect.item(%Item{
+          id: @id,
+          value: entry.value,
+          disabled: entry.disabled,
+          invalid: entry.invalid,
+          checked: @value == entry.value,
+          dir: @dir,
+          orientation: @orientation
         })}>
           {render_slot(item_slot, %{
             value: entry.value,

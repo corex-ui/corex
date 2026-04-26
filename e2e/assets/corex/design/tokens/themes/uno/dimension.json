@@ -1,0 +1,38 @@
+{
+  "theme": {
+    "spacing": {
+      "default": { "value": "0.25rem", "type": "dimension" },
+      "space": {
+        "sm": { "value": "calc({theme.spacing.default} * 1)", "type": "dimension" },
+        "md": { "value": "calc({theme.spacing.default} * 2)", "type": "dimension" },
+        "lg": { "value": "calc({theme.spacing.default} * 3)", "type": "dimension" },
+        "xl": { "value": "calc({theme.spacing.default} * 4)", "type": "dimension" }
+      },
+      "size": {
+        "sm": { "value": "calc({theme.spacing.default} * 7)", "type": "dimension" },
+        "md": { "value": "calc({theme.spacing.default} * 9)", "type": "dimension" },
+        "lg": { "value": "calc({theme.spacing.default} * 11)", "type": "dimension" },
+        "xl": { "value": "calc({theme.spacing.default} * 13)", "type": "dimension" }
+      }
+    },
+    "container": {
+      "7xs": { "value": "5.52rem", "type": "dimension" },
+      "6xs": { "value": "7.36rem", "type": "dimension" },
+      "5xs": { "value": "9.2rem", "type": "dimension" },
+      "4xs": { "value": "11.04rem", "type": "dimension" },
+      "3xs": { "value": "14.72rem", "type": "dimension" },
+      "2xs": { "value": "16.56rem", "type": "dimension" },
+      "xs": { "value": "18.4rem", "type": "dimension" },
+      "sm": { "value": "22.08rem", "type": "dimension" },
+      "md": { "value": "25.76rem", "type": "dimension" },
+      "lg": { "value": "29.44rem", "type": "dimension" },
+      "xl": { "value": "33.12rem", "type": "dimension" },
+      "2xl": { "value": "38.64rem", "type": "dimension" },
+      "3xl": { "value": "44.16rem", "type": "dimension" },
+      "4xl": { "value": "51.52rem", "type": "dimension" },
+      "5xl": { "value": "58.88rem", "type": "dimension" },
+      "6xl": { "value": "66.24rem", "type": "dimension" },
+      "7xl": { "value": "73.6rem", "type": "dimension" }
+    }
+  }
+}

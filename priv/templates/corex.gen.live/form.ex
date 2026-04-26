@@ -110,8 +110,8 @@ defmodule <%= inspect context.web_module %>.<%= inspect Module.concat(schema.web
     end
   end
 
-  <%= if layout_locale do %>defp return_path(locale, <%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"/#{locale}<%= scope_param_route_prefix %><%= schema.route_prefix %>"
-  defp return_path(locale, <%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"/#{locale}<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"
+  <%= if layout_locale do %>defp return_path(locale, <%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
+  defp return_path(locale, <%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"
 <% else %>defp return_path(<%= scope_param_prefix %>"index", _<%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>"
   defp return_path(<%= scope_param_prefix %>"show", <%= schema.singular %>), do: ~p"<%= scope_param_route_prefix %><%= schema.route_prefix %>/#{<%= schema.singular %>}"
 <% end %>end

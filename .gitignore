@@ -43,3 +43,6 @@ corex-*.tar
 
 /integration_test/_build/
 /integration_test/deps/
+.dexter.db*
+
+/.claude/

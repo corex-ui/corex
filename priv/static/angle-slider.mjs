@@ -1,30 +1,44 @@
 import {
+  readNumberControlledZagProps
+} from "./chunk-DQ6PDFVK.mjs";
+import {
   createRect
-} from "./chunk-ZZKFCQSP.mjs";
+} from "./chunk-MPNHBCLD.mjs";
 import {
   snapValueToStep
-} from "./chunk-MV633JPN.mjs";
+} from "./chunk-NX2BOTHE.mjs";
+import {
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunk-WHNMJXTN.mjs";
+import {
+  emitResponse,
+  idMatches,
+  notifyChange,
+  parseRespondTo,
+  readPayloadId
+} from "./chunk-GGOQNLHD.mjs";
 import {
   Component,
   VanillaMachine,
+  canPushEvent,
   createAnatomy,
   createMachine,
   dataAttr,
   getBoolean,
+  getDir,
   getEventKey,
   getEventPoint,
   getEventStep,
   getNativeEvent,
-  getNumber,
   getString,
   isLeftClick,
-  normalizeProps,
   raf,
   setElementValue,
   trackPointerMove
-} from "./chunk-SNFXM6OQ.mjs";
+} from "./chunk-SJ37CZDS.mjs";
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.36.0/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
 var anatomy = createAnatomy("angle-slider").parts(
   "root",
   "label",
@@ -37,7 +51,7 @@ var anatomy = createAnatomy("angle-slider").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.36.0/node_modules/@zag-js/angle-slider/dist/angle-slider.dom.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `angle-slider:${ctx.id}`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `angle-slider:${ctx.id}:thumb`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `angle-slider:${ctx.id}:input`;
@@ -48,7 +62,7 @@ var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 var getThumbEl = (ctx) => ctx.getById(getThumbId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.36.0/node_modules/@zag-js/rect-utils/dist/angle.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.39.1/node_modules/@zag-js/rect-utils/dist/angle.mjs
 function getPointAngle(rect, point, reference = rect.center) {
   const x = point.x - reference.x;
   const y = point.y - reference.y;
@@ -56,7 +70,7 @@ function getPointAngle(rect, point, reference = rect.center) {
   return 360 - deg;
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.36.0/node_modules/@zag-js/angle-slider/dist/angle-slider.utils.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.utils.mjs
 var MIN_VALUE = 0;
 var MAX_VALUE = 359;
 function mirrorAngle(angle) {
@@ -97,7 +111,7 @@ function snapAngleToStep(value, step) {
   return snapValueToStep(value, MIN_VALUE, MAX_VALUE, step);
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.36.0/node_modules/@zag-js/angle-slider/dist/angle-slider.connect.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, computed, scope } = service;
   const dragging = state.matches("dragging");
@@ -287,7 +301,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.36.0/node_modules/@zag-js/angle-slider/dist/angle-slider.machine.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {
@@ -449,7 +463,7 @@ var AngleSlider = class extends Component {
     return new VanillaMachine(machine, props);
   }
   initApi() {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
   render() {
     const rootEl = this.el.querySelector('[data-scope="angle-slider"][data-part="root"]') ?? this.el;
@@ -478,9 +492,9 @@ var AngleSlider = class extends Component {
       const valueSpan = valueTextEl.querySelector(
         '[data-scope="angle-slider"][data-part="value"]'
       );
-      if (valueSpan && valueSpan.textContent !== String(this.api.value)) {
-        valueSpan.textContent = String(this.api.value);
-      }
+      const format = this.el.dataset.valueTextAs;
+      const nextValue = format === "raw" ? String(this.api.value) : String(this.api.valueAsDegree ?? this.api.value);
+      if (valueSpan && valueSpan.textContent !== nextValue) valueSpan.textContent = nextValue;
     }
     const markerGroupEl = this.el.querySelector(
       '[data-scope="angle-slider"][data-part="marker-group"]'
@@ -497,115 +511,124 @@ var AngleSlider = class extends Component {
 };
 
 // hooks/angle-slider.ts
+function valueChangePayload(el, details) {
+  return {
+    id: el.id,
+    value: details.value,
+    valueAsDegree: details.valueAsDegree
+  };
+}
+function queueFormBubblingInputForPhoenix(el, getZag) {
+  queueMicrotask(() => {
+    const zag = getZag();
+    const input = el.querySelector(
+      '[data-scope="angle-slider"][data-part="hidden-input"]'
+    );
+    if (!input) return;
+    const v = zag.api.value;
+    if (String(input.value) !== String(v)) {
+      input.value = String(v);
+    }
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
+}
 var AngleSliderHook = {
   mounted() {
     const el = this.el;
-    const value = getNumber(el, "value");
-    const defaultValue = getNumber(el, "defaultValue");
-    const controlled = getBoolean(el, "controlled");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const zag = new AngleSlider(el, {
       id: el.id,
-      ...controlled && value !== void 0 ? { value } : { defaultValue: defaultValue ?? 0 },
-      step: getNumber(el, "step") ?? 1,
+      ...readNumberControlledZagProps(el),
       disabled: getBoolean(el, "disabled"),
       readOnly: getBoolean(el, "readOnly"),
       invalid: getBoolean(el, "invalid"),
       name: getString(el, "name"),
-      dir: getString(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
       "aria-label": getString(el, "aria-label"),
       "aria-labelledby": getString(el, "aria-labelledby"),
       onValueChange: (details) => {
-        const eventName = getString(el, "onValueChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            valueAsDegree: details.valueAsDegree,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChange"),
+          clientEventName: getString(el, "onValueChangeClient")
+        });
       },
       onValueChangeEnd: (details) => {
-        const eventName = getString(el, "onValueChangeEnd");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
-            value: details.value,
-            valueAsDegree: details.valueAsDegree,
-            id: el.id
-          });
-        }
-        const eventNameClient = getString(el, "onValueChangeEndClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: { value: details, id: el.id }
-            })
-          );
-        }
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: valueChangePayload(el, details),
+          serverEventName: getString(el, "onValueChangeEnd"),
+          clientEventName: getString(el, "onValueChangeEndClient")
+        });
+        queueFormBubblingInputForPhoenix(el, () => zag);
       }
     });
     zag.init();
     this.angleSlider = zag;
-    this.handlers = [];
-    this.onSetValue = (event) => {
-      const { value: value2 } = event.detail;
-      zag.api.setValue(value2);
-    };
-    el.addEventListener("phx:angle-slider:set-value", this.onSetValue);
-    this.handlers.push(
-      this.handleEvent(
-        "angle_slider_set_value",
-        (payload) => {
-          const targetId = payload.angle_slider_id;
-          if (targetId) {
-            const matches = el.id === targetId || el.id === `angle-slider:${targetId}`;
-            if (!matches) return;
-          }
-          zag.api.setValue(payload.value);
-        }
-      )
-    );
-    this.handlers.push(
-      this.handleEvent("angle_slider_value", () => {
-        this.pushEvent("angle_slider_value_response", {
+    const emitValue = (respondTo) => {
+      emitResponse({
+        respondTo,
+        canPushServer: canPush(),
+        pushEvent,
+        serverEventName: "angle_slider_value_response",
+        serverPayload: {
+          id: el.id,
           value: zag.api.value,
           valueAsDegree: zag.api.valueAsDegree,
           dragging: zag.api.dragging
-        });
-      })
-    );
+        },
+        el,
+        domEventName: "angle-slider-value",
+        domDetail: {
+          id: el.id,
+          value: zag.api.value,
+          valueAsDegree: zag.api.valueAsDegree,
+          dragging: zag.api.dragging
+        }
+      });
+    };
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:angle-slider:set-value", (event) => {
+      zag.api.setValue(event.detail.value);
+      queueFormBubblingInputForPhoenix(el, () => zag);
+    });
+    domRegistry.add("corex:angle-slider:value", (event) => {
+      emitValue(parseRespondTo(event.detail));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("angle_slider_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(payload.value);
+      queueFormBubblingInputForPhoenix(el, () => zag);
+    });
+    registry.add("angle_slider_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      emitValue(parseRespondTo(payload));
+    });
   },
   updated() {
-    const value = getNumber(this.el, "value");
-    const defaultValue = getNumber(this.el, "defaultValue");
-    const controlled = getBoolean(this.el, "controlled");
     this.angleSlider?.updateProps({
       id: this.el.id,
-      ...controlled && value !== void 0 ? { value } : { defaultValue: defaultValue ?? 0 },
-      step: getNumber(this.el, "step") ?? 1,
+      ...readNumberControlledZagProps(this.el),
       disabled: getBoolean(this.el, "disabled"),
       readOnly: getBoolean(this.el, "readOnly"),
       invalid: getBoolean(this.el, "invalid"),
       name: getString(this.el, "name"),
-      dir: getString(this.el, "dir", ["ltr", "rtl"])
+      dir: getDir(this.el)
     });
   },
   destroyed() {
-    if (this.onSetValue) {
-      this.el.removeEventListener("phx:angle-slider:set-value", this.onSetValue);
-    }
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.angleSlider?.destroy();
   }
 };

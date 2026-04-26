@@ -66,7 +66,7 @@ defmodule Corex.PasswordInput do
 
   ### Live View
 
-  When using in a Live view add controlled mode. Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
+  Prefer building the form from an Ecto changeset (see "With Ecto changeset" below).
 
   ### With Ecto changeset
 
@@ -155,7 +155,6 @@ defmodule Corex.PasswordInput do
   </.password_input>
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/password-input#modifiers)
   '''
 
   defmodule Translation do
@@ -188,7 +187,6 @@ defmodule Corex.PasswordInput do
 
   attr(:id, :string, required: false)
   attr(:visible, :boolean, default: false)
-  attr(:controlled_visible, :boolean, default: false)
   attr(:disabled, :boolean, default: false)
   attr(:invalid, :boolean, default: false)
   attr(:read_only, :boolean, default: false)
@@ -196,7 +194,8 @@ defmodule Corex.PasswordInput do
   attr(:ignore_password_managers, :boolean, default: true)
   attr(:name, :string)
   attr(:form, :string)
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
+  attr(:orientation, :string, default: "vertical", values: ["horizontal", "vertical"])
 
   attr(:auto_complete, :string,
     default: "current-password",
@@ -259,6 +258,7 @@ defmodule Corex.PasswordInput do
       |> assign_new(:name, fn -> nil end)
       |> assign_new(:form, fn -> nil end)
       |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:orientation, fn -> "horizontal" end)
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
 
@@ -266,12 +266,13 @@ defmodule Corex.PasswordInput do
     <div
       id={@id}
       phx-hook="PasswordInput"
+      data-loading 
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}     
       data-no-icon={if @visible_indicator == [] or @hidden_indicator == [], do: "", else: nil}
       {@rest}
       {Connect.props(%Props{
         id: @id,
         visible: @visible,
-        controlled_visible: @controlled_visible,
         disabled: @disabled,
         invalid: @invalid,
         read_only: @read_only,
@@ -280,39 +281,52 @@ defmodule Corex.PasswordInput do
         name: @name,
         form: @form,
         dir: @dir,
+        orientation: @orientation,
         auto_complete: @auto_complete,
         on_visibility_change: @on_visibility_change,
         on_visibility_change_client: @on_visibility_change_client
       })}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, dir: @dir})}>
-        <label :if={@label != []} {Connect.label(%Label{id: @id, dir: @dir})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, dir: @dir, orientation: @orientation})} {Connect.root(%Root{id: @id, dir: @dir, orientation: @orientation})}>
+        <label :if={@label != []} phx-mounted={Connect.ignore_label(%Label{id: @id, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </label>
-        <div {Connect.control(%Control{id: @id, dir: @dir})}>
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, dir: @dir, orientation: @orientation})} {Connect.control(%Control{id: @id, dir: @dir, orientation: @orientation})}>
           <input
             type="password"
+            phx-mounted={Connect.ignore_input(%Input{
+              id: @id,
+              disabled: @disabled,
+              name: @name,
+              form: @form,
+              auto_complete: @auto_complete,
+              dir: @dir,
+              orientation: @orientation
+            })}
             {Connect.input(%Input{
               id: @id,
               disabled: @disabled,
               name: @name,
               form: @form,
-              auto_complete: @auto_complete
+              auto_complete: @auto_complete,
+              dir: @dir,
+              orientation: @orientation
             })}
           />
           <button
             :if={@visible_indicator != [] and @hidden_indicator != []}
             type="button"
-            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir, aria_label: @translation.toggle_visibility})}
+            phx-mounted={Connect.ignore_visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir, aria_label: @translation.toggle_visibility, orientation: @orientation})}
+            {Connect.visibility_trigger(%VisibilityTrigger{id: @id, dir: @dir, aria_label: @translation.toggle_visibility, orientation: @orientation})}
           >
-            <span {Connect.indicator(%Indicator{id: @id, dir: @dir})} data-state={if @visible, do: "visible", else: "hidden"}>
+            <span phx-mounted={Connect.ignore_indicator(%Indicator{id: @id, dir: @dir, visible: @visible, orientation: @orientation})} {Connect.indicator(%Indicator{id: @id, dir: @dir, visible: @visible, orientation: @orientation})}>
               <span data-visible="" aria-hidden="true">{render_slot(@visible_indicator)}</span>
               <span data-hidden="" aria-hidden="true">{render_slot(@hidden_indicator)}</span>
             </span>
           </button>
         </div>
       </div>
-      <div :if={@error} :for={msg <- @errors} data-scope="password-input" data-part="error">
+      <div :if={@error} :for={msg <- @errors} class={Map.get(Enum.at(@error, 0), :class, nil)} data-scope="password-input" data-part="error">
         {render_slot(@error, msg)}
       </div>
     </div>

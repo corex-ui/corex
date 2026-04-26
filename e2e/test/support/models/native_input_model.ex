@@ -5,10 +5,11 @@ defmodule E2eWeb.NativeInputModel do
     path =
       case mode do
         :static -> "/en/native-input/form"
-        :live -> "/en/live/native-input/form"
+        :live -> "/en/native-input/live-form"
       end
 
-    visit(session, path)
+    session = visit_path(session, path)
+    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
   end
 
   def fill_input(session, id, value) when is_binary(id) do
@@ -43,10 +44,10 @@ defmodule E2eWeb.NativeInputModel do
     fill_in(session, text_field(label), with: value)
   end
 
-  def click_checkbox(session) do
+  def click_checkbox(session, form_id \\ "native-input-plain-form") do
     click(
       session,
-      css("form [data-scope='native-input'][data-part='input'][type='checkbox']")
+      css("##{form_id} [data-scope='native-input'][data-part='input'][type='checkbox']")
     )
   end
 
@@ -90,10 +91,10 @@ defmodule E2eWeb.NativeInputModel do
   end
 
   def wait_for_redirect(session) do
-    wait_for_text(session, "NativeInput form")
+    wait_for_has(session, css("#native-input-form-page"), timeout: 10_000)
   end
 
   def see_flash(session, flash_text) do
-    wait_for_text(session, flash_text)
+    wait_for_flash(session, flash_text)
   end
 end

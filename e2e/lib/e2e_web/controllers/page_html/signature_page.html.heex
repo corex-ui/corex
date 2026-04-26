@@ -2,25 +2,27 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Signature Pad</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
+  <.demo_page
+    id="signature-anatomy-page"
+    title="Signature Pad · Anatomy"
+    subtitle="Clear control and optional label."
+  >
+    <.demo_section
+      id="signature-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.SignatureDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.SignatureDemo.minimal_example /></:preview>
+    </.demo_section>
 
-  <h3>Client API</h3>
-  <div class="layout__row">
-    <.action phx-click={Corex.SignaturePad.clear("my-signature-pad")} class="button button--sm">
-      Clear Signature
-    </.action>
-  </div>
-
-  <.signature_pad id="my-signature-pad" on_draw_end="signature_drawn">
-    <:label>Sign here</:label>
-    <:clear_trigger>
-      <.heroicon name="hero-x-mark" />
-    </:clear_trigger>
-  </.signature_pad>
+    <.demo_section
+      id="signature-anatomy-with-label"
+      title="With label"
+      code={E2eWeb.Demos.SignatureDemo.with_label_code()}
+    >
+      <:preview><E2eWeb.Demos.SignatureDemo.with_label_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

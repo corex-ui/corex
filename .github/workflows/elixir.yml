@@ -23,12 +23,15 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
+          - elixir: 1.17.3
+            otp: 26.2.5.2
+            coveralls: false
           - elixir: 1.18.4
             otp: 27.3
+            coveralls: true
           - elixir: 1.18.4
             otp: 28.0.1
+            coveralls: false
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -54,8 +57,26 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288a8380ff81df1b7dbd07a9d9deed44
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: package.json
+
+      - name: Install npm dependencies
+        run: npm install
+
+      - name: Check JavaScript (prettier + eslint)
+        run: npm run check
+
       - name: Run tests and post coverage to Coveralls
+        if: matrix.coveralls
         run: mix coveralls.github
+
+      - name: Run tests
+        if: ${{ !matrix.coveralls }}
+        run: mix test
 
   e2e-tests:
     name: E2E tests (OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }})
@@ -64,8 +85,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
+          - elixir: 1.17.3
+            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4
@@ -130,8 +151,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
+          - elixir: 1.17.3
+            otp: 26.2.5.2
           - elixir: 1.18.4
             otp: 27.3
           - elixir: 1.18.4
@@ -171,10 +192,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - elixir: 1.15.8
-            otp: 25.3.2.9
           - elixir: 1.17.3
-            otp: 27.1.2
+            otp: 26.2.5.2
+          - elixir: 1.18.4
+            otp: 27.3
 
     services:
       postgres:
@@ -214,6 +235,18 @@ jobs:
         working-directory: integration_test
         run: mix deps.get
 
+      - name: Install installer dependencies and local corex_new archive
+        working-directory: installer
+        run: |
+          mix deps.get
+          mix archive.build -o corex_new.ez
+          mix archive.install corex_new.ez --force
+
+      - name: Install Mix archives for corex.new (phx.new + igniter.install)
+        run: |
+          mix archive.install hex phx_new --force
+          mix archive.install hex igniter_new --force
+
       - name: Run integration tests
         working-directory: integration_test
-        run: mix test --exclude database:mysql --exclude database:mssql --timeout 600000
+        run: mix test test/code_generation/dev_corex_new_test.exs --timeout 600000

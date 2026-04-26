@@ -62,18 +62,22 @@ defmodule Corex.Marquee.Anatomy do
       :delay,
       :loop_count,
       :translate,
-      :respect_reduced_motion
+      :respect_reduced_motion,
+      default_paused: false
     ]
 
     @type t :: %__MODULE__{
             id: String.t(),
+            aria_label: String.t() | nil,
             dir: String.t(),
             orientation: String.t(),
             duration: number(),
             spacing: String.t(),
             delay: number(),
             loop_count: non_neg_integer(),
-            translate: String.t()
+            translate: String.t(),
+            respect_reduced_motion: boolean(),
+            default_paused: boolean()
           }
   end
 
@@ -93,22 +97,22 @@ defmodule Corex.Marquee.Anatomy do
 
   defmodule Content do
     @moduledoc false
-    defstruct [:root_id, :index, :clone, :orientation, :side, :reverse]
+    defstruct [:root_id, :index, :orientation, :side, :reverse, :dir]
 
     @type t :: %__MODULE__{
             root_id: String.t(),
             index: non_neg_integer(),
-            clone: boolean(),
             orientation: String.t(),
             side: String.t(),
-            reverse: boolean()
+            reverse: boolean(),
+            dir: String.t() | nil
           }
   end
 
   defmodule Item do
     @moduledoc false
-    defstruct [:orientation]
+    defstruct [:orientation, :dir]
 
-    @type t :: %__MODULE__{orientation: String.t()}
+    @type t :: %__MODULE__{orientation: String.t(), dir: String.t() | nil}
   end
 end

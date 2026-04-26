@@ -1,19 +1,31 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Carousel } from "../components/carousel";
 import type { Props, PageChangeDetails } from "@zag-js/carousel";
-import { getString, getBoolean, getNumber, getDir } from "../lib/util";
+import { getString, getBoolean, getNumber, getDir, canPushEvent } from "../lib/util";
+import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
 
 type CarouselHookState = {
   carousel?: Carousel;
-  handlers?: Array<CallbackRef>;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
 };
+
+function readInstant(detail: unknown): boolean {
+  if (detail && typeof detail === "object" && "instant" in detail) {
+    const v = (detail as { instant?: unknown }).instant;
+    return v === true || v === "true";
+  }
+  return false;
+}
 
 const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & CarouselHookState) {
     const el = this.el;
-    const page = getNumber(el, "page");
-    const defaultPage = getNumber(el, "defaultPage");
+    const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
     const controlled = getBoolean(el, "controlled");
     const slideCount = getNumber(el, "slideCount");
     if (slideCount == null || slideCount < 1) {
@@ -22,89 +34,108 @@ const CarouselHook: Hook<object & CarouselHookState, HTMLElement> = {
     const zag = new Carousel(el, {
       id: el.id,
       slideCount,
-      ...(controlled && page !== undefined ? { page } : { defaultPage: defaultPage ?? 0 }),
+      ...(controlled
+        ? { page: getNumber(el, "page") }
+        : { defaultPage: getNumber(el, "defaultPage") }),
       dir: getDir(el),
-      orientation: getString<"horizontal" | "vertical">(el, "orientation", [
-        "horizontal",
-        "vertical",
-      ]),
-      slidesPerPage: getNumber(el, "slidesPerPage") ?? 1,
+      orientation: getString<"horizontal" | "vertical">(el, "orientation"),
+      slidesPerPage: getNumber(el, "slidesPerPage"),
       slidesPerMove:
         getString(el, "slidesPerMove") === "auto" ? "auto" : getNumber(el, "slidesPerMove"),
       loop: getBoolean(el, "loop"),
-      autoplay: getBoolean(el, "autoplay")
-        ? { delay: getNumber(el, "autoplayDelay") ?? 4000 }
-        : false,
+      autoplay: getBoolean(el, "autoplay") ? { delay: getNumber(el, "autoplayDelay") } : false,
       allowMouseDrag: getBoolean(el, "allowMouseDrag"),
-      spacing: getString(el, "spacing") ?? "0px",
+      spacing: getString(el, "spacing"),
       padding: getString(el, "padding"),
-      inViewThreshold: getNumber(el, "inViewThreshold") ?? 0.6,
-      snapType: getString<"proximity" | "mandatory">(el, "snapType", ["proximity", "mandatory"]),
+      inViewThreshold: getNumber(el, "inViewThreshold"),
+      snapType: getString<"proximity" | "mandatory">(el, "snapType"),
       autoSize: getBoolean(el, "autoSize"),
       onPageChange: (details: PageChangeDetails) => {
-        const eventName = getString(el, "onPageChange");
-        if (eventName && !this.liveSocket.main.isDead && this.liveSocket.main.isConnected()) {
-          this.pushEvent(eventName, {
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: {
+            id: el.id,
             page: details.page,
             pageSnapPoint: details.pageSnapPoint,
-            id: el.id,
-          });
-        }
-        const clientName = getString(el, "onPageChangeClient");
-        if (clientName) {
-          el.dispatchEvent(
-            new CustomEvent(clientName, {
-              bubbles: true,
-              detail: { value: details, id: el.id },
-            })
-          );
-        }
+          },
+          serverEventName: getString(el, "onPageChange"),
+          clientEventName: getString(el, "onPageChangeClient"),
+        });
       },
     } as Props);
     zag.init();
     this.carousel = zag;
-    this.handlers = [];
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:carousel:play", () => {
+      zag.api.play();
+    });
+    domRegistry.add("corex:carousel:pause", () => {
+      zag.api.pause();
+    });
+    domRegistry.add<CustomEvent>("corex:carousel:scroll-next", (event) => {
+      zag.api.scrollNext(readInstant(event.detail));
+    });
+    domRegistry.add<CustomEvent>("corex:carousel:scroll-prev", (event) => {
+      zag.api.scrollPrev(readInstant(event.detail));
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("carousel_play", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.play();
+    });
+    registry.add("carousel_pause", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.pause();
+    });
+    registry.add("carousel_scroll_next", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.scrollNext(readInstant(payload));
+    });
+    registry.add("carousel_scroll_prev", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.scrollPrev(readInstant(payload));
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & CarouselHookState) {
     const slideCount = getNumber(this.el, "slideCount");
     if (slideCount == null || slideCount < 1) return;
-    const page = getNumber(this.el, "page");
     const controlled = getBoolean(this.el, "controlled");
     this.carousel?.updateProps({
       id: this.el.id,
       slideCount,
-      ...(controlled && page !== undefined ? { page } : {}),
+      ...(controlled
+        ? { page: getNumber(this.el, "page") }
+        : { defaultPage: getNumber(this.el, "defaultPage") }),
       dir: getDir(this.el),
-      orientation: getString<"horizontal" | "vertical">(this.el, "orientation", [
-        "horizontal",
-        "vertical",
-      ]),
-      slidesPerPage: getNumber(this.el, "slidesPerPage") ?? 1,
+      orientation: getString<"horizontal" | "vertical">(this.el, "orientation"),
+      slidesPerPage: getNumber(this.el, "slidesPerPage"),
       slidesPerMove:
         getString(this.el, "slidesPerMove") === "auto"
           ? "auto"
           : getNumber(this.el, "slidesPerMove"),
       loop: getBoolean(this.el, "loop"),
       autoplay: getBoolean(this.el, "autoplay")
-        ? { delay: getNumber(this.el, "autoplayDelay") ?? 4000 }
+        ? { delay: getNumber(this.el, "autoplayDelay") }
         : false,
       allowMouseDrag: getBoolean(this.el, "allowMouseDrag"),
-      spacing: getString(this.el, "spacing") ?? "0px",
+      spacing: getString(this.el, "spacing"),
       padding: getString(this.el, "padding"),
-      inViewThreshold: getNumber(this.el, "inViewThreshold") ?? 0.6,
-      snapType: getString<"proximity" | "mandatory">(this.el, "snapType", [
-        "proximity",
-        "mandatory",
-      ]),
+      inViewThreshold: getNumber(this.el, "inViewThreshold"),
+      snapType: getString<"proximity" | "mandatory">(this.el, "snapType"),
       autoSize: getBoolean(this.el, "autoSize"),
     } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & CarouselHookState) {
-    if (this.handlers) {
-      for (const h of this.handlers) this.removeHandleEvent(h);
-    }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.carousel?.destroy();
   },
 };

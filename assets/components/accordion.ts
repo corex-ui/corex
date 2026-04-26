@@ -1,6 +1,7 @@
 import { connect, machine, type Props, type Api } from "@zag-js/accordion";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
+import { stripHiddenFromProps } from "../lib/animation";
 
 export class Accordion extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -9,25 +10,28 @@ export class Accordion extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {
     const rootEl =
       this.el.querySelector<HTMLElement>('[data-scope="accordion"][data-part="root"]') ?? this.el;
     this.spreadProps(rootEl, this.api.getRootProps());
-
-    const itemsList = this.getItemsList();
+    const scopeId = this.el.id;
+    const itemPrefix = scopeId ? `accordion:${scopeId}:item:` : "";
     const itemEls = rootEl.querySelectorAll<HTMLElement>(
       '[data-scope="accordion"][data-part="item"]'
     );
 
-    for (let i = 0; i < itemEls.length; i++) {
-      const itemEl = itemEls[i];
-      const itemData = itemsList[i];
-      if (!itemData?.value) continue;
+    const animation = this.el.dataset.animation ?? "instant";
 
-      const { value, disabled } = itemData;
+    for (const itemEl of itemEls) {
+      if (itemPrefix && !itemEl.id.startsWith(itemPrefix)) continue;
+      const value = itemEl.dataset.value;
+      if (!value) continue;
+
+      const disabled = itemEl.dataset.disabled === "";
+
       this.spreadProps(itemEl, this.api.getItemProps({ value, disabled }));
 
       const triggerEl = itemEl.querySelector<HTMLElement>(
@@ -48,18 +52,18 @@ export class Accordion extends Component<Props, Api> {
         '[data-scope="accordion"][data-part="item-content"]'
       );
       if (contentEl) {
-        this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
+        if (animation === "instant") {
+          this.spreadProps(contentEl, this.api.getItemContentProps({ value, disabled }));
+        } else if (animation === "js" || animation === "custom") {
+          this.spreadProps(
+            contentEl,
+            stripHiddenFromProps(
+              this.api.getItemContentProps({ value, disabled }) as Record<string, unknown>
+            )
+          );
+          contentEl.removeAttribute("hidden");
+        }
       }
-    }
-  }
-
-  private getItemsList(): Array<{ value: string; disabled: boolean }> {
-    const raw = this.el.getAttribute("data-items");
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw) as Array<{ value: string; disabled: boolean }>;
-    } catch {
-      return [];
     }
   }
 }

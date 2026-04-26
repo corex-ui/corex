@@ -1,0 +1,72 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="accordion-styling-page"
+    title="Accordion Style"
+    subtitle="Semantic colors, density steps, and width utilities via modifier classes on the accordion."
+  >
+    <.demo_section
+      id="accordion-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.AccordionDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="accordion-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.AccordionDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="accordion-styling-text"
+      title="Text"
+      code={E2eWeb.Demos.AccordionDemo.styling_text_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_text_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="accordion-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.AccordionDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="accordion-styling-max-width"
+      title="Max Width"
+      code={E2eWeb.Demos.AccordionDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="accordion-styling-mix-modifiers"
+      title="Mix modifiers"
+      code={E2eWeb.Demos.AccordionDemo.styling_mix_modifiers_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.AccordionDemo.styling_mix_modifiers_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

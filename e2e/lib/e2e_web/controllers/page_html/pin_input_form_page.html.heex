@@ -2,26 +2,34 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Pin Input form</:title>
-    <:subtitle>Controller Form</:subtitle>
-  </.layout_heading>
-  <p>Controller Form</p>
-  <form action={~p"/#{@locale}/pin-input/form"} method="post" id="pin-input-plain-form">
-    <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-    <.pin_input
-      name="pin_input_form[pin]"
-      id="pin-input-form-pin"
-      count={4}
-      class="pin-input"
+  <.demo_page
+    id="pin-input-form-page"
+    title="Pin Input · Form"
+    subtitle="Controller-rendered form; the hidden input submits the pin string."
+  >
+    <.demo_section
+      id="pin-input-form-plain"
+      title="HTML form"
+      code={E2eWeb.Demos.PinInputDemo.form_code()}
     >
-      <:label>Code</:label>
-    </.pin_input>
-    <.action type="submit" id="pin-input-form-submit" class="button button--accent">
-      Submit
-    </.action>
-  </form>
+      <:preview>
+        <form action={~p"/pin-input/form"} method="post" id="pin-input-plain-form">
+          <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
+          <.pin_input
+            name="pin_input_form[pin]"
+            id="pin-input-form-pin"
+            count={4}
+            class="pin-input"
+          >
+            <:label>Code</:label>
+          </.pin_input>
+          <.action type="submit" id="pin-input-form-submit" class="button button--accent">
+            Submit
+          </.action>
+        </form>
+      </:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

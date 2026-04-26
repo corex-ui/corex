@@ -5,19 +5,19 @@ defmodule E2eWeb.PasswordInputModel do
     path =
       case mode do
         :static -> "/en/password-input/form"
-        :live -> "/en/live/password-input/form"
+        :live -> "/en/password-input/live-form"
       end
 
-    visit(session, path)
+    session = visit_path(session, path)
+    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
   end
 
   def fill_password_input(session, value) do
-    input_id = "p-input-password-input-form-password-input"
     escaped = String.replace(value, "'", "\\'")
 
     script = """
     (function() {
-      var el = document.getElementById('#{input_id}');
+      var el = document.getElementById('password-input-native-password');
       if (!el) return 'not found';
       el.value = '#{escaped}';
       el.dispatchEvent(new Event('input', { bubbles: true }));
@@ -30,14 +30,26 @@ defmodule E2eWeb.PasswordInputModel do
     session
   end
 
+  def fill_live_password_input(session, value) do
+    fill_in(
+      session,
+      css("#p-input-password-input-live-changeset-input", visible: :any),
+      with: value
+    )
+
+    session
+  end
+
   def submit_form(session, mode \\ :static) do
     id =
-      if mode == :live, do: "password-input-form-live-submit", else: "password-input-form-submit"
+      if mode == :live,
+        do: "password-input-form-live-submit",
+        else: "password-input-controller-submit"
 
     click(session, css("##{id}"))
   end
 
   def see_flash(session, flash_text) do
-    wait_for_text(session, flash_text)
+    wait_for_flash(session, flash_text)
   end
 end

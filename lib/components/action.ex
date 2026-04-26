@@ -31,7 +31,6 @@ defmodule Corex.Action do
   <.action class="button button--accent button--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/button#modifiers)
   """
 
   @doc type: :component

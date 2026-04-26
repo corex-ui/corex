@@ -8,36 +8,31 @@
 
 ## Introduction
 
-Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
+Corex brings Zag.js state machines to Phoenix to build accessible and unstyled components with a full server and client API.
+Control and listen from both sides of the wire and Fully Compatible with Phoenix Form, Stream and Ecto Changeset
 
-Corex bridges the gap between Phoenix and modern JavaScript UI patterns by leveraging Zag.js: a collection of framework-agnostic UI component state machines. This approach gives you:
+- **Flexible anatomy:** declarative, custom slots and full compound mode.
+- **Server and client API & Events:** push state in, pull it out and react to changes in Elixir and JavaScript.
+- **LiveView-native:** update props at runtime without resetting component state.
+- **Server App & Static Website** Build a full app with Phoenix or build a static site using Tableau.
+- **Accessible and keyboard-first:** powered by Zag.js state machines.
+- **Truly unstyled:** bring your own CSS or use Corex Design System.
 
-- **Accessible by default** - Built-in ARIA attributes and keyboard navigation
-- **Unstyled components** - Complete control over styling and design
-- **Type-safe state management** - Powered by Zag.js state machines
-- **Works everywhere** - Phoenix Controllers and LiveView
-- **No Node.js required** - Install directly from Hex and connect the Phoenix hooks
+> **Beta stage**
+> Corex is actively being developed and is currently in beta stage.
+> It is getting closer to a stable release and no critical changes in the API are excpected at this stage
 
-> #### Alpha stage {: .neutral}
-> Corex is actively being developed and is currently in alpha stage.
-> It's not recommended for production use at this time.
-> You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 
 ## Live Demo
 
-To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
-
-You can also explore some components via [Live Captures](https://corex.gigalixirapp.com/captures/components/Elixir.CorexWeb.Accordion/accordion), a zero-boilerplate storybook for LiveView components. A big thanks to [@achempion](https://github.com/achempion) for assisting.
-
-This is still in an early stage and will evolve with future stable releases.
-
-Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*.
+To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, Dark Mode and Site Navigation.
 
 ## New project with Corex
 
-To create a new Phoenix application with Corex preconfigured, install the Corex project generator archive (first time only), then generate the app:
+To create a new Phoenix application with Corex preconfigured, install the Corex project generator archive and Igniter (first time only), then generate the app:
 
 ```bash
+mix archive.install hex igniter
 mix archive.install hex corex_new
 mix corex.new my_app
 ```
@@ -49,27 +44,35 @@ mix local.corex
 mix corex.new my_app
 ```
 
-Then in the generated project:
+See full options at `Mix.Tasks.Corex.New`
+
+## Existing project
 
 ```bash
-cd my_app
-mix deps.get
+mix igniter.install corex
 ```
 
-The generated app includes the `corex` dependency, configuration, hooks, and layout setup.
+See full options at `Mix.Tasks.Corex.Install`
 
-## Existing Project
+### How Igniter shows (or hides) the diff
 
-To add Corex to an existing Phoenix app instead of using the generator, see [Manual installation](manual_installation.html).
+Corex’s installer is a normal [Igniter](https://hexdocs.pm/igniter) task. The behavior matches Igniter, not a custom TUI.
 
+- **Interactive diff + confirm:** run `mix igniter.install corex` **without** `--yes`. When there are proposed file changes, Igniter prints a diff and asks for confirmation.
+- **Non-interactive (CI, scripts, docs):** flags such as `--yes` and `--yes-to-deps` apply changes **without** printing the usual diff step first, then run deferred tasks (e.g. `mix deps.get`) and show **notices** at the end.
+- **Preview only:** use `--dry-run` to see the proposed diff without writing files.
+- **Maintainer / documentation bundle:** to generate a Markdown file that embeds per-section diffs (the “manual with fenced diff blocks” workflow), use Igniter’s **scribe** mode, for example:
+  - `mix igniter.install corex --scribe path/to/corex_install_manual.md`  
+  Exact option names can vary slightly with your Igniter version; see `mix help igniter.install` and the [writing generators](https://hexdocs.pm/igniter/writing-generators.html) guide. That path is for **publishing a portable install guide**, separate from the normal interactive `mix igniter.install` flow.
+
+### `assets/js/app.js` and `assets/css/app.css` patching
+
+- **[igniter_js](https://github.com/ash-project/igniter_js)** is an **optional** dependency of Corex. When it is available (it is in Corex’s own `mix.lock`), the installer patches `assets/js/app.js` using its JavaScript codemods (LiveSocket hooks and imports). If the module is not on the code path, the same behavior falls back to regular-expression patching. Set `COREX_PATCH_ASSETS_JS_REGEX=1` to force the regex path (for example when comparing output or debugging).
+- **[igniter_css](https://github.com/ash-project/igniter_css)** is **not** integrated. It depends on [Pythonx](https://hexdocs.pm/pythonx) for part of its pipeline, which would add a heavy runtime to every install. Corex continues to strip daisyUI regions and append design imports in [`Mix.Corex.Install.Design`](https://github.com/corex-ui/corex) using the existing string and regex approach. Revisit if IgniterCss exposes a small, Python-free API for the same transforms.
 
 ## Add your first component
 
 Add the following Accordion examples to your application.
-
-<!-- tabs-open -->
-
-### Basic
 
 You can use `Corex.Content.new/1` to create a list of content items.
 
@@ -267,8 +270,6 @@ defmodule MyAppWeb.AccordionAsyncLive do
 end
 ```
 
-<!-- tabs-close -->
-
 ## API Control
 
 In order to use the API, you must use an id on the component.
@@ -289,4 +290,45 @@ def handle_event("open_item", _, socket) do
 end
 ```
 
-For development performance tips (e.g. minifying assets), see [Troubleshooting](troubleshooting.html). For the final build in production, see the [Production guide](production.html).
+## Events
+
+Listen to component events on the **server** (LiveView events) or on the **client** (DOM CustomEvents).
+
+### Server
+
+```heex
+<.accordion
+  id="my-accordion"
+  class="accordion"
+  items={@items}
+  on_value_change="accordion_value_changed"
+/>
+```
+
+```elixir
+def handle_event("accordion_value_changed", %{"id" => "my-accordion", "value" => value}, socket) do
+  {:noreply, assign(socket, open_values: value)}
+end
+```
+
+### Client
+
+```heex
+<.accordion
+  id="my-accordion"
+  class="accordion"
+  items={@items}
+  on_value_change_client="accordion-value-changed"
+/>
+```
+
+```javascript
+const el = document.getElementById("my-accordion");
+
+el.addEventListener("accordion-value-changed", (event) => {
+  const { id, value } = event.detail;
+  console.log("accordion value changed", { id, value });
+});
+```
+
+For the final build in production, see the [Production guide](production.html).

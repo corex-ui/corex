@@ -1,15 +1,22 @@
 @import "../main.css";
 
 @layer components {
+  .clipboard {
+    width: fit-content;
+  }
+
   .clipboard [data-scope="clipboard"][data-part="root"] {
     @apply ui-root;
 
-    gap: var(--spacing-ui-gap);
-    max-width: var(--container-ui);
+    gap: var(--spacing-space);
   }
 
-  .clipboard [data-scope="clipboard"][data-part="trigger"] {
-    @apply ui-trigger;
+  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="horizontal"] {
+    align-items: center;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="root"][data-orientation="vertical"] {
+    align-items: start;
   }
 
   .clipboard [data-scope="clipboard"][data-part="label"] {
@@ -19,72 +26,86 @@
   .clipboard [data-scope="clipboard"][data-part="control"] {
     display: flex;
     flex-flow: row wrap;
-    justify-content: center;
-    gap: var(--spacing-ui-gap);
+    justify-content: start;
+    gap: var(--spacing-space-sm);
   }
 
   .clipboard [data-scope="clipboard"][data-part="input"] {
     @apply ui-input;
 
-    max-width: var(--container-mini);
+    max-width: var(--container-5xs);
   }
 
   .clipboard [data-scope="clipboard"][data-part="input"][data-copied] {
-    background-color: var(--color-ui-success) !important;
-    color: var(--color-ui-success--text) !important;
-    border-color: var(--color-ui-success--border) !important;
+    background-color: var(--color-success);
+    color: var(--color-success-ink);
   }
 
-  .clipboard [data-scope="clipboard"][data-part="trigger"] .data-copy {
-    display: inline-block;
+  .clipboard [data-scope="clipboard"][data-part="trigger"] {
+    @apply ui-trigger;
   }
 
-  .clipboard [data-scope="clipboard"][data-part="trigger"] .data-copied {
-    display: none !important;
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-space);
+    pointer-events: none;
+  }
+
+  .clipboard [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    display: none;
   }
 
   .clipboard [data-scope="clipboard"][data-part="trigger"][data-copied] {
-    background-color: var(--color-ui-success);
-    color: var(--color-ui-success--text);
+    background-color: var(--color-success);
+    color: var(--color-success-ink);
     outline: none;
-    box-shadow: inset 0 0 0 2px var(--color-ui-success--text);
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
   }
 
   .clipboard
     [data-scope="clipboard"][data-part="trigger"][data-copied]
-    .data-copy {
-    display: none !important;
+    [data-scope="clipboard"][data-part="copy"] {
+    display: none;
   }
 
   .clipboard
     [data-scope="clipboard"][data-part="trigger"][data-copied]
-    .data-copied {
-    display: inline-block !important;
+    [data-scope="clipboard"][data-part="copied"] {
+    display: inline-flex;
   }
 }
 
 @utility clipboard--* {
-  [data-scope="clipboard"][data-part="root"] {
-    max-width: --value(--container-ui-*, [length]);
-    gap: --value(--spacing-ui-gap-*, [length]);
+
+  & [data-scope="clipboard"][data-part="root"] {
+    gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="clipboard"][data-part="control"] {
-    gap: --value(--spacing-ui-gap-*, [length]);
+  & [data-scope="clipboard"][data-part="control"] {
+    gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="clipboard"][data-part="trigger"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+  & [data-scope="clipboard"][data-part="trigger"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
   }
 
-  [data-scope="clipboard"][data-part="label"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
+  & [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copy"],
+  & [data-scope="clipboard"][data-part="trigger"] [data-scope="clipboard"][data-part="copied"] {
+    gap: --value(--spacing-space-*, [length]);
   }
 
-  [data-scope="clipboard"][data-part="input"] {
-    max-width: --value(--container-ui-*, [length]);
+  & [data-scope="clipboard"][data-part="label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+  }
+
+  & [data-scope="clipboard"][data-part="input"] {
+    min-height: --value(--spacing-size-*, [length]);
   }
 }

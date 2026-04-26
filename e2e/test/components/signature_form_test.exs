@@ -10,7 +10,7 @@ defmodule E2eWeb.SignatureFormTest do
     |> Signature.wait(500)
     |> Signature.submit_form()
     |> Signature.wait(500)
-    |> Signature.see_flash("Submitted: signature=")
+    |> Signature.wait_for_signature_field_error()
   end
 
   feature "static form - has no A11y violations", %{session: session} do
@@ -26,7 +26,7 @@ defmodule E2eWeb.SignatureFormTest do
     |> Signature.wait(500)
     |> Signature.submit_form(:live)
     |> Signature.wait(2000)
-    |> Signature.see_flash("signature=")
+    |> Signature.wait_for_signature_field_error()
   end
 
   feature "live form - has no A11y violations", %{session: session} do

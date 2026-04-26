@@ -1,0 +1,231 @@
+{
+  "theme": {
+    "color": {
+      "selected-ink": {
+        "description": "7.0:1 contrast against selected (#cacaca)",
+        "type": "color",
+        "value": "#393939"
+      },
+      "ink-success": {
+        "description": "6.0:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#005f40"
+      },
+      "ui-active": {
+        "description": "Surface ui active stop (base 88% lightness, chroma #F0F0F0).",
+        "type": "color",
+        "value": "#c1c1c1"
+      },
+      "brand-muted": {
+        "description": "Semantic brand muted fill at 36% lightness (chroma #32479C).",
+        "type": "color",
+        "value": "#293c90"
+      },
+      "alert-muted": {
+        "description": "Semantic alert muted fill at 36% lightness (chroma #A43C3C).",
+        "type": "color",
+        "value": "#80191f"
+      },
+      "accent-muted": {
+        "description": "Semantic accent muted fill at 36% lightness (chroma #4B4B4B).",
+        "type": "color",
+        "value": "#464646"
+      },
+      "accent-ink": {
+        "description": "7.0:1 contrast against accent (#3d3d3d)",
+        "type": "color",
+        "value": "#cfcfcf"
+      },
+      "ui-hover": {
+        "description": "Surface ui hover stop (base 88% lightness, chroma #F0F0F0).",
+        "type": "color",
+        "value": "#cacaca"
+      },
+      "selected-hover": {
+        "description": "Semantic selected hover fill at 84% lightness (chroma #F0F0F0).",
+        "type": "color",
+        "value": "#bebebe"
+      },
+      "ink-accent": {
+        "description": "6.0:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#535353"
+      },
+      "layer": {
+        "description": "Surface layer at 97% lightness (chroma #F0F0F0).",
+        "type": "color",
+        "value": "#f5f5f5"
+      },
+      "brand-ink": {
+        "description": "7.0:1 contrast against brand (#213285)",
+        "type": "color",
+        "value": "#cccccc"
+      },
+      "accent-active": {
+        "description": "Semantic accent active fill at 36% lightness (chroma #4B4B4B).",
+        "type": "color",
+        "value": "#2b2b2b"
+      },
+      "alert-ink": {
+        "description": "7.0:1 contrast against alert (#750916)",
+        "type": "color",
+        "value": "#c9c9c9"
+      },
+      "alert": {
+        "description": "Semantic alert default fill at 36% lightness (chroma #A43C3C).",
+        "type": "color",
+        "value": "#750916"
+      },
+      "brand-active": {
+        "description": "Semantic brand active fill at 36% lightness (chroma #32479C).",
+        "type": "color",
+        "value": "#131d6f"
+      },
+      "selected-active": {
+        "description": "Semantic selected active fill at 84% lightness (chroma #F0F0F0).",
+        "type": "color",
+        "value": "#b4b4b4"
+      },
+      "ink-alert": {
+        "description": "6.0:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#952e30"
+      },
+      "alert-active": {
+        "description": "Semantic alert active fill at 36% lightness (chroma #A43C3C).",
+        "type": "color",
+        "value": "#5e0003"
+      },
+      "success": {
+        "description": "Semantic success default fill at 38% lightness (chroma #059669).",
+        "type": "color",
+        "value": "#00562e"
+      },
+      "info": {
+        "description": "Semantic info default fill at 40% lightness (chroma #1F77D4).",
+        "type": "color",
+        "value": "#00439c"
+      },
+      "success-active": {
+        "description": "Semantic success active fill at 38% lightness (chroma #059669).",
+        "type": "color",
+        "value": "#00421c"
+      },
+      "success-muted": {
+        "description": "Semantic success muted fill at 38% lightness (chroma #059669).",
+        "type": "color",
+        "value": "#006037"
+      },
+      "selected-muted": {
+        "description": "Semantic selected muted fill at 84% lightness (chroma #F0F0F0).",
+        "type": "color",
+        "value": "#d6d6d6"
+      },
+      "selected": {
+        "description": "Semantic selected default fill at 84% lightness (chroma #F0F0F0).",
+        "type": "color",
+        "value": "#cacaca"
+      },
+      "ui-muted": {
+        "description": "Surface ui muted stop (base 88% lightness, chroma #F0F0F0).",
+        "type": "color",
+        "value": "#e3e3e3"
+      },
+      "root": {
+        "description": "Surface root at 99% lightness (chroma #32479C).",
+        "type": "color",
+        "value": "#d5f8ff"
+      },
+      "brand": {
+        "description": "Semantic brand default fill at 36% lightness (chroma #32479C).",
+        "type": "color",
+        "value": "#213285"
+      },
+      "shadow": {
+        "description": "1.28:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#ffffff"
+      },
+      "ink": {
+        "description": "8.5:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#3d3d3d"
+      },
+      "accent": {
+        "description": "Semantic accent default fill at 36% lightness (chroma #4B4B4B).",
+        "type": "color",
+        "value": "#3d3d3d"
+      },
+      "alert-hover": {
+        "description": "Semantic alert hover fill at 36% lightness (chroma #A43C3C).",
+        "type": "color",
+        "value": "#68000a"
+      },
+      "success-ink": {
+        "description": "7.0:1 contrast against success (#00562e)",
+        "type": "color",
+        "value": "#e5e5e5"
+      },
+      "ink-brand": {
+        "description": "6.0:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#374ca2"
+      },
+      "info-active": {
+        "description": "Semantic info active fill at 40% lightness (chroma #1F77D4).",
+        "type": "color",
+        "value": "#002e85"
+      },
+      "success-hover": {
+        "description": "Semantic success hover fill at 38% lightness (chroma #059669).",
+        "type": "color",
+        "value": "#004a24"
+      },
+      "info-ink": {
+        "description": "7.0:1 contrast against info (#00439c)",
+        "type": "color",
+        "value": "#e0e0e0"
+      },
+      "brand-hover": {
+        "description": "Semantic brand hover fill at 36% lightness (chroma #32479C).",
+        "type": "color",
+        "value": "#192679"
+      },
+      "ink-muted": {
+        "description": "5.0:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#5f5f5f"
+      },
+      "info-hover": {
+        "description": "Semantic info hover fill at 40% lightness (chroma #1F77D4).",
+        "type": "color",
+        "value": "#00378f"
+      },
+      "ink-info": {
+        "description": "6.0:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#0052a0"
+      },
+      "info-muted": {
+        "description": "Semantic info muted fill at 40% lightness (chroma #1F77D4).",
+        "type": "color",
+        "value": "#004ea7"
+      },
+      "accent-hover": {
+        "description": "Semantic accent hover fill at 36% lightness (chroma #4B4B4B).",
+        "type": "color",
+        "value": "#333333"
+      },
+      "ui": {
+        "description": "Surface ui default stop (base 88% lightness, chroma #F0F0F0).",
+        "type": "color",
+        "value": "#d7d7d7"
+      },
+      "border": {
+        "description": "1.34:1 contrast against ui (#e3e3e3)",
+        "type": "color",
+        "value": "#c5c5c5"
+      }
+    }
+  }
+}

@@ -10,7 +10,7 @@ defmodule Corex.Integration.MixProject do
     [
       app: :phoenix_integration,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps()
@@ -32,7 +32,7 @@ defmodule Corex.Integration.MixProject do
   defp deps do
     [
       {:corex_new, path: "../installer"},
-      {:corex, path: "..", override: true},
+      {:igniter, "~> 0.6", only: [:dev, :test]},
       {:phoenix, "~> 1.8.1"},
       {:phoenix_ecto, "~> 4.5"},
       {:esbuild, "~> 0.10", runtime: false},

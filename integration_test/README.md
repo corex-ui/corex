@@ -1,6 +1,23 @@
 ## Phoenix Integration Tests
 
-This project contains integration tests for phoenix's generated projects.
+This project contains integration tests for Phoenix-generated projects and Corex.
+
+### Current default (`--dev-corex`)
+
+Until new Corex / `corex_new` versions are published to Hex, CI runs a single end-to-end test that
+generates an app with **`mix corex.new ... --dev-corex <repo>`** and asserts esbuild ESM flags,
+JS hooks, `config :corex`, `use Corex` in the web module, `config :localize` in `config/runtime.exs` from
+`Gettext.known_locales/1`, and a starter `priv/gettext/fr/.../default.po`.
+
+From the **repository root**, install Mix archives (`phx_new`, `igniter_new`, local `corex_new`),
+then:
+
+    $ cd integration_test
+    $ mix deps.get
+    $ mix test test/code_generation/dev_corex_new_test.exs
+
+Older database-backed code generation tests are kept under `test/code_generation/` but are not
+run in CI until the suite is re-enabled after publish.
 
 ## Running tests
 
@@ -8,11 +25,11 @@ To install dependencies, run:
 
     $ mix deps.get
 
-Then run the basic test suite (no dependencies on the database) with:
+Then run the focused dev_corex test (recommended):
 
-    $ mix test
+    $ mix test test/code_generation/dev_corex_new_test.exs
 
-To run the test suite with tests that test a specific database, run:
+To run the full legacy suite with tests that target a specific database:
 
     $ mix test --include database:postgresql
     $ mix test --include database:mysql

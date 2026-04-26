@@ -1,13 +1,27 @@
 @import "../main.css";
 
 @layer components {
-  .select [data-scope="select"][data-part="root"] {
-    @apply ui-root;
-    width: var(--container-mini);
-    gap: var(--spacing-ui-gap);
+  .select {
+    max-width: var(--container-5xs);
+    width: 100%;
   }
 
-  
+  .select[data-loading] [data-scope="select"][data-part="root"] {
+    @apply ui-loading;
+  }
+
+  .select [data-scope="select"][data-part="root"] {
+    @apply ui-root;
+    gap: var(--spacing-space);
+    position: relative;
+    padding-inline-end: var(--spacing-space);
+  }
+
+  .select [data-scope="select"][data-part="root"][data-readonly],
+  .select [data-scope="select"][data-part="root"][data-read-only] {
+    @apply ui-readonly-overlay;
+  }
+
   .select [data-scope="select"][data-part="label"] {
     @apply ui-label;
   }
@@ -15,7 +29,13 @@
   .select [data-scope="select"][data-part="control"] {
     display: flex;
     width: 100%;
+    min-width: 0;
     position: relative;
+
+    &[data-focus]:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+    }
   }
 
   .select [data-scope="select"][data-part="trigger"] {
@@ -23,6 +43,25 @@
 
     justify-content: space-between;
     width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .select [data-scope="select"][data-part="trigger"] > [data-part="item-text"] {
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+    text-align: start;
+  }
+
+  .select [data-scope="select"][data-part="trigger"] > .icon,
+  .select [data-scope="select"][data-part="trigger"] > [class^="hero-"] {
+    flex-shrink: 0;
   }
 
   .select [data-scope="select"][data-part="positioner"] {
@@ -32,16 +71,42 @@
   .select [data-scope="select"][data-part="content"] {
     @apply ui-content;
 
-    border: 1px solid var(--color-ui--border);
+    border: 1px solid var(--color-border);
     z-index: 50;
     padding: 0;
-    border-radius: var(--radius-ui);
+    border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-ui);
 
     &:focus-visible {
       outline: none;
     }
+
+    & [data-part="item"] {
+      border-radius: var(--radius-none) !important; 
+    }
+
+    & > [data-part="item"]:first-child {
+      border-top-left-radius: var(--radius-md) !important; 
+      border-top-right-radius: var(--radius-md) !important;
+      border-bottom-left-radius: 0 !important;              
+      border-bottom-right-radius: 0 !important;             
+    }
+
+
+    & > [data-part="item"]:last-child {
+      border-bottom-left-radius: var(--radius-md) !important; 
+      border-bottom-right-radius: var(--radius-md) !important;
+      border-top-left-radius: 0 !important;                    
+      border-top-right-radius: 0 !important;                   
+    }
+
+    
+    & > [data-part="item-group"]:last-child [data-part="item"]:last-child {
+      border-bottom-left-radius: var(--radius-md) !important; 
+      border-bottom-right-radius: var(--radius-md) !important;
+    }
+
   }
 
   .select [data-scope="select"][data-part="item-group"] {
@@ -50,23 +115,28 @@
   }
 
   .select [data-scope="select"][data-part="item-group-label"] {
-    font-size: var(--text-ui);
-    line-height: var(--text-ui--line-height);
-    text-align: start;
-    padding-inline: var(--spacing-ui-padding);
-    padding-block: var(--spacing-mini-padding-sm);
+    @apply ui-label;
+    
     background-color: var(--color-root);
-    color: var(--color-root--text);
-    border-bottom: 1px solid var(--color-ui--border);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
+    border-top: 1px solid var(--color-border);
+    box-shadow: var(--shadow-ui);
+    padding-inline-start: --spacing(4);
   }
 
   .select [data-scope="select"][data-part="item"] {
     @apply ui-item;
   }
 
-  .select [data-scope="select"][data-part="item-text"] {
+  .select [data-scope="select"][data-part="content"] [data-part="item-text"] {
     width: 100%;
     text-align: start;
+    text-wrap-mode: nowrap;
+  }
+
+  .select [data-scope="select"][data-part="item-indicator"] {
+    @apply ui-icon;
   }
 
   .select [data-scope="select"][data-part="error"] {
@@ -74,63 +144,31 @@
   }
 }
 
+
 @utility select--* {
-  [data-scope="select"][data-part="root"] {
-    width: --value(--container-*, [length]);
-  }
 
   [data-scope="select"][data-part="label"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="select"][data-part="trigger"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    padding-inline: --value(--spacing-space-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
+    min-height: --value(--spacing-size-*, [length]);
   }
 
   [data-scope="select"][data-part="control"] {
-    max-width: --value(--container-mini-*, [length]);
-    gap: --value(--spacing-mini-gap-*, [length]);
+    max-width: --value(--container-*, [length]);
+    gap: --value(--spacing-space-*, [length]);
   }
+
 
   [data-scope="select"][data-part="item"] {
-    font-size: --value(--text-ui-*, [length]);
-    line-height: --value(--text-ui-* --line-height, [length]);
-    min-height: --value(--spacing-ui-*, [length]);
-  }
-
-  /* States for item */
-  [data-scope="select"][data-part="item"][data-selected],
-  [data-scope="select"][data-part="item"][data-state="checked"] {
-    background-color: --value(--color-ui-*, [color]);
-    color: --value(--color-ui-* --text, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected]:hover,
-  [data-scope="select"][data-part="item"][data-state="checked"]:hover {
-    background-color: --value(--color-ui-* -hover, [color]);
-    color: --value(--color-ui-* --text, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected]:active {
-    background-color: --value(--color-ui-* -active, [color]);
-    color: --value(--color-ui-* --text, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-highlighted] {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
-    background-color: --value(--color-ui-* -hover, [color]);
-    color: --value(--color-ui-* --text, [color]);
-  }
-
-  [data-scope="select"][data-part="item"][data-selected][data-highlighted],
-  [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
-    outline: none;
-    box-shadow: inset 0 0 0 2px --value(--color-ui-* --text, [color]);
-    background-color: --value(--color-ui-* -hover, [color]);
-    color: --value(--color-ui-* --text, [color]);
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
+    
   }
 }

@@ -12,18 +12,62 @@ defmodule Corex.Integration.CodeGeneratorCase do
     app_path = Path.expand(app_name, tmp_dir)
     integration_test_root_path = Path.expand("../../", __DIR__)
     app_root_path = get_app_root_path(tmp_dir, app_name, opts)
+    local_corex = Path.expand("../../..", __DIR__)
+
+    dev_corex_argv =
+      if "--dev_corex" in opts or "--dev-corex" in opts do
+        []
+      else
+        ["--dev-corex", local_corex]
+      end
 
     output =
       mix_run!(
-        ["corex.new", app_path, "--no-install", "--no-version-check"] ++ opts,
+        ["corex.new", app_path, "--no-install", "--no-version-check"] ++
+          dev_corex_argv ++ opts,
         integration_test_root_path
       )
 
-    for path <- ~w(mix.lock deps) do
-      File.cp_r!(
-        Path.join(integration_test_root_path, path),
-        Path.join(app_root_path, path)
+    mix_lock_src = Path.join(integration_test_root_path, "mix.lock")
+    mix_lock_dst = Path.join(app_root_path, "mix.lock")
+    File.cp!(mix_lock_src, mix_lock_dst)
+
+    inject_corex_path_dep(app_root_path, opts)
+    mix_run!(["deps.get"], app_root_path)
+    mix_run!(["compile"], app_root_path)
+
+    {app_root_path, output}
+  end
+
+  def generate_corex_app_dev_corex(tmp_dir, app_name, opts \\ [])
+      when is_binary(app_name) and is_list(opts) do
+    app_path = Path.expand(app_name, tmp_dir)
+    integration_test_root_path = Path.expand("../../", __DIR__)
+    app_root_path = get_app_root_path(tmp_dir, app_name, opts)
+    corex_root = Path.expand("../../..", __DIR__)
+
+    mix_exs = Path.join(corex_root, "mix.exs")
+
+    unless File.exists?(mix_exs) and File.read!(mix_exs) =~ ~r/\bapp:\s*:corex\b/ do
+      raise "expected Corex repo at #{corex_root} (mix.exs with app: :corex)"
+    end
+
+    output =
+      mix_run!(
+        [
+          "corex.new",
+          app_path,
+          "--no-install",
+          "--no-version-check",
+          "--no-design",
+          "--dev-corex",
+          corex_root
+        ] ++ opts,
+        integration_test_root_path
       )
+
+    unless output =~ "mix phx.new" and output =~ "igniter" do
+      raise "expected corex.new to run phx.new and igniter install, but output did not include it"
     end
 
     inject_corex_path_dep(app_root_path, opts)
@@ -36,6 +80,35 @@ defmodule Corex.Integration.CodeGeneratorCase do
   def generate_phoenix_app(tmp_dir, app_name, opts \\ [])
       when is_binary(app_name) and is_list(opts) do
     generate_corex_app(tmp_dir, app_name, opts)
+  end
+
+  def generate_plain_phoenix_app(tmp_dir, app_name, phx_opts \\ [])
+      when is_binary(app_name) and is_list(phx_opts) do
+    app_path = Path.expand(app_name, tmp_dir)
+    integration_test_root_path = Path.expand("../../", __DIR__)
+
+    output =
+      mix_run!(
+        [
+          "igniter.new",
+          app_path,
+          "--yes",
+          "--yes-to-deps",
+          "--with",
+          "phx.new",
+          "--with-args=--no-install --no-version-check"
+        ] ++ phx_opts,
+        integration_test_root_path
+      )
+
+    mix_lock_src = Path.join(integration_test_root_path, "mix.lock")
+    mix_lock_dst = Path.join(app_path, "mix.lock")
+    File.cp!(mix_lock_src, mix_lock_dst)
+
+    mix_run!(["deps.get"], app_path)
+    mix_run!(["compile"], app_path)
+
+    {app_path, output}
   end
 
   def mix_run!(args, app_path, opts \\ [])
@@ -61,11 +134,48 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def mix_run(args, app_path, opts \\ [])
       when is_list(args) and is_binary(app_path) and is_list(opts) do
+    maybe_ensure_igniter_new_archive(args, app_path)
     System.cmd("mix", args, [stderr_to_stdout: true, cd: Path.expand(app_path)] ++ opts)
+  end
+
+  defp maybe_ensure_igniter_new_archive(["corex.new" | _], app_path) do
+    ensure_igniter_new_archive(Path.expand(app_path))
+  end
+
+  defp maybe_ensure_igniter_new_archive(["igniter.new" | _], app_path) do
+    ensure_igniter_new_archive(Path.expand(app_path))
+  end
+
+  defp maybe_ensure_igniter_new_archive(_, _), do: :ok
+
+  defp ensure_igniter_new_archive(_cwd) do
+    key = {__MODULE__, :igniter_new_archive_installed}
+
+    case :persistent_term.get(key, false) do
+      true ->
+        :ok
+
+      false ->
+        {out, code} =
+          System.cmd("mix", ["archive.install", "hex", "igniter_new", "--force"],
+            stderr_to_stdout: true
+          )
+
+        if code != 0 do
+          raise "failed to install igniter_new archive:\n\n#{out}"
+        end
+
+        :persistent_term.put(key, true)
+        :ok
+    end
   end
 
   def assert_dir(path) do
     assert File.dir?(path), "Expected #{path} to be a directory, but is not"
+  end
+
+  def refute_dir(path) do
+    refute File.dir?(path), "Expected #{path} to not be a directory, but it exists"
   end
 
   def assert_file(file) do
@@ -100,6 +210,10 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def assert_passes_formatter_check(app_path) do
     mix_run!(~w(format --check-formatted), app_path)
+  end
+
+  def assert_assets_build_pass(app_path) do
+    mix_run!(["assets.build"], app_path, env: [{"MIX_ENV", "dev"}])
   end
 
   def assert_no_compilation_warnings(app_path) do
@@ -288,6 +402,103 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   def request_with_retries(url, retries)
+
+  @doc """
+  `mix corex.new` default (replace on, design on): JS hooks, design assets, home wrapped in
+  `Layouts.app`, and Phoenix daisyUI plugins stripped from `app.css`.
+  """
+  def assert_corex_greenfield_file_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    app_js = Path.join([base, "assets", "js", "app.js"])
+    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
+
+    app_css = Path.join([base, "assets", "css", "app.css"])
+    assert_file(app_css, ~r{/\* corex:design-imports \*/})
+    assert_file(app_css, ~r{\.\./corex/main\.css})
+    assert_file(app_css, fn c ->
+      refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
+    end)
+
+    design_dir = Path.join([base, "assets", "corex"])
+    assert_dir(design_dir)
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, fn c ->
+      assert c =~ ~r/<Layouts\.app[\s\n]/
+      refute c =~ "Layouts.flash_group"
+      refute c =~ "Layouts.theme_toggle"
+    end)
+  end
+
+  @doc """
+  `mix corex.new … --no-replace`: stock home at `/`, router adds `GET /corex`; JS is still patched.
+  """
+  def assert_corex_no_replace_file_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    app_js = Path.join([base, "assets", "js", "app.js"])
+    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, ~r/\.\.\.corex/)
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, fn c -> assert c =~ ~r/<Layouts\.flash_group/ end)
+
+    router = Path.join([base, "lib", web, "router.ex"])
+
+    assert_file(router, fn c ->
+      assert c =~ "CorexPageController"
+      assert c =~ "/corex"
+    end)
+  end
+
+  @doc """
+  `mix corex.new … --no-design` (or installer `--no-design`): no copied design tree from `mix corex.design`.
+  """
+  def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    design_dir = Path.join([base, "assets", "corex"])
+    refute_dir(design_dir)
+  end
+
+  @doc """
+  Replace mode with `--no-design` (e.g. `dev_corex` or `corex.new --no-design`): ESM hooks + wrapped home, no
+  `assets/corex` and no `corex:design-imports` in `app.css`.
+  """
+  def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    assert_corex_no_design_skipped!(app_root, app_name, opts)
+
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    app_js = Path.join([base, "assets", "js", "app.js"])
+    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
+
+    app_css = Path.join([base, "assets", "css", "app.css"])
+    assert_file(app_css, fn c -> refute c =~ "corex:design-imports" end)
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, fn c ->
+      assert c =~ ~r/<Layouts\.app[\s\n]/
+      refute c =~ "Layouts.flash_group"
+    end)
+  end
+
+  defp app_base_path(app_root, app_name, opts) do
+    if "--umbrella" in opts do
+      Path.join([app_root, "apps", app_name])
+    else
+      app_root
+    end
+  end
 
   def request_with_retries(_url, 0), do: {:error, :out_of_retries}
 

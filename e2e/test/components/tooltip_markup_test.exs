@@ -3,11 +3,9 @@ defmodule E2eWeb.TooltipMarkupTest do
 
   import Phoenix.LiveViewTest
 
-  @locale "en"
-
   describe "static tooltip page" do
     test "renders tooltip data attributes", %{conn: conn} do
-      conn = get(conn, ~p"/#{@locale}/tooltip")
+      conn = get(conn, ~p"/tooltip/playground")
       html = html_response(conn, 200)
 
       assert html =~ ~r/data-scope="tooltip"/
@@ -17,7 +15,7 @@ defmodule E2eWeb.TooltipMarkupTest do
     end
 
     test "renders arrow parts when show_arrow", %{conn: conn} do
-      conn = get(conn, ~p"/#{@locale}/tooltip")
+      conn = get(conn, ~p"/tooltip/playground")
       html = html_response(conn, 200)
 
       assert html =~ ~r/data-part="arrow"/
@@ -27,7 +25,7 @@ defmodule E2eWeb.TooltipMarkupTest do
 
   describe "live tooltip page" do
     test "renders tooltip data attributes", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/tooltip")
+      {:ok, _view, html} = live(conn, ~p"/tooltip/patterns")
 
       assert html =~ ~r/data-scope="tooltip"/
       assert html =~ ~r/data-part="trigger"/
@@ -36,7 +34,7 @@ defmodule E2eWeb.TooltipMarkupTest do
     end
 
     test "renders arrow parts when show_arrow", %{conn: conn} do
-      {:ok, _view, html} = live(conn, ~p"/#{@locale}/live/tooltip")
+      {:ok, _view, html} = live(conn, ~p"/tooltip/playground")
 
       assert html =~ ~r/data-part="arrow"/
       assert html =~ ~r/data-part="arrow-tip"/

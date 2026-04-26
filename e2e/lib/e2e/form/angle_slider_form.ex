@@ -11,4 +11,15 @@ defmodule E2e.Form.AngleSliderForm do
     |> cast(attrs, [:angle])
     |> validate_required([:angle])
   end
+
+  def changeset_validate(form, attrs \\ %{}) do
+    form
+    |> cast(attrs, [:angle])
+    |> validate_required([:angle])
+    |> validate_number(:angle,
+      greater_than_or_equal_to: 0.0,
+      less_than_or_equal_to: 90.0,
+      message: "must be between 0 and 90"
+    )
+  end
 end

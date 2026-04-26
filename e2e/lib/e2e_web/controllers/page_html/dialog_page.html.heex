@@ -2,40 +2,35 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Dialog</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-
-  <h3>Client Api</h3>
-  <div class="layout__row">
-    <.action
-      phx-click={Corex.Dialog.set_open("my-dialog", true)}
-      class="button button--sm"
+  <.demo_page
+    id="dialog-anatomy-page"
+    title="Dialog Anatomy"
+    subtitle="Structure: minimal surface, title and description, and actions composed in content."
+  >
+    <.demo_section
+      id="dialog-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.DialogDemo.minimal_code()}
     >
-      Open Dialog
-    </.action>
-  </div>
-  <.dialog id="my-dialog" class="dialog">
-    <:trigger>Open Dialog</:trigger>
-    <:title>Dialog Title</:title>
-    <:description>
-      This is a dialog description that explains what the dialog is about.
-    </:description>
-    <:content>
-      <p>Dialog content goes here. You can add any content you want inside the dialog.</p>
-      <.action
-        phx-click={Corex.Dialog.set_open("my-dialog", false)}
-        class="button button--sm"
-      >
-        API Close Dialog
-      </.action>
-    </:content>
-    <:close_trigger>
-      <.heroicon name="hero-x-mark" class="icon" />
-    </:close_trigger>
-  </.dialog>
+      <:preview><E2eWeb.Demos.DialogDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-anatomy-title-description"
+      title="With title and description"
+      code={E2eWeb.Demos.DialogDemo.with_title_description_code()}
+    >
+      <:preview><E2eWeb.Demos.DialogDemo.with_title_description_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="dialog-anatomy-actions"
+      title="Actions"
+      code={E2eWeb.Demos.DialogDemo.actions_code()}
+    >
+      <:preview><E2eWeb.Demos.DialogDemo.actions_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

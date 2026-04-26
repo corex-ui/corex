@@ -3,13 +3,13 @@
 
 @layer components {
   .layout {
-    @apply scrollbar;
+    @apply scrollbar scrollbar--sm;
 
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     min-width: 0;
-    color: var(--color-root--text);
+    color: var(--color-ink);
     background: var(--color-root);
     overflow-x: hidden;
     overflow-y: scroll;
@@ -21,17 +21,17 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    height: var(--spacing-ui-lg);
+    height: var(--spacing-size-lg);
     background: var(--color-layer);
-    color: var(--color-layer--text);
-    border-bottom: 1px solid var(--color-layer--border);
+    color: var(--color-ink);
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     align-items: center;
   }
 
   .layout__header--compact {
     height: auto;
-    min-height: var(--spacing-ui);
+    
   }
 
   .layout__header__content,
@@ -43,17 +43,18 @@
     flex-wrap: wrap;
     margin-inline: auto;
     width: 100%;
-    padding-inline: var(--spacing-ui-padding);
-    padding-block: var(--spacing-ui-padding-sm);
+    padding-inline: var(--spacing-space-xl);
+    padding-block: var(--spacing-space-lg);
+    min-height: var(--spacing-size-lg);
   }
 
   .layout__footer {
     background: var(--color-layer);
-    color: var(--color-layer--text);
-    border-bottom: 1px solid var(--color-layer--border);
+    color: var(--color-ink);
+    border-top: 1px solid var(--color-border);
     display: flex;
     align-items: center;
-    min-height: var(--spacing-ui-lg);
+    min-height: var(--spacing-size-lg);
   }
 
   .layout__wrapper {
@@ -74,14 +75,13 @@
     position: sticky;
     display: flex;
     flex-direction: column;
-    top: calc(var(--spacing-ui-lg));
+    top: var(--spacing-size-lg);
     align-self: flex-start;
     background: var(--color-layer);
-    color: var(--color-layer--text);
-    min-width: var(--container-micro);
-    max-width: var(--container-ui);
+    color: var(--color-ink);
+    max-width: var(--container-md);
     width: auto;
-    height: calc(100vh - var(--spacing-ui-lg));
+    height: calc(100vh - var(--spacing-size-lg));
     overflow-y: scroll;
     scrollbar-gutter: stable;
 
@@ -89,7 +89,7 @@
 
   .layout__aside-mobile {
     background: var(--color-layer);
-    color: var(--color-layer--text);
+    color: var(--color-ink);
     width: 100%;
   }
 
@@ -101,8 +101,8 @@
     width: 100%;
     height: 100%;
     margin-inline: auto;
-    margin-block-end: var(--container-micro);
     position: relative;
+    min-height: calc(100vh - var(--spacing-size-lg));
   }
 
   .layout__main__wrapper {
@@ -123,9 +123,9 @@
     min-width: 0;
     justify-content: flex-start;
     align-items: center;
-    padding: var(--spacing-ui-padding);
-    gap: var(--spacing-ui-gap);
-    margin-block-end: var(--container-micro);
+    padding: var(--spacing-space-xl);
+    gap: var(--spacing-space-xl);
+    margin-block-end: var(--spacing-size-lg);
 
   }
 
@@ -133,15 +133,26 @@
     width: 100%;
     min-width: 0;
     max-width: var(--breakpoint-lg);
-    padding: var(--spacing-ui-padding);
-    color: var(--color-layer--text);
-    border-radius: var(--radius-ui);
+    min-height: 100%;
+    color: var(--color-ink);
+    border-radius: var(--radius-md);
     margin-inline: auto;
     justify-items: center;
     align-items: center;
-    gap: var(--spacing-ui);
+    gap: var(--spacing-size-lg);
     display: flex;
     flex-direction: column;
+  }
+
+  .layout__main--marketing {
+    width: 100%;
+  }
+
+  .layout__content--marketing {
+    max-width: none;
+    width: 100%;
+    align-items: stretch;
+    margin-block-end: var(--spacing-size-lg);
   }
 
   .layout .layout__row {
@@ -150,7 +161,7 @@
     align-items: center;
     justify-content: center;
     align-items: center;
-    gap: var(--spacing-ui-gap);
+    gap: var(--spacing-space-xl);
     width: auto
 
   }
@@ -160,9 +171,9 @@
     flex-direction: column;
     align-items: start;
     justify-content: center;
-    gap: var(--spacing-ui-gap);
-    margin-block: var(--spacing-ui);
-    min-width: var(--container-ui)
+    gap: var(--spacing-space-xl);
+    margin-block: var(--spacing-size-lg);
+    min-width: var(--container-md);
   }
 
   .layout .layout__side,
@@ -213,4 +224,5 @@
       max-width: var(--breakpoint-lg);
     }
   }
+
 }

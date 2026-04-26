@@ -9,26 +9,25 @@
     cursor: unset;
     width: fit-content;
     max-width: 100%;
-    font-size: calc(var(--text-ui) * 0.8);
-    line-height: var(--text-ui--line-height);
-    font-weight: var(--font-weight-ui);
+    font-size: calc(var(--text-base) * 0.8);
+    line-height: var(--text-base--line-height);
+    font-weight: var(--font-weight-normal);
     border-radius: var(--radius-full);
-    border: 1px solid var(--color-ui--border);
-    padding-inline: var(--spacing-mini-padding);
-    gap: var(--spacing-mini-gap);
-    height: calc(var(--spacing-ui) * 0.8);
+    border: 1px solid var(--color-border);
+    padding: var(--spacing-space);
+    gap: var(--spacing-space);
+    height: calc(--spacing(11) * 0.8);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
-    color: var(--color-ui--text);
+    color: var(--color-ink);
     background-color: var(--color-ui);
 
     &:disabled,
     &[data-disabled],
-    &[data-disabled="true"],
-    &[disabled="true"] {
-      color: var(--color-ui--muted);
-      background-color: --alpha(var(--color-ui) / 60%);
+    &[disabled] {
+      color: var(--color-ink-muted);
+      background-color: var(--color-ui-muted);
       cursor: not-allowed;
     }
 
@@ -55,17 +54,20 @@
 }
 
 @utility badge--* {
-  font-size: calc(--value(--text-ui-*, [length]) * 0.8);
-  line-height: calc(--value(--text-ui-* --line-height, [length]) * 0.8);
-  height: calc(--value(--spacing-ui-*, [length]) * 0.8);
-  background-color: --value(--color-ui-*, [color]);
-  color: --value(--color-ui-* --text, [color]);
-  padding-inline: calc(--value(--spacing-mini-padding-*, [length]) * 0.8);
-  gap: calc(--value(--spacing-mini-gap-*, [length]) * 0.8);
+  font-size: calc(--value(--text-*, [length]) * 0.8);
+  line-height: calc(--value(--text-*--line-height, [length]) * 0.8);
+  height: calc(--value(--spacing-*, [length]) * 0.8);
+  background-color: --value(--color-ui, [color]);
+  color: --value(--color-ink, [color]);
+  border-color: --value(--color-border, [color]);
+
+  padding-inline: --value(--spacing-space-*, [length]);
+  gap: --value(--spacing-space-*, [length]);
 
   &:disabled,
-  &[data-disabled] {
-    color: --value(--color-ui-* --muted, [color]);
-    background-color: --alpha(--value(--color-ui-*, [color]) / 60%);
+  &[data-disabled],
+  &[disabled] {
+    color: var(--color-ink-muted);
+    background-color: --value(--color-ui-muted, [color]);
   }
 }

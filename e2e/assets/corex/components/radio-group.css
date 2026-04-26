@@ -1,11 +1,26 @@
 @import "../main.css";
 
 @layer components {
+  .radio-group {
+    width: 100%;
+    max-width: var(--container-md);
+  }
+
+  .radio-group[data-loading] [data-scope="radio-group"][data-part="root"] {
+    @apply ui-loading;
+  }
+
   .radio-group [data-scope="radio-group"][data-part="root"] {
     @apply ui-root;
 
-    gap: var(--spacing-ui-gap);
-    max-width: var(--container-ui);
+    gap: --spacing(4);
+    position: relative;
+    padding-inline-end: var(--spacing-space);
+  }
+
+  .radio-group [data-scope="radio-group"][data-part="root"][data-readonly],
+  .radio-group [data-scope="radio-group"][data-part="root"][data-read-only] {
+    @apply ui-readonly-overlay;
   }
 
   .radio-group [data-scope="radio-group"][data-part="label"] {
@@ -16,9 +31,9 @@
     display: inline-flex;
     align-items: center;
     position: relative;
-    max-width: var(--container-ui);
+    max-width: var(--container-md);
     width: auto;
-    gap: var(--spacing-ui-gap);
+    gap: --spacing(4);
     margin-inline: auto;
     cursor: pointer;
   }
@@ -28,29 +43,29 @@
   }
 
   [data-scope="radio-group"][data-part="item-control"] {
-    height: var(--spacing-mini);
-    width: var(--spacing-mini);
+    height: --spacing(8);
+    width: --spacing(8);
     background: var(--color-ui);
-    color: var(--color-ui--text);
-    font-weight: var(--font-weight-ui);
+    color: var(--color-ink);
+    font-weight: var(--font-weight-normal);
     border-radius: var(--radius-full);
-    border: 1px solid var(--color-ui--border);
+    border: 1px solid var(--color-border);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    padding: var(--spacing-micro-padding-sm);
+    padding: --spacing(4);
 
     &[data-state="checked"] {
-      background: var(--color-ui--text);
-      color: var(--color-ui);
-      border-color: var(--color-ui--text);
+      background: var(--color-selected);
+      color: var(--color-selected-ink);
+      border-color: var(--color-selected);
     }
 
     &[data-state="unchecked"] {
       background: var(--color-ui);
-      color: var(--color-ui--text);
-      border-color: var(--color-ui--border);
+      color: var(--color-ink);
+      border-color: var(--color-border);
     }
 
     &:hover {
@@ -62,33 +77,40 @@
     }
 
     &[data-state="checked"]:hover {
-      background-color: var(--color-ui--text);
-      opacity: 0.9;
+      background-color: var(--color-selected-hover);
+    }
+
+    &[data-state="checked"]:active {
+      background-color: var(--color-selected-active);
     }
 
     &:focus-visible,
     &[data-focus] {
       outline: none;
-      box-shadow: inset 0 0 0 2px var(--color-ui--text);
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+    }
+
+    &[data-state="checked"]:focus-visible,
+    &[data-state="checked"][data-focus] {
+      box-shadow: inset 0 0 0 2px var(--color-selected-ink);
     }
 
     &:disabled,
     &[data-disabled],
-    &[data-disabled="true"],
-    &[disabled="true"] {
-      color: var(--color-ui--muted);
-      background-color: --alpha(var(--color-ui) / 60%);
+    &[disabled] {
+      color: var(--color-ink-muted);
+      background-color: var(--color-ui-muted);
       cursor: not-allowed;
     }
 
     &[data-invalid] {
-      color: var(--color-ui-alert);
-      border-color: var(--color-ui-alert);
+      color: var(--color-alert);
+      border-color: var(--color-alert);
     }
 
     &[data-required] {
-      color: var(--color-ui-alert);
-      border-color: var(--color-ui-alert);
+      color: var(--color-alert);
+      border-color: var(--color-alert);
     }
   }
 
@@ -100,7 +122,7 @@
     .data-checked {
     display: block !important;
     @apply ui-icon;
-    color: var(--color-ui-accent--text);
+    color: inherit;
     width: 100%;
     height: 100%;
   }

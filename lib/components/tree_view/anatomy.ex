@@ -13,9 +13,14 @@ defmodule Corex.TreeView.Anatomy do
       controlled: false,
       selection_mode: "single",
       redirect: false,
+      typeahead: true,
       dir: "ltr",
       on_selection_change: nil,
-      on_expanded_change: nil
+      on_selection_change_client: nil,
+      on_expanded_change: nil,
+      on_expanded_change_client: nil,
+      animation: "js",
+      animation_options: %Corex.Animation.Height{}
     ]
 
     @type t :: %__MODULE__{
@@ -26,9 +31,14 @@ defmodule Corex.TreeView.Anatomy do
             controlled: boolean(),
             selection_mode: String.t(),
             redirect: boolean(),
+            typeahead: boolean(),
             dir: String.t(),
             on_selection_change: String.t() | nil,
-            on_expanded_change: String.t() | nil
+            on_selection_change_client: String.t() | nil,
+            on_expanded_change: String.t() | nil,
+            on_expanded_change_client: String.t() | nil,
+            animation: String.t(),
+            animation_options: Corex.Animation.Height.t()
           }
   end
 
@@ -37,6 +47,9 @@ defmodule Corex.TreeView.Anatomy do
     defstruct [:id, dir: "ltr"]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+
+    @ignored_attrs ["dir", "id"]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Label do
@@ -44,6 +57,24 @@ defmodule Corex.TreeView.Anatomy do
     defstruct [:id, dir: "ltr"]
 
     @type t :: %__MODULE__{id: String.t(), dir: String.t()}
+
+    @ignored_attrs ["dir", "id"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule Tree do
+    @moduledoc false
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "role",
+      "tabindex",
+      "aria-label",
+      "aria-labelledby",
+      "aria-activedescendant"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Item do
@@ -51,6 +82,7 @@ defmodule Corex.TreeView.Anatomy do
     defstruct [
       :id,
       :value,
+      :to,
       :index_path,
       :name,
       dir: "ltr",
@@ -65,16 +97,35 @@ defmodule Corex.TreeView.Anatomy do
     @type t :: %__MODULE__{
             id: String.t(),
             value: String.t(),
+            to: String.t() | nil,
             index_path: list(integer()),
             name: String.t() | nil,
             dir: String.t(),
             disabled: boolean(),
             data: map(),
-            redirect: boolean() | nil,
+            redirect: :href | :patch | :navigate | false | nil,
             new_tab: boolean(),
             selected: boolean(),
             focused: boolean()
           }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "style",
+      "role",
+      "tabindex",
+      "aria-selected",
+      "aria-current",
+      "aria-level",
+      "aria-expanded",
+      "aria-disabled",
+      "data-state",
+      "data-focus",
+      "data-selected",
+      "data-ownedby"
+    ]
+    def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Branch do
@@ -89,7 +140,8 @@ defmodule Corex.TreeView.Anatomy do
       data: %{},
       expanded: false,
       selected: false,
-      focused: false
+      focused: false,
+      animation: "js"
     ]
 
     @type t :: %__MODULE__{
@@ -102,7 +154,112 @@ defmodule Corex.TreeView.Anatomy do
             data: map(),
             expanded: boolean(),
             selected: boolean(),
-            focused: boolean()
+            focused: boolean(),
+            animation: String.t()
           }
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "style",
+      "data-state",
+      "data-focus",
+      "data-selected",
+      "role",
+      "tabindex",
+      "aria-expanded",
+      "aria-selected",
+      "aria-disabled",
+      "aria-level",
+      "aria-controls",
+      "aria-labelledby"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule BranchControl do
+    @moduledoc false
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "style",
+      "data-state",
+      "data-focus",
+      "data-selected",
+      "role",
+      "tabindex",
+      "aria-expanded",
+      "aria-selected",
+      "aria-disabled",
+      "aria-level",
+      "aria-controls",
+      "aria-labelledby"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule BranchContent do
+    @moduledoc false
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "data-state",
+      "hidden",
+      "role"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule BranchIndicator do
+    @moduledoc false
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "data-state",
+      "data-disabled",
+      "data-focus",
+      "aria-hidden"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule BranchText do
+    @moduledoc false
+
+    @ignored_attrs ["dir", "id", "data-value", "data-path"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemText do
+    @moduledoc false
+
+    @ignored_attrs ["dir", "id", "data-value", "data-path"]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule ItemIndicator do
+    @moduledoc false
+
+    @ignored_attrs [
+      "dir",
+      "id",
+      "hidden",
+      "data-state",
+      "data-disabled",
+      "data-selected",
+      "data-focus",
+      "aria-hidden"
+    ]
+    def ignored_attrs, do: @ignored_attrs
+  end
+
+  defmodule BranchIndentGuide do
+    @moduledoc false
+
+    @ignored_attrs ["dir", "id", "data-value", "data-path", "data-depth"]
+    def ignored_attrs, do: @ignored_attrs
   end
 end

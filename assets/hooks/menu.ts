@@ -2,9 +2,10 @@ import type { Hook } from "phoenix_live_view";
 import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
 import { Menu } from "../components/menu";
 import type { SelectionDetails, OpenChangeDetails, Props } from "@zag-js/menu";
-import type { Direction } from "@zag-js/types";
 
-import { getString, getBoolean } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { performRedirect, readDomItemRedirect } from "../lib/redirect";
+import { readPositioningOptions } from "../lib/positioning";
 
 type MenuHookState = {
   menu?: Menu;
@@ -23,59 +24,51 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     }
 
     const pushEvent = this.pushEvent.bind(this);
-    const getMain = () => this.liveSocket?.main;
+    const liveSocket = this.liveSocket;
+
+    const buildOnSelect = () => (details: SelectionDetails) => {
+      if (getBoolean(el, "redirect") && details.value) {
+        const itemEl = el.querySelector<HTMLElement>(
+          `[data-scope="menu"][data-part="item"][data-value="${CSS.escape(details.value)}"]`
+        );
+        performRedirect(readDomItemRedirect(itemEl, details.value), { liveSocket });
+      }
+
+      const eventName = getString(el, "onSelect");
+      if (eventName && canPushEvent(liveSocket)) {
+        pushEvent(eventName, {
+          id: el.id,
+          value: details.value ?? null,
+        });
+      }
+
+      const eventNameClient = getString(el, "onSelectClient");
+      if (eventNameClient) {
+        el.dispatchEvent(
+          new CustomEvent(eventNameClient, {
+            bubbles: true,
+            detail: {
+              id: el.id,
+              value: details.value ?? null,
+            },
+          })
+        );
+      }
+    };
 
     const menu = new Menu(el, {
       id: el.id.replace("menu:", ""),
-      defaultOpen: getBoolean(el, "defaultOpen"),
       closeOnSelect: getBoolean(el, "closeOnSelect"),
       loopFocus: getBoolean(el, "loopFocus"),
       typeahead: getBoolean(el, "typeahead"),
       composite: getBoolean(el, "composite"),
       defaultHighlightedValue: getString(el, "defaultHighlightedValue"),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
-      onSelect: (details: SelectionDetails) => {
-        const redirect = getBoolean(el, "redirect");
-        const itemEl = [
-          ...el.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="item"]'),
-        ].find((node) => node.getAttribute("data-value") === details.value);
-        const itemRedirect = itemEl?.getAttribute("data-redirect");
-        const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-        const main = getMain();
-        const doRedirect =
-          redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
-        if (doRedirect) {
-          if (itemNewTab) {
-            window.open(details.value, "_blank", "noopener,noreferrer");
-          } else {
-            window.location.href = details.value;
-          }
-        }
-        const eventName = getString(el, "onSelect");
-        if (eventName && main && !main.isDead && main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            value: details.value ?? null,
-          });
-        }
-
-        const eventNameClient = getString(el, "onSelectClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                value: details.value ?? null,
-              },
-            })
-          );
-        }
-      },
+      dir: getDir(el),
+      positioning: readPositioningOptions(el),
+      onSelect: buildOnSelect(),
       onOpenChange: (details: OpenChangeDetails) => {
-        const main = getMain();
         const eventName = getString(el, "onOpenChange");
-        if (eventName && main && !main.isDead && main.isConnected()) {
+        if (eventName && canPushEvent(liveSocket)) {
           pushEvent(eventName, {
             id: el.id,
             open: details.open ?? false,
@@ -111,49 +104,13 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
         const nestedMenuId = `${nestedId}-${index}`;
         const nestedMenu = new Menu(nestedEl, {
           id: nestedMenuId,
-          dir: getString<Direction>(nestedEl, "dir", ["ltr", "rtl"]),
+          dir: getDir(nestedEl),
           closeOnSelect: getBoolean(nestedEl, "closeOnSelect"),
           loopFocus: getBoolean(nestedEl, "loopFocus"),
           typeahead: getBoolean(nestedEl, "typeahead"),
           composite: getBoolean(nestedEl, "composite"),
-          onSelect: (details: SelectionDetails) => {
-            const redirect = getBoolean(el, "redirect");
-            const itemEl = [
-              ...el.querySelectorAll<HTMLElement>('[data-scope="menu"][data-part="item"]'),
-            ].find((node) => node.getAttribute("data-value") === details.value);
-            const itemRedirect = itemEl?.getAttribute("data-redirect");
-            const itemNewTab = itemEl?.hasAttribute("data-new-tab");
-            const main = getMain();
-            const doRedirect =
-              redirect && details.value && (main?.isDead ?? true) && itemRedirect !== "false";
-            if (doRedirect) {
-              if (itemNewTab) {
-                window.open(details.value, "_blank", "noopener,noreferrer");
-              } else {
-                window.location.href = details.value;
-              }
-            }
-            const eventName = getString(el, "onSelect");
-            if (eventName && main && !main.isDead && main.isConnected()) {
-              pushEvent(eventName, {
-                id: el.id,
-                value: details.value ?? null,
-              });
-            }
-
-            const eventNameClient = getString(el, "onSelectClient");
-            if (eventNameClient) {
-              el.dispatchEvent(
-                new CustomEvent(eventNameClient, {
-                  bubbles: true,
-                  detail: {
-                    id: el.id,
-                    value: details.value ?? null,
-                  },
-                })
-              );
-            }
-          },
+          positioning: readPositioningOptions(nestedEl),
+          onSelect: buildOnSelect(),
         });
 
         nestedMenu.init();
@@ -179,7 +136,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
       const { open } = (event as CustomEvent<{ open: boolean }>).detail;
       if (menu.api.open !== open) menu.api.setOpen(open);
     };
-    el.addEventListener("phx:menu:set-open", this.onSetOpen);
+    el.addEventListener("corex:menu:set-open", this.onSetOpen);
 
     this.handlers = [];
 
@@ -206,15 +163,13 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
 
     this.menu?.updateProps({
       id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { open: getBoolean(this.el, "open") }
-        : { defaultOpen: getBoolean(this.el, "defaultOpen") }),
       closeOnSelect: getBoolean(this.el, "closeOnSelect"),
       loopFocus: getBoolean(this.el, "loopFocus"),
       typeahead: getBoolean(this.el, "typeahead"),
       composite: getBoolean(this.el, "composite"),
       defaultHighlightedValue: getString(this.el, "defaultHighlightedValue"),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
+      dir: getDir(this.el),
+      positioning: readPositioningOptions(this.el),
     } as Props);
   },
 
@@ -222,7 +177,7 @@ const MenuHook: Hook<object & MenuHookState, HTMLElement> = {
     if (this.el.hasAttribute("data-nested")) return;
 
     if (this.onSetOpen) {
-      this.el.removeEventListener("phx:menu:set-open", this.onSetOpen);
+      this.el.removeEventListener("corex:menu:set-open", this.onSetOpen);
     }
 
     if (this.handlers) {

@@ -1,39 +1,32 @@
 defmodule Corex.List do
   @moduledoc ~S'''
-  List items for flat selectable items to be used with:
+  Flat selectable items for [Combobox](Corex.Combobox.html), [Listbox](Corex.Listbox.html), and [Select](Corex.Select.html).
 
-  - [Combobox](Corex.Combobox.html)
-  - [Listbox](Corex.Listbox.html)
-  - [Select](Corex.Select.html)
+  Build items with `Corex.List.new/1` or `Corex.List.Item.new/1`. Each row is a `Corex.List.Item` with required `:label` and optional `:id` (defaults to a monotonic `list-<integer>` from `generate_id/0`), `:to`, `:redirect`, `:new_tab`, `:disabled`, `:group`, and `:meta`.
 
-  Use `Corex.List.new/1` to build a list of items from keyword lists or maps.
-
+  When the parent sets `redirect`, selection can navigate using each item’s `:to` or id as destination; per-item `:redirect` is `:href`, `:patch`, `:navigate`, or `false` to opt out. With `redirect` enabled, the client runs single-select in Zag even if the form uses `multiple`.
   '''
 
   defmodule Item do
     @moduledoc """
-    List item structure.
-
-    Use it to create flat lists of selectable items for:
-    - [Combobox](Corex.Combobox.html)
-    - [Listbox](Corex.Listbox.html)
-    - [Select](Corex.Select.html)
+    One selectable row for Combobox, Listbox, or Select.
 
     ## Fields
 
-    * `:id` - (optional) Unique identifier, auto-generated if not provided
-    * `:label` - (required) Display text
-    * `:disabled` - (optional) Whether the item is disabled
-    * `:group` - (optional) Group identifier for grouping items
-    * `:meta` - (optional) Additional metadata for the item
-    * `:redirect` - (optional) When top-level redirect is true, set to false on an item to disable redirect for that item
-    * `:new_tab` - (optional) When redirect is used, set to true to open this item's URL in a new tab
+    * `:label` (required) — visible text
+    * `:id` (optional) — value id; defaults generated when built through `Item.new/1`
+    * `:to` (optional) — URL or path used for redirect-on-select when the parent has `redirect`
+    * `:disabled` (optional)
+    * `:group` (optional) — group id for grouped lists
+    * `:meta` (optional) — arbitrary map
+    * `:redirect` (optional) — `:href` | `:patch` | `:navigate` | `false`; controls navigation kind for this item when the parent has `redirect`
+    * `:new_tab` (optional) — open redirect target in a new tab
     """
 
-    @derive Jason.Encoder
     @enforce_keys [:label]
     defstruct [
       :id,
+      :to,
       :label,
       disabled: false,
       group: nil,
@@ -42,13 +35,16 @@ defmodule Corex.List do
       new_tab: false
     ]
 
+    @type redirect_mode :: :href | :patch | :navigate | false | nil
+
     @type t :: %__MODULE__{
             id: String.t(),
+            to: String.t() | nil,
             label: String.t(),
             disabled: boolean(),
             group: String.t() | nil,
             meta: map(),
-            redirect: boolean() | nil,
+            redirect: redirect_mode(),
             new_tab: boolean()
           }
 
@@ -71,7 +67,7 @@ defmodule Corex.List do
                 Failed to create List.Item: #{Exception.message(e)}
 
                 Required fields: [:label]
-                Optional fields: [:id, :disabled, :group, :meta, :redirect, :new_tab]
+                Optional fields: [:id, :to, :disabled, :group, :meta, :redirect, :new_tab]
 
                 Example:
                   Corex.List.Item.new(label: "My Label")
@@ -97,20 +93,25 @@ defmodule Corex.List do
   """
   def new([]), do: []
 
-  def new([first | _rest] = items) when is_list(first) or is_map(first) do
-    Enum.map(items, &Item.new/1)
-  end
-
   def new(items) when is_list(items) do
-    raise ArgumentError, """
-    Expected a list of keyword lists or maps, got invalid item format.
+    Enum.map(items, fn
+      %Item{} = item ->
+        item
 
-    Example:
-      Corex.List.new([
-        [label: "Option 1"],
-        [label: "Option 2"]
-      ])
-    """
+      item when is_list(item) or is_map(item) ->
+        Item.new(item)
+
+      other ->
+        raise ArgumentError, """
+        Expected keyword lists, maps, or %Corex.List.Item{}, got: #{inspect(other)}
+
+        Example:
+          Corex.List.new([
+            [label: "Option 1"],
+            [label: "Option 2"]
+          ])
+        """
+    end)
   end
 
   def new(items) do

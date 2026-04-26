@@ -1,5 +1,5 @@
 import { connect, machine, type Props, type Api } from "@zag-js/switch";
-import { VanillaMachine, normalizeProps } from "@zag-js/vanilla";
+import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 
 export class Switch extends Component<Props, Api> {
@@ -9,7 +9,7 @@ export class Switch extends Component<Props, Api> {
   }
 
   initApi(): Api {
-    return connect(this.machine.service, normalizeProps);
+    return this.zagConnect(connect);
   }
 
   render(): void {

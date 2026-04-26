@@ -1,0 +1,19 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+[data-theme="leo"] {
+  --theme-font-sans: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
+  --theme-font-serif: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, serif;
+  --theme-font-mono: ui-monospace, 'IBM Plex Mono', Menlo, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  --theme-font-display: Optima, Candara, 'Noto Sans', source-sans-pro, sans-serif;
+  --theme-font-weight-thin: 100;
+  --theme-font-weight-extralight: 200;
+  --theme-font-weight-light: 300;
+  --theme-font-weight-normal: 400;
+  --theme-font-weight-medium: 500;
+  --theme-font-weight-semibold: 600;
+  --theme-font-weight-bold: 700;
+  --theme-font-weight-extrabold: 800;
+  --theme-font-weight-black: 900;
+}

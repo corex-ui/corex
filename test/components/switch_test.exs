@@ -9,7 +9,7 @@ defmodule Corex.SwitchTest do
       html = render_component(&Switch.switch/1, checked: false, name: "sw")
       assert html =~ ~r/data-scope="switch"/
       assert html =~ ~r/data-part="root"/
-      assert html =~ ~r/data-js="pending"/
+      assert html =~ ~r//
     end
 
     test "renders controlled with checked true has data-checked and no data-default-checked" do

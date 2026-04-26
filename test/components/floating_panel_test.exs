@@ -2,6 +2,7 @@ defmodule Corex.FloatingPanelTest do
   use CorexTest.ComponentCase, async: true
   import Phoenix.Component
 
+  alias Corex.FloatingPanel
   alias Corex.FloatingPanel.Connect
 
   describe "floating_panel/1" do
@@ -27,8 +28,6 @@ defmodule Corex.FloatingPanelTest do
             ~H"""
             <Corex.FloatingPanel.floating_panel
               id="test-panel-full"
-              open={true}
-              controlled={true}
               draggable={false}
               resizable={false}
               allow_overflow={false}
@@ -83,6 +82,26 @@ defmodule Corex.FloatingPanelTest do
     end
   end
 
+  describe "set_open/2" do
+    test "returns JS command when open is true" do
+      js = FloatingPanel.set_open("my-floating-panel", true)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+
+    test "returns JS command when open is false" do
+      js = FloatingPanel.set_open("my-floating-panel", false)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "set_open/3" do
+    test "pushes event to socket" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = FloatingPanel.set_open(socket, "my-floating-panel", false)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
   describe "Connect.root/1" do
     test "returns root attributes" do
       assigns = %{id: "test-panel", dir: "ltr"}
@@ -94,17 +113,11 @@ defmodule Corex.FloatingPanelTest do
   end
 
   describe "Connect.trigger/1" do
-    test "returns trigger attributes when closed" do
-      assigns = %{id: "test-panel", initial_open: false}
+    test "returns trigger attributes closed for SSR" do
+      assigns = %{id: "test-panel", dir: "ltr", orientation: "vertical"}
       result = Connect.trigger(assigns)
       assert result["id"] == "floating-panel:test-panel:trigger"
       assert result["data-state"] == "closed"
-    end
-
-    test "returns trigger attributes when open" do
-      assigns = %{id: "test-panel", initial_open: true}
-      result = Connect.trigger(assigns)
-      assert result["data-state"] == "open"
     end
   end
 end

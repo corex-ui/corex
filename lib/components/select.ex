@@ -15,14 +15,14 @@ defmodule Corex.Select do
   <.select
     id="my-select"
     class="select"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra", disabled: true},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
       %{label: "Netherlands", id: "nld"},
       %{label: "Switzerland", id: "che"},
       %{label: "Austria", id: "aut"}
-    ]}
+    ])}
   >
     <:trigger>
       <.heroicon name="hero-chevron-down" />
@@ -35,7 +35,7 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
@@ -49,7 +49,7 @@ defmodule Corex.Select do
       %{label: "USA", id: "usa", group: "North America"},
       %{label: "Canada", id: "can", group: "North America"},
       %{label: "Mexico", id: "mex", group: "North America"}
-    ]}
+    ])}
   >
     <:trigger>
       <.heroicon name="hero-chevron-down" />
@@ -63,14 +63,14 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra"},
       %{label: "Belgium", id: "bel"},
       %{label: "Germany", id: "deu"},
       %{label: "Netherlands", id: "nld"},
       %{label: "Switzerland", id: "che"},
       %{label: "Austria", id: "aut"}
-    ]}
+    ])}
   >
     <:label>
       Country of residence
@@ -94,14 +94,14 @@ defmodule Corex.Select do
   ```heex
   <.select
     class="select"
-    items={[
+    items={Corex.List.new([
       %{label: "France", id: "fra", group: "Europe"},
       %{label: "Belgium", id: "bel", group: "Europe"},
       %{label: "Germany", id: "deu", group: "Europe"},
       %{label: "Japan", id: "jpn", group: "Asia"},
       %{label: "China", id: "chn", group: "Asia"},
       %{label: "South Korea", id: "kor", group: "Asia"}
-    ]}
+    ])}
   >
     <:item :let={item}>
       <Flagpack.flag name={String.to_atom(item.id)} />
@@ -120,11 +120,22 @@ defmodule Corex.Select do
 
   ## Use as Navigation
 
-  Set `redirect` so the first selected value is used as the destination URL. Per item: `redirect: false` disables redirect; `new_tab: true` opens in a new tab.
+  Set `redirect` on the component so the first selected value is used as the destination URL.
+  Per item, choose the navigation kind explicitly via the item's `:redirect` field:
+
+    * `:href` (default) - full page redirect via `window.location` (safe everywhere)
+    * `:patch` - LiveView `js().patch(url)` (caller asserts: same LV mount + matching live route)
+    * `:navigate` - LiveView `js().navigate(url)` (caller asserts: another LV in the same `live_session`)
+    * `false` - disable redirect for this item (e.g. let your `on_value_change` server handler decide)
+
+  Set `new_tab: true` on an item to open its destination in a new tab via `window.open`.
+  An item may also set `:to` to override the destination (defaults to the item id).
+
+  Build items with `Corex.List.new/1`. When `redirect` is true, the client runs **single-select in Zag** even if `multiple` is set on the component.
 
   ### Controller
 
-  When not connected to LiveView, the hook automatically performs a full page redirect via `window.location`.
+  When not connected to LiveView, the hook always performs a full page redirect via `window.location`.
 
   ```heex
   <.select
@@ -132,10 +143,10 @@ defmodule Corex.Select do
     class="select"
     redirect
     translation={%Corex.Select.Translation{placeholder: "Go to"}}
-    items={[
+    items={Corex.List.new([
       %{label: "Account", id: ~p"/account"},
       %{label: "Settings", id: ~p"/settings"}
-    ]}
+    ])}
   >
     <:trigger>
       <.heroicon name="hero-chevron-down" />
@@ -164,10 +175,10 @@ defmodule Corex.Select do
         redirect
         on_value_change="nav_change"
         translation={%Corex.Select.Translation{placeholder: "Go to"}}
-        items={[
+        items={Corex.List.new([
           %{label: "Account", id: ~p"/account"},
           %{label: "Settings", id: ~p"/settings"}
-        ]}
+        ])}
       >
         <:trigger>
           <.heroicon name="hero-chevron-down" />
@@ -202,14 +213,14 @@ defmodule Corex.Select do
       field={f[:country]}
       class="select"
       translation={%Corex.Select.Translation{placeholder: "Select a country"}}
-      items={[
+      items={Corex.List.new([
         %{label: "France", id: "fra", disabled: true},
         %{label: "Belgium", id: "bel"},
         %{label: "Germany", id: "deu"},
         %{label: "Netherlands", id: "nld"},
         %{label: "Switzerland", id: "che"},
         %{label: "Austria", id: "aut"}
-      ]}
+      ])}
     >
       <:label>Your country of residence</:label>
       <:trigger>
@@ -277,11 +288,11 @@ defmodule Corex.Select do
           class="select"
           controlled
           translation={%Corex.Select.Translation{placeholder: "Select a country"}}
-          items={[
+          items={Corex.List.new([
             %{label: "France", id: "fra"},
             %{label: "Belgium", id: "bel"},
             %{label: "Germany", id: "deu"}
-          ]}
+          ])}
         >
           <:label>Your country of residence</:label>
           <:trigger>
@@ -301,18 +312,12 @@ defmodule Corex.Select do
   ## API Control
 
   ```heex
-  # Client-side
-  <button phx-click={Corex.Select.set_value("my-select", "fra")}>
-    Check
-  </button>
-
-  <button phx-click={Corex.Select.toggle_value("my-select")}>
-    Toggle
-  </button>
-
-  # Server-side
-  def handle_event("set_value", _, socket) do
-    {:noreply, Corex.Select.set_value(socket, "my-select", "fra")}
+  <.action phx-click={Corex.Select.set_value("my-select", ["fra"])} class="button button--sm">France</.action>
+  <.action phx-click={Corex.Select.set_open("my-select", true)} class="button button--sm">Open</.action>
+  ```
+  ```elixir
+  def handle_event("api", _, socket) do
+    {:noreply, Corex.Select.set_value(socket, "my-select", ["bel"])}
   end
   ```
 
@@ -349,7 +354,6 @@ defmodule Corex.Select do
   <.select class="select select--accent select--lg">
   ```
 
-  Learn more about modifiers and [Corex Design](https://corex-ui.com/components/select#modifiers)
 
   '''
 
@@ -365,16 +369,37 @@ defmodule Corex.Select do
   end
 
   use Phoenix.Component
-  alias Corex.Select.Anatomy.{Content, Control, Label, Positioner, Props, Root}
+
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
+
+  alias Corex.Select.Anatomy.{
+    Content,
+    Control,
+    HiddenSelect,
+    Item,
+    ItemGroup,
+    ItemGroupLabel,
+    ItemIndicator,
+    ItemText,
+    Label,
+    Positioner,
+    Props,
+    Root,
+    Trigger,
+    ValueInput
+  }
+
   alias Corex.Select.Connect
 
-  import Corex.Helpers, only: [normalize_items: 1, has_groups?: 1, group_by_group: 1]
+  import Corex.Helpers,
+    only: [normalize_items: 1, has_groups?: 1, group_by_group: 1, validate_value!: 1]
 
   attr(:id, :string, required: false, doc: "The id of the select component")
 
   attr(:items, :list,
     default: [],
-    doc: "List of items (maps with :id and :label, or Corex.List.Item)"
+    doc: "List of items from `Corex.List.new/1` (or maps with :id and :label)"
   )
 
   attr(:controlled, :boolean, default: false, doc: "Whether the select is controlled")
@@ -404,6 +429,11 @@ defmodule Corex.Select do
   attr(:required, :boolean, default: false, doc: "Whether the select is required")
   attr(:prompt, :string, default: nil, doc: "the prompt for select inputs")
 
+  attr(:deselectable, :boolean,
+    default: false,
+    doc: "Whether the selected items can be deselected"
+  )
+
   attr(:on_value_change, :string,
     default: nil,
     doc:
@@ -421,12 +451,16 @@ defmodule Corex.Select do
 
   attr(:redirect, :boolean,
     default: false,
-    doc:
-      "When true, the first selected value is used as the destination URL. When not connected the hook sets window.location; when connected use on_value_change and redirect(socket, to: Enum.at(value, 0)) in your handler. Same approach as menu's redirect. Per item: set redirect: false on an item to disable redirect for that item; set new_tab: true to open that item's URL in a new tab."
+    doc: """
+    When true, selecting a value triggers redirect-on-select. Each item picks
+    the navigation kind via `:redirect` (`:href` (default) | `:patch` | `:navigate` | `false`).
+    Items may also set `:to` (overrides the destination) and `:new_tab` (opens in a new tab).
+    When true, the client runs single-select in Zag even if `multiple` is set on this component.
+    """
   )
 
   attr(:positioning, Corex.Positioning,
-    default: %Corex.Positioning{},
+    default: %Corex.Positioning{same_width: true},
     doc: "Positioning options for the dropdown"
   )
 
@@ -466,7 +500,19 @@ defmodule Corex.Select do
   )
 
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    form_attempted? =
+      case field.form do
+        %Phoenix.HTML.Form{source: %Ecto.Changeset{action: a}} when not is_nil(a) -> true
+        _ -> false
+      end
+
+    errors =
+      if Phoenix.Component.used_input?(field) or form_attempted? do
+        field.errors
+      else
+        []
+      end
+
     value = get_value(field.value)
     selected_label = get_selected_label(assigns.items, value)
 
@@ -476,6 +522,7 @@ defmodule Corex.Select do
     |> assign_new(:id, fn -> field.id end)
     |> assign_new(:form, fn -> field.form.id end)
     |> assign_new(:name, fn -> field.name end)
+    |> assign_new(:controlled, fn -> true end)
     |> assign(:value, value)
     |> assign(:selected_label, selected_label)
     |> select()
@@ -493,6 +540,8 @@ defmodule Corex.Select do
       |> assign_new(:id, fn -> "select-#{System.unique_integer([:positive])}" end)
       |> assign_new(:name, fn -> "name-#{System.unique_integer([:positive])}" end)
       |> assign_new(:form, fn -> nil end)
+      |> assign_new(:dir, fn -> "ltr" end)
+      |> assign_new(:controlled, fn -> false end)
       |> assign(:translation, translation)
       |> assign(:placeholder, placeholder)
 
@@ -501,10 +550,17 @@ defmodule Corex.Select do
     value_list = get_value(value)
     selected_label = get_selected_label(items, value_list)
 
-    assigns = assign(assigns, :selected_label, selected_label)
+    assigns =
+      assigns
+      |> assign(:selected_label, selected_label)
+      |> assign(:value, value_list)
 
     options = transform_collection_to_options(items)
-    grouped_items = group_by_group(items)
+
+    grouped_items =
+      group_by_group(items)
+      |> Enum.sort_by(fn {group, _items} -> group || "" end, :asc)
+
     has_groups = has_groups?(items)
 
     selected_for_options =
@@ -527,32 +583,36 @@ defmodule Corex.Select do
       |> assign(:value_for_hidden_input, value_for_hidden_input(value_list, assigns.multiple))
 
     ~H"""
-    <div id={@id} phx-hook="Select" data-js="pending" {@rest} {Connect.props(%Props{
+    <div 
+    id={@id} 
+    phx-hook="Select"
+    data-loading
+    phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])} 
+    {@rest}
+    {Connect.props(%Props{
       id: @id, items: @items, controlled: @controlled, placeholder: @placeholder, value: @value,
-      disabled: @disabled, close_on_select: @close_on_select, dir: @dir, loop_focus: @loop_focus,
+      disabled: @disabled, close_on_select: @close_on_select, dir: @dir, orientation: @orientation, loop_focus: @loop_focus,
       multiple: @multiple, invalid: @invalid, name: @name, form: @form, read_only: @read_only,
       required: @required, on_value_change: @on_value_change, on_value_change_client: @on_value_change_client,
       redirect: @redirect,
-      positioning: @positioning
+      positioning: @positioning,
+      deselectable: @deselectable
     })}>
-      <div {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation})}>
+      <div phx-mounted={Connect.ignore_root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})} {Connect.root(%Root{id: @id, invalid: @invalid, read_only: @read_only, orientation: @orientation, dir: @dir})}>
 
-      <input type="hidden" name={@name} form={@form} id={"#{@id}-value"} data-scope="select" data-part="value-input" value={@value_for_hidden_input} />
+      <input phx-mounted={Connect.ignore_value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} {Connect.value_input(%ValueInput{id: @id, dir: @dir, orientation: @orientation})} name={@name} form={@form} value={@value_for_hidden_input} />
 
-      <select multiple={@multiple} data-scope="select" data-part="hidden-select" aria-hidden="true" tabindex="-1" style="border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px;white-space:nowrap;word-wrap:normal;">
-        <%= Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options) %>
+      <select phx-mounted={Connect.ignore_hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} {Connect.hidden_select(%HiddenSelect{id: @id, dir: @dir, orientation: @orientation})} multiple={@multiple} name={@name} form={@form}>
+        {Phoenix.HTML.Form.options_for_select(@options_with_prompt, @selected_for_options)}
       </select>
 
-        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
+        <div :if={!Enum.empty?(@label)} class={Map.get(Enum.at(@label, 0), :class, nil)} phx-mounted={Connect.ignore_label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})} {Connect.label(%Label{id: @id, invalid: @invalid, read_only: @read_only, required: @required, disabled: @disabled, dir: @dir, orientation: @orientation})}>
           {render_slot(@label)}
         </div>
-        <div phx-update="ignore"  {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
-          <button phx-update="ignore" id={"select:#{@id}:trigger"} :if={!Enum.empty?(@trigger)} aria-label={@selected_label || @placeholder} data-scope="select" data-part="trigger">
-            <span :if={@selected_label} data-scope="select" data-part="item-text">
-              {@selected_label}
-            </span>
-            <span :if={!@selected_label} data-scope="select" data-part="item-text">
-              {@placeholder}
+        <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
+          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} :if={!Enum.empty?(@trigger)} aria-label={@selected_label || @placeholder}>
+            <span phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: "value-label", dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: "value-label", dir: @dir, orientation: @orientation})}>
+              {if @selected_label, do: @selected_label, else: @placeholder}
             </span>
             {render_slot(@trigger)}
           </button>
@@ -560,34 +620,34 @@ defmodule Corex.Select do
         <div :if={!Enum.empty?(@errors)} :for={msg <- @errors} data-scope="select" data-part="error">
           {render_slot(@error, msg)}
         </div>
-        <div phx-update="ignore" {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
-          <ul {Connect.content(%Content{id: @id, dir: @dir})}>
-            <li :if={@has_groups} :for={{group, group_items} <- @grouped_items} data-scope="select" data-part="item-group" data-id={group || "default"}>
-              <div :if={group} data-scope="select" data-part="item-group-label" data-id={group}>
+        <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
+          <ul phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, orientation: @orientation})} {Connect.content(%Content{id: @id, dir: @dir, orientation: @orientation})}>
+            <li :if={@has_groups} :for={{group, group_items} <- @grouped_items} phx-mounted={Connect.ignore_item_group(%ItemGroup{id: @id, group_id: group || "default", dir: @dir, orientation: @orientation})} {Connect.item_group(%ItemGroup{id: @id, group_id: group || "default", dir: @dir, orientation: @orientation})}>
+              <div :if={group} phx-mounted={Connect.ignore_item_group_label(%ItemGroupLabel{id: @id, group_id: group, dir: @dir, orientation: @orientation})} {Connect.item_group_label(%ItemGroupLabel{id: @id, group_id: group, dir: @dir, orientation: @orientation})}>
                 {group}
               </div>
               <ul>
-                <li :for={item <- group_items} data-scope="select" data-part="item" data-value={item.id}>
-                  <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
+                <li :for={item <- group_items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
+                  <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
                     {render_slot(@item, item)}
                   </span>
-                  <span :if={Enum.empty?(@item)} data-scope="select" data-part="item-text">
+                  <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
                     {item.label}
                   </span>
-                  <span :if={!Enum.empty?(@item_indicator)} data-scope="select" data-part="item-indicator">
+                  <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
                     {render_slot(@item_indicator)}
                   </span>
                 </li>
               </ul>
             </li>
-            <li :if={!@has_groups} :for={item <- @items} data-scope="select" data-part="item" data-value={item.id}>
-              <span :if={!Enum.empty?(@item)} data-scope="select" data-part="item-text">
+            <li :if={!@has_groups} :for={item <- @items} phx-mounted={Connect.ignore_item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item(%Item{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation, to: Map.get(item, :to), redirect: Map.get(item, :redirect), new_tab: Map.get(item, :new_tab, false)})}>
+              <span :if={!Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
                 {render_slot(@item, item)}
               </span>
-              <span :if={Enum.empty?(@item)} data-scope="select" data-part="item-text">
+              <span :if={Enum.empty?(@item)} phx-mounted={Connect.ignore_item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_text(%ItemText{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
                 {item.label}
               </span>
-              <span :if={!Enum.empty?(@item_indicator)} data-scope="select" data-part="item-indicator">
+              <span :if={!Enum.empty?(@item_indicator)} phx-mounted={Connect.ignore_item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})} {Connect.item_indicator(%ItemIndicator{id: @id, value: to_string(item.id), dir: @dir, orientation: @orientation})}>
                 {render_slot(@item_indicator)}
               </span>
             </li>
@@ -596,6 +656,55 @@ defmodule Corex.Select do
       </div>
     </div>
     """
+  end
+
+  @doc type: :api
+  @doc """
+  Sets select value in the client. Dispatches `corex:select:set-value` on the hook root.
+  """
+  def set_value(select_id, value) when is_binary(select_id) do
+    JS.dispatch("corex:select:set-value",
+      to: "##{select_id}",
+      detail: %{value: validate_value!(List.wrap(value))},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets select value from the server via `push_event` (`select_set_value`).
+  """
+  def set_value(socket, select_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) do
+    LiveView.push_event(socket, "select_set_value", %{
+      id: select_id,
+      value: validate_value!(List.wrap(value))
+    })
+  end
+
+  @doc type: :api
+  @doc """
+  Opens or closes the menu. Dispatches `corex:select:set-open` on the hook root.
+  """
+  def set_open(select_id, open) when is_binary(select_id) and is_boolean(open) do
+    JS.dispatch("corex:select:set-open",
+      to: "##{select_id}",
+      detail: %{open: open},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets open state from the server via `push_event` (`select_set_open`).
+  """
+  def set_open(socket, select_id, open)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(select_id) and
+             is_boolean(open) do
+    LiveView.push_event(socket, "select_set_open", %{
+      id: select_id,
+      open: open
+    })
   end
 
   defp get_disabled_values(collection) do

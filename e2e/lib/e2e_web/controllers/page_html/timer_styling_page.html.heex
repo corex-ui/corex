@@ -1,0 +1,32 @@
+<Layouts.app
+  flash={@flash}
+  mode={@mode}
+  theme={@theme}
+  path={@path}
+>
+  <.demo_page
+    id="timer-styling-page"
+    title="Timer · Style"
+    subtitle="Semantic color and size modifiers on the root."
+  >
+    <.demo_section
+      id="timer-styling-color"
+      title="Color"
+      code={E2eWeb.Demos.TimerDemo.styling_color_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TimerDemo.styling_color_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="timer-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.TimerDemo.styling_size_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TimerDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+  </.demo_page>
+</Layouts.app>

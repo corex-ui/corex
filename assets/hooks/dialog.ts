@@ -1,21 +1,54 @@
 import type { Hook } from "phoenix_live_view";
-import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/types/view_hook";
+import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
 import { Dialog } from "../components/dialog";
 import type { OpenChangeDetails } from "@zag-js/dialog";
-import type { Direction } from "@zag-js/types";
 
-import { getString, getBoolean } from "../lib/util";
+import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { idMatches, notifyChange, readPayloadId } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
+import {
+  prepareInitialScaleState,
+  readScaleAnimationOptions,
+  runScaleAnimation,
+} from "../lib/animation";
 
 type DialogHookState = {
   dialog?: Dialog;
-  handlers?: Array<CallbackRef>;
-  onSetOpen?: (event: Event) => void;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  closePointerT?: ReturnType<typeof setTimeout>;
 };
+
+function openChangePayload(el: HTMLElement, details: OpenChangeDetails): Record<string, unknown> {
+  return {
+    id: el.id,
+    open: details.open,
+  };
+}
+
+function getDialogUpdatePropsFromEl(el: HTMLElement) {
+  const softLock = el.dataset.animInteractionLocked === "true";
+  return {
+    id: el.id,
+    ...(getBoolean(el, "controlled")
+      ? { open: getBoolean(el, "open") }
+      : { defaultOpen: getBoolean(el, "defaultOpen") }),
+    modal: getBoolean(el, "modal"),
+    closeOnInteractOutside: softLock ? false : getBoolean(el, "closeOnInteractOutside"),
+    closeOnEscape: softLock ? false : getBoolean(el, "closeOnEscapeKeyDown"),
+    preventScroll: getBoolean(el, "preventScroll"),
+    restoreFocus: getBoolean(el, "restoreFocus"),
+    dir: getDir(el),
+  };
+}
 
 const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & DialogHookState) {
     const el = this.el;
+    const self = this as object & HookInterface<HTMLElement> & DialogHookState;
     const pushEvent = this.pushEvent.bind(this);
+    const canPush = () => canPushEvent(this.liveSocket);
 
     const dialog = new Dialog(el, {
       id: el.id,
@@ -27,86 +60,152 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
       closeOnEscape: getBoolean(el, "closeOnEscapeKeyDown"),
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
-      dir: getString<Direction>(el, "dir", ["ltr", "rtl"]),
+      dir: getDir(el),
 
       onOpenChange: (details: OpenChangeDetails) => {
-        const eventName = getString(el, "onOpenChange");
-        if (eventName && this.liveSocket.main.isConnected()) {
-          pushEvent(eventName, {
-            id: el.id,
-            open: details.open,
-          });
+        if (!details.open && (el.dataset.animation === "js" || el.dataset.animation === "custom")) {
+          if (self.closePointerT !== undefined) clearTimeout(self.closePointerT);
+          el.setAttribute("data-exit-anim", "running");
+
+          // Only read scale opts for "js" mode — "custom" has no duration attribute
+          if (el.dataset.animation === "js") {
+            const closeOpts = readScaleAnimationOptions(el);
+            self.closePointerT = window.setTimeout(
+              () => {
+                el.setAttribute("data-exit-anim", "complete");
+                const backdrop = el.querySelector<HTMLElement>(
+                  '[data-scope="dialog"][data-part="backdrop"]'
+                );
+                const positioner = el.querySelector<HTMLElement>(
+                  '[data-scope="dialog"][data-part="positioner"]'
+                );
+                if (backdrop) backdrop.style.pointerEvents = "none";
+                if (positioner) positioner.style.pointerEvents = "none";
+                self.closePointerT = undefined;
+              },
+              Math.max(0, closeOpts.duration * 1000)
+            );
+          } else {
+            // "custom" mode: just mark exit anim, external animator drives the close
+            self.closePointerT = window.setTimeout(() => {
+              el.setAttribute("data-exit-anim", "complete");
+              self.closePointerT = undefined;
+            }, 0);
+          }
+        } else if (details.open) {
+          if (self.closePointerT !== undefined) {
+            clearTimeout(self.closePointerT);
+            self.closePointerT = undefined;
+          }
+          el.removeAttribute("data-exit-anim");
+          el.removeAttribute("data-anim-interaction-locked");
+          dialog.updateProps(getDialogUpdatePropsFromEl(el));
+          dialog.render();
         }
 
-        const eventNameClient = getString(el, "onOpenChangeClient");
-        if (eventNameClient) {
-          el.dispatchEvent(
-            new CustomEvent(eventNameClient, {
-              bubbles: true,
-              detail: {
-                id: el.id,
-                open: details.open,
-              },
-            })
+        notifyChange({
+          el,
+          canPushServer: canPush(),
+          pushEvent,
+          payload: openChangePayload(el, details),
+          serverEventName: getString(el, "onOpenChange"),
+          clientEventName: getString(el, "onOpenChangeClient"),
+        });
+
+        if (el.dataset.animation === "js") {
+          const animOpts = readScaleAnimationOptions(el);
+          if (animOpts.blockInteraction) {
+            el.dataset.animInteractionLocked = "true";
+            dialog.updateProps(getDialogUpdatePropsFromEl(el));
+            dialog.render();
+          }
+          const backdrop = el.querySelector<HTMLElement>(
+            '[data-scope="dialog"][data-part="backdrop"]'
           );
+          const content = el.querySelector<HTMLElement>(
+            '[data-scope="dialog"][data-part="content"]'
+          );
+          const a1 = backdrop ? runScaleAnimation(backdrop, details.open, animOpts) : null;
+          const a2 = content ? runScaleAnimation(content, details.open, animOpts) : null;
+          const onDone = () => {
+            if (animOpts.blockInteraction) {
+              el.removeAttribute("data-anim-interaction-locked");
+              dialog.updateProps(getDialogUpdatePropsFromEl(el));
+              dialog.render();
+            }
+          };
+          const promises: Promise<Animation | void>[] = [];
+          if (a1) promises.push(a1.finished);
+          if (a2) promises.push(a2.finished);
+          if (promises.length > 0) {
+            void Promise.all(promises).then(onDone, onDone);
+          } else {
+            onDone();
+          }
         }
+        // "custom" mode: external animator handles everything via on_open_change_client event
       },
     });
 
     dialog.init();
     this.dialog = dialog;
 
-    this.onSetOpen = (event: Event) => {
-      const { open } = (event as CustomEvent<{ open: boolean }>).detail;
+    // Only prepare initial scale state for "js" mode
+    if (el.dataset.animation === "js") {
+      const opts = readScaleAnimationOptions(el);
+      prepareInitialScaleState(
+        el,
+        '[data-scope="dialog"][data-part="backdrop"], [data-scope="dialog"][data-part="content"]',
+        opts,
+        (sub) => {
+          if (sub.dataset.part === "backdrop") return { scale: false };
+        }
+      );
+    }
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add<CustomEvent<{ open: boolean }>>("corex:dialog:set-open", (event) => {
+      const { open } = event.detail;
       dialog.api.setOpen(open);
-    };
-    el.addEventListener("phx:dialog:set-open", this.onSetOpen);
+    });
 
-    this.handlers = [];
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
 
-    this.handlers.push(
-      this.handleEvent("dialog_set_open", (payload: { dialog_id?: string; open: boolean }) => {
-        const targetId = payload.dialog_id;
-        if (targetId && targetId !== el.id) return;
-        dialog.api.setOpen(payload.open);
-      })
-    );
+    registry.add("dialog_set_open", (payload: unknown) => {
+      if (!payload || typeof payload !== "object") return;
+      const o = payload as { open?: boolean };
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (typeof o.open === "boolean") dialog.api.setOpen(o.open);
+    });
 
-    this.handlers.push(
-      this.handleEvent("dialog_open", () => {
-        this.pushEvent("dialog_open_response", {
-          value: dialog.api.open,
-        });
-      })
-    );
-  },
-
-  updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    this.dialog?.updateProps({
-      id: this.el.id,
-      ...(getBoolean(this.el, "controlled")
-        ? { open: getBoolean(this.el, "open") }
-        : { defaultOpen: getBoolean(this.el, "defaultOpen") }),
-      modal: getBoolean(this.el, "modal"),
-      closeOnInteractOutside: getBoolean(this.el, "closeOnInteractOutside"),
-      closeOnEscape: getBoolean(this.el, "closeOnEscapeKeyDown"),
-      preventScroll: getBoolean(this.el, "preventScroll"),
-      restoreFocus: getBoolean(this.el, "restoreFocus"),
-      dir: getString<Direction>(this.el, "dir", ["ltr", "rtl"]),
+    registry.add("dialog_open", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      if (!canPush()) return;
+      this.pushEvent("dialog_open_response", {
+        id: el.id,
+        value: dialog.api.open,
+      });
     });
   },
 
+  updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
+    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+  },
+
   destroyed(this: object & HookInterface<HTMLElement> & DialogHookState) {
-    if (this.onSetOpen) {
-      this.el.removeEventListener("phx:dialog:set-open", this.onSetOpen);
+    const self = this as object & HookInterface<HTMLElement> & DialogHookState;
+    if (self.closePointerT !== undefined) {
+      clearTimeout(self.closePointerT);
+      self.closePointerT = undefined;
     }
-
-    if (this.handlers) {
-      for (const handler of this.handlers) {
-        this.removeHandleEvent(handler);
-      }
-    }
-
+    this.el.removeAttribute("data-exit-anim");
+    this.el.removeAttribute("data-anim-interaction-locked");
+    this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.dialog?.destroy();
   },
 };

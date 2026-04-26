@@ -4,10 +4,10 @@
   .menu [data-scope="menu"][data-part="content"] {
     @apply ui-content;
 
-    border: 1px solid var(--color-ui--border);
+    border: 1px solid var(--color-border);
     z-index: 50;
     padding: 0;
-    border-radius: var(--radius-ui);
+    border-radius: var(--radius-md);
     overflow: hidden;
     box-shadow: var(--shadow-ui);
 
@@ -19,22 +19,22 @@
   .menu [data-scope="menu"][data-part="trigger"] {
     @apply ui-trigger;
 
-    margin-inline-end: var(--spacing-ui-padding);
+    margin-inline-end: --spacing(4);
     border: none;
-    min-width: var(--container-micro);
+    min-width: var(--container-7xs);
   }
 
   .menu [data-scope="menu"][data-part="context-trigger"] {
     @apply ui-trigger;
 
-    border: 1px dashed var(--color-ui--muted);
+    border: 1px dashed var(--color-border);
     cursor: context-menu;
   }
 
   .menu [data-scope="menu"][data-part="separator"] {
     height: 1px;
     width: 100%;
-    background: var(--color-ui--border);
+    background: var(--color-border);
   }
 
   .menu [data-scope="menu"][data-part="item-group"] {
@@ -46,14 +46,14 @@
   .menu [data-scope="menu"][data-part="item-group-label"] {
     @apply ui-label;
 
-    border-block-end: 1px solid var(--color-ui--border);
-    padding-inline: var(--spacing-ui-padding)
+    border-block-end: 1px solid var(--color-border);
+    padding-inline: --spacing(4);
   }
 
   .menu [data-scope="menu"][data-part="item"],
   .menu [data-scope="menu"][data-part="trigger-item"] {
     @apply ui-item;
 
-    min-width: var(--container-micro);
+    min-width: var(--container-7xs);
   }
 }

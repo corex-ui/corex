@@ -5,10 +5,11 @@ defmodule E2eWeb.EditableModel do
     path =
       case mode do
         :static -> "/en/editable/form"
-        :live -> "/en/live/editable/form"
+        :live -> "/en/editable/live-form"
       end
 
-    visit(session, path)
+    session = visit_path(session, path)
+    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
   end
 
   def submit_form(session, mode \\ :static) do
@@ -17,6 +18,6 @@ defmodule E2eWeb.EditableModel do
   end
 
   def see_flash(session, flash_text) do
-    wait_for_text(session, flash_text)
+    wait_for_flash(session, flash_text)
   end
 end

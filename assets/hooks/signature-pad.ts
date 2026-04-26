@@ -3,27 +3,45 @@ import type { HookInterface, CallbackRef } from "phoenix_live_view/assets/js/typ
 import { SignaturePad } from "../components/signature-pad";
 import type { Props } from "@zag-js/signature-pad";
 
-import { getString, getBoolean, getNumber } from "../lib/util";
+import { getBoolean, getNumber, getString } from "../lib/util";
+import { idMatches, readPayloadId } from "../lib/respond-to";
 
-function getPaths(el: HTMLElement, attr: string): unknown[] {
-  const value = el.dataset[attr];
-  if (!value) return [];
-  try {
-    return JSON.parse(value);
-  } catch {
-    return [];
-  }
+function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): string[] {
+  const raw = el.dataset[key];
+  if (!raw) return [];
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
-function buildDrawingOptions(el: HTMLElement): Props["drawing"] {
-  return {
-    fill: getString(el, "drawingFill") || "black",
-    size: getNumber(el, "drawingSize") ?? 2,
+function buildDrawingOptions(el: HTMLElement): NonNullable<Props["drawing"]> {
+  const o: Record<string, unknown> = {
+    fill: getString(el, "drawingFill"),
+    size: getNumber(el, "drawingSize"),
     simulatePressure: getBoolean(el, "drawingSimulatePressure"),
-    smoothing: getNumber(el, "drawingSmoothing") ?? 0.5,
-    thinning: getNumber(el, "drawingThinning") ?? 0.7,
-    streamline: getNumber(el, "drawingStreamline") ?? 0.65,
+    smoothing: getNumber(el, "drawingSmoothing"),
+    thinning: getNumber(el, "drawingThinning"),
+    streamline: getNumber(el, "drawingStreamline"),
   };
+  const easing = getString(el, "drawingEasing");
+  if (easing) o.easing = easing;
+  return o as NonNullable<Props["drawing"]>;
+}
+
+function queueFormBubblingInputForPhoenix(el: HTMLElement, getValue: () => string): void {
+  queueMicrotask(() => {
+    const input = el.querySelector<HTMLInputElement>(
+      '[data-scope="signature-pad"][data-part="hidden-input"]'
+    );
+    if (!input) return;
+    const v = getValue();
+    if (String(input.value) !== String(v)) {
+      input.value = v;
+    }
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  });
 }
 
 type SignaturePadHookState = {
@@ -37,27 +55,20 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     const el = this.el;
     const pushEvent = this.pushEvent.bind(this);
 
-    const controlled = getBoolean(el, "controlled");
-    const paths = getPaths(el, "paths");
-    const defaultPaths = getPaths(el, "defaultPaths");
+    const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
 
     const signaturePad = new SignaturePad(el, {
       id: el.id,
       name: getString(el, "name"),
-      ...(controlled && paths.length > 0 ? { paths: paths } : undefined),
-      ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : undefined),
+      ...(defaultPaths.length > 0 ? { defaultPaths } : {}),
       drawing: buildDrawingOptions(el),
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
 
-        const hiddenInput = el.querySelector<HTMLInputElement>(
-          '[data-scope="signature-pad"][data-part="hidden-input"]'
+        queueFormBubblingInputForPhoenix(
+          el,
+          () => (details.paths.length > 0 ? details.paths.join("\n") : "")
         );
-        if (hiddenInput) {
-          hiddenInput.value = details.paths.length > 0 ? JSON.stringify(details.paths) : "";
-          hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
-          hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
-        }
 
         details.getDataUrl("image/png").then((url) => {
           signaturePad.imageURL = url;
@@ -94,42 +105,41 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       const { id: targetId } = (event as CustomEvent<{ id: string }>).detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
+      queueFormBubblingInputForPhoenix(el, () => "");
     };
-    el.addEventListener("phx:signature-pad:clear", this.onClear);
+    el.addEventListener("corex:signature-pad:clear", this.onClear);
 
     this.handlers = [];
 
     this.handlers.push(
-      this.handleEvent("signature_pad_clear", (payload: { signature_pad_id?: string }) => {
-        const targetId = payload.signature_pad_id;
-        if (targetId && targetId !== el.id) return;
+      this.handleEvent("signature_pad_clear", (payload: unknown) => {
+        if (!idMatches(el.id, readPayloadId(payload))) return;
         signaturePad.api.clear();
+        queueFormBubblingInputForPhoenix(el, () => "");
       })
     );
   },
 
   updated(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
-    const controlled = getBoolean(this.el, "controlled");
-    const paths = getPaths(this.el, "paths");
-    const defaultPaths = getPaths(this.el, "defaultPaths");
-    const name = getString(this.el, "name");
+    const el = this.el;
+    const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
+    const name = getString(el, "name");
 
     if (name) {
       this.signaturePad?.setName(name);
     }
 
     this.signaturePad?.updateProps({
-      id: this.el.id,
+      id: el.id,
       name: name,
-      ...(controlled && paths.length > 0 ? { paths: paths } : {}),
-      ...(!controlled && defaultPaths.length > 0 ? { defaultPaths: defaultPaths } : {}),
-      drawing: buildDrawingOptions(this.el),
-    } as Props);
+      ...(defaultPaths.length > 0 ? { defaultPaths } : {}),
+      drawing: buildDrawingOptions(el),
+    } as Partial<Props>);
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
     if (this.onClear) {
-      this.el.removeEventListener("phx:signature-pad:clear", this.onClear);
+      this.el.removeEventListener("corex:signature-pad:clear", this.onClear);
     }
 
     if (this.handlers) {

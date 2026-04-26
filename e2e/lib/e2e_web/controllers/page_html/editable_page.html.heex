@@ -2,24 +2,27 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Editable</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-  <.editable
-    id="my-editable"
-    value="My custom value"
-    placeholder="Enter Value"
-    activation_mode="dblclick"
-    select_on_focus
-    class="editable"
+  <.demo_page
+    id="editable-anatomy-page"
+    title="Editable Anatomy"
+    subtitle="Basic setup and trigger slots."
   >
-    <:label>Name</:label>
-    <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-    <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-    <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-  </.editable>
+    <.demo_section
+      id="editable-anatomy-minimal"
+      title="Minimal"
+      code={E2eWeb.Demos.EditableDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.EditableDemo.minimal_example /></:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="editable-anatomy-triggers"
+      title="With triggers"
+      code={E2eWeb.Demos.EditableDemo.with_triggers_code()}
+    >
+      <:preview><E2eWeb.Demos.EditableDemo.with_triggers_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

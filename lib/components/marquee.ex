@@ -12,7 +12,7 @@ defmodule Corex.Marquee do
     spacing="2rem"
     pause_on_interaction
   >
-    <:item :let={%{item: item}}>
+    <:item :let={item}>
       <span>{item.logo}</span>
       <span>{item.name}</span>
     </:item>
@@ -89,23 +89,32 @@ defmodule Corex.Marquee do
   )
 
   attr(:items, :list, required: true, doc: "List of maps for each marquee item")
-  attr(:duration, :integer, required: true, doc: "Animation duration in seconds")
+  attr(:duration, :integer, default: 20, doc: "Animation duration in seconds")
   attr(:side, :string, default: "end", values: ["start", "end", "top", "bottom"])
-  attr(:speed, :integer, default: 50)
-  attr(:spacing, :string, default: "1rem")
-  attr(:auto_fill, :boolean, default: true)
-  attr(:pause_on_interaction, :boolean, default: false)
-  attr(:default_paused, :boolean, default: false)
-  attr(:delay, :integer, default: 0)
-  attr(:loop_count, :integer, default: 0)
-  attr(:reverse, :boolean, default: false)
+  attr(:speed, :integer, default: 100, doc: "Animation speed in pixels per second")
+  attr(:spacing, :string, default: "1rem", doc: "Spacing between items")
+
+  attr(:pause_on_interaction, :boolean,
+    default: false,
+    doc: "Whether to pause the animation on interaction"
+  )
+
+  attr(:default_paused, :boolean, default: false, doc: "Whether the marquee is paused by default")
+  attr(:delay, :integer, default: 0, doc: "Delay before starting the animation in seconds")
+
+  attr(:loop_count, :integer,
+    default: 0,
+    doc: "Number of times to loop the animation, setting to 0 creates an infinite loop"
+  )
+
+  attr(:reverse, :boolean, default: false, doc: "Whether to reverse the animation")
 
   attr(:respect_reduced_motion, :boolean,
     default: true,
     doc: "When false, animation runs even when user has prefers-reduced-motion"
   )
 
-  attr(:dir, :string, default: nil, values: [nil, "ltr", "rtl"])
+  attr(:dir, :string, default: "ltr", values: ["ltr", "rtl"])
   attr(:on_pause_change, :string, default: nil, doc: "Server event when pause status changes")
 
   attr(:on_pause_change_client, :string,
@@ -136,18 +145,9 @@ defmodule Corex.Marquee do
     attr(:class, :string, required: false)
   end
 
-  slot :edge_start, required: false do
-    attr(:class, :string, required: false)
-  end
-
-  slot :edge_end, required: false do
-    attr(:class, :string, required: false)
-  end
-
   def marquee(assigns) do
     items = List.wrap(assigns.items)
     items_count = length(items)
-    content_count = if(assigns.auto_fill, do: 2, else: 1)
     orient = orientation(assigns.side)
     dir = assigns.dir || "ltr"
     translate = marquee_translate(assigns.side, dir)
@@ -157,56 +157,88 @@ defmodule Corex.Marquee do
       |> assign_new(:id, fn -> "marquee-#{System.unique_integer([:positive])}" end)
       |> assign(:items, items)
       |> assign(:items_count, items_count)
-      |> assign(:content_count, content_count)
       |> assign(:orientation, orient)
       |> assign(:dir, dir)
       |> assign(:translate, translate)
+
+    connect_props = %Props{
+      id: assigns.id,
+      aria_label: assigns.aria_label,
+      duration: assigns.duration,
+      items_count: items_count,
+      content_count: 2,
+      side: assigns.side,
+      speed: assigns.speed,
+      spacing: assigns.spacing,
+      pause_on_interaction: assigns.pause_on_interaction,
+      default_paused: assigns.default_paused,
+      delay: assigns.delay,
+      loop_count: assigns.loop_count,
+      reverse: assigns.reverse,
+      respect_reduced_motion: assigns.respect_reduced_motion,
+      dir: dir,
+      orientation: orient,
+      on_pause_change: assigns.on_pause_change,
+      on_pause_change_client: assigns.on_pause_change_client,
+      on_loop_complete: assigns.on_loop_complete,
+      on_loop_complete_client: assigns.on_loop_complete_client,
+      on_complete: assigns.on_complete,
+      on_complete_client: assigns.on_complete_client
+    }
+
+    root_attrs = %Root{
+      id: assigns.id,
+      aria_label: assigns.aria_label,
+      dir: dir,
+      orientation: orient,
+      duration: assigns.duration,
+      spacing: assigns.spacing,
+      delay: assigns.delay,
+      loop_count: assigns.loop_count,
+      translate: translate,
+      respect_reduced_motion: assigns.respect_reduced_motion,
+      default_paused: assigns.default_paused
+    }
+
+    assigns =
+      assigns
+      |> assign(:connect_props, connect_props)
+      |> assign(:marquee_root, root_attrs)
 
     ~H"""
     <div
       id={@id}
       phx-hook="Marquee"
+      phx-mounted={Connect.ignore_hook(@id)}
+      data-loading
       {@rest}
-      {Connect.props(%Props{
-        id: @id,
-        aria_label: @aria_label,
-        duration: @duration,
-        items_count: @items_count,
-        content_count: @content_count,
-        side: @side,
-        speed: @speed,
-        spacing: @spacing,
-        auto_fill: @auto_fill,
-        pause_on_interaction: @pause_on_interaction,
-        default_paused: @default_paused,
-        delay: @delay,
-        loop_count: @loop_count,
-        reverse: @reverse,
-        respect_reduced_motion: @respect_reduced_motion,
-        dir: @dir,
-        orientation: @orientation,
-        on_pause_change: @on_pause_change,
-        on_pause_change_client: @on_pause_change_client,
-        on_loop_complete: @on_loop_complete,
-        on_loop_complete_client: @on_loop_complete_client,
-        on_complete: @on_complete,
-        on_complete_client: @on_complete_client
-      })}
+      {Connect.props(@connect_props)}
     >
-      <div phx-update="ignore" {Connect.root(%Root{id: @id, aria_label: @aria_label, dir: @dir, orientation: @orientation, duration: @duration, spacing: @spacing, delay: @delay, loop_count: @loop_count, translate: @translate, respect_reduced_motion: @respect_reduced_motion})}>
-        <div :if={!Enum.empty?(@edge_start)} {Connect.edge(%Edge{side: "start", orientation: @orientation})}>
-          {render_slot(@edge_start)}
+      <template data-part="items-template" style="display:none" aria-hidden="true">
+        <div :for={item <- @items} {Connect.item(%Item{orientation: @orientation, dir: @dir})}>
+          {render_slot(@item, item)}
         </div>
+      </template>
+      <div {Connect.root(@marquee_root)}>
+        <div {Connect.edge(%Edge{side: "start", orientation: @orientation})}></div>
         <div {Connect.viewport(%Viewport{id: @id, orientation: @orientation, side: @side})}>
-          <div :for={idx <- 0..(@content_count - 1)} {Connect.content(%Content{root_id: @id, index: idx, clone: idx > 0, orientation: @orientation, side: @side, reverse: @reverse})}>
-            <div :for={item <- @items} {Connect.item(%Item{orientation: @orientation})}>
-              {render_slot(@item, %{item: item})}
+          <div
+            :for={i <- 0..(@connect_props.content_count - 1)}
+            {Connect.content(%Content{
+              root_id: @id,
+              index: i,
+              orientation: @orientation,
+              side: @side,
+              reverse: @reverse,
+              dir: @dir
+            })}
+          >
+            <div :for={item <- @items} {Connect.item(%Item{orientation: @orientation, dir: @dir})}>
+              {render_slot(@item, item)}
             </div>
           </div>
         </div>
-        <div :if={!Enum.empty?(@edge_end)} {Connect.edge(%Edge{side: "end", orientation: @orientation})}>
-          {render_slot(@edge_end)}
-        </div>
+        <div {Connect.edge(%Edge{side: "end", orientation: @orientation})}></div>
       </div>
     </div>
     """
@@ -218,8 +250,8 @@ defmodule Corex.Marquee do
     case side do
       "top" -> "-100%"
       "bottom" -> "100%"
-      "start" -> if(dir == "rtl", do: "100%", else: "-100%")
-      _ -> if(dir == "rtl", do: "-100%", else: "100%")
+      "start" -> if(dir == "rtl", do: "-100%", else: "100%")
+      _ -> if(dir == "rtl", do: "100%", else: "-100%")
     end
   end
 
@@ -227,7 +259,7 @@ defmodule Corex.Marquee do
   Pauses the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
   def pause(marquee_id) when is_binary(marquee_id) do
-    JS.dispatch("phx:marquee:pause", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("corex:marquee:pause", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc """
@@ -242,7 +274,7 @@ defmodule Corex.Marquee do
   Resumes the marquee from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
   def resume(marquee_id) when is_binary(marquee_id) do
-    JS.dispatch("phx:marquee:resume", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("corex:marquee:resume", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc """
@@ -257,7 +289,7 @@ defmodule Corex.Marquee do
   Toggles the pause state from client-side. Returns a `Phoenix.LiveView.JS` command.
   """
   def toggle_pause(marquee_id) when is_binary(marquee_id) do
-    JS.dispatch("phx:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
+    JS.dispatch("corex:marquee:toggle-pause", to: "##{marquee_id}", bubbles: false)
   end
 
   @doc """

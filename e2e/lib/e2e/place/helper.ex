@@ -4,7 +4,8 @@ defmodule E2e.Place.Helper do
   require Logger
 
   def country_name_from_code(country_code) do
-    {:ok, country_name} = Cldr.Territory.display_name(country_code)
+    territory = country_code |> to_string() |> String.upcase()
+    {:ok, country_name} = Localize.Territory.display_name(territory)
     country_name
   end
 

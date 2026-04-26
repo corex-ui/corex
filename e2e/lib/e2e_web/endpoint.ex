@@ -1,6 +1,10 @@
 defmodule E2eWeb.Endpoint do
   use Phoenix.Endpoint, otp_app: :corex_web
 
+  if Application.compile_env(:corex_web, :sql_sandbox, false) do
+    plug Phoenix.Ecto.SQL.Sandbox
+  end
+
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
   # Set :encryption_salt if you would also like to encrypt it.
@@ -30,6 +34,10 @@ defmodule E2eWeb.Endpoint do
 
   if Mix.env() == :dev do
     plug Tidewave
+  end
+
+  if Mix.env() in [:dev, :test] do
+    plug Corex.MCP
   end
 
   # Code reloading can be explicitly enabled under the

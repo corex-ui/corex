@@ -83,10 +83,9 @@ defmodule Corex.PasswordInputTest do
   end
 
   describe "Connect.props/1" do
-    test "returns props when controlled visible" do
+    test "maps visible to default-visible only" do
       assigns = %{
         id: "test-password",
-        controlled_visible: true,
         visible: true,
         disabled: false,
         invalid: false,
@@ -102,31 +101,8 @@ defmodule Corex.PasswordInputTest do
       }
 
       result = Connect.props(assigns)
-      assert result["data-visible"] == ""
-      assert result["data-default-visible"] == nil
-    end
-
-    test "returns props when uncontrolled visible" do
-      assigns = %{
-        id: "test-password",
-        controlled_visible: false,
-        visible: true,
-        disabled: false,
-        invalid: false,
-        read_only: false,
-        required: false,
-        ignore_password_managers: false,
-        name: nil,
-        form: nil,
-        dir: "ltr",
-        auto_complete: nil,
-        on_visibility_change: nil,
-        on_visibility_change_client: nil
-      }
-
-      result = Connect.props(assigns)
-      assert result["data-default-visible"] != nil
-      assert result["data-visible"] == nil
+      assert result["data-default-visible"] == ""
+      refute Map.has_key?(result, "data-visible")
     end
   end
 end

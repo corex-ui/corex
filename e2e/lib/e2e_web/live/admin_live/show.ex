@@ -2,6 +2,7 @@ defmodule E2eWeb.AdminLive.Show do
   use E2eWeb, :live_view
 
   alias E2e.Accounts
+  alias E2e.Accounts.Admin
 
   @impl true
   def render(assigns) do
@@ -10,35 +11,34 @@ defmodule E2eWeb.AdminLive.Show do
       flash={@flash}
       mode={@mode}
       theme={@theme}
-      locale={@locale}
-      current_path={@current_path}
+      path={@path}
     >
-      <.layout_heading>
+      <.layout_heading class="layout-heading">
         <:title>Admin {@admin.id}</:title>
         <:subtitle>This is a admin record from your database.</:subtitle>
         <:actions>
           <.navigate
-            to={~p"/#{@locale}/admins"}
+            to={~p"/admins"}
             type="navigate"
-            class="button"
+            class="button button--sm button--square"
             aria_label={gettext("Previous page")}
           >
             <.heroicon name="hero-arrow-left" />
           </.navigate>
           <.navigate
-            to={~p"/#{@locale}/admins/#{@admin}/edit?return_to=show"}
+            to={~p"/admins/#{@admin}/edit?return_to=show"}
             type="navigate"
-            class="button button--accent"
+            class="button button--accent button--sm"
           >
             <.heroicon name="hero-pencil-square" /> Edit admin
           </.navigate>
         </:actions>
       </.layout_heading>
 
-      <.data_list class="data-list">
-        <:item title="Name">{@admin.name}</:item>
-        <:item title="Country">{@admin.country}</:item>
-        <:item title="Terms">{@admin.terms}</:item>
+      <.data_list class="data-list max-w-none">
+        <:item :for={field <- @fields} title={label(field)}>
+          <.record_field_value record={@admin} field={field} />
+        </:item>
       </.data_list>
     </Layouts.app>
     """
@@ -49,6 +49,7 @@ defmodule E2eWeb.AdminLive.Show do
     {:ok,
      socket
      |> assign(:page_title, "Show Admin")
+     |> assign(:fields, Admin.__schema__(:fields) |> Enum.sort())
      |> assign(:admin, Accounts.get_admin!(id))}
   end
 end

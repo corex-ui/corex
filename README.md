@@ -1,65 +1,69 @@
 
+# Installation
+
 ![Hex.pm License](https://img.shields.io/hexpm/l/corex)
 ![Hex.pm Version](https://img.shields.io/hexpm/v/corex)
 [![Coverage Status](https://coveralls.io/repos/github/corex-ui/corex/badge.svg?branch=corex-install)](https://coveralls.io/github/corex-ui/corex?branch=corex-install)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/corex-ui/corex/elixir.yml)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/corex-ui/corex/main)
 
-# Corex
+## Introduction
 
-Corex is an accessible and unstyled UI components library written in Elixir and TypeScript that integrates [Zag.js](https://zagjs.com/) state machines into the Phoenix Framework.
+Corex brings Zag.js state machines to Phoenix to build accessible and unstyled components with a full server and client API.
+Control and listen from both sides of the wire and Fully Compatible with Phoenix Form, Stream and Ecto Changeset
 
-Corex bridges the gap between Phoenix and modern JavaScript UI patterns by leveraging Zag.js: a collection of framework-agnostic UI component state machines. This approach gives you:
+- **Flexible anatomy:** declarative, custom slots and full compound mode.
+- **Server and client API & Events:** push state in, pull it out and react to changes in Elixir and JavaScript.
+- **LiveView-native:** update props at runtime without resetting component state.
+- **Server App & Static Website** Build a full app with Phoenix or build a static site using Tableau.
+- **Accessible and keyboard-first:** powered by Zag.js state machines.
+- **Truly unstyled:** bring your own CSS or use Corex Design System.
 
-- **Accessible by default** - Built-in ARIA attributes and keyboard navigation
-- **Unstyled components** - Complete control over styling and design
-- **Type-safe state management** - Powered by Zag.js state machines
-- **Works everywhere** - Phoenix Controllers and LiveView
-- **No Node.js required** - Install directly from Hex and connect the Phoenix hooks
+> **Beta stage**
+> Corex is actively being developed and is currently in beta stage.
+> It is getting closer to a stable release and no critical changes in the API are excpected at this stage
 
-> **Alpha stage**
-> Corex is actively being developed and is currently in alpha stage.
-> It's not recommended for production use at this time.
-> You can monitor development progress and contribute to the [project on GitHub](https://github.com/corex-ui/corex).
 
 ## Live Demo
 
-To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, and Dark Mode and Site Navigation.
+To preview the components, a [Live Demo](https://corex.gigalixirapp.com/en) is available to showcase some uses of components, language switching, RTL, Dark Mode and Site Navigation.
 
-You can also explore all components via [Live Captures](https://corex.gigalixirapp.com/captures/components/Elixir.CorexWeb.Accordion/accordion), a zero-boilerplate storybook for LiveView components. A big thanks to [@achempion](https://github.com/achempion) for assisting.
+## New project with Corex
 
-This is still in an early stage and will evolve with future stable releases.
-
-Thanks to [Gigalixir](https://www.gigalixir.com/) for providing a reliable hosting solution for Elixir projects *(not sponsored, just a personal experience)*.
-
-
-## Documentation
-
-Full documentation is available at [hexdocs.pm/corex](http://hexdocs.pm/corex).
-
-## Installation
-
-Install the Corex project generator, then create a new Phoenix application with Corex:
+To create a new Phoenix application with Corex preconfigured, install the Corex project generator archive and Igniter (first time only), then generate the app:
 
 ```bash
+mix archive.install hex igniter
 mix archive.install hex corex_new
 mix corex.new my_app
-cd my_app
-mix deps.get
 ```
 
-To update the generator to the latest version first, run `mix local.corex` before `mix corex.new my_app`.
+To update the generator to the latest version before creating a project:
 
-The generated project includes Corex, configuration, and default styling.
+```bash
+mix local.corex
+mix corex.new my_app
+```
 
-## Existing Project
+See full options at `Mix.Tasks.Corex.New`
 
-To add Corex to an existing Phoenix app instead of using the generator, see [Manual installation](manual_installation.html).
+## Existing project
 
+```bash
+mix igniter.install corex
+```
 
-### Add your first component
+See full options at `Mix.Tasks.Corex.Install`
 
-Example Accordion using `Corex.Content.new/1`:
+## Add your first component
+
+Add the following Accordion examples to your application.
+
+You can use `Corex.Content.new/1` to create a list of content items.
+
+The `id` for each item is optional and will be auto-generated if not provided.
+
+You can specify `disabled` for each item.
 
 ```heex
 <.accordion
@@ -72,7 +76,245 @@ Example Accordion using `Corex.Content.new/1`:
 />
 ```
 
-More Accordion examples (with indicator, custom slots, controlled, async) and API control are in the [Installation guide](https://hexdocs.pm/corex/installation.html#add-your-first-component).
+### With indicator
+
+Use the optional `:indicator` slot to add an icon after each trigger.
+
+This example assumes the import of `.heroicon` from Core Components.
+
+```heex
+<.accordion
+  class="accordion"
+  items={Corex.Content.new([
+    [
+      id: "lorem",
+      trigger: "Lorem ipsum dolor sit amet",
+      content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique."
+    ],
+    [
+      trigger: "Duis dictum gravida odio ac pharetra?",
+      content: "Nullam eget vestibulum ligula, at interdum tellus."
+    ],
+    [
+      id: "donec",
+      trigger: "Donec condimentum ex mi",
+      content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+    ]
+  ])}
+>
+  <:indicator>
+    <.heroicon name="hero-chevron-right" />
+  </:indicator>
+</.accordion>
+```
+
+### Custom
+
+Use `:trigger` and `:content` together to fully customize how each item is rendered. Add the `:indicator` slot to show an icon after each trigger. Use `:let={item}` on slots to access the item and its `data` (including `meta` for per-item customization).
+
+```heex
+<.accordion
+  class="accordion"
+  items={
+    Corex.Content.new([
+      [
+        id: "lorem",
+        trigger: "Lorem ipsum dolor sit amet",
+        content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+        meta: %{indicator: "hero-arrow-long-right", icon: "hero-chat-bubble-left-right"}
+      ],
+      [
+        trigger: "Duis dictum gravida ?",
+        content: "Nullam eget vestibulum ligula, at interdum tellus.",
+        meta: %{indicator: "hero-chevron-right", icon: "hero-device-phone-mobile"}
+      ],
+      [
+        id: "donec",
+        trigger: "Donec condimentum ex mi",
+        content: "Congue molestie ipsum gravida a. Sed ac eros luctus.",
+        disabled: true,
+        meta: %{indicator: "hero-chevron-double-right", icon: "hero-phone"}
+      ]
+    ])
+  }
+>
+  <:trigger :let={item}>
+    <.heroicon name={item.data.meta.icon} />{item.data.trigger}
+  </:trigger>
+  <:content :let={item}>{item.data.content}</:content>
+  <:indicator :let={item}>
+    <.heroicon name={item.data.meta.indicator} />
+  </:indicator>
+</.accordion>
+```
+
+### Controlled
+
+Render an accordion controlled by the server.
+
+You must use the `on_value_change` event to update the value on the server and pass the value as a list of strings.
+
+The event will receive the value as a map with the key `value` and the id of the accordion.
+
+```elixir
+defmodule MyAppWeb.AccordionLive do
+  use MyAppWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :value, ["lorem"])}
+  end
+
+  def handle_event("on_value_change", %{"value" => value}, socket) do
+    {:noreply, assign(socket, :value, value)}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.accordion
+      controlled
+      value={@value}
+      on_value_change="on_value_change"
+      class="accordion"
+      items={Corex.Content.new([
+        [id: "lorem", trigger: "Lorem ipsum dolor sit amet", content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique. Proin quis risus feugiat tellus iaculis fringilla."],
+        [id: "duis", trigger: "Duis dictum gravida odio ac pharetra?", content: "Nullam eget vestibulum ligula, at interdum tellus. Quisque feugiat, dui ut fermentum sodales, lectus metus dignissim ex."]
+      ])}
+    />
+    """
+  end
+end
+```
+
+### Async
+
+When the initial props are not available on mount, you can use `Phoenix.LiveView.assign_async` to assign the props asynchronously.
+
+You can use the optional `Corex.Accordion.accordion_skeleton/1` to render a loading or error state.
+
+```elixir
+defmodule MyAppWeb.AccordionAsyncLive do
+  use MyAppWeb, :live_view
+
+  def mount(_params, _session, socket) do
+    socket =
+      socket
+      |> assign_async(:accordion, fn ->
+        Process.sleep(1000)
+
+        items = Corex.Content.new([
+          [
+            id: "lorem",
+            trigger: "Lorem ipsum dolor sit amet",
+            content: "Consectetur adipiscing elit. Sed sodales ullamcorper tristique.",
+            disabled: true
+          ],
+          [
+            id: "duis",
+            trigger: "Duis dictum gravida odio ac pharetra?",
+            content: "Nullam eget vestibulum ligula, at interdum tellus."
+          ],
+          [
+            id: "donec",
+            trigger: "Donec condimentum ex mi",
+            content: "Congue molestie ipsum gravida a. Sed ac eros luctus."
+          ]
+        ])
+
+        {:ok,
+         %{
+           accordion: %{
+             items: items,
+             value: ["duis", "donec"]
+           }
+         }}
+      end)
+
+    {:ok, socket}
+  end
+
+  def render(assigns) do
+    ~H"""
+    <.async_result :let={accordion} assign={@accordion}>
+      <:loading>
+        <.accordion_skeleton count={3} class="accordion" />
+      </:loading>
+
+      <:failed>
+        there was an error loading the accordion
+      </:failed>
+
+      <.accordion
+        id="async-accordion"
+        class="accordion"
+        items={accordion.items}
+        value={accordion.value}
+      />
+    </.async_result>
+    """
+  end
+end
+```
+
+## API Control
+
+In order to use the API, you must use an id on the component.
+
+**Client-side**
+
+```heex
+<button phx-click={Corex.Accordion.set_value("my-accordion", ["item-1"])}>
+  Open Item 1
+</button>
+```
+
+**Server-side**
+
+```elixir
+def handle_event("open_item", _, socket) do
+  {:noreply, Corex.Accordion.set_value(socket, "my-accordion", ["item-1"])}
+end
+```
+
+## Events
+
+Listen to component events on the **server** (LiveView events) or on the **client** (DOM CustomEvents).
+
+### Server
+
+```heex
+<.accordion
+  id="my-accordion"
+  class="accordion"
+  items={@items}
+  on_value_change="accordion_value_changed"
+/>
+```
+
+```elixir
+def handle_event("accordion_value_changed", %{"id" => "my-accordion", "value" => value}, socket) do
+  {:noreply, assign(socket, open_values: value)}
+end
+```
+
+### Client
+
+```heex
+<.accordion
+  id="my-accordion"
+  class="accordion"
+  items={@items}
+  on_value_change_client="accordion-value-changed"
+/>
+```
+
+```javascript
+const el = document.getElementById("my-accordion");
+
+el.addEventListener("accordion-value-changed", (event) => {
+  const { id, value } = event.detail;
+  console.log("accordion value changed", { id, value });
+});
+```
 
 ## License
 

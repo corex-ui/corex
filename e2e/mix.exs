@@ -5,11 +5,12 @@ defmodule E2e.MixProject do
     [
       app: :corex_web,
       version: "0.1.0",
-      elixir: "~> 1.15",
+      elixir: "~> 1.17",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      usage_rules: usage_rules(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
@@ -64,23 +65,34 @@ defmodule E2e.MixProject do
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 1.0"},
+      {:localize_web, "~> 0.5"},
       {:jason, "~> 1.2"},
+      {:color, "~> 0.11"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:corex, path: "../../corex"},
       {:makeup, "~> 1.2"},
       {:makeup_elixir, "~> 1.0.1 or ~> 1.1"},
       {:makeup_html, "~> 0.2"},
+      {:makeup_eex, "~> 2.0"},
       {:makeup_css, "~> 0.2"},
       {:makeup_js, "~> 0.1.0"},
       {:wallaby, "~> 0.30", only: :test},
       {:a11y_audit, "~> 0.3.1", only: :test},
       {:flagpack, "~> 0.6.0"},
-      {:ex_cldr, "~> 2.47"},
-      {:ex_cldr_languages, "~> 0.3"},
-      {:ex_cldr_territories, "~> 2.10.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
-      {:designex, "~> 1.0", only: [:dev, :test]}
+      {:designex, "~> 1.0"},
+      {:usage_rules, "~> 1.2", only: [:dev, :test]},
+      {:igniter, "~> 0.6", only: [:dev, :test]}
+    ]
+  end
+
+  defp usage_rules do
+    [
+      skills: [
+        location: ".claude/skills",
+        package_skills: [:corex]
+      ]
     ]
   end
 
@@ -97,7 +109,6 @@ defmodule E2e.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
-        "assets.build",
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
@@ -109,7 +120,7 @@ defmodule E2e.MixProject do
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
       "assets.build": [
         "compile",
-        "cmd node assets/corex/design/palette.mjs",
+        "e2e.palette",
         "designex corex",
         "tailwind e2e --minify",
         "esbuild e2e"

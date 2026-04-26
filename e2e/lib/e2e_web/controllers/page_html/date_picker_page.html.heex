@@ -2,44 +2,33 @@
   flash={@flash}
   mode={@mode}
   theme={@theme}
-  locale={@locale}
-  current_path={@current_path}
+  path={@path}
 >
-  <.layout_heading>
-    <:title>Date Picker</:title>
-    <:subtitle>Controller View</:subtitle>
-  </.layout_heading>
-
-  <h3>Client Api</h3>
-  <div class="layout__row">
-    <.action
-      phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-01-15")}
-      class="button button--sm"
-    >
-      Set to 2024-01-15
-    </.action>
-    <.action
-      phx-click={Corex.DatePicker.set_value("my-date-picker", "2024-12-25")}
-      class="button button--sm"
-    >
-      Set to 2024-12-25
-    </.action>
-  </div>
-  <.date_picker
-    id="my-date-picker"
-    trigger_aria_label="Select date"
-    input_aria_label="Select date"
-    class="date-picker"
+  <.demo_page
+    id="date-picker-anatomy-page"
+    title="Date Picker Anatomy"
+    subtitle="Single date, range, and multiple selection (uncontrolled); same slots as minimal."
   >
-    <:label>Select a date</:label>
-    <:trigger>
-      <.heroicon name="hero-calendar" class="icon" />
-    </:trigger>
-    <:prev_trigger>
-      <.heroicon name="hero-chevron-left" class="icon" />
-    </:prev_trigger>
-    <:next_trigger>
-      <.heroicon name="hero-chevron-right" class="icon" />
-    </:next_trigger>
-  </.date_picker>
+    <.demo_section
+      id="date-picker-anatomy-minimal"
+      title="Minimal (single)"
+      code={E2eWeb.Demos.DatePickerDemo.minimal_code()}
+    >
+      <:preview><E2eWeb.Demos.DatePickerDemo.minimal_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="date-picker-anatomy-range"
+      title="Range"
+      code={E2eWeb.Demos.DatePickerDemo.anatomy_range_code()}
+    >
+      <:preview><E2eWeb.Demos.DatePickerDemo.anatomy_range_example /></:preview>
+    </.demo_section>
+    <.demo_section
+      id="date-picker-anatomy-multiple"
+      title="Multiple"
+      code={E2eWeb.Demos.DatePickerDemo.anatomy_multiple_code()}
+    >
+      <:preview><E2eWeb.Demos.DatePickerDemo.anatomy_multiple_example /></:preview>
+    </.demo_section>
+  </.demo_page>
 </Layouts.app>

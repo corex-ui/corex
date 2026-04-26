@@ -2,14 +2,19 @@ defmodule Corex.TreeViewTest do
   use CorexTest.ComponentCase, async: true
   import Phoenix.Component
 
+  alias Corex.Json
   alias Corex.TreeView
   alias Corex.TreeView.Connect
+
+  @zag_root %{"id" => "test-tree", "name" => "", "children" => []}
 
   describe "tree_view/1" do
     test "renders" do
       html = render_component(&CorexTest.ComponentHelpers.render_tree_view/1, [])
       assert html =~ ~r/data-scope="tree-view"/
       assert html =~ ~r/data-part="root"/
+      assert html =~ ~r//
+      assert html =~ ~r/phx-mounted=/
       assert html =~ ~r/Item/
     end
 
@@ -46,7 +51,7 @@ defmodule Corex.TreeViewTest do
     test "renders expanded and selected values" do
       items =
         Corex.Tree.new([
-          [label: "P1", id: "p1", children: [[label: "C1", id: "c1"]]]
+          %{label: "P1", id: "p1", children: [%{label: "C1", id: "c1"}]}
         ])
 
       html =
@@ -82,6 +87,7 @@ defmodule Corex.TreeViewTest do
 
       assert html =~ "Leaf"
       assert html =~ "data-part=\"item\""
+      assert html =~ "data-part=\"item-text\""
     end
 
     test "renders tree_branch" do
@@ -91,9 +97,9 @@ defmodule Corex.TreeViewTest do
             _ = assigns
 
             ~H"""
-            <Corex.TreeView.tree_branch branch={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
-              <:trigger>Trigger</:trigger>
-              <:indicator>Icon</:indicator>
+            <Corex.TreeView.tree_branch row={%{id: "b1", value: "v1", index_path: [0], dir: "ltr", expanded: false, disabled: false, selected: false, focused: false, name: "B1"}}>
+              <:branch>Trigger</:branch>
+              <:branch_indicator>Icon</:branch_indicator>
               Content
             </Corex.TreeView.tree_branch>
             """
@@ -143,11 +149,71 @@ defmodule Corex.TreeViewTest do
     end
   end
 
+  describe "value/1" do
+    test "returns JS command" do
+      js = TreeView.value("my-tree")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "value/2 (client)" do
+    test "returns JS command with respond_to opts" do
+      js = TreeView.value("my-tree", respond_to: :client)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "value/2 (server)" do
+    test "pushes tree_view_value event with id" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = TreeView.value(socket, "my-tree")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "value/3 (server)" do
+    test "pushes tree_view_value event with respond_to opts" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = TreeView.value(socket, "my-tree", respond_to: :both)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "expanded_value/1" do
+    test "returns JS command" do
+      js = TreeView.expanded_value("my-tree")
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "expanded_value/2 (client)" do
+    test "returns JS command with respond_to opts" do
+      js = TreeView.expanded_value("my-tree", respond_to: :client)
+      assert %Phoenix.LiveView.JS{} = js
+    end
+  end
+
+  describe "expanded_value/2 (server)" do
+    test "pushes tree_view_expanded_value event with id" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = TreeView.expanded_value(socket, "my-tree")
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
+  describe "expanded_value/3 (server)" do
+    test "pushes tree_view_expanded_value event with respond_to opts" do
+      socket = %Phoenix.LiveView.Socket{}
+      result = TreeView.expanded_value(socket, "my-tree", respond_to: :both)
+      assert %Phoenix.LiveView.Socket{} = result
+    end
+  end
+
   describe "Connect.root/1" do
     test "returns root attributes" do
       assigns = %{id: "test-tree", dir: "ltr"}
       result = Connect.root(assigns)
-      assert result["id"] == "tree-view:test-tree"
+      assert result["id"] == "tree-view:test-tree:root"
       assert result["data-scope"] == "tree-view"
       assert result["data-part"] == "root"
     end
@@ -190,7 +256,7 @@ defmodule Corex.TreeViewTest do
       }
 
       result = Connect.item(assigns)
-      assert result["id"] == "tree-view:test-tree:item:node-1"
+      assert result["id"] == "tree-view:test-tree:node:node-1"
       assert result["data-value"] == "node-1"
       assert result["style"] == "--depth: 1"
     end
@@ -224,6 +290,23 @@ defmodule Corex.TreeViewTest do
 
       result = Connect.item(assigns)
       assert result["data-redirect"] == "false"
+    end
+
+    test "stringifies atom redirect modes" do
+      for mode <- [:href, :patch, :navigate] do
+        assigns = %{
+          id: "test-tree",
+          value: "node-1",
+          index_path: [],
+          disabled: false,
+          redirect: mode,
+          new_tab: false,
+          dir: "ltr"
+        }
+
+        result = Connect.item(assigns)
+        assert result["data-redirect"] == Atom.to_string(mode)
+      end
     end
 
     test "adds data-new-tab when new_tab true" do
@@ -426,7 +509,26 @@ defmodule Corex.TreeViewTest do
       refute Map.has_key?(result, "hidden")
     end
 
-    test "adds hidden when collapsed" do
+    test "adds hidden when collapsed only for instant animation" do
+      instant = %{
+        id: "test-tree",
+        value: "node-1",
+        index_path: [],
+        expanded: false,
+        dir: "ltr",
+        animation: "instant"
+      }
+
+      assert Connect.branch_content(instant)["hidden"] == ""
+
+      for animation <- ["js", "custom"] do
+        assigns = %{instant | animation: animation}
+        result = Connect.branch_content(assigns)
+        refute Map.has_key?(result, "hidden")
+      end
+    end
+
+    test "adds hidden when collapsed with default animation" do
       assigns = %{
         id: "test-tree",
         value: "node-1",
@@ -465,6 +567,32 @@ defmodule Corex.TreeViewTest do
     end
   end
 
+  describe "Connect.item_text/1" do
+    test "returns item text attributes for leaves" do
+      assigns = %{id: "test-tree", value: "leaf-1", index_path: [0, 1], dir: "ltr"}
+      result = Connect.item_text(assigns)
+      assert result["data-part"] == "item-text"
+      assert result["data-value"] == "leaf-1"
+    end
+  end
+
+  describe "Connect.item_indicator/1" do
+    test "returns item indicator attributes" do
+      assigns = %{
+        id: "test-tree",
+        value: "leaf-1",
+        index_path: [0],
+        dir: "ltr",
+        disabled: false,
+        selected: false,
+        focused: false
+      }
+
+      result = Connect.item_indicator(assigns)
+      assert result["data-part"] == "item-indicator"
+    end
+  end
+
   describe "Connect.branch_indent_guide/1" do
     test "returns branch indent guide attributes" do
       assigns = %{id: "test-tree", value: "node-1", index_path: [0], dir: "ltr"}
@@ -477,6 +605,7 @@ defmodule Corex.TreeViewTest do
     test "returns props when uncontrolled" do
       assigns = %{
         id: "test-tree",
+        tree: @zag_root,
         controlled: false,
         expanded_value: ["node-1"],
         value: ["node-2"],
@@ -488,15 +617,18 @@ defmodule Corex.TreeViewTest do
       }
 
       result = Connect.props(assigns)
+      assert result["data-tree"] == Json.encode!(@zag_root)
       assert result["data-default-expanded-value"] == "node-1"
       assert result["data-default-selected-value"] == "node-2"
       assert result["data-expanded-value"] == nil
       assert result["data-selected-value"] == nil
+      assert result["data-typeahead"] == "true"
     end
 
     test "returns props when controlled" do
       assigns = %{
         id: "test-tree",
+        tree: @zag_root,
         controlled: true,
         expanded_value: ["node-1"],
         value: ["node-2"],
@@ -508,15 +640,18 @@ defmodule Corex.TreeViewTest do
       }
 
       result = Connect.props(assigns)
+      assert result["data-tree"] == Json.encode!(@zag_root)
       assert result["data-default-expanded-value"] == nil
       assert result["data-default-selected-value"] == nil
       assert result["data-expanded-value"] == "node-1"
       assert result["data-selected-value"] == "node-2"
+      assert result["data-typeahead"] == "true"
     end
 
     test "returns props with redirect false" do
       assigns = %{
         id: "test-tree",
+        tree: @zag_root,
         controlled: false,
         expanded_value: [],
         value: [],
@@ -528,7 +663,49 @@ defmodule Corex.TreeViewTest do
       }
 
       result = Connect.props(assigns)
+      assert result["data-tree"] == Json.encode!(@zag_root)
       assert result["data-redirect"] == nil
+      assert result["data-typeahead"] == "true"
+    end
+
+    test "returns data-typeahead false when disabled" do
+      assigns = %{
+        id: "test-tree",
+        tree: @zag_root,
+        controlled: false,
+        expanded_value: [],
+        value: [],
+        selection_mode: "single",
+        dir: "ltr",
+        typeahead: false,
+        on_selection_change: nil,
+        on_expanded_change: nil,
+        redirect: false
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-typeahead"] == "false"
+    end
+
+    test "does not merge animation_options when animation is not js" do
+      assigns = %{
+        id: "test-tree",
+        tree: @zag_root,
+        animation: "custom",
+        animation_options: %Corex.Animation.Height{duration: 0.9},
+        controlled: false,
+        expanded_value: [],
+        value: [],
+        selection_mode: "single",
+        dir: "ltr",
+        on_selection_change: nil,
+        on_expanded_change: nil,
+        redirect: false
+      }
+
+      result = Connect.props(assigns)
+      assert result["data-animation"] == "custom"
+      refute Map.has_key?(result, "data-anim-height-duration")
     end
   end
 

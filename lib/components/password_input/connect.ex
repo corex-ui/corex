@@ -2,6 +2,8 @@ defmodule Corex.PasswordInput.Connect do
   @moduledoc false
   import Corex.Gettext, only: [gettext: 1]
 
+  alias Corex.Selectors
+
   alias Corex.PasswordInput.Anatomy.{
     Control,
     Indicator,
@@ -12,30 +14,69 @@ defmodule Corex.PasswordInput.Connect do
     VisibilityTrigger
   }
 
-  defp data_attr(true), do: ""
-  defp data_attr(false), do: nil
-  defp data_attr(nil), do: nil
+  alias Phoenix.LiveView.JS
+  import Corex.Helpers, only: [get_boolean: 1]
+
+  defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
+
+  defp aria_label_for_trigger(assigns) do
+    Map.get(assigns, :aria_label) || gettext("Toggle password visibility")
+  end
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-visible" => if(assigns.controlled_visible, do: data_attr(assigns.visible), else: nil),
-      "data-default-visible" =>
-        if(assigns.controlled_visible, do: nil, else: data_attr(assigns.visible)),
-      "data-controlled-visible" => data_attr(assigns.controlled_visible),
-      "data-disabled" => data_attr(assigns.disabled),
-      "data-invalid" => data_attr(assigns.invalid),
-      "data-read-only" => data_attr(assigns.read_only),
-      "data-required" => data_attr(assigns.required),
-      "data-ignore-password-managers" => data_attr(assigns.ignore_password_managers),
+      "data-default-visible" => get_boolean(assigns.visible),
+      "data-disabled" => get_boolean(assigns.disabled),
+      "data-invalid" => get_boolean(assigns.invalid),
+      "data-read-only" => get_boolean(assigns.read_only),
+      "data-required" => get_boolean(assigns.required),
+      "data-ignore-password-managers" => get_boolean(assigns.ignore_password_managers),
       "data-name" => assigns.name,
       "data-form" => assigns.form,
-      "data-dir" => assigns.dir,
+      "data-dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns),
       "data-auto-complete" => assigns.auto_complete,
       "data-on-visibility-change" => assigns.on_visibility_change,
       "data-on-visibility-change-client" => assigns.on_visibility_change_client
     }
+  end
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("password-input:#{assigns.id}")
+    )
+  end
+
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("password-input:#{assigns.id}:label")
+    )
+  end
+
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("password-input:#{assigns.id}:control")
+    )
+  end
+
+  def ignore_input(assigns) do
+    JS.ignore_attributes(Input.ignored_attrs(),
+      to: Selectors.css_id("p-input-#{assigns.id}-input")
+    )
+  end
+
+  def ignore_visibility_trigger(assigns) do
+    JS.ignore_attributes(VisibilityTrigger.ignored_attrs(),
+      to: Selectors.css_id("password-input:#{assigns.id}:visibility-trigger")
+    )
+  end
+
+  def ignore_indicator(assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id("password-input:#{assigns.id}:indicator")
+    )
   end
 
   @spec root(Root.t()) :: map()
@@ -43,7 +84,8 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "root",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}"
     }
   end
@@ -53,7 +95,9 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "label",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns),
+      "id" => "password-input:#{assigns.id}:label",
       "for" => "p-input-#{assigns.id}-input"
     }
   end
@@ -63,7 +107,8 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "control",
-      "dir" => assigns.dir,
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}:control"
     }
   end
@@ -73,11 +118,13 @@ defmodule Corex.PasswordInput.Connect do
     base = %{
       "data-scope" => "password-input",
       "data-part" => "input",
-      "disabled" => data_attr(assigns.disabled),
+      "disabled" => get_boolean(assigns.disabled),
       "id" => "p-input-#{assigns.id}-input",
       "name" => Map.get(assigns, :name),
       "form" => Map.get(assigns, :form),
-      "autocomplete" => Map.get(assigns, :auto_complete)
+      "autocomplete" => Map.get(assigns, :auto_complete),
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns)
     }
 
     Map.reject(base, fn {_k, v} -> is_nil(v) end)
@@ -89,8 +136,10 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "visibility-trigger",
       "type" => "button",
-      "dir" => assigns.dir,
-      "aria-label" => gettext("Toggle password visibility")
+      "id" => "password-input:#{assigns.id}:visibility-trigger",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns),
+      "aria-label" => aria_label_for_trigger(assigns)
     }
   end
 
@@ -99,8 +148,11 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "indicator",
-      "dir" => assigns.dir,
-      "aria-hidden" => "true"
+      "id" => "password-input:#{assigns.id}:indicator",
+      "dir" => Map.get(assigns, :dir, "ltr"),
+      "data-orientation" => orientation(assigns),
+      "aria-hidden" => "true",
+      "data-state" => if(Map.get(assigns, :visible, false), do: "visible", else: "hidden")
     }
   end
 end

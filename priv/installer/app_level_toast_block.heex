@@ -1,0 +1,13 @@
+
+    <.toast_group id="layout-toast" class="toast" flash={@flash}>
+      <:loading>Loading…</:loading>
+      <:close>Close</:close>
+    </.toast_group>
+    <.toast_client_error
+      toast_group_id="layout-toast"
+      title="We lost the connection"
+      description="We're trying to reconnect you..."
+      type={:error}
+      duration={:infinity}
+    />
+

@@ -1,22 +1,42 @@
 defmodule Corex.Checkbox.Connect do
   @moduledoc false
-  alias Corex.Checkbox.Anatomy.{Control, HiddenInput, Indicator, Label, Props, Root}
+  alias Corex.Selectors
+
+  alias Corex.Checkbox.Anatomy.{
+    Control,
+    HiddenInput,
+    Indeterminate,
+    Indicator,
+    Label,
+    Props,
+    Root
+  }
 
   import Corex.Helpers,
-    only: [get_boolean: 1, get_boolean: 2, get_default_boolean: 2, data_state: 3]
+    only: [
+      get_boolean: 1,
+      checkbox_checked_controlled_attr: 2,
+      checkbox_checked_default_attr: 2,
+      checkbox_native_checked: 1,
+      checkbox_visual_state: 1
+    ]
+
+  alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-default-checked" => get_default_boolean(assigns.controlled, assigns.checked),
-      "data-checked" => get_boolean(assigns.controlled, assigns.checked),
+      "data-default-checked" =>
+        checkbox_checked_default_attr(assigns.controlled, assigns.checked),
+      "data-checked" => checkbox_checked_controlled_attr(assigns.controlled, assigns.checked),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-value" => assigns.value,
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-label" => assigns.label,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
@@ -28,8 +48,8 @@ defmodule Corex.Checkbox.Connect do
 
   @spec root(Root.t()) :: map()
   def root(assigns) do
-    state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    state = checkbox_visual_state(assigns.checked)
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "checkbox",
@@ -43,6 +63,12 @@ defmodule Corex.Checkbox.Connect do
     }
   end
 
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("checkbox:#{assigns.id}")
+    )
+  end
+
   @spec hidden_input(HiddenInput.t()) :: map()
   def hidden_input(assigns) do
     %{
@@ -50,7 +76,7 @@ defmodule Corex.Checkbox.Connect do
       "data-part" => "hidden-input",
       "id" => "checkbox:#{assigns.id}:input",
       "type" => "checkbox",
-      "checked" => get_boolean(assigns.checked),
+      "checked" => checkbox_native_checked(assigns.checked),
       "value" => "true",
       "name" => assigns.name,
       "required" => get_boolean(assigns.required),
@@ -62,10 +88,16 @@ defmodule Corex.Checkbox.Connect do
     }
   end
 
+  def ignore_hidden_input(assigns) do
+    JS.ignore_attributes(HiddenInput.ignored_attrs(),
+      to: Selectors.css_id("checkbox:#{assigns.id}:input")
+    )
+  end
+
   @spec control(Control.t()) :: map()
   def control(assigns) do
-    state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    state = checkbox_visual_state(assigns.checked)
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "checkbox",
@@ -78,10 +110,16 @@ defmodule Corex.Checkbox.Connect do
     }
   end
 
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("checkbox:#{assigns.id}:control")
+    )
+  end
+
   @spec label(Label.t()) :: map()
   def label(assigns) do
-    state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    state = checkbox_visual_state(assigns.checked)
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "checkbox",
@@ -93,10 +131,16 @@ defmodule Corex.Checkbox.Connect do
     }
   end
 
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("checkbox:#{assigns.id}:label")
+    )
+  end
+
   @spec indicator(Indicator.t()) :: map()
   def indicator(assigns) do
-    state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    state = checkbox_visual_state(assigns.checked)
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "checkbox",
@@ -106,5 +150,32 @@ defmodule Corex.Checkbox.Connect do
       "id" => "checkbox:#{assigns.id}:indicator",
       "data-state" => state
     }
+  end
+
+  def ignore_indicator(assigns) do
+    JS.ignore_attributes(Indicator.ignored_attrs(),
+      to: Selectors.css_id("checkbox:#{assigns.id}:indicator")
+    )
+  end
+
+  @spec indeterminate(Indeterminate.t()) :: map()
+  def indeterminate(assigns) do
+    state = checkbox_visual_state(assigns.checked)
+    orientation = Map.get(assigns, :orientation, "horizontal")
+
+    %{
+      "data-scope" => "checkbox",
+      "data-part" => "indeterminate",
+      "data-orientation" => orientation,
+      "dir" => assigns.dir,
+      "id" => "checkbox:#{assigns.id}:indeterminate",
+      "data-state" => state
+    }
+  end
+
+  def ignore_indeterminate(assigns) do
+    JS.ignore_attributes(Indeterminate.ignored_attrs(),
+      to: Selectors.css_id("checkbox:#{assigns.id}:indeterminate")
+    )
   end
 end

@@ -95,9 +95,15 @@ defmodule Corex.Tooltip do
   attr(:disabled, :boolean, default: false, doc: "Whether the tooltip is disabled")
 
   attr(:dir, :string,
-    default: nil,
-    values: [nil, "ltr", "rtl"],
+    default: "ltr",
+    values: ["ltr", "rtl"],
     doc: "The direction of the tooltip. When nil, derived from document"
+  )
+
+  attr(:orientation, :string,
+    default: "horizontal",
+    values: ["horizontal", "vertical"],
+    doc: "Layout orientation for CSS."
   )
 
   attr(:open_delay, :integer,
@@ -155,6 +161,13 @@ defmodule Corex.Tooltip do
     doc: "Whether to show an arrow pointing to the trigger"
   )
 
+  attr(:trigger_tag, :atom,
+    default: :button,
+    values: [:button, :span],
+    doc:
+      "Use :span when the tooltip sits inside another button-like control (e.g. tree view row) to avoid nested <button> elements."
+  )
+
   attr(:rest, :global)
 
   slot :trigger,
@@ -168,15 +181,27 @@ defmodule Corex.Tooltip do
   end
 
   def tooltip(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "tooltip-#{System.unique_integer([:positive])}" end)
+    id = assigns.id
+
     assigns =
       assigns
-      |> assign_new(:id, fn -> "tooltip-#{System.unique_integer([:positive])}" end)
       |> assign(:slot_assigns, %{open: assigns.open, disabled: assigns.disabled})
+      |> assign(:tooltip_trigger, %Trigger{
+        id: id,
+        dir: assigns.dir,
+        open: assigns.open,
+        disabled: assigns.disabled,
+        orientation: assigns.orientation,
+        tag: assigns.trigger_tag
+      })
 
     ~H"""
     <div
       id={@id}
       phx-hook="Tooltip"
+      data-loading  
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}    
       {@rest}
       {Connect.props(%Props{
         id: @id,
@@ -184,6 +209,7 @@ defmodule Corex.Tooltip do
         open: @open,
         disabled: @disabled,
         dir: @dir,
+        orientation: @orientation,
         open_delay: @open_delay,
         close_delay: @close_delay,
         placement: @placement,
@@ -196,16 +222,38 @@ defmodule Corex.Tooltip do
         on_open_change_client: @on_open_change_client
       })}
     >
-      <button {Connect.trigger(%Trigger{id: @id, dir: @dir, open: @open, disabled: @disabled})}>
-        {render_slot(@trigger, @slot_assigns)}
-      </button>
-      <div {Connect.positioner(%Positioner{id: @id, dir: @dir})}>
-        <div :if={@show_arrow} {Connect.arrow(%Arrow{id: @id, dir: @dir})}>
-          <div {Connect.arrow_tip(%ArrowTip{dir: @dir})}>
+      <%= if @trigger_tag == :span do %>
+        <span
+          class={Map.get(Enum.at(@trigger, 0), :class, nil)}
+          phx-mounted={Connect.ignore_trigger(@tooltip_trigger)}
+          {Connect.trigger(@tooltip_trigger)}
+        >
+          {render_slot(Enum.at(@trigger, 0), @slot_assigns)}
+        </span>
+      <% else %>
+        <button
+          class={Map.get(Enum.at(@trigger, 0), :class, nil)}
+          phx-mounted={Connect.ignore_trigger(@tooltip_trigger)}
+          {Connect.trigger(@tooltip_trigger)}
+        >
+          {render_slot(Enum.at(@trigger, 0), @slot_assigns)}
+        </button>
+      <% end %>
+      <div phx-mounted={Connect.ignore_positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})} {Connect.positioner(%Positioner{id: @id, dir: @dir, orientation: @orientation})}>
+        <div
+          :if={@show_arrow}
+          phx-mounted={Connect.ignore_arrow(%Arrow{id: @id, dir: @dir, orientation: @orientation})}
+          {Connect.arrow(%Arrow{id: @id, dir: @dir, orientation: @orientation})}
+        >
+          <div phx-mounted={Connect.ignore_arrow_tip(%ArrowTip{id: @id, dir: @dir, orientation: @orientation})} {Connect.arrow_tip(%ArrowTip{id: @id, dir: @dir, orientation: @orientation})}>
           </div>
         </div>
-        <div {Connect.content(%Content{id: @id, dir: @dir, open: @open})}>
-          {render_slot(@content, @slot_assigns)}
+        <div
+          class={Map.get(Enum.at(@content, 0), :class, nil)}
+          phx-mounted={Connect.ignore_content(%Content{id: @id, dir: @dir, open: @open, orientation: @orientation})}
+          {Connect.content(%Content{id: @id, dir: @dir, open: @open, orientation: @orientation})}
+        >
+          {render_slot(Enum.at(@content, 0), @slot_assigns)}
         </div>
       </div>
     </div>
@@ -214,7 +262,7 @@ defmodule Corex.Tooltip do
 
   @doc type: :api
   def set_open(tooltip_id, open) when is_binary(tooltip_id) and is_boolean(open) do
-    JS.dispatch("phx:tooltip:set-open",
+    JS.dispatch("corex:tooltip:set-open",
       to: "##{tooltip_id}",
       detail: %{open: open},
       bubbles: false

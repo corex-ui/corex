@@ -5,21 +5,13 @@ defmodule E2eWeb.Plugs.Theme do
   """
   import Plug.Conn
 
-  @valid_themes ~w(neo uno duo leo)
-
   def init(opts), do: opts
 
   def call(conn, _opts) do
-    theme =
-      conn.cookies["phx_theme"]
-      |> parse_theme()
+    theme = conn.cookies["phx_theme"] || "neo"
 
     conn
     |> assign(:theme, theme)
     |> put_session(:theme, theme)
   end
-
-  defp parse_theme(nil), do: "neo"
-  defp parse_theme(theme) when theme in @valid_themes, do: theme
-  defp parse_theme(_), do: "neo"
 end

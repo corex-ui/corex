@@ -1,9 +1,12 @@
 defmodule Corex.Switch.Connect do
   @moduledoc false
+  alias Corex.Selectors
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
 
   import Corex.Helpers,
     only: [get_boolean: 1, get_boolean: 2, get_default_boolean: 2, data_state: 3]
+
+  alias Phoenix.LiveView.JS
 
   @spec props(Props.t()) :: map()
   def props(assigns) do
@@ -17,6 +20,7 @@ defmodule Corex.Switch.Connect do
       "data-name" => assigns.name,
       "data-form" => assigns.form,
       "data-dir" => assigns.dir,
+      "data-orientation" => Map.get(assigns, :orientation, "horizontal"),
       "data-label" => assigns.label,
       "data-read-only" => get_boolean(assigns.read_only),
       "data-invalid" => get_boolean(assigns.invalid),
@@ -29,7 +33,7 @@ defmodule Corex.Switch.Connect do
   @spec root(Root.t()) :: map()
   def root(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "switch",
@@ -41,6 +45,12 @@ defmodule Corex.Switch.Connect do
       "for" => "switch:#{assigns.id}:input",
       "data-state" => state
     }
+  end
+
+  def ignore_root(assigns) do
+    JS.ignore_attributes(Root.ignored_attrs(),
+      to: Selectors.css_id("switch:#{assigns.id}")
+    )
   end
 
   @spec hidden_input(HiddenInput.t()) :: map()
@@ -69,10 +79,16 @@ defmodule Corex.Switch.Connect do
     }
   end
 
+  def ignore_hidden_input(assigns) do
+    JS.ignore_attributes(HiddenInput.ignored_attrs(),
+      to: Selectors.css_id("switch:#{assigns.id}:input")
+    )
+  end
+
   @spec control(Control.t()) :: map()
   def control(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "switch",
@@ -85,10 +101,16 @@ defmodule Corex.Switch.Connect do
     }
   end
 
+  def ignore_control(assigns) do
+    JS.ignore_attributes(Control.ignored_attrs(),
+      to: Selectors.css_id("switch:#{assigns.id}:control")
+    )
+  end
+
   @spec thumb(Thumb.t()) :: map()
   def thumb(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "switch",
@@ -101,10 +123,16 @@ defmodule Corex.Switch.Connect do
     }
   end
 
+  def ignore_thumb(assigns) do
+    JS.ignore_attributes(Thumb.ignored_attrs(),
+      to: Selectors.css_id("switch:#{assigns.id}:thumb")
+    )
+  end
+
   @spec label(Label.t()) :: map()
   def label(assigns) do
     state = data_state(assigns.checked, "checked", "unchecked")
-    orientation = Map.get(assigns, :orientation, "vertical")
+    orientation = Map.get(assigns, :orientation, "horizontal")
 
     %{
       "data-scope" => "switch",
@@ -115,5 +143,11 @@ defmodule Corex.Switch.Connect do
       "id" => "switch:#{assigns.id}:label",
       "data-state" => state
     }
+  end
+
+  def ignore_label(assigns) do
+    JS.ignore_attributes(Label.ignored_attrs(),
+      to: Selectors.css_id("switch:#{assigns.id}:label")
+    )
   end
 end

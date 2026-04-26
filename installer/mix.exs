@@ -6,11 +6,11 @@ end
 defmodule Corex.New.MixProject do
   use Mix.Project
 
-  @version "0.1.0-alpha.33"
+  @version "0.1.0-beta.1"
   @phoenix_version "1.8.4"
   @scm_url "https://github.com/corex-ui/corex"
 
-  @elixir_requirement "~> 1.15"
+  @elixir_requirement "~> 1.17"
 
   def project do
     [
@@ -26,16 +26,16 @@ defmodule Corex.New.MixProject do
         maintainers: ["Karim Semmoud"],
         licenses: ["MIT"],
         links: %{"GitHub" => @scm_url},
-        files: ~w(lib templates mix.exs README.md)
+        files: ~w(lib mix.exs README.md)
       ],
       source_url: @scm_url,
       docs: docs(),
       homepage_url: "https://corex.gigalixirapp.com/en",
       description: """
-      Corex project generator.
+      Corex greenfield helper archive.
 
-      Provides a `mix corex.new` task to bootstrap a new Elixir application
-      with Phoenix and Corex dependencies.
+      Provides `mix corex.new`, a thin wrapper around `mix phx.new` followed by
+      `mix igniter.install corex`. Install `phx_new` and `igniter_new` archives first.
       """
     ]
   end
@@ -52,6 +52,7 @@ defmodule Corex.New.MixProject do
 
   def deps do
     [
+      {:jason, "~> 1.0"},
       {:ex_doc, "~> 0.24", only: :docs}
     ]
   end
@@ -62,22 +63,7 @@ defmodule Corex.New.MixProject do
     ]
   end
 
-  defp copy_agents_md(_) do
-    usage_rules = Path.expand("../usage-rules", __DIR__)
-    dest = Path.expand("./templates/phoenix-usage-rules", __DIR__)
-
-    if File.exists?(usage_rules) do
-      File.cp_r!(usage_rules, dest)
-    end
-  end
-
   defp aliases do
-    [
-      "hex.publish": [
-        &copy_agents_md/1,
-        "hex.publish"
-      ]
-    ]
+    []
   end
-
 end

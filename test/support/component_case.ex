@@ -7,6 +7,7 @@ defmodule CorexTest.ComponentCase do
     quote do
       @endpoint CorexTest.Endpoint
       import Phoenix.LiveViewTest
+      import CorexTest.Assertions
 
       defp find_in_html(html, selector) do
         {:ok, doc} = Floki.parse_fragment(to_string(html))
