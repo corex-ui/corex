@@ -58,7 +58,7 @@ jobs:
         run: mix deps.get
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288a8380ff81df1b7dbd07a9d9deed44
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: "24"
           cache: npm
