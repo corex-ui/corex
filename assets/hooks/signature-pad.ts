@@ -65,9 +65,8 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
 
-        queueFormBubblingInputForPhoenix(
-          el,
-          () => (details.paths.length > 0 ? details.paths.join("\n") : "")
+        queueFormBubblingInputForPhoenix(el, () =>
+          details.paths.length > 0 ? details.paths.join("\n") : ""
         );
 
         details.getDataUrl("image/png").then((url) => {

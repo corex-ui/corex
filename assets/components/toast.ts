@@ -215,8 +215,8 @@ export class ToastGroup extends Component<GroupProps, GroupApi> {
         this.toastComponents.set(toastData.id, item);
       } else {
         item.duration = toastData.duration;
-        (item as ToastItem).showLoading = (toastData as { meta?: { loading?: boolean } }).meta
-          ?.loading === true;
+        (item as ToastItem).showLoading =
+          (toastData as { meta?: { loading?: boolean } }).meta?.loading === true;
         item.updateProps({
           ...toastData,
           parent: this.machine.service,
