@@ -213,7 +213,7 @@ defmodule Corex.TreeViewTest do
     test "returns root attributes" do
       assigns = %{id: "test-tree", dir: "ltr"}
       result = Connect.root(assigns)
-      assert result["id"] == "tree-view:test-tree:root"
+      assert result["id"] == "tree:test-tree:root"
       assert result["data-scope"] == "tree-view"
       assert result["data-part"] == "root"
     end
@@ -229,7 +229,7 @@ defmodule Corex.TreeViewTest do
     test "returns label attributes" do
       assigns = %{id: "test-tree", dir: "ltr"}
       result = Connect.label(assigns)
-      assert result["id"] == "tree-view:test-tree:label"
+      assert result["id"] == "tree:test-tree:label"
       assert result["data-part"] == "label"
     end
   end
@@ -238,7 +238,7 @@ defmodule Corex.TreeViewTest do
     test "returns tree attributes" do
       assigns = %{id: "test-tree", dir: "ltr"}
       result = Connect.tree(assigns)
-      assert result["id"] == "tree-view:test-tree:tree"
+      assert result["id"] == "tree:test-tree:tree"
       assert result["data-part"] == "tree"
     end
   end
@@ -256,7 +256,7 @@ defmodule Corex.TreeViewTest do
       }
 
       result = Connect.item(assigns)
-      assert result["id"] == "tree-view:test-tree:node:node-1"
+      assert result["id"] == "tree:test-tree:node:node-1"
       assert result["data-value"] == "node-1"
       assert result["style"] == "--depth: 1"
     end
