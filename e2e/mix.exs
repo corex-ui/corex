@@ -87,7 +87,7 @@ defmodule E2e.MixProject do
     ]
 
     if needs_json_polyfill?() do
-      base ++ [{:json_polyfill, "~> 2.0"}]
+      base ++ [{:json_polyfill, "~> 0.2"}]
     else
       base
     end
