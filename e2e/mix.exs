@@ -95,7 +95,7 @@ defmodule E2e.MixProject do
   end
 
   defp needs_json_polyfill? do
-    elixir_old? = Version.match?(System.version(), "< 1.17.0")
+    elixir_old? = Version.match?(System.version(), "< 1.18.0")
     otp = :erlang.system_info(:otp_release) |> List.to_string() |> String.to_integer()
 
     elixir_old? and otp < 26
