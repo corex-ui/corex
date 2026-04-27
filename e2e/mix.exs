@@ -67,7 +67,7 @@ defmodule E2e.MixProject do
       {:gettext, "~> 1.0"},
       {:localize_web, "~> 0.5"},
       {:jason, "~> 1.2"},
-      {:color, "~> 0.11", only: :dev},
+      {:color, "~> 0.11"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:corex, path: "../../corex"},
@@ -83,7 +83,8 @@ defmodule E2e.MixProject do
       {:tidewave, "~> 0.5.5", only: :dev},
       {:designex, "~> 1.0"},
       {:usage_rules, "~> 1.2", only: [:dev, :test]},
-      {:igniter, "~> 0.6", only: [:dev, :test]}
+      {:igniter, "~> 0.6", only: [:dev, :test]},
+      {:json_polyfill, "~> 0.2"}
     ]
   end
 
