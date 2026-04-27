@@ -1,20 +1,104 @@
-# MCP
+# Corex MCP — Usage Guide
 
-MCP (Model Context Protocol) lets an editor/agent connect to external tools (for example browser automation, design tools, or a running application) through a standard interface.
+Corex ships with a built-in MCP (Model Context Protocol) server that exposes your component registry and documentation to AI tools (Cursor, Claude, VS Code, etc.).
 
-## In this project
+This allows assistants to **discover, inspect, and generate UI code** based on your actual Corex components.
 
-- Corex includes MCP-related tooling in the `e2e/` app (used to validate documentation and demos).
-- If you are using Cursor agents, MCP is how the agent can interact with the environment beyond static code edits (when enabled).
+## 1. Enable MCP
 
-## Practical usage
+Mount the MCP plug in development:
 
-1) Start the relevant app (for example the `e2e` demo app).
-2) Use the MCP integration for the tool you need (browser, app eval, docs lookup, etc.).
-3) Prefer the MCP tool over guessing runtime output.
+```elixir
+if Mix.env() == :dev do
+  plug Corex.MCP
+end
+```
 
-If you’re working on Corex documentation, a good workflow is:
+This exposes an HTTP endpoint:
 
-- Keep examples in component module docs (`lib/components/...`) aligned with the `e2e` demo pages.
-- Use the running `e2e` app to verify examples and interaction flows.
+```
+http://localhost:4000/corex/mcp
+```
+
+---
+
+## 2. Configure your MCP client
+
+Add Corex as a server in your MCP-enabled tool.
+
+### Cursor
+
+`.cursor/mcp.json`
+
+```json
+{
+  "servers": {
+    "corex": {
+      "url": "http://localhost:4000/corex_dev/mcp"
+    }
+  }
+}
+```
+
+---
+
+### Claude Desktop
+
+```json
+{
+  "mcpServers": {
+    "corex": {
+      "transport": {
+        "type": "http",
+        "url": "http://localhost:4000/corex_dev/mcp"
+      }
+    }
+  }
+}
+```
+
+---
+
+### VS Code (MCP extension)
+
+```json
+{
+  "mcp.servers": {
+    "corex": {
+      "url": "http://localhost:4000/corex_dev/mcp"
+    }
+  }
+}
+```
+
+---
+
+### Generic MCP client
+
+```json
+{
+  "name": "corex",
+  "url": "http://localhost:4000/corex_dev/mcp"
+}
+```
+
+---
+
+## 3. Available tools
+
+Corex MCP exposes tools to query your design system:
+
+### `corex_list_components`
+
+List all available component
+
+### `corex_get_component`
+
+Get documentation for a component
+
+## 4. Notes
+
+* Intended for **development only**
+* Requires your Phoenix server running locally
+* Corex MCP based of [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix/tree/main) and is distributed under the Apache License 2.0.
 

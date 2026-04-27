@@ -10,7 +10,7 @@ defmodule Corex.MCP do
   end
 
   @impl true
-  def call(%Plug.Conn{path_info: ["corex" | rest]} = conn, config) do
+  def call(%Plug.Conn{path_info: ["corex_dev" | rest]} = conn, config) do
     conn
     |> validate!()
     |> Plug.Conn.put_private(:corex_mcp_config, config)
