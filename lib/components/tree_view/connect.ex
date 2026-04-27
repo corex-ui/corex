@@ -34,23 +34,18 @@ defmodule Corex.TreeView.Connect do
     Enum.map_join(index_path, "-", &Integer.to_string/1)
   end
 
-  defp tree_root_id(component_id), do: "tree-view:#{component_id}:root"
-  defp tree_label_id(component_id), do: "tree-view:#{component_id}:label"
-  defp tree_tree_id(component_id), do: "tree-view:#{component_id}:tree"
+  defp tree_root_id(component_id), do: "tree:#{component_id}:root"
+  defp tree_label_id(component_id), do: "tree:#{component_id}:label"
+  defp tree_tree_id(component_id), do: "tree:#{component_id}:tree"
 
-  defp tree_node_id(component_id, value) when is_binary(component_id) and is_binary(value) do
-    "tree-view:#{component_id}:node:#{value}"
-  end
+  defp tree_node_id(component_id, value),
+    do: "tree:#{component_id}:node:#{value}"
 
-  defp tree_branch_wrapper_id(component_id, value)
-       when is_binary(component_id) and is_binary(value) do
-    "tree-view:#{component_id}:branch:#{value}"
-  end
+  defp tree_branch_wrapper_id(component_id, value),
+    do: "tree:#{component_id}:branch:#{value}"
 
-  defp tree_branch_part_id(component_id, part, path_key)
-       when is_binary(component_id) and is_binary(part) and is_binary(path_key) do
-    "tree-view:#{component_id}:#{part}:#{path_key}"
-  end
+  defp tree_branch_part_id(component_id, part, path_key),
+    do: "tree:#{component_id}:#{part}:#{path_key}"
 
   @spec props(Props.t()) :: map()
   def props(assigns) do

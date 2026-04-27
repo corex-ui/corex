@@ -1,13 +1,14 @@
 defmodule E2eWeb.TreeViewModel do
   import ExUnit.Assertions
+  import Wallaby.Query
 
   use E2eWeb.Model, component: "tree-view"
 
   @anatomy_sections ~w(
-    tree-view-anatomy-minimal
-    tree-view-anatomy-with-indicator
-    tree-view-anatomy-custom-slots
-    tree-view-anatomy-compound
+    tree-anatomy-minimal
+    tree-anatomy-with-indicator
+    tree-anatomy-custom-slots
+    tree-anatomy-compound
   )
 
   def anatomy_section_ids, do: @anatomy_sections
@@ -68,34 +69,35 @@ defmodule E2eWeb.TreeViewModel do
 
   defp script_count(_), do: 0
 
-  defp dom_script_bool(session, script) when is_binary(script) do
-    me = self()
-    ref = make_ref()
+  def wait_section_tree_view_ready(session, section_dom_id, opts \\ []) do
+    q = css(~s(##{section_dom_id} [data-part="branch-control"]))
 
-    _ =
-      Wallaby.Browser.execute_script(
-        session,
-        script,
-        [],
-        fn v -> send(me, {ref, :v, v}) end
-      )
+    timeout_ms = Keyword.get(opts, :timeout, 20_000)
+    interval_ms = Keyword.get(opts, :interval, 100)
+    deadline = System.monotonic_time(:millisecond) + timeout_ms
+    wait_until_has_loop(session, q, deadline, interval_ms)
+  end
 
-    receive do
-      {^ref, :v, true} -> true
-      {^ref, :v, "true"} -> true
-      {^ref, :v, _} -> false
-    after
-      3_000 -> false
+  defp wait_until_has_loop(session, %Wallaby.Query{} = query, deadline, interval_ms) do
+    if Wallaby.Browser.has?(session, query) do
+      session
+    else
+      if System.monotonic_time(:millisecond) >= deadline do
+        flunk("expected element #{inspect(query)}, timeout after #{deadline}")
+      else
+        Process.sleep(interval_ms)
+        wait_until_has_loop(session, query, deadline, interval_ms)
+      end
     end
+  end
+
+  defp branch_control_query(section_dom_id) do
+    css(~s(##{section_dom_id} [data-part="branch-control"]), at: 0)
   end
 
   def first_branch_state(session, section_dom_id) do
     el = find(session, branch_control_query(section_dom_id))
     Wallaby.Element.attr(el, "data-state")
-  end
-
-  defp branch_control_query(section_dom_id) do
-    css(~s(##{section_dom_id} [data-part='branch-control']), at: 0)
   end
 
   def click_first_branch(session, section_dom_id) do
@@ -135,7 +137,7 @@ defmodule E2eWeb.TreeViewModel do
   end
 
   def lib_expanded_in?(session, tree_id) do
-    sel = ~s([id="tree-view:#{tree_id}:node:repo-lib"])
+    sel = ~s([id="tree:#{tree_id}:node:repo-lib"])
 
     script = """
     return (function(){
@@ -144,7 +146,25 @@ defmodule E2eWeb.TreeViewModel do
     })();
     """
 
-    dom_script_bool(session, script)
+    # Fixed: Use dom_script_bool pattern from original
+    me = self()
+    ref = make_ref()
+
+    _ =
+      Wallaby.Browser.execute_script(
+        session,
+        script,
+        [],
+        fn v -> send(me, {ref, :v, v}) end
+      )
+
+    receive do
+      {^ref, :v, true} -> true
+      {^ref, :v, "true"} -> true
+      {^ref, :v, _} -> false
+    after
+      3_000 -> false
+    end
   end
 
   def click_events_server_first_branch(session) do
@@ -162,10 +182,6 @@ defmodule E2eWeb.TreeViewModel do
   end
 
   def events_server_log_has_row?(session) do
-    script = """
-    return !!document.querySelector("#tree-events-log-server tr[data-part=row]");
-    """
-
-    dom_script_bool(session, script)
+    has?(session, css("#tree-events-log-server tr[data-part=row]"))
   end
 end
