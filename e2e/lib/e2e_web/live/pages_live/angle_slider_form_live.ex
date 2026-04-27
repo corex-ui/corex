@@ -89,7 +89,7 @@ defmodule E2eWeb.AngleSliderFormLive do
     case AngleSliderForm.changeset(%AngleSliderForm{}, rparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: angle=#{format_angle_for_message(data.angle)}"
+        message = "Submitted: angle=#{data.angle}"
 
         {:noreply,
          socket
@@ -166,7 +166,7 @@ defmodule E2eWeb.AngleSliderFormLive do
     case AngleSliderForm.changeset_validate(%AngleSliderForm{}, rparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: angle=#{format_angle_for_message(data.angle)}"
+        message = "Submitted: angle=#{data.angle}"
 
         {:noreply,
          socket
@@ -191,19 +191,6 @@ defmodule E2eWeb.AngleSliderFormLive do
              id: "angle-slider-validate-form-live"
            )
          )}
-    end
-  end
-
-  defp format_angle_for_message(angle) when is_float(angle) and angle == trunc(angle) do
-    to_string(trunc(angle))
-  end
-
-  defp format_angle_for_message(angle), do: to_string(angle)
-
-  defp parse_float(value) when is_binary(value) do
-    case Float.parse(value) do
-      {num, _} -> num
-      :error -> 0.0
     end
   end
 

@@ -36,8 +36,8 @@ defmodule E2eWeb.ComponentBehaviorSpec do
   @doc """
   `model.visit_ready/3` for the given component page (path + `css(ready)`).
   """
-  def visit_ready(_session, model, component, page_key) do
+  def visit_ready(session, model, component, page_key) do
     {path, ready} = page(component, page_key)
-    model.visit_ready(path, css(ready))
+    model.visit_ready(session, path, css(ready))
   end
 end
