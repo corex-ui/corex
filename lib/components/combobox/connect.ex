@@ -149,7 +149,8 @@ defmodule Corex.Combobox.Connect do
       "data-invalid" => get_boolean(assigns.invalid),
       "aria-controls" => "combobox:#{assigns.id}:content",
       "placeholder" => assigns.placeholder,
-      "autoFocus" => get_boolean(assigns.auto_focus)
+      "autoFocus" => get_boolean(assigns.auto_focus),
+      "aria-expanded" => "false"
     }
   end
 
@@ -186,6 +187,7 @@ defmodule Corex.Combobox.Connect do
       "data-part" => "clear-trigger",
       "type" => "button",
       "dir" => Map.get(assigns, :dir, "ltr"),
+      "aria-label" => "Clear selection",
       "data-orientation" => Map.get(assigns, :orientation, "vertical"),
       "id" => "combobox:#{assigns.id}:clear-trigger",
       "data-disabled" => get_boolean(assigns.disabled),

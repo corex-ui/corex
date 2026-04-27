@@ -87,7 +87,7 @@ defmodule E2eWeb.NumberInputFormLive do
     case NumberInputForm.changeset(%NumberInputForm{}, rparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted: #{NumberInputForm.format_for_toast(data)}"
+        message = "Submitted: #{data.value}"
 
         {:noreply,
          socket
@@ -121,7 +121,7 @@ defmodule E2eWeb.NumberInputFormLive do
     case NumberInputForm.changeset_validate(%NumberInputForm{}, rparams) do
       %Ecto.Changeset{valid?: true} = changeset ->
         data = Ecto.Changeset.apply_changes(changeset)
-        message = "Submitted (strict): #{NumberInputForm.format_for_toast(data)}"
+        message = "Submitted (strict): #{data.value}"
 
         {:noreply,
          socket

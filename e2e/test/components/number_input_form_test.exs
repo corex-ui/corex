@@ -10,7 +10,7 @@ defmodule E2eWeb.NumberInputFormTest do
     |> NumberInput.wait(500)
     |> NumberInput.submit_form()
     |> NumberInput.wait(500)
-    |> NumberInput.see_flash("Submitted: value=")
+    |> NumberInput.see_flash("Submitted: value=1234")
   end
 
   feature "static form - fill value then submit includes value", %{session: session} do
@@ -21,7 +21,7 @@ defmodule E2eWeb.NumberInputFormTest do
     |> NumberInput.wait(200)
     |> NumberInput.submit_form()
     |> NumberInput.wait(500)
-    |> NumberInput.see_flash("value=42")
+    |> NumberInput.see_flash("42")
   end
 
   feature "static form - has no A11y violations", %{session: session} do
@@ -37,7 +37,7 @@ defmodule E2eWeb.NumberInputFormTest do
     |> NumberInput.wait(500)
     |> NumberInput.submit_form(:live)
     |> NumberInput.wait(2000)
-    |> NumberInput.see_flash("value=")
+    |> NumberInput.see_flash("Submitted: 1234")
   end
 
   feature "live form - fill value then submit shows submitted value", %{session: session} do
@@ -48,7 +48,7 @@ defmodule E2eWeb.NumberInputFormTest do
     |> NumberInput.wait(500)
     |> NumberInput.submit_form(:live)
     |> NumberInput.wait(2000)
-    |> NumberInput.see_flash("value=42", timeout: 12_000)
+    |> NumberInput.see_flash("42", timeout: 12_000)
   end
 
   feature "live form - has no A11y violations", %{session: session} do

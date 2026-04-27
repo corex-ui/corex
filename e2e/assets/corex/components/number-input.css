@@ -3,7 +3,7 @@
 @layer components {
   .number-input {
     width: 100%;
-    max-width: var(--container-7xs);
+    max-width: var(--container-6xs);
   }
 
   .number-input[data-loading] [data-scope="number-input"][data-part="root"] {

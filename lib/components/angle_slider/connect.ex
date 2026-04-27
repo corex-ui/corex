@@ -18,7 +18,6 @@ defmodule Corex.AngleSlider.Connect do
 
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
-  import Corex.Gettext, only: [gettext: 1]
 
   defp orientation(assigns), do: Map.get(assigns, :orientation, "horizontal")
 
@@ -163,8 +162,7 @@ defmodule Corex.AngleSlider.Connect do
       "style" => "rotate:var(--angle);",
       "data-disabled" => get_boolean(assigns.disabled),
       "data-invalid" => get_boolean(assigns.invalid),
-      "data-readonly" => get_boolean(assigns.read_only),
-      "aria-label" => gettext("Angle position")
+      "data-readonly" => get_boolean(assigns.read_only)
     }
   end
 
