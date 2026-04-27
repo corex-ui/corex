@@ -67,7 +67,7 @@ defmodule E2e.MixProject do
       {:gettext, "~> 1.0"},
       {:localize_web, "~> 0.5"},
       {:jason, "~> 1.2"},
-      {:color, "~> 0.11"},
+      {:color, "~> 0.11", only: :dev},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
       {:corex, path: "../../corex"},
