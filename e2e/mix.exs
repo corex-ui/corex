@@ -118,13 +118,7 @@ defmodule E2e.MixProject do
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.digest.clean": ["phx.digest.clean", "--no-compile"],
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
-      "assets.build": [
-        "compile",
-        "e2e.palette",
-        "designex corex",
-        "tailwind e2e --minify",
-        "esbuild e2e"
-      ],
+      "assets.build": assets_build(Mix.env()),
       "assets.deploy": [
         "compile",
         "designex corex",
@@ -133,6 +127,25 @@ defmodule E2e.MixProject do
         "phx.digest"
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
+    ]
+  end
+
+  defp assets_build(:test) do
+    [
+      "compile",
+      "designex corex",
+      "tailwind e2e --minify",
+      "esbuild e2e"
+    ]
+  end
+
+  defp assets_build(_) do
+    [
+      "compile",
+      "e2e.palette",
+      "designex corex",
+      "tailwind e2e --minify",
+      "esbuild e2e"
     ]
   end
 end
