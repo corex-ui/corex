@@ -251,12 +251,12 @@ defmodule Corex.Clipboard do
             class={@input_class}
             phx-mounted={Connect.ignore_input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
             {Connect.input(%Input{id: @id, dir: @dir, value: @value, orientation: @orientation})}
-            aria-label={@input_aria_label}
+            aria-label="Text to copy"
           />
           <button
             phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
             {Connect.trigger(%Trigger{id: @id, dir: @dir, orientation: @orientation})}
-            aria-label={@trigger_aria_label}
+            aria-label="Copy"
             class={@trigger_button_class}
           >
             <span

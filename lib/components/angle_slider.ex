@@ -368,7 +368,8 @@ defmodule Corex.AngleSlider do
           <div
             phx-mounted={Connect.ignore_thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
             {Connect.thumb(%Thumb{id: @id, dir: @dir, disabled: @disabled, read_only: @read_only, invalid: @invalid, orientation: @orientation})}
-          />
+            title="Thumb"
+            />
           <div
             :if={@marker_values != []}
             phx-mounted={Connect.ignore_marker_group(%MarkerGroup{id: @id, dir: @dir, orientation: @orientation})}

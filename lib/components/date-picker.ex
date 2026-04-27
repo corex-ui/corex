@@ -553,13 +553,13 @@ defmodule Corex.DatePicker do
       })}
     >
       <div phx-mounted={Connect.ignore_root(%Anatomy.Root{id: @id, dir: @dir})} {Connect.root(%Anatomy.Root{id: @id, dir: @dir})}>
-        <span
+        <label
           :if={@label != []}
           phx-mounted={Connect.ignore_label(%Anatomy.Label{id: @id, dir: @dir})}
           {Connect.label(%Anatomy.Label{id: @id, dir: @dir})}
         >
           {render_slot(@label)}
-        </span>
+        </label>
         <div phx-mounted={Connect.ignore_control(%Anatomy.Control{id: @id, dir: @dir})} {Connect.control(%Anatomy.Control{id: @id, dir: @dir})}>
           <input type="text" hidden id={"#{@id}-value"} name={@name} value={Phoenix.HTML.Form.normalize_value("date", @value)} aria-hidden="true" />
           <%= if @selection_mode == "range" do %>
