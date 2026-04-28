@@ -568,20 +568,22 @@ defmodule Corex.DatePicker do
               <input
                 phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
                 {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
-                aria-labelledby={if @label == [], do: @id <> "-range-start-label"}
+                aria-labelledby={@id <> "-range-start-label"}
+                aria-label={@input_aria_label || @translation.input}
               />
               <span class="date-picker__range-label" id={"#{@id}-range-end-label"}>{@range_end_label}</span>
               <input
                 phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
                 {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 1})}
                 aria-labelledby={@id <> "-range-end-label"}
+                aria-label={@input_aria_label || @translation.input}
               />
             </div>
           <% else %>
             <input
               phx-mounted={Connect.ignore_input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
               {Connect.input(%Anatomy.Input{id: @id, dir: @dir, index: 0})}
-              aria-label={if @label == [], do: @input_aria_label || @translation.input}
+              aria-label={@input_aria_label || @translation.input}
             />
           <% end %>
           <button

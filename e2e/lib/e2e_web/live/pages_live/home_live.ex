@@ -396,7 +396,10 @@ defmodule E2eWeb.HomeLive do
           </h2>
           <div class="home__cta-band__panel">
             <div class="home__cta-band__actions">
-              <.navigate to={~p"/accordion/anatomy"} class="home__cta-band__btn button button--brand rounded-full">
+              <.navigate
+                to={~p"/accordion/anatomy"}
+                class="home__cta-band__btn button button--brand rounded-full"
+              >
                 {gettext("Browse components")}
                 <.heroicon name="hero-arrow-right" class="icon" />
               </.navigate>

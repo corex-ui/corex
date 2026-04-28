@@ -73,8 +73,8 @@ defmodule Corex.New.FlagsIgniterArgvTest do
     refute "dev_corex" in argv
   end
 
-  test "Flags.igniter_install_opts defaults replace true" do
+  test "Flags.igniter_install_opts defaults replace false" do
     assert :replace in Keyword.keys(Flags.igniter_install_opts([]))
-    assert Keyword.get(Flags.igniter_install_opts([]), :replace) == true
+    assert Keyword.get(Flags.igniter_install_opts([]), :replace) == false
   end
 end

@@ -122,6 +122,15 @@ defmodule E2eWeb.AngleSliderModel do
   end
 
   def angle_events_server_dispatch(session) do
+    session =
+      wait_for_has(
+        session,
+        css(
+          "#events-angle-slider-on-value-change-server[phx-hook='AngleSlider']:not([data-loading])"
+        ),
+        timeout: 10_000
+      )
+
     execute_script(
       session,
       """

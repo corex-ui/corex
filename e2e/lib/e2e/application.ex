@@ -7,15 +7,6 @@ defmodule E2e.Application do
 
   @impl true
   def start(_type, _args) do
-    _ =
-      case :ets.whereis(:theme_generator_exports) do
-        :undefined ->
-          :ets.new(:theme_generator_exports, [:named_table, :public, :set])
-
-        _ ->
-          :ok
-      end
-
     :ok = Corex.MCP.Server.init_tools()
 
     children = [

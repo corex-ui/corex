@@ -2,14 +2,15 @@ defmodule E2eWeb.RadioGroupModel do
   use E2eWeb.Model, component: "radio-group"
 
   def click_item_in_section(session, section_dom_id, value) do
-    click(
-      session,
+    session
+    |> wait_for_has(css("##{section_dom_id} [phx-hook='RadioGroup']:not([data-loading])"),
+      timeout: 10_000
+    )
+    |> click(
       css(
         "##{section_dom_id} [data-scope='radio-group'][data-part='item'][data-value='#{value}']"
       )
     )
-
-    session
   end
 
   def radio_group_events_server_log_has_row?(session) do

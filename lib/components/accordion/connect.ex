@@ -58,11 +58,6 @@ defmodule Corex.Accordion.Connect do
     }
   end
 
-  @spec ignore_hook(String.t()) :: JS.t()
-  def ignore_hook(id) when is_binary(id) do
-    JS.ignore_attributes(["data-loading"], to: to_selector(id))
-  end
-
   def ignore_root(assigns) do
     JS.ignore_attributes(Root.ignored_attrs(), to: to_selector(root_id(assigns.id)))
   end

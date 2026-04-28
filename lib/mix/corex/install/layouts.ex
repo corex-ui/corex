@@ -27,6 +27,7 @@ defmodule Mix.Corex.Install.Layouts do
         content =
           transform_root_html(pre_html, web_mod, themes, opts, i18n?, first_theme)
           |> maybe_insert_theme_mode_bridge(themes, opts)
+          |> maybe_merge_design_body_class(opts)
 
         Rewrite.Source.update(source, :content, content)
       end
@@ -223,6 +224,48 @@ defmodule Mix.Corex.Install.Layouts do
     case Regex.run(~r/<html[^>]*>/u, content) do
       [tag] -> String.contains?(tag, "data-theme=")
       _ -> false
+    end
+  end
+
+  defp maybe_merge_design_body_class(content, opts) do
+    if Config.design_on?(opts) do
+      merge_body_typo_layout_class(content)
+    else
+      content
+    end
+  end
+
+  def merge_body_typo_layout_class(html) when is_binary(html) do
+    extra = "typo layout"
+
+    cond do
+      Regex.match?(~r/<body[^>]*\btypo\b[^>]*\blayout\b/u, html) ->
+        html
+
+      Regex.match?(~r/<body[^>]*class=\{/u, html) ->
+        html
+
+      Regex.match?(~r/<body\s*>/u, html) ->
+        Regex.replace(~r/<body\s*>/u, html, ~s(<body class="#{extra}">), global: false)
+
+      Regex.match?(~r/<body\s+class="/u, html) ->
+        Regex.replace(
+          ~r/(<body\s+class=")([^"]*)(")/u,
+          html,
+          fn _, a, classes, c ->
+            merged =
+              (classes <> " " <> extra)
+              |> String.split(~r/\s+/, trim: true)
+              |> Enum.uniq()
+              |> Enum.join(" ")
+
+            a <> merged <> c
+          end,
+          global: false
+        )
+
+      true ->
+        Regex.replace(~r/<body(\s[^>]*)>/u, html, "<body\\1 class=\"#{extra}\"", global: false)
     end
   end
 

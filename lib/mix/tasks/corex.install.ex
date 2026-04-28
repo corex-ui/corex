@@ -21,7 +21,7 @@ if Code.ensure_loaded?(Igniter) do
 
     * `--no-design` — skip running `mix corex.design` after install
     * `--designex` — pass `--designex` to `mix corex.design`
-    * **`--replace` / `--no-replace`** — control whether the stock home and app layout are switched to the Corex-oriented layout and toast pattern (`--replace` is the default for `mix corex.new`); with `--no-replace`, a separate `/home` demo route and `Layouts.corex` are added instead
+    * **`--replace` / `--no-replace`** — control whether the stock home and app layout are switched to the Corex-oriented layout and toast pattern (**default off** for `mix igniter.install corex`; **`mix corex.new` defaults `--replace` on**); without `--replace`, a separate `/home` demo route and `Layouts.corex` are added instead
     * **`--no-mcp`** — do not add the Corex MCP plug in `dev` on the web endpoint (default is to add it)
     * **`--refresh-templates`** — overwrite an existing generated Corex starter HEEx file if present (default: keep existing files)
 
@@ -37,10 +37,10 @@ if Code.ensure_loaded?(Igniter) do
     def info(_argv, _source) do
       %Igniter.Mix.Task.Info{
         group: :corex,
-        example: "mix igniter.install corex --yes --corex.replace --corex.mode",
+        example: "mix igniter.install corex --yes --corex.mode",
         composes: ["igniter.add_extension"],
         defaults: [
-          replace: true,
+          replace: false,
           mcp: true,
           design: true,
           designex: false,

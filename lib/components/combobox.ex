@@ -384,6 +384,17 @@ defmodule Corex.Combobox do
     doc: "The positioning of the combobox"
   )
 
+  attr(:trigger_aria_label, :string,
+    default: nil,
+    doc:
+      "Accessible name for the open/close trigger button. Defaults to gettext(\"Open options\")."
+  )
+
+  attr(:clear_trigger_aria_label, :string,
+    default: nil,
+    doc: "Accessible name for the clear trigger button. Defaults to gettext(\"Clear selection\")."
+  )
+
   attr(:rest, :global)
 
   slot :label, required: false, doc: "The label content" do
@@ -523,10 +534,10 @@ defmodule Corex.Combobox do
         </div>
         <div phx-mounted={Connect.ignore_control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})} {Connect.control(%Control{id: @id, invalid: @invalid, dir: @dir, disabled: @disabled, orientation: @orientation})}>
           <input phx-mounted={Connect.ignore_input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} {Connect.input(%Input{id: @id, value: @value, selected_label: @selected_label, form: nil, invalid: @invalid, dir: @dir, disabled: @disabled, required: @required, placeholder: @placeholder, name: nil, auto_focus: @auto_focus, orientation: @orientation})} />
-          <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})}>
+          <button :if={!Enum.empty?(@clear_trigger)} hidden={Enum.empty?(@value)} phx-mounted={Connect.ignore_clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.clear_trigger(%ClearTrigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@clear_trigger_aria_label || gettext("Clear selection")}>
             {render_slot(@clear_trigger)}
           </button>
-          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})}>
+          <button phx-mounted={Connect.ignore_trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} {Connect.trigger(%Trigger{id: @id, dir: @dir, disabled: @disabled, invalid: @invalid, orientation: @orientation})} aria-label={@trigger_aria_label || gettext("Open options")}>
             {render_slot(@trigger)}
           </button>
         </div>

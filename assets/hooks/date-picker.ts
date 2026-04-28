@@ -154,11 +154,6 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
 
-    const inputWrapper = el.querySelector<HTMLElement>(
-      '[data-scope="date-picker"][data-part="input-wrapper"]'
-    );
-    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
-
     this.handlers = [];
 
     this.handlers.push(
@@ -183,11 +178,6 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
 
   updated(this: object & HookInterface<HTMLElement> & DatePickerHookState) {
     const el = this.el;
-    const inputWrapper = el.querySelector<HTMLElement>(
-      '[data-scope="date-picker"][data-part="input-wrapper"]'
-    );
-    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
-
     const min = getString(el, "min");
     const max = getString(el, "max");
     const focusedStr = getString(el, "focusedValue");

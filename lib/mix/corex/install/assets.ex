@@ -16,9 +16,34 @@ defmodule Mix.Corex.Install.Assets do
   end
 
   def js_patch_opts do
-    case dev_corex_root() do
+    case corex_root_for_relative_import() do
       nil -> []
       abs -> [import_line: import_line_for_mjs(abs)]
+    end
+  end
+
+  defp corex_root_for_relative_import do
+    dev_corex_root() ||
+      if(path_dep_declared_in_workspace?(), do: deps_corex_root(), else: nil)
+  end
+
+  defp path_dep_declared_in_workspace? do
+    Enum.any?(mix_exs_files(File.cwd!()), fn mix_exs ->
+      path_dep_from_content(mix_exs) != nil
+    end)
+  end
+
+  defp deps_corex_root do
+    root = File.cwd!()
+    cand = Path.join([root, "deps", "corex"]) |> Path.expand()
+    mix = Path.join(cand, "mix.exs")
+
+    with true <- File.exists?(mix),
+         {:ok, body} <- File.read(mix),
+         true <- String.match?(body, ~r/\bapp:\s*:corex\b/) do
+      cand
+    else
+      _ -> nil
     end
   end
 
@@ -102,6 +127,8 @@ defmodule Mix.Corex.Install.Assets do
     case File.read(mix_exs) do
       {:ok, c} ->
         cond do
+          m = Regex.run(~r/:corex\s*,\s*\[\s*path:\s*"([^"]+)"/u, c) -> Enum.at(m, 1)
+          m = Regex.run(~r/:corex\s*,\s*\[\s*path:\s*'([^']+)'/u, c) -> Enum.at(m, 1)
           m = Regex.run(~r/:corex\s*,\s*path:\s*"((?:\.\.|\\.|\/|[^"\\])*)"/u, c) -> Enum.at(m, 1)
           m = Regex.run(~r/:corex\s*,\s*path:\s*'((?:\.\.|\\.|\/|[^'\\])*)'/u, c) -> Enum.at(m, 1)
           m = Regex.run(~r/:corex\s*,\s*path:\s*([^\s,}\]]+)/, c) -> Enum.at(m, 1)

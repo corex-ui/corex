@@ -60,7 +60,7 @@ defmodule Mix.Corex.Install.Pipeline do
   """
 
   @section_starter """
-  With `--replace` (default for `corex.new`): patch `Layouts.app`, wrap the stock `home.html.heex` in that layout, remove stock `flash_group` / `theme_toggle` helpers, and do not add `Layouts.corex` or `GET /home`. With `--no-replace`, add the demo `GET /home` route and `Layouts.corex` while leaving the default Phoenix home unchanged.
+  With `--replace`, patch `Layouts.app`, wrap the stock `home.html.heex` in that layout, remove stock `flash_group` / `theme_toggle` helpers, and do not add `Layouts.corex` or `GET /home`. Default is **on** for `mix corex.new`, **off** for `mix igniter.install corex`. With `--no-replace` (or defaults when install runs without `--replace`), add the demo `GET /home` route and `Layouts.corex` while leaving the default Phoenix home unchanged.
   """
 
   @section_design """
@@ -72,7 +72,7 @@ defmodule Mix.Corex.Install.Pipeline do
     Config.validate_opts!(opts)
 
     mcp? = Keyword.get(opts, :mcp, true)
-    replace? = Keyword.get(opts, :replace, true)
+    replace? = Keyword.get(opts, :replace, false)
 
     web_mod = ILPhoenix.web_module(igniter)
     app = ProjectApplication.app_name(igniter)

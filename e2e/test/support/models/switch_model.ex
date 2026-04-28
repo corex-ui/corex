@@ -8,8 +8,11 @@ defmodule E2eWeb.SwitchModel do
   def anatomy_section_ids, do: @anatomy_sections
 
   def click_control_in_section(session, section_dom_id) do
-    click(session, css("##{section_dom_id} [data-scope='switch'][data-part='control']"))
     session
+    |> wait_for_has(css("##{section_dom_id} [phx-hook='Switch']:not([data-loading])"),
+      timeout: 10_000
+    )
+    |> click(css("##{section_dom_id} [data-scope='switch'][data-part='control']"))
   end
 
   def click_api_off(session) do

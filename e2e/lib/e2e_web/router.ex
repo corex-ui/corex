@@ -198,11 +198,7 @@ defmodule E2eWeb.Router do
       live "/tooltip/patterns", TooltipPatternsLive
 
       live "/", HomeLive, :index
-
-      live "/theme-generator", ThemeGeneratorLive, :index
     end
-
-    get "/theme-generator/export", ThemeGeneratorController, :export
 
     get "/accordion/anatomy", PageController, :accordion_page
     get "/accordion/style", PageController, :accordion_styling_page

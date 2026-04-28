@@ -995,8 +995,8 @@ defmodule Corex.Accordion do
     <div
       id={@id}
       phx-hook="Accordion"
-      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       {Connect.props(%Props{
         id: @id,
         controlled: @controlled,

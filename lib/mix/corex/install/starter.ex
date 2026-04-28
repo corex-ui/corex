@@ -95,6 +95,200 @@ defmodule Mix.Corex.Install.Starter do
 
     igniter
     |> ProjectModule.find_and_update_module!(layouts_module, &layouts_zipper_for_corex(&1, ctx))
+    |> Igniter.include_existing_file(layouts_ex_path)
+    |> Igniter.update_file(layouts_ex_path, fn source ->
+      content = Rewrite.Source.get(source, :content)
+
+      next = merge_corex_layout_declarations(content, opts, themes, has_lang?)
+
+      %{source | content: next}
+    end)
+  end
+
+  def merge_corex_layout_declarations(content, opts, themes, has_lang?) do
+    zone = declaration_zone_before_corex(content)
+    chunks = corex_declaration_chunks(opts, themes, has_lang?)
+    missing = Enum.reject(chunks, fn chunk -> declaration_chunk_present?(zone, chunk) end)
+
+    case missing do
+      [] ->
+        content
+
+      _ ->
+        block =
+          missing |> Enum.map(&String.trim/1) |> Enum.reject(&(&1 == "")) |> Enum.join("\n\n")
+
+        insert_declarations_before_def_corex(content, block <> "\n")
+    end
+  end
+
+  defp declaration_chunk_present?(zone, chunk) do
+    markers = declaration_markers_for_chunk(chunk)
+    Enum.all?(markers, &marker_present_in_decl_zone?(zone, &1))
+  end
+
+  defp marker_present_in_decl_zone?(zone, marker) do
+    case marker do
+      "attr :conn" ->
+        Regex.match?(~r/\battr\s*\(?\s*:conn\b/m, zone)
+
+      "attr :path" ->
+        Regex.match?(~r/\battr\s*\(?\s*:path\b/m, zone)
+
+      "attr :mode" ->
+        Regex.match?(~r/\battr\s*\(?\s*:mode\b/m, zone)
+
+      "attr :theme" ->
+        Regex.match?(~r/\battr\s*\(?\s*:theme\b/m, zone)
+
+      "attr :flash" ->
+        Regex.match?(~r/\battr\s*\(?\s*:flash\b/m, zone)
+
+      "attr :current_scope" ->
+        Regex.match?(~r/\battr\s*\(?\s*:current_scope\b/m, zone)
+
+      "slot :inner_block" ->
+        Regex.match?(~r/\bslot\s*\(?\s*:inner_block\b/m, zone)
+
+      _ ->
+        String.contains?(zone, marker)
+    end
+  end
+
+  defp declaration_markers_for_chunk(chunk) do
+    cond do
+      String.contains?(chunk, "attr :conn") ->
+        ["attr :conn", "attr :path"]
+
+      String.contains?(chunk, "attr :mode") and String.contains?(chunk, "attr :theme") ->
+        ["attr :mode", "attr :theme"]
+
+      String.contains?(chunk, "attr :mode") ->
+        ["attr :mode"]
+
+      String.contains?(chunk, "attr :theme") ->
+        ["attr :theme"]
+
+      true ->
+        lines =
+          chunk
+          |> String.split("\n")
+          |> Enum.map(&String.trim/1)
+          |> Enum.reject(&(&1 == ""))
+
+        case lines do
+          [first | _] -> [first]
+          [] -> [""]
+        end
+    end
+  end
+
+  defp declaration_zone_before_corex(content) do
+    strict = ~r/\n\s*def\s+corex\s*\(\s*assigns\s*\)\s+do\b/m
+
+    start_pos =
+      case Regex.scan(strict, content, return: :index) do
+        [] ->
+          case Regex.run(~r/\n\s*def\s+corex\b/m, content, return: :index) do
+            [{pos, _}] -> pos
+            _ -> nil
+          end
+
+        matches ->
+          matches
+          |> Enum.map(fn [{pos, _} | _] -> pos end)
+          |> Enum.max()
+      end
+
+    case start_pos do
+      nil -> ""
+      pos -> binary_part(content, 0, pos)
+    end
+  end
+
+  defp insert_declarations_before_def_corex(content, block) do
+    block = String.trim_trailing(block)
+
+    fun = fn _, nl, ind, def_rest ->
+      nl <> indent_declaration_block_lines(block, ind) <> nl <> ind <> def_rest
+    end
+
+    strict = ~r/(\n)(\s*)(def\s+corex\s*\(\s*assigns\s*\)\s+do\b)/m
+    loose = ~r/(\n)(\s*)(def\s+corex\b)/m
+
+    replaced = Regex.replace(strict, content, fun, global: false)
+
+    if replaced != content do
+      replaced
+    else
+      Regex.replace(loose, content, fun, global: false)
+    end
+  end
+
+  defp indent_declaration_block_lines(block, ind) do
+    block
+    |> String.split("\n")
+    |> Enum.map(fn line ->
+      if String.trim(line) == "" do
+        nil
+      else
+        ind <> String.trim_leading(line)
+      end
+    end)
+    |> Enum.reject(&is_nil/1)
+    |> Enum.join("\n")
+  end
+
+  defp corex_declaration_chunks(opts, themes, has_lang?) do
+    has_mode? = opts[:mode] == true
+    has_theme? = themes != []
+    any_ui? = has_mode? or has_theme? or has_lang?
+
+    i18n_block =
+      if has_lang? do
+        i18n_attrs_only()
+      else
+        ""
+      end
+
+    extra =
+      extra_mode_theme_attrs(any_ui?, has_mode?, has_theme?, has_lang?)
+      |> String.trim()
+
+    []
+    |> then(fn acc -> if i18n_block != "", do: acc ++ [i18n_block], else: acc end)
+    |> then(fn acc -> if extra != "", do: acc ++ [extra], else: acc end)
+    |> then(fn acc ->
+      acc ++ [flash_attr_chunk(), scope_attr_chunk(), slot_inner_block_chunk()]
+    end)
+    |> Enum.reject(&(String.trim(&1) == ""))
+  end
+
+  defp flash_attr_chunk do
+    ~s(attr :flash, :map, required: true, doc: "the map of flash messages")
+  end
+
+  defp scope_attr_chunk do
+    """
+    attr :current_scope, :map,
+      default: nil,
+      doc: "the current [scope](https://hexdocs.pm/phoenix/scopes.html)"
+    """
+    |> String.trim()
+  end
+
+  defp slot_inner_block_chunk do
+    "slot :inner_block, required: true"
+  end
+
+  defp i18n_attrs_only do
+    """
+    attr :conn, Plug.Conn, default: nil, doc: "the current connection, for i18n links"
+    attr :path, :string,
+      default: nil,
+      doc: "the path after an optional /:locale prefix (from Plug.Conn or from assigns)"
+    """
+    |> String.trim()
   end
 
   defp layouts_zipper_for_corex(zipper, ctx) do
@@ -140,7 +334,9 @@ defmodule Mix.Corex.Install.Starter do
 
       true ->
         zipper
-        |> Common.replace_code(build_corex_body(ctx.themes, ctx.opts, ctx.has_lang?, ctx.web_mod))
+        |> Common.replace_code(
+          build_corex_def_only(ctx.themes, ctx.opts, ctx.has_lang?, ctx.web_mod)
+        )
         |> then(&Sourceror.Zipper.topmost/1)
         |> append_toggle_components_after_corex(ctx.parts)
     end
@@ -170,6 +366,30 @@ defmodule Mix.Corex.Install.Starter do
   end
 
   defp build_corex_body(themes, opts, has_lang?, web_mod) do
+    decls = build_corex_declarations_only(themes, opts, has_lang?)
+    def_only = build_corex_def_only(themes, opts, has_lang?, web_mod)
+    decls <> "\n\n" <> def_only
+  end
+
+  defp build_corex_declarations_only(themes, opts, has_lang?) do
+    has_mode? = opts[:mode] == true
+    has_theme? = themes != []
+    any_ui? = has_mode? or has_theme? or has_lang?
+
+    extra =
+      extra_mode_theme_attrs(any_ui?, has_mode?, has_theme?, has_lang?)
+      |> String.trim()
+
+    []
+    |> then(fn acc -> if has_lang?, do: acc ++ [i18n_attrs_only()], else: acc end)
+    |> then(fn acc -> if extra != "", do: acc ++ [extra], else: acc end)
+    |> then(fn acc ->
+      acc ++ [flash_attr_chunk(), scope_attr_chunk(), slot_inner_block_chunk()]
+    end)
+    |> Enum.join("\n\n")
+  end
+
+  defp build_corex_def_only(themes, opts, has_lang?, web_mod) do
     has_mode? = opts[:mode] == true
     has_theme? = themes != []
     any_ui? = has_mode? or has_theme? or has_lang?
@@ -178,21 +398,6 @@ defmodule Mix.Corex.Install.Starter do
 
     switcher_html =
       corex_header_switcher_markup(has_lang?, has_theme?, has_mode?, any_ui?)
-
-    i18n_attrs =
-      if has_lang? do
-        """
-        attr :conn, Plug.Conn, default: nil, doc: "the current connection, for i18n links"
-        attr :path, :string,
-          default: nil,
-          doc: "the path after an optional /:locale prefix (from Plug.Conn or from assigns)"
-
-        """
-      else
-        ""
-      end
-
-    extra_mode_theme = extra_mode_theme_attrs(any_ui?, has_mode?, has_theme?, has_lang?)
 
     path_prefix =
       if has_lang? do
@@ -212,14 +417,6 @@ defmodule Mix.Corex.Install.Starter do
       end
 
     """
-    #{i18n_attrs}#{extra_mode_theme}attr :flash, :map, required: true, doc: "the map of flash messages"
-
-    attr :current_scope, :map,
-      default: nil,
-      doc: "the current [scope](https://hexdocs.pm/phoenix/scopes.html)"
-
-    slot :inner_block, required: true
-
     def corex(assigns) do
       #{path_prefix}      ~H\"""
       <header class="navbar px-4 sm:px-6 lg:px-8">
@@ -280,7 +477,12 @@ defmodule Mix.Corex.Install.Starter do
   defp append_toggle_components_after_corex(z, parts) do
     case Function.move_to_def(z, :corex, 1, target: :at) do
       {:ok, z2} ->
-        t = toggle_components_string(parts)
+        top = Sourceror.Zipper.topmost(z2)
+
+        has_tt? = match?({:ok, _}, Function.move_to_def(top, :theme_toggle, 1))
+        has_mt? = match?({:ok, _}, Function.move_to_def(top, :mode_toggle, 1))
+
+        t = toggle_components_string_filtered(parts, has_tt?, has_mt?)
 
         if t == "",
           do: z2,
@@ -326,10 +528,14 @@ defmodule Mix.Corex.Install.Starter do
     end
   end
 
-  defp toggle_components_string({has_theme?, has_mode?}) do
+  defp toggle_components_string_filtered(
+         {has_theme?, has_mode?},
+         has_theme_toggle?,
+         has_mode_toggle?
+       ) do
     [
-      if(has_theme?, do: theme_toggle_source(), else: nil),
-      if(has_mode?, do: mode_toggle_source(), else: nil)
+      if(has_theme? && !has_theme_toggle?, do: theme_toggle_source(), else: nil),
+      if(has_mode? && !has_mode_toggle?, do: mode_toggle_source(), else: nil)
     ]
     |> Enum.reject(&is_nil/1)
     |> Enum.join("\n\n")

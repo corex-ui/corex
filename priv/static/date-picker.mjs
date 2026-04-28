@@ -4485,10 +4485,6 @@ var DatePickerHook = {
     });
     datePickerInstance.init();
     this.datePicker = datePickerInstance;
-    const inputWrapper = el.querySelector(
-      '[data-scope="date-picker"][data-part="input-wrapper"]'
-    );
-    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
     this.handlers = [];
     this.handlers.push(
       this.handleEvent(
@@ -4510,10 +4506,6 @@ var DatePickerHook = {
   },
   updated() {
     const el = this.el;
-    const inputWrapper = el.querySelector(
-      '[data-scope="date-picker"][data-part="input-wrapper"]'
-    );
-    if (inputWrapper) inputWrapper.removeAttribute("data-loading");
     const min = getString(el, "min");
     const max = getString(el, "max");
     const focusedStr = getString(el, "focusedValue");

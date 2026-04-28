@@ -62,16 +62,28 @@ defmodule E2eWeb.SelectModel do
   end
 
   def click_select_trigger(session) do
-    click(session, css("[data-scope='select'][data-part='trigger']"))
+    session
+    |> wait_for_has(css("[phx-hook='Select']:not([data-loading])"), timeout: 10_000)
+    |> click(css("[data-scope='select'][data-part='trigger']"))
   end
 
   def click_form_select_trigger(session, mode \\ :static) do
     form_id = if mode == :live, do: "select-form", else: "select-changeset-form"
-    click(session, css("##{form_id} [data-scope='select'][data-part='trigger']"))
+
+    session
+    |> wait_for_has(css("##{form_id} [phx-hook='Select']:not([data-loading])"),
+      timeout: 10_000
+    )
+    |> click(css("##{form_id} [data-scope='select'][data-part='trigger']"))
   end
 
   def select_item(session, value) when is_binary(value) do
-    click(session, css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
+    session
+    |> wait_for_has(
+      css(~s([data-scope='select'][data-part='content'][data-state='open'])),
+      timeout: 10_000
+    )
+    |> click(css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
   end
 
   def set_select_value(session, id, value) do

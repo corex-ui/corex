@@ -116,7 +116,9 @@ defmodule E2eWeb.Model do
       end
 
       def prepare_live_form_for_push_toast(session) do
-        session
+        wait_for_has(session, css(~s(#layout-toast[data-toast-group="true"]), visible: :any),
+          timeout: 10_000
+        )
       end
 
       def wait_for_has(session, %Wallaby.Query{} = query, opts \\ []) do
