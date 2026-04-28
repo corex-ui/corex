@@ -38858,32 +38858,33 @@ var Corex = (() => {
   function createLazyHook(importFn, exportName) {
     return {
       mounted() {
-        return __async(this, null, function* () {
-          const mod2 = yield importFn();
+        this.el.removeAttribute("data-loading");
+        return importFn().then((mod2) => {
           const real = mod2[exportName];
           this._realHook = real;
           if (real == null ? void 0 : real.mounted) return real.mounted.call(this);
         });
       },
       updated() {
-        var _a2, _b;
-        (_b = (_a2 = this._realHook) == null ? void 0 : _a2.updated) == null ? void 0 : _b.call(this);
+        var _a, _b;
+        this.el.removeAttribute("data-loading");
+        (_b = (_a = this._realHook) == null ? void 0 : _a.updated) == null ? void 0 : _b.call(this);
       },
       destroyed() {
-        var _a2, _b;
-        (_b = (_a2 = this._realHook) == null ? void 0 : _a2.destroyed) == null ? void 0 : _b.call(this);
+        var _a, _b;
+        (_b = (_a = this._realHook) == null ? void 0 : _a.destroyed) == null ? void 0 : _b.call(this);
       },
       disconnected() {
-        var _a2, _b;
-        (_b = (_a2 = this._realHook) == null ? void 0 : _a2.disconnected) == null ? void 0 : _b.call(this);
+        var _a, _b;
+        (_b = (_a = this._realHook) == null ? void 0 : _a.disconnected) == null ? void 0 : _b.call(this);
       },
       reconnected() {
-        var _a2, _b;
-        (_b = (_a2 = this._realHook) == null ? void 0 : _a2.reconnected) == null ? void 0 : _b.call(this);
+        var _a, _b;
+        (_b = (_a = this._realHook) == null ? void 0 : _a.reconnected) == null ? void 0 : _b.call(this);
       },
       beforeUpdate() {
-        var _a2, _b;
-        (_b = (_a2 = this._realHook) == null ? void 0 : _a2.beforeUpdate) == null ? void 0 : _b.call(this);
+        var _a, _b;
+        (_b = (_a = this._realHook) == null ? void 0 : _a.beforeUpdate) == null ? void 0 : _b.call(this);
       }
     };
   }

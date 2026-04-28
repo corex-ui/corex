@@ -4,13 +4,16 @@ type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
 
 function createLazyHook(importFn: () => Promise<HookModule>, exportName: string): Hook {
   return {
-    async mounted() {
-      const mod = await importFn();
-      const real = mod[exportName];
-      (this as { _realHook?: Hook<object, HTMLElement> })._realHook = real;
-      if (real?.mounted) return real.mounted.call(this);
+    mounted() {
+      this.el.removeAttribute("data-loading");
+      return importFn().then((mod) => {
+        const real = mod[exportName];
+        (this as { _realHook?: Hook<object, HTMLElement> })._realHook = real;
+        if (real?.mounted) return real.mounted.call(this);
+      });
     },
     updated() {
+      this.el.removeAttribute("data-loading");
       (this as { _realHook?: Hook })._realHook?.updated?.call(this);
     },
     destroyed() {
