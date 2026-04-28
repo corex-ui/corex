@@ -349,50 +349,40 @@ defmodule E2eWeb.Demos.DialogDemo do
 
   def animation_custom_js do
     ~S"""
-    document.addEventListener("my-dialog-open-changed", (e) => {
-    const { id, open } = e.detail;
-    const root = document.getElementById(id);
-    if (!root) return;
-    const backdrop = root.querySelector('[data-scope="dialog"][data-part="backdrop"]');
-    const content = root.querySelector('[data-scope="dialog"][data-part="content"]');
-    if (!backdrop || !content) return;
+    import { animate } from "motion"
 
-    if (open) {
-    animate(backdrop, 
-      { opacity: [0, 1] }, 
-      { duration: 0.5, easing: "ease-out" }
-    );
-    animate(content,
-      { 
-        opacity: [0, 1], 
-        scale: [0.7, 1],
-        y: [60, 0],
-        filter: ["blur(12px)", "blur(0px)"]
-      },
-      { 
-        duration: 0.7, 
-        easing: [0.16, 1, 0.3, 1]
+    const reducedMotion = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    document.addEventListener("my-dialog-open-changed", (e) => {
+      const { id, open } = e.detail
+      const root = document.getElementById(id)
+      if (!root) return
+      const backdrop = root.querySelector('[data-scope="dialog"][data-part="backdrop"]')
+      const content = root.querySelector('[data-scope="dialog"][data-part="content"]')
+      if (reducedMotion()) {
+        if (backdrop) backdrop.style.opacity = open ? "" : "0"
+        if (content) content.style.opacity = open ? "" : "0"
+        return
       }
-    );
-    } else {
-    animate(backdrop, 
-      { opacity: [1, 0] }, 
-      { duration: 0.4, easing: "ease-in" }
-    );
-    animate(content,
-      { 
-        opacity: [1, 0], 
-        scale: [1, 0.8],
-        y: [0, 40],
-        filter: ["blur(0px)", "blur(12px)"]
-      },
-      { 
-        duration: 0.35, 
-        easing: "ease-in" 
+      if (open) {
+        if (backdrop) animate(backdrop, { opacity: [0, 1] }, { duration: 0.5, easing: "ease-out" })
+        if (content)
+          animate(
+            content,
+            { opacity: [0, 1], scale: [0.7, 1], y: [60, 0], filter: ["blur(12px)", "blur(0px)"] },
+            { duration: 0.7, easing: [0.16, 1, 0.3, 1] },
+          )
+      } else {
+        if (backdrop) animate(backdrop, { opacity: [1, 0] }, { duration: 0.4, easing: "ease-in" })
+        if (content)
+          animate(
+            content,
+            { opacity: [1, 0], scale: [1, 0.8], y: [0, 40], filter: ["blur(0px)", "blur(12px)"] },
+            { duration: 0.35, easing: "ease-in" },
+          )
       }
-    );
-    }
-    });
+    })
     """
   end
 end

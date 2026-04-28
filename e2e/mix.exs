@@ -113,16 +113,28 @@ defmodule E2e.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
+        "localize.download_locales",
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate",
         "run priv/repo/seeds/user_admin_seed.exs",
+        "tailwind e2e --minify",
+        "esbuild e2e  --minify",
         "test"
       ],
-      "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
+      "assets.setup": [
+        "localize.download_locales",
+        "tailwind.install --if-missing",
+        "esbuild.install --if-missing"
+      ],
       "assets.digest.clean": ["phx.digest.clean", "--no-compile"],
       "assets.digest.clean.all": ["phx.digest.clean", "--all", "--no-compile"],
-      "assets.build": assets_build(Mix.env()),
+      "assets.build": [
+        "e2e.palette",
+        "designex corex",
+        "tailwind e2e",
+        "esbuild e2e"
+      ],
       "assets.deploy": [
         "compile",
         "designex corex",
@@ -131,25 +143,6 @@ defmodule E2e.MixProject do
         "phx.digest"
       ],
       precommit: ["compile --warnings-as-errors", "deps.unlock --unused", "format", "test"]
-    ]
-  end
-
-  defp assets_build(:test) do
-    [
-      "compile",
-      "designex corex",
-      "tailwind e2e --minify",
-      "esbuild e2e"
-    ]
-  end
-
-  defp assets_build(_) do
-    [
-      "compile",
-      "e2e.palette",
-      "designex corex",
-      "tailwind e2e --minify",
-      "esbuild e2e"
     ]
   end
 end

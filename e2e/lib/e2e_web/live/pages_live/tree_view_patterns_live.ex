@@ -79,13 +79,11 @@ defmodule E2eWeb.TreeViewPatternsLive do
     {:ok, socket}
   end
 
-  def handle_event("patterns_tree_expanded_changed", %{"value" => v}, socket) do
-    expanded = Map.get(v, "expandedValue") || Map.get(v, :expandedValue) || []
+  def handle_event("patterns_tree_expanded_changed", %{"expandedValue" => expanded}, socket) do
     {:noreply, assign(socket, :expanded_value, expanded)}
   end
 
-  def handle_event("patterns_tree_selection_changed", %{"value" => v}, socket) do
-    sel = Map.get(v, "selectedValue") || Map.get(v, :selectedValue) || []
+  def handle_event("patterns_tree_selection_changed", %{"selectedValue" => sel}, socket) do
     {:noreply, assign(socket, :value, sel)}
   end
   """
@@ -125,19 +123,19 @@ defmodule E2eWeb.TreeViewPatternsLive do
     {:ok, socket}
   end
 
-  def handle_event("patterns_tree_expanded_changed", %{"value" => v}, socket) do
-    expanded = Map.get(v, "expandedValue") || Map.get(v, :expandedValue) || []
+  def handle_event("patterns_tree_expanded_changed", %{"expandedValue" => expanded}, socket) do
     {:noreply, assign(socket, :expanded_value, expanded)}
   end
 
-  def handle_event("patterns_tree_selection_changed", %{"value" => v}, socket) do
-    sel = Map.get(v, "selectedValue") || Map.get(v, :selectedValue) || []
+  def handle_event("patterns_tree_selection_changed", %{"selectedValue" => sel}, socket) do
     {:noreply, assign(socket, :value, sel)}
   end
 
-  def handle_event("patterns_tree_redirect_nav", %{"value" => v}, socket) do
-    is_item = Map.get(v, "isItem")
-    paths = Map.get(v, "selectedValue") || []
+  def handle_event(
+        "patterns_tree_redirect_nav",
+        %{"selectedValue" => paths, "isItem" => is_item},
+        socket
+      ) do
     path = List.first(paths || [])
 
     if is_item == true and is_binary(path) and path != "" do

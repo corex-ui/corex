@@ -2,8 +2,15 @@ import {
   trackInteractOutside
 } from "./chunk-TJXFG272.mjs";
 import {
-  notifyChange
-} from "./chunk-GGOQNLHD.mjs";
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunk-WHNMJXTN.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId,
+  readPayloadValue
+} from "./chunk-U6DIKNUJ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -597,6 +604,18 @@ var EditableHook = {
     });
     zag.init();
     this.editable = zag;
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:editable:set-value", (event) => {
+      const raw = event.detail?.value;
+      zag.api.setValue(raw === void 0 || raw === null ? "" : String(raw));
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("editable_set_value", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(readPayloadValue(payload));
+    });
   },
   updated() {
     const el = this.el;
@@ -617,6 +636,8 @@ var EditableHook = {
     });
   },
   destroyed() {
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.editable?.destroy();
   }
 };

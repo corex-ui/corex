@@ -1,7 +1,7 @@
 defmodule E2eWeb.DialogAnimationLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, demo_section: 1]
 
   @easing_items [
     %{label: "ease", id: "ease"},
@@ -86,145 +86,141 @@ defmodule E2eWeb.DialogAnimationLive do
         title="Dialog · Animation"
         subtitle="Built-in JS animation, instant mode, and custom Motion-driven transitions."
       >
-        <section id="dialog-animation-playground-section" class="flex flex-col gap-4 items-start">
-          <h3>Playground</h3>
-          <div class="preview w-full">
-            <div class="preview__frame">
-              <div class="preview__sidebar">
-                <.select
-                  id="dialog-animation-easing"
-                  class="select select--sm select--mini-sm lg:w-full"
-                  value={@easing}
-                  items={@easing_items}
-                  on_value_change="easing_changed"
-                  translation={%Corex.Select.Translation{placeholder: "Easing"}}
-                >
-                  <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-                  <:label>Easing</:label>
-                </.select>
+        <.demo_playground
+          id="dialog-animation-playground-section"
+          title="Playground"
+          heading_class="layout-heading"
+        >
+          <:controls>
+            <.select
+              id="dialog-animation-easing"
+              class="select select--sm select--mini-sm lg:w-full"
+              value={@easing}
+              items={@easing_items}
+              on_value_change="easing_changed"
+              translation={%Corex.Select.Translation{placeholder: "Easing"}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Easing</:label>
+            </.select>
 
-                <.number_input
-                  id="dialog-animation-duration"
-                  class="number-input number-input--sm lg:w-full"
-                  value={@duration}
-                  step={0.1}
-                  min={0.0}
-                  on_value_change="duration_changed"
-                >
-                  <:label>Duration</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="dialog-animation-duration"
+              class="number-input number-input--sm lg:w-full"
+              value={@duration}
+              step={0.1}
+              min={0.0}
+              on_value_change="duration_changed"
+            >
+              <:label>Duration</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="dialog-animation-opacity-start"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.1}
-                  min={0.0}
-                  max={1.0}
-                  value={@opacity_start}
-                  on_value_change="opacity_start_changed"
-                >
-                  <:label>Opacity start</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="dialog-animation-opacity-start"
+              class="number-input number-input--sm lg:w-full"
+              step={0.1}
+              min={0.0}
+              max={1.0}
+              value={@opacity_start}
+              on_value_change="opacity_start_changed"
+            >
+              <:label>Opacity start</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="dialog-animation-opacity-end"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.1}
-                  min={0.0}
-                  max={1.0}
-                  value={@opacity_end}
-                  on_value_change="opacity_end_changed"
-                >
-                  <:label>Opacity end</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="dialog-animation-opacity-end"
+              class="number-input number-input--sm lg:w-full"
+              step={0.1}
+              min={0.0}
+              max={1.0}
+              value={@opacity_end}
+              on_value_change="opacity_end_changed"
+            >
+              <:label>Opacity end</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="dialog-animation-scale-start"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.01}
-                  min={0.0}
-                  max={1.5}
-                  value={@scale_start}
-                  on_value_change="scale_start_changed"
-                >
-                  <:label>Scale (closed)</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="dialog-animation-scale-start"
+              class="number-input number-input--sm lg:w-full"
+              step={0.01}
+              min={0.0}
+              max={1.5}
+              value={@scale_start}
+              on_value_change="scale_start_changed"
+            >
+              <:label>Scale (closed)</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="dialog-animation-scale-end"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.01}
-                  min={0.0}
-                  max={1.5}
-                  value={@scale_end}
-                  on_value_change="scale_end_changed"
-                >
-                  <:label>Scale (open)</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="dialog-animation-scale-end"
+              class="number-input number-input--sm lg:w-full"
+              step={0.01}
+              min={0.0}
+              max={1.5}
+              value={@scale_end}
+              on_value_change="scale_end_changed"
+            >
+              <:label>Scale (open)</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.switch
-                  id="dialog-animation-block-interaction"
-                  class="switch switch--sm w-full"
-                  checked={@animation_options.block_interaction}
-                  on_checked_change="block_interaction_changed"
-                >
-                  <:label>Block Interaction</:label>
-                </.switch>
-              </div>
-
-              <section class="preview__main">
-                <div class="preview__canvas">
-                  <.dialog
-                    id="dialog-animation-playground"
-                    class="dialog"
-                    modal
-                    animation="js"
-                    animation_options={@animation_options}
-                  >
-                    <:trigger>Open</:trigger>
-                    <:title>Playground</:title>
-                    <:content>
-                      <p>Dialog JS animation uses only opacity and scale on the content.</p>
-                    </:content>
-                    <:close_trigger>
-                      <.heroicon name="hero-x-mark" class="icon" />
-                    </:close_trigger>
-                  </.dialog>
-                </div>
-              </section>
-            </div>
-          </div>
-        </section>
+            <.switch
+              id="dialog-animation-block-interaction"
+              class="switch switch--sm w-full"
+              checked={@animation_options.block_interaction}
+              on_checked_change="block_interaction_changed"
+            >
+              <:label>Block Interaction</:label>
+            </.switch>
+          </:controls>
+          <:canvas>
+            <.dialog
+              id="dialog-animation-playground"
+              class="dialog"
+              modal
+              animation="js"
+              animation_options={@animation_options}
+            >
+              <:trigger>Open</:trigger>
+              <:title>Playground</:title>
+              <:content>
+                <p>Dialog JS animation uses only opacity and scale on the content.</p>
+              </:content>
+              <:close_trigger>
+                <.heroicon name="hero-x-mark" class="icon" />
+              </:close_trigger>
+            </.dialog>
+          </:canvas>
+        </.demo_playground>
 
         <.demo_section
           id="dialog-animation-instant"

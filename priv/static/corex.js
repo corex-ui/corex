@@ -108,6 +108,18 @@ var Corex = (() => {
     }, "return" in obj && method("return"), it;
   };
 
+  // ../priv/static/chunk-ZIE4GI65.mjs
+  function diffStringValues(next2, previous) {
+    const added = next2.filter((v2) => !previous.includes(v2));
+    const removed = previous.filter((v2) => !next2.includes(v2));
+    return { added, removed };
+  }
+  var init_chunk_ZIE4GI65 = __esm({
+    "../priv/static/chunk-ZIE4GI65.mjs"() {
+      "use strict";
+    }
+  });
+
   // ../priv/static/chunk-ZCRB45IP.mjs
   function getDir(element) {
     const fromEl = element.dataset.dir;
@@ -2961,7 +2973,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunk-GGOQNLHD.mjs
+  // ../priv/static/chunk-U6DIKNUJ.mjs
   function parseRespondTo(source) {
     var _a4, _b, _c;
     if (source && typeof source === "object") {
@@ -2998,6 +3010,14 @@ var Corex = (() => {
       }
     }
     return generic;
+  }
+  function readPayloadValue(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return "";
+    const o2 = payload;
+    const v2 = (_a4 = o2.value) != null ? _a4 : o2["value"];
+    if (v2 === void 0 || v2 === null) return "";
+    return String(v2);
   }
   function notifyChange(args) {
     const { el, canPushServer, pushEvent, payload, serverEventName, clientEventName } = args;
@@ -3036,8 +3056,8 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_GGOQNLHD = __esm({
-    "../priv/static/chunk-GGOQNLHD.mjs"() {
+  var init_chunk_U6DIKNUJ = __esm({
+    "../priv/static/chunk-U6DIKNUJ.mjs"() {
       "use strict";
     }
   });
@@ -3191,9 +3211,10 @@ var Corex = (() => {
   var init_accordion = __esm({
     "../priv/static/accordion.mjs"() {
       "use strict";
+      init_chunk_ZIE4GI65();
       init_chunk_TYROJSCS();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
@@ -3413,9 +3434,12 @@ var Corex = (() => {
       };
       AccordionHook = {
         mounted() {
+          var _a4, _b;
           const el = this.el;
+          const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          self2.lastValue = getBoolean(el, "controlled") ? (_a4 = getStringList(el, "value")) != null ? _a4 : [] : (_b = getStringList(el, "defaultValue")) != null ? _b : [];
           const accordion = new Accordion(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") }), {
@@ -3424,12 +3448,23 @@ var Corex = (() => {
             orientation: getString(el, "orientation"),
             dir: getDir(el),
             onValueChange: (details) => {
-              var _a4;
+              var _a5, _b2;
+              const next2 = (_a5 = details.value) != null ? _a5 : [];
+              const previousValue = (_b2 = self2.lastValue) != null ? _b2 : [];
+              const { added, removed } = diffStringValues(next2, previousValue);
+              self2.lastValue = next2;
+              const payload = {
+                id: el.id,
+                value: next2,
+                previousValue,
+                added,
+                removed
+              };
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a4 = details.value) != null ? _a4 : null },
+                payload,
                 serverEventName: getString(el, "onValueChange"),
                 clientEventName: getString(el, "onValueChangeClient")
               });
@@ -3439,23 +3474,22 @@ var Corex = (() => {
                   selector: '[data-scope="accordion"][data-part="item-content"]',
                   opts: readHeightAnimationOptions(el),
                   isOpen: (contentEl) => {
-                    var _a5;
                     const itemEl = contentEl.closest(
                       '[data-scope="accordion"][data-part="item"]'
                     );
                     const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                    return !!value && ((_a5 = details.value) != null ? _a5 : []).includes(value);
+                    return !!value && next2.includes(value);
                   }
                 });
               }
             },
             onFocusChange: (details) => {
-              var _a4;
+              var _a5;
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: { id: el.id, value: (_a4 = details.value) != null ? _a4 : null },
+                payload: { id: el.id, value: (_a5 = details.value) != null ? _a5 : null },
                 serverEventName: getString(el, "onFocusChange"),
                 clientEventName: getString(el, "onFocusChangeClient")
               });
@@ -3560,38 +3594,41 @@ var Corex = (() => {
         },
         beforeUpdate() {
           var _a4;
-          if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+          if (getBoolean(this.el, "controlled")) {
             this.previousValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
           }
         },
         updated() {
-          var _a4, _b, _c;
+          var _a4, _b, _c, _d;
           const controlled = getBoolean(this.el, "controlled");
-          if (controlled && this.el.dataset.animation === "js") {
-            const prevValue = (_a4 = this.previousValue) != null ? _a4 : [];
-            const nextValue = (_b = getStringList(this.el, "value")) != null ? _b : [];
+          if (controlled) {
+            const nextValue = (_a4 = getStringList(this.el, "value")) != null ? _a4 : [];
+            const prevValue = (_c = (_b = this.previousValue) != null ? _b : this.lastValue) != null ? _c : [];
             this.previousValue = void 0;
-            runOpenStateTransitionsHeight({
-              rootEl: this.el,
-              selector: '[data-scope="accordion"][data-part="item-content"]',
-              opts: readHeightAnimationOptions(this.el),
-              wasOpen: (contentEl) => {
-                const itemEl = contentEl.closest(
-                  '[data-scope="accordion"][data-part="item"]'
-                );
-                const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                return !!value && prevValue.includes(value);
-              },
-              isOpen: (contentEl) => {
-                const itemEl = contentEl.closest(
-                  '[data-scope="accordion"][data-part="item"]'
-                );
-                const value = itemEl == null ? void 0 : itemEl.dataset.value;
-                return !!value && nextValue.includes(value);
-              }
-            });
+            this.lastValue = nextValue;
+            if (this.el.dataset.animation === "js") {
+              runOpenStateTransitionsHeight({
+                rootEl: this.el,
+                selector: '[data-scope="accordion"][data-part="item-content"]',
+                opts: readHeightAnimationOptions(this.el),
+                wasOpen: (contentEl) => {
+                  const itemEl = contentEl.closest(
+                    '[data-scope="accordion"][data-part="item"]'
+                  );
+                  const value = itemEl == null ? void 0 : itemEl.dataset.value;
+                  return !!value && prevValue.includes(value);
+                },
+                isOpen: (contentEl) => {
+                  const itemEl = contentEl.closest(
+                    '[data-scope="accordion"][data-part="item"]'
+                  );
+                  const value = itemEl == null ? void 0 : itemEl.dataset.value;
+                  return !!value && nextValue.includes(value);
+                }
+              });
+            }
           }
-          (_c = this.accordion) == null ? void 0 : _c.updateProps(__spreadProps(__spreadValues({
+          (_d = this.accordion) == null ? void 0 : _d.updateProps(__spreadProps(__spreadValues({
             id: this.el.id
           }, controlled ? { value: getStringList(this.el, "value") } : { defaultValue: getStringList(this.el, "defaultValue") }), {
             collapsible: getBoolean(this.el, "collapsible"),
@@ -4015,7 +4052,7 @@ var Corex = (() => {
       init_chunk_IY22ITUY();
       init_chunk_A7BIKXCQ();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
@@ -4433,7 +4470,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
@@ -5101,7 +5138,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_A7BIKXCQ();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
@@ -6148,7 +6185,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_M7GO4YJR();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
@@ -6645,7 +6682,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_HII6GO6Y();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
@@ -7007,7 +7044,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_A7BIKXCQ();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
@@ -12095,7 +12132,7 @@ var Corex = (() => {
       init_chunk_6XKINCJF();
       init_chunk_M7GO4YJR();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
@@ -14254,7 +14291,7 @@ var Corex = (() => {
       init_chunk_CJQJFW2J();
       init_chunk_TJXFG272();
       init_chunk_A7BIKXCQ();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy9 = createAnatomy("color-picker", [
         "root",
@@ -18190,7 +18227,7 @@ var Corex = (() => {
       init_chunk_CJQJFW2J();
       init_chunk_TJXFG272();
       init_chunk_A7BIKXCQ();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
@@ -20637,12 +20674,6 @@ var Corex = (() => {
       body.removeAttribute(LOCK_CLASSNAME);
     };
   }
-  function openChangePayload2(el, details) {
-    return {
-      id: el.id,
-      open: details.open
-    };
-  }
   function getDialogUpdatePropsFromEl(el) {
     const softLock = el.dataset.animInteractionLocked === "true";
     return __spreadProps(__spreadValues({
@@ -20664,7 +20695,7 @@ var Corex = (() => {
       init_chunk_TJXFG272();
       init_chunk_TYROJSCS();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
@@ -21669,7 +21700,7 @@ var Corex = (() => {
               this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
               if (open) {
                 backdropEl.removeAttribute("hidden");
-              } else if (!rootEl.dataset.exitAnim) {
+              } else if (rootEl.dataset.exitAnim !== "running") {
                 backdropEl.setAttribute("hidden", "");
               }
             }
@@ -21689,7 +21720,7 @@ var Corex = (() => {
               this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
               if (open) {
                 contentEl.removeAttribute("hidden");
-              } else if (!rootEl.dataset.exitAnim) {
+              } else if (rootEl.dataset.exitAnim !== "running") {
                 contentEl.setAttribute("hidden", "");
               }
             }
@@ -21731,10 +21762,12 @@ var Corex = (() => {
       };
       DialogHook = {
         mounted() {
+          var _a4, _b;
           const el = this.el;
           const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
+          self2.lastOpen = getBoolean(el, "controlled") ? (_a4 = getBoolean(el, "open")) != null ? _a4 : false : (_b = getBoolean(el, "defaultOpen")) != null ? _b : false;
           const dialog = new Dialog(el, __spreadProps(__spreadValues({
             id: el.id
           }, getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") }), {
@@ -21745,6 +21778,7 @@ var Corex = (() => {
             restoreFocus: getBoolean(el, "restoreFocus"),
             dir: getDir(el),
             onOpenChange: (details) => {
+              var _a5;
               if (!details.open && (el.dataset.animation === "js" || el.dataset.animation === "custom")) {
                 if (self2.closePointerT !== void 0) clearTimeout(self2.closePointerT);
                 el.setAttribute("data-exit-anim", "running");
@@ -21762,6 +21796,7 @@ var Corex = (() => {
                       if (backdrop) backdrop.style.pointerEvents = "none";
                       if (positioner) positioner.style.pointerEvents = "none";
                       self2.closePointerT = void 0;
+                      dialog.render();
                     },
                     Math.max(0, closeOpts.duration * 1e3)
                   );
@@ -21769,6 +21804,7 @@ var Corex = (() => {
                   self2.closePointerT = window.setTimeout(() => {
                     el.setAttribute("data-exit-anim", "complete");
                     self2.closePointerT = void 0;
+                    dialog.render();
                   }, 0);
                 }
               } else if (details.open) {
@@ -21781,11 +21817,18 @@ var Corex = (() => {
                 dialog.updateProps(getDialogUpdatePropsFromEl(el));
                 dialog.render();
               }
+              const previousOpen = (_a5 = self2.lastOpen) != null ? _a5 : false;
+              self2.lastOpen = details.open;
+              const payload = {
+                id: el.id,
+                open: details.open,
+                previousOpen
+              };
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: openChangePayload2(el, details),
+                payload,
                 serverEventName: getString(el, "onOpenChange"),
                 clientEventName: getString(el, "onOpenChangeClient")
               });
@@ -21859,8 +21902,11 @@ var Corex = (() => {
           });
         },
         updated() {
-          var _a4;
-          (_a4 = this.dialog) == null ? void 0 : _a4.updateProps(getDialogUpdatePropsFromEl(this.el));
+          var _a4, _b;
+          if (getBoolean(this.el, "controlled")) {
+            this.lastOpen = (_a4 = getBoolean(this.el, "open")) != null ? _a4 : false;
+          }
+          (_b = this.dialog) == null ? void 0 : _b.updateProps(getDialogUpdatePropsFromEl(this.el));
         },
         destroyed() {
           var _a4, _b, _c, _d;
@@ -22122,7 +22168,8 @@ var Corex = (() => {
     "../priv/static/editable.mjs"() {
       "use strict";
       init_chunk_TJXFG272();
-      init_chunk_GGOQNLHD();
+      init_chunk_WHNMJXTN();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy12 = createAnatomy("editable").parts(
         "root",
@@ -22486,6 +22533,19 @@ var Corex = (() => {
           }));
           zag.init();
           this.editable = zag;
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:editable:set-value", (event) => {
+            var _a4;
+            const raw = (_a4 = event.detail) == null ? void 0 : _a4.value;
+            zag.api.setValue(raw === void 0 || raw === null ? "" : String(raw));
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("editable_set_value", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.setValue(readPayloadValue(payload));
+          });
         },
         updated() {
           var _a4;
@@ -22506,8 +22566,10 @@ var Corex = (() => {
           }, getBoolean(el, "controlledEdit") ? { edit: getBoolean(el, "edit") } : { defaultEdit: getBoolean(el, "defaultEdit") }));
         },
         destroyed() {
-          var _a4;
-          (_a4 = this.editable) == null ? void 0 : _a4.destroy();
+          var _a4, _b, _c;
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.editable) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -23022,7 +23084,7 @@ var Corex = (() => {
       init_chunk_IY22ITUY();
       init_chunk_A7BIKXCQ();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
@@ -24489,7 +24551,7 @@ var Corex = (() => {
       init_chunk_6XKINCJF();
       init_chunk_M7GO4YJR();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
@@ -25369,7 +25431,7 @@ var Corex = (() => {
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
@@ -28125,7 +28187,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_KJQMLLHN();
       init_chunk_A7BIKXCQ();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy17 = createAnatomy("numberInput").parts(
         "root",
@@ -29146,7 +29208,7 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
@@ -29667,7 +29729,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_A7BIKXCQ();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
@@ -30344,7 +30406,7 @@ var Corex = (() => {
       init_chunk_BZGI4EKV();
       init_chunk_M7GO4YJR();
       init_chunk_A7BIKXCQ();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
@@ -31175,7 +31237,7 @@ var Corex = (() => {
       init_chunk_6XKINCJF();
       init_chunk_M7GO4YJR();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy21 = createAnatomy("select").parts(
         "label",
@@ -32594,7 +32656,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
@@ -33113,7 +33175,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_M7GO4YJR();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
@@ -33633,7 +33695,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_A7BIKXCQ();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
@@ -36250,7 +36312,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_RFHNZSI7();
       init_chunk_M7GO4YJR();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy27 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts27 = anatomy27.build();
@@ -36948,7 +37010,7 @@ var Corex = (() => {
       value: details.value
     };
   }
-  function readPayloadValue(payload) {
+  function readPayloadValue2(payload) {
     var _a4;
     if (!payload || typeof payload !== "object") return void 0;
     const o2 = payload;
@@ -36961,7 +37023,7 @@ var Corex = (() => {
     "../priv/static/toggle-group.mjs"() {
       "use strict";
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy28 = createAnatomy("toggle-group").parts("root", "item");
       parts28 = anatomy28.build();
@@ -37226,7 +37288,7 @@ var Corex = (() => {
           this.handleRegistry = registry;
           registry.add("toggle-group_set_value", (payload) => {
             if (!idMatches(el.id, readPayloadId(payload))) return;
-            const value = readPayloadValue(payload);
+            const value = readPayloadValue2(payload);
             if (value) toggleGroup.api.setValue(value);
           });
           registry.add("toggle-group:value", (payload) => {
@@ -37842,6 +37904,14 @@ var Corex = (() => {
       rootNode
     });
   }
+  function readExpandedAttr(el) {
+    var _a4, _b;
+    return getBoolean(el, "controlled") ? (_a4 = el.getAttribute("data-expanded-value")) != null ? _a4 : "" : (_b = el.getAttribute("data-default-expanded-value")) != null ? _b : "";
+  }
+  function readSelectedAttr(el) {
+    var _a4, _b;
+    return getBoolean(el, "controlled") ? (_a4 = el.getAttribute("data-selected-value")) != null ? _a4 : "" : (_b = el.getAttribute("data-default-selected-value")) != null ? _b : "";
+  }
   function parseRootNode(el) {
     const raw = el.dataset.tree;
     if (raw == null || raw === "") {
@@ -37855,9 +37925,10 @@ var Corex = (() => {
       "use strict";
       init_chunk_3HAF4CIH();
       init_chunk_6XKINCJF();
+      init_chunk_ZIE4GI65();
       init_chunk_TYROJSCS();
       init_chunk_WHNMJXTN();
-      init_chunk_GGOQNLHD();
+      init_chunk_U6DIKNUJ();
       init_chunk_ZCRB45IP();
       anatomy29 = createAnatomy("tree-view").parts(
         "branch",
@@ -38648,27 +38719,33 @@ var Corex = (() => {
       };
       TreeViewHook = {
         mounted() {
-          var _a4, _b, _c, _d, _e;
+          var _a4, _b, _c, _d, _e, _f, _g, _h, _i;
           const el = this.el;
+          const self2 = this;
           const pushEvent = this.pushEvent.bind(this);
           const canPush = () => canPushEvent(this.liveSocket);
           const rootNode = parseRootNode(el);
           this.lastDataTree = el.dataset.tree;
+          const controlled = getBoolean(el, "controlled");
+          self2.lastExpanded = controlled ? (_a4 = getStringList(el, "expandedValue")) != null ? _a4 : [] : (_b = getStringList(el, "defaultExpandedValue")) != null ? _b : [];
+          self2.lastSelected = controlled ? (_c = getStringList(el, "selectedValue")) != null ? _c : [] : (_d = getStringList(el, "defaultSelectedValue")) != null ? _d : [];
+          self2.lastExpandedAttr = readExpandedAttr(el);
+          self2.lastSelectedAttr = readSelectedAttr(el);
           const treeView = new TreeView(el, __spreadProps(__spreadValues({
             id: el.id,
             rootNode
-          }, getBoolean(el, "controlled") ? {
-            expandedValue: (_a4 = getStringList(el, "expandedValue")) != null ? _a4 : [],
-            selectedValue: (_b = getStringList(el, "selectedValue")) != null ? _b : []
+          }, controlled ? {
+            expandedValue: (_e = getStringList(el, "expandedValue")) != null ? _e : [],
+            selectedValue: (_f = getStringList(el, "selectedValue")) != null ? _f : []
           } : {
-            defaultExpandedValue: (_c = getStringList(el, "defaultExpandedValue")) != null ? _c : [],
-            defaultSelectedValue: (_d = getStringList(el, "defaultSelectedValue")) != null ? _d : []
+            defaultExpandedValue: (_g = getStringList(el, "defaultExpandedValue")) != null ? _g : [],
+            defaultSelectedValue: (_h = getStringList(el, "defaultSelectedValue")) != null ? _h : []
           }), {
-            selectionMode: (_e = getString(el, "selectionMode")) != null ? _e : "single",
+            selectionMode: (_i = getString(el, "selectionMode")) != null ? _i : "single",
             typeahead: el.dataset.typeahead !== "false",
             dir: getDir(el),
             onSelectionChange: (details) => {
-              var _a5;
+              var _a5, _b2, _c2;
               const redirectOn = getBoolean(el, "redirect");
               const value = ((_a5 = details.selectedValue) == null ? void 0 : _a5.length) ? details.selectedValue[0] : void 0;
               const itemEl = value ? el.querySelector(
@@ -38678,31 +38755,47 @@ var Corex = (() => {
               if (redirectOn && isItem) {
                 performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
               }
+              const next2 = (_b2 = details.selectedValue) != null ? _b2 : [];
+              const previousSelectedValue = (_c2 = self2.lastSelected) != null ? _c2 : [];
+              const { added, removed } = diffStringValues(next2, previousSelectedValue);
+              self2.lastSelected = next2;
+              const payload = {
+                id: el.id,
+                selectedValue: next2,
+                previousSelectedValue,
+                added,
+                removed,
+                focusedValue: details.focusedValue,
+                isItem
+              };
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: {
-                  id: el.id,
-                  value: {
-                    selectedValue: details.selectedValue,
-                    focusedValue: details.focusedValue,
-                    isItem
-                  }
-                },
+                payload,
                 serverEventName: getString(el, "onSelectionChange"),
                 clientEventName: getString(el, "onSelectionChangeClient")
               });
             },
             onExpandedChange: (details) => {
+              var _a5, _b2;
+              const next2 = (_a5 = details.expandedValue) != null ? _a5 : [];
+              const previousExpandedValue = (_b2 = self2.lastExpanded) != null ? _b2 : [];
+              const { added, removed } = diffStringValues(next2, previousExpandedValue);
+              self2.lastExpanded = next2;
+              const payload = {
+                id: el.id,
+                expandedValue: next2,
+                previousExpandedValue,
+                added,
+                removed,
+                focusedValue: details.focusedValue
+              };
               notifyChange({
                 el,
                 canPushServer: canPush(),
                 pushEvent,
-                payload: {
-                  id: el.id,
-                  value: { expandedValue: details.expandedValue }
-                },
+                payload,
                 serverEventName: getString(el, "onExpandedChange"),
                 clientEventName: getString(el, "onExpandedChangeClient")
               });
@@ -38713,7 +38806,7 @@ var Corex = (() => {
                   opts: readHeightAnimationOptions(el),
                   isOpen: (contentEl) => {
                     const value = contentEl.dataset.value;
-                    return !!value && details.expandedValue.includes(value);
+                    return !!value && next2.includes(value);
                   }
                 });
               }
@@ -38812,7 +38905,15 @@ var Corex = (() => {
           const selectionMode = (_e = getString(el, "selectionMode")) != null ? _e : "single";
           const typeahead = el.dataset.typeahead !== "false";
           const dir = getDir(el);
+          const expandedAttr = readExpandedAttr(el);
+          const selectedAttr = readSelectedAttr(el);
+          const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
+          const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
+          this.lastExpandedAttr = expandedAttr;
+          this.lastSelectedAttr = selectedAttr;
           if (controlled) {
+            if (expandedAttrChanged) this.lastExpanded = expanded;
+            if (selectedAttrChanged) this.lastSelected = selected;
             tv.updateProps({
               expandedValue: expanded,
               selectedValue: selected,
@@ -38826,8 +38927,8 @@ var Corex = (() => {
               typeahead,
               dir
             });
-            tv.api.setExpandedValue(expanded);
-            tv.api.setSelectedValue(selected);
+            if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
+            if (selectedAttrChanged) tv.api.setSelectedValue(selected);
           }
         },
         destroyed() {

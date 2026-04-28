@@ -1,7 +1,7 @@
 defmodule E2eWeb.AccordionAnimationLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, demo_section: 1]
 
   @easing_items [
     %{label: "ease", id: "ease"},
@@ -73,105 +73,101 @@ defmodule E2eWeb.AccordionAnimationLive do
         title="Accordion · Animation"
         subtitle="Built-in JS animation, instant mode, and custom Motion-driven transitions."
       >
-        <section id="accordion-animation-playground" class="flex flex-col gap-4 items-start">
-          <h3>Playground</h3>
-          <div class="preview w-full">
-            <div class="preview__frame">
-              <div class="preview__sidebar">
-                <.select
-                  id="accordion-animation-easing"
-                  class="select select--sm select--mini-sm lg:w-full"
-                  value={@easing}
-                  items={@easing_items}
-                  on_value_change="easing_changed"
-                  translation={%Corex.Select.Translation{placeholder: "Easing"}}
-                >
-                  <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-                  <:label>Easing</:label>
-                </.select>
+        <.demo_playground
+          id="accordion-animation-playground"
+          title="Playground"
+          heading_class="layout-heading"
+        >
+          <:controls>
+            <.select
+              id="accordion-animation-easing"
+              class="select select--sm select--mini-sm lg:w-full"
+              value={@easing}
+              items={@easing_items}
+              on_value_change="easing_changed"
+              translation={%Corex.Select.Translation{placeholder: "Easing"}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Easing</:label>
+            </.select>
 
-                <.number_input
-                  id="accordion-animation-duration"
-                  class="number-input number-input--sm lg:w-full"
-                  value={@duration}
-                  step={0.1}
-                  min={0.0}
-                  on_value_change="duration_changed"
-                >
-                  <:label>Duration</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="accordion-animation-duration"
+              class="number-input number-input--sm lg:w-full"
+              value={@duration}
+              step={0.1}
+              min={0.0}
+              on_value_change="duration_changed"
+            >
+              <:label>Duration</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="accordion-animation-opacity-start"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.1}
-                  min={0.0}
-                  max={1.0}
-                  value={@opacity_start}
-                  on_value_change="opacity_start_changed"
-                >
-                  <:label>Opacity start</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="accordion-animation-opacity-start"
+              class="number-input number-input--sm lg:w-full"
+              step={0.1}
+              min={0.0}
+              max={1.0}
+              value={@opacity_start}
+              on_value_change="opacity_start_changed"
+            >
+              <:label>Opacity start</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="accordion-animation-opacity-end"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.1}
-                  min={0.0}
-                  max={1.0}
-                  value={@opacity_end}
-                  on_value_change="opacity_end_changed"
-                >
-                  <:label>Opacity end</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="accordion-animation-opacity-end"
+              class="number-input number-input--sm lg:w-full"
+              step={0.1}
+              min={0.0}
+              max={1.0}
+              value={@opacity_end}
+              on_value_change="opacity_end_changed"
+            >
+              <:label>Opacity end</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.switch
-                  id="accordion-animation-block-interaction"
-                  class="switch switch--sm w-full"
-                  checked={@animation_options.block_interaction}
-                  on_checked_change="block_interaction_changed"
-                >
-                  <:label>Block Interaction</:label>
-                </.switch>
-              </div>
-
-              <section class="preview__main">
-                <div class="preview__canvas">
-                  <.accordion
-                    id="accordion-animation-playground-accordion"
-                    class="accordion w-full h-full overflow-hidden"
-                    animation="js"
-                    animation_options={@animation_options}
-                    items={@items}
-                    value={@value}
-                  >
-                    <:indicator>
-                      <.heroicon name="hero-chevron-right" />
-                    </:indicator>
-                  </.accordion>
-                </div>
-              </section>
-            </div>
-          </div>
-        </section>
+            <.switch
+              id="accordion-animation-block-interaction"
+              class="switch switch--sm w-full"
+              checked={@animation_options.block_interaction}
+              on_checked_change="block_interaction_changed"
+            >
+              <:label>Block Interaction</:label>
+            </.switch>
+          </:controls>
+          <:canvas>
+            <.accordion
+              id="accordion-animation-playground-accordion"
+              class="accordion w-full h-full overflow-hidden"
+              animation="js"
+              animation_options={@animation_options}
+              items={@items}
+              value={@value}
+            >
+              <:indicator>
+                <.heroicon name="hero-chevron-right" />
+              </:indicator>
+            </.accordion>
+          </:canvas>
+        </.demo_playground>
 
         <.demo_section
           id="accordion-animation-instant"
@@ -202,7 +198,7 @@ defmodule E2eWeb.AccordionAnimationLive do
               id="accordion-custom-animate"
               class="accordion"
               animation="custom"
-              value="lorem"
+              value={["lorem"]}
               on_value_change_client="my-accordion-changed"
               items={@items}
             >

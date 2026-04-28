@@ -84,6 +84,26 @@ config :corex,
   json_library: Jason
 ```
 
+### Download CLDR locale files (`mix localize.download_locales`)
+
+The [`localize`](https://hex.pm/packages/localize) dependency (pulled in by `localize_web`) serves formatting, validation, and locale display names from Unicode CLDR data stored in an **on-disk cache**. Until a locale’s data is present there, APIs such as `Localize.Locale.display_name/2`, `Localize.Locale.get/3` (used for RTL `dir` in step 7), and `Localize.Locale.display_name!/2` in the language switcher (step 9) cannot resolve that locale and may error or fall back.
+
+Download the locales that match `:supported_locales` at least once after adding dependencies or changing supported locales:
+
+```bash
+mix localize.download_locales
+```
+
+Or request specific locale ids:
+
+```bash
+mix localize.download_locales en fr ar
+```
+
+Files are written under the app’s build output (for example `_build/dev/lib/localize/priv/localize/locales/`). In Docker or CI, run `mix localize.download_locales` during the image build so production ships with the cache; alternatively set `config :localize, allow_runtime_locale_download: true` so missing locales are fetched from the Localize CDN on first use (often avoided in production in favor of pre-downloading).
+
+You can hook the task into setup-style pipelines—for example `mix setup`—alongside asset tooling so new clones get CLDR data without an extra manual step.
+
 ## 3. Use Phoenix verified routes via `Localize.VerifiedRoutes`
 
 `Localize.VerifiedRoutes` is a drop-in replacement for `Phoenix.VerifiedRoutes` that injects the active locale into `~p` paths. In `lib/my_app_web.ex`, swap the `verified_routes/0` helper:
@@ -488,7 +508,7 @@ Corex components that expose translatable labels (Select, Editable, Dialog, …)
 
 ## Summary
 
-1. **`localize_web` dep + Gettext** — Gettext is the source of truth for the locale list; `config :localize, :supported_locales` derives from it at runtime.
+1. **`localize_web` dep + Gettext** — Gettext is the source of truth for the locale list; `config :localize, :supported_locales` derives from it at runtime. Run **`mix localize.download_locales`** so CLDR data exists on disk for every supported locale (language switcher labels, `html dir`, and other Localize APIs).
 2. **`Localize.VerifiedRoutes`** — `~p"/foo"` automatically prefixes the active locale, so links never need manual locale handling.
 3. **Router** — `use Localize.Routes`, `Localize.Plug.PutLocale` + `Localize.Plug.PutSession` after `:fetch_live_flash`, and `localize do … end` around the routes that gain a locale prefix.
 4. **`MyAppWeb.Path`** — three small helpers (`strip_after_locale/1`, `join_locale_path/2`, `with_current_locale/1`) the switcher uses to rebuild URLs.

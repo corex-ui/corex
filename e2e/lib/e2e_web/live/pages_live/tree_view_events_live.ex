@@ -33,14 +33,13 @@ defmodule E2eWeb.TreeViewEventsLive do
     {:ok, socket}
   end
 
-  def handle_event("tree_server_expanded", %{"id" => id, "value" => v}, socket) do
-    expanded = Map.get(v, "expandedValue") || Map.get(v, :expandedValue) || []
+  def handle_event("tree_server_expanded", %{"id" => id, "expandedValue" => expanded}, socket) do
     log = new_log("server", id, "expanded", expanded)
     {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
   end
 
-  def handle_event("tree_server_selection", %{"id" => id, "value" => v}, socket) do
-    log = new_log("server", id, "selection", v)
+  def handle_event("tree_server_selection", %{"id" => id} = payload, socket) do
+    log = new_log("server", id, "selection", Map.drop(payload, ["id"]))
     {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
   end
 
@@ -158,21 +157,19 @@ defmodule E2eWeb.TreeViewEventsLive do
                       if (!el) return;
                       el.addEventListener("tree-view-expanded-client", (event) => {
                         const d = event.detail;
-                        const v = d.value ?? {};
                         this.pushEvent("tree_client_expanded", {
                           id: d.id,
-                          expanded_value: v.expandedValue ?? d.expandedValue,
+                          expanded_value: d.expandedValue,
                         });
                       });
                       el.addEventListener("tree-view-selection-client", (event) => {
                         const d = event.detail;
-                        const v = d.value ?? {};
                         this.pushEvent("tree_client_selection", {
                           id: d.id,
                           payload: {
-                            selectedValue: v.selectedValue ?? d.selectedValue,
-                            focusedValue: v.focusedValue ?? d.focusedValue,
-                            isItem: v.isItem ?? d.isItem,
+                            selectedValue: d.selectedValue,
+                            focusedValue: d.focusedValue,
+                            isItem: d.isItem,
                           },
                         });
                       });

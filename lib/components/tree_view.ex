@@ -179,12 +179,12 @@ defmodule Corex.TreeView do
    ### Controlled (LiveView)
 
    ```elixir
-   def handle_event("tree_expanded", %{"value" => value}, socket) do
-     {:noreply, assign(socket, :expanded, Map.get(value, "expandedValue", []))}
+   def handle_event("tree_expanded", %{"expandedValue" => expanded}, socket) do
+     {:noreply, assign(socket, :expanded, expanded)}
    end
 
-   def handle_event("tree_selected", %{"value" => value}, socket) do
-     {:noreply, assign(socket, :selected, Map.get(value, "selectedValue", []))}
+   def handle_event("tree_selected", %{"selectedValue" => selected}, socket) do
+     {:noreply, assign(socket, :selected, selected)}
    end
 
    def render(assigns) do
@@ -276,10 +276,74 @@ defmodule Corex.TreeView do
 
    ### `custom`
 
-   The hook removes `hidden` and dispatches a browser `CustomEvent` whose **type** is `on_expanded_change_client`. Animate branch content yourself.
+   The hook removes `hidden` and dispatches a browser `CustomEvent` whose **type** is `on_expanded_change_client`. The event `detail` is enriched with deltas:
+
+       // event.detail (TreeViewExpandedChangedDetail)
+       { id, expandedValue, previousExpandedValue, added, removed, focusedValue }
+
+   Animate branch content yourself, using `added`/`removed` to drive the transition without diffing on the client side. The example below also seeds initial closed-state styling on mount and after LiveView navigations.
 
    ```heex
    <.tree_view class="tree-view" animation="custom" on_expanded_change_client="my-tree-expanded" items={@items} />
+   ```
+
+   ```javascript
+   import { animate } from "motion"
+
+   const reducedMotion = () =>
+     window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+   function applyClosedHeight(el) {
+     el.style.opacity = "0"
+     el.style.height = "0px"
+     el.style.overflow = "hidden"
+   }
+
+   function applyOpenHeight(el) {
+     el.style.opacity = ""
+     el.style.height = ""
+     el.style.overflow = ""
+   }
+
+   function initClosedTreeBranches() {
+     document
+       .querySelectorAll('[data-scope="tree-view"][data-part="root"][data-animation="custom"]')
+       .forEach((rootEl) => {
+         rootEl
+           .querySelectorAll('[data-scope="tree-view"][data-part="branch-content"]')
+           .forEach((el) => {
+             if (el.dataset.state !== "open") applyClosedHeight(el)
+           })
+       })
+   }
+
+   document.addEventListener("DOMContentLoaded", initClosedTreeBranches)
+   window.addEventListener("phx:page-loading-stop", initClosedTreeBranches)
+
+   function findTreeBranch(root, value) {
+     return root.querySelector(
+       `[data-scope="tree-view"][data-part="branch-content"][data-value="${CSS.escape(value)}"]`,
+     )
+   }
+
+   document.addEventListener("my-tree-expanded", (e) => {
+     const root = document.getElementById(e.detail.id)
+     if (!root) return
+     const { added, removed } = e.detail
+     if (reducedMotion()) {
+       added.forEach((v) => { const el = findTreeBranch(root, v); if (el) applyOpenHeight(el) })
+       removed.forEach((v) => { const el = findTreeBranch(root, v); if (el) applyClosedHeight(el) })
+       return
+     }
+     added.forEach((v) => {
+       const el = findTreeBranch(root, v)
+       if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+     })
+     removed.forEach((v) => {
+       const el = findTreeBranch(root, v)
+       if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+     })
+   })
    ```
 
    <!-- tabs-close -->
@@ -310,9 +374,9 @@ defmodule Corex.TreeView do
 
    When `phx-hook="TreeView"` is active, Zag invokes callbacks that map to:
 
-   - **`on_selection_change`** — `pushEvent/3` to LiveView with the name you set. Params: `%{"id" => tree_dom_id, "value" => %{"selectedValue" => [...], "isItem" => bool, ...}}`.
+   - **`on_selection_change`** — `pushEvent/3` to LiveView with the name you set. Params: `%{"id" => tree_dom_id, "selectedValue" => [...], "previousSelectedValue" => [...], "added" => [...], "removed" => [...], "focusedValue" => focused_or_nil, "isItem" => bool}` (TS: `TreeViewSelectionChangedDetail`).
    - **`on_selection_change_client`** — browser `CustomEvent` whose **type** is the string you set; `event.detail` mirrors the push payload (bubbles).
-   - **`on_expanded_change`** — `pushEvent/3` with `%{"id" => dom_id, "value" => %{"expandedValue" => [...]}}`.
+   - **`on_expanded_change`** — `pushEvent/3` with `%{"id" => dom_id, "expandedValue" => [...], "previousExpandedValue" => [...], "added" => [...], "removed" => [...], "focusedValue" => focused_or_nil}` (TS: `TreeViewExpandedChangedDetail`).
    - **`on_expanded_change_client`** — `CustomEvent` with the same `detail` shape (bubbles). Required for `animation="custom"`.
 
    ### Imperative API (LiveView helpers and client DOM)
@@ -446,22 +510,26 @@ defmodule Corex.TreeView do
 
   attr(:on_selection_change, :string,
     default: nil,
-    doc: "The server event name when selection changes"
+    doc:
+      "Server event name when selection changes. Payload: `%{id, selectedValue, previousSelectedValue, added, removed, focusedValue, isItem}`."
   )
 
   attr(:on_selection_change_client, :string,
     default: nil,
-    doc: "DOM event name dispatched on selection change for client listeners"
+    doc:
+      "DOM event name dispatched on selection change. `event.detail` matches `TreeViewSelectionChangedDetail`."
   )
 
   attr(:on_expanded_change, :string,
     default: nil,
-    doc: "The server event name when expanded state changes"
+    doc:
+      "Server event name when expanded state changes. Payload: `%{id, expandedValue, previousExpandedValue, added, removed, focusedValue}`."
   )
 
   attr(:on_expanded_change_client, :string,
     default: nil,
-    doc: "DOM event name dispatched on expanded change when animation is custom"
+    doc:
+      "DOM event name dispatched on expanded change. `event.detail` matches `TreeViewExpandedChangedDetail`. Required for `animation=\"custom\"`."
   )
 
   attr(:animation, :string,

@@ -6,6 +6,9 @@ import {
   readDomItemRedirect
 } from "./chunk-6XKINCJF.mjs";
 import {
+  diffStringValues
+} from "./chunk-ZIE4GI65.mjs";
+import {
   prepareInitialHeightState,
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
@@ -21,7 +24,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunk-GGOQNLHD.mjs";
+} from "./chunk-U6DIKNUJ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -1438,6 +1441,12 @@ var TreeView = class extends Component {
 };
 
 // hooks/tree-view.ts
+function readExpandedAttr(el) {
+  return getBoolean(el, "controlled") ? el.getAttribute("data-expanded-value") ?? "" : el.getAttribute("data-default-expanded-value") ?? "";
+}
+function readSelectedAttr(el) {
+  return getBoolean(el, "controlled") ? el.getAttribute("data-selected-value") ?? "" : el.getAttribute("data-default-selected-value") ?? "";
+}
 function parseRootNode(el) {
   const raw = el.dataset.tree;
   if (raw == null || raw === "") {
@@ -1448,14 +1457,20 @@ function parseRootNode(el) {
 var TreeViewHook = {
   mounted() {
     const el = this.el;
+    const self = this;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     const rootNode = parseRootNode(el);
     this.lastDataTree = el.dataset.tree;
+    const controlled = getBoolean(el, "controlled");
+    self.lastExpanded = controlled ? getStringList(el, "expandedValue") ?? [] : getStringList(el, "defaultExpandedValue") ?? [];
+    self.lastSelected = controlled ? getStringList(el, "selectedValue") ?? [] : getStringList(el, "defaultSelectedValue") ?? [];
+    self.lastExpandedAttr = readExpandedAttr(el);
+    self.lastSelectedAttr = readSelectedAttr(el);
     const treeView = new TreeView(el, {
       id: el.id,
       rootNode,
-      ...getBoolean(el, "controlled") ? {
+      ...controlled ? {
         expandedValue: getStringList(el, "expandedValue") ?? [],
         selectedValue: getStringList(el, "selectedValue") ?? []
       } : {
@@ -1475,31 +1490,46 @@ var TreeViewHook = {
         if (redirectOn && isItem) {
           performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
         }
+        const next = details.selectedValue ?? [];
+        const previousSelectedValue = self.lastSelected ?? [];
+        const { added, removed } = diffStringValues(next, previousSelectedValue);
+        self.lastSelected = next;
+        const payload = {
+          id: el.id,
+          selectedValue: next,
+          previousSelectedValue,
+          added,
+          removed,
+          focusedValue: details.focusedValue,
+          isItem
+        };
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: {
-            id: el.id,
-            value: {
-              selectedValue: details.selectedValue,
-              focusedValue: details.focusedValue,
-              isItem
-            }
-          },
+          payload,
           serverEventName: getString(el, "onSelectionChange"),
           clientEventName: getString(el, "onSelectionChangeClient")
         });
       },
       onExpandedChange: (details) => {
+        const next = details.expandedValue ?? [];
+        const previousExpandedValue = self.lastExpanded ?? [];
+        const { added, removed } = diffStringValues(next, previousExpandedValue);
+        self.lastExpanded = next;
+        const payload = {
+          id: el.id,
+          expandedValue: next,
+          previousExpandedValue,
+          added,
+          removed,
+          focusedValue: details.focusedValue
+        };
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: {
-            id: el.id,
-            value: { expandedValue: details.expandedValue }
-          },
+          payload,
           serverEventName: getString(el, "onExpandedChange"),
           clientEventName: getString(el, "onExpandedChangeClient")
         });
@@ -1510,7 +1540,7 @@ var TreeViewHook = {
             opts: readHeightAnimationOptions(el),
             isOpen: (contentEl) => {
               const value = contentEl.dataset.value;
-              return !!value && details.expandedValue.includes(value);
+              return !!value && next.includes(value);
             }
           });
         }
@@ -1608,7 +1638,15 @@ var TreeViewHook = {
     const selectionMode = getString(el, "selectionMode") ?? "single";
     const typeahead = el.dataset.typeahead !== "false";
     const dir = getDir(el);
+    const expandedAttr = readExpandedAttr(el);
+    const selectedAttr = readSelectedAttr(el);
+    const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
+    const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
+    this.lastExpandedAttr = expandedAttr;
+    this.lastSelectedAttr = selectedAttr;
     if (controlled) {
+      if (expandedAttrChanged) this.lastExpanded = expanded;
+      if (selectedAttrChanged) this.lastSelected = selected;
       tv.updateProps({
         expandedValue: expanded,
         selectedValue: selected,
@@ -1622,8 +1660,8 @@ var TreeViewHook = {
         typeahead,
         dir
       });
-      tv.api.setExpandedValue(expanded);
-      tv.api.setSelectedValue(selected);
+      if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
+      if (selectedAttrChanged) tv.api.setSelectedValue(selected);
     }
   },
   destroyed() {

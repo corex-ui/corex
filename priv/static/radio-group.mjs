@@ -11,7 +11,7 @@ import {
 } from "./chunk-A7BIKXCQ.mjs";
 import {
   notifyChange
-} from "./chunk-GGOQNLHD.mjs";
+} from "./chunk-U6DIKNUJ.mjs";
 import {
   Component,
   VanillaMachine,

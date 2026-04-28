@@ -57,7 +57,7 @@ defmodule E2eWeb.EditableEventsLive do
       <.demo_page
         id="editable-events-page"
         title="Editable · Event"
-        subtitle="Subscribe to value changes from LiveView or the client. Event detail is a flat map: id and value."
+        subtitle="Value change events (server + client)."
       >
         <.demo_section
           id="editable-events-server"

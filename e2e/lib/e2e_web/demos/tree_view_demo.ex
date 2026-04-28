@@ -1148,14 +1148,13 @@ defmodule E2eWeb.Demos.TreeViewDemo do
       {:ok, socket |> stream(:server_logs, [])}
     end
 
-    def handle_event("tree_server_expanded", %{"id" => id, "value" => v}, socket) do
-      expanded = Map.get(v, "expandedValue") || Map.get(v, :expandedValue) || []
+    def handle_event("tree_server_expanded", %{"id" => id, "expandedValue" => expanded}, socket) do
       log = new_log("server", id, "expanded", expanded)
       {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
     end
 
-    def handle_event("tree_server_selection", %{"id" => id, "value" => v}, socket) do
-      log = new_log("server", id, "selection", v)
+    def handle_event("tree_server_selection", %{"id" => id} = payload, socket) do
+      log = new_log("server", id, "selection", Map.drop(payload, ["id"]))
       {:noreply, stream_insert(socket, :server_logs, log, at: 0)}
     end
     """
@@ -1182,43 +1181,30 @@ defmodule E2eWeb.Demos.TreeViewDemo do
     const el = document.getElementById("tree-events-client");
     el?.addEventListener("tree-view-expanded-client", (event) => {
       const d = event.detail;
-      const ev = d.value?.expandedValue ?? d.expandedValue;
-      console.log("expanded", d.id, ev);
+      console.log("expanded", d.id, d.expandedValue, "added:", d.added, "removed:", d.removed);
     });
     el?.addEventListener("tree-view-selection-client", (event) => {
       const d = event.detail;
-      const v = d.value ?? {};
-      console.log(
-        "selection",
-        d.id,
-        v.selectedValue ?? d.selectedValue,
-        v.isItem ?? d.isItem
-      );
+      console.log("selection", d.id, d.selectedValue, "isItem:", d.isItem);
     });
     """
   end
 
   def events_client_ts do
     ~S"""
+    import type {
+      TreeViewExpandedChangedDetail,
+      TreeViewSelectionChangedDetail,
+    } from "corex";
+
     const el = document.getElementById("tree-events-client");
-    type ExpandedDetail = { id: string; value?: { expandedValue: string[] } };
-    type SelectionDetail = {
-      id: string;
-      value?: {
-        selectedValue: string[];
-        focusedValue: string | null;
-        isItem: boolean;
-      };
-    };
     el?.addEventListener("tree-view-expanded-client", (event: Event) => {
-      const d = (event as CustomEvent<ExpandedDetail>).detail;
-      const ev = d.value?.expandedValue;
-      console.log("expanded", d.id, ev);
+      const d = (event as CustomEvent<TreeViewExpandedChangedDetail>).detail;
+      console.log("expanded", d.id, d.expandedValue, "added:", d.added, "removed:", d.removed);
     });
     el?.addEventListener("tree-view-selection-client", (event: Event) => {
-      const d = (event as CustomEvent<SelectionDetail>).detail;
-      const v = d.value;
-      console.log("selection", d.id, v?.selectedValue, v?.isItem);
+      const d = (event as CustomEvent<TreeViewSelectionChangedDetail>).detail;
+      console.log("selection", d.id, d.selectedValue, "isItem:", d.isItem);
     });
     """
   end
@@ -1279,31 +1265,62 @@ defmodule E2eWeb.Demos.TreeViewDemo do
 
   def animation_custom_js do
     ~S"""
+    import { animate } from "motion"
+
+    const reducedMotion = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    function applyClosedHeight(el) {
+      el.style.opacity = "0"
+      el.style.height = "0px"
+      el.style.overflow = "hidden"
+    }
+
+    function applyOpenHeight(el) {
+      el.style.opacity = ""
+      el.style.height = ""
+      el.style.overflow = ""
+    }
+
+    function initClosedTreeBranches() {
+      document
+        .querySelectorAll('[data-scope="tree-view"][data-part="root"][data-animation="custom"]')
+        .forEach((rootEl) => {
+          rootEl
+            .querySelectorAll('[data-scope="tree-view"][data-part="branch-content"]')
+            .forEach((el) => {
+              if (el.dataset.state !== "open") applyClosedHeight(el)
+            })
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", initClosedTreeBranches)
+    window.addEventListener("phx:page-loading-stop", initClosedTreeBranches)
+
+    function findTreeBranch(root, value) {
+      return root.querySelector(
+        `[data-scope="tree-view"][data-part="branch-content"][data-value="${CSS.escape(value)}"]`,
+      )
+    }
+
     document.addEventListener("my-tree-view-changed", (e) => {
-      const treeEl = document.getElementById(e.detail.id);
-      if (!treeEl) return;
-      const expandedValue =
-        e.detail.value?.expandedValue ?? e.detail.expandedValue ?? [];
-      const duration = parseFloat(treeEl.dataset.animationDuration ?? "0.3");
-      const easing = treeEl.dataset.animationEasing ?? "ease-out";
-      const contentEls = treeEl.querySelectorAll(
-        '[data-scope="tree-view"][data-part="branch-content"]'
-      );
-      contentEls.forEach((el) => {
-        const value = el.dataset.value;
-        const isOpen = expandedValue.includes(value);
-        const wasOpen = el.dataset.state === "open";
-        if (isOpen === wasOpen) return;
-        animate(
-          el,
-          {
-            height: isOpen ? ["0px", "auto"] : ["auto", "0px"],
-            opacity: isOpen ? [0, 1] : [1, 0],
-          },
-          { duration, easing }
-        );
-      });
-    });
+      const root = document.getElementById(e.detail.id)
+      if (!root) return
+      const { added, removed } = e.detail
+      if (reducedMotion()) {
+        added.forEach((v) => { const el = findTreeBranch(root, v); if (el) applyOpenHeight(el) })
+        removed.forEach((v) => { const el = findTreeBranch(root, v); if (el) applyClosedHeight(el) })
+        return
+      }
+      added.forEach((v) => {
+        const el = findTreeBranch(root, v)
+        if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+      })
+      removed.forEach((v) => {
+        const el = findTreeBranch(root, v)
+        if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+      })
+    })
     """
   end
 

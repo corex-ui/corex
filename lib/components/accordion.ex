@@ -357,7 +357,12 @@ defmodule Corex.Accordion do
 
   ### `custom`
 
-  The hook removes `hidden` and dispatches a browser `CustomEvent` when the value changes. Use `on_value_change_client` for the event name. Animate panels in your own JS.
+  The hook removes `hidden` and dispatches a browser `CustomEvent` when the value changes. Use `on_value_change_client` for the event name. The event `detail` is enriched with deltas so user code rarely needs DOM lookups beyond the affected items:
+
+      // event.detail (AccordionChangedDetail)
+      { id, value, previousValue, added, removed }
+
+  Animate panels in your own JS. The example below also seeds initial closed-state styling on mount and after LiveView navigations.
 
   ```heex
   <.accordion
@@ -389,44 +394,62 @@ defmodule Corex.Accordion do
   ```
 
   ```javascript
-  import { animate } from "motion";
+  import { animate } from "motion"
 
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('[data-animation="custom"]').forEach((accordionEl) => {
-      accordionEl
-        .querySelectorAll('[data-scope="accordion"][data-part="item-content"]')
-        .forEach((el) => {
-          if (el.dataset.state !== "open") {
-            el.style.opacity = "0";
-            el.style.height = "0px";
-            el.style.overflow = "hidden";
-          }
-        });
-    });
-  });
+  const reducedMotion = () =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+  function applyClosedHeight(el) {
+    el.style.opacity = "0"
+    el.style.height = "0px"
+    el.style.overflow = "hidden"
+  }
+
+  function applyOpenHeight(el) {
+    el.style.opacity = ""
+    el.style.height = ""
+    el.style.overflow = ""
+  }
+
+  function initClosedAccordionPanels() {
+    document
+      .querySelectorAll('[data-scope="accordion"][data-part="root"][data-animation="custom"]')
+      .forEach((rootEl) => {
+        rootEl
+          .querySelectorAll('[data-scope="accordion"][data-part="item-content"]')
+          .forEach((el) => {
+            if (el.dataset.state !== "open") applyClosedHeight(el)
+          })
+      })
+  }
+
+  document.addEventListener("DOMContentLoaded", initClosedAccordionPanels)
+  window.addEventListener("phx:page-loading-stop", initClosedAccordionPanels)
+
+  function findAccordionContent(root, value) {
+    return root.querySelector(
+      `[data-scope="accordion"][data-part="item"][data-value="${CSS.escape(value)}"] [data-part="item-content"]`,
+    )
+  }
 
   document.addEventListener("my-accordion-changed", (e) => {
-    const accordionEl = document.getElementById(e.detail.id);
-    if (!accordionEl) return;
-    const openValues = e.detail.value;
-    accordionEl
-      .querySelectorAll('[data-scope="accordion"][data-part="item-content"]')
-      .forEach((el) => {
-        const itemEl = el.closest('[data-scope="accordion"][data-part="item"]');
-        const value = itemEl?.dataset.value;
-        const isOpen = openValues.includes(value);
-        const wasOpen = el.dataset.state === "open";
-        if (isOpen === wasOpen) return;
-        animate(
-          el,
-          {
-            height: isOpen ? ["0px", "auto"] : ["auto", "0px"],
-            opacity: isOpen ? [0, 1] : [1, 0],
-          },
-          { duration: 0.2, easing: "ease" }
-        );
-      });
-  });
+    const root = document.getElementById(e.detail.id)
+    if (!root) return
+    const { added, removed } = e.detail
+    if (reducedMotion()) {
+      added.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyOpenHeight(el) })
+      removed.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyClosedHeight(el) })
+      return
+    }
+    added.forEach((v) => {
+      const el = findAccordionContent(root, v)
+      if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+    })
+    removed.forEach((v) => {
+      const el = findAccordionContent(root, v)
+      if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+    })
+  })
   ```
 
   <!-- tabs-close -->
@@ -762,29 +785,30 @@ defmodule Corex.Accordion do
   const el = document.getElementById("my-accordion");
 
   el?.addEventListener("accordion-value-changed", (event) => {
-    const detail = event.detail;
-    console.log(detail.id, detail.value);
+    const d = event.detail;
+    console.log(d.id, d.value, "added:", d.added, "removed:", d.removed);
   });
 
   el?.addEventListener("accordion-focus-changed", (event) => {
-    const detail = event.detail;
-    console.log(detail.id, detail.value);
+    const d = event.detail;
+    console.log(d.id, d.value);
   });
   ```
 
   ```typescript
+  import type { AccordionChangedDetail } from "corex";
+
   const el = document.getElementById("my-accordion");
-  type ValueDetail = { id: string; value: string[] };
   type FocusDetail = { id: string; value: string | null };
 
   el?.addEventListener("accordion-value-changed", (event: Event) => {
-    const detail = (event as CustomEvent<ValueDetail>).detail;
-    console.log(detail.id, detail.value);
+    const d = (event as CustomEvent<AccordionChangedDetail>).detail;
+    console.log(d.id, d.value, "added:", d.added, "removed:", d.removed);
   });
 
   el?.addEventListener("accordion-focus-changed", (event: Event) => {
-    const detail = (event as CustomEvent<FocusDetail>).detail;
-    console.log(detail.id, detail.value);
+    const d = (event as CustomEvent<FocusDetail>).detail;
+    console.log(d.id, d.value);
   });
   ```
 
@@ -913,7 +937,7 @@ defmodule Corex.Accordion do
   attr(:on_value_change_client, :string,
     default: nil,
     doc:
-      "Browser `CustomEvent` type when the open value(s) change. `event.detail`: `%{id: dom_id, value: list}`. See **Events** in the module doc."
+      "Browser `CustomEvent` type when the open value(s) change. `event.detail`: `%{id: dom_id, value: list, previousValue: list, added: list, removed: list}` (TS: `AccordionChangedDetail`). See **Events** in the module doc."
   )
 
   attr(:on_focus_change, :string,

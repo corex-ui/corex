@@ -1,14 +1,20 @@
 defmodule E2eWeb.EditableFormLive do
   use E2eWeb, :live_view
 
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+
   alias E2e.Form.EditableForm
   alias Corex.Toast
+  alias E2eWeb.Demos.EditableDemo, as: Demo
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      socket
-     |> assign(:page_title, "Editable form")
+     |> assign(:page_title, "Editable · Form")
+     |> assign(:form_ecto, Demo.form_ecto())
+     |> assign(:live_basic_heex, Demo.form_doc_live_changeset_heex())
+     |> assign(:live_basic_elixir, Demo.form_doc_live_changeset_elixir())
      |> assign_form()}
   end
 
@@ -110,37 +116,25 @@ defmodule E2eWeb.EditableFormLive do
       theme={@theme}
       path={@path}
     >
-      <article id="editable-form-live-page" class="w-full flex flex-col gap-4">
-        <.layout_heading>
-          <:title>Editable form</:title>
-          <:subtitle>Live View Form</:subtitle>
-        </.layout_heading>
-        <p>Phoenix form with Ecto changeset and editable (field=)</p>
-
-        <.form
-          for={@form}
-          id={@form.id}
-          phx-change="validate"
-          phx-submit="save"
+      <.demo_page
+        id="editable-form-live-page"
+        title="Editable · Form"
+        subtitle="Live View form"
+      >
+        <.demo_section
+          id="editable-live-form-changeset"
+          title="Phoenix form (changeset)"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: @live_basic_heex},
+            %{value: "elixir", label: "Elixir", language: :elixir, code: @live_basic_elixir},
+            %{value: "ecto", label: "Ecto", language: :elixir, code: @form_ecto}
+          ]}
         >
-          <.editable
-            field={@form[:text]}
-            on_value_change="value_changed"
-            placeholder="Enter text"
-            activation_mode="dblclick"
-            select_on_focus
-            class="editable"
-          >
-            <:label>Text</:label>
-            <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
-            <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
-            <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
-          </.editable>
-          <.action type="submit" id="editable-form-live-submit" class="button button--accent">
-            Submit
-          </.action>
-        </.form>
-      </article>
+          <:preview>
+            <Demo.form_preview_live_changeset form={@form} />
+          </:preview>
+        </.demo_section>
+      </.demo_page>
     </Layouts.app>
     """
   end

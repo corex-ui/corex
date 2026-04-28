@@ -34,7 +34,7 @@ export class Dialog extends Component<Props, Api> {
         this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
         if (open) {
           backdropEl.removeAttribute("hidden");
-        } else if (!rootEl.dataset.exitAnim) {
+        } else if (rootEl.dataset.exitAnim !== "running") {
           backdropEl.setAttribute("hidden", "");
         }
       }
@@ -56,7 +56,7 @@ export class Dialog extends Component<Props, Api> {
         this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
         if (open) {
           contentEl.removeAttribute("hidden");
-        } else if (!rootEl.dataset.exitAnim) {
+        } else if (rootEl.dataset.exitAnim !== "running") {
           contentEl.setAttribute("hidden", "");
         }
       }

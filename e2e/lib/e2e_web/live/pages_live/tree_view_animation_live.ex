@@ -1,7 +1,7 @@
 defmodule E2eWeb.TreeViewAnimationLive do
   use E2eWeb, :live_view
 
-  import E2eWeb.DemoPage, only: [demo_page: 1, demo_section: 1]
+  import E2eWeb.DemoPage, only: [demo_page: 1, demo_playground: 1, demo_section: 1]
 
   @easing_items [
     %{label: "ease", id: "ease"},
@@ -76,104 +76,100 @@ defmodule E2eWeb.TreeViewAnimationLive do
         title="Tree view · Animation"
         subtitle="Built-in JS animation, instant mode, and custom Motion-driven transitions."
       >
-        <section id="tree-view-animation-playground" class="flex flex-col gap-4 items-start">
-          <h3>Playground</h3>
-          <div class="preview w-full">
-            <div class="preview__frame">
-              <div class="preview__sidebar">
-                <.select
-                  id="tree-view-animation-easing"
-                  class="select select--sm select--mini-sm lg:w-full"
-                  value={@easing}
-                  items={@easing_items}
-                  on_value_change="easing_changed"
-                  translation={%Corex.Select.Translation{placeholder: "Easing"}}
-                >
-                  <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-                  <:label>Easing</:label>
-                </.select>
+        <.demo_playground
+          id="tree-view-animation-playground"
+          title="Playground"
+          heading_class="layout-heading"
+        >
+          <:controls>
+            <.select
+              id="tree-view-animation-easing"
+              class="select select--sm select--mini-sm lg:w-full"
+              value={@easing}
+              items={@easing_items}
+              on_value_change="easing_changed"
+              translation={%Corex.Select.Translation{placeholder: "Easing"}}
+            >
+              <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+              <:label>Easing</:label>
+            </.select>
 
-                <.number_input
-                  id="tree-view-animation-duration"
-                  class="number-input number-input--sm lg:w-full"
-                  value={@duration}
-                  step={0.1}
-                  min={0.0}
-                  on_value_change="duration_changed"
-                >
-                  <:label>Duration</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="tree-view-animation-duration"
+              class="number-input number-input--sm lg:w-full"
+              value={@duration}
+              step={0.1}
+              min={0.0}
+              on_value_change="duration_changed"
+            >
+              <:label>Duration</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="tree-view-animation-opacity-start"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.1}
-                  min={0.0}
-                  max={1.0}
-                  value={@opacity_start}
-                  on_value_change="opacity_start_changed"
-                >
-                  <:label>Opacity start</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="tree-view-animation-opacity-start"
+              class="number-input number-input--sm lg:w-full"
+              step={0.1}
+              min={0.0}
+              max={1.0}
+              value={@opacity_start}
+              on_value_change="opacity_start_changed"
+            >
+              <:label>Opacity start</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.number_input
-                  id="tree-view-animation-opacity-end"
-                  class="number-input number-input--sm lg:w-full"
-                  step={0.1}
-                  min={0.0}
-                  max={1.0}
-                  value={@opacity_end}
-                  on_value_change="opacity_end_changed"
-                >
-                  <:label>Opacity end</:label>
-                  <:decrement_trigger>
-                    <.heroicon name="hero-chevron-down" class="icon" />
-                  </:decrement_trigger>
-                  <:increment_trigger>
-                    <.heroicon name="hero-chevron-up" class="icon" />
-                  </:increment_trigger>
-                </.number_input>
+            <.number_input
+              id="tree-view-animation-opacity-end"
+              class="number-input number-input--sm lg:w-full"
+              step={0.1}
+              min={0.0}
+              max={1.0}
+              value={@opacity_end}
+              on_value_change="opacity_end_changed"
+            >
+              <:label>Opacity end</:label>
+              <:decrement_trigger>
+                <.heroicon name="hero-chevron-down" class="icon" />
+              </:decrement_trigger>
+              <:increment_trigger>
+                <.heroicon name="hero-chevron-up" class="icon" />
+              </:increment_trigger>
+            </.number_input>
 
-                <.switch
-                  id="tree-view-animation-block-interaction"
-                  class="switch switch--sm w-full"
-                  checked={@animation_options.block_interaction}
-                  on_checked_change="block_interaction_changed"
-                >
-                  <:label>Block Interaction</:label>
-                </.switch>
-              </div>
-
-              <section class="preview__main">
-                <div class="preview__canvas">
-                  <.tree_view
-                    id="tree-animation-playground"
-                    class="tree-view w-full max-w-md h-full overflow-hidden"
-                    animation="js"
-                    animation_options={@animation_options}
-                    expanded_value={@expanded_value}
-                    items={@items}
-                  >
-                    <:label>Corex</:label>
-                    <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
-                  </.tree_view>
-                </div>
-              </section>
-            </div>
-          </div>
-        </section>
+            <.switch
+              id="tree-view-animation-block-interaction"
+              class="switch switch--sm w-full"
+              checked={@animation_options.block_interaction}
+              on_checked_change="block_interaction_changed"
+            >
+              <:label>Block Interaction</:label>
+            </.switch>
+          </:controls>
+          <:canvas>
+            <.tree_view
+              id="tree-animation-playground"
+              class="tree-view w-full max-w-md h-full overflow-hidden"
+              animation="js"
+              animation_options={@animation_options}
+              expanded_value={@expanded_value}
+              items={@items}
+            >
+              <:label>Corex</:label>
+              <:branch_indicator><.heroicon name="hero-chevron-right" /></:branch_indicator>
+            </.tree_view>
+          </:canvas>
+        </.demo_playground>
 
         <.demo_section
           id="tree-view-animation-instant"

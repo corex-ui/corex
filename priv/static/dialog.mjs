@@ -16,7 +16,7 @@ import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunk-GGOQNLHD.mjs";
+} from "./chunk-U6DIKNUJ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -1256,7 +1256,7 @@ var Dialog = class extends Component {
         this.spreadProps(backdropEl, stripHiddenFromProps(rawBackdrop));
         if (open) {
           backdropEl.removeAttribute("hidden");
-        } else if (!rootEl.dataset.exitAnim) {
+        } else if (rootEl.dataset.exitAnim !== "running") {
           backdropEl.setAttribute("hidden", "");
         }
       }
@@ -1276,7 +1276,7 @@ var Dialog = class extends Component {
         this.spreadProps(contentEl, stripHiddenFromProps(rawContent));
         if (open) {
           contentEl.removeAttribute("hidden");
-        } else if (!rootEl.dataset.exitAnim) {
+        } else if (rootEl.dataset.exitAnim !== "running") {
           contentEl.setAttribute("hidden", "");
         }
       }
@@ -1318,12 +1318,6 @@ var Dialog = class extends Component {
 };
 
 // hooks/dialog.ts
-function openChangePayload(el, details) {
-  return {
-    id: el.id,
-    open: details.open
-  };
-}
 function getDialogUpdatePropsFromEl(el) {
   const softLock = el.dataset.animInteractionLocked === "true";
   return {
@@ -1343,6 +1337,7 @@ var DialogHook = {
     const self = this;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    self.lastOpen = getBoolean(el, "controlled") ? getBoolean(el, "open") ?? false : getBoolean(el, "defaultOpen") ?? false;
     const dialog = new Dialog(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { open: getBoolean(el, "open") } : { defaultOpen: getBoolean(el, "defaultOpen") },
@@ -1370,6 +1365,7 @@ var DialogHook = {
                 if (backdrop) backdrop.style.pointerEvents = "none";
                 if (positioner) positioner.style.pointerEvents = "none";
                 self.closePointerT = void 0;
+                dialog.render();
               },
               Math.max(0, closeOpts.duration * 1e3)
             );
@@ -1377,6 +1373,7 @@ var DialogHook = {
             self.closePointerT = window.setTimeout(() => {
               el.setAttribute("data-exit-anim", "complete");
               self.closePointerT = void 0;
+              dialog.render();
             }, 0);
           }
         } else if (details.open) {
@@ -1389,11 +1386,18 @@ var DialogHook = {
           dialog.updateProps(getDialogUpdatePropsFromEl(el));
           dialog.render();
         }
+        const previousOpen = self.lastOpen ?? false;
+        self.lastOpen = details.open;
+        const payload = {
+          id: el.id,
+          open: details.open,
+          previousOpen
+        };
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: openChangePayload(el, details),
+          payload,
           serverEventName: getString(el, "onOpenChange"),
           clientEventName: getString(el, "onOpenChangeClient")
         });
@@ -1467,6 +1471,9 @@ var DialogHook = {
     });
   },
   updated() {
+    if (getBoolean(this.el, "controlled")) {
+      this.lastOpen = getBoolean(this.el, "open") ?? false;
+    }
     this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
   },
   destroyed() {

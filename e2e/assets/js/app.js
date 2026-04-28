@@ -25,7 +25,7 @@ import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/corex_web"
 import corex from "../../../"
 import topbar from "../vendor/topbar"
-import {initHomeHero} from "./home.js"
+import "./doc_animation_custom.js"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
@@ -36,10 +36,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
 window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
-window.addEventListener("phx:page-loading-stop", _info => {
-  topbar.hide()
-  initHomeHero()
-})
+window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()

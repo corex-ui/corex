@@ -1,4 +1,7 @@
 import {
+  diffStringValues
+} from "./chunk-ZIE4GI65.mjs";
+import {
   prepareInitialHeightState,
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
@@ -14,7 +17,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunk-GGOQNLHD.mjs";
+} from "./chunk-U6DIKNUJ.mjs";
 import {
   Component,
   VanillaMachine,
@@ -397,8 +400,10 @@ var Accordion = class extends Component {
 var AccordionHook = {
   mounted() {
     const el = this.el;
+    const self = this;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+    self.lastValue = getBoolean(el, "controlled") ? getStringList(el, "value") ?? [] : getStringList(el, "defaultValue") ?? [];
     const accordion = new Accordion(el, {
       id: el.id,
       ...getBoolean(el, "controlled") ? { value: getStringList(el, "value") } : { defaultValue: getStringList(el, "defaultValue") },
@@ -407,11 +412,22 @@ var AccordionHook = {
       orientation: getString(el, "orientation"),
       dir: getDir(el),
       onValueChange: (details) => {
+        const next = details.value ?? [];
+        const previousValue = self.lastValue ?? [];
+        const { added, removed } = diffStringValues(next, previousValue);
+        self.lastValue = next;
+        const payload = {
+          id: el.id,
+          value: next,
+          previousValue,
+          added,
+          removed
+        };
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.value ?? null },
+          payload,
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient")
         });
@@ -425,7 +441,7 @@ var AccordionHook = {
                 '[data-scope="accordion"][data-part="item"]'
               );
               const value = itemEl?.dataset.value;
-              return !!value && (details.value ?? []).includes(value);
+              return !!value && next.includes(value);
             }
           });
         }
@@ -539,35 +555,38 @@ var AccordionHook = {
     );
   },
   beforeUpdate() {
-    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+    if (getBoolean(this.el, "controlled")) {
       this.previousValue = getStringList(this.el, "value") ?? [];
     }
   },
   updated() {
     const controlled = getBoolean(this.el, "controlled");
-    if (controlled && this.el.dataset.animation === "js") {
-      const prevValue = this.previousValue ?? [];
+    if (controlled) {
       const nextValue = getStringList(this.el, "value") ?? [];
+      const prevValue = this.previousValue ?? this.lastValue ?? [];
       this.previousValue = void 0;
-      runOpenStateTransitionsHeight({
-        rootEl: this.el,
-        selector: '[data-scope="accordion"][data-part="item-content"]',
-        opts: readHeightAnimationOptions(this.el),
-        wasOpen: (contentEl) => {
-          const itemEl = contentEl.closest(
-            '[data-scope="accordion"][data-part="item"]'
-          );
-          const value = itemEl?.dataset.value;
-          return !!value && prevValue.includes(value);
-        },
-        isOpen: (contentEl) => {
-          const itemEl = contentEl.closest(
-            '[data-scope="accordion"][data-part="item"]'
-          );
-          const value = itemEl?.dataset.value;
-          return !!value && nextValue.includes(value);
-        }
-      });
+      this.lastValue = nextValue;
+      if (this.el.dataset.animation === "js") {
+        runOpenStateTransitionsHeight({
+          rootEl: this.el,
+          selector: '[data-scope="accordion"][data-part="item-content"]',
+          opts: readHeightAnimationOptions(this.el),
+          wasOpen: (contentEl) => {
+            const itemEl = contentEl.closest(
+              '[data-scope="accordion"][data-part="item"]'
+            );
+            const value = itemEl?.dataset.value;
+            return !!value && prevValue.includes(value);
+          },
+          isOpen: (contentEl) => {
+            const itemEl = contentEl.closest(
+              '[data-scope="accordion"][data-part="item"]'
+            );
+            const value = itemEl?.dataset.value;
+            return !!value && nextValue.includes(value);
+          }
+        });
+      }
     }
     this.accordion?.updateProps({
       id: this.el.id,

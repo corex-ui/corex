@@ -3,10 +3,14 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Editable } from "../components/editable";
 import type { Props, ValueChangeDetails } from "@zag-js/editable";
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
-import { notifyChange } from "../lib/respond-to";
+import { createHookHandleEventRegistry } from "../lib/hook-handlers";
+import { createDomEventRegistry } from "../lib/dom-events";
+import { idMatches, notifyChange, readPayloadId, readPayloadValue } from "../lib/respond-to";
 
 type EditableHookState = {
   editable?: Editable;
+  domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
 };
 
 function dataDefaultValue(el: HTMLElement): string {
@@ -63,6 +67,22 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
     } as Props);
     zag.init();
     this.editable = zag;
+
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+
+    domRegistry.add<CustomEvent<{ value?: string }>>("corex:editable:set-value", (event) => {
+      const raw = event.detail?.value;
+      zag.api.setValue(raw === undefined || raw === null ? "" : String(raw));
+    });
+
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+
+    registry.add("editable_set_value", (payload: unknown) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.setValue(readPayloadValue(payload));
+    });
   },
 
   updated(this: object & HookInterface<HTMLElement> & EditableHookState) {
@@ -87,6 +107,8 @@ const EditableHook: Hook<object & HookInterface<HTMLElement> & EditableHookState
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & EditableHookState) {
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.editable?.destroy();
   },
 };

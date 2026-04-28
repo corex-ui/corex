@@ -1558,29 +1558,62 @@ defmodule E2eWeb.Demos.AccordionDemo do
 
   def animation_custom_js do
     ~S"""
+    import { animate } from "motion"
+
+    const reducedMotion = () =>
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    function applyClosedHeight(el) {
+      el.style.opacity = "0"
+      el.style.height = "0px"
+      el.style.overflow = "hidden"
+    }
+
+    function applyOpenHeight(el) {
+      el.style.opacity = ""
+      el.style.height = ""
+      el.style.overflow = ""
+    }
+
+    function initClosedAccordionPanels() {
+      document
+        .querySelectorAll('[data-scope="accordion"][data-part="root"][data-animation="custom"]')
+        .forEach((rootEl) => {
+          rootEl
+            .querySelectorAll('[data-scope="accordion"][data-part="item-content"]')
+            .forEach((el) => {
+              if (el.dataset.state !== "open") applyClosedHeight(el)
+            })
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", initClosedAccordionPanels)
+    window.addEventListener("phx:page-loading-stop", initClosedAccordionPanels)
+
+    function findAccordionContent(root, value) {
+      return root.querySelector(
+        `[data-scope="accordion"][data-part="item"][data-value="${CSS.escape(value)}"] [data-part="item-content"]`,
+      )
+    }
+
     document.addEventListener("my-accordion-changed", (e) => {
-      const accordionEl = document.getElementById(e.detail.id);
-      if (!accordionEl) return;
-      const openValues = e.detail.value;
-      const contentEls = accordionEl.querySelectorAll(
-        '[data-scope="accordion"][data-part="item-content"]'
-      );
-      contentEls.forEach(el => {
-        const itemEl = el.closest('[data-scope="accordion"][data-part="item"]');
-        const value = itemEl?.dataset.value;
-        const isOpen = openValues.includes(value);
-        const wasOpen = el.dataset.state === "open";
-        if (isOpen === wasOpen) return;
-        animate(
-          el,
-          {
-            height: isOpen ? ["0px", "auto"] : ["auto", "0px"],
-            opacity: isOpen ? [0, 1] : [1, 0],
-          },
-          { duration: 0.2, easing: "ease" }
-        )
-      });
-    });
+      const root = document.getElementById(e.detail.id)
+      if (!root) return
+      const { added, removed } = e.detail
+      if (reducedMotion()) {
+        added.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyOpenHeight(el) })
+        removed.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyClosedHeight(el) })
+        return
+      }
+      added.forEach((v) => {
+        const el = findAccordionContent(root, v)
+        if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+      })
+      removed.forEach((v) => {
+        const el = findAccordionContent(root, v)
+        if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+      })
+    })
     """
   end
 

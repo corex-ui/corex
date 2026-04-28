@@ -11,7 +11,7 @@ import {
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunk-GGOQNLHD.mjs";
+} from "./chunk-U6DIKNUJ.mjs";
 import {
   Component,
   VanillaMachine,

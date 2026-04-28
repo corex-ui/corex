@@ -16,6 +16,17 @@ defmodule E2eWeb.HomeLive do
     ]
   end
 
+  defp hero_marquee_items do
+    [
+      %{name: "Elixir", img: "/images/tech/elixir.svg"},
+      %{name: "Phoenix", img: "/images/tech/phoenix.svg"},
+      %{name: "Zag.js", img: "/images/tech/zag.webp"},
+      %{name: "TypeScript", img: "/images/tech/typescript.svg"},
+      %{name: "Tailwind", img: "/images/tech/tailwind.svg"},
+      %{name: "Figma", img: "/images/tech/figma.svg"}
+    ]
+  end
+
   @hero_code_snippet ~S"""
   <.accordion class="accordion">
     <:trigger value="anatomy">Anatomy</:trigger>
@@ -31,6 +42,7 @@ defmodule E2eWeb.HomeLive do
      socket
      |> assign(:page_title, "Corex")
      |> assign(:hero_code, @hero_code_snippet)
+     |> assign(:hero_marquee_items, hero_marquee_items())
      |> stream(:accordion_events, [], limit: 20)}
   end
 
@@ -58,7 +70,7 @@ defmodule E2eWeb.HomeLive do
       theme={@theme}
       path={@path}
     >
-      <section class="home__hero" data-home-hero aria-labelledby="home-hero-heading">
+      <section class="home__hero" aria-labelledby="home-hero-heading">
         <div class="home__hero__backdrop" aria-hidden="true">
           <div class="home__hero__glow home__hero__glow--brand"></div>
           <div class="home__hero__glow home__hero__glow--accent"></div>
@@ -67,19 +79,19 @@ defmodule E2eWeb.HomeLive do
 
         <div class="home__hero__stack">
           <div class="home__hero__inner">
-            <div class="home__hero__copy" data-home-anim-group>
-              <h1 id="home-hero-heading" data-home-anim class="home__display">
+            <div class="home__hero__copy">
+              <h1 id="home-hero-heading" class="home__display">
                 The <span class="text-brand">Phoenix UI</span>
                 with a <span class="text-alert">real API</span>.
               </h1>
 
-              <p data-home-anim class="home__lede">
+              <p class="home__lede">
                 Corex brings Zag.js state machines to Phoenix to build accessible and unstyled components with a full server and client API.
                 <br />
                 Control and listen from both sides of the wire and Fully Compatible with Phoenix Form, Stream and Ecto Changeset
               </p>
 
-              <ul data-home-anim class="home__bullets" aria-label="Highlights">
+              <ul class="home__bullets" aria-label="Highlights">
                 <li class="home__bullet">
                   <.heroicon name="hero-check-circle" class="home__bullet__icon icon" />
                   <span>
@@ -122,7 +134,7 @@ defmodule E2eWeb.HomeLive do
                 </li>
               </ul>
 
-              <div data-home-anim class="home__cta-row">
+              <div class="home__cta-row">
                 <.navigate
                   to={~p"/accordion/anatomy"}
                   class="button button--brand rounded-full"
@@ -139,13 +151,9 @@ defmodule E2eWeb.HomeLive do
               </div>
             </div>
 
-            <div class="home__hero__composition" data-home-composition>
+            <div class="home__hero__composition">
               <h2 class="sr-only">{gettext("Interactive preview")}</h2>
-              <div
-                class="home__card home__card--accordion"
-                data-home-float
-                data-rotate="-4"
-              >
+              <div class="home__card home__card--accordion">
                 <div class="home__card__label">
                   <.heroicon name="hero-bars-3-bottom-left" class="icon" />
                   <span>Accordion</span>
@@ -163,11 +171,7 @@ defmodule E2eWeb.HomeLive do
                 </.accordion>
               </div>
 
-              <div
-                class="home__card home__card--api"
-                data-home-float
-                data-rotate="3"
-              >
+              <div class="home__card home__card--api">
                 <div class="home__card__label">
                   <.heroicon name="hero-command-line" class="icon" />
                   <span>API</span>
@@ -200,11 +204,7 @@ defmodule E2eWeb.HomeLive do
                 </div>
               </div>
 
-              <div
-                class="home__card home__card--code"
-                data-home-float
-                data-rotate="-2"
-              >
+              <div class="home__card home__card--code">
                 <div class="home__card__header">
                   <div class="home__card__label">
                     <.heroicon name="hero-code-bracket" class="icon" />
@@ -237,11 +237,7 @@ defmodule E2eWeb.HomeLive do
                 />
               </div>
 
-              <div
-                class="home__card home__card--events"
-                data-home-float
-                data-rotate="4"
-              >
+              <div class="home__card home__card--events">
                 <div class="home__card__label">
                   <.heroicon name="hero-signal" class="icon" />
                   <span>Events</span>
@@ -268,24 +264,11 @@ defmodule E2eWeb.HomeLive do
           <div class="home__hero__marquee" aria-label="Built with">
             <div class="home__hero__marquee__inner">
               <p class="home__hero__marquee__label">Built with</p>
-              <.marquee
-                id="home-stack-marquee"
-                class="marquee marquee--on-layer maw-w-md"
-                items={[
-                  %{name: "Elixir", img: "/images/tech/elixir.svg"},
-                  %{name: "Phoenix", img: "/images/tech/phoenix.svg"},
-                  %{name: "Zag.js", img: "/images/tech/zag.webp"},
-                  %{name: "TypeScript", img: "/images/tech/typescript.svg"},
-                  %{name: "Tailwind", img: "/images/tech/tailwind.svg"},
-                  %{name: "Figma", img: "/images/tech/figma.svg"}
-                ]}
-                speed={50}
-                spacing="5rem"
-              >
-                <:item :let={item}>
+              <div class="home__hero__marquee__logos">
+                <%= for item <- @hero_marquee_items do %>
                   <img src={item.img} alt={item.name} class="home__hero__marquee__logo" />
-                </:item>
-              </.marquee>
+                <% end %>
+              </div>
             </div>
           </div>
         </div>

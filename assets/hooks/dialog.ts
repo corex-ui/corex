@@ -12,20 +12,15 @@ import {
   readScaleAnimationOptions,
   runScaleAnimation,
 } from "../lib/animation";
+import { type DialogOpenChangedDetail } from "../lib/event-details";
 
 type DialogHookState = {
   dialog?: Dialog;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   closePointerT?: ReturnType<typeof setTimeout>;
+  lastOpen?: boolean;
 };
-
-function openChangePayload(el: HTMLElement, details: OpenChangeDetails): Record<string, unknown> {
-  return {
-    id: el.id,
-    open: details.open,
-  };
-}
 
 function getDialogUpdatePropsFromEl(el: HTMLElement) {
   const softLock = el.dataset.animInteractionLocked === "true";
@@ -50,6 +45,10 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
 
+    self.lastOpen = getBoolean(el, "controlled")
+      ? (getBoolean(el, "open") ?? false)
+      : (getBoolean(el, "defaultOpen") ?? false);
+
     const dialog = new Dialog(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
@@ -67,7 +66,6 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
           if (self.closePointerT !== undefined) clearTimeout(self.closePointerT);
           el.setAttribute("data-exit-anim", "running");
 
-          // Only read scale opts for "js" mode — "custom" has no duration attribute
           if (el.dataset.animation === "js") {
             const closeOpts = readScaleAnimationOptions(el);
             self.closePointerT = window.setTimeout(
@@ -82,14 +80,15 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
                 if (backdrop) backdrop.style.pointerEvents = "none";
                 if (positioner) positioner.style.pointerEvents = "none";
                 self.closePointerT = undefined;
+                dialog.render();
               },
               Math.max(0, closeOpts.duration * 1000)
             );
           } else {
-            // "custom" mode: just mark exit anim, external animator drives the close
             self.closePointerT = window.setTimeout(() => {
               el.setAttribute("data-exit-anim", "complete");
               self.closePointerT = undefined;
+              dialog.render();
             }, 0);
           }
         } else if (details.open) {
@@ -103,11 +102,20 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
           dialog.render();
         }
 
+        const previousOpen = self.lastOpen ?? false;
+        self.lastOpen = details.open;
+
+        const payload: DialogOpenChangedDetail = {
+          id: el.id,
+          open: details.open,
+          previousOpen,
+        };
+
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: openChangePayload(el, details),
+          payload: payload as unknown as Record<string, unknown>,
           serverEventName: getString(el, "onOpenChange"),
           clientEventName: getString(el, "onOpenChangeClient"),
         });
@@ -192,6 +200,9 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
   },
 
   updated(this: object & HookInterface<HTMLElement> & DialogHookState) {
+    if (getBoolean(this.el, "controlled")) {
+      this.lastOpen = getBoolean(this.el, "open") ?? false;
+    }
     this.dialog?.updateProps(getDialogUpdatePropsFromEl(this.el));
   },
 

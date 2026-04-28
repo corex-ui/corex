@@ -20,19 +20,26 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import { type AccordionChangedDetail, diffStringValues } from "../lib/event-details";
 
 type AccordionHookState = {
   accordion?: Accordion;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
+  lastValue?: string[];
   previousValue?: string[];
 };
 
 const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & AccordionHookState) {
     const el = this.el;
+    const self = this as object & HookInterface<HTMLElement> & AccordionHookState;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
+
+    self.lastValue = getBoolean(el, "controlled")
+      ? (getStringList(el, "value") ?? [])
+      : (getStringList(el, "defaultValue") ?? []);
 
     const accordion = new Accordion(el, {
       id: el.id,
@@ -44,11 +51,24 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
       orientation: getString<Orientation>(el, "orientation"),
       dir: getDir(el),
       onValueChange: (details: ValueChangeDetails) => {
+        const next = details.value ?? [];
+        const previousValue = self.lastValue ?? [];
+        const { added, removed } = diffStringValues(next, previousValue);
+        self.lastValue = next;
+
+        const payload: AccordionChangedDetail = {
+          id: el.id,
+          value: next,
+          previousValue,
+          added,
+          removed,
+        };
+
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: { id: el.id, value: details.value ?? null } as Record<string, unknown>,
+          payload: payload as unknown as Record<string, unknown>,
           serverEventName: getString(el, "onValueChange"),
           clientEventName: getString(el, "onValueChangeClient"),
         });
@@ -62,7 +82,7 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
                 '[data-scope="accordion"][data-part="item"]'
               );
               const value = itemEl?.dataset.value;
-              return !!value && (details.value ?? []).includes(value);
+              return !!value && next.includes(value);
             },
           });
         }
@@ -192,36 +212,39 @@ const AccordionHook: Hook<object & AccordionHookState, HTMLElement> = {
   },
 
   beforeUpdate(this: object & HookInterface<HTMLElement> & AccordionHookState) {
-    if (getBoolean(this.el, "controlled") && this.el.dataset.animation === "js") {
+    if (getBoolean(this.el, "controlled")) {
       this.previousValue = getStringList(this.el, "value") ?? [];
     }
   },
 
   updated(this: object & HookInterface<HTMLElement> & AccordionHookState) {
     const controlled = getBoolean(this.el, "controlled");
-    if (controlled && this.el.dataset.animation === "js") {
-      const prevValue = this.previousValue ?? [];
+    if (controlled) {
       const nextValue = getStringList(this.el, "value") ?? [];
+      const prevValue = this.previousValue ?? this.lastValue ?? [];
       this.previousValue = undefined;
-      runOpenStateTransitionsHeight({
-        rootEl: this.el,
-        selector: '[data-scope="accordion"][data-part="item-content"]',
-        opts: readHeightAnimationOptions(this.el),
-        wasOpen: (contentEl) => {
-          const itemEl = contentEl.closest<HTMLElement>(
-            '[data-scope="accordion"][data-part="item"]'
-          );
-          const value = itemEl?.dataset.value;
-          return !!value && prevValue.includes(value);
-        },
-        isOpen: (contentEl) => {
-          const itemEl = contentEl.closest<HTMLElement>(
-            '[data-scope="accordion"][data-part="item"]'
-          );
-          const value = itemEl?.dataset.value;
-          return !!value && nextValue.includes(value);
-        },
-      });
+      this.lastValue = nextValue;
+      if (this.el.dataset.animation === "js") {
+        runOpenStateTransitionsHeight({
+          rootEl: this.el,
+          selector: '[data-scope="accordion"][data-part="item-content"]',
+          opts: readHeightAnimationOptions(this.el),
+          wasOpen: (contentEl) => {
+            const itemEl = contentEl.closest<HTMLElement>(
+              '[data-scope="accordion"][data-part="item"]'
+            );
+            const value = itemEl?.dataset.value;
+            return !!value && prevValue.includes(value);
+          },
+          isOpen: (contentEl) => {
+            const itemEl = contentEl.closest<HTMLElement>(
+              '[data-scope="accordion"][data-part="item"]'
+            );
+            const value = itemEl?.dataset.value;
+            return !!value && nextValue.includes(value);
+          },
+        });
+      }
     }
 
     this.accordion?.updateProps({

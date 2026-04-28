@@ -54,6 +54,14 @@ export function readPayloadId(payload: unknown): string | undefined {
   return generic;
 }
 
+export function readPayloadValue(payload: unknown): string {
+  if (!payload || typeof payload !== "object") return "";
+  const o = payload as Record<string, unknown>;
+  const v = o.value ?? o["value"];
+  if (v === undefined || v === null) return "";
+  return String(v);
+}
+
 type NotifyChangeArgs<TPayload extends Record<string, unknown>> = {
   el: HTMLElement;
   canPushServer: boolean;

@@ -19,13 +19,34 @@ import {
 } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
+import {
+  type TreeViewExpandedChangedDetail,
+  type TreeViewSelectionChangedDetail,
+  diffStringValues,
+} from "../lib/event-details";
 
 type TreeViewHookState = {
   treeView?: TreeView;
   handleRegistry?: ReturnType<typeof createHookHandleEventRegistry>;
   domRegistry?: ReturnType<typeof createDomEventRegistry>;
   lastDataTree?: string;
+  lastExpanded?: string[];
+  lastSelected?: string[];
+  lastExpandedAttr?: string;
+  lastSelectedAttr?: string;
 };
+
+function readExpandedAttr(el: HTMLElement): string {
+  return getBoolean(el, "controlled")
+    ? (el.getAttribute("data-expanded-value") ?? "")
+    : (el.getAttribute("data-default-expanded-value") ?? "");
+}
+
+function readSelectedAttr(el: HTMLElement): string {
+  return getBoolean(el, "controlled")
+    ? (el.getAttribute("data-selected-value") ?? "")
+    : (el.getAttribute("data-default-selected-value") ?? "");
+}
 
 function parseRootNode(el: HTMLElement): TreeNode {
   const raw = el.dataset.tree;
@@ -38,15 +59,26 @@ function parseRootNode(el: HTMLElement): TreeNode {
 const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & TreeViewHookState) {
     const el = this.el;
+    const self = this as object & HookInterface<HTMLElement> & TreeViewHookState;
     const pushEvent = this.pushEvent.bind(this);
     const canPush = () => canPushEvent(this.liveSocket);
     const rootNode = parseRootNode(el);
     this.lastDataTree = el.dataset.tree;
 
+    const controlled = getBoolean(el, "controlled");
+    self.lastExpanded = controlled
+      ? (getStringList(el, "expandedValue") ?? [])
+      : (getStringList(el, "defaultExpandedValue") ?? []);
+    self.lastSelected = controlled
+      ? (getStringList(el, "selectedValue") ?? [])
+      : (getStringList(el, "defaultSelectedValue") ?? []);
+    self.lastExpandedAttr = readExpandedAttr(el);
+    self.lastSelectedAttr = readSelectedAttr(el);
+
     const treeView = new TreeView(el, {
       id: el.id,
       rootNode,
-      ...(getBoolean(el, "controlled")
+      ...(controlled
         ? {
             expandedValue: getStringList(el, "expandedValue") ?? [],
             selectedValue: getStringList(el, "selectedValue") ?? [],
@@ -72,31 +104,50 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
           performRedirect(readDomItemRedirect(itemEl, value), { liveSocket: this.liveSocket });
         }
 
+        const next = details.selectedValue ?? [];
+        const previousSelectedValue = self.lastSelected ?? [];
+        const { added, removed } = diffStringValues(next, previousSelectedValue);
+        self.lastSelected = next;
+
+        const payload: TreeViewSelectionChangedDetail = {
+          id: el.id,
+          selectedValue: next,
+          previousSelectedValue,
+          added,
+          removed,
+          focusedValue: details.focusedValue,
+          isItem,
+        };
+
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: {
-            id: el.id,
-            value: {
-              selectedValue: details.selectedValue,
-              focusedValue: details.focusedValue,
-              isItem,
-            },
-          } as Record<string, unknown>,
+          payload: payload as unknown as Record<string, unknown>,
           serverEventName: getString(el, "onSelectionChange"),
           clientEventName: getString(el, "onSelectionChangeClient"),
         });
       },
       onExpandedChange: (details: ExpandedChangeDetails) => {
+        const next = details.expandedValue ?? [];
+        const previousExpandedValue = self.lastExpanded ?? [];
+        const { added, removed } = diffStringValues(next, previousExpandedValue);
+        self.lastExpanded = next;
+
+        const payload: TreeViewExpandedChangedDetail = {
+          id: el.id,
+          expandedValue: next,
+          previousExpandedValue,
+          added,
+          removed,
+          focusedValue: details.focusedValue,
+        };
+
         notifyChange({
           el,
           canPushServer: canPush(),
           pushEvent,
-          payload: {
-            id: el.id,
-            value: { expandedValue: details.expandedValue },
-          } as Record<string, unknown>,
+          payload: payload as unknown as Record<string, unknown>,
           serverEventName: getString(el, "onExpandedChange"),
           clientEventName: getString(el, "onExpandedChangeClient"),
         });
@@ -108,7 +159,7 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
             opts: readHeightAnimationOptions(el),
             isOpen: (contentEl) => {
               const value = contentEl.dataset.value;
-              return !!value && details.expandedValue.includes(value);
+              return !!value && next.includes(value);
             },
           });
         }
@@ -228,7 +279,16 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
     const typeahead = el.dataset.typeahead !== "false";
     const dir = getDir(el);
 
+    const expandedAttr = readExpandedAttr(el);
+    const selectedAttr = readSelectedAttr(el);
+    const expandedAttrChanged = expandedAttr !== this.lastExpandedAttr;
+    const selectedAttrChanged = selectedAttr !== this.lastSelectedAttr;
+    this.lastExpandedAttr = expandedAttr;
+    this.lastSelectedAttr = selectedAttr;
+
     if (controlled) {
+      if (expandedAttrChanged) this.lastExpanded = expanded;
+      if (selectedAttrChanged) this.lastSelected = selected;
       tv.updateProps({
         expandedValue: expanded,
         selectedValue: selected,
@@ -242,8 +302,8 @@ const TreeViewHook: Hook<object & TreeViewHookState, HTMLElement> = {
         typeahead,
         dir,
       });
-      tv.api.setExpandedValue(expanded);
-      tv.api.setSelectedValue(selected);
+      if (expandedAttrChanged) tv.api.setExpandedValue(expanded);
+      if (selectedAttrChanged) tv.api.setSelectedValue(selected);
     }
   },
 

@@ -98,12 +98,320 @@ defmodule E2eWeb.Demos.EditableDemo do
     """
   end
 
-  def api_overview_code do
-    minimal_code()
+  def api_set_value_client_binding_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")} class="button button--sm">Alpha</.action>
+      <.action phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")} class="button button--sm">Beta</.action>
+    </div>
+    <.editable id="editable-api-cb" class="editable" default_value="Start">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
   end
 
-  def api_overview_example(assigns) do
-    minimal_example(assigns)
+  def api_set_value_client_binding_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4 w-full max-w-4xl">
+      <.action
+        phx-click={Corex.Editable.set_value("editable-api-cb", "Alpha")}
+        class="button button--sm"
+      >
+        Alpha
+      </.action>
+      <.action
+        phx-click={Corex.Editable.set_value("editable-api-cb", "Beta")}
+        class="button button--sm"
+      >
+        Beta
+      </.action>
+    </div>
+    <.editable id="editable-api-cb" class="editable" default_value="Start">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def api_set_value_client_js_heex do
+    ~S"""
+    <div class="layout__row">
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('editable-api-cjs')?.dispatchEvent(new CustomEvent('corex:editable:set-value', { bubbles: false, detail: { value: 'Gamma' } }))"
+      >
+        Gamma (client JS)
+      </button>
+    </div>
+    <.editable id="editable-api-cjs" class="editable" default_value="Start">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def api_set_value_client_js_js do
+    ~S"""
+    const el = document.getElementById("editable-api-cjs");
+    el?.dispatchEvent(
+      new CustomEvent("corex:editable:set-value", { bubbles: false, detail: { value: "Gamma" } })
+    );
+    """
+  end
+
+  def api_set_value_client_js_ts do
+    ~S"""
+    const el: HTMLElement | null = document.getElementById("editable-api-cjs");
+    el?.dispatchEvent(
+      new CustomEvent("corex:editable:set-value", { bubbles: false, detail: { value: "Gamma" } })
+    );
+    """
+  end
+
+  def api_set_value_client_js_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-4">
+      <div class="layout__row">
+        <button
+          type="button"
+          class="button button--sm"
+          onclick="document.getElementById('editable-api-cjs')?.dispatchEvent(new CustomEvent('corex:editable:set-value', { bubbles: false, detail: { value: 'Gamma' } }))"
+        >
+          Gamma (client JS)
+        </button>
+      </div>
+      <.editable id="editable-api-cjs" class="editable" default_value="Start">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
+  def api_set_value_server_heex do
+    ~S"""
+    <div class="layout__row">
+      <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
+      <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
+    </div>
+    <.editable id="editable-api-srv" class="editable" default_value="Start">
+      <:label>Label</:label>
+      <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+      <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+      <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+    </.editable>
+    """
+  end
+
+  def api_set_value_server_elixir do
+    ~S"""
+    def handle_event("editable_api_alpha", _params, socket) do
+      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Alpha")}
+    end
+
+    def handle_event("editable_api_beta", _params, socket) do
+      {:noreply, Corex.Editable.set_value(socket, "editable-api-srv", "Beta")}
+    end
+    """
+  end
+
+  def api_set_value_server_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="w-full max-w-4xl flex flex-col gap-4">
+      <div class="layout__row">
+        <.action phx-click="editable_api_alpha" class="button button--sm">Alpha</.action>
+        <.action phx-click="editable_api_beta" class="button button--sm">Beta</.action>
+      </div>
+      <.editable id="editable-api-srv" class="editable" default_value="Start">
+        <:label>Label</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+    </div>
+    """
+  end
+
+  def api_codes do
+    %{
+      set_value_client_binding: api_set_value_client_binding_heex(),
+      set_value_client_js_heex: api_set_value_client_js_heex(),
+      set_value_client_js: api_set_value_client_js_js(),
+      set_value_client_ts: api_set_value_client_js_ts(),
+      set_value_server_heex: api_set_value_server_heex(),
+      set_value_server_elixir: api_set_value_server_elixir()
+    }
+  end
+
+  def form_ecto do
+    ~S"""
+    defmodule E2e.Form.EditableForm do
+      use Ecto.Schema
+      import Ecto.Changeset
+
+      embedded_schema do
+        field :text, :string
+      end
+
+      def changeset(form, attrs \\ %{}) do
+        form
+        |> cast(attrs, [:text])
+      end
+    end
+    """
+  end
+
+  def form_doc_live_changeset_heex do
+    ~S"""
+    <.form
+      for={@form}
+      id={@form.id}
+      phx-change="validate"
+      phx-submit="save"
+      class="w-full max-w-2xs flex flex-col gap-space items-center"
+    >
+      <.editable
+        field={@form[:text]}
+        on_value_change="value_changed"
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+      >
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-live-submit" class="button button--accent w-full">
+        Submit
+      </.action>
+    </.form>
+    """
+  end
+
+  def form_doc_live_changeset_elixir do
+    ~S"""
+    def mount(_params, _session, socket) do
+      form =
+        %E2e.Form.EditableForm{}
+        |> E2e.Form.EditableForm.changeset(%{})
+        |> Phoenix.Component.to_form(as: :editable_form, id: "editable-form")
+
+      {:ok, assign(socket, :form, form)}
+    end
+
+    def handle_event("validate", %{"editable_form" => params}, socket) do
+      changeset =
+        %E2e.Form.EditableForm{}
+        |> E2e.Form.EditableForm.changeset(params)
+        |> Map.put(:action, :validate)
+
+      {:noreply,
+       assign(
+         socket,
+         :form,
+         Phoenix.Component.to_form(changeset,
+           action: :validate,
+           as: :editable_form,
+           id: "editable-form"
+         )
+       )}
+    end
+
+    def handle_event("value_changed", %{"value" => value}, socket) do
+      params = Map.merge(socket.assigns.form.params || %{}, %{"text" => to_string(value)})
+
+      changeset =
+        %E2e.Form.EditableForm{}
+        |> E2e.Form.EditableForm.changeset(params)
+        |> Map.put(:action, :validate)
+
+      {:noreply,
+       assign(
+         socket,
+         :form,
+         Phoenix.Component.to_form(changeset,
+           action: :validate,
+           as: :editable_form,
+           id: "editable-form"
+         )
+       )}
+    end
+
+    def handle_event("save", %{"editable_form" => params}, socket) do
+      case E2e.Form.EditableForm.changeset(%E2e.Form.EditableForm{}, params) do
+        %Ecto.Changeset{valid?: true} = changeset ->
+          _data = Ecto.Changeset.apply_changes(changeset)
+          {:noreply,
+           assign(
+             socket,
+             :form,
+             Phoenix.Component.to_form(E2e.Form.EditableForm.changeset(%E2e.Form.EditableForm{}, params),
+               as: :editable_form,
+               id: "editable-form"
+             )
+           )}
+
+        changeset ->
+          {:noreply,
+           assign(
+             socket,
+             :form,
+             Phoenix.Component.to_form(changeset,
+               action: :insert,
+               as: :editable_form,
+               id: "editable-form"
+             )
+           )}
+      end
+    end
+    """
+  end
+
+  def form_preview_live_changeset(assigns) do
+    ~H"""
+    <.form
+      for={@form}
+      id={@form.id}
+      phx-change="validate"
+      phx-submit="save"
+      class="w-full max-w-2xs flex flex-col gap-space items-center"
+    >
+      <.editable
+        field={@form[:text]}
+        on_value_change="value_changed"
+        placeholder="Enter text"
+        activation_mode="dblclick"
+        select_on_focus
+        class="editable"
+      >
+        <:label>Text</:label>
+        <:edit_trigger><.heroicon name="hero-pencil-square" class="icon" /></:edit_trigger>
+        <:submit_trigger><.heroicon name="hero-check" class="icon" /></:submit_trigger>
+        <:cancel_trigger><.heroicon name="hero-x-mark" class="icon" /></:cancel_trigger>
+      </.editable>
+      <.action type="submit" id="editable-form-live-submit" class="button button--accent w-full">
+        Submit
+      </.action>
+    </.form>
+    """
   end
 
   def events_server_heex do

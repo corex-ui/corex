@@ -66,8 +66,6 @@
   .floating-panel [data-scope="floating-panel"][data-part="stage-trigger"],
   .floating-panel [data-scope="floating-panel"][data-part="close-trigger"] {
     @apply ui-trigger ui-trigger--square ui-trigger--sm;
-
-    min-height: --spacing(8);
   }
 
   [data-scope="floating-panel"][data-part="body"] {
@@ -94,7 +92,8 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    padding: --spacing(4);
+    padding-block: --spacing(1);
+    padding-inline: var(--spacing-space);
     gap: var(--spacing-space);
   }
 

@@ -53,6 +53,20 @@ defmodule Corex.Editable do
   </.editable>
   ```
 
+  ## Programmatic control
+
+  ```heex
+  <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>
+    Set Hello
+  </.action>
+  ```
+
+  ```elixir
+  def handle_event("set_text", _, socket) do
+    {:noreply, Corex.Editable.set_value(socket, "my-editable", "Hello")}
+  end
+  ```
+
   '''
 
   defmodule Translation do
@@ -72,6 +86,8 @@ defmodule Corex.Editable do
   import Corex.Gettext, only: [gettext: 1]
 
   alias Phoenix.HTML.Form
+  alias Phoenix.LiveView
+  alias Phoenix.LiveView.JS
 
   alias Corex.Editable.Anatomy.{
     Area,
@@ -282,4 +298,42 @@ defmodule Corex.Editable do
 
   defp normalize_default_value(nil), do: nil
   defp normalize_default_value(v), do: value_to_string(v)
+
+  @doc type: :api
+  @doc """
+  Sets the editable text from the client. Returns a `Phoenix.LiveView.JS` command.
+
+  ## Examples
+
+      <.action phx-click={Corex.Editable.set_value("my-editable", "Hello")}>
+        Set Hello
+      </.action>
+  """
+  def set_value(editable_id, value)
+      when is_binary(editable_id) and is_binary(value) do
+    JS.dispatch("corex:editable:set-value",
+      to: "##{editable_id}",
+      detail: %{value: value},
+      bubbles: false
+    )
+  end
+
+  @doc type: :api
+  @doc """
+  Sets the editable text from the server by pushing an event to the hook.
+
+  ## Examples
+
+      def handle_event("set_text", _params, socket) do
+        {:noreply, Corex.Editable.set_value(socket, "my-editable", "Hello")}
+      end
+  """
+  def set_value(socket, editable_id, value)
+      when is_struct(socket, Phoenix.LiveView.Socket) and is_binary(editable_id) and
+             is_binary(value) do
+    LiveView.push_event(socket, "editable_set_value", %{
+      id: editable_id,
+      value: value
+    })
+  end
 end

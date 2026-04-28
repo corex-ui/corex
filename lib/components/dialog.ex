@@ -70,6 +70,38 @@ defmodule Corex.Dialog do
 
   <!-- tabs-close -->
 
+  ## Animation
+
+  Set `animation` on `dialog` (`instant`, `js`, or `custom`).
+
+  - `instant` — Zag toggles the native `hidden` attribute, no animation.
+  - `js` — Web Animations API drives opacity/scale via `animation_options` (`Corex.Animation.Scale`).
+  - `custom` — the hook removes `hidden` and dispatches a `CustomEvent` whose **type** is `on_open_change_client`. The `detail` shape is:
+
+        // event.detail (DialogOpenChangedDetail)
+        { id, open, previousOpen }
+
+    During close, the hook sets `data-exit-anim="running"` so backdrop/positioner remain in the DOM, then on the next frame sets `data-exit-anim="complete"` and re-renders so `hidden` is re-applied. Run your exit animation synchronously inside the listener so the visual transition completes before that re-render.
+
+  ```javascript
+  import { animate } from "motion"
+
+  document.addEventListener("my-dialog-open-changed", (e) => {
+    const { id, open } = e.detail
+    const root = document.getElementById(id)
+    if (!root) return
+    const backdrop = root.querySelector('[data-scope="dialog"][data-part="backdrop"]')
+    const content = root.querySelector('[data-scope="dialog"][data-part="content"]')
+    if (open) {
+      if (backdrop) animate(backdrop, { opacity: [0, 1] }, { duration: 0.5, easing: "ease-out" })
+      if (content) animate(content, { opacity: [0, 1], scale: [0.7, 1] }, { duration: 0.7 })
+    } else {
+      if (backdrop) animate(backdrop, { opacity: [1, 0] }, { duration: 0.4, easing: "ease-in" })
+      if (content) animate(content, { opacity: [1, 0], scale: [1, 0.8] }, { duration: 0.35 })
+    }
+  })
+  ```
+
   ## API Control
 
   In order to use the API, you must use an id on the component
@@ -207,12 +239,14 @@ defmodule Corex.Dialog do
 
   attr(:on_open_change, :string,
     default: nil,
-    doc: "The server event name when the open state changes"
+    doc:
+      "Server event name when the open state changes. Payload: `%{id, open, previousOpen}` (TS: `DialogOpenChangedDetail`)."
   )
 
   attr(:on_open_change_client, :string,
     default: nil,
-    doc: "The client event name when the open state changes"
+    doc:
+      "DOM event name dispatched when the open state changes. `event.detail` matches `DialogOpenChangedDetail`. Required for `animation=\"custom\"`."
   )
 
   attr(:animation, :string,

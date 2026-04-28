@@ -1,5 +1,12 @@
 import type { Hook } from "phoenix_live_view";
 
+export type {
+  AccordionChangedDetail,
+  TreeViewExpandedChangedDetail,
+  TreeViewSelectionChangedDetail,
+  DialogOpenChangedDetail,
+} from "../lib/event-details";
+
 type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
 
 function createLazyHook(importFn: () => Promise<HookModule>, exportName: string): Hook {
