@@ -1,5 +1,5 @@
 defmodule Corex.Mix.Corex.Install.AssetsPathImportTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
 
   alias Mix.Corex.Install.Assets
 
