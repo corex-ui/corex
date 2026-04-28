@@ -551,6 +551,7 @@ defmodule E2eWeb.AccordionTest do
         session
         |> Accordion.click_first_trigger_in_section("my-accordion")
         |> Accordion.wait_root_no_loading("#my-accordion")
+        |> Accordion.wait(400)
 
       Accordion.check_accessibility(session, css("#my-accordion"),
         filter: E2eWeb.A11yDocPageFilter
@@ -573,6 +574,7 @@ defmodule E2eWeb.AccordionTest do
         session
         |> Accordion.click_trigger_in_section_at("accordion-patterns-controlled", 2)
         |> Accordion.wait_root_no_loading("#patterns-controlled")
+        |> Accordion.wait(400)
 
       Accordion.check_accessibility(session, css("#accordion-patterns-controlled"))
     end
