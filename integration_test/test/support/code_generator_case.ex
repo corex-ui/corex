@@ -66,8 +66,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
         integration_test_root_path
       )
 
-    unless output =~ "mix phx.new" and output =~ "igniter" do
-      raise "expected corex.new to run phx.new and igniter install, but output did not include it"
+    unless output =~ "mix igniter.new" and output =~ "igniter" do
+      raise "expected corex.new to run igniter.new and igniter install, but output did not include it"
     end
 
     inject_corex_path_dep(app_root_path, opts)

@@ -131,7 +131,8 @@ defmodule Corex.New.PhxWrapper do
     {_, code} =
       System.cmd(bin, args,
         cd: cd,
-        into: IO.binstream(:stdio, :line),
+        env: pty_subprocess_env(),
+        into: IO.binstream(:stdio, 16_384),
         stderr_to_stdout: true
       )
 
@@ -140,6 +141,15 @@ defmodule Corex.New.PhxWrapper do
     else
       Mix.raise("mix #{Enum.join(original_argv, " ")} failed (exit #{code})")
     end
+  end
+
+  defp pty_subprocess_env do
+    base = System.get_env() || %{}
+
+    base
+    |> Map.put("LANG", Map.get(base, "LANG", "C.UTF-8"))
+    |> Map.put("LC_ALL", Map.get(base, "LC_ALL", "C.UTF-8"))
+    |> Enum.to_list()
   end
 
   @doc false

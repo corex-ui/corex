@@ -34,8 +34,8 @@ defmodule Corex.New.MixProject do
       description: """
       Corex greenfield helper archive.
 
-      Provides `mix corex.new`, a thin wrapper around `mix phx.new` followed by
-      `mix igniter.install corex`. Install `phx_new` and `igniter_new` archives first.
+      Provides `mix corex.new`, which runs `mix igniter.new` with Phoenix (`--with phx.new`)
+      and installs Corex via Igniter. Install `phx_new` and `igniter_new` archives first.
       """
     ]
   end

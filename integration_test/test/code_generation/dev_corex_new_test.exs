@@ -17,7 +17,7 @@ defmodule Corex.Integration.CodeGeneration.DevCorexNewTest do
         cfg = Path.join(app_root_path, "config/config.exs")
         mix = Path.join(app_root_path, "mix.exs")
 
-        assert output =~ "mix phx.new" and output =~ "igniter"
+        assert output =~ "mix igniter.new" and output =~ "igniter"
 
         assert_file(mix, ~r/:corex/)
         assert_file(mix, ~r/path:/)

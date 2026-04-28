@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Corex.New.Web do
 
   ## 2) Corex (Igniter)
 
-  Same as **`mix corex.new`**: plain Corex flags (as in **`mix igniter.install corex -- …`**), plus **`--dev_corex PATH`**. For details see `mix help corex.new` or `Mix.Tasks.Corex.Install`.
+  Same as **`mix corex.new`**: plain Corex flags (as in **`mix igniter.install corex -- …`**), plus **`--dev_corex PATH`**. **`phx.new.web`** is always invoked with **`--no-install`** so Phoenix does not fetch during scaffolding; the Corex end prompt for **`deps.get`** / **`assets.setup`** behaves like **`mix corex.new`**. For details see `mix help corex.new` or `Mix.Tasks.Corex.Install`.
 
   Set **`MIX_COREX_IGNITER_INTERACTIVE=1`** to omit non-interactive `--yes` on nested `igniter.install` in some environments.
   """
@@ -98,6 +98,7 @@ defmodule Mix.Tasks.Corex.New.Web do
       opts
       |> Flags.phx_new_cli_opts()
       |> Keyword.put(:dev, false)
+      |> Keyword.put(:install, false)
 
     with_args =
       phx_opts

@@ -2,13 +2,15 @@ defmodule Mix.Tasks.Corex.New do
   @moduledoc """
   Creates a new Phoenix application and installs Corex using Igniter.
 
-  Requires the **`igniter_new`** archive so `mix igniter.install` is available, and typically **`phx_new`** for `mix phx.new`. Install both, then the Corex new archive.
+  Requires the **`igniter_new`** archive (`mix igniter.new`, `mix igniter.install`), and typically **`phx_new`** for Phoenix generators. Install both, then the Corex new archive.
 
       mix archive.install hex phx_new
       mix archive.install hex igniter_new
       mix archive.install hex corex_new
 
-  `corex.new` runs in two steps: (1) **`mix phx.new` / `phx.new.web` arguments only**; (2) **`mix igniter.install corex`** with Corex-only options (the same as `Mix.Tasks.Corex.Install` — use **`mix help igniter.install`**).
+  `corex.new` runs **`mix igniter.new`** with **`--with phx.new`** and **`--install corex`** (or `corex@path:…` with **`--dev-corex`**), forwarding Phoenix flags via **`--with-args`** and Corex installer flags (same as **`mix igniter.install corex`** — see **`mix help igniter.install`**).
+
+  **`phx.new` is always invoked with `--no-install`** (via `--with-args`) so the Phoenix generator does not run **`mix deps.get`** / compile during scaffolding; Igniter then runs its own fetch/compile as needed. After Corex finishes, you get the usual Corex prompt to fetch **`mix deps.get`** / **`mix assets.setup`** (or pass **`--install`** / **`--no-install`** to skip the prompt).
 
   For flags not listed below, generate with **`mix phx.new`**, `cd` into the project, then run **`mix igniter.install corex`**.
 
@@ -34,6 +36,7 @@ defmodule Mix.Tasks.Corex.New do
   * **`--theme`** — enable themes (Neo/Uno/Duo/Leo), `Plugs.Theme`, theme toggle, and `data-theme` bridge. **Implies `--design`** (with a notice).
   * **`--lang`** — set up Localize + Gettext: `Plugs.Path`, locale-aware router helpers, layout `lang/dir` and `language_switch` component. Does **not** imply `--design`.
   * **`--replace`** / `--no-replace` — wrap the stock `home.html.heex` in `Layouts.app` (Corex layout), strip stock helpers (`flash_group`, `theme_toggle`), and keep `/` as the entry route. **Default: on for `corex.new`**. `--no-replace` leaves the default Phoenix home at `/` and adds a demo `/home` route with `Layouts.corex` instead.
+  * **`--install`** / **`--no-install`** — after **`corex.new`** completes, control the **final** **`mix deps.get`** / **`mix assets.setup`** step (prompt if omitted). Does **not** remove **`--no-install`** on **`phx.new`** (that is always set so Phoenix does not fetch during generation).
   * `--mcp` / **`--no-mcp`** — install the Corex MCP plug under `Mix.env() == :dev` on the web endpoint. **Default: on**.
 
   ## Idempotency
@@ -171,7 +174,10 @@ defmodule Mix.Tasks.Corex.New do
     igniter_extra = opts |> then(&Flags.igniter_install_opts/1) |> IgniterArgv.to_argv()
     PhxWrapper.ensure_igniter_new!()
 
-    phx_opts = Flags.phx_new_cli_opts(opts)
+    phx_opts =
+      opts
+      |> Flags.phx_new_cli_opts()
+      |> Keyword.put(:install, false)
 
     pkg = PhxWrapper.corex_igniter_install_target(opts)
 
