@@ -35944,7 +35944,7 @@ var Corex = (() => {
             offsets: parseOffsets(getString(el, "offset")),
             pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
           });
-          el.removeAttribute("data-loading");
+          el.setAttribute("data-ready", "");
           const store2 = getToastStore(this.groupId);
           const flashInfo = el.getAttribute("data-flash-info");
           const flashInfoTitle = el.getAttribute("data-flash-info-title");
@@ -38850,33 +38850,32 @@ var Corex = (() => {
   function createLazyHook(importFn, exportName) {
     return {
       mounted() {
-        this.el.removeAttribute("data-loading");
-        return importFn().then((mod2) => {
+        return __async(this, null, function* () {
+          const mod2 = yield importFn();
           const real = mod2[exportName];
           this._realHook = real;
           if (real == null ? void 0 : real.mounted) return real.mounted.call(this);
         });
       },
       updated() {
-        var _a4, _b;
-        this.el.removeAttribute("data-loading");
-        (_b = (_a4 = this._realHook) == null ? void 0 : _a4.updated) == null ? void 0 : _b.call(this);
+        var _a5, _b;
+        (_b = (_a5 = this._realHook) == null ? void 0 : _a5.updated) == null ? void 0 : _b.call(this);
       },
       destroyed() {
-        var _a4, _b;
-        (_b = (_a4 = this._realHook) == null ? void 0 : _a4.destroyed) == null ? void 0 : _b.call(this);
+        var _a5, _b;
+        (_b = (_a5 = this._realHook) == null ? void 0 : _a5.destroyed) == null ? void 0 : _b.call(this);
       },
       disconnected() {
-        var _a4, _b;
-        (_b = (_a4 = this._realHook) == null ? void 0 : _a4.disconnected) == null ? void 0 : _b.call(this);
+        var _a5, _b;
+        (_b = (_a5 = this._realHook) == null ? void 0 : _a5.disconnected) == null ? void 0 : _b.call(this);
       },
       reconnected() {
-        var _a4, _b;
-        (_b = (_a4 = this._realHook) == null ? void 0 : _a4.reconnected) == null ? void 0 : _b.call(this);
+        var _a5, _b;
+        (_b = (_a5 = this._realHook) == null ? void 0 : _a5.reconnected) == null ? void 0 : _b.call(this);
       },
       beforeUpdate() {
-        var _a4, _b;
-        (_b = (_a4 = this._realHook) == null ? void 0 : _a4.beforeUpdate) == null ? void 0 : _b.call(this);
+        var _a5, _b;
+        (_b = (_a5 = this._realHook) == null ? void 0 : _a5.beforeUpdate) == null ? void 0 : _b.call(this);
       }
     };
   }

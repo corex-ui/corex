@@ -37,16 +37,13 @@ __export(corex_exports, {
 module.exports = __toCommonJS(corex_exports);
 function createLazyHook(importFn, exportName) {
   return {
-    mounted() {
-      this.el.removeAttribute("data-loading");
-      return importFn().then((mod) => {
-        const real = mod[exportName];
-        this._realHook = real;
-        if (real?.mounted) return real.mounted.call(this);
-      });
+    async mounted() {
+      const mod = await importFn();
+      const real = mod[exportName];
+      this._realHook = real;
+      if (real?.mounted) return real.mounted.call(this);
     },
     updated() {
-      this.el.removeAttribute("data-loading");
       this._realHook?.updated?.call(this);
     },
     destroyed() {

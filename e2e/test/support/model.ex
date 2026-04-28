@@ -6,11 +6,24 @@ defmodule E2eWeb.Model do
   `assert_has/2` and `refute_has/2`, which retry implicitly up to
   `:wallaby, :max_wait_time` (configured in `config/test.exs`).
 
-  The single readiness contract is the `data-loading` attribute on each
-  Zag-backed component host. The base `Component` class in `core.ts`
-  (and the `Toast` hook) remove `data-loading` after the underlying
-  state machine is started, so tests can wait on
-  `css("...:not([data-loading])")` to know a component is interactive.
+  Readiness contract:
+
+    * Interactive Zag-backed components keep the `data-loading`
+      attribute on their host element. The base `Component` class in
+      `core.ts` removes `data-loading` once the underlying state
+      machine has started, so tests wait on
+      `css("...:not([data-loading])")` to know a component is
+      interactive.
+
+    * The layout `Toast` group is special: it lives in the layout,
+      uses `phx-update="ignore"`, and is never a direct interaction
+      target. Instead of `data-loading`, the `Toast` hook publishes a
+      positive `data-ready` flag once `createToastGroup` succeeds.
+      `prepare_live_form/1` waits for `#layout-toast[data-ready]`
+      before returning, and `assert_toast/2` / `refute_toast/2` look
+      for substrings inside the rendered toast container
+      (`#layout-toast [data-scope='toast'][data-part='root']`)
+      rather than the whole `body`.
   """
 
   def wait(session, time) do
@@ -75,10 +88,7 @@ defmodule E2eWeb.Model do
       end
 
       def prepare_live_form(session) do
-        assert_has(
-          session,
-          css("#layout-toast[data-loading]", count: 0, visible: :any)
-        )
+        assert_has(session, css("#layout-toast[data-ready]", visible: :any))
       end
 
       def prepare_live_form_for_push_toast(session) do
@@ -86,11 +96,20 @@ defmodule E2eWeb.Model do
       end
 
       def assert_toast(session, substring) when is_binary(substring) do
-        assert_has(session, css("body", text: substring))
+        assert_has(
+          session,
+          css("#layout-toast [data-scope='toast'][data-part='root']", text: substring)
+        )
       end
 
       def refute_toast(session, substring) when is_binary(substring) do
-        assert_has(session, css("body", count: 0, text: substring))
+        assert_has(
+          session,
+          css("#layout-toast [data-scope='toast'][data-part='root']",
+            count: 0,
+            text: substring
+          )
+        )
       end
 
       def assert_submitted(session, substring) when is_binary(substring) do
