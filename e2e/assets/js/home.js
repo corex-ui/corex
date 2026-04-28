@@ -1,28 +1,5 @@
 import { animate } from "motion"
 
-function syncHomeLvPageLoading(loading) {
-  const kicker = document.getElementById("home-lv-kicker")
-  if (!kicker || kicker.getAttribute("data-home-socket") !== "connected") return
-  const connected = document.getElementById("home-lv-status-connected")
-  const loadingEl = document.getElementById("home-lv-status-loading")
-  if (!connected || !loadingEl) return
-  if (loading) {
-    kicker.setAttribute("data-home-page-loading", "")
-    connected.classList.add("hidden")
-    loadingEl.classList.remove("hidden")
-  } else {
-    kicker.removeAttribute("data-home-page-loading")
-    loadingEl.classList.add("hidden")
-    connected.classList.remove("hidden")
-  }
-}
-
-window.addEventListener("phx:page-loading-start", () => syncHomeLvPageLoading(true))
-window.addEventListener("phx:page-loading-stop", () => {
-  syncHomeLvPageLoading(false)
-  runHomeMotion()
-})
-
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
 }
@@ -32,18 +9,12 @@ function setRevealed(el) {
   el.style.transform = "none"
 }
 
-function initHero(hero) {
-  if (hero.getAttribute("data-home-motion-initialized") === "true") {
-    return
-  }
-
-  const markDone = () => hero.setAttribute("data-home-motion-initialized", "true")
-
+function animateHero(hero) {
   const items = hero.querySelectorAll("[data-home-anim]")
+
   if (prefersReducedMotion()) {
     items.forEach(setRevealed)
     hero.querySelectorAll("[data-home-float]").forEach(setRevealed)
-    markDone()
     return
   }
 
@@ -64,44 +35,38 @@ function initHero(hero) {
   })
 
   const cards = hero.querySelectorAll("[data-home-float]")
-  if (cards.length === 0) {
-    initCompositionParallax(hero)
-    markDone()
-    return
-  }
+  if (cards.length === 0) return
 
   const lgUp = window.matchMedia("(min-width: 64rem)")
 
   if (!lgUp.matches) {
     cards.forEach(setRevealed)
-  } else {
-    cards.forEach((card) => {
-      const rotate = Number(card.dataset.rotate || 0)
-      card.style.opacity = "0"
-      card.style.transform = `translateY(24px) rotate(${rotate}deg) scale(0.96)`
-    })
-
-    cards.forEach((card, i) => {
-      const rotate = Number(card.dataset.rotate || 0)
-      animate(
-        card,
-        {
-          opacity: [0, 1],
-          transform: [
-            `translateY(24px) rotate(${rotate}deg) scale(0.96)`,
-            `translateY(0px) rotate(${rotate}deg) scale(1)`,
-          ],
-        },
-        { duration: 0.8, delay: 0.25 + i * 0.1, easing: [0.16, 1, 0.3, 1] }
-      )
-    })
+    return
   }
 
-  initCompositionParallax(hero)
-  markDone()
+  cards.forEach((card) => {
+    const rotate = Number(card.dataset.rotate || 0)
+    card.style.opacity = "0"
+    card.style.transform = `translateY(24px) rotate(${rotate}deg) scale(0.96)`
+  })
+
+  cards.forEach((card, i) => {
+    const rotate = Number(card.dataset.rotate || 0)
+    animate(
+      card,
+      {
+        opacity: [0, 1],
+        transform: [
+          `translateY(24px) rotate(${rotate}deg) scale(0.96)`,
+          `translateY(0px) rotate(${rotate}deg) scale(1)`,
+        ],
+      },
+      { duration: 0.8, delay: 0.25 + i * 0.1, easing: [0.16, 1, 0.3, 1] }
+    )
+  })
 }
 
-function initCompositionParallax(hero) {
+function bindCompositionParallax(hero) {
   const composition = hero.querySelector("[data-home-composition]")
   if (!composition) return
   if (prefersReducedMotion()) return
@@ -113,15 +78,9 @@ function initCompositionParallax(hero) {
   if (!lgUp.matches) return
 
   const depths = [12, 8, 16, 10]
-  let rect = composition.getBoundingClientRect()
-
-  const updateRect = () => {
-    rect = composition.getBoundingClientRect()
-  }
-  window.addEventListener("resize", updateRect, { passive: true })
-  window.addEventListener("scroll", updateRect, { passive: true })
 
   const onMove = (event) => {
+    const rect = composition.getBoundingClientRect()
     const cx = rect.left + rect.width / 2
     const cy = rect.top + rect.height / 2
     const nx = (event.clientX - cx) / (rect.width / 2)
@@ -157,13 +116,11 @@ function initCompositionParallax(hero) {
   composition.addEventListener("pointerleave", onLeave)
 }
 
-function runHomeMotion() {
+export function initHomeHero() {
   const hero = document.querySelector("[data-home-hero]")
-  if (hero) initHero(hero)
-}
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", runHomeMotion)
-} else {
-  runHomeMotion()
+  if (!hero) return
+  if (hero.dataset.homeMotionInitialized === "true") return
+  hero.dataset.homeMotionInitialized = "true"
+  animateHero(hero)
+  bindCompositionParallax(hero)
 }
