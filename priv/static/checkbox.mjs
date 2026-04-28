@@ -1,7 +1,7 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-ZKMAU6SY.mjs";
+} from "./chunk-M7GO4YJR.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -30,13 +30,13 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.39.1/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.39.1/node_modules/@zag-js/checkbox/dist/checkbox.dom.mjs
+// ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `checkbox:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `checkbox:${ctx.id}:label`;
 var getControlId = (ctx) => ctx.ids?.control ?? `checkbox:${ctx.id}:control`;
@@ -44,7 +44,7 @@ var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `checkbox:${ctx.id}:inpu
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.39.1/node_modules/@zag-js/checkbox/dist/checkbox.connect.mjs
+// ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.connect.mjs
 function connect(service, normalize) {
   const { send, context, prop, computed, scope } = service;
   const disabled = !!prop("disabled");
@@ -160,7 +160,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+checkbox@1.39.1/node_modules/@zag-js/checkbox/dist/checkbox.machine.mjs
+// ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {

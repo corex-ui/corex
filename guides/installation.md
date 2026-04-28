@@ -18,8 +18,8 @@ This guide covers adding Corex with the official generators. For the same setup 
 
 ## Prerequisites
 
-- **Elixir** `~> 1.17` (see the [`corex` package](https://hex.pm/packages/corex) on Hex for the exact requirement).
-- **Phoenix** and **LiveView** versions compatible with Corex (constraints are listed on Hex).
+- **Elixir** `~> 1.17`
+- **Phoenix** and **LiveView**
 
 ## New Phoenix application
 

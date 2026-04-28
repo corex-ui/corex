@@ -1,7 +1,7 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-ZKMAU6SY.mjs";
+} from "./chunk-M7GO4YJR.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -30,13 +30,13 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.anatomy.mjs
 var anatomy = createAnatomy("switch").parts("root", "label", "control", "thumb");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.dom.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `switch:${ctx.id}`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `switch:${ctx.id}:label`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `switch:${ctx.id}:thumb`;
@@ -45,7 +45,7 @@ var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `switch:${ctx.id}:input`
 var getRootEl = (ctx) => ctx.getById(getRootId(ctx));
 var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.connect.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.connect.mjs
 function connect(service, normalize) {
   const { context, send, prop, scope } = service;
   const disabled = !!prop("disabled");
@@ -162,7 +162,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+switch@1.39.1/node_modules/@zag-js/switch/dist/switch.machine.mjs
+// ../node_modules/.pnpm/@zag-js+switch@1.40.0/node_modules/@zag-js/switch/dist/switch.machine.mjs
 var { not } = createGuards();
 var machine = createMachine({
   props({ props }) {

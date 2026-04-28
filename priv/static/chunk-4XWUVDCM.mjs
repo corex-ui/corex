@@ -1,4 +1,4 @@
-// ../node_modules/.pnpm/@zag-js+live-region@1.39.1/node_modules/@zag-js/live-region/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+live-region@1.40.0/node_modules/@zag-js/live-region/dist/index.mjs
 var ID = "__live-region__";
 function createLiveRegion(opts = {}) {
   const { level = "polite", document: doc = document, root, delay: _delay = 0 } = opts;

@@ -68,7 +68,6 @@ defmodule Corex.MixProject do
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0", optional: true},
-      {:ecto, "~> 3.10"},
       {:esbuild, "~> 0.8", only: :dev},
       {:ex_doc, "~> 0.40", only: :docs},
       {:makeup, "~> 1.2", only: [:dev, :test, :docs], optional: true, override: true},
@@ -80,8 +79,6 @@ defmodule Corex.MixProject do
       {:phoenix_ecto, "~> 4.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
       {:tidewave, "~> 0.5.5", only: :dev},
-      {:ex_cldr, "~> 2.47", only: :dev},
-      {:ex_cldr_languages, "~> 0.3", only: :dev},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
       {:igniter, "~> 0.6", optional: true}

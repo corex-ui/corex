@@ -1,6 +1,6 @@
 import {
   toPx
-} from "./chunk-NX2BOTHE.mjs";
+} from "./chunk-A7BIKXCQ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -38,13 +38,13 @@ import {
   raf,
   resizeObserverBorderBox,
   setup
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.39.1/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.anatomy.mjs
 var anatomy = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.39.1/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `tabs:${ctx.id}`;
 var getListId = (ctx) => ctx.ids?.list ?? `tabs:${ctx.id}:list`;
 var getContentId = (ctx, value) => ctx.ids?.content?.(value) ?? `tabs:${ctx.id}:content-${value}`;
@@ -74,7 +74,7 @@ var getRectByValue = (ctx, value) => {
   return getOffsetRect(tab);
 };
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.39.1/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, scope } = service;
   const translations = prop("translations");
@@ -268,7 +268,7 @@ function connect(service, normalize) {
 }
 var isRectEmpty = (rect) => rect == null || rect.width === 0 && rect.height === 0 && rect.x === 0 && rect.y === 0;
 
-// ../node_modules/.pnpm/@zag-js+tabs@1.39.1/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
+// ../node_modules/.pnpm/@zag-js+tabs@1.40.0/node_modules/@zag-js/tabs/dist/tabs.machine.mjs
 var { createMachine } = setup();
 var machine = createMachine({
   props({ props }) {

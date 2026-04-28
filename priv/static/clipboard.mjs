@@ -1,6 +1,6 @@
 import {
   setRafTimeout
-} from "./chunk-4ERCYGOM.mjs";
+} from "./chunk-HII6GO6Y.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -21,13 +21,13 @@ import {
   getString,
   getWindow,
   setElementValue
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.39.1/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.anatomy.mjs
 var anatomy = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.39.1/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `clip:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `clip:${ctx.id}:input`;
 var getLabelId = (ctx) => ctx.ids?.label ?? `clip:${ctx.id}:label`;
@@ -74,7 +74,7 @@ function copyText(doc, text) {
   return Promise.resolve();
 }
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.39.1/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, scope, prop } = service;
   const copied = state.matches("copied");
@@ -145,7 +145,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+clipboard@1.39.1/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
+// ../node_modules/.pnpm/@zag-js+clipboard@1.40.0/node_modules/@zag-js/clipboard/dist/clipboard.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {

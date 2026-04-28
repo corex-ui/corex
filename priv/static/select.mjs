@@ -1,14 +1,14 @@
 import {
   readPositioningOptions
-} from "./chunk-AFD7D2GA.mjs";
+} from "./chunk-NXMEG5AW.mjs";
 import {
   getPlacement,
   getPlacementStyles
-} from "./chunk-F6MNP3LD.mjs";
+} from "./chunk-RFHNZSI7.mjs";
 import {
   trackDismissableElement
-} from "./chunk-JJ4TVKGJ.mjs";
-import "./chunk-DXQBMWMN.mjs";
+} from "./chunk-CJQJFW2J.mjs";
+import "./chunk-TJXFG272.mjs";
 import {
   zagIdValueLabelCollectionConfig
 } from "./chunk-ZZTIKT3S.mjs";
@@ -17,7 +17,7 @@ import {
   createSelectedItemMap,
   deriveSelectionState,
   resolveSelectedItems
-} from "./chunk-FLYYJ5XV.mjs";
+} from "./chunk-3HAF4CIH.mjs";
 import {
   performRedirect,
   readDomItemRedirect
@@ -26,7 +26,7 @@ import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-ZKMAU6SY.mjs";
+} from "./chunk-M7GO4YJR.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -67,9 +67,9 @@ import {
   scrollIntoView,
   trackFormControl,
   visuallyHiddenStyle
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+select@1.39.1/node_modules/@zag-js/select/dist/select.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.anatomy.mjs
 var anatomy = createAnatomy("select").parts(
   "label",
   "positioner",
@@ -89,7 +89,7 @@ var anatomy = createAnatomy("select").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+select@1.39.1/node_modules/@zag-js/select/dist/select.collection.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.collection.mjs
 var collection = (options) => {
   return new ListCollection(options);
 };
@@ -97,7 +97,7 @@ collection.empty = () => {
   return new ListCollection({ items: [] });
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.39.1/node_modules/@zag-js/select/dist/select.dom.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `select:${ctx.id}`;
 var getContentId = (ctx) => ctx.ids?.content ?? `select:${ctx.id}:content`;
 var getTriggerId = (ctx) => ctx.ids?.trigger ?? `select:${ctx.id}:trigger`;
@@ -119,7 +119,7 @@ var getItemEl = (ctx, id) => {
   return ctx.getById(getItemId(ctx, id));
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.39.1/node_modules/@zag-js/select/dist/select.connect.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.connect.mjs
 function connect(service, normalize) {
   const { context, prop, scope, state, computed, send } = service;
   const translations = prop("translations");
@@ -543,7 +543,7 @@ var getSelectedValues = (el) => {
   return el.multiple ? Array.from(el.selectedOptions, (o) => o.value) : el.value ? [el.value] : [];
 };
 
-// ../node_modules/.pnpm/@zag-js+select@1.39.1/node_modules/@zag-js/select/dist/select.machine.mjs
+// ../node_modules/.pnpm/@zag-js+select@1.40.0/node_modules/@zag-js/select/dist/select.machine.mjs
 var { and, not, or } = createGuards();
 var machine = createMachine({
   props({ props }) {

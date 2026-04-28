@@ -1,6 +1,6 @@
 import {
   clampValue
-} from "./chunk-NX2BOTHE.mjs";
+} from "./chunk-A7BIKXCQ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -44,9 +44,9 @@ import {
   throttle,
   trackPointerMove,
   uniq
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.39.1/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.anatomy.mjs
 var anatomy = createAnatomy("carousel").parts(
   "root",
   "itemGroup",
@@ -61,7 +61,7 @@ var anatomy = createAnatomy("carousel").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.39.1/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `carousel:${ctx.id}`;
 var getItemId = (ctx, index) => ctx.ids?.item?.(index) ?? `carousel:${ctx.id}:item:${index}`;
 var getItemGroupId = (ctx) => ctx.ids?.itemGroup ?? `carousel:${ctx.id}:item-group`;
@@ -79,7 +79,7 @@ var syncTabIndex = (ctx) => {
   el.setAttribute("tabindex", tabbables.length > 0 ? "-1" : "0");
 };
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.39.1/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.connect.mjs
 function connect(service, normalize) {
   const { state, context, computed, send, scope, prop } = service;
   const isPlaying = state.matches("autoplay");
@@ -348,7 +348,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+scroll-snap@1.39.1/node_modules/@zag-js/scroll-snap/dist/index.mjs
+// ../node_modules/.pnpm/@zag-js+scroll-snap@1.40.0/node_modules/@zag-js/scroll-snap/dist/index.mjs
 var getDirection = (element) => getComputedStyle2(element).direction;
 var convert = (raw, size) => {
   let n = parseFloat(raw);
@@ -514,7 +514,7 @@ function findSnapPoint(parent, axis, predicate) {
 var uniq2 = (arr) => [...new Set(arr)];
 var clamp = (min, max) => (value) => Math.max(min, Math.min(max, value));
 
-// ../node_modules/.pnpm/@zag-js+carousel@1.39.1/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
+// ../node_modules/.pnpm/@zag-js+carousel@1.40.0/node_modules/@zag-js/carousel/dist/carousel.machine.mjs
 var DRIFT_THRESHOLD = 1;
 var machine = createMachine({
   props({ props }) {

@@ -1,12 +1,12 @@
 import {
   readNumberControlledZagProps
-} from "./chunk-DQ6PDFVK.mjs";
+} from "./chunk-BZGI4EKV.mjs";
 import {
   createRect
-} from "./chunk-MPNHBCLD.mjs";
+} from "./chunk-IY22ITUY.mjs";
 import {
   snapValueToStep
-} from "./chunk-NX2BOTHE.mjs";
+} from "./chunk-A7BIKXCQ.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
@@ -36,9 +36,9 @@ import {
   raf,
   setElementValue,
   trackPointerMove
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.anatomy.mjs
 var anatomy = createAnatomy("angle-slider").parts(
   "root",
   "label",
@@ -51,7 +51,7 @@ var anatomy = createAnatomy("angle-slider").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.dom.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `angle-slider:${ctx.id}`;
 var getThumbId = (ctx) => ctx.ids?.thumb ?? `angle-slider:${ctx.id}:thumb`;
 var getHiddenInputId = (ctx) => ctx.ids?.hiddenInput ?? `angle-slider:${ctx.id}:input`;
@@ -62,7 +62,7 @@ var getHiddenInputEl = (ctx) => ctx.getById(getHiddenInputId(ctx));
 var getControlEl = (ctx) => ctx.getById(getControlId(ctx));
 var getThumbEl = (ctx) => ctx.getById(getThumbId(ctx));
 
-// ../node_modules/.pnpm/@zag-js+rect-utils@1.39.1/node_modules/@zag-js/rect-utils/dist/angle.mjs
+// ../node_modules/.pnpm/@zag-js+rect-utils@1.40.0/node_modules/@zag-js/rect-utils/dist/angle.mjs
 function getPointAngle(rect, point, reference = rect.center) {
   const x = point.x - reference.x;
   const y = point.y - reference.y;
@@ -70,7 +70,7 @@ function getPointAngle(rect, point, reference = rect.center) {
   return 360 - deg;
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.utils.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.utils.mjs
 var MIN_VALUE = 0;
 var MAX_VALUE = 359;
 function mirrorAngle(angle) {
@@ -111,7 +111,7 @@ function snapAngleToStep(value, step) {
   return snapValueToStep(value, MIN_VALUE, MAX_VALUE, step);
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.connect.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.connect.mjs
 function connect(service, normalize) {
   const { state, send, context, prop, computed, scope } = service;
   const dragging = state.matches("dragging");
@@ -301,7 +301,7 @@ function connect(service, normalize) {
   };
 }
 
-// ../node_modules/.pnpm/@zag-js+angle-slider@1.39.1/node_modules/@zag-js/angle-slider/dist/angle-slider.machine.mjs
+// ../node_modules/.pnpm/@zag-js+angle-slider@1.40.0/node_modules/@zag-js/angle-slider/dist/angle-slider.machine.mjs
 var machine = createMachine({
   props({ props }) {
     return {

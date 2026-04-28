@@ -1,6 +1,6 @@
 import {
   memo
-} from "./chunk-7EQLYSUR.mjs";
+} from "./chunk-KJQMLLHN.mjs";
 import {
   clampValue,
   decrementValue,
@@ -10,7 +10,7 @@ import {
   isValueWithinRange,
   roundToDpr,
   wrap
-} from "./chunk-NX2BOTHE.mjs";
+} from "./chunk-A7BIKXCQ.mjs";
 import {
   notifyChange
 } from "./chunk-GGOQNLHD.mjs";
@@ -42,9 +42,9 @@ import {
   setElementValue,
   setup,
   trackFormControl
-} from "./chunk-SJ37CZDS.mjs";
+} from "./chunk-ZCRB45IP.mjs";
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.39.1/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.anatomy.mjs
 var anatomy = createAnatomy("numberInput").parts(
   "root",
   "label",
@@ -57,7 +57,7 @@ var anatomy = createAnatomy("numberInput").parts(
 );
 var parts = anatomy.build();
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.39.1/node_modules/@zag-js/number-input/dist/cursor.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/cursor.mjs
 function recordCursor(inputEl, scope) {
   if (!inputEl || !scope.isActiveElement(inputEl)) return;
   try {
@@ -137,7 +137,7 @@ function getNextCursorPosition(oldValue, newValue, oldPosition) {
   return newValue.length;
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.39.1/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.dom.mjs
 var getRootId = (ctx) => ctx.ids?.root ?? `number-input:${ctx.id}`;
 var getInputId = (ctx) => ctx.ids?.input ?? `number-input:${ctx.id}:input`;
 var getIncrementTriggerId = (ctx) => ctx.ids?.incrementTrigger ?? `number-input:${ctx.id}:inc`;
@@ -225,7 +225,7 @@ var createVirtualCursor = (ctx, point) => {
   doc.body.appendChild(el);
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.39.1/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.connect.mjs
 function connect(service, normalize) {
   const { state, send, prop, scope, computed } = service;
   const focused = state.hasTag("focus");
@@ -853,7 +853,7 @@ function $6c7bd7858deea686$var$escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.39.1/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.utils.mjs
 var createFormatter = (locale, options = {}) => {
   return new Intl.NumberFormat(locale, options);
 };
@@ -880,7 +880,7 @@ var getDefaultStep = (step, formatOptions) => {
   return defaultStep;
 };
 
-// ../node_modules/.pnpm/@zag-js+number-input@1.39.1/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
+// ../node_modules/.pnpm/@zag-js+number-input@1.40.0/node_modules/@zag-js/number-input/dist/number-input.machine.mjs
 var { choose, guards, createMachine } = setup();
 var { not, and } = guards;
 var machine = createMachine({
