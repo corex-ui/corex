@@ -406,7 +406,7 @@ defmodule Mix.Corex.Install.Layouts do
     igniter
     |> patch_replaced_layouts_ex_file(lay_ex, themes, opts, i18n?)
     |> patch_replaced_app_heex_file(app_heex, themes, opts)
-    |> maybe_patch_replaced_home(web_mod, i18n?)
+    |> maybe_patch_replaced_home(web_mod, themes, opts, i18n?)
   end
 
   defp patch_replaced_layouts_ex_file(igniter, lay_ex, themes, opts, i18n?) do
@@ -566,52 +566,38 @@ defmodule Mix.Corex.Install.Layouts do
     end
   end
 
-  defp strip_replaced_phoenix_home_layout_refs(c) when is_binary(c) do
-    c
-    |> then(fn b ->
-      if String.starts_with?(b, <<0xEF, 0xBB, 0xBF>>), do: String.slice(b, 3..-1//1), else: b
+  def maybe_patch_replaced_home(igniter, web_mod, themes, opts, i18n?) do
+    web_dir = Web.web_ex_dir(igniter, web_mod)
+    web_dir_name = Path.basename(web_dir)
+    home = Path.join([web_dir, "controllers", "page_html", "home.html.heex"])
+
+    new_content = build_replaced_home(themes, opts, i18n?, web_dir_name)
+
+    igniter
+    |> Igniter.include_or_create_file(home, new_content)
+    |> Igniter.update_file(home, fn source ->
+      Rewrite.Source.update(source, :content, new_content)
     end)
-    |> String.replace(~r/<Layouts\.flash_group[\s\S]*?\/>\s*/u, "")
-    |> String.replace(~r/<\.flash_group[\s\S]*?\/>\s*/u, "")
-    |> String.replace(~r/<Layouts\.theme_toggle[\s\S]*?\/>\s*/u, "")
   end
 
-  def maybe_patch_replaced_home(igniter, web_mod, i18n?) do
-    home =
-      Path.join([
-        Web.web_ex_dir(igniter, web_mod),
-        "controllers",
-        "page_html",
-        "home.html.heex"
-      ])
+  def build_replaced_home(themes, opts, i18n?, web_dir_name) do
+    mode_attr = ~s(mode={assigns[:mode] || "light"})
+    theme_attr = ~s(theme={assigns[:theme] || "neo"})
 
-    igniter = Igniter.include_existing_file(igniter, home)
+    attrs =
+      ["flash={@flash}", "current_scope={assigns[:current_scope]}"]
+      |> then(&if(i18n?, do: &1 ++ ["path={assigns[:path]}"], else: &1))
+      |> then(&if(opts[:mode], do: &1 ++ [mode_attr], else: &1))
+      |> then(&if(themes != [], do: &1 ++ [theme_attr], else: &1))
 
-    if Igniter.exists?(igniter, home) do
-      Igniter.update_file(igniter, home, &wrap_home_in_layouts_app(&1, i18n?))
-    else
-      igniter
-    end
-  end
+    body =
+      opts
+      |> Templates.corex_starter_index_body()
+      |> String.replace("{web}", web_dir_name)
+      |> String.replace("corex.html.heex", "home.html.heex")
+      |> String.trim()
 
-  defp wrap_home_in_layouts_app(source, i18n?) do
-    c0 = source.content
-    c = c0 |> strip_replaced_phoenix_home_layout_refs() |> String.trim()
-
-    new_content =
-      if String.contains?(c, "<Layouts.app") do
-        c
-      else
-        line =
-          if i18n? do
-            ~s(<Layouts.app flash={@flash} conn={@conn} current_scope={assigns[:current_scope]} mode={assigns[:mode] || "light"} theme={assigns[:theme] || "neo"} path={assigns[:path]}>)
-          else
-            ~s(<Layouts.app flash={@flash} current_scope={assigns[:current_scope]} mode={assigns[:mode] || "light"} theme={assigns[:theme] || "neo"} path={assigns[:path]}>)
-          end
-
-        line <> "\n" <> c <> "\n</Layouts.app>\n"
-      end
-
-    Rewrite.Source.update(source, :content, new_content)
+    "<Layouts.app\n  " <>
+      Enum.join(attrs, "\n  ") <> "\n>\n" <> body <> "\n</Layouts.app>\n"
   end
 end

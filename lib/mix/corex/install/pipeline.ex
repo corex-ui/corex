@@ -97,6 +97,8 @@ defmodule Mix.Corex.Install.Pipeline do
         igniter
         |> Config.configure_app_env(app, themes)
         |> Config.configure_designex(opts)
+        |> Config.maybe_add_designex_dep(opts)
+        |> Config.maybe_add_designex_alias(opts)
         |> Config.configure_test_phoenix()
       end)
     end)

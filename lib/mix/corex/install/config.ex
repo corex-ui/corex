@@ -1,7 +1,7 @@
 defmodule Mix.Corex.Install.Config do
   @moduledoc false
 
-  alias Igniter.Project.{Config, Deps}
+  alias Igniter.Project.{Config, Deps, TaskAliases}
 
   @all_themes ~w(neo uno duo leo)
 
@@ -153,6 +153,81 @@ defmodule Mix.Corex.Install.Config do
       igniter
     end
   end
+
+  def maybe_add_designex_dep(igniter, opts) do
+    if opts[:designex] do
+      Deps.add_dep(
+        igniter,
+        {:designex, "~> 1.0", [runtime: quote(do: Mix.env() == :dev)]}
+      )
+    else
+      igniter
+    end
+  end
+
+  def maybe_add_designex_alias(igniter, opts) do
+    if opts[:designex] do
+      igniter
+      |> insert_designex_before_tailwind(:"assets.build")
+      |> insert_designex_before_tailwind(:"assets.deploy")
+    else
+      igniter
+    end
+  end
+
+  defp insert_designex_before_tailwind(igniter, alias_name) do
+    TaskAliases.modify_existing_alias(igniter, alias_name, fn zipper ->
+      zipper = ensure_alias_value_is_list(zipper)
+
+      cond do
+        not Igniter.Code.List.list?(zipper) ->
+          :error
+
+        designex_corex_present?(zipper) ->
+          {:ok, zipper}
+
+        true ->
+          case Igniter.Code.List.move_to_list_item(zipper, &tailwind_string_item?/1) do
+            {:ok, item_zipper} ->
+              {:ok, Sourceror.Zipper.insert_left(item_zipper, string_node("designex corex"))}
+
+            :error ->
+              :error
+          end
+      end
+    end)
+  end
+
+  defp ensure_alias_value_is_list(zipper) do
+    if Igniter.Code.List.list?(zipper) do
+      zipper
+    else
+      Igniter.Code.Common.replace_code(zipper, [zipper.node])
+    end
+  end
+
+  defp designex_corex_present?(list_zipper) do
+    case Igniter.Code.List.move_to_list_item(list_zipper, &designex_corex_item?/1) do
+      {:ok, _} -> true
+      :error -> false
+    end
+  end
+
+  defp designex_corex_item?(zipper), do: literal_string(zipper) == "designex corex"
+
+  defp tailwind_string_item?(zipper) do
+    case literal_string(zipper) do
+      s when is_binary(s) -> Elixir.String.starts_with?(s, "tailwind ")
+      _ -> false
+    end
+  end
+
+  defp literal_string(%{node: node}), do: literal_string(node)
+  defp literal_string({:__block__, _, [v]}) when is_binary(v), do: v
+  defp literal_string(v) when is_binary(v), do: v
+  defp literal_string(_), do: nil
+
+  defp string_node(s), do: {:__block__, [delimiter: "\""], [s]}
 
   def configure_test_phoenix(igniter) do
     path = "test.exs"

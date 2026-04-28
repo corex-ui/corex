@@ -28,7 +28,7 @@ defmodule Mix.Tasks.Corex.Design do
   ```elixir
   def deps do
     [
-      {:designex, "~> 1.0", only: :dev}
+      {:designex, "~> 1.0", runtime: Mix.env() == :dev}
     ]
   end
   ```
@@ -66,13 +66,19 @@ defmodule Mix.Tasks.Corex.Design do
   mix designex corex
   ```
 
-  Optionally you can add the build into your assets build pipeline by adding the following to your `mix.exs`:
+  Optionally you can add the build into your assets build pipeline by adding the following to your `mix.exs` aliases (place `designex corex` **before** the `tailwind` step):
 
   ```elixir
-  "assets.build": ["compile", "tailwind my_app", "esbuild my_app", "designex corex"],
+  "assets.build": ["compile", "designex corex", "tailwind my_app", "esbuild my_app"],
+  "assets.deploy": [
+    "designex corex",
+    "tailwind my_app --minify",
+    "esbuild my_app --minify",
+    "phx.digest"
+  ]
   ```
 
-  the `designex corex` task will be run automatically when you run `mix assets.build`.
+  the `designex corex` task will be run automatically when you run `mix assets.build` or `mix assets.deploy`.
 
   You can also watch for changes in the design tokens by adding the following to your `config/dev.exs`:
 

@@ -2,7 +2,7 @@ defmodule Corex.Integration.CodeGeneration.CorexReplaceTest do
   use Corex.Integration.CodeGeneratorCase, async: true
 
   describe "--replace flag coverage" do
-    test "corex.new --replace yields wrapped home, no flash_group/theme_toggle defs, no /home" do
+    test "corex.new --replace overwrites home with starter body, no flash_group/theme_toggle defs, no /home" do
       with_installer_tmp("corex_replace_new", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "my_app", ["--replace"])
 
@@ -12,6 +12,11 @@ defmodule Corex.Integration.CodeGeneration.CorexReplaceTest do
         router = File.read!(Path.join(web, "router.ex"))
 
         assert home =~ ~r/<Layouts\.app[\s\n]/
+        assert home =~ "flash={@flash}"
+        assert home =~ "Welcome to Corex"
+        assert home =~ ~s|<.accordion id="welcome-accordion"|
+        assert home =~ "home.html.heex"
+        refute home =~ "corex.html.heex"
         refute layouts =~ "def flash_group"
         refute layouts =~ "def theme_toggle"
         refute router =~ ~s[get "/home"]
@@ -39,6 +44,11 @@ defmodule Corex.Integration.CodeGeneration.CorexReplaceTest do
         router = File.read!(Path.join(web, "router.ex"))
 
         assert home =~ ~r/<Layouts\.app[\s\n]/
+        assert home =~ "flash={@flash}"
+        assert home =~ "Welcome to Corex"
+        assert home =~ ~s|<.accordion id="welcome-accordion"|
+        assert home =~ "home.html.heex"
+        refute home =~ "corex.html.heex"
         refute layouts =~ "def flash_group"
         refute router =~ ~s[get "/home"]
       end)
