@@ -1,44 +1,287 @@
 # Theming
 
-Corex can expose a small set of named themes (skins) and keep **`data-theme`** on **`<html>`** in sync with cookies, storage, and UI controls.
+## Introduction
 
-## Enable with the installer
+This guide walks through wiring a **theme picker** (skins like `neo`, `uno`, `duo`, `leo`) into a Phoenix + Corex app. The result is a `data-theme="neo"` attribute on `<html>` driven by the user's selection, persisted across reloads.
 
-**New app:**
+Theme is **independent** from light/dark mode. The Corex Design tokens combine the two: a CSS rule like `[data-theme="neo"][data-mode="dark"]` is what you'd target if you wanted Neo's dark variant. Mode is covered in [Dark mode](dark_mode.html); this guide is theme-only, but they share the same bridge script and slot together cleanly.
 
-```bash
-mix corex.new my_app --theme
+If you ran `mix corex.new my_app --theme` (or `mix igniter.install corex --yes --theme`), the installer wrote everything below for you. Use this guide to understand what that produced, or to wire it by hand.
+
+For the underlying Corex install, see [Manual installation](manual_installation.html).
+
+### The problem
+
+Like dark mode, theme has to be known **at render time**. The server has to set the right `data-theme` on `<html>` so the first paint already uses the correct CSS tokens — switching client-side after paint causes a visible flash.
+
+### The solution
+
+The same three-layer pattern as dark mode:
+
+1. **Cookie + Plug** — `Plugs.Theme` reads `phx_theme` and assigns `:theme`.
+2. **Inline `<script>` in `<head>`** — reconciles `localStorage["phx:theme"]`, `data-theme`, and the configured default; persists the cookie back.
+3. **`phx:set-theme` window event** — the Corex select dispatches it on change.
+
+## 1. Configure the theme list
+
+The Corex installer writes the available themes into your application config so the plug, the bridge script, and any UI can read the same list. In `config/config.exs`:
+
+```elixir
+config :my_app, :themes, ~w(neo uno duo leo)
 ```
 
-**Existing app:**
+The **first entry** is the default theme used when no cookie is set. Use the subset that matches the Corex Design themes you import in `app.css` — there is no point exposing `leo` in the picker if you never `@import "../corex/theme/leo.css"`.
 
-```bash
-mix igniter.install corex --yes --corex.theme
+## 2. Create the Theme plug
+
+Create `lib/my_app_web/plugs/theme.ex`. It reads `phx_theme` from the cookies, validates it against your configured `:themes` list, and falls back to the first one when the cookie is missing or invalid. It also exposes the full list as `:themes` so the picker can render it without re-reading config:
+
+```elixir
+defmodule MyAppWeb.Plugs.Theme do
+  import Plug.Conn
+
+  def init(opts), do: opts
+
+  def call(conn, _opts) do
+    themes = Application.get_env(:my_app, :themes, ["neo"])
+    default_theme = List.first(themes) || "neo"
+
+    theme =
+      conn.cookies["phx_theme"]
+      |> parse_theme(themes, default_theme)
+
+    conn
+    |> assign(:theme, theme)
+    |> assign(:themes, themes)
+    |> put_session(:theme, theme)
+  end
+
+  defp parse_theme(nil, _themes, default), do: default
+
+  defp parse_theme(theme, themes, default) do
+    if theme in themes, do: theme, else: default
+  end
+end
 ```
 
-The **`--theme`** flag turns on the full theme set the installer supports (neo, uno, duo, leo). See [Installation](installation.html).
+## 3. Add the plug to the browser pipeline
 
-## Theme names
+Mount it in `lib/my_app_web/router.ex` after `:fetch_live_flash`. If you also enabled dark mode, the two plugs sit side by side; either order works.
 
-Valid theme ids match the design packs Corex ships with, typically **`neo`**, **`uno`**, **`duo`**, and **`leo`**. The default when nothing is stored is usually **`neo`** (see generated **`Plugs.Theme`** and layout defaults).
+```elixir
+pipeline :browser do
+  plug :accepts, ["html"]
+  plug :fetch_session
+  plug :fetch_live_flash
+  plug MyAppWeb.Plugs.Mode
+  plug MyAppWeb.Plugs.Theme
+  plug :put_root_layout, html: {MyAppWeb.Layouts, :root}
+  plug :protect_from_forgery
+  plug :put_secure_browser_headers
+end
+```
 
-## What the installer wires
+## 4. Update the root layout
 
-With **`--theme`**, Corex typically:
+In `lib/my_app_web/components/layouts/root.html.heex`, expose `data-theme` on `<html>` from the assign, defaulting to `"neo"` (or whichever theme you put first in `:themes`):
 
-1. Adds **`YourAppWeb.Plugs.Theme`** on the **browser** pipeline after **`fetch_live_flash`**. The plug reads the **`phx_theme`** cookie (defaulting to **`neo`** when unset) and assigns **`theme`** / session so SSR matches the picker.
-2. Sets **`data-theme`** on **`<html>`** from **`@theme`** in the root layout.
-3. Extends the same **root** bridge script used for mode (when present) to sync **`localStorage`** key **`phx:theme`**, **`phx_theme`**, **`data-theme`**, and to handle **`phx:set-theme`** events from Corex select/toggle components.
+```heex
+<!DOCTYPE html>
+<html lang="en" data-theme={assigns[:theme] || "neo"} data-mode={assigns[:mode] || "light"}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content={get_csrf_token()} />
+    <.live_title default="MyApp" suffix=" · Phoenix Framework">
+      {assigns[:page_title]}
+    </.live_title>
+    <link phx-track-static rel="stylesheet" href={~p"/assets/css/app.css"} />
+    <script defer phx-track-static type="module" src={~p"/assets/js/app.js"}></script>
+  </head>
+  <body class="typo layout">
+    {@inner_content}
+  </body>
+</html>
+```
 
-## Design system CSS
+`type="module"` on the `<script>` tag is required by the Corex JS bundle — see [Manual installation](manual_installation.html#4-root-layout-load-app-js-as-a-module) if you have not set it yet.
 
-Import the generated theme layer that matches your selection (for example **`theme/neo.css`**) from **`mix corex.design`** output. Select component styles are pulled in when you enable theme (and locale) with design — keep **`assets/css/app.css`** imports aligned with [Manual installation](manual_installation.html).
+## 5. Add the bridge script
 
-## Changing the default theme
+Inside `<head>`, **before** the closing `</head>`, add the bridge script. It runs synchronously on first paint, reconciles `localStorage` ↔ `data-theme` ↔ default, persists the cookie back, and listens for `phx:set-theme` from the picker.
 
-Adjust the fallback in **`Plugs.Theme`** and the **`data-theme`** default in the root layout to the theme id you want when no cookie is set. Keep **`validThemes`** in the bridge script aligned if you customize the list.
+If you already have the dark-mode bridge from [Dark mode](dark_mode.html#4-add-the-bridge-script), add this block right after it inside the same `<script>` IIFE — they share the same lifecycle.
+
+```heex
+<script>
+  (() => {
+    const validThemes = ["neo", "uno", "duo", "leo"];
+
+    const setTheme = (theme) => {
+      const resolved = validThemes.includes(theme) ? theme : "neo";
+      localStorage.setItem("phx:theme", resolved);
+      document.cookie = "phx_theme=" + resolved + "; path=/; max-age=31536000";
+      document.documentElement.setAttribute("data-theme", resolved);
+    };
+
+    setTheme(
+      localStorage.getItem("phx:theme") ||
+        document.documentElement.getAttribute("data-theme") ||
+        "neo"
+    );
+
+    window.addEventListener(
+      "storage",
+      (e) => e.key === "phx:theme" && e.newValue && setTheme(e.newValue)
+    );
+
+    window.addEventListener("phx:set-theme", (e) => {
+      const value = e.detail?.value;
+      const theme = Array.isArray(value) && value[0] ? value[0] : "neo";
+      setTheme(theme);
+    });
+  })();
+</script>
+```
+
+Keep `validThemes` and the fallback string in sync with your `config :my_app, :themes` list. If you only ship `neo` and `uno`, set `validThemes = ["neo", "uno"]`.
+
+## 6. Add a theme picker to the app layout
+
+Use `Corex.Select`. The `on_value_change_client="phx:set-theme"` attribute makes it dispatch the same window event the bridge script listens for — no `handle_event/3` needed.
+
+In `lib/my_app_web/components/layouts.ex`, add a `:theme` attr to your `app/1` and render the picker in the header:
+
+```elixir
+attr :flash, :map, required: true, doc: "the map of flash messages"
+attr :mode, :string, default: "light", doc: "current mode (light or dark)"
+attr :theme, :string, default: "neo", doc: "current theme"
+attr :current_scope, :map, default: nil
+
+slot :inner_block, required: true
+
+def app(assigns) do
+  ~H"""
+  <header class="layout__header flex items-center gap-2">
+    <.theme_toggle theme={@theme} />
+    <.mode_toggle mode={@mode} />
+  </header>
+  <main class="layout__main">
+    <div class="layout__content">
+      {render_slot(@inner_block)}
+    </div>
+  </main>
+  """
+end
+
+attr :theme, :string,
+  default: "neo",
+  values: ["neo", "uno", "duo", "leo"],
+  doc: "current theme"
+
+def theme_toggle(assigns) do
+  ~H"""
+  <.select
+    id="theme-select"
+    class="select select--sm w-4xs"
+    items={[
+      %{id: "neo", label: "Neo"},
+      %{id: "uno", label: "Uno"},
+      %{id: "duo", label: "Duo"},
+      %{id: "leo", label: "Leo"}
+    ]}
+    value={[@theme]}
+    on_value_change_client="phx:set-theme"
+  >
+    <:label class="sr-only">Theme</:label>
+    <:item :let={item}>{item.label}</:item>
+    <:trigger>
+      <.heroicon name="hero-swatch" />
+    </:trigger>
+    <:item_indicator>
+      <.heroicon name="hero-check" />
+    </:item_indicator>
+  </.select>
+  """
+end
+```
+
+Then make sure every page passes `theme={@theme}` (or `theme={assigns[:theme] || "neo"}`) into the layout:
+
+```heex
+<Layouts.app flash={@flash} theme={assigns[:theme] || "neo"} mode={assigns[:mode] || "light"}>
+  <h1>{gettext("Home")}</h1>
+</Layouts.app>
+```
+
+For LiveViews, attach a small `on_mount` hook that pulls `:theme` from the session into the socket:
+
+```elixir
+defmodule MyAppWeb.ThemeLive do
+  def on_mount(:default, _params, session, socket) do
+    theme = session["theme"] || "neo"
+    {:cont, Phoenix.Component.assign(socket, :theme, theme)}
+  end
+end
+```
+
+```elixir
+def live_view do
+  quote do
+    use Phoenix.LiveView
+
+    on_mount MyAppWeb.ModeLive
+    on_mount MyAppWeb.ThemeLive
+    unquote(html_helpers())
+  end
+end
+```
+
+## 7. Styling
+
+Import each theme you want available, plus the `select` component CSS that styles the picker. In `assets/css/app.css`:
+
+```css
+@import "../corex/main.css";
+@import "../corex/theme/neo.css";
+@import "../corex/theme/uno.css";
+@import "../corex/theme/duo.css";
+@import "../corex/theme/leo.css";
+@import "../corex/components/typo.css";
+@import "../corex/components/layout.css";
+@import "../corex/components/select.css";
+```
+
+Each `theme/*.css` file scopes its tokens under `[data-theme="<name>"]`, so all four can coexist in the same bundle — the active one is whichever the `<html>` attribute names.
+
+If you also use Corex Design with [Dark mode](dark_mode.html), each theme file already defines a `[data-theme="<name>"][data-mode="dark"]` variant. Theme and mode compose without extra setup.
+
+## 8. Changing the default theme
+
+The default is the **first entry** of `config :my_app, :themes`. Reorder it to change the fallback for new visitors (and anyone who hasn't picked a theme yet):
+
+```elixir
+config :my_app, :themes, ~w(uno neo duo leo)
+```
+
+If you change the default, also update:
+
+- The fallback in the bridge script (`"neo"` → your new default in **two** places).
+- The `:theme` default in `Layouts.app/1` and any `theme_toggle/1` `attr :theme, default: ...`.
+- The fallback in your `<html data-theme={... || "neo"}>` attribute.
+
+`Plugs.Theme` already picks up `List.first(themes)` automatically.
+
+## Summary
+
+1. **Config** — `config :my_app, :themes, ~w(neo uno duo leo)` is the single source of truth; first entry is the default.
+2. **Cookie** — `Plugs.Theme` reads `phx_theme`, validates against the config, assigns `:theme` and `:themes`.
+3. **Server-rendered `data-theme`** — `<html data-theme={assigns[:theme] || "neo"}>` carries the value into the first paint.
+4. **Inline `<script>` in `<head>`** — reconciles `localStorage` ↔ `data-theme` ↔ default, persists the cookie, and listens for `phx:set-theme`.
+5. **`Corex.Select`** — `on_value_change_client="phx:set-theme"` dispatches the event the bridge listens for; no server round-trip.
+6. **CSS** — every theme you list also has to be `@import`ed; `select.css` styles the picker.
 
 ## Related
 
-- [Dark mode](dark_mode.html) — light/dark **`data-mode`** alongside themes.
-- [Installation](installation.html) — **`--theme`** and **`--mode`** together.
+- [Dark mode](dark_mode.html) — same pattern for `data-mode`; combine the two bridges in one `<script>` block.
+- [Installation](installation.html) — the `--theme` flag wires all of the above automatically.
