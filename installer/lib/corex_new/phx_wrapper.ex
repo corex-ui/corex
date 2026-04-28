@@ -52,7 +52,7 @@ defmodule Corex.New.PhxWrapper do
     if interactive_yes?() do
       []
     else
-      ["--yes", "--yes-to-deps"]
+      ["--yes"]
     end
   end
 
@@ -107,7 +107,8 @@ defmodule Corex.New.PhxWrapper do
   space-separated flags work; values containing whitespace, quotes, or
   shell-significant characters are POSIX-quoted.
   """
-  def build_with_args_string(args) when is_list(args), do: Enum.map_join(args, " ", &shell_quote/1)
+  def build_with_args_string(args) when is_list(args),
+    do: Enum.map_join(args, " ", &shell_quote/1)
 
   @doc false
   def pty_cmd_stream!(argv, cd) when is_list(argv) and is_binary(cd) do
