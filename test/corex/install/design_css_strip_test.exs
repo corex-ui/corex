@@ -82,7 +82,7 @@ defmodule Corex.Install.DesignCssStripTest do
 
     """
 
-    cleaned = Mix.Corex.Install.Design.strip_stock_css_before_corex_design(css)
+    cleaned = Design.strip_stock_css_before_corex_design(css)
 
     refute cleaned =~ "daisyui"
     refute cleaned =~ "daisyUI"
