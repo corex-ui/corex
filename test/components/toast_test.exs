@@ -1,6 +1,9 @@
 defmodule Corex.ToastTest do
   use CorexTest.ComponentCase, async: true
 
+  alias Corex.Toast.Anatomy.Group
+  alias Corex.Toast.Connect
+
   describe "create_toast/5" do
     test "returns JS command for info type" do
       js = Corex.Toast.create_toast("layout-toast", "Title", "Description", :info, [])
@@ -266,6 +269,20 @@ defmodule Corex.ToastTest do
         )
 
       assert result =~ ~s(&quot;type&quot;:&quot;info&quot;)
+    end
+  end
+
+  describe "Connect.group/1 and Connect.ignore_group/1" do
+    test "group maps anatomy attrs" do
+      m = Connect.group(%Group{id: "g1"})
+      assert m["id"] == "toast:g1:group"
+      assert m["data-scope"] == "toast"
+      assert m["data-part"] == "group"
+    end
+
+    test "ignore_group returns JS" do
+      js = Connect.ignore_group(%Group{id: "g1"})
+      assert %Phoenix.LiveView.JS{} = js
     end
   end
 end

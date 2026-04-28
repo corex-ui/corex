@@ -1,17 +1,17 @@
 import {
   isFocusVisible,
   trackFocusVisible
-} from "./chunk-M7GO4YJR.mjs";
+} from "./chunks/chunk-ZNA2UPG2.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
-} from "./chunk-WHNMJXTN.mjs";
+} from "./chunks/chunk-77HPO22C.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadChecked,
   readPayloadId
-} from "./chunk-U6DIKNUJ.mjs";
+} from "./chunks/chunk-UGQ3K46R.mjs";
 import {
   Component,
   VanillaMachine,
@@ -30,7 +30,7 @@ import {
   trackFormControl,
   trackPress,
   visuallyHiddenStyle
-} from "./chunk-ZCRB45IP.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+checkbox@1.40.0/node_modules/@zag-js/checkbox/dist/checkbox.anatomy.mjs
 var anatomy = createAnatomy("checkbox").parts("root", "label", "control", "indicator");

@@ -1,11 +1,18 @@
 {
   "skip_files": [
-    "lib/components/.*/anatomy\\.ex",
-    "test/support/endpoint\\.ex",
-    "test/support/gettext\\.ex",
-    "lib/corex/flash\\.ex",
-    "lib/mix/tasks/corex.gen.schema.ex",
-    "lib/mix/tasks/corex.gen.html.ex",
-    "lib/mix/tasks/corex.gen.live.ex"
+    "lib/mix/corex/gen/context\\.ex",
+    "lib/mix/corex/install/assets\\.ex",
+    "lib/mix/corex/install/config\\.ex",
+    "lib/mix/corex/install/i18n\\.ex",
+    "lib/mix/corex/install/layouts\\.ex",
+    "lib/mix/corex/install/pipeline\\.ex",
+    "lib/mix/corex/install/templates\\.ex",
+    "lib/mix/corex/install/web\\.ex",
+    "lib/mix/corex\\.ex",
+    "lib/mix/tasks/corex\\.heroicon\\.ex",
+    "lib/mix/tasks/corex\\.install\\.ex",
+    "lib/mix/tasks/corex\\.gen\\.html\\.ex",
+    "lib/mix/tasks/corex\\.gen\\.live\\.ex",
+    "lib/mix/tasks/corex\\.gen\\.schema\\.ex"
   ]
 }

@@ -1,22 +1,22 @@
 import {
   trackDismissableElement
-} from "./chunk-CJQJFW2J.mjs";
-import "./chunk-TJXFG272.mjs";
+} from "./chunks/chunk-FXKWDXRF.mjs";
+import "./chunks/chunk-AOJTHBPA.mjs";
 import {
   prepareInitialScaleState,
   readScaleAnimationOptions,
   runScaleAnimation,
   stripHiddenFromProps
-} from "./chunk-TYROJSCS.mjs";
+} from "./chunks/chunk-7NPJK3FE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
-} from "./chunk-WHNMJXTN.mjs";
+} from "./chunks/chunk-77HPO22C.mjs";
 import {
   idMatches,
   notifyChange,
   readPayloadId
-} from "./chunk-U6DIKNUJ.mjs";
+} from "./chunks/chunk-UGQ3K46R.mjs";
 import {
   Component,
   VanillaMachine,
@@ -52,7 +52,7 @@ import {
   raf,
   setStyle,
   setStyleProperty
-} from "./chunk-ZCRB45IP.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+dialog@1.40.0/node_modules/@zag-js/dialog/dist/dialog.anatomy.mjs
 var anatomy = createAnatomy("dialog").parts(

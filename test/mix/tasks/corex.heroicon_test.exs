@@ -1,6 +1,15 @@
 defmodule Mix.Tasks.Corex.HeroiconTest do
   use ExUnit.Case, async: false
 
+  @moduletag capture_log: true
+
+  setup do
+    shell = Mix.shell()
+    Mix.shell(Mix.Shell.Quiet)
+    on_exit(fn -> Mix.shell(shell) end)
+    :ok
+  end
+
   @tag :tmp_dir
   test "creates plugin in assets/vendor", %{tmp_dir: tmp_dir} do
     File.mkdir_p!(Path.join(tmp_dir, "assets"))

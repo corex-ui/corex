@@ -1,23 +1,23 @@
 import {
   diffStringValues
-} from "./chunk-ZIE4GI65.mjs";
+} from "./chunks/chunk-JDGMEOQK.mjs";
 import {
   prepareInitialHeightState,
   readHeightAnimationOptions,
   runOpenStateTransitionsHeight,
   stripHiddenFromProps
-} from "./chunk-TYROJSCS.mjs";
+} from "./chunks/chunk-7NPJK3FE.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
-} from "./chunk-WHNMJXTN.mjs";
+} from "./chunks/chunk-77HPO22C.mjs";
 import {
   emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunk-U6DIKNUJ.mjs";
+} from "./chunks/chunk-UGQ3K46R.mjs";
 import {
   Component,
   VanillaMachine,
@@ -40,7 +40,7 @@ import {
   queryAll,
   remove,
   warn
-} from "./chunk-ZCRB45IP.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+accordion@1.40.0/node_modules/@zag-js/accordion/dist/accordion.anatomy.mjs
 var anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");

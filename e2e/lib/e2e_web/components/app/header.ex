@@ -81,8 +81,10 @@ defmodule E2eWeb.App.Header do
                 </.navigate>
               </div>
               <div
+                id="layout-menu-nav-scroll"
                 class="flex-1 min-h-0 flex flex-col scrollbar scrollbar--sm overflow-y-auto w-full py-size gap-size bg-layer"
                 aria-label="Documentation navigation"
+                phx-hook="AsideNavScroll"
               >
                 <.aside_nav_tree_views
                   path={@path}

@@ -167,8 +167,10 @@ defmodule E2eWeb.App.Aside do
 
     ~H"""
     <aside
+      id="layout-aside-nav"
       class="layout__side hidden lg:flex scrollbar scrollbar--sm w-full max-w-2xs overflow-y-auto py-size gap-size"
       aria-label="Documentation navigation"
+      phx-hook="AsideNavScroll"
     >
       <.aside_nav_tree_views
         path={@path}

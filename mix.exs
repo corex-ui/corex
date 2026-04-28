@@ -22,26 +22,7 @@ defmodule Corex.MixProject do
       docs: &docs/0,
       test_coverage: [
         tool: ExCoveralls,
-        threshold: 85,
-        ignore_modules: [
-          Mix.Tasks.Corex.Gen.Html,
-          Mix.Tasks.Corex.Gen.Live,
-          Corex.Flash,
-          Corex.Flash.Info,
-          Corex.Flash.Error,
-          Corex.Gettext,
-          Corex.Combobox.Translation,
-          Corex.ColorPicker.Translation,
-          Corex.DataTable.Translation,
-          Corex.Dialog.Translation,
-          Corex.Editable.Translation,
-          Corex.FloatingPanel.Translation,
-          Corex.NumberInput.Translation,
-          Corex.PasswordInput.Translation,
-          Corex.PinInput.Translation,
-          Corex.Select.Translation,
-          Corex.Toast.Translation
-        ]
+        threshold: 85
       ]
     ]
   end
@@ -91,6 +72,7 @@ defmodule Corex.MixProject do
       "assets.build": [
         &copy_design_to_installer/1,
         "esbuild module",
+        &clean_priv_static_chunks/1,
         "esbuild hooks",
         "esbuild cdn",
         "esbuild cdn_min",
@@ -106,6 +88,16 @@ defmodule Corex.MixProject do
       tidewave:
         "run --no-halt -e 'Agent.start(fn -> Bandit.start_link(plug: Tidewave, port: 4004) end)'"
     ]
+  end
+
+  defp clean_priv_static_chunks(_) do
+    chunks = Path.join(__DIR__, "priv/static/chunks")
+
+    if File.exists?(chunks) do
+      File.rm_rf!(chunks)
+    end
+
+    :ok
   end
 
   defp copy_design_to_installer(_) do

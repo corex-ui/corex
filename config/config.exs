@@ -60,7 +60,8 @@ if Mix.env() == :dev do
 
   hooks_args =
     hooks_entries ++
-      ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs)
+      ~w(--bundle --splitting --format=esm --outdir=../priv/static --out-extension:.js=.mjs) ++
+      ["--chunk-names=chunks/[name]-[hash]"]
 
   config :esbuild,
     version: "0.25.4",

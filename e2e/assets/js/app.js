@@ -26,12 +26,13 @@ import {hooks as colocatedHooks} from "phoenix-colocated/corex_web"
 import corex from "../../../"
 import topbar from "../vendor/topbar"
 import "./doc_animation_custom.js"
+import AsideNavScroll from "./aside_nav_scroll.js"
 
 const csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 const liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
-  hooks: {...colocatedHooks, ...corex}
+  hooks: {...colocatedHooks, ...corex, AsideNavScroll}
 })
 
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})

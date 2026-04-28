@@ -1,6 +1,6 @@
 import {
   zagIdValueLabelCollectionConfig
-} from "./chunk-ZZTIKT3S.mjs";
+} from "./chunks/chunk-7NUJK5QP.mjs";
 import {
   GridCollection,
   ListCollection,
@@ -9,27 +9,27 @@ import {
   deriveSelectionState,
   isGridCollection,
   resolveSelectedItems
-} from "./chunk-3HAF4CIH.mjs";
+} from "./chunks/chunk-5YSYSNPK.mjs";
 import {
   performRedirect,
   readDomItemRedirect
-} from "./chunk-6XKINCJF.mjs";
+} from "./chunks/chunk-FOQSALVP.mjs";
 import {
   getInteractionModality,
   setInteractionModality,
   trackFocusVisible
-} from "./chunk-M7GO4YJR.mjs";
+} from "./chunks/chunk-ZNA2UPG2.mjs";
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
-} from "./chunk-WHNMJXTN.mjs";
+} from "./chunks/chunk-77HPO22C.mjs";
 import {
   emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunk-U6DIKNUJ.mjs";
+} from "./chunks/chunk-UGQ3K46R.mjs";
 import {
   Component,
   VanillaMachine,
@@ -59,7 +59,7 @@ import {
   scrollIntoView,
   setup,
   templatesContentRoot
-} from "./chunk-ZCRB45IP.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+listbox@1.40.0/node_modules/@zag-js/listbox/dist/listbox.anatomy.mjs
 var anatomy = createAnatomy("listbox").parts(

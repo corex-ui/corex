@@ -1,14 +1,14 @@
 import {
   createDomEventRegistry,
   createHookHandleEventRegistry
-} from "./chunk-WHNMJXTN.mjs";
+} from "./chunks/chunk-77HPO22C.mjs";
 import {
   emitResponse,
   idMatches,
   notifyChange,
   parseRespondTo,
   readPayloadId
-} from "./chunk-U6DIKNUJ.mjs";
+} from "./chunks/chunk-UGQ3K46R.mjs";
 import {
   Component,
   VanillaMachine,
@@ -18,7 +18,7 @@ import {
   getString,
   observeAttributes,
   observeChildren
-} from "./chunk-ZCRB45IP.mjs";
+} from "./chunks/chunk-OVJ3SUQN.mjs";
 
 // ../node_modules/.pnpm/@zag-js+avatar@1.40.0/node_modules/@zag-js/avatar/dist/avatar.anatomy.mjs
 var anatomy = createAnatomy("avatar").parts("root", "image", "fallback");
