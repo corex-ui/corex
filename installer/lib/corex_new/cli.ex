@@ -59,6 +59,9 @@ defmodule Corex.New.Cli do
       Keyword.get(opts, :design) == true ->
         opts
 
+      Keyword.get(opts, :design) == false and needs_design? ->
+        opts
+
       true ->
         if notify? do
           Mix.shell().info(

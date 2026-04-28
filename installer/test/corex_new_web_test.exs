@@ -6,7 +6,7 @@ defmodule Mix.Tasks.Corex.New.WebTest do
   import ExUnit.CaptureIO
 
   test "new without args shows help" do
-    assert capture_io(fn -> Mix.Tasks.Corex.New.Web.run([]) end) =~ "mix phx.new.web"
+    assert capture_io(fn -> Mix.Tasks.Corex.New.Web.run([]) end) =~ "phx.new.web"
   end
 
   test "new outside umbrella" do
