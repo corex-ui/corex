@@ -34,7 +34,6 @@ defmodule E2eWeb.AccordionTest do
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_trigger_in_section_at(section, 2)
-        |> Accordion.wait(200)
 
       assert Accordion.trigger_aria_expanded_at(session, section, 2) == "true"
     end
@@ -49,7 +48,6 @@ defmodule E2eWeb.AccordionTest do
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_first_trigger_in_section(section)
-        |> Accordion.wait(100)
 
       assert has?(
                session,
@@ -65,7 +63,6 @@ defmodule E2eWeb.AccordionTest do
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_first_trigger_in_section(section)
-        |> Accordion.wait(200)
 
       assert Accordion.content_visible?(
                session,
@@ -81,7 +78,6 @@ defmodule E2eWeb.AccordionTest do
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_trigger_in_section_at(section, 2)
-        |> Accordion.wait(200)
 
       assert Accordion.content_visible?(
                session,
@@ -103,13 +99,11 @@ defmodule E2eWeb.AccordionTest do
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_first_trigger_in_section(section)
-        |> Accordion.wait(100)
 
       assert Accordion.first_trigger_aria_expanded(session, section) == "true"
 
       session
       |> Accordion.press_space()
-      |> Accordion.wait(100)
 
       assert Accordion.first_trigger_aria_expanded(session, section) == "false"
     end
@@ -122,13 +116,10 @@ defmodule E2eWeb.AccordionTest do
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :anatomy)
         |> Accordion.wait_section_accordion_ready(section)
         |> Accordion.click_first_trigger_in_section(section)
-        |> Accordion.wait(100)
 
       session
       |> Accordion.press_key(:down_arrow, 1)
-      |> Accordion.wait(100)
       |> Accordion.press_enter()
-      |> Accordion.wait(200)
 
       assert Accordion.first_trigger_aria_expanded(session, section) in ["true", "false"]
       assert Accordion.trigger_aria_expanded_at(session, section, 2) in ["true", "false"]
@@ -147,7 +138,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_open_lorem_api()
-        |> Accordion.wait(400)
 
       assert Accordion.lorem_trigger_expanded?(session)
     end
@@ -161,7 +151,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_in_section("accordion-api-set-value-js", "Open Lorem")
-        |> Accordion.wait(400)
 
       assert Accordion.trigger_expanded?(session, "api-set-value-client-js", "lorem", "true")
     end
@@ -175,7 +164,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_in_section("accordion-api-set-value-server", "Open Lorem")
-        |> Accordion.wait(400)
 
       assert Accordion.trigger_expanded?(session, "api-set-value-server", "lorem", "true")
     end
@@ -188,7 +176,6 @@ defmodule E2eWeb.AccordionTest do
 
       session
       |> Accordion.click_in_section("accordion-api-value-binding", "Value")
-      |> Accordion.wait(800)
 
       assert String.contains?(
                Wallaby.Browser.page_source(session),
@@ -205,7 +192,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_in_section("accordion-api-value-js", "Value")
-        |> Accordion.wait(300)
 
       assert is_binary(Wallaby.Browser.page_source(session))
     end
@@ -219,7 +205,6 @@ defmodule E2eWeb.AccordionTest do
       _ =
         session
         |> Accordion.click_in_section("accordion-api-value-server", "Value")
-        |> Accordion.wait(800)
 
       assert is_binary(Wallaby.Browser.page_source(session))
     end
@@ -233,7 +218,6 @@ defmodule E2eWeb.AccordionTest do
 
       session
       |> Accordion.click_in_section("accordion-api-focused-binding", "Focused")
-      |> Accordion.wait(5_500)
 
       Accordion.assert_active_element_inside_id(session, "api-focused-client")
     end
@@ -247,7 +231,6 @@ defmodule E2eWeb.AccordionTest do
 
       session
       |> Accordion.click_in_section("accordion-api-focused-js", "Focused")
-      |> Accordion.wait(5_500)
 
       Accordion.assert_active_element_inside_id(session, "api-focused-client-js")
     end
@@ -261,7 +244,6 @@ defmodule E2eWeb.AccordionTest do
 
       session
       |> Accordion.click_in_section("accordion-api-focused-server", "Focused")
-      |> Accordion.wait(5_500)
 
       Accordion.assert_active_element_inside_id(session, "api-focused-server")
     end
@@ -276,7 +258,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_in_section("accordion-api-item-state-binding", "donec")
-        |> Accordion.wait(1_200)
 
       assert Accordion.item_data_disabled?(session, "api-item-client", "donec") or
                Accordion.trigger_aria_disabled?(session, "api-item-client", "donec")
@@ -292,7 +273,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_in_section("accordion-api-item-state-js", "donec")
-        |> Accordion.wait(400)
 
       assert Accordion.trigger_aria_disabled?(session, "api-item-client-js", "donec")
     end
@@ -307,7 +287,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_in_section("accordion-api-item-state-server", "donec")
-        |> Accordion.wait(1_200)
 
       assert Accordion.item_data_disabled?(session, "api-item-server", "donec") or
                Accordion.trigger_aria_disabled?(session, "api-item-server", "donec")
@@ -350,7 +329,6 @@ defmodule E2eWeb.AccordionTest do
       _ =
         session
         |> Accordion.click_events_client_duis()
-        |> Accordion.wait(500)
         |> Accordion.wait_for_has(
           css("#accordion-events-log-client tr[data-part='row']", count: 1),
           timeout: 20_000
@@ -408,9 +386,7 @@ defmodule E2eWeb.AccordionTest do
       _ =
         session
         |> Accordion.click_first_trigger_in_section("my-accordion")
-        |> Accordion.wait(200)
         |> Accordion.click_trigger_in_section_at("my-accordion", 2)
-        |> Accordion.wait(200)
 
       assert Accordion.first_trigger_aria_expanded(session, "my-accordion") == "false"
       assert Accordion.trigger_aria_expanded_at(session, "my-accordion", 2) == "true"
@@ -425,7 +401,6 @@ defmodule E2eWeb.AccordionTest do
       _ =
         session
         |> click(css("#playground-disabled-items [data-part='trigger']"))
-        |> Accordion.wait(300)
         |> click(css("#playground-disabled-items [data-part='item'][data-value='lorem']"))
         |> Accordion.click_outside()
         |> Accordion.wait_root_no_loading("#my-accordion")
@@ -442,7 +417,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> click(css("#accordion-size [data-part='trigger']"))
-        |> Accordion.wait(200)
         |> click(
           css(~S|#accordion-size [data-scope="select"][data-part="item"][data-value="sm"]|)
         )
@@ -462,7 +436,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> click(css("#accordion-color [data-part='trigger']"))
-        |> Accordion.wait(200)
         |> click(css("#accordion-color [data-part='item'][data-value='accent']"))
         |> Accordion.wait_root_no_loading("#my-accordion")
 
@@ -488,7 +461,6 @@ defmodule E2eWeb.AccordionTest do
       _ =
         session
         |> Accordion.click_trigger_in_section_at(section, 2)
-        |> Accordion.wait(400)
 
       assert Accordion.trigger_expanded?(session, "patterns-open-single", "duis", "true")
       refute Accordion.trigger_expanded?(session, "patterns-open-single", "lorem", "true")
@@ -512,7 +484,6 @@ defmodule E2eWeb.AccordionTest do
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
         |> Accordion.wait_root_no_loading("#patterns-controlled")
-        |> Accordion.wait(300)
 
       assert Accordion.trigger_expanded?(session, "patterns-controlled", "lorem", "true")
       assert Accordion.trigger_expanded?(session, "patterns-controlled", "duis", "false")
@@ -520,7 +491,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_trigger_in_section_at(section, 2)
-        |> Accordion.wait(200)
 
       assert Accordion.trigger_expanded?(session, "patterns-controlled", "duis", "true")
       assert Accordion.trigger_expanded?(session, "patterns-controlled", "lorem", "false")
@@ -580,7 +550,6 @@ defmodule E2eWeb.AccordionTest do
       session =
         session
         |> Accordion.click_first_trigger_in_section("my-accordion")
-        |> Accordion.wait(200)
         |> Accordion.wait_root_no_loading("#my-accordion")
 
       Accordion.check_accessibility(session, css("#my-accordion"),
@@ -597,14 +566,12 @@ defmodule E2eWeb.AccordionTest do
         session
         |> ComponentBehaviorSpec.visit_ready(Accordion, :accordion, :patterns)
         |> Accordion.wait_root_no_loading("#patterns-controlled")
-        |> Accordion.wait(300)
 
       session = Accordion.check_accessibility(session, css("#accordion-patterns-controlled"))
 
       session =
         session
         |> Accordion.click_trigger_in_section_at("accordion-patterns-controlled", 2)
-        |> Accordion.wait(200)
         |> Accordion.wait_root_no_loading("#patterns-controlled")
 
       Accordion.check_accessibility(session, css("#accordion-patterns-controlled"))

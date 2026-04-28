@@ -9,7 +9,7 @@ defmodule E2eWeb.EditableModel do
       end
 
     session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
+    if mode == :live, do: prepare_live_form(session), else: session
   end
 
   def submit_form(session, mode \\ :static) do
@@ -18,6 +18,6 @@ defmodule E2eWeb.EditableModel do
   end
 
   def see_flash(session, flash_text) do
-    wait_for_flash(session, flash_text)
+    assert_toast(session, flash_text)
   end
 end

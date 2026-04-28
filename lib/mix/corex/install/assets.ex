@@ -91,6 +91,54 @@ defmodule Mix.Corex.Install.Assets do
     end)
   end
 
+  @doc """
+  Copies the Corex SVG logo to `priv/static/images/logo.svg`, but only if no logo exists yet
+  or the existing file is the stock Phoenix logo. Existing user logos are preserved.
+  """
+  def maybe_install_corex_logo(igniter) do
+    target_rel = "priv/static/images/logo.svg"
+    source_path = Path.join([:code.priv_dir(:corex), "installer", "images", "logo.svg"])
+
+    case File.read(source_path) do
+      {:ok, corex_svg} ->
+        maybe_write_corex_logo(igniter, target_rel, corex_svg)
+
+      _ ->
+        igniter
+    end
+  end
+
+  defp maybe_write_corex_logo(igniter, target_rel, corex_svg) do
+    target_abs = Path.expand(target_rel)
+    existing = if File.exists?(target_abs), do: File.read!(target_abs), else: nil
+
+    cond do
+      is_nil(existing) ->
+        Igniter.create_new_file(igniter, target_rel, corex_svg, on_exists: :overwrite)
+
+      existing == corex_svg ->
+        igniter
+
+      stock_phoenix_logo?(existing) ->
+        overwrite_logo_file(igniter, target_rel, corex_svg)
+
+      true ->
+        igniter
+    end
+  end
+
+  defp overwrite_logo_file(igniter, target_rel, corex_svg) do
+    Igniter.update_file(igniter, target_rel, fn source ->
+      Rewrite.Source.update(source, :content, corex_svg)
+    end)
+  end
+
+  defp stock_phoenix_logo?(svg) when is_binary(svg) do
+    String.contains?(svg, "phoenix") or String.contains?(svg, "Phoenix") or
+      String.contains?(svg, "phx") or
+      String.contains?(svg, "M71.8 60.3c-15.9-7.4")
+  end
+
   defp import_corex_present?(content) do
     Regex.match?(~r/^\s*import\s+corex\s+from\s+/m, content)
   end

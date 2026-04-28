@@ -8,29 +8,40 @@ defmodule Mix.Tasks.Corex.New do
       mix archive.install hex igniter_new
       mix archive.install hex corex_new
 
-  `corex.new` is two steps: (1) **`mix phx.new` / `phx.new.web` arguments only**; (2) **`mix igniter.install corex`** with Corex-only options (the same as `Mix.Tasks.Corex.Install` — use **`mix help igniter.install`**.)
+  `corex.new` runs in two steps: (1) **`mix phx.new` / `phx.new.web` arguments only**; (2) **`mix igniter.install corex`** with Corex-only options (the same as `Mix.Tasks.Corex.Install` — use **`mix help igniter.install`**).
 
-  For flags not listed for either step, generate with **`mix phx.new`**, `cd` into the project, then run **`mix igniter.install corex`**.
+  For flags not listed below, generate with **`mix phx.new`**, `cd` into the project, then run **`mix igniter.install corex`**.
 
   ## 1) Phoenix (forwarded to `phx.new` or `phx.new.web` only)
 
-  These match **`mix help phx.new`** / **`mix help phx.new.web`**: for example **`--no-ecto`**, **`--no-version-check`**, **`--umbrella`**, and **`--dev`** (Phoenix’s local dev deps; not Corex).
+  These match **`mix help phx.new`** / **`mix help phx.new.web`**: for example **`--no-ecto`**, **`--no-version-check`**, **`--umbrella`**, **`--database sqlite3`**, and **`--dev`** (uses Phoenix from a sibling clone — needed when developing Phoenix locally).
+
+  Notes:
+
+  * `--no-tailwind`, `--no-assets`, `--no-esbuild`, `--no-html` are not supported by Corex and will fail validation.
+  * `--no-gettext` is forbidden when `--lang` is set (Localize/Gettext is required for `--lang`).
 
   ## 2) Corex / Igniter (not passed to `phx.new`)
 
-  * **`--dev_corex PATH`** — `mix igniter.install corex@path:PATH` instead of Hex. Path is from the **web** app (e.g. sibling **`../corex`**, umbrella **`../../corex`**). Use with Phoenix **`--dev`** when you need both.
+  Corex flags are unique and **do not conflict** with `phx.new` / Igniter flags, so pass them bare:
 
-  * `--no-design` / `--design` — skip or enable design generation after install; **`--designex`** for `corex.design --designex`
-  * `--mode`, `--theme`, `--lang` — forwarded as **`--corex.…`** to **`mix igniter.install corex`** (see `Mix.Tasks.Corex.Install`); **`--theme`** turns on all four themes; plain **`--mode`**, **`--replace`**, etc.
-  * `--replace` / **`--no-replace`** — forwarded as **`--corex.replace`**. Default is **on**: stock **`home.html.heex` is wrapped in `Layouts.app` (Corex layout), the stock `Layouts.app` is fully switched to Corex, stock-only layout functions like **`flash_group` / `theme_toggle` are removed**, and **no** `GET /home` or `Layouts.corex` is added. **`--no-replace`** keeps the default Phoenix home at `/` and **adds** the separate `/home` route with `Layouts.corex` and `def corex` instead.
-  * **`--no-mcp`** — as in `Mix.Tasks.Corex.Install`
+  * **`--dev_corex PATH`** — installs `corex@path:PATH` instead of Hex. Path is relative to the **web** app (sibling **`../corex`**, umbrella **`../../corex`**).
+  * `--design` / **`--no-design`** — install the Corex design system (`mix corex.design`). **Default: on**. `--no-design` keeps the stock Phoenix Tailwind/daisy assets.
+  * **`--designex`** — also install token tooling (`mix corex.design --designex`); implies `--design`.
+  * **`--mode`** — generate `Plugs.Mode`, mode toggle, and `data-mode` bridge in the root layout. **Implies `--design`** (with a notice).
+  * **`--theme`** — enable themes (Neo/Uno/Duo/Leo), `Plugs.Theme`, theme toggle, and `data-theme` bridge. **Implies `--design`** (with a notice).
+  * **`--lang`** — set up Localize + Gettext: `Plugs.Path`, locale-aware router helpers, layout `lang/dir` and `language_switch` component. Does **not** imply `--design`.
+  * **`--replace`** / `--no-replace` — wrap the stock `home.html.heex` in `Layouts.app` (Corex layout), strip stock helpers (`flash_group`, `theme_toggle`), and keep `/` as the entry route. **Default: on for `corex.new`**. `--no-replace` leaves the default Phoenix home at `/` and adds a demo `/home` route with `Layouts.corex` instead.
+  * `--mcp` / **`--no-mcp`** — install the Corex MCP plug under `Mix.env() == :dev` on the web endpoint. **Default: on**.
 
-  See `Mix.Tasks.Corex.Install` for the full list of what gets patched in the app.
+  ## Idempotency
+
+  Re-running `mix igniter.install corex` (or `mix corex.new` followed by `mix igniter.install corex --yes`) with the same flags makes no diffs to the project. Re-running with new UI flags (e.g. add `--lang`) only adds the new bits.
 
   ## Examples
 
       mix corex.new hello_world
-      mix corex.new my_app --mode --theme
+      mix corex.new my_app --mode --theme --lang
       mix corex.new hello --umbrella
       mix corex.new my_app --dev --dev_corex ../corex
   """
@@ -93,6 +104,7 @@ defmodule Mix.Tasks.Corex.New do
       |> Keyword.put_new(:mcp, true)
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:design, true)
+      |> Cli.maybe_auto_enable_design()
 
     Cli.validate_corex_flags!(opts)
     Cli.validate_phx_new_flags!(opts)
@@ -148,7 +160,6 @@ defmodule Mix.Tasks.Corex.New do
       opts
       |> Flags.phx_new_cli_opts()
       |> Keyword.put(:install, false)
-      |> Keyword.put(:dev, false)
 
     pkg = PhxWrapper.corex_igniter_install_target(opts)
 

@@ -10,9 +10,7 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:static)
     |> RadioGroup.wait_for_has(css("#radio-group-form-page"), timeout: 15_000)
-    |> RadioGroup.wait(200)
     |> RadioGroup.submit_form()
-    |> RadioGroup.wait(500)
     |> RadioGroup.wait_for_redirect()
     |> RadioGroup.see_flash("Submitted: choice=")
   end
@@ -21,11 +19,8 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:static)
     |> RadioGroup.wait_for_has(css("#radio-group-form-page"), timeout: 15_000)
-    |> RadioGroup.wait(200)
     |> RadioGroup.click_radio_native("b")
-    |> RadioGroup.wait(200)
     |> RadioGroup.submit_form()
-    |> RadioGroup.wait(500)
     |> RadioGroup.wait_for_redirect()
     |> RadioGroup.see_flash("Submitted: choice=")
   end
@@ -34,7 +29,6 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:static)
     |> RadioGroup.wait_for_has(css("#radio-group-form-page"), timeout: 15_000)
-    |> RadioGroup.wait(200)
     |> RadioGroup.check_accessibility()
   end
 
@@ -43,9 +37,7 @@ defmodule E2eWeb.RadioGroupFormTest do
       session
       |> RadioGroup.goto_form(:live)
       |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
-      |> RadioGroup.wait(200)
       |> RadioGroup.submit_form(:live)
-      |> RadioGroup.wait(1500)
 
     refute_has(session, Wallaby.Query.text("choice=b"))
     assert_has(session, Wallaby.Query.css("#radio-group-live-form-changeset", text: "Choose one"))
@@ -55,11 +47,8 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:live)
     |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
-    |> RadioGroup.wait(200)
     |> RadioGroup.click_radio_live("b")
-    |> RadioGroup.wait(200)
     |> RadioGroup.submit_form(:live)
-    |> RadioGroup.wait(1500)
     |> RadioGroup.see_flash("Submitted: choice=")
   end
 
@@ -67,7 +56,6 @@ defmodule E2eWeb.RadioGroupFormTest do
     session
     |> RadioGroup.goto_form(:live)
     |> RadioGroup.wait_for_has(css("#radio-group-form-live-page"), timeout: 15_000)
-    |> RadioGroup.wait(200)
     |> RadioGroup.check_accessibility()
   end
 end

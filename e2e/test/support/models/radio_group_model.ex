@@ -3,9 +3,7 @@ defmodule E2eWeb.RadioGroupModel do
 
   def click_item_in_section(session, section_dom_id, value) do
     session
-    |> wait_for_has(css("##{section_dom_id} [phx-hook='RadioGroup']:not([data-loading])"),
-      timeout: 10_000
-    )
+    |> assert_has(css("##{section_dom_id} [phx-hook='RadioGroup']:not([data-loading])"))
     |> click(
       css(
         "##{section_dom_id} [data-scope='radio-group'][data-part='item'][data-value='#{value}']"
@@ -25,7 +23,7 @@ defmodule E2eWeb.RadioGroupModel do
       end
 
     session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
+    if mode == :live, do: prepare_live_form(session), else: session
   end
 
   def click_radio_native(session, value) do
@@ -53,7 +51,7 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def wait_for_redirect(session) do
-    wait_for_has(session, css("#radio-group-form-page"), timeout: 10_000)
+    assert_has(session, css("#radio-group-form-page"))
   end
 
   def submit_form(session, mode \\ :static) do
@@ -64,6 +62,6 @@ defmodule E2eWeb.RadioGroupModel do
   end
 
   def see_flash(session, flash_text) do
-    wait_for_flash(session, flash_text)
+    assert_toast(session, flash_text)
   end
 end

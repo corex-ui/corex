@@ -11,7 +11,7 @@ defmodule E2eWeb.NumberInputModel do
     session = visit_path(session, path)
 
     if mode == :live do
-      prepare_live_form_for_push_toast(session)
+      prepare_live_form(session)
     else
       session
     end
@@ -80,7 +80,7 @@ defmodule E2eWeb.NumberInputModel do
     click(session, css("##{id}"))
   end
 
-  def see_flash(session, flash_text, opts \\ []) do
-    wait_for_flash(session, flash_text, opts)
+  def see_flash(session, flash_text, _opts \\ []) do
+    assert_toast(session, flash_text)
   end
 end

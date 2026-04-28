@@ -10,9 +10,7 @@ defmodule E2eWeb.AngleSliderFormTest do
     session
     |> AngleSlider.goto_form(:static)
     |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
-    |> AngleSlider.wait(200)
     |> AngleSlider.submit_form()
-    |> AngleSlider.wait(500)
     |> AngleSlider.see_flash("Submitted: angle=")
   end
 
@@ -20,11 +18,8 @@ defmodule E2eWeb.AngleSliderFormTest do
     session
     |> AngleSlider.goto_form(:static)
     |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
-    |> AngleSlider.wait(200)
     |> AngleSlider.set_angle_value(90)
-    |> AngleSlider.wait(200)
     |> AngleSlider.submit_form()
-    |> AngleSlider.wait(500)
     |> AngleSlider.see_flash("angle=90")
   end
 
@@ -32,7 +27,6 @@ defmodule E2eWeb.AngleSliderFormTest do
     session
     |> AngleSlider.goto_form(:static)
     |> AngleSlider.wait_for_has(css("#angle-slider-form-page"), timeout: 15_000)
-    |> AngleSlider.wait(200)
     |> AngleSlider.check_accessibility()
   end
 
@@ -40,9 +34,7 @@ defmodule E2eWeb.AngleSliderFormTest do
     session
     |> AngleSlider.goto_form(:live)
     |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
-    |> AngleSlider.wait(200)
     |> AngleSlider.submit_form(:live)
-    |> AngleSlider.wait(2000)
     |> AngleSlider.see_flash("Submitted: angle=", timeout: 20_000, interval: 200)
   end
 
@@ -50,11 +42,8 @@ defmodule E2eWeb.AngleSliderFormTest do
     session
     |> AngleSlider.goto_form(:live)
     |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
-    |> AngleSlider.wait(200)
     |> AngleSlider.set_angle_value(90, :live)
-    |> AngleSlider.wait(1_200)
     |> AngleSlider.submit_form(:live)
-    |> AngleSlider.wait(2000)
     |> AngleSlider.see_flash("Submitted: angle=90", timeout: 20_000, interval: 200)
   end
 
@@ -62,7 +51,6 @@ defmodule E2eWeb.AngleSliderFormTest do
     session
     |> AngleSlider.goto_form(:live)
     |> AngleSlider.wait_for_has(css("#angle-slider-form-live-page"), timeout: 15_000)
-    |> AngleSlider.wait(200)
     |> AngleSlider.check_accessibility()
   end
 end

@@ -47,7 +47,7 @@ defmodule Mix.Corex.Install.StarterTest do
 
   test "build_corex_starter_page_template/3 with --lang" do
     out = Starter.build_corex_starter_page_template([], [], true)
-    assert out =~ "conn={@conn}"
+    refute out =~ "conn={@conn}"
     assert out =~ "path={assigns[:path]}"
   end
 

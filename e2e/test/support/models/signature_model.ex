@@ -9,44 +9,16 @@ defmodule E2eWeb.SignatureModel do
       end
 
     session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
+    if mode == :live, do: prepare_live_form(session), else: session
   end
 
-  def wait_for_signature_field_error(session, opts \\ []) do
-    timeout_ms = Keyword.get(opts, :timeout, 10_000)
-    interval_ms = Keyword.get(opts, :interval, 200)
-    deadline = System.monotonic_time(:millisecond) + timeout_ms
-    q = css(~s([data-scope="signature-pad"][data-part="error"]), visible: :any)
-    wait_until_signature_error(session, q, deadline, interval_ms)
-    el = find(session, q)
-    assert String.contains?(Wallaby.Element.text(el), "blank")
-    session
-  end
-
-  defp wait_until_signature_error(session, q, deadline, interval_ms) do
-    if has?(session, q) do
-      el = find(session, q)
-
-      if String.contains?(Wallaby.Element.text(el), "blank") do
-        :ok
-      else
-        if System.monotonic_time(:millisecond) >= deadline do
-          flunk(
-            "expected signature pad error text to mention \"blank\", got #{inspect(Wallaby.Element.text(el))}"
-          )
-        else
-          Process.sleep(interval_ms)
-          wait_until_signature_error(session, q, deadline, interval_ms)
-        end
-      end
-    else
-      if System.monotonic_time(:millisecond) >= deadline do
-        flunk("expected signature pad error [data-part=error] within timeout")
-      else
-        Process.sleep(interval_ms)
-        wait_until_signature_error(session, q, deadline, interval_ms)
-      end
-    end
+  def wait_for_signature_field_error(session, _opts \\ []) do
+    assert_has(
+      session,
+      css(~s([data-scope="signature-pad"][data-part="error"]),
+        text: "blank"
+      )
+    )
   end
 
   def submit_form(session, mode \\ :static) do
@@ -59,6 +31,6 @@ defmodule E2eWeb.SignatureModel do
   end
 
   def see_flash(session, flash_text) do
-    wait_for_flash(session, flash_text)
+    assert_toast(session, flash_text)
   end
 end

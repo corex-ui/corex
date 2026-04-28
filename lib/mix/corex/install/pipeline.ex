@@ -68,7 +68,11 @@ defmodule Mix.Corex.Install.Pipeline do
   """
 
   def igniter(igniter) do
-    opts = merge_cli_flags_into_options(igniter)
+    opts =
+      igniter
+      |> merge_cli_flags_into_options()
+      |> Config.maybe_auto_enable_design()
+
     Config.validate_opts!(opts)
 
     mcp? = Keyword.get(opts, :mcp, true)
@@ -100,10 +104,9 @@ defmodule Mix.Corex.Install.Pipeline do
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
         |> Config.maybe_configure_localize_runtime(web_mod, i18n?)
-        |> I18n.maybe_create_localize_helpers(web_mod, i18n?)
         |> I18n.maybe_patch_layouts_for_language_switch(web_mod, i18n?)
+        |> I18n.maybe_create_localize_helpers(web_mod, i18n?)
         |> I18n.maybe_patch_web_verified_routes(web_mod, i18n?)
-        |> I18n.maybe_enable_phoenix_route_helpers_for_localize(web_mod, i18n?)
         |> I18n.maybe_locale_notices(i18n?)
       end)
     end)
@@ -117,6 +120,7 @@ defmodule Mix.Corex.Install.Pipeline do
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
         |> Assets.patch_assets_js()
+        |> Assets.maybe_install_corex_logo()
         |> maybe_patch_design_assets(opts)
       end)
     end)
@@ -175,8 +179,8 @@ defmodule Mix.Corex.Install.Pipeline do
     end
   end
 
-  defp apply_optional_starter(igniter, true, web_mod, _themes, _opts, i18n?) do
-    Layouts.maybe_patch_replaced_home(igniter, web_mod, i18n?)
+  defp apply_optional_starter(igniter, true, _web_mod, _themes, _opts, _i18n?) do
+    igniter
   end
 
   defp apply_optional_starter(igniter, false, web_mod, themes, opts, i18n?) do

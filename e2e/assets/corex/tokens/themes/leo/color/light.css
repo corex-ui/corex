@@ -3,49 +3,49 @@
  */
 
 [data-theme="leo"][data-mode="light"] {
-  --theme-color-selected-ink: #353535; /** 7.0:1 contrast against selected (#c4c4c4) */
-  --theme-color-ink-success: #005436; /** 6.0:1 contrast against ui (#d2d2d2) */
-  --theme-color-ui-active: #b1b1b1; /** Surface ui active stop (base 83% lightness, chroma #F0F0F0). */
-  --theme-color-brand-muted: #25368a; /** Semantic brand muted fill at 34% lightness (chroma #32479C). */
-  --theme-color-alert-muted: #7a111a; /** Semantic alert muted fill at 34% lightness (chroma #A43C3C). */
-  --theme-color-accent-muted: #414141; /** Semantic accent muted fill at 34% lightness (chroma #4B4B4B). */
-  --theme-color-accent-ink: #c8c8c8; /** 7.0:1 contrast against accent (#383838) */
-  --theme-color-ui-hover: #bababa; /** Surface ui hover stop (base 83% lightness, chroma #F0F0F0). */
-  --theme-color-selected-hover: #b7b7b7; /** Semantic selected hover fill at 82% lightness (chroma #F0F0F0). */
-  --theme-color-ink-accent: #494949; /** 6.0:1 contrast against ui (#d2d2d2) */
-  --theme-color-layer: #ebebeb; /** Surface layer at 94% lightness (chroma #F0F0F0). */
-  --theme-color-brand-ink: #c4c4c4; /** 7.0:1 contrast against brand (#1d2c7f) */
-  --theme-color-accent-active: #262626; /** Semantic accent active fill at 34% lightness (chroma #4B4B4B). */
-  --theme-color-alert-ink: #c1c1c1; /** 7.0:1 contrast against alert (#6e0010) */
-  --theme-color-alert: #6e0010; /** Semantic alert default fill at 34% lightness (chroma #A43C3C). */
-  --theme-color-brand-active: #0f1669; /** Semantic brand active fill at 34% lightness (chroma #32479C). */
-  --theme-color-selected-active: #aeaeae; /** Semantic selected active fill at 82% lightness (chroma #F0F0F0). */
-  --theme-color-ink-alert: #892226; /** 6.0:1 contrast against ui (#d2d2d2) */
-  --theme-color-alert-active: #580000; /** Semantic alert active fill at 34% lightness (chroma #A43C3C). */
-  --theme-color-success: #005029; /** Semantic success default fill at 36% lightness (chroma #059669). */
-  --theme-color-info: #003d95; /** Semantic info default fill at 38% lightness (chroma #1F77D4). */
-  --theme-color-success-active: #003c17; /** Semantic success active fill at 36% lightness (chroma #059669). */
-  --theme-color-success-muted: #005a32; /** Semantic success muted fill at 36% lightness (chroma #059669). */
-  --theme-color-selected-muted: #cfcfcf; /** Semantic selected muted fill at 82% lightness (chroma #F0F0F0). */
-  --theme-color-selected: #c4c4c4; /** Semantic selected default fill at 82% lightness (chroma #F0F0F0). */
-  --theme-color-ui-muted: #d2d2d2; /** Surface ui muted stop (base 83% lightness, chroma #F0F0F0). */
-  --theme-color-root: #fcfcfc; /** Surface root at 99% lightness (chroma #F0F0F0). */
-  --theme-color-brand: #1d2c7f; /** Semantic brand default fill at 34% lightness (chroma #32479C). */
-  --theme-color-shadow: #c9c9c9; /** 1.09:1 contrast against ui (#d2d2d2) */
-  --theme-color-ink: #2c2c2c; /** 9.25:1 contrast against ui (#d2d2d2) */
-  --theme-color-accent: #383838; /** Semantic accent default fill at 34% lightness (chroma #4B4B4B). */
-  --theme-color-alert-hover: #610005; /** Semantic alert hover fill at 34% lightness (chroma #A43C3C). */
-  --theme-color-success-ink: #dcdcdc; /** 7.0:1 contrast against success (#005029) */
-  --theme-color-ink-brand: #2d4196; /** 6.0:1 contrast against ui (#d2d2d2) */
-  --theme-color-info-active: #00277f; /** Semantic info active fill at 38% lightness (chroma #1F77D4). */
-  --theme-color-success-hover: #00451f; /** Semantic success hover fill at 36% lightness (chroma #059669). */
-  --theme-color-info-ink: #d8d8d8; /** 7.0:1 contrast against info (#003d95) */
-  --theme-color-brand-hover: #152073; /** Semantic brand hover fill at 34% lightness (chroma #32479C). */
-  --theme-color-ink-muted: #545454; /** 5.0:1 contrast against ui (#d2d2d2) */
-  --theme-color-info-hover: #003189; /** Semantic info hover fill at 38% lightness (chroma #1F77D4). */
-  --theme-color-ink-info: #004793; /** 6.0:1 contrast against ui (#d2d2d2) */
-  --theme-color-info-muted: #0048a1; /** Semantic info muted fill at 38% lightness (chroma #1F77D4). */
-  --theme-color-accent-hover: #2e2e2e; /** Semantic accent hover fill at 34% lightness (chroma #4B4B4B). */
-  --theme-color-ui: #c7c7c7; /** Surface ui default stop (base 83% lightness, chroma #F0F0F0). */
-  --theme-color-border: #b3b3b3; /** 1.38:1 contrast against ui (#d2d2d2) */
+  --theme-color-selected-ink: #353535; /* 7.0:1 contrast against selected (#c4c4c4) */
+  --theme-color-ink-success: #005436; /* 6.0:1 contrast against ui (#d2d2d2) */
+  --theme-color-ui-active: #b1b1b1; /* Surface ui active stop (base 83% lightness, chroma #F0F0F0). */
+  --theme-color-brand-muted: #25368a; /* Semantic brand muted fill at 34% lightness (chroma #32479C). */
+  --theme-color-alert-muted: #7a111a; /* Semantic alert muted fill at 34% lightness (chroma #A43C3C). */
+  --theme-color-accent-muted: #414141; /* Semantic accent muted fill at 34% lightness (chroma #4B4B4B). */
+  --theme-color-accent-ink: #c8c8c8; /* 7.0:1 contrast against accent (#383838) */
+  --theme-color-ui-hover: #bababa; /* Surface ui hover stop (base 83% lightness, chroma #F0F0F0). */
+  --theme-color-selected-hover: #b7b7b7; /* Semantic selected hover fill at 82% lightness (chroma #F0F0F0). */
+  --theme-color-ink-accent: #494949; /* 6.0:1 contrast against ui (#d2d2d2) */
+  --theme-color-layer: #ebebeb; /* Surface layer at 94% lightness (chroma #F0F0F0). */
+  --theme-color-brand-ink: #c4c4c4; /* 7.0:1 contrast against brand (#1d2c7f) */
+  --theme-color-accent-active: #262626; /* Semantic accent active fill at 34% lightness (chroma #4B4B4B). */
+  --theme-color-alert-ink: #c1c1c1; /* 7.0:1 contrast against alert (#6e0010) */
+  --theme-color-alert: #6e0010; /* Semantic alert default fill at 34% lightness (chroma #A43C3C). */
+  --theme-color-brand-active: #0f1669; /* Semantic brand active fill at 34% lightness (chroma #32479C). */
+  --theme-color-selected-active: #aeaeae; /* Semantic selected active fill at 82% lightness (chroma #F0F0F0). */
+  --theme-color-ink-alert: #892226; /* 6.0:1 contrast against ui (#d2d2d2) */
+  --theme-color-alert-active: #580000; /* Semantic alert active fill at 34% lightness (chroma #A43C3C). */
+  --theme-color-success: #005029; /* Semantic success default fill at 36% lightness (chroma #059669). */
+  --theme-color-info: #003d95; /* Semantic info default fill at 38% lightness (chroma #1F77D4). */
+  --theme-color-success-active: #003c17; /* Semantic success active fill at 36% lightness (chroma #059669). */
+  --theme-color-success-muted: #005a32; /* Semantic success muted fill at 36% lightness (chroma #059669). */
+  --theme-color-selected-muted: #cfcfcf; /* Semantic selected muted fill at 82% lightness (chroma #F0F0F0). */
+  --theme-color-selected: #c4c4c4; /* Semantic selected default fill at 82% lightness (chroma #F0F0F0). */
+  --theme-color-ui-muted: #d2d2d2; /* Surface ui muted stop (base 83% lightness, chroma #F0F0F0). */
+  --theme-color-root: #fcfcfc; /* Surface root at 99% lightness (chroma #F0F0F0). */
+  --theme-color-brand: #1d2c7f; /* Semantic brand default fill at 34% lightness (chroma #32479C). */
+  --theme-color-shadow: #c9c9c9; /* 1.09:1 contrast against ui (#d2d2d2) */
+  --theme-color-ink: #2c2c2c; /* 9.25:1 contrast against ui (#d2d2d2) */
+  --theme-color-accent: #383838; /* Semantic accent default fill at 34% lightness (chroma #4B4B4B). */
+  --theme-color-alert-hover: #610005; /* Semantic alert hover fill at 34% lightness (chroma #A43C3C). */
+  --theme-color-success-ink: #dcdcdc; /* 7.0:1 contrast against success (#005029) */
+  --theme-color-ink-brand: #2d4196; /* 6.0:1 contrast against ui (#d2d2d2) */
+  --theme-color-info-active: #00277f; /* Semantic info active fill at 38% lightness (chroma #1F77D4). */
+  --theme-color-success-hover: #00451f; /* Semantic success hover fill at 36% lightness (chroma #059669). */
+  --theme-color-info-ink: #d8d8d8; /* 7.0:1 contrast against info (#003d95) */
+  --theme-color-brand-hover: #152073; /* Semantic brand hover fill at 34% lightness (chroma #32479C). */
+  --theme-color-ink-muted: #545454; /* 5.0:1 contrast against ui (#d2d2d2) */
+  --theme-color-info-hover: #003189; /* Semantic info hover fill at 38% lightness (chroma #1F77D4). */
+  --theme-color-ink-info: #004793; /* 6.0:1 contrast against ui (#d2d2d2) */
+  --theme-color-info-muted: #0048a1; /* Semantic info muted fill at 38% lightness (chroma #1F77D4). */
+  --theme-color-accent-hover: #2e2e2e; /* Semantic accent hover fill at 34% lightness (chroma #4B4B4B). */
+  --theme-color-ui: #c7c7c7; /* Surface ui default stop (base 83% lightness, chroma #F0F0F0). */
+  --theme-color-border: #b3b3b3; /* 1.38:1 contrast against ui (#d2d2d2) */
 }

@@ -70,15 +70,10 @@ defmodule Mix.Corex.Install.Layouts do
   end
 
   defp transform_root_html_when_i18n(pre_html, web_mod, themes, opts, first_theme) do
-    cond do
-      String.contains?(pre_html, "LocalizeLayout.html_lang") ->
-        pre_html
-
-      opts[:mode] || themes != [] ->
-        root_html_tag_with_localize_mode_theme(pre_html, web_mod, first_theme)
-
-      true ->
-        root_html_tag_localize_only(pre_html, web_mod)
+    if String.contains?(pre_html, "LocalizeLayout.html_lang") do
+      pre_html
+    else
+      merge_i18n_root_html_open_tag(pre_html, web_mod, themes, opts, first_theme)
     end
   end
 
@@ -100,22 +95,66 @@ defmodule Mix.Corex.Install.Layouts do
     end
   end
 
-  defp root_html_tag_with_localize_mode_theme(pre_html, web_mod, first_theme) do
+  defp merge_i18n_root_html_open_tag(pre_html, web_mod, themes, opts, first_theme) do
+    mode_theme? = opts[:mode] == true or themes != []
+    first_theme = first_theme || "neo"
+
     Regex.replace(
-      ~r/<html[^>]*>/u,
+      ~r/<html([\s\S]*?)>/u,
       pre_html,
-      "<html lang={#{inspect(web_mod)}.LocalizeLayout.html_lang(@conn)} dir={#{inspect(web_mod)}.LocalizeLayout.html_dir(@conn)} data-theme={assigns[:theme] || \"#{first_theme}\"} data-mode={assigns[:mode] || \"light\"}>",
+      fn _full, attrs_inner ->
+        attrs_inner = attrs_inner || ""
+        rest = strip_lang_dir_attrs(attrs_inner)
+        rest = if mode_theme?, do: strip_data_theme_mode_attrs(rest), else: rest
+
+        lang_dir =
+          "lang={#{inspect(web_mod)}.LocalizeLayout.html_lang(@conn)} dir={#{inspect(web_mod)}.LocalizeLayout.html_dir(@conn)}"
+
+        merged =
+          if mode_theme? do
+            lang_dir <>
+              " data-theme={assigns[:theme] || \"#{first_theme}\"} data-mode={assigns[:mode] || \"light\"}"
+          else
+            lang_dir
+          end
+
+        inner = merged <> if rest == "", do: "", else: " " <> rest
+        "<html " <> String.trim(inner) <> ">"
+      end,
       global: false
     )
   end
 
-  defp root_html_tag_localize_only(pre_html, web_mod) do
-    Regex.replace(
-      ~r/<html[^>]*>/u,
-      pre_html,
-      "<html lang={#{inspect(web_mod)}.LocalizeLayout.html_lang(@conn)} dir={#{inspect(web_mod)}.LocalizeLayout.html_dir(@conn)}>",
-      global: false
+  defp strip_lang_dir_attrs(attrs) do
+    Enum.reduce(
+      [
+        ~r/\slang=\{[^\}]*\}/u,
+        ~r/\slang="[^"]*"/u,
+        ~r/\slang='[^']*'/u,
+        ~r/\sdir=\{[^\}]*\}/u,
+        ~r/\sdir="[^"]*"/u,
+        ~r/\sdir='[^']*'/u
+      ],
+      attrs,
+      fn re, acc -> Regex.replace(re, acc, "") end
     )
+    |> String.replace(~r/\s+/u, " ")
+    |> String.trim()
+  end
+
+  defp strip_data_theme_mode_attrs(attrs) do
+    Enum.reduce(
+      [
+        ~r/\sdata-theme=\{[^\}]*\}/u,
+        ~r/\sdata-theme="[^"]*"/u,
+        ~r/\sdata-mode=\{[^\}]*\}/u,
+        ~r/\sdata-mode="[^"]*"/u
+      ],
+      attrs,
+      fn re, acc -> Regex.replace(re, acc, "") end
+    )
+    |> String.replace(~r/\s+/u, " ")
+    |> String.trim()
   end
 
   defp transform_root_html_for_mode_or_themes(pre_html, first_theme) do

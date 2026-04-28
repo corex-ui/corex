@@ -14,36 +14,18 @@ defmodule E2eWeb.AccordionModel do
 
   def anatomy_section_ids, do: @anatomy_sections
 
-  def wait_root_no_loading(session, id_selector, opts \\ []) do
-    q = css(~s(#{id_selector}[data-loading]))
-    wait_until_refute_has(session, q, opts)
+  def wait_root_no_loading(session, id_selector, _opts \\ []) do
+    assert_has(session, css(~s(#{id_selector}[data-loading]), count: 0, visible: :any))
   end
 
-  def wait_section_accordion_ready(session, section_dom_id, opts \\ []) do
-    q =
-      css(~s(##{section_dom_id} [phx-hook="Accordion"][data-loading]))
-
-    wait_until_refute_has(session, q, opts)
-  end
-
-  defp wait_until_refute_has(session, %Wallaby.Query{} = query, opts) do
-    timeout_ms = Keyword.get(opts, :timeout, 15_000)
-    interval_ms = Keyword.get(opts, :interval, 50)
-    deadline = System.monotonic_time(:millisecond) + timeout_ms
-    wait_until_refute_has_loop(session, query, deadline, interval_ms)
-  end
-
-  defp wait_until_refute_has_loop(session, query, deadline, interval_ms) do
-    if Wallaby.Browser.has?(session, query) do
-      if System.monotonic_time(:millisecond) >= deadline do
-        flunk("expected element to be ready, still matching #{inspect(query)}")
-      else
-        Process.sleep(interval_ms)
-        wait_until_refute_has_loop(session, query, deadline, interval_ms)
-      end
-    else
-      session
-    end
+  def wait_section_accordion_ready(session, section_dom_id, _opts \\ []) do
+    assert_has(
+      session,
+      css(~s(##{section_dom_id} [phx-hook="Accordion"][data-loading]),
+        count: 0,
+        visible: :any
+      )
+    )
   end
 
   def click_item(session, trigger_text) do
@@ -88,10 +70,18 @@ defmodule E2eWeb.AccordionModel do
     session = wait_section_accordion_ready(session, section_dom_id)
     before = first_trigger_aria_expanded(session, section_dom_id)
 
-    session =
-      session
-      |> click_first_trigger_in_section(section_dom_id)
-      |> wait(100)
+    session = click_first_trigger_in_section(session, section_dom_id)
+
+    flipped = if before == "true", do: "false", else: "true"
+
+    assert_has(
+      session,
+      css(
+        ~s|##{section_dom_id} [data-scope="accordion"][data-part="item-trigger"][aria-expanded="#{flipped}"]|,
+        count: :any,
+        visible: :any
+      )
+    )
 
     after_exp = first_trigger_aria_expanded(session, section_dom_id)
     assert before != after_exp
@@ -99,8 +89,7 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def see_content(session, content_text) do
-    wait_for_text(session, content_text, timeout: 5_000)
-    session
+    assert_has(session, css("body", text: content_text))
   end
 
   def dont_see_content(session, content_text) do
@@ -108,7 +97,7 @@ defmodule E2eWeb.AccordionModel do
   end
 
   def content_visible?(session, content_text) do
-    has?(session, Wallaby.Query.text(content_text))
+    has?(session, css("body", text: content_text))
   end
 
   def click_open_lorem_api(session) do

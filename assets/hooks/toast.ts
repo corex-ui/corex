@@ -72,6 +72,8 @@ const ToastHook: Hook<object & ToastHookState, HTMLElement> = {
       pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle"),
     });
 
+    el.removeAttribute("data-loading");
+
     const store = getToastStore(this.groupId);
     const flashInfo = el.getAttribute("data-flash-info");
     const flashInfoTitle = el.getAttribute("data-flash-info-title");

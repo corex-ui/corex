@@ -9,7 +9,7 @@ defmodule E2eWeb.NativeInputModel do
       end
 
     session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
+    if mode == :live, do: prepare_live_form(session), else: session
   end
 
   def fill_input(session, id, value) when is_binary(id) do
@@ -87,14 +87,14 @@ defmodule E2eWeb.NativeInputModel do
   end
 
   def see_submitted_value(session, key, value) do
-    wait_for_text(session, "#{key}=#{value}")
+    assert_has(session, css("body", text: "#{key}=#{value}"))
   end
 
   def wait_for_redirect(session) do
-    wait_for_has(session, css("#native-input-form-page"), timeout: 10_000)
+    assert_has(session, css("#native-input-form-page"))
   end
 
   def see_flash(session, flash_text) do
-    wait_for_flash(session, flash_text)
+    assert_toast(session, flash_text)
   end
 end

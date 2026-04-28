@@ -36,7 +36,6 @@ defmodule E2eWeb.PagesA11yTest do
 
       session
       |> Wallaby.Browser.visit(path)
-      |> E2eWeb.Model.wait(500)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
   end
@@ -53,7 +52,6 @@ defmodule E2eWeb.PagesA11yTest do
 
       session
       |> Wallaby.Browser.visit(path)
-      |> E2eWeb.Model.wait(500)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
 
@@ -62,7 +60,6 @@ defmodule E2eWeb.PagesA11yTest do
 
       session
       |> Wallaby.Browser.visit(path)
-      |> E2eWeb.Model.wait(500)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
   end
@@ -79,7 +76,6 @@ defmodule E2eWeb.PagesA11yTest do
 
       session
       |> Wallaby.Browser.visit(path)
-      |> E2eWeb.Model.wait(500)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
 
@@ -88,7 +84,6 @@ defmodule E2eWeb.PagesA11yTest do
 
       session
       |> Wallaby.Browser.visit(path)
-      |> E2eWeb.Model.wait(500)
       |> A11yAudit.Wallaby.assert_no_violations()
     end
   end

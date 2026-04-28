@@ -12,20 +12,25 @@ if Code.ensure_loaded?(Igniter) do
     Registered as an [Igniter](https://hexdocs.pm/igniter) task in group **`corex`**. Invoke it through Igniter, for example:
 
         mix igniter.install corex --yes
+        mix igniter.install corex --mode --theme --lang --yes
 
-    Pass Corex-specific options with the `--corex.*` prefix when Igniter asks you to disambiguate (see `mix help igniter.install`). A path dependency can be written as `mix igniter.install corex@path:../corex`.
+    Corex flags are uniquely named and **do not conflict** with `phx.new` or Igniter switches, so you can pass them bare (no `--corex.` prefix). A path dependency is written as `mix igniter.install corex@path:../corex`.
 
     For the same setup without the installer, see the **Manual installation** guide in the docs.
 
     ## Flags
 
-    * `--no-design` — skip running `mix corex.design` after install
-    * `--designex` — pass `--designex` to `mix corex.design`
-    * **`--replace` / `--no-replace`** — control whether the stock home and app layout are switched to the Corex-oriented layout and toast pattern (**default off** for `mix igniter.install corex`; **`mix corex.new` defaults `--replace` on**); without `--replace`, a separate `/home` demo route and `Layouts.corex` are added instead
-    * **`--no-mcp`** — do not add the Corex MCP plug in `dev` on the web endpoint (default is to add it)
-    * **`--refresh-templates`** — overwrite an existing generated Corex starter HEEx file if present (default: keep existing files)
+    * `--design` / **`--no-design`** — install the Corex Design system (`mix corex.design`). **Default: on**.
+    * `--designex` — also install token tooling (`mix corex.design --designex`); implies `--design`.
+    * **`--mode`** — generate `Plugs.Mode`, mode toggle, and `data-mode` bridge in the root layout. **Implies `--design`** (with a notice).
+    * **`--theme`** — enable themes (Neo/Uno/Duo/Leo), `Plugs.Theme`, theme toggle, and `data-theme` bridge. **Implies `--design`** (with a notice).
+    * **`--lang`** — set up Localize + Gettext (`Plugs.Path`, locale-aware router helpers, layout `lang/dir` and `language_switch` component). Does **not** imply `--design`.
+    * **`--replace` / `--no-replace`** — control whether the stock home and app layout are switched to the Corex-oriented layout and toast pattern. **Default: off** for `mix igniter.install corex`; `mix corex.new` defaults to **on**. Without `--replace`, a separate `/home` demo route and `Layouts.corex` are added instead.
+    * `--mcp` / **`--no-mcp`** — add the Corex MCP plug under `Mix.env() == :dev`. **Default: on**.
 
-    Additional Corex-related switches exist; see **`mix help igniter.install`** when multiple installers share option names.
+    ## Idempotency
+
+    Re-running `mix igniter.install corex` with the same flags makes no diffs to the project. Re-running with new UI flags (e.g. add `--lang` later) only adds the new bits; previously enabled features are preserved.
 
     If the install stopped early (for example before `assets/js/app.js` was updated), run **`mix igniter.install corex --yes`** again with the same options.
     """
@@ -37,7 +42,7 @@ if Code.ensure_loaded?(Igniter) do
     def info(_argv, _source) do
       %Igniter.Mix.Task.Info{
         group: :corex,
-        example: "mix igniter.install corex --yes --corex.mode",
+        example: "mix igniter.install corex --yes --mode",
         composes: ["igniter.add_extension"],
         defaults: [
           replace: false,
@@ -46,8 +51,7 @@ if Code.ensure_loaded?(Igniter) do
           designex: false,
           mode: false,
           theme: false,
-          lang: false,
-          refresh_templates: false
+          lang: false
         ],
         schema: [
           design: :boolean,
@@ -56,8 +60,7 @@ if Code.ensure_loaded?(Igniter) do
           mode: :boolean,
           theme: :boolean,
           lang: :boolean,
-          mcp: :boolean,
-          refresh_templates: :boolean
+          mcp: :boolean
         ]
       }
     end

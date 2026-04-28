@@ -75,45 +75,88 @@ defmodule Mix.Corex.Install.Web do
       mod = Module.concat(web_mod, Endpoint)
       path = Igniter.Project.Module.proper_location(igniter, mod)
 
-      Igniter.update_file(igniter, path, fn source ->
-        endpoint_mcp_update(source, mod, mcp?)
+      Igniter.update_elixir_file(igniter, path, fn zipper ->
+        inject_mcp_plug(zipper, mod)
       end)
     end
   end
 
   def endpoint_mcp_apply(content, opts) when is_binary(content) and is_list(opts) do
-    patch_endpoint_mcp_plugs(content, Keyword.get(opts, :mcp, true))
+    patch_endpoint_mcp_plugs_in_string(content, Keyword.get(opts, :mcp, true))
   end
 
-  defp endpoint_mcp_update(source, mod, mcp?) do
-    content = Rewrite.Source.get(source, :content)
-    patched = patch_endpoint_mcp_plugs(content, mcp?)
+  defp inject_mcp_plug(zipper, mod) do
+    root = Sourceror.Zipper.topmost(zipper)
+    root_str = root.node |> Sourceror.to_string()
 
-    if patched == content and mcp? and not String.contains?(content, "plug Corex.MCP") do
-      {:warning,
-       "Could not insert `plug Corex.MCP` in #{inspect(mod)}. Add this near the dev-only plugs:\n\nif Mix.env() == :dev do\n  plug Corex.MCP\nend\n"}
+    if String.contains?(root_str, "plug Corex.MCP") do
+      {:ok, zipper}
     else
-      Rewrite.Source.update(source, :content, patched)
+      inject_mcp_after_socket_or_static(zipper, mod)
     end
   end
 
-  defp patch_endpoint_mcp_plugs(content, mcp?) when is_binary(content) and is_boolean(mcp?) do
-    mcp_block = """
+  defp inject_mcp_after_socket_or_static(zipper, mod) do
+    case Function.move_to_function_call(
+           zipper,
+           :socket,
+           [2, 3],
+           fn _z -> true end
+         ) do
+      {:ok, socket_zipper} ->
+        {:ok, Common.add_code(socket_zipper, mcp_block_string(), placement: :after)}
+
+      :error ->
+        inject_mcp_after_static_plug(zipper, mod)
+    end
+  end
+
+  defp inject_mcp_after_static_plug(zipper, mod) do
+    case Function.move_to_function_call(
+           zipper,
+           :plug,
+           [1, 2],
+           &static_plug?/1
+         ) do
+      {:ok, static_plug_zipper} ->
+        {:ok, Common.add_code(static_plug_zipper, mcp_block_string(), placement: :after)}
+
+      :error ->
+        {:warning,
+         "Could not insert `plug Corex.MCP` in #{inspect(mod)}. Add this near the dev-only plugs:\n\nif Mix.env() == :dev do\n  plug Corex.MCP\nend\n"}
+    end
+  end
+
+  defp static_plug?(z) do
+    Function.argument_equals?(z, 0, Plug.Static)
+  end
+
+  defp mcp_block_string do
+    """
+    if Mix.env() == :dev do
+      plug Corex.MCP
+    end\
+    """
+  end
+
+  defp patch_endpoint_mcp_plugs_in_string(content, mcp?)
+       when is_binary(content) and is_boolean(mcp?) do
+    block = """
       if Mix.env() == :dev do
         plug Corex.MCP
-      end
+      end\
     """
 
     add_mcp = mcp? && not String.contains?(content, "plug Corex.MCP")
 
     if add_mcp do
-      insert_mcp_plug_block(content, String.trim_trailing(mcp_block))
+      insert_mcp_plug_block_in_string(content, block)
     else
       content
     end
   end
 
-  defp insert_mcp_plug_block(content, block) do
+  defp insert_mcp_plug_block_in_string(content, block) do
     needle = "  # Code reloading can be explicitly"
 
     if String.contains?(content, needle) do
@@ -164,30 +207,20 @@ defmodule Mix.Corex.Install.Web do
   end
 
   defp write_plug(igniter, path, contents) do
-    if Igniter.exists?(igniter, path) do
-      igniter
-    else
-      Igniter.include_or_create_file(igniter, path, contents)
-    end
+    igniter = Igniter.include_or_create_file(igniter, path, contents)
+
+    Igniter.update_file(igniter, path, fn source ->
+      current = Rewrite.Source.get(source, :content)
+
+      if current == contents do
+        source
+      else
+        Rewrite.Source.update(source, :content, contents)
+      end
+    end)
   end
 
   # --- Router ---
-
-  defp merge_router_localize_plugs(source, i18n?, web_mod, gettext_backend) do
-    content = Rewrite.Source.get(source, :content)
-
-    patched =
-      if i18n? && not String.contains?(content, "Localize.Plug.PutLocale") do
-        content
-        |> insert_use_localize_routes(web_mod, gettext_backend)
-        |> insert_localize_plugs(gettext_backend)
-        |> wrap_home_in_localize()
-      else
-        content
-      end
-
-    Rewrite.Source.update(source, :content, patched)
-  end
 
   def patch_router_for_plugs(igniter, web_mod, opts, themes, i18n?) do
     {igniter, router} =
@@ -203,9 +236,9 @@ defmodule Mix.Corex.Install.Web do
 
     if need_plugs? do
       igniter
-      |> Igniter.update_file(path, fn source ->
-        merge_router_localize_plugs(source, i18n?, web_mod, gettext_backend)
-      end)
+      |> maybe_insert_use_localize_routes(path, web_mod, gettext_backend, i18n?)
+      |> maybe_insert_localize_plugs(path, gettext_backend, i18n?)
+      |> maybe_wrap_home_in_localize(path, i18n?)
       |> insert_mode_theme_plugs(path, web_mod, opts, themes)
       |> maybe_insert_path_plug_after_localize(path, web_mod, i18n?)
     else
@@ -213,11 +246,95 @@ defmodule Mix.Corex.Install.Web do
     end
   end
 
+  defp maybe_insert_use_localize_routes(igniter, _path, _web_mod, _gettext, false), do: igniter
+
+  defp maybe_insert_use_localize_routes(igniter, path, web_mod, gettext_backend, true) do
+    Igniter.update_elixir_file(igniter, path, fn zipper ->
+      insert_localize_routes_use(zipper, web_mod, gettext_backend)
+    end)
+  end
+
+  defp insert_localize_routes_use(zipper, web_mod, gettext_backend) do
+    root = Sourceror.Zipper.topmost(zipper) |> source_string()
+
+    if String.contains?(root, "use Localize.Routes") do
+      {:ok, zipper}
+    else
+      add_localize_routes_after_router(zipper, web_mod, gettext_backend)
+    end
+  end
+
+  defp add_localize_routes_after_router(zipper, web_mod, gettext_backend) do
+    case Function.move_to_function_call(zipper, :use, [1, 2], fn z ->
+           Function.argument_equals?(z, 0, web_mod) and
+             Function.argument_equals?(z, 1, :router)
+         end) do
+      {:ok, use_z} ->
+        {:ok,
+         Common.add_code(
+           use_z,
+           "use Localize.Routes, gettext: #{inspect(gettext_backend)}",
+           placement: :after
+         )}
+
+      :error ->
+        {:warning,
+         "Could not find `use #{inspect(web_mod)}, :router`; add `use Localize.Routes, gettext: #{inspect(gettext_backend)}` after it manually."}
+    end
+  end
+
+  defp maybe_insert_localize_plugs(igniter, _path, _gettext, false), do: igniter
+
+  defp maybe_insert_localize_plugs(igniter, path, gettext_backend, true) do
+    Igniter.update_elixir_file(igniter, path, fn zipper ->
+      insert_localize_plugs_if_needed(zipper, gettext_backend)
+    end)
+  end
+
+  defp insert_localize_plugs_if_needed(zipper, gettext_backend) do
+    root_str = Sourceror.Zipper.topmost(zipper) |> source_string()
+
+    if String.contains?(root_str, "Localize.Plug.PutLocale") do
+      {:ok, zipper}
+    else
+      add_localize_plugs_after_live_flash(zipper, gettext_backend)
+    end
+  end
+
+  defp add_localize_plugs_after_live_flash(zipper, gettext_backend) do
+    block =
+      "plug Localize.Plug.PutLocale,\n  from: [:route, :session, :accept_language, :query, :path],\n  gettext: #{inspect(gettext_backend)}\n\nplug Localize.Plug.PutSession, as: :string"
+
+    case Function.move_to_function_call(zipper, :plug, [1, 2], fn z ->
+           Function.argument_equals?(z, 0, :fetch_live_flash)
+         end) do
+      {:ok, z} ->
+        {:ok, Common.add_code(z, block, placement: :after)}
+
+      :error ->
+        {:warning,
+         "Could not find `plug :fetch_live_flash`; add Localize plugs after it manually."}
+    end
+  end
+
+  defp maybe_wrap_home_in_localize(igniter, _path, false), do: igniter
+
+  defp maybe_wrap_home_in_localize(igniter, path, true) do
+    Igniter.update_file(igniter, path, fn source ->
+      content = Rewrite.Source.get(source, :content)
+      Rewrite.Source.update(source, :content, wrap_home_in_localize(content))
+    end)
+  end
+
   defp maybe_insert_path_plug_after_localize(i, path, web_mod, true) do
     insert_path_plug_after_localize(i, path, web_mod)
   end
 
   defp maybe_insert_path_plug_after_localize(i, _path, _web_mod, false), do: i
+
+  defp source_string(z) do
+    z.node |> Sourceror.to_string()
+  end
 
   defp insert_mode_theme_plugs(igniter, router_path, web_mod, opts, themes) do
     lines =
@@ -270,34 +387,6 @@ defmodule Mix.Corex.Install.Web do
     end
   end
 
-  defp insert_use_localize_routes(content, web_mod, gettext_backend) do
-    needle = "use #{inspect(web_mod)}, :router\n"
-
-    if String.contains?(content, "use Localize.Routes") do
-      content
-    else
-      String.replace(
-        content,
-        needle,
-        needle <> "  use Localize.Routes, gettext: #{inspect(gettext_backend)}\n",
-        global: false
-      )
-    end
-  end
-
-  defp insert_localize_plugs(content, gettext_backend) do
-    if String.contains?(content, "Localize.Plug.PutLocale") do
-      content
-    else
-      String.replace(
-        content,
-        "plug :fetch_live_flash",
-        "plug :fetch_live_flash\n    plug Localize.Plug.PutLocale,\n      from: [:route, :session, :accept_language, :query, :path],\n      gettext: #{inspect(gettext_backend)}\n\n    plug Localize.Plug.PutSession, as: :string",
-        global: false
-      )
-    end
-  end
-
   defp wrap_home_in_localize(content) do
     cond do
       String.contains?(content, "localize do") ->
@@ -317,31 +406,39 @@ defmodule Mix.Corex.Install.Web do
   end
 
   defp insert_path_plug_after_localize(igniter, router_path, web_mod) do
-    plug_line = "    plug #{inspect(web_mod)}.Plugs.Path"
+    plug_mod = Module.concat(web_mod, :Plugs) |> Module.concat(:Path)
+    plug_line = "plug #{inspect(plug_mod)}"
 
-    Igniter.update_file(igniter, router_path, fn source ->
-      c = Rewrite.Source.get(source, :content)
-
-      if String.contains?(c, "Plugs.Path") do
-        source
-      else
-        c2 = insert_path_plug_after_localize_in_content(c, web_mod, plug_line)
-        Rewrite.Source.update(source, :content, c2)
-      end
+    Igniter.update_elixir_file(igniter, router_path, fn zipper ->
+      insert_path_plug_zipper(zipper, plug_line)
     end)
   end
 
-  defp insert_path_plug_after_localize_in_content(content, web_mod, plug_line) do
-    if String.contains?(content, "Localize.Plug.PutSession, as: :string") and
-         not String.contains?(content, "#{inspect(web_mod)}.Plugs.Path") do
-      String.replace(
-        content,
-        "    plug Localize.Plug.PutSession, as: :string",
-        "    plug Localize.Plug.PutSession, as: :string\n" <> plug_line,
-        global: false
-      )
-    else
-      content
+  defp insert_path_plug_zipper(zipper, plug_line) do
+    root_str = Sourceror.Zipper.topmost(zipper) |> source_string()
+
+    cond do
+      String.contains?(root_str, "Plugs.Path") ->
+        {:ok, zipper}
+
+      not String.contains?(root_str, "Localize.Plug.PutSession") ->
+        {:ok, zipper}
+
+      true ->
+        add_path_plug_after_put_session(zipper, plug_line)
+    end
+  end
+
+  defp add_path_plug_after_put_session(zipper, plug_line) do
+    case Function.move_to_function_call(zipper, :plug, [1, 2], fn z ->
+           Function.argument_equals?(z, 0, Localize.Plug.PutSession)
+         end) do
+      {:ok, z} ->
+        {:ok, Common.add_code(z, plug_line, placement: :after)}
+
+      :error ->
+        {:warning,
+         "Could not find `plug Localize.Plug.PutSession`; add `#{plug_line}` after it manually."}
     end
   end
 

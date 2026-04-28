@@ -3,9 +3,19 @@ defmodule Mix.Corex.Install.Templates do
 
   @sub "installer"
 
+  alias Mix.Corex.Install.Config
+
   def app_level_toast_block, do: read!("toast.heex")
 
-  def corex_starter_index_body, do: read!("starter.html.heex")
+  def corex_starter_index_body, do: corex_starter_index_body([])
+
+  def corex_starter_index_body(opts) when is_list(opts) do
+    if Config.design_on?(opts) do
+      read!("starter.html.heex")
+    else
+      read!("starter_no_design.html.heex")
+    end
+  end
 
   def design_imports_block do
     read!("design.css")

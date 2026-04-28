@@ -13,7 +13,47 @@ defmodule Mix.Corex.Install.Config do
       )
     end
 
+    if opts[:mode] == true and opts[:design] == false do
+      Mix.raise(
+        "--mode requires design. Remove `--no-design` (design will auto-enable for `--mode`)." <>
+          "\n\n" <> manual_install_hint()
+      )
+    end
+
+    if opts[:theme] == true and opts[:design] == false do
+      Mix.raise(
+        "--theme requires design. Remove `--no-design` (design will auto-enable for `--theme`)." <>
+          "\n\n" <> manual_install_hint()
+      )
+    end
+
     :ok
+  end
+
+  @doc """
+  Returns `opts` with `:design` set to `true` when any UI flag (`--mode`, `--theme`, `--designex`)
+  implies design. Caller may pass `notify: false` to suppress the printed notice.
+  """
+  def maybe_auto_enable_design(opts, notify_opts \\ []) when is_list(opts) do
+    notify? = Keyword.get(notify_opts, :notify, true)
+    needs_design? = opts[:mode] == true or opts[:theme] == true or opts[:designex] == true
+
+    cond do
+      not needs_design? ->
+        opts
+
+      Keyword.get(opts, :design) == true ->
+        opts
+
+      true ->
+        if notify? do
+          Mix.shell().info(
+            "* Corex: enabling --design because --mode/--theme/--designex was set; pass --no-design to opt out."
+          )
+        end
+
+        Keyword.put(opts, :design, true)
+    end
   end
 
   def themes_from_opts(opts) do

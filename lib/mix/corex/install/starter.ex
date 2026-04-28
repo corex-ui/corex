@@ -4,7 +4,7 @@ defmodule Mix.Corex.Install.Starter do
   alias Igniter.Code.{Common, Function}
   alias Igniter.Libs.Phoenix, as: IPhoenix
   alias Igniter.Project.Module, as: ProjectModule
-  alias Mix.Corex.Install.{Templates, Web}
+  alias Mix.Corex.Install.{Config, Templates, Web}
 
   def add_corex_page_and_layout(igniter, web_mod, themes, opts, i18n?) do
     w = Web.web_ex_dir(igniter, web_mod)
@@ -13,19 +13,21 @@ defmodule Mix.Corex.Install.Starter do
     page_controller = Module.concat(web_mod, PageController)
     layouts_module = layout_mod
     template_path = Path.join([w, "controllers", "page_html", "corex.html.heex"])
-    index = String.trim_trailing(build_corex_starter_page_template(themes, opts, i18n?)) <> "\n"
-    layouts_ex_path = ProjectModule.proper_location(igniter, layouts_module)
 
-    on_exists =
-      if Keyword.get(opts, :refresh_templates, false) do
-        :overwrite
-      else
-        :skip
-      end
+    web_dir_name = Path.basename(w)
+
+    index =
+      themes
+      |> build_corex_starter_page_template(opts, i18n?)
+      |> String.replace("{web}", web_dir_name)
+      |> String.trim_trailing()
+      |> Kernel.<>("\n")
+
+    layouts_ex_path = ProjectModule.proper_location(igniter, layouts_module)
 
     igniter
     |> Igniter.include_existing_file(layouts_ex_path)
-    |> Igniter.create_new_file(template_path, index, on_exists: on_exists)
+    |> Igniter.create_new_file(template_path, index, on_exists: :skip)
     |> add_corex_layout_function(layouts_module, layouts_ex_path, themes, opts, i18n?, web_mod)
     |> add_corex_action(page_controller, layout_mod)
     |> ensure_corex_action_is_render_only(page_controller, layout_mod)
@@ -43,7 +45,7 @@ defmodule Mix.Corex.Install.Starter do
         "current_scope={assigns[:current_scope]}"
       ]
       |> then(fn acc ->
-        if has_lang?, do: acc ++ ["conn={@conn}", "path={assigns[:path]}"], else: acc
+        if has_lang?, do: acc ++ ["path={assigns[:path]}"], else: acc
       end)
       |> then(fn acc ->
         if has_mode?, do: acc ++ ["mode={assigns[:mode] || \"light\"}"], else: acc
@@ -54,7 +56,7 @@ defmodule Mix.Corex.Install.Starter do
 
     attr_block = Enum.join(attr_lines, "\n  ")
 
-    inner = Templates.corex_starter_index_body() |> String.trim()
+    inner = Templates.corex_starter_index_body(opts) |> String.trim()
 
     """
     <Layouts.corex
@@ -283,10 +285,9 @@ defmodule Mix.Corex.Install.Starter do
 
   defp i18n_attrs_only do
     """
-    attr :conn, Plug.Conn, default: nil, doc: "the current connection, for i18n links"
     attr :path, :string,
       default: nil,
-      doc: "the path after an optional /:locale prefix (from Plug.Conn or from assigns)"
+      doc: "locale-stripped path (from Plugs.Path)"
     """
     |> String.trim()
   end
@@ -389,48 +390,43 @@ defmodule Mix.Corex.Install.Starter do
     |> Enum.join("\n\n")
   end
 
-  defp build_corex_def_only(themes, opts, has_lang?, web_mod) do
+  defp build_corex_def_only(themes, opts, has_lang?, _web_mod) do
+    if Config.design_on?(opts) do
+      build_corex_def_with_design(themes, opts, has_lang?)
+    else
+      build_corex_def_no_design(themes, opts, has_lang?)
+    end
+  end
+
+  defp build_corex_def_with_design(themes, opts, has_lang?) do
     has_mode? = opts[:mode] == true
     has_theme? = themes != []
     any_ui? = has_mode? or has_theme? or has_lang?
 
-    path_mod = Module.concat(web_mod, :Path) |> inspect()
-
-    switcher_html =
-      corex_header_switcher_markup(has_lang?, has_theme?, has_mode?, any_ui?)
-
-    path_prefix =
-      if has_lang? do
-        """
-        path =
-          case assigns do
-            %{path: p} when is_binary(p) -> p
-            %{conn: %Plug.Conn{} = c} -> #{path_mod}.strip_after_locale(c.request_path)
-            _ -> ""
-          end
-
-        assigns = assign(assigns, :path, path)
-
-        """
-      else
-        ""
-      end
+    switcher_html = corex_header_switcher_markup_with_design(has_lang?, has_theme?, has_mode?)
+    header_right = if any_ui?, do: switcher_html, else: ""
 
     """
     def corex(assigns) do
-      #{path_prefix}      ~H\"""
-      <header class="navbar px-4 sm:px-6 lg:px-8">
-        <div class="flex-1">
-          <a href="/" class="flex-1 flex w-fit items-center gap-2">
-            <img src={~p"/images/logo.svg"} width="36" />
+      ~H\"""
+      <header class="layout__header">
+        <div class="layout__header__content">
+          <a href="/" class="ui-link ui-link--brand">
+            #{corex_logo_svg()}
+            Corex
           </a>
-        </div>
-    #{switcher_html}  </header>
-      <main class="px-4 py-8 sm:px-6">
-        <div class="mx-auto max-w-2xl space-y-4">
+    #{header_right}    </div>
+      </header>
+      <main class="layout__main">
+        <div class="layout__content">
           {render_slot(@inner_block)}
         </div>
       </main>
+      <footer class="layout__footer">
+        <div class="layout__footer__content">
+          <span>Powered by Corex</span>
+        </div>
+      </footer>
       <.toast_group id="corex-layout-toast" class="toast" flash={@flash}>
         <:loading>Loading…</:loading>
         <:close>Close</:close>
@@ -447,27 +443,93 @@ defmodule Mix.Corex.Install.Starter do
     """
   end
 
-  defp corex_header_switcher_markup(has_lang?, has_theme?, has_mode?, any_ui?) do
+  defp build_corex_def_no_design(themes, opts, has_lang?) do
+    has_mode? = opts[:mode] == true
+    has_theme? = themes != []
+    any_ui? = has_mode? or has_theme? or has_lang?
+
+    switcher_html = corex_header_switcher_markup_no_design(has_lang?, has_theme?, has_mode?)
+    header_right = if any_ui?, do: switcher_html, else: ""
+
+    """
+    def corex(assigns) do
+      ~H\"""
+      <header>
+        <div>
+          <a href="/">
+            #{corex_logo_svg()}
+            Corex
+          </a>
+    #{header_right}    </div>
+      </header>
+      <main>
+        <div>
+          {render_slot(@inner_block)}
+        </div>
+      </main>
+      <footer>
+        <div>
+          <span>Powered by Corex</span>
+        </div>
+      </footer>
+      <.toast_group id="corex-layout-toast" flash={@flash}>
+        <:loading>Loading…</:loading>
+        <:close>Close</:close>
+      </.toast_group>
+      <.toast_client_error
+        toast_group_id="corex-layout-toast"
+        title="We lost the connection"
+        description="We're trying to reconnect you..."
+        type={:error}
+        duration={:infinity}
+      />
+    \"""
+    end
+    """
+  end
+
+  defp corex_logo_svg do
+    ~S|<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 136 136" width="36" height="36"><path d="M70.573 1.67C33.94 1.67 4.243 31.367 4.243 68c0 36.634 29.697 66.33 66.33 66.33s66.33-29.696 66.33-66.33c0-36.633-29.697-66.33-66.33-66.33m.05 102.736c-20.117 0-36.427-16.308-36.427-36.427 0-20.118 16.31-36.427 36.427-36.427 17.055 0 31.37 11.723 35.333 27.55H89.845c-3.365-7.255-10.713-12.301-19.222-12.301-11.678 0-21.179 9.501-21.179 21.18s9.501 21.178 21.18 21.178c8.539 0 15.907-5.08 19.256-12.377h16.095c-3.939 15.864-18.269 27.624-35.352 27.624" fill="var(--color-brand)"/></svg>|
+  end
+
+  defp corex_header_switcher_markup_with_design(has_lang?, has_theme?, has_mode?) do
     switcher_inner =
       [
-        if(has_lang?, do: "            <.language_switch conn={@conn} />", else: nil),
-        if(has_theme?, do: "            <.theme_toggle theme={@theme} />", else: nil),
-        if(has_mode?, do: "            <.mode_toggle mode={@mode} />", else: nil)
+        if(has_lang?, do: "          <.language_switch path={@path} />", else: nil),
+        if(has_theme?, do: "          <.theme_toggle theme={@theme} />", else: nil),
+        if(has_mode?, do: "          <.mode_toggle mode={@mode} />", else: nil)
       ]
       |> Enum.reject(&is_nil/1)
 
-    n = length(switcher_inner)
-
-    row_class =
-      if n == 1, do: "layout__row gap-2 sm:gap-4 justify-end", else: "layout__row gap-2 sm:gap-4"
-
-    if n == 0 or not any_ui? do
+    if switcher_inner == [] do
       ""
     else
       body = Enum.join(switcher_inner, "\n")
 
       """
-          <div class="#{row_class}">
+          <div class="layout__row">
+      #{body}
+          </div>
+      """
+    end
+  end
+
+  defp corex_header_switcher_markup_no_design(has_lang?, has_theme?, has_mode?) do
+    switcher_inner =
+      [
+        if(has_lang?, do: "          <.language_switch path={@path} />", else: nil),
+        if(has_theme?, do: "          <.theme_toggle theme={@theme} />", else: nil),
+        if(has_mode?, do: "          <.mode_toggle mode={@mode} />", else: nil)
+      ]
+      |> Enum.reject(&is_nil/1)
+
+    if switcher_inner == [] do
+      ""
+    else
+      body = Enum.join(switcher_inner, "\n")
+
+      """
+          <div>
       #{body}
           </div>
       """

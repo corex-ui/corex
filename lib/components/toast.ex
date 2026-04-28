@@ -192,6 +192,8 @@ defmodule Corex.Toast do
     <div
       id={@id}
       phx-hook="Toast"
+      data-loading
+      phx-mounted={Phoenix.LiveView.JS.ignore_attributes(["data-loading"])}
       data-placement={@placement}
       data-max={@max}
       data-gap={@gap}

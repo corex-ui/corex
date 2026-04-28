@@ -14,7 +14,6 @@ defmodule E2eWeb.ErrorPagesA11yTest do
   feature "404 page has no a11y violations", %{session: session} do
     session
     |> visit(@missing_404_path)
-    |> E2eWeb.Model.wait(500)
     |> A11yAudit.Wallaby.assert_no_violations()
   end
 end

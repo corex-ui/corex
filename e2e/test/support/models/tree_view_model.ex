@@ -108,10 +108,18 @@ defmodule E2eWeb.TreeViewModel do
   def assert_first_branch_toggles(session, section_dom_id) do
     before = first_branch_state(session, section_dom_id)
 
-    session =
-      session
-      |> click_first_branch(section_dom_id)
-      |> wait(400)
+    session = click_first_branch(session, section_dom_id)
+
+    flipped = if before == "open", do: "closed", else: "open"
+
+    assert_has(
+      session,
+      css(
+        ~s(##{section_dom_id} [data-part="branch-control"][data-state="#{flipped}"]),
+        count: :any,
+        visible: :any
+      )
+    )
 
     after_state = first_branch_state(session, section_dom_id)
     assert before != after_state

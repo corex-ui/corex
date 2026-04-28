@@ -1,67 +1,119 @@
 defmodule Mix.Corex.Install.I18n do
   @moduledoc false
 
+  alias Igniter.Code.{Common, Function}
+  alias Igniter.Project.Module, as: ProjectModule
   alias Mix.Corex.Install.Web
 
   def maybe_create_localize_helpers(igniter, _web_mod, false), do: igniter
 
   def maybe_create_localize_helpers(igniter, web_mod, true) do
-    app = Igniter.Project.Application.app_name(igniter)
     gettext_backend = Module.concat(web_mod, Gettext)
     web_base = Web.web_ex_dir(igniter, web_mod)
 
     layout_path = Path.join([web_base, "localize_layout.ex"])
-    switch_path = Path.join([web_base, "language_switch.ex"])
-
-    layout_contents = localize_layout_module(web_mod, gettext_backend)
-    switch_contents = language_switch_module(web_mod, gettext_backend, app)
-
     path_ex_path = Path.join([web_base, "path.ex"])
-    path_contents = path_module(web_mod, gettext_backend)
+
+    layouts_mod = Module.concat(web_mod, Layouts)
+    layouts_ex_path = ProjectModule.proper_location(igniter, layouts_mod)
 
     igniter
-    |> Igniter.include_or_create_file(layout_path, layout_contents)
-    |> Igniter.include_or_create_file(switch_path, switch_contents)
-    |> Igniter.include_or_create_file(path_ex_path, path_contents)
-    |> patch_layouts_import_language_switch(web_mod)
+    |> create_or_refresh_file(layout_path, localize_layout_module(web_mod, gettext_backend))
+    |> create_or_refresh_file(path_ex_path, path_module(web_mod, gettext_backend))
+    |> patch_layouts_embed_language_switch(layouts_ex_path, web_mod, gettext_backend)
+  end
+
+  defp create_or_refresh_file(igniter, path, contents) do
+    igniter = Igniter.include_or_create_file(igniter, path, contents)
+
+    Igniter.update_file(igniter, path, fn source ->
+      current = Rewrite.Source.get(source, :content)
+
+      if current == contents do
+        source
+      else
+        Rewrite.Source.update(source, :content, contents)
+      end
+    end)
   end
 
   def maybe_patch_layouts_for_language_switch(igniter, _web_mod, false), do: igniter
 
   def maybe_patch_layouts_for_language_switch(igniter, web_mod, true) do
+    layouts_mod = Module.concat(web_mod, Layouts)
+
+    igniter
+    |> insert_path_attr_into_layouts_app(layouts_mod)
+    |> insert_language_switch_in_app_header(web_mod)
+    |> ensure_path_in_page_templates(web_mod)
+  end
+
+  @path_attr_line ~S|attr :path, :string, default: nil, doc: "locale-stripped path (from Plugs.Path)"|
+
+  defp insert_path_attr_into_layouts_app(igniter, layouts_mod) do
+    ProjectModule.find_and_update_module!(igniter, layouts_mod, fn zipper ->
+      apply_path_attr_to_app(zipper)
+    end)
+  end
+
+  defp apply_path_attr_to_app(zipper) do
+    case Function.move_to_def(zipper, :app, 1, target: :before) do
+      {:ok, app_z} ->
+        maybe_add_path_attr_line(app_z, zipper)
+
+      :error ->
+        {:ok, zipper}
+    end
+  end
+
+  defp maybe_add_path_attr_line(app_z, zipper) do
+    if path_attr_already_attached?(app_z) do
+      {:ok, zipper}
+    else
+      {:ok, Common.add_code(app_z, @path_attr_line, placement: :before)}
+    end
+  end
+
+  defp path_attr_already_attached?(app_z) do
+    walk_attrs_above(app_z, &attr_is_path?/1)
+  end
+
+  defp attr_is_path?(node) do
+    case node do
+      {:attr, _, [{:__block__, _, [:path]} | _]} -> true
+      {:attr, _, [:path | _]} -> true
+      _ -> false
+    end
+  end
+
+  defp walk_attrs_above(zipper, predicate) do
+    case Sourceror.Zipper.left(zipper) do
+      nil ->
+        false
+
+      left ->
+        node = Sourceror.Zipper.node(left)
+
+        cond do
+          predicate.(node) -> true
+          attr_or_doc_like?(node) -> walk_attrs_above(left, predicate)
+          true -> false
+        end
+    end
+  end
+
+  defp attr_or_doc_like?({:attr, _, _}), do: true
+  defp attr_or_doc_like?({:slot, _, _}), do: true
+  defp attr_or_doc_like?({:@, _, [{name, _, _}]}) when name in [:doc, :spec, :impl], do: true
+  defp attr_or_doc_like?(_), do: false
+
+  defp insert_language_switch_in_app_header(igniter, web_mod) do
     layouts_path =
       Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts.ex"])
 
-    igniter
-    |> Igniter.update_file(layouts_path, fn source ->
+    Igniter.update_file(igniter, layouts_path, fn source ->
       c = source.content
-      c = maybe_insert_layouts_app_conn_attr(c)
       c = maybe_insert_language_switch_in_app_header(c)
-      %{source | content: c}
-    end)
-    |> ensure_conn_in_page_templates(web_mod)
-  end
-
-  def maybe_enable_phoenix_route_helpers_for_localize(igniter, _web_mod, false), do: igniter
-
-  def maybe_enable_phoenix_route_helpers_for_localize(igniter, web_mod, true) do
-    path = Igniter.Project.Module.proper_location(igniter, web_mod)
-
-    Igniter.update_file(igniter, path, fn source ->
-      c = source.content
-
-      c =
-        if String.contains?(c, "use Phoenix.Router, helpers: false") do
-          String.replace(
-            c,
-            "use Phoenix.Router, helpers: false",
-            "use Phoenix.Router, helpers: true",
-            global: false
-          )
-        else
-          c
-        end
-
       %{source | content: c}
     end)
   end
@@ -75,22 +127,30 @@ defmodule Mix.Corex.Install.I18n do
     Igniter.update_file(igniter, path, fn source ->
       content = source.content
 
-      if String.contains?(content, "Localize.VerifiedRoutes") do
-        source
-      else
-        new =
-          "use Localize.VerifiedRoutes,\n        endpoint: #{inspect(web_mod)}.Endpoint,\n        router: #{inspect(web_mod)}.Router,\n        gettext: #{inspect(gettext_backend)},\n        statics: #{inspect(web_mod)}.static_paths()"
+      content =
+        String.replace(
+          content,
+          "use Phoenix.Router, helpers: false",
+          "use Phoenix.Router, helpers: true",
+          global: true
+        )
 
-        content =
+      content =
+        if String.contains?(content, "Localize.VerifiedRoutes") do
+          content
+        else
+          new =
+            "use Localize.VerifiedRoutes,\n        endpoint: #{inspect(web_mod)}.Endpoint,\n        router: #{inspect(web_mod)}.Router,\n        gettext: #{inspect(gettext_backend)},\n        statics: #{inspect(web_mod)}.static_paths()"
+
           Regex.replace(
             ~r/use Phoenix\.VerifiedRoutes,\s*\n\s*endpoint:[\s\S]*?statics:\s*#{Regex.escape(inspect(web_mod))}\.static_paths\(\)/,
             content,
             new,
             global: false
           )
+        end
 
-        %{source | content: content}
-      end
+      %{source | content: content}
     end)
   end
 
@@ -113,12 +173,75 @@ defmodule Mix.Corex.Install.I18n do
     )
     |> Igniter.add_notice(
       "If the stock `def app` layout has no `theme_toggle` component, the installer does not " <>
-        "insert the language switch there automatically; add `<.language_switch conn={@conn} />` " <>
+        "insert the language switch there automatically; add `<.language_switch path={@path} />` " <>
         "in the header for pages that use `Layouts.app` without `--replace`."
     )
   end
 
-  defp ensure_conn_in_page_templates(igniter, web_mod) do
+  defp patch_layouts_embed_language_switch(igniter, _layouts_ex_path, web_mod, gettext_backend) do
+    layouts_mod = Module.concat(web_mod, Layouts)
+
+    ProjectModule.find_and_update_module!(igniter, layouts_mod, fn zipper ->
+      case Function.move_to_def(zipper, :language_switch, 1) do
+        {:ok, _} ->
+          {:ok, zipper}
+
+        :error ->
+          block = language_switch_def_in_layouts(web_mod, gettext_backend)
+          {:ok, Common.add_code(zipper, block, placement: :after)}
+      end
+    end)
+  end
+
+  defp language_switch_def_in_layouts(web_mod, gettext_backend) do
+    b = inspect(gettext_backend)
+    path_mod = inspect(Module.concat(web_mod, Path))
+
+    ~s'''
+    attr :path, :string, default: nil, doc: "locale-stripped path (from Plugs.Path)"
+
+    def language_switch(assigns) do
+      backend = #{b}
+      p = assigns.path || ""
+
+      items =
+        for loc <- Gettext.known_locales(backend), into: [] do
+          %{
+            id: #{path_mod}.join_locale_path(loc, p),
+            label: Localize.Locale.display_name!(loc, locale: loc)
+          }
+        end
+
+      value = [#{path_mod}.with_current_locale(p)]
+
+      assigns =
+        assigns
+        |> assign(:items, items)
+        |> assign(:value, value)
+
+      ~H"""
+      <.select
+        id="corex-language-switch"
+        class="select select--sm w-4xs"
+        items={@items}
+        value={@value}
+        redirect
+      >
+        <:label class="sr-only">Language</:label>
+        <:item :let={item}>{item.label}</:item>
+        <:trigger>
+          <.heroicon name="hero-language" class="icon" />
+        </:trigger>
+        <:item_indicator>
+          <.heroicon name="hero-check" class="icon" />
+        </:item_indicator>
+      </.select>
+      """
+    end
+    '''
+  end
+
+  defp ensure_path_in_page_templates(igniter, web_mod) do
     w = Web.web_ex_dir(igniter, web_mod)
     home = Path.join([w, "controllers", "page_html", "home.html.heex"])
     corex_legacy = Path.join([w, "controllers", "corex_page", "index.html.heex"])
@@ -127,32 +250,32 @@ defmodule Mix.Corex.Install.I18n do
     igniter
     |> then(fn i ->
       if Igniter.exists?(i, home),
-        do: Igniter.update_file(i, home, &append_conn_to_layouts_app/1),
+        do: Igniter.update_file(i, home, &append_path_to_layouts_app/1),
         else: i
     end)
     |> then(fn i ->
       if Igniter.exists?(i, corex_legacy),
-        do: Igniter.update_file(i, corex_legacy, &append_conn_to_layouts_corex/1),
+        do: Igniter.update_file(i, corex_legacy, &append_path_to_layouts_corex/1),
         else: i
     end)
     |> then(fn i ->
       if Igniter.exists?(i, corex_page),
-        do: Igniter.update_file(i, corex_page, &append_conn_to_layouts_corex/1),
+        do: Igniter.update_file(i, corex_page, &append_path_to_layouts_corex/1),
         else: i
     end)
   end
 
-  defp append_conn_to_layouts_app(source) do
+  defp append_path_to_layouts_app(source) do
     c = source.content
 
-    if c =~ ~r/<Layouts\.app[^>]*\bconn=[^>]+>/m do
+    if c =~ ~r/<Layouts\.app[^>]*\bpath=[^>]+>/m do
       source
     else
       c =
         String.replace(
           c,
           ~r/<Layouts\.app(\s)/m,
-          "<Layouts.app\\1conn={@conn} ",
+          "<Layouts.app\\1path={assigns[:path]} ",
           global: false
         )
 
@@ -160,50 +283,25 @@ defmodule Mix.Corex.Install.I18n do
     end
   end
 
-  defp append_conn_to_layouts_corex(source) do
+  defp append_path_to_layouts_corex(source) do
     c = source.content
 
     if c =~ ~r/<Layouts\.corex\b/ do
       c2 =
-        if c =~ ~r/<Layouts\.corex[^>]*\bconn=[^>]+>/m do
+        if c =~ ~r/<Layouts\.corex[^>]*\bpath=[^>]+>/m do
           c
         else
           String.replace(
             c,
             ~r/<Layouts\.corex(\s)/m,
-            "<Layouts.corex\\1conn={@conn} ",
-            global: false
-          )
-        end
-
-      c3 =
-        if c2 =~ ~r/<Layouts\.corex[^>]*\bpath=[^>]+>/m do
-          c2
-        else
-          String.replace(
-            c2,
-            ~r/<Layouts\.corex(\s+)(?![^>]*\bpath=)/m,
             "<Layouts.corex\\1path={assigns[:path]} ",
             global: false
           )
         end
 
-      %{source | content: c3}
+      %{source | content: c2}
     else
       source
-    end
-  end
-
-  defp maybe_insert_layouts_app_conn_attr(content) do
-    if String.contains?(content, "attr :conn,") or String.contains?(content, "attr(:conn,") do
-      content
-    else
-      String.replace(
-        content,
-        "attr :flash, :map,",
-        "attr :conn, Plug.Conn, default: nil\n  attr :flash, :map,",
-        global: false
-      )
     end
   end
 
@@ -215,28 +313,10 @@ defmodule Mix.Corex.Install.I18n do
       String.replace(
         content,
         "            <.theme_toggle />",
-        "            <.language_switch conn={@conn} />\n            <.theme_toggle />",
+        "            <.language_switch path={@path} />\n            <.theme_toggle />",
         global: false
       )
     end
-  end
-
-  defp patch_layouts_import_language_switch(igniter, web_mod) do
-    layouts_path = Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts.ex"])
-
-    Igniter.update_file(igniter, layouts_path, fn source ->
-      content = source.content
-
-      imp =
-        "  import #{inspect(Module.concat(web_mod, LanguageSwitch))}, only: [language_switch: 1]\n"
-
-      if String.contains?(content, "LanguageSwitch") do
-        source
-      else
-        needle = "  use #{inspect(web_mod)}, :html\n"
-        %{source | content: String.replace(content, needle, needle <> imp, global: false)}
-      end
-    end)
   end
 
   defp localize_layout_module(web_mod, gettext_backend) do
@@ -278,79 +358,6 @@ defmodule Mix.Corex.Install.I18n do
     """
   end
 
-  defp language_switch_module(web_mod, gettext_backend, _app) do
-    ~s'''
-    defmodule #{inspect(web_mod)}.LanguageSwitch do
-      @moduledoc false
-
-      use Phoenix.Component
-
-      use Corex
-
-      attr(:conn, :any, default: nil)
-
-      def language_switch(assigns) do
-        base =
-          case assigns.conn do
-            %Plug.Conn{} = c -> Phoenix.Controller.current_path(c, %{})
-            _ -> "/"
-          end
-
-        items =
-          for loc <- Gettext.known_locales(#{inspect(gettext_backend)}) do
-            q = URI.encode_query(%{"locale" => loc})
-            sep = if base =~ "?", do: "&", else: "?"
-            label = Localize.Locale.display_name!(loc, locale: loc)
-
-            %{id: base <> sep <> q, label: label}
-          end
-
-        cur =
-          case assigns.conn do
-            %Plug.Conn{} = conn ->
-              loc =
-                case conn.query_params do
-                  %{"locale" => l} when is_binary(l) -> l
-                  _ -> Gettext.get_locale(#{inspect(gettext_backend)})
-                end
-
-              if is_binary(loc) do
-                found = Enum.find_value(items, fn i -> String.contains?(i.id, "locale=" <> loc) && i.id end)
-                [found || hd(items).id]
-              else
-                [hd(items).id]
-              end
-
-            _ ->
-              [hd(items).id]
-          end
-
-        assigns = assign(assigns, :collection, items)
-        assigns = assign(assigns, :cur, cur)
-
-        ~H"""
-        <.select
-          id="corex-language-switch"
-          class="select select--sm w-4xs"
-          items={@collection}
-          value={@cur}
-          redirect
-        >
-          <:label class="sr-only">Language</:label>
-          <:item :let={item}>{item.label}</:item>
-          <:trigger>
-            <.heroicon name="hero-language" class="icon" />
-          </:trigger>
-          <:item_indicator>
-            <.heroicon name="hero-check" class="icon" />
-          </:item_indicator>
-        </.select>
-        """
-      end
-    end
-    '''
-  end
-
   defp path_module(web_mod, gettext_backend) do
     m = Module.concat(web_mod, :Path)
 
@@ -387,6 +394,21 @@ defmodule Mix.Corex.Install.I18n do
           String.starts_with?(path, base <> "/") -> String.replace_prefix(path, base, "")
           true -> path
         end
+      end
+
+      def join_locale_path(locale, after_path)
+          when is_binary(locale) and (is_binary(after_path) or after_path == "") do
+        base = "/" <> locale
+
+        cond do
+          after_path == "" or after_path == nil -> base
+          String.starts_with?(after_path, "/") -> base <> after_path
+          true -> base <> "/" <> after_path
+        end
+      end
+
+      def with_current_locale(after_path) when is_binary(after_path) or after_path == "" do
+        join_locale_path(Gettext.get_locale(#{inspect(gettext_backend)}), after_path)
       end
     end
     """

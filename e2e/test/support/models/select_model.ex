@@ -11,59 +11,30 @@ defmodule E2eWeb.SelectModel do
     session = visit_path(session, path)
 
     if mode == :live do
-      prepare_live_form_for_push_toast(session)
+      prepare_live_form(session)
     else
       session
     end
   end
 
-  def wait_for_select_field_error(session, mode \\ :static, opts \\ []) do
-    timeout_ms = Keyword.get(opts, :timeout, 10_000)
-    interval_ms = Keyword.get(opts, :interval, 200)
-    deadline = System.monotonic_time(:millisecond) + timeout_ms
-
+  def wait_for_select_field_error(session, mode \\ :static, _opts \\ []) do
     form_id =
       case mode do
         :live -> "select-form"
         :static -> "select-changeset-form"
       end
 
-    q = css(~s(##{form_id} [data-scope="select"][data-part="error"]), visible: :any)
-    wait_until_select_error(session, q, deadline, interval_ms)
-    el = find(session, q)
-    assert String.contains?(Wallaby.Element.text(el), "blank")
-    session
-  end
+    q =
+      css(~s(##{form_id} [data-scope="select"][data-part="error"]),
+        text: "blank"
+      )
 
-  defp wait_until_select_error(session, q, deadline, interval_ms) do
-    if has?(session, q) do
-      el = find(session, q)
-
-      if String.contains?(Wallaby.Element.text(el), "blank") do
-        :ok
-      else
-        if System.monotonic_time(:millisecond) >= deadline do
-          flunk(
-            "expected select error text to mention \"blank\", got #{inspect(Wallaby.Element.text(el))}"
-          )
-        else
-          Process.sleep(interval_ms)
-          wait_until_select_error(session, q, deadline, interval_ms)
-        end
-      end
-    else
-      if System.monotonic_time(:millisecond) >= deadline do
-        flunk("expected select error [data-part=error] within timeout")
-      else
-        Process.sleep(interval_ms)
-        wait_until_select_error(session, q, deadline, interval_ms)
-      end
-    end
+    assert_has(session, q)
   end
 
   def click_select_trigger(session) do
     session
-    |> wait_for_has(css("[phx-hook='Select']:not([data-loading])"), timeout: 10_000)
+    |> assert_has(css("[phx-hook='Select']:not([data-loading])"))
     |> click(css("[data-scope='select'][data-part='trigger']"))
   end
 
@@ -71,18 +42,13 @@ defmodule E2eWeb.SelectModel do
     form_id = if mode == :live, do: "select-form", else: "select-changeset-form"
 
     session
-    |> wait_for_has(css("##{form_id} [phx-hook='Select']:not([data-loading])"),
-      timeout: 10_000
-    )
+    |> assert_has(css("##{form_id} [phx-hook='Select']:not([data-loading])"))
     |> click(css("##{form_id} [data-scope='select'][data-part='trigger']"))
   end
 
   def select_item(session, value) when is_binary(value) do
     session
-    |> wait_for_has(
-      css(~s([data-scope='select'][data-part='content'][data-state='open'])),
-      timeout: 10_000
-    )
+    |> assert_has(css(~s([data-scope='select'][data-part='content'][data-state='open'])))
     |> click(css("[data-scope='select'][data-part='item'][data-value='#{value}']"))
   end
 
@@ -110,10 +76,10 @@ defmodule E2eWeb.SelectModel do
   end
 
   def see_submitted_value(session, key, value) do
-    wait_for_text(session, "#{key}=#{value}")
+    assert_has(session, css("body", text: "#{key}=#{value}"))
   end
 
-  def see_flash(session, flash_text, opts \\ []) do
-    wait_for_flash(session, flash_text, opts)
+  def see_flash(session, flash_text, _opts \\ []) do
+    assert_toast(session, flash_text)
   end
 end

@@ -144,13 +144,16 @@ defmodule Corex.MixProject do
 
   defp docs do
     [
-      main: "Corex",
+      main: "installation",
       extras: [
         "guides/installation.md",
+        "guides/manual_installation.md",
+        "guides/dark_mode.md",
+        "guides/theming.md",
+        "guides/localize.md",
         "guides/MCP.md",
         "guides/production.md"
       ],
-      main: "installation",
       formatters: ["html", "epub"],
       groups_for_modules: groups_for_modules(),
       groups_for_docs: [
@@ -158,6 +161,21 @@ defmodule Corex.MixProject do
         Compounds: &(&1[:type] == :compound),
         API: &(&1[:type] == :api),
         Helpers: &(&1[:type] == :helpers)
+      ],
+      groups_for_extras: [
+        Introduction: [
+          "guides/installation.md",
+          "guides/manual_installation.md"
+        ],
+        Guides: [
+          "guides/dark_mode.md",
+          "guides/theming.md",
+          "guides/localize.md"
+        ],
+        "Further reading": [
+          "guides/MCP.md",
+          "guides/production.md"
+        ]
       ]
     ]
   end

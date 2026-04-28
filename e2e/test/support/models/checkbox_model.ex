@@ -11,9 +11,7 @@ defmodule E2eWeb.CheckboxModel do
 
   def click_control_in_section(session, section_dom_id) do
     session
-    |> wait_for_has(css("##{section_dom_id} [phx-hook='Checkbox']:not([data-loading])"),
-      timeout: 10_000
-    )
+    |> assert_has(css("##{section_dom_id} [phx-hook='Checkbox']:not([data-loading])"))
     |> click(css("##{section_dom_id} [data-scope='checkbox'][data-part='control']"))
   end
 
@@ -40,7 +38,7 @@ defmodule E2eWeb.CheckboxModel do
       end
 
     session = visit_path(session, path)
-    if mode == :live, do: prepare_live_form_for_push_toast(session), else: session
+    if mode == :live, do: prepare_live_form(session), else: session
   end
 
   def click_checkbox(session, :live) do
@@ -70,14 +68,14 @@ defmodule E2eWeb.CheckboxModel do
   end
 
   def see_submitted_value(session, key, value) do
-    wait_for_text(session, "#{key}=#{value}")
+    assert_has(session, css("body", text: "#{key}=#{value}"))
   end
 
   def see_error(session, error_text) do
-    wait_for_text(session, error_text)
+    assert_has(session, css("body", text: error_text))
   end
 
   def see_flash(session, flash_text) do
-    wait_for_flash(session, flash_text)
+    assert_toast(session, flash_text)
   end
 end

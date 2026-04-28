@@ -10,9 +10,7 @@ defmodule E2eWeb.CheckboxFormTest do
     session
     |> Checkbox.goto_form(:static)
     |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-    |> Checkbox.wait(200)
     |> Checkbox.submit_form()
-    |> Checkbox.wait(500)
     |> Checkbox.see_flash("Submitted: terms=")
   end
 
@@ -20,11 +18,8 @@ defmodule E2eWeb.CheckboxFormTest do
     session
     |> Checkbox.goto_form(:static)
     |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-    |> Checkbox.wait(200)
     |> Checkbox.click_checkbox()
-    |> Checkbox.wait(200)
     |> Checkbox.submit_form()
-    |> Checkbox.wait(500)
     |> Checkbox.see_flash("Submitted: terms=")
   end
 
@@ -35,9 +30,7 @@ defmodule E2eWeb.CheckboxFormTest do
       session
       |> Checkbox.goto_form(:live)
       |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
-      |> Checkbox.wait(200)
       |> Checkbox.submit_form(:live)
-      |> Checkbox.wait(1500)
 
     refute_has(session, Wallaby.Query.text("terms=true"))
     assert_has(session, css("#checkbox-form-live-terms", visible: true))
@@ -47,11 +40,8 @@ defmodule E2eWeb.CheckboxFormTest do
     session
     |> Checkbox.goto_form(:live)
     |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
-    |> Checkbox.wait(200)
     |> Checkbox.click_checkbox(:live)
-    |> Checkbox.wait(200)
     |> Checkbox.submit_form(:live)
-    |> Checkbox.wait(1500)
     |> Checkbox.see_flash("terms=true")
   end
 
@@ -59,7 +49,6 @@ defmodule E2eWeb.CheckboxFormTest do
     session
     |> Checkbox.goto_form(:static)
     |> Checkbox.wait_for_has(css("#checkbox-form-page"), timeout: 15_000)
-    |> Checkbox.wait(200)
     |> Checkbox.check_accessibility()
   end
 
@@ -67,7 +56,6 @@ defmodule E2eWeb.CheckboxFormTest do
     session
     |> Checkbox.goto_form(:live)
     |> Checkbox.wait_for_has(css("#checkbox-form-live-page"), timeout: 15_000)
-    |> Checkbox.wait(200)
     |> Checkbox.check_accessibility()
   end
 end

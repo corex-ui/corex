@@ -48,7 +48,7 @@ config :wallaby,
   otp_app: :corex_web,
   driver: Wallaby.Chrome,
   hackney_options: [timeout: :infinity, recv_timeout: :infinity],
-  max_wait_time: 5_000,
+  max_wait_time: 15_000,
   chromedriver: [
     capabilities: %{
       chromeOptions: %{

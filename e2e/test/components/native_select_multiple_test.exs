@@ -7,13 +7,10 @@ defmodule E2eWeb.NativeSelectMultipleTest do
   feature "submit without selection shows empty tags", %{session: session} do
     session
     |> NativeInput.goto_form(:live)
-    |> NativeInput.wait(500)
     |> NativeInput.fill_input_via_script("native-input-form-name", "Test")
     |> NativeInput.fill_input_via_script("native-input-form-email", "test@example.com")
     |> NativeInput.click_checkbox("native-input-live-profile-form")
-    |> NativeInput.wait(500)
     |> NativeInput.submit_form(:live)
-    |> NativeInput.wait(2000)
     |> NativeInput.see_flash("Submitted:")
     |> NativeInput.see_flash("tags=")
   end
@@ -21,14 +18,11 @@ defmodule E2eWeb.NativeSelectMultipleTest do
   feature "select multiple options and submit shows selected tags", %{session: session} do
     session
     |> NativeInput.goto_form(:live)
-    |> NativeInput.wait(500)
     |> NativeInput.fill_input_via_script("native-input-form-name", "Test")
     |> NativeInput.fill_input_via_script("native-input-form-email", "test@example.com")
     |> NativeInput.click_checkbox("native-input-live-profile-form")
     |> NativeInput.select_multiple_options("native-input-form-tags", ["elixir", "phoenix"])
-    |> NativeInput.wait(500)
     |> NativeInput.submit_form(:live)
-    |> NativeInput.wait(2000)
     |> NativeInput.see_flash("Submitted:")
     |> NativeInput.see_flash("elixir")
     |> NativeInput.see_flash("phoenix")
@@ -37,7 +31,6 @@ defmodule E2eWeb.NativeSelectMultipleTest do
   feature "has no A11y violations", %{session: session} do
     session
     |> NativeInput.goto_form(:live)
-    |> NativeInput.wait(500)
     |> A11yAudit.Wallaby.assert_no_violations()
   end
 end

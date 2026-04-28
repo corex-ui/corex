@@ -18,17 +18,7 @@ defmodule Corex.Install.DesignCssStripTest do
     @custom-variant phx-click-loading (.phx-click-loading&, .phx-click-loading &);
     """
 
-    body = Design.design_imports_inner_body([])
-
-    full_block =
-      """
-      #{@marker}
-      #{body}
-      #{@marker}
-      """
-      |> String.trim()
-
-    out = Design.sync_corex_block(css, full_block)
+    out = Design.sync_corex_block(css, [])
 
     assert out =~ ~r/\n\n\/\*\s*Add variants based on LiveView classes/
   end
@@ -51,6 +41,25 @@ defmodule Corex.Install.DesignCssStripTest do
 
   test "design_imports_inner_body adds both imports when mode and theme" do
     out = Design.design_imports_inner_body(mode: true, theme: true)
+    assert out =~ ~s(toggle-group.css)
+    assert out =~ ~s(select.css)
+  end
+
+  test "sync_corex_block unions component imports when marker already had toggle-group and opts add lang" do
+    css = """
+    @import "tailwindcss" source(none);
+    @plugin "../vendor/heroicons";
+
+    #{@marker}
+    @import "../corex/main.css";
+    @import "../corex/components/toggle-group.css";
+    #{@marker}
+
+    /* Add variants based on LiveView classes */
+    """
+
+    out = Design.sync_corex_block(css, lang: true)
+
     assert out =~ ~s(toggle-group.css)
     assert out =~ ~s(select.css)
   end

@@ -29,13 +29,11 @@ defmodule E2eWeb.TreeViewTest do
         timeout: 25_000
       )
       |> TreeView.prepare_lazy_tree_view()
-      |> TreeView.wait(300)
 
     refute TreeView.lib_expanded_in?(session, "tree-api-set-expanded-client")
 
     session
     |> TreeView.click_expand_lib_api()
-    |> TreeView.wait(1_500)
 
     assert TreeView.lib_expanded_in?(session, "tree-api-set-expanded-client")
   end
@@ -50,14 +48,12 @@ defmodule E2eWeb.TreeViewTest do
         timeout: 25_000
       )
       |> TreeView.prepare_lazy_tree_view()
-      |> TreeView.wait(400)
 
     refute TreeView.events_server_log_has_row?(session)
 
     session =
       session
       |> TreeView.click_events_server_first_branch()
-      |> TreeView.wait(2_000)
 
     assert TreeView.events_server_log_has_row?(session)
   end

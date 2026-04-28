@@ -7,9 +7,7 @@ defmodule E2eWeb.NativeInputFormTest do
   feature "static form - submit empty shows flash with name and agree", %{session: session} do
     session
     |> NativeInput.goto_form(:static)
-    |> NativeInput.wait(500)
     |> NativeInput.submit_form()
-    |> NativeInput.wait(500)
     |> NativeInput.wait_for_redirect()
     |> NativeInput.see_flash("Submitted: name=")
   end
@@ -19,7 +17,6 @@ defmodule E2eWeb.NativeInputFormTest do
   } do
     session
     |> NativeInput.goto_form(:static)
-    |> NativeInput.wait(500)
     |> NativeInput.fill_input_via_script("native-input-form-name", "Alice")
     |> NativeInput.fill_input_via_script("native-input-form-email", "alice@example.com")
     |> NativeInput.fill_input_via_script("native-input-form-bio", "Developer")
@@ -38,9 +35,7 @@ defmodule E2eWeb.NativeInputFormTest do
     |> NativeInput.select_multiple_options("native-input-form-tags", ["elixir", "phoenix"])
     |> NativeInput.click_radio("profile[size]", "m")
     |> NativeInput.click_checkbox("native-input-plain-form")
-    |> NativeInput.wait(200)
     |> NativeInput.submit_form()
-    |> NativeInput.wait(500)
     |> NativeInput.wait_for_redirect()
     |> NativeInput.see_flash("Submitted:")
     |> NativeInput.see_flash("name=")
@@ -52,9 +47,7 @@ defmodule E2eWeb.NativeInputFormTest do
     session =
       session
       |> NativeInput.goto_form(:live)
-      |> NativeInput.wait(500)
       |> NativeInput.submit_form(:live)
-      |> NativeInput.wait(500)
 
     assert has_text?(session, "can't be blank")
   end
@@ -64,7 +57,6 @@ defmodule E2eWeb.NativeInputFormTest do
   } do
     session
     |> NativeInput.goto_form(:live)
-    |> NativeInput.wait(500)
     |> NativeInput.fill_input_via_script("native-input-form-name", "Alice")
     |> NativeInput.fill_input_via_script("native-input-form-email", "alice@example.com")
     |> NativeInput.fill_input_via_script("native-input-form-bio", "Developer")
@@ -83,9 +75,7 @@ defmodule E2eWeb.NativeInputFormTest do
     |> NativeInput.select_multiple_options("native-input-form-tags", ["elixir", "phoenix"])
     |> NativeInput.click_radio("profile[size]", "m")
     |> NativeInput.click_checkbox("native-input-live-profile-form")
-    |> NativeInput.wait(200)
     |> NativeInput.submit_form(:live)
-    |> NativeInput.wait(1500)
     |> NativeInput.see_flash("Submitted:")
     |> NativeInput.see_flash("name=")
   end
@@ -93,14 +83,12 @@ defmodule E2eWeb.NativeInputFormTest do
   feature "static form - has no A11y violations", %{session: session} do
     session
     |> NativeInput.goto_form(:static)
-    |> NativeInput.wait(500)
     |> NativeInput.check_accessibility()
   end
 
   feature "live form - has no A11y violations", %{session: session} do
     session
     |> NativeInput.goto_form(:live)
-    |> NativeInput.wait(500)
     |> NativeInput.check_accessibility()
   end
 end
