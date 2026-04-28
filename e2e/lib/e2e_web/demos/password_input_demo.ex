@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.PasswordInputDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   def minimal_code do
     ~S"""
     <.password_input id="password-input-anatomy-basic" name="user[password]" class="password-input">
@@ -253,7 +251,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/account/password"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={f[:password]} class="password-input" id="account-password">
@@ -317,7 +315,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/account/password-strict"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={f[:password]} class="password-input" id="account-password-strict">
@@ -399,7 +397,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -475,7 +473,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -562,7 +560,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-changeset-field">
@@ -595,7 +593,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
       for={@form}
       action={~p"/password-input/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.password_input field={f[:password]} class="password-input" id="password-input-validate-field">
@@ -653,7 +651,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -683,7 +681,7 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

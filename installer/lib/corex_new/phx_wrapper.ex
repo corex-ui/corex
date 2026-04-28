@@ -61,7 +61,14 @@ defmodule Corex.New.PhxWrapper do
 
   @igniter_dep_version ~S("~> 0.6")
 
-  def phx_new_then_igniter_install!(parent_dir, install_dir, phx_new_argv, pkg, igniter_extra, new_with)
+  def phx_new_then_igniter_install!(
+        parent_dir,
+        install_dir,
+        phx_new_argv,
+        pkg,
+        igniter_extra,
+        new_with
+      )
       when is_binary(parent_dir) and is_binary(install_dir) and is_list(phx_new_argv) and
              is_binary(pkg) and is_list(igniter_extra) and is_binary(new_with) do
     mix_cmd_stream!(phx_new_argv, parent_dir)
@@ -209,8 +216,7 @@ defmodule Corex.New.PhxWrapper do
           {Keyword.get(opts, :esbuild) == false, "--no-esbuild"},
           {Keyword.get(opts, :tailwind) == false, "--no-tailwind"},
           {Keyword.get(opts, :gettext) == false, "--no-gettext"},
-          {Keyword.get(opts, :html) == false, "--no-html"},
-          {Keyword.get(opts, :skills) == false, "--no-agents-md"}
+          {Keyword.get(opts, :html) == false, "--no-html"}
         ],
         on? do
       flag

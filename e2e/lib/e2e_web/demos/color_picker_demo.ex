@@ -3,8 +3,6 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
 
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   @presets ["#ff0000", "#00ff00", "#0000ff", "#3b82f6"]
 
   def presets, do: @presets
@@ -325,7 +323,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
@@ -396,7 +394,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
@@ -471,7 +469,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -521,7 +519,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -599,7 +597,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
@@ -629,7 +627,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
       for={@form}
       action={~p"/color-picker/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.color_picker
@@ -687,7 +685,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -719,7 +717,7 @@ defmodule E2eWeb.Demos.ColorPickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

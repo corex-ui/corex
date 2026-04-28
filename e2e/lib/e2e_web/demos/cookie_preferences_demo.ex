@@ -3,7 +3,7 @@ defmodule E2eWeb.Demos.CookiePreferencesDemo do
     ~S"""
     <.form
       for={@cookie_form}
-      id={Corex.Form.get_form_id(@cookie_form)}
+      id={@cookie_form.id}
       phx-change="validate"
       phx-submit="save_cookies"
       class="home__showcase__form"

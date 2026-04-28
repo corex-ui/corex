@@ -11,7 +11,7 @@ defmodule Corex.New.Cli do
   end
 
   def validate_corex_flags!(opts) do
-    if opts[:designex] && opts[:no_design] do
+    if opts[:designex] && opts[:design] == false do
       Mix.raise("--designex requires design. Remove `--no-design` or disable `--designex`.")
     end
 
@@ -28,23 +28,6 @@ defmodule Corex.New.Cli do
         :ok
     end
 
-    if opts[:theme] && opts[:theme] != "" do
-      themes =
-        opts[:theme]
-        |> String.split(":", trim: true)
-        |> Enum.map(&String.trim/1)
-        |> Enum.reject(&(&1 == ""))
-
-      valid = ["neo", "uno", "duo", "leo"]
-      invalid = themes -- valid
-
-      if invalid != [] do
-        Mix.raise(
-          "--theme must be colon-separated names from neo, uno, duo, leo. Got: #{inspect(invalid)}"
-        )
-      end
-    end
-
     :ok
   end
 
@@ -56,7 +39,7 @@ defmodule Corex.New.Cli do
       |> then(fn acc -> if opts[:html] == false, do: ["--no-html" | acc], else: acc end)
       |> then(fn acc -> if opts[:ecto] == false, do: ["--no-ecto" | acc], else: acc end)
       |> then(fn acc ->
-        design_on? = opts[:no_design] != true
+        design_on? = opts[:design] != false
         if design_on? and opts[:tailwind] == false, do: ["--no-tailwind" | acc], else: acc
       end)
       |> Enum.reverse()

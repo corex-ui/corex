@@ -2,7 +2,8 @@ import Config
 
 config :logger, :console,
   colors: [enabled: false],
-  format: "\n$time $metadata[$level] $message\n"
+  format: "\n$time $metadata[$level] $message\n",
+  metadata: :all
 
 config :phoenix,
   json_library: Jason,

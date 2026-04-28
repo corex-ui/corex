@@ -61,11 +61,11 @@ defmodule Corex.Checkbox do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
-  Build the form from an Ecto changeset and pass it to the template. Use `Corex.Form.get_form_id/1` for the form `id`:
+  Build the form from an Ecto changeset and pass it to the template. Pass `id` into `to_form/2` so the template can use `id={@form.id}`:
 
   ```elixir
   def checkbox_form_page(conn, _params) do
@@ -78,7 +78,7 @@ defmodule Corex.Checkbox do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.checkbox field={f[:terms]} class="checkbox">
       <:label>Accept terms</:label>
       <:error :let={msg}>
@@ -125,30 +125,29 @@ defmodule Corex.Checkbox do
   defmodule MyAppWeb.CheckboxFormLive do
     use MyAppWeb, :live_view
     alias MyApp.Form.Terms
-    alias Corex.Form
 
     def mount(_params, _session, socket) do
-      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms)
+      form = %Terms{} |> Terms.changeset(%{}) |> to_form(as: :terms, id: "checkbox-form-terms")
       {:ok, assign(socket, :form, form)}
     end
 
     def handle_event("validate", %{"terms" => params}, socket) do
       changeset = Terms.changeset(%Terms{}, params)
-      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms))}
+      {:noreply, assign(socket, :form, to_form(changeset, action: :validate, as: :terms, id: "checkbox-form-terms"))}
     end
 
     def handle_event("save", %{"terms" => params}, socket) do
       case Terms.changeset(%Terms{}, params) do
         %Ecto.Changeset{valid?: true} = _ ->
-          {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms))}
+          {:noreply, assign(socket, :form, to_form(Terms.changeset(%Terms{}, %{}), as: :terms, id: "checkbox-form-terms"))}
         changeset ->
-          {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms))}
+          {:noreply, assign(socket, :form, to_form(changeset, action: :insert, as: :terms, id: "checkbox-form-terms"))}
       end
     end
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+      <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
         <.checkbox field={@form[:terms]} class="checkbox" controlled>
           <:label>Accept terms</:label>
           <:error :let={msg}>

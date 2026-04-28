@@ -13,7 +13,7 @@
   </.layout_heading>
 
   <.<%= schema.singular %>_form
-    changeset={@changeset}
+    form={to_form(@changeset, as: :<%= String.to_atom(schema.singular) %>, id: "<%= schema.singular %>-form")}
     action={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
     return_to={~p"<%= if layout_locale do %>/#{@locale}<% end %><%= scope_assign_route_prefix %><%= schema.route_prefix %>"}
   />

@@ -97,10 +97,34 @@ defmodule Corex.PinInput do
     doc: "Override translatable strings"
   )
 
+  attr(:errors, :list, default: [], doc: "Error messages to display (non-field API)")
+  attr(:field, Phoenix.HTML.FormField, doc: "A form field, e.g. f[:code] or @form[:code]")
+
   attr(:rest, :global)
 
   slot :label, required: false do
     attr(:class, :string, required: false)
+  end
+
+  slot :error, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  def pin_input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    value = form_field_to_pin_list(field)
+    value_str = Enum.join(value, "")
+
+    assigns
+    |> assign(:field, nil)
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
+    |> assign(:id, field.id)
+    |> assign(:name, field.name)
+    |> assign(:form, field.form.id)
+    |> assign(:value, value)
+    |> assign(:value_str, value_str)
+    |> assign(:invalid, errors != [])
+    |> pin_input()
   end
 
   def pin_input(assigns) do
@@ -114,6 +138,7 @@ defmodule Corex.PinInput do
 
     assigns =
       assigns
+      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "pin-input-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign_new(:orientation, fn -> "horizontal" end)
@@ -170,8 +195,27 @@ defmodule Corex.PinInput do
           />
         </div>
       </div>
+      <div :if={@error != []} :for={msg <- @errors} data-scope="pin-input" data-part="error">
+        {render_slot(@error, msg)}
+      </div>
     </div>
     """
+  end
+
+  defp form_field_to_pin_list(%Phoenix.HTML.FormField{} = field) do
+    case field.value do
+      nil ->
+        []
+
+      v when is_list(v) ->
+        validate_value!(v)
+
+      v when is_binary(v) ->
+        v |> String.graphemes() |> validate_value!()
+
+      v ->
+        v |> to_string() |> String.graphemes() |> validate_value!()
+    end
   end
 
   defp merge_translation(nil, default), do: default

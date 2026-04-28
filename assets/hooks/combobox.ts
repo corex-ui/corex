@@ -99,6 +99,7 @@ function buildComboboxProps(
           const list = details.value.map((v) => String(v));
           hidden.value =
             list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (list[0] ?? "");
+          hidden.dispatchEvent(new Event("input", { bubbles: true }));
           hidden.dispatchEvent(new Event("change", { bubbles: true }));
         }
       }

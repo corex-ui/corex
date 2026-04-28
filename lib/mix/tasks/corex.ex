@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Corex do
 
   To create a new project with Corex, use the installer (install separately with `mix archive.install hex corex_new`). Example with Gettext/Localize i18n, mode, and themes:
 
-      $ mix corex.new my_app --mode --theme neo:uno:duo:leo
+      $ mix corex.new my_app --mode --theme
 
   See `Mix.Tasks.Corex.New` for all options.
   """

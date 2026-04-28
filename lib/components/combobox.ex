@@ -123,7 +123,7 @@ defmodule Corex.Combobox do
 
   ## Phoenix Form Integration
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. The combobox stays uncontrolled in the browser; merge hook-driven updates into changeset params when validating (see Angle Slider form docs). See the Select or NumberInput component docs for full controller and LiveView examples.
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`. Build the form in the controller with `Schema.changeset(%Schema{}, %{}) |> Phoenix.Component.to_form(as: :form_name, id: "form-id")`. The combobox stays uncontrolled in the browser; merge hook-driven updates into changeset params when validating (see Angle Slider form docs). See the Select or NumberInput component docs for full controller and LiveView examples.
 
   ### Server-side Filtering
 

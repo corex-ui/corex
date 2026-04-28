@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.AngleSliderDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   import Corex.AngleSlider,
     only: [
       angle_slider: 1,
@@ -725,7 +723,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/products"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
@@ -790,7 +788,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/products"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
@@ -853,7 +851,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_angle"
       phx-submit="save_angle"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -948,7 +946,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_angle_range"
       phx-submit="save_angle_range"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -1077,7 +1075,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
@@ -1113,7 +1111,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
       for={@form}
       action={~p"/angle-slider/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.angle_slider
@@ -1174,7 +1172,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -1212,7 +1210,7 @@ defmodule E2eWeb.Demos.AngleSliderDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

@@ -97,6 +97,7 @@ const SelectHook: Hook<object & SelectHookState, HTMLElement> = {
               : details.value.length === 1
                 ? String(details.value[0])
                 : details.value.map(String).join(",");
+          valueInput.dispatchEvent(new Event("input", { bubbles: true }));
           valueInput.dispatchEvent(new Event("change", { bubbles: true }));
         }
 

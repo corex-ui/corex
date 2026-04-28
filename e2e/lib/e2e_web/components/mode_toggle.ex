@@ -10,10 +10,12 @@ defmodule E2eWeb.ModeToggle do
     values: ["light", "dark"],
     doc: "the mode (dark or light) from cookie/session"
 
+  attr :id, :string, default: "mode-switcher"
+
   def mode_toggle(assigns) do
     ~H"""
     <.toggle_group
-      id="mode-switcher"
+      id={@id}
       class="toggle-group toggle-group--sm toggle-group--duo toggle-group--circle"
       value={if @mode == "dark", do: ["dark"], else: []}
       on_value_change_client="phx:set-mode"

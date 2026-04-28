@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.RadioGroupDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   defp items do
     [
       %{value: "a", label: "Option A"},
@@ -343,7 +341,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/account/choice"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.radio_group
@@ -413,7 +411,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/account/choice-strict"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.radio_group
@@ -509,7 +507,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -622,7 +620,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -746,7 +744,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.radio_group
@@ -781,7 +779,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
       for={@form}
       action={~p"/radio-group/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.radio_group
@@ -846,7 +844,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -878,7 +876,7 @@ defmodule E2eWeb.Demos.RadioGroupDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

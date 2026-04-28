@@ -1,6 +1,8 @@
 defmodule E2eWeb.UserController do
   use E2eWeb, :controller
 
+  import Phoenix.Component, only: [to_form: 2]
+
   alias E2e.Accounts
   alias E2e.Accounts.User
 
@@ -11,7 +13,7 @@ defmodule E2eWeb.UserController do
 
   def new(conn, _params) do
     changeset = Accounts.change_user(%User{})
-    render(conn, :new, changeset: changeset)
+    render(conn, :new, form: to_form(changeset, as: :user, id: "e2e-user-form"))
   end
 
   def create(conn, %{"user" => user_params}) do
@@ -22,7 +24,7 @@ defmodule E2eWeb.UserController do
         |> redirect(to: ~p"/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :new, changeset: changeset)
+        render(conn, :new, form: to_form(changeset, as: :user, id: "e2e-user-form"))
     end
   end
 
@@ -31,14 +33,21 @@ defmodule E2eWeb.UserController do
     render(conn, :show, user: user)
   end
 
-  def edit(conn, %{"id" => id}) do
+  def edit(conn, %{"id" => id} = params) do
     user = Accounts.get_user!(id)
     changeset = Accounts.change_user(user)
-    render(conn, :edit, user: user, changeset: changeset)
+    return_to = if params["return_to"] == "show", do: "show", else: "index"
+
+    render(conn, :edit,
+      user: user,
+      form: to_form(changeset, as: :user, id: "e2e-user-form"),
+      return_to: return_to
+    )
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
+  def update(conn, %{"id" => id, "user" => user_params} = params) do
     user = Accounts.get_user!(id)
+    return_to = if params["return_to"] == "show", do: "show", else: "index"
 
     case Accounts.update_user(user, user_params) do
       {:ok, user} ->
@@ -47,7 +56,11 @@ defmodule E2eWeb.UserController do
         |> redirect(to: ~p"/users/#{user}")
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, :edit, user: user, changeset: changeset)
+        render(conn, :edit,
+          user: user,
+          form: to_form(changeset, as: :user, id: "e2e-user-form"),
+          return_to: return_to
+        )
     end
   end
 

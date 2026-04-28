@@ -82,6 +82,7 @@ const DatePickerHook: Hook<object & DatePickerHookState, HTMLElement> = {
       placeholder: getString(el, "placeholder"),
       minView: getString<"day" | "month" | "year">(el, "minView"),
       maxView: getString<"day" | "month" | "year">(el, "maxView"),
+      defaultOpen: false,
       inline: getBoolean(el, "inline"),
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),

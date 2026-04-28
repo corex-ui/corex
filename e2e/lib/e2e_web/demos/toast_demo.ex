@@ -180,7 +180,7 @@ defmodule E2eWeb.Demos.ToastDemo do
 
   def patterns_form_code do
     ~S"""
-    <.form for={@form} as={:toast} phx-submit="create_flash" id={Corex.Form.get_form_id(@form)}>
+    <.form for={@form} as={:toast} phx-submit="create_flash" id={@form.id}>
       <.native_input field={@form[:title]} type="text" required><:label>Title</:label></.native_input>
       <.native_input field={@form[:message]} type="text" required><:label>Message</:label></.native_input>
       <.select class="select" field={@form[:type]} items={[...]}>

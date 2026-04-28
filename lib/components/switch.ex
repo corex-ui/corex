@@ -43,7 +43,7 @@ defmodule Corex.Switch do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
@@ -60,7 +60,7 @@ defmodule Corex.Switch do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.switch field={f[:notifications]} class="switch">
       <:label>Enable notifications</:label>
       <:error :let={msg}>
@@ -117,7 +117,7 @@ defmodule Corex.Switch do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.form for={@form} id={@form.id} phx-change="validate">
         <.switch field={@form[:notifications_enabled]} class="switch" controlled>
           <:label>Enable notifications</:label>
           <:error :let={msg}>

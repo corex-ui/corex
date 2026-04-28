@@ -50,9 +50,6 @@ custom classes must fully style the input
 - Ensure **clean typography, spacing, and layout balance** for a refined, premium look
 - Focus on **delightful details** like hover effects, loading states, and smooth page transitions
 
-
-<!-- usage-rules-start -->
-
 <!-- phoenix:elixir-start -->
 ## Elixir guidelines
 
@@ -452,5 +449,3 @@ And **never** do this:
 - You are FORBIDDEN from accessing the changeset in the template as it will cause errors
 - **Never** use `<.form let={f} ...>` in the template, instead **always use `<.form for={@form} ...>`**, then drive all form references from the form assign as in `@form[:field]`. The UI should **always** be driven by a `to_form/2` assigned in the LiveView module that is derived from a changeset
 <!-- phoenix:liveview-end -->
-
-<!-- usage-rules-end -->

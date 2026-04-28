@@ -189,7 +189,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
 
   describe "corex.gen.html E2E patterns" do
     @tag database: :postgresql
-    test "generated templates use layout_heading, data_list, get_form_id, link method delete" do
+    test "generated templates use layout_heading, data_list, @form.id, link method delete" do
       with_installer_tmp("gen_html_e2e", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog")
 
@@ -215,7 +215,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
           Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/resource_form.html.heex")
 
         assert_file(form_path, fn file ->
-          assert file =~ "get_form_id(@changeset)"
+          assert file =~ "id={@form.id}"
         end)
       end)
     end
@@ -223,7 +223,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
 
   describe "corex.gen.live E2E patterns" do
     @tag database: :postgresql
-    test "generated LiveView templates use layout_heading, data_list, get_form_id, action delete" do
+    test "generated LiveView templates use layout_heading, data_list, @form.id, action delete" do
       with_installer_tmp("gen_live_e2e", fn tmp_dir ->
         {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
 
@@ -248,7 +248,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
 
         form_path = Path.join(app_root_path, "lib/phx_blog_web/live/post_live/form.ex")
         assert_file(form_path, fn file ->
-          assert file =~ "get_form_id(@form)"
+          assert file =~ "id={@form.id}"
         end)
       end)
     end

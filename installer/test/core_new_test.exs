@@ -15,10 +15,10 @@ defmodule Mix.Tasks.Corex.NewTest do
     assert_received {:mix_shell, :info, ["Corex installer v" <> _]}
   end
 
-  test "validates --theme option" do
-    in_tmp("new with invalid theme", fn ->
-      assert_raise Mix.Error, ~r/--theme must be colon-separated names from neo, uno, duo, leo/, fn ->
-        Mix.Tasks.Corex.New.run(["phx_blog", "--theme", "invalid"])
+  test "designex conflicts with --no-design" do
+    in_tmp("new designex no design", fn ->
+      assert_raise Mix.Error, ~r/--designex requires design/, fn ->
+        Mix.Tasks.Corex.New.run(["phx_blog", "--no-design", "--designex"])
       end
     end)
   end

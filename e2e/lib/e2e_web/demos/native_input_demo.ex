@@ -427,7 +427,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="flex flex-col gap-6 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -726,7 +726,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="flex flex-col gap-6 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -937,7 +937,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
       for={@form}
       action={~p"/native-input/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="flex flex-col gap-6 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -1334,7 +1334,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="flex flex-col gap-6 w-full max-w-lg"
@@ -1378,7 +1378,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="flex flex-col gap-6 w-full max-w-lg"
@@ -1444,7 +1444,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="flex flex-col gap-6 w-full max-w-lg"
@@ -1653,7 +1653,7 @@ defmodule E2eWeb.Demos.NativeInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="flex flex-col gap-6 w-full max-w-lg"

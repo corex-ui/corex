@@ -76,7 +76,7 @@ defmodule Corex.DatePicker do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
@@ -93,7 +93,7 @@ defmodule Corex.DatePicker do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.date_picker field={f[:date]} class="date-picker" trigger_aria_label="Select date" input_aria_label="Select date">
       <:label>Date</:label>
       <:trigger>
@@ -161,7 +161,7 @@ defmodule Corex.DatePicker do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.form for={@form} id={@form.id} phx-change="validate">
         <.date_picker field={@form[:birth_date]} class="date-picker" controlled>
           <:label>Birth date</:label>
           <:trigger>
@@ -602,9 +602,8 @@ defmodule Corex.DatePicker do
           {render_slot(@error, msg)}
         </div>
         <div
-          phx-mounted={Connect.ignore_positioner(%Anatomy.Positioner{id: @id, dir: @dir})}
-          {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir})}
-          
+          phx-mounted={Connect.ignore_positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
+          {Connect.positioner(%Anatomy.Positioner{id: @id, dir: @dir, positioning: @positioning})}
         >
           <div phx-mounted={Connect.ignore_content(%Anatomy.Content{id: @id, dir: @dir})} {Connect.content(%Anatomy.Content{id: @id, dir: @dir})}>
             <div id={@id <> "-day-view"} data-scope="date-picker" data-part="day-view">

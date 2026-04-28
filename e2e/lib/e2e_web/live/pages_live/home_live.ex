@@ -68,7 +68,7 @@ defmodule E2eWeb.HomeLive do
         <div class="home__hero__stack">
           <div class="home__hero__inner">
             <div class="home__hero__copy" data-home-anim-group>
-              <h1 id="home-hero-heading" data-home-anim class="home__display text-7xl">
+              <h1 id="home-hero-heading" data-home-anim class="home__display">
                 The <span class="text-brand">Phoenix UI</span>
                 with a <span class="text-alert">real API</span>.
               </h1>
@@ -286,6 +286,136 @@ defmodule E2eWeb.HomeLive do
                   <img src={item.img} alt={item.name} class="home__hero__marquee__logo" />
                 </:item>
               </.marquee>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section
+        class="home__features"
+        id="home-features"
+        aria-labelledby="home-features-heading"
+      >
+        <div class="home__features__inner">
+          <header class="home__features__head">
+            <p class="home__features__eyebrow">{gettext("Why Corex")}</p>
+            <h2 id="home-features-heading" class="home__features__title">
+              {gettext("Platform and roadmap")}
+            </h2>
+            <p class="home__features__lead">
+              {gettext("Production-ready primitives, open licensing, and a clear forward direction.")}
+            </p>
+          </header>
+          <ul class="home__features__list">
+            <li class="home__features__item">
+              <div class="home__features__item__inner">
+                <h3 class="home__features__item__title">
+                  {gettext("Controllers and LiveView, same building blocks")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext("Use the same component APIs on controller-backed pages and LiveView.")}
+                </p>
+              </div>
+            </li>
+            <li class="home__features__item">
+              <div class="home__features__item__inner">
+                <h3 class="home__features__item__title">
+                  {gettext("Corex MCP for component documentation")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext(
+                    "Stream detailed component docs into your editor via the Corex MCP; installation and client setup are documented on Hexdocs."
+                  )}
+                </p>
+              </div>
+            </li>
+            <li class="home__features__item">
+              <div class="home__features__item__inner">
+                <h3 class="home__features__item__title">
+                  {gettext("100% open source")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext(
+                    "No paid add-ons, no paywalled components, and that commitment holds for the future of the project."
+                  )}
+                </p>
+              </div>
+            </li>
+            <li class="home__features__item">
+              <div class="home__features__item__inner">
+                <h3 class="home__features__item__title">
+                  {gettext("Design system and Tailwind v4")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext(
+                    "Corex ships a design system with design tokens, themes, and Tailwind CSS v4 usage patterns."
+                  )}
+                </p>
+              </div>
+            </li>
+            <li class="home__features__item">
+              <div class="home__features__item__inner">
+                <h3 class="home__features__item__title">
+                  {gettext("Tableau Elixir for static sites")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext(
+                    "Fits a classic Phoenix app and works alongside Tableau Elixir for static site generation."
+                  )}
+                </p>
+              </div>
+            </li>
+            <li class="home__features__item home__features__item--roadmap">
+              <div class="home__features__item__inner">
+                <p class="home__features__badge">{gettext("Soon")}</p>
+                <h3 class="home__features__item__title">
+                  {gettext("Palette and theme generation")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext("Create palettes and map them into the token pipeline.")}
+                </p>
+              </div>
+            </li>
+            <li class="home__features__item home__features__item--roadmap">
+              <div class="home__features__item__inner">
+                <p class="home__features__badge">{gettext("Soon")}</p>
+                <h3 class="home__features__item__title">
+                  {gettext("Blocks and composition")}
+                </h3>
+                <p class="home__features__item__body">
+                  {gettext("Compose higher-level blocks and layouts on top of primitives.")}
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+      <section class="home__cta-band" aria-labelledby="home-cta-band-heading">
+        <div class="home__cta-band__inner">
+          <h2 id="home-cta-band-heading" class="home__cta-band__title">
+            {gettext("Get started")}
+          </h2>
+          <div class="home__cta-band__panel">
+            <div class="home__cta-band__actions">
+              <.navigate to={~p"/accordion/anatomy"} class="home__cta-band__btn button button--brand rounded-full">
+                {gettext("Browse components")}
+                <.heroicon name="hero-arrow-right" class="icon" />
+              </.navigate>
+              <.navigate
+                to="https://hexdocs.pm/corex/installation.html"
+                class="home__cta-band__btn home__cta-band__btn--secondary button rounded-full"
+                external
+              >
+                {gettext("Visit Hexdocs")}
+                <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+              </.navigate>
+              <.navigate
+                to="https://github.com/corex-ui/corex"
+                class="home__cta-band__btn home__cta-band__btn--secondary button rounded-full"
+                external
+              >
+                {gettext("Visit GitHub")}
+                <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
+              </.navigate>
             </div>
           </div>
         </div>

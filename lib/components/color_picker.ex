@@ -132,7 +132,28 @@ defmodule Corex.ColorPicker do
     doc: "Override translatable strings"
   )
 
+  attr(:errors, :list, default: [], doc: "Error messages to display (non-field API)")
+  attr(:field, Phoenix.HTML.FormField, doc: "A form field, e.g. f[:color] or @form[:color]")
+
   attr(:rest, :global)
+
+  slot :error, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  def color_picker(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    v = form_field_to_color_value(field)
+
+    assigns
+    |> assign(:field, nil)
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
+    |> assign(:id, field.id)
+    |> assign(:name, field.name)
+    |> assign(:value, v)
+    |> assign(:invalid, errors != [])
+    |> color_picker()
+  end
 
   def color_picker(assigns) do
     default_translation = %Translation{
@@ -142,6 +163,7 @@ defmodule Corex.ColorPicker do
 
     assigns =
       assigns
+      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "color-picker-#{System.unique_integer([:positive])}" end)
       |> assign_new(:translation, fn -> default_translation end)
       |> assign(:translation, merge_translation(assigns.translation, default_translation))
@@ -338,8 +360,20 @@ defmodule Corex.ColorPicker do
           </div>
         </div>
       </div>
+      <div :if={@error != []} :for={msg <- @errors} data-scope="color-picker" data-part="error">
+        {render_slot(@error, msg)}
+      </div>
     </div>
     """
+  end
+
+  defp form_field_to_color_value(%Phoenix.HTML.FormField{} = field) do
+    case field.value do
+      v when is_binary(v) and v == "" -> nil
+      v when is_binary(v) -> v
+      nil -> nil
+      v -> to_string(v)
+    end
   end
 
   defp initial_value(%{value: v}) when is_binary(v) and v != "" do

@@ -16,33 +16,21 @@ defmodule Mix.Tasks.Corex.New do
 
   These match **`mix help phx.new`** / **`mix help phx.new.web`**: for example **`--no-ecto`**, **`--no-version-check`**, **`--umbrella`**, and **`--dev`** (Phoenix’s local dev deps; not Corex).
 
-  **`--no-skills`**: passed to `phx.new` as Phoenix’s **`--no-agents-md`**, and to **`mix igniter.install corex`** as **`--no-skills`**.
-
   ## 2) Corex / Igniter (not passed to `phx.new`)
 
   * **`--dev_corex PATH`** — `mix igniter.install corex@path:PATH` instead of Hex. Path is from the **web** app (e.g. sibling **`../corex`**, umbrella **`../../corex`**). Use with Phoenix **`--dev`** when you need both.
 
   * `--no-design` / `--design` — skip or enable design generation after install; **`--designex`** for `corex.design --designex`
-  * `--mode`, `--theme`, `--lang` — forwarded as **`--corex.…`** to **`mix igniter.install corex`** (see `Mix.Tasks.Corex.Install`); you type plain **`--mode`**, **`--theme neo:leo`**, and **`--replace`** here, not **`--corex.…`**
-  * `--replace` / **`--no-replace`** — forwarded as **`--corex.replace`** to **`mix igniter.install corex`**; default for greenfield is replace on (new apps)
-  * **`--no-mcp`**, **`--no-skills`** (Igniter side) — as in `Mix.Tasks.Corex.Install`
+  * `--mode`, `--theme`, `--lang` — forwarded as **`--corex.…`** to **`mix igniter.install corex`** (see `Mix.Tasks.Corex.Install`); **`--theme`** turns on all four themes; plain **`--mode`**, **`--replace`**, etc.
+  * `--replace` / **`--no-replace`** — forwarded as **`--corex.replace`**. Default is **on**: stock **`home.html.heex` is wrapped in `Layouts.app` (Corex layout), the stock `Layouts.app` is fully switched to Corex, stock-only layout functions like **`flash_group` / `theme_toggle` are removed**, and **no** `GET /home` or `Layouts.corex` is added. **`--no-replace`** keeps the default Phoenix home at `/` and **adds** the separate `/home` route with `Layouts.corex` and `def corex` instead.
+  * **`--no-mcp`** — as in `Mix.Tasks.Corex.Install`
 
   See `Mix.Tasks.Corex.Install` for the full list of what gets patched in the app.
-
-  ## Diffs, TTY, and `MIX_COREX_IGNITER_INTERACTIVE`
-
-  By default this task runs **`mix igniter.install corex` with `--yes` and `--yes-to-deps`** so new projects and CI are non-interactive. That **skips** Igniter’s step that prints a green file diff in the terminal (the same as running `igniter.install` with global `--yes`).
-
-  The nested `mix` run uses a **Port**, so the subprocess is usually **not a TTY**; even without `--yes`, prompts and diff UX are not the same as running `igniter.install` by hand in your shell.
-
-  To try for **interactive** behavior locally, set **`MIX_COREX_IGNITER_INTERACTIVE=1`** and ensure **`CI` is unset**. Then `igniter_install_yes_argv/0` omits `--yes` so you can get Igniter’s confirmation/diff path when the environment allows it.
-
-  The reliable way to **see** the full install diff: after generation, `cd` into the app and run **`mix igniter.install corex`** (or `corex@path:…`) **without** `--yes`, or use **`--dry-run`** / **`--scribe path.md`** as documented on `Mix.Tasks.Corex.Install`.
 
   ## Examples
 
       mix corex.new hello_world
-      mix corex.new my_app --mode --theme neo:uno
+      mix corex.new my_app --mode --theme
       mix corex.new hello --umbrella
       mix corex.new my_app --dev --dev_corex ../corex
   """
@@ -60,7 +48,7 @@ defmodule Mix.Tasks.Corex.New do
     designex: :boolean,
     live: :boolean,
     mode: :boolean,
-    theme: :string,
+    theme: :boolean,
     lang: :boolean,
     ecto: :boolean,
     app: :string,
@@ -82,12 +70,8 @@ defmodule Mix.Tasks.Corex.New do
     tailwind: :boolean,
     gettext: :boolean,
     html: :boolean,
-    skills: :boolean,
-    a11y: :boolean,
     mcp: :boolean,
-    no_design: :boolean,
-    replace: :boolean,
-    no_replace: :boolean
+    replace: :boolean
   ]
 
   @reserved_app_names ~w(server table)
@@ -107,7 +91,8 @@ defmodule Mix.Tasks.Corex.New do
       |> Keyword.put_new(:lang, false)
       |> Keyword.put_new(:replace, true)
       |> Keyword.put_new(:mcp, true)
-      |> Keyword.put_new(:skills, true)
+      |> Keyword.put_new(:theme, false)
+      |> Keyword.put_new(:design, true)
 
     Cli.validate_corex_flags!(opts)
     Cli.validate_phx_new_flags!(opts)
@@ -184,6 +169,7 @@ defmodule Mix.Tasks.Corex.New do
       igniter_extra,
       "phx-new"
     )
+
     PhxWrapper.run_format!(install_dir)
 
     PostGenerate.copy_cached_build(phx_root)

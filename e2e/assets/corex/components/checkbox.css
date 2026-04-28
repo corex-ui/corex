@@ -8,7 +8,7 @@
     gap: var(--spacing-space);
   }
   .checkbox[data-orientation="horizontal"] {
-    max-width: var(--container-5xs);
+    max-width: fit-content;
   }
   .checkbox[data-orientation="vertical"] {
     max-width: var(--container-5xs);

@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.SignatureDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   def minimal_code do
     ~S"""
     <.signature_pad id="signature-anatomy-minimal" class="signature-pad">
@@ -274,7 +272,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.signature_pad field={f[:signature]}>
         <:label>Sign here</:label>
@@ -313,7 +311,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       for={@form}
       action={~p"/signature/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.signature_pad field={f[:signature]}>
         <:label>Sign here (stricter)</:label>
@@ -355,7 +353,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature/form"}
       method="post"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.signature_pad field={f[:signature]}>
         <:label>Sign here</:label>
@@ -384,7 +382,7 @@ defmodule E2eWeb.Demos.SignatureDemo do
       action={~p"/signature/form"}
       method="post"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.signature_pad field={f[:signature]}>
         <:label>Sign here (stricter)</:label>

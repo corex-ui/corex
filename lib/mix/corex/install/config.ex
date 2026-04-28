@@ -1,0 +1,132 @@
+defmodule Mix.Corex.Install.Config do
+  @moduledoc false
+
+  alias Igniter.Project.{Config, Deps}
+
+  @all_themes ~w(neo uno duo leo)
+
+  def validate_opts!(opts) do
+    if opts[:designex] == true and opts[:design] == false do
+      Mix.raise(
+        "--designex requires design. Remove `--no-design` or disable `--designex`." <>
+          "\n\n" <> manual_install_hint()
+      )
+    end
+
+    :ok
+  end
+
+  def themes_from_opts(opts) do
+    if opts[:theme] == true, do: @all_themes, else: []
+  end
+
+  def design_on?(opts), do: Keyword.get(opts, :design, true)
+
+  defp manual_install_hint do
+    """
+    If automated install is not an option, add Corex to an app yourself:
+
+      * Follow https://hexdocs.pm/corex/manual_installation.html (or guides/manual_installation.md in the repo) — add the dependency, `import corex` and hooks in `assets/js/app.js`, and esbuild ESM flags in `config/config.exs` as shown there.
+    """
+  end
+
+  def maybe_add_localize_web_dep(igniter, false), do: igniter
+
+  def maybe_add_localize_web_dep(igniter, true) do
+    Deps.add_dep(igniter, {:localize_web, "~> 0.5"})
+  end
+
+  def maybe_configure_localize_runtime(igniter, _web_mod, false), do: igniter
+
+  def maybe_configure_localize_runtime(igniter, web_mod, true) do
+    gettext_backend = Module.concat(web_mod, Gettext)
+
+    block =
+      "config :localize,\n  supported_locales: Gettext.known_locales(#{inspect(gettext_backend)}) |> Enum.map(&String.to_atom/1)\n"
+
+    path = "config/runtime.exs"
+
+    if Igniter.exists?(igniter, path) do
+      Igniter.update_file(
+        igniter,
+        path,
+        &merge_localize_runtime_into_source(&1, gettext_backend, block)
+      )
+    else
+      Igniter.include_or_create_file(igniter, path, "import Config\n\n" <> block)
+    end
+  end
+
+  defp merge_localize_runtime_into_source(source, gettext_backend, block) do
+    content = Rewrite.Source.get(source, :content)
+
+    if String.contains?(content, "Gettext.known_locales(#{inspect(gettext_backend)})") do
+      source
+    else
+      base = runtime_exs_base_content(content)
+      Rewrite.Source.update(source, :content, String.trim_trailing(base) <> "\n\n" <> block)
+    end
+  end
+
+  defp runtime_exs_base_content(content) do
+    if String.contains?(String.trim_leading(content), "import Config") do
+      content
+    else
+      "import Config\n\n" <> String.trim_leading(content)
+    end
+  end
+
+  defp append_designex_config_block(source, block) do
+    content = Rewrite.Source.get(source, :content)
+
+    if String.contains?(content, "config :designex") do
+      source
+    else
+      Rewrite.Source.update(source, :content, String.trim_trailing(content) <> block)
+    end
+  end
+
+  def configure_app_env(igniter, app, themes) do
+    if themes != [] do
+      Config.configure_new(igniter, "config.exs", app, [:themes], themes)
+    else
+      igniter
+    end
+  end
+
+  def configure_designex(igniter, opts) do
+    if opts[:designex] do
+      block = """
+
+      config :designex,
+        version: "1.0.2",
+        commit: "1da4b31",
+        cd: Path.expand("../assets", __DIR__),
+        dir: "corex",
+        corex: [
+          build_args: ~w(--dir=design --script=build.mjs --tokens=tokens)
+        ]
+      """
+
+      Igniter.update_file(igniter, "config/config.exs", &append_designex_config_block(&1, block))
+    else
+      igniter
+    end
+  end
+
+  def configure_test_phoenix(igniter) do
+    path = "test.exs"
+
+    if Igniter.exists?(igniter, path) do
+      Config.configure_new(
+        igniter,
+        path,
+        :phoenix,
+        [:sort_verified_routes_query_params],
+        true
+      )
+    else
+      igniter
+    end
+  end
+end

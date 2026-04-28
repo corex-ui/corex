@@ -2,7 +2,6 @@ defmodule E2eWeb.PinInputFormLive do
   use E2eWeb, :live_view
 
   alias E2e.Form.PinInputForm
-  alias Corex.Form
   alias Corex.Toast
 
   @impl true
@@ -97,7 +96,7 @@ defmodule E2eWeb.PinInputFormLive do
 
         <.form
           for={@form}
-          id={Form.get_form_id(@form)}
+          id={@form.id}
           phx-change="validate"
           phx-submit="save"
         >

@@ -12061,6 +12061,7 @@ var Corex = (() => {
           if (hidden) {
             const list = details.value.map((v2) => String(v2));
             hidden.value = list.length === 0 ? "" : getBoolean(el, "multiple") ? list.join(",") : (_a = list[0]) != null ? _a : "";
+            hidden.dispatchEvent(new Event("input", { bubbles: true }));
             hidden.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
@@ -14226,6 +14227,19 @@ var Corex = (() => {
     if (!selectEl) return;
     raf(() => setElementValue(selectEl, format));
   }
+  function syncColorHiddenAndNotify(el, valueAsString) {
+    if (valueAsString === void 0) {
+      return;
+    }
+    const hidden = el.querySelector(
+      '[data-scope="color-picker"][data-part="hidden-input"]'
+    );
+    if (hidden) {
+      hidden.value = valueAsString;
+      hidden.dispatchEvent(new Event("input", { bubbles: true }));
+      hidden.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
   function readValueProps(el) {
     const defaultVal = getString(el, "defaultValue");
     return { defaultValue: defaultVal ? parse(defaultVal) : void 0 };
@@ -15769,6 +15783,7 @@ var Corex = (() => {
             dir: getDir(el),
             positioning: readPositioningOptions(el),
             onValueChange: (details) => {
+              syncColorHiddenAndNotify(el, details.valueAsString);
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -15782,6 +15797,7 @@ var Corex = (() => {
               });
             },
             onValueChangeEnd: (details) => {
+              syncColorHiddenAndNotify(el, details.valueAsString);
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -20290,6 +20306,7 @@ var Corex = (() => {
             placeholder: getString(el, "placeholder"),
             minView: getString(el, "minView"),
             maxView: getString(el, "maxView"),
+            defaultOpen: false,
             inline: getBoolean(el, "inline"),
             positioning: readPositioningOptions(el)
           }), resolveZagDatePickerTranslations(el)), {
@@ -28993,6 +29010,8 @@ var Corex = (() => {
                 );
                 if (valueInput) {
                   valueInput.value = (_a = details.value) != null ? _a : "";
+                  valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+                  valueInput.dispatchEvent(new Event("change", { bubbles: true }));
                 }
               }
               notifyChange({
@@ -30667,6 +30686,13 @@ var Corex = (() => {
             dir: getDir(el),
             orientation: getString(el, "orientation"),
             onValueChange: (details) => {
+              const checked = el.querySelector(
+                '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+              );
+              if (checked) {
+                checked.dispatchEvent(new Event("input", { bubbles: true }));
+                checked.dispatchEvent(new Event("change", { bubbles: true }));
+              }
               notifyChange({
                 el,
                 canPushServer: canPush(),
@@ -32129,6 +32155,7 @@ var Corex = (() => {
               );
               if (valueInput && getBoolean(el, "controlled")) {
                 valueInput.value = details.value.length === 0 ? "" : details.value.length === 1 ? String(details.value[0]) : details.value.map(String).join(",");
+                valueInput.dispatchEvent(new Event("input", { bubbles: true }));
                 valueInput.dispatchEvent(new Event("change", { bubbles: true }));
               }
               notifyChange({
@@ -32543,6 +32570,11 @@ var Corex = (() => {
     if (!raw) return [];
     return raw.split("\n").map((line) => line.trim()).filter(Boolean);
   }
+  function reapplyLiveViewValueInputUsage(input) {
+    const p2 = input;
+    if (!p2.phxPrivate) p2.phxPrivate = {};
+    p2.phxPrivate[PHX_HAS_FOCUSED] = true;
+  }
   function buildDrawingOptions(el) {
     const o2 = {
       fill: getString(el, "drawingFill"),
@@ -32556,21 +32588,25 @@ var Corex = (() => {
     if (easing) o2.easing = easing;
     return o2;
   }
-  function queueFormBubblingInputForPhoenix2(el, getValue) {
+  function queueFormBubblingInputForPhoenix2(el, getValue, opts) {
     queueMicrotask(() => {
       const input = el.querySelector(
         '[data-scope="signature-pad"][data-part="hidden-input"]'
       );
-      if (!input) return;
+      if (!input) {
+        return;
+      }
       const v2 = getValue();
       if (String(input.value) !== String(v2)) {
         input.value = v2;
       }
+      opts.onPadTouched();
+      reapplyLiveViewValueInputUsage(input);
       input.dispatchEvent(new Event("input", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
     });
   }
-  var anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine22, SignaturePad, SignaturePadHook;
+  var anatomy22, parts22, getRootId17, getControlId9, getLabelId13, getHiddenInputId5, getControlEl5, getSegmentEl, getDataUrl2, e, t, n, r, a, E, D, O, F, z2, average, machine22, SignaturePad, PHX_HAS_FOCUSED, SignaturePadHook;
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
@@ -32768,7 +32804,9 @@ var Corex = (() => {
               const hiddenInput = this.el.querySelector(
                 '[data-scope="signature-pad"][data-part="hidden-input"]'
               );
-              if (hiddenInput) hiddenInput.value = "";
+              if (hiddenInput && hiddenInput.value !== "") {
+                hiddenInput.value = "";
+              }
               return;
             }
             segment.innerHTML = "";
@@ -32844,11 +32882,32 @@ var Corex = (() => {
           this.syncPaths();
         }
       };
+      PHX_HAS_FOCUSED = "phx-has-focused";
       SignaturePadHook = {
         mounted() {
+          var _a;
           const el = this.el;
+          const hook = this;
           const pushEvent = this.pushEvent.bind(this);
+          hook.padTouched = false;
+          const markTouched = () => {
+            hook.padTouched = true;
+          };
           const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
+          {
+            const input = el.querySelector(
+              '[data-scope="signature-pad"][data-part="hidden-input"]'
+            );
+            if (String((_a = input == null ? void 0 : input.value) != null ? _a : "") !== "" || defaultPaths.length > 0) {
+              hook.padTouched = true;
+              queueMicrotask(() => {
+                const i2 = el.querySelector(
+                  '[data-scope="signature-pad"][data-part="hidden-input"]'
+                );
+                if (i2) reapplyLiveViewValueInputUsage(i2);
+              });
+            }
+          }
           const signaturePad = new SignaturePad(el, __spreadProps(__spreadValues({
             id: el.id,
             name: getString(el, "name")
@@ -32858,7 +32917,8 @@ var Corex = (() => {
               signaturePad.setPaths(details.paths);
               queueFormBubblingInputForPhoenix2(
                 el,
-                () => details.paths.length > 0 ? details.paths.join("\n") : ""
+                () => details.paths.length > 0 ? details.paths.join("\n") : "",
+                { onPadTouched: markTouched }
               );
               details.getDataUrl("image/png").then((url) => {
                 signaturePad.imageURL = url;
@@ -32892,7 +32952,7 @@ var Corex = (() => {
             const { id: targetId } = event.detail;
             if (targetId && targetId !== el.id) return;
             signaturePad.api.clear();
-            queueFormBubblingInputForPhoenix2(el, () => "");
+            queueFormBubblingInputForPhoenix2(el, () => "", { onPadTouched: markTouched });
           };
           el.addEventListener("corex:signature-pad:clear", this.onClear);
           this.handlers = [];
@@ -32900,24 +32960,33 @@ var Corex = (() => {
             this.handleEvent("signature_pad_clear", (payload) => {
               if (!idMatches(el.id, readPayloadId(payload))) return;
               signaturePad.api.clear();
-              queueFormBubblingInputForPhoenix2(el, () => "");
+              queueFormBubblingInputForPhoenix2(el, () => "", { onPadTouched: markTouched });
             })
           );
         },
         updated() {
           var _a, _b;
           const el = this.el;
-          const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
           const name = getString(el, "name");
           if (name) {
             (_a = this.signaturePad) == null ? void 0 : _a.setName(name);
           }
-          (_b = this.signaturePad) == null ? void 0 : _b.updateProps(__spreadProps(__spreadValues({
+          (_b = this.signaturePad) == null ? void 0 : _b.updateProps({
             id: el.id,
-            name
-          }, defaultPaths.length > 0 ? { defaultPaths } : {}), {
+            name,
             drawing: buildDrawingOptions(el)
-          }));
+          });
+          if (!this.padTouched) {
+            return;
+          }
+          queueMicrotask(() => {
+            const input = this.el.querySelector(
+              '[data-scope="signature-pad"][data-part="hidden-input"]'
+            );
+            if (input) {
+              reapplyLiveViewValueInputUsage(input);
+            }
+          });
         },
         destroyed() {
           var _a;
@@ -35121,7 +35190,7 @@ var Corex = (() => {
     const id = el.dataset.toastGroupId || el.id;
     return id ? toastStores.get(id) : void 0;
   }
-  var anatomy26, parts26, getRegionId, getRegionEl, getRootId21, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine26, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, ToastHook;
+  var anatomy26, parts26, getRegionId, getRegionEl, getRootId21, getRootEl7, getTitleId3, getDescriptionId2, getCloseTriggerId2, defaultTimeouts, getOffsets, guards4, createMachine22, and9, groupMachine, not10, machine26, withDefaults, priorities, DEFAULT_TYPE, getPriorityForType, sortToastsByPriority, isHttpResponse, group, toastGroups, toastStores, ToastItem, ToastGroup, loadingMeta, ToastHook;
   var init_toast = __esm({
     "../priv/static/toast.mjs"() {
       "use strict";
@@ -35685,14 +35754,17 @@ var Corex = (() => {
       toastStores = /* @__PURE__ */ new Map();
       ToastItem = class extends Component {
         constructor(el, props) {
+          var _a;
           super(el, props);
           __publicField(this, "parts");
           __publicField(this, "duration");
+          __publicField(this, "showLoading");
           __publicField(this, "destroy", () => {
             this.machine.stop();
             this.el.remove();
           });
           this.duration = props.duration;
+          this.showLoading = ((_a = props.meta) == null ? void 0 : _a.loading) === true;
           this.el.setAttribute("data-scope", "toast");
           this.el.setAttribute("data-part", "root");
           this.el.classList.add("toast-item");
@@ -35764,15 +35836,18 @@ var Corex = (() => {
           const isInfinity = duration === "Infinity" || duration === Infinity || duration === Number.POSITIVE_INFINITY;
           if (isInfinity) {
             this.parts.progressbar.style.display = "none";
-            this.parts.loadingSpinner.style.display = "flex";
             this.el.setAttribute("data-duration-infinity", "true");
+          } else {
+            this.parts.progressbar.style.display = "block";
+            this.el.removeAttribute("data-duration-infinity");
+          }
+          if (this.showLoading) {
+            this.parts.loadingSpinner.style.display = "flex";
             if (loadingIcon && this.parts.loadingSpinner.innerHTML !== loadingIcon) {
               this.parts.loadingSpinner.innerHTML = loadingIcon;
             }
           } else {
-            this.parts.progressbar.style.display = "block";
             this.parts.loadingSpinner.style.display = "none";
-            this.el.removeAttribute("data-duration-infinity");
           }
         }
       };
@@ -35811,6 +35886,7 @@ var Corex = (() => {
           const toasts = this.api.getToasts().filter((t2) => typeof t2.id === "string");
           const nextIds = new Set(toasts.map((t2) => t2.id));
           toasts.forEach((toastData, index) => {
+            var _a;
             let item = this.toastComponents.get(toastData.id);
             if (!item) {
               const el = document.createElement("div");
@@ -35826,6 +35902,7 @@ var Corex = (() => {
               this.toastComponents.set(toastData.id, item);
             } else {
               item.duration = toastData.duration;
+              item.showLoading = ((_a = toastData.meta) == null ? void 0 : _a.loading) === true;
               item.updateProps(__spreadProps(__spreadValues({}, toastData), {
                 parent: this.machine.service,
                 index
@@ -35840,6 +35917,7 @@ var Corex = (() => {
           }
         }
       };
+      loadingMeta = (loading) => loading === true || loading === "true" ? { meta: { loading: true } } : {};
       ToastHook = {
         mounted() {
           var _a;
@@ -35921,13 +35999,13 @@ var Corex = (() => {
               const store22 = getToastStore(payload.groupId || this.groupId);
               if (!store22) return;
               try {
-                store22.create({
+                store22.create(__spreadValues({
                   title: payload.title,
                   description: payload.description,
                   type: payload.type || "info",
                   id: payload.id || generateId(void 0, "toast"),
                   duration: parseDuration(payload.duration)
-                });
+                }, loadingMeta(payload.loading)));
               } catch (error) {
                 console.error("Failed to create toast:", error);
               }
@@ -35964,13 +36042,13 @@ var Corex = (() => {
             const store22 = getToastStore(detail.groupId || this.groupId);
             if (!store22) return;
             try {
-              store22.create({
+              store22.create(__spreadValues({
                 title: detail.title,
                 description: detail.description,
                 type: detail.type || "info",
                 id: detail.id || generateId(void 0, "toast"),
                 duration: parseDuration(detail.duration)
-              });
+              }, loadingMeta(detail.loading)));
             } catch (error) {
               console.error("Failed to create toast:", error);
             }

@@ -401,105 +401,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
     port
   end
 
-  def request_with_retries(url, retries)
-
-  @doc """
-  `mix corex.new` default (replace on, design on): JS hooks, design assets, home wrapped in
-  `Layouts.app`, and Phoenix daisyUI plugins stripped from `app.css`.
-  """
-  def assert_corex_greenfield_file_invariants!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    base = app_base_path(app_root, app_name, opts)
-    web = "#{app_name}_web"
-
-    app_js = Path.join([base, "assets", "js", "app.js"])
-    assert_file(app_js, ~r/import corex from "corex"/)
-    assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
-
-    app_css = Path.join([base, "assets", "css", "app.css"])
-    assert_file(app_css, ~r{/\* corex:design-imports \*/})
-    assert_file(app_css, ~r{\.\./corex/main\.css})
-    assert_file(app_css, fn c ->
-      refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
-    end)
-
-    design_dir = Path.join([base, "assets", "corex"])
-    assert_dir(design_dir)
-
-    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
-    assert_file(home, fn c ->
-      assert c =~ ~r/<Layouts\.app[\s\n]/
-      refute c =~ "Layouts.flash_group"
-      refute c =~ "Layouts.theme_toggle"
-    end)
-  end
-
-  @doc """
-  `mix corex.new … --no-replace`: stock home at `/`, router adds `GET /corex`; JS is still patched.
-  """
-  def assert_corex_no_replace_file_invariants!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    base = app_base_path(app_root, app_name, opts)
-    web = "#{app_name}_web"
-
-    app_js = Path.join([base, "assets", "js", "app.js"])
-    assert_file(app_js, ~r/import corex from "corex"/)
-    assert_file(app_js, ~r/\.\.\.corex/)
-
-    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
-    assert_file(home, fn c -> assert c =~ ~r/<Layouts\.flash_group/ end)
-
-    router = Path.join([base, "lib", web, "router.ex"])
-
-    assert_file(router, fn c ->
-      assert c =~ "CorexPageController"
-      assert c =~ "/corex"
-    end)
-  end
-
-  @doc """
-  `mix corex.new … --no-design` (or installer `--no-design`): no copied design tree from `mix corex.design`.
-  """
-  def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    base = app_base_path(app_root, app_name, opts)
-    design_dir = Path.join([base, "assets", "corex"])
-    refute_dir(design_dir)
-  end
-
-  @doc """
-  Replace mode with `--no-design` (e.g. `dev_corex` or `corex.new --no-design`): ESM hooks + wrapped home, no
-  `assets/corex` and no `corex:design-imports` in `app.css`.
-  """
-  def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
-      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
-    assert_corex_no_design_skipped!(app_root, app_name, opts)
-
-    base = app_base_path(app_root, app_name, opts)
-    web = "#{app_name}_web"
-
-    app_js = Path.join([base, "assets", "js", "app.js"])
-    assert_file(app_js, ~r/import corex from "corex"/)
-    assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
-
-    app_css = Path.join([base, "assets", "css", "app.css"])
-    assert_file(app_css, fn c -> refute c =~ "corex:design-imports" end)
-
-    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
-    assert_file(home, fn c ->
-      assert c =~ ~r/<Layouts\.app[\s\n]/
-      refute c =~ "Layouts.flash_group"
-    end)
-  end
-
-  defp app_base_path(app_root, app_name, opts) do
-    if "--umbrella" in opts do
-      Path.join([app_root, "apps", app_name])
-    else
-      app_root
-    end
-  end
-
   def request_with_retries(_url, 0), do: {:error, :out_of_retries}
 
   def request_with_retries(url, retries) do
@@ -533,6 +434,127 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
       {:error, reason} ->
         {:error, reason}
+    end
+  end
+
+  @doc """
+  `mix corex.new` default (replace on, design on): JS hooks, design assets, home wrapped in
+  `Layouts.app`, and Phoenix daisyUI plugins stripped from `app.css`.
+  """
+  def assert_corex_greenfield_file_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    app_js = Path.join([base, "assets", "js", "app.js"])
+    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
+
+    app_css = Path.join([base, "assets", "css", "app.css"])
+    assert_file(app_css, ~r{/\* corex:design-imports \*/})
+    assert_file(app_css, ~r{\.\./corex/main\.css})
+    assert_file(app_css, fn c ->
+      refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
+    end)
+
+    design_dir = Path.join([base, "assets", "corex"])
+    assert_dir(design_dir)
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, fn c ->
+      assert c =~ ~r/<Layouts\.app[\s\n]/
+      refute c =~ "Layouts.flash_group"
+      refute c =~ "Layouts.theme_toggle"
+    end)
+  end
+
+  @doc """
+  `mix corex.new …` with replace off (`--no-replace`): stock home at `/`, router adds `GET /home`; JS is still patched.
+  """
+  def assert_corex_no_replace_file_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    app_js = Path.join([base, "assets", "js", "app.js"])
+    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, ~r/\.\.\.corex/)
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, fn c -> assert c =~ ~r/<Layouts\.flash_group/ end)
+
+    router = Path.join([base, "lib", web, "router.ex"])
+
+    assert_file(router, fn c ->
+      assert c =~ "PageController, :corex"
+      assert c =~ ~s[get "/home"]
+    end)
+
+    assert_corex_starter_page_and_layout_invariants!(app_root, app_name, opts)
+  end
+
+  def assert_corex_starter_page_and_layout_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+    corex = Path.join([base, "lib", web, "controllers", "page_html", "corex.html.heex"])
+    assert_file(corex, fn c -> assert c =~ ~r/<Layouts\.corex[\s\n]/ end)
+
+    layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
+    assert_file(layouts, fn c -> assert c =~ ~r/def\s+corex\s*\(/ end)
+  end
+
+  def assert_corex_lang_path_plug_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+    router = Path.join([base, "lib", web, "router.ex"])
+    assert_file(router, fn c -> assert c =~ "Plugs.Path" end)
+
+    path_plug = Path.join([base, "lib", web, "plugs", "path.ex"])
+    assert_file(path_plug, fn c -> assert c =~ "strip_after_locale" end)
+  end
+
+  @doc """
+  `mix corex.new …` with design off (`--no-design`, i.e. `design: false`): no copied design tree from `mix corex.design`.
+  """
+  def assert_corex_no_design_skipped!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    base = app_base_path(app_root, app_name, opts)
+    design_dir = Path.join([base, "assets", "corex"])
+    refute_dir(design_dir)
+  end
+
+  @doc """
+  Replace mode with design off (`--no-design`): ESM hooks + wrapped home, no
+  `assets/corex` and no `corex:design-imports` in `app.css`.
+  """
+  def assert_corex_no_design_replace_invariants!(app_root, app_name, opts \\ [])
+      when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
+    assert_corex_no_design_skipped!(app_root, app_name, opts)
+
+    base = app_base_path(app_root, app_name, opts)
+    web = "#{app_name}_web"
+
+    app_js = Path.join([base, "assets", "js", "app.js"])
+    assert_file(app_js, ~r/import corex from "corex"/)
+    assert_file(app_js, fn c -> assert c =~ ~r/\.\.\.corex/ end)
+
+    app_css = Path.join([base, "assets", "css", "app.css"])
+    assert_file(app_css, fn c -> refute c =~ "corex:design-imports" end)
+
+    home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+    assert_file(home, fn c ->
+      assert c =~ ~r/<Layouts\.app[\s\n]/
+      refute c =~ "Layouts.flash_group"
+    end)
+  end
+
+  defp app_base_path(app_root, app_name, opts) do
+    if "--umbrella" in opts do
+      Path.join([app_root, "apps", app_name])
+    else
+      app_root
     end
   end
 end

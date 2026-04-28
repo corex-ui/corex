@@ -13,7 +13,6 @@ defmodule Corex.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),
-      usage_rules: usage_rules(),
       name: "Corex",
       description:
         "Accessible and unstyled UI components library written in Elixir and TypeScript that integrates Zag.js state machines into the Phoenix Framework.",
@@ -65,7 +64,7 @@ defmodule Corex.MixProject do
 
   defp deps do
     [
-      {:jason, "~> 1.0", optional: true},
+      {:jason, "~> 1.0"},
       {:phoenix, "~> 1.8.1"},
       {:phoenix_live_view, "~> 1.1.0"},
       {:gettext, "~> 1.0", optional: true},
@@ -85,18 +84,7 @@ defmodule Corex.MixProject do
       {:ex_cldr_languages, "~> 0.3", only: :dev},
       {:bandit, "~> 1.0", only: :dev},
       {:sobelow, "~> 0.13", only: [:dev, :test], runtime: false},
-      {:usage_rules, "~> 1.2", only: [:dev, :test]},
-      {:igniter, "~> 0.6", optional: true},
-      {:igniter_js, "~> 0.4.11", optional: true}
-    ]
-  end
-
-  defp usage_rules do
-    [
-      skills: [
-        location: ".claude/skills",
-        package_skills: [:corex]
-      ]
+      {:igniter, "~> 0.6", optional: true}
     ]
   end
 
@@ -141,12 +129,7 @@ defmodule Corex.MixProject do
   end
 
   defp package do
-    root = __DIR__
-
-    files =
-      ~w(lib priv mix.exs package.json README.md .formatter.exs usage-rules.md) ++
-        (Path.wildcard(Path.join(root, "usage-rules/**/*"), match_dot: true)
-         |> Enum.map(&Path.relative_to(&1, root)))
+    files = ~w(lib priv mix.exs package.json README.md .formatter.exs)
 
     [
       maintainers: ["Karim Semmoud"],
@@ -199,7 +182,6 @@ defmodule Corex.MixProject do
         Corex.Dialog,
         Corex.Editable,
         Corex.FloatingPanel,
-        Corex.Form,
         Corex.Heroicon,
         Corex.HiddenInput,
         Corex.Layout.Heading,

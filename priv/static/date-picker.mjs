@@ -4423,6 +4423,7 @@ var DatePickerHook = {
       placeholder: getString(el, "placeholder"),
       minView: getString(el, "minView"),
       maxView: getString(el, "maxView"),
+      defaultOpen: false,
       inline: getBoolean(el, "inline"),
       positioning: readPositioningOptions(el),
       ...resolveZagDatePickerTranslations(el),

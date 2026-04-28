@@ -104,7 +104,7 @@ defmodule Corex.DatePicker.Anatomy do
             dir: String.t()
           }
 
-    @ignored_attrs ["id", "dir", "data-disabled", "data-readonly"]
+    @ignored_attrs ["id", "dir", "data-state", "data-disabled", "data-readonly", "data-index"]
     def ignored_attrs, do: @ignored_attrs
   end
 
@@ -176,11 +176,12 @@ defmodule Corex.DatePicker.Anatomy do
 
   defmodule Positioner do
     @moduledoc false
-    defstruct [:id, :dir]
+    defstruct id: nil, dir: nil, positioning: nil
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t()
+            dir: String.t(),
+            positioning: Corex.Positioning.t() | nil
           }
 
     @ignored_attrs ["id", "dir", "style", "data-state", "data-placement", "hidden"]

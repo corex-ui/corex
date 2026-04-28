@@ -91,6 +91,9 @@ defmodule Corex.RadioGroup do
     doc: "List of [value, label] or %{value: ..., label: ..., disabled: ..., invalid: ...}"
   )
 
+  attr(:errors, :list, default: [], doc: "Error messages to display (non-field API)")
+  attr(:field, Phoenix.HTML.FormField, doc: "A form field, e.g. f[:choice] or @form[:choice]")
+
   attr(:rest, :global)
 
   slot :label, required: false do
@@ -105,9 +108,29 @@ defmodule Corex.RadioGroup do
     attr(:class, :string, required: false)
   end
 
+  slot :error, required: false do
+    attr(:class, :string, required: false)
+  end
+
+  def radio_group(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    v = if field.value in [nil, ""], do: nil, else: to_string(field.value)
+
+    assigns
+    |> assign(:field, nil)
+    |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error/1))
+    |> assign(:id, field.id)
+    |> assign(:name, field.name)
+    |> assign(:form, field.form.id)
+    |> assign(:value, v)
+    |> assign(:invalid, errors != [])
+    |> radio_group()
+  end
+
   def radio_group(assigns) do
     assigns =
       assigns
+      |> assign_new(:errors, fn -> [] end)
       |> assign_new(:id, fn -> "radio-group-#{System.unique_integer([:positive])}" end)
       |> assign_new(:dir, fn -> "ltr" end)
       |> assign(:items, normalize_items(assigns.items))
@@ -208,6 +231,9 @@ defmodule Corex.RadioGroup do
             checked: @value == entry.value
           })}
         </label>
+      </div>
+      <div :if={@error != []} :for={msg <- @errors} data-scope="radio-group" data-part="error">
+        {render_slot(@error, msg)}
       </div>
     </div>
     """

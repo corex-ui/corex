@@ -1,7 +1,7 @@
 defmodule Corex.Install.EndpointDevPlugsTest do
   use ExUnit.Case, async: true
 
-  alias Mix.Corex.Install.EndpointDevPlugs
+  alias Mix.Corex.Install.Web
 
   @phx_18 ~s"""
     plug Plug.Static,
@@ -19,20 +19,20 @@ defmodule Corex.Install.EndpointDevPlugsTest do
   """
 
   test "inserts Corex.MCP when mcp is on" do
-    out = EndpointDevPlugs.apply(@phx_18, mcp: true)
+    out = Web.endpoint_mcp_apply(@phx_18, mcp: true)
     assert out =~ "  if Mix.env() == :dev do"
     assert out =~ "    plug Corex.MCP"
     assert out =~ "  if code_reloading? do"
   end
 
   test "no insertion when mcp is off" do
-    out = EndpointDevPlugs.apply(@phx_18, mcp: false)
+    out = Web.endpoint_mcp_apply(@phx_18, mcp: false)
     refute out =~ "Corex.MCP"
   end
 
   test "idempotent" do
-    a = EndpointDevPlugs.apply(@phx_18, mcp: true)
-    b = EndpointDevPlugs.apply(a, mcp: true)
+    a = Web.endpoint_mcp_apply(@phx_18, mcp: true)
+    b = Web.endpoint_mcp_apply(a, mcp: true)
     assert a == b
   end
 end

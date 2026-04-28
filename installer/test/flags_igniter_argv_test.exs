@@ -8,21 +8,19 @@ defmodule Corex.New.FlagsIgniterArgvTest do
       Flags.phx_new_cli_opts(
         mode: true,
         dev_corex: "/x",
-        theme: "neo",
-        umbrella: true,
-        skills: false
+        theme: true,
+        umbrella: true
       )
 
     refute Keyword.has_key?(o, :mode)
     refute Keyword.has_key?(o, :dev_corex)
     refute Keyword.has_key?(o, :theme)
     assert o[:umbrella] == true
-    assert o[:skills] == false
   end
 
   test "build_phx_new_argv from phx-only opts never includes corex-style flags" do
     argv =
-      [mode: true, theme: "neo", mcp: false, dev_corex: "/c"]
+      [mode: true, theme: true, mcp: false, dev_corex: "/c"]
       |> Flags.phx_new_cli_opts()
       |> PhxWrapper.build_phx_new_with_args()
 
@@ -32,7 +30,7 @@ defmodule Corex.New.FlagsIgniterArgvTest do
 
   test "igniter argv uses --corex.* (Igniter group disambiguation)" do
     a =
-      [mcp: false, skills: true, mode: true, theme: "neo:leo", replace: true, lang: true]
+      [mcp: false, mode: true, theme: true, replace: true, lang: true]
       |> Flags.igniter_install_opts()
       |> IgniterArgv.to_argv()
       |> Enum.join(" ")
@@ -54,8 +52,8 @@ defmodule Corex.New.FlagsIgniterArgvTest do
     assert "--corex.mode" in argv
   end
 
-  test "igniter argv --corex.no-design when :no_design is true" do
-    argv = IgniterArgv.to_argv(Flags.igniter_install_opts(no_design: true, replace: true))
+  test "igniter argv --corex.no-design when :design is false" do
+    argv = IgniterArgv.to_argv(Flags.igniter_install_opts(design: false, replace: true))
     assert "--corex.no-design" in argv
   end
 
@@ -65,7 +63,7 @@ defmodule Corex.New.FlagsIgniterArgvTest do
         Flags.igniter_install_opts(
           dev_corex: "/tmp/corex",
           mcp: false,
-          no_design: true
+          design: false
         )
       )
 
@@ -75,10 +73,8 @@ defmodule Corex.New.FlagsIgniterArgvTest do
     refute "dev_corex" in argv
   end
 
-  test "Flags.igniter_install_opts defaults replace true and applies no_replace" do
+  test "Flags.igniter_install_opts defaults replace true" do
     assert :replace in Keyword.keys(Flags.igniter_install_opts([]))
     assert Keyword.get(Flags.igniter_install_opts([]), :replace) == true
-
-    assert Keyword.get(Flags.igniter_install_opts(no_replace: true), :replace) == false
   end
 end

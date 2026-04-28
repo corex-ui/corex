@@ -18,7 +18,10 @@ function syncHomeLvPageLoading(loading) {
 }
 
 window.addEventListener("phx:page-loading-start", () => syncHomeLvPageLoading(true))
-window.addEventListener("phx:page-loading-stop", () => syncHomeLvPageLoading(false))
+window.addEventListener("phx:page-loading-stop", () => {
+  syncHomeLvPageLoading(false)
+  runHomeMotion()
+})
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -30,10 +33,17 @@ function setRevealed(el) {
 }
 
 function initHero(hero) {
+  if (hero.getAttribute("data-home-motion-initialized") === "true") {
+    return
+  }
+
+  const markDone = () => hero.setAttribute("data-home-motion-initialized", "true")
+
   const items = hero.querySelectorAll("[data-home-anim]")
   if (prefersReducedMotion()) {
     items.forEach(setRevealed)
     hero.querySelectorAll("[data-home-float]").forEach(setRevealed)
+    markDone()
     return
   }
 
@@ -54,7 +64,11 @@ function initHero(hero) {
   })
 
   const cards = hero.querySelectorAll("[data-home-float]")
-  if (cards.length === 0) return
+  if (cards.length === 0) {
+    initCompositionParallax(hero)
+    markDone()
+    return
+  }
 
   const lgUp = window.matchMedia("(min-width: 64rem)")
 
@@ -84,6 +98,7 @@ function initHero(hero) {
   }
 
   initCompositionParallax(hero)
+  markDone()
 }
 
 function initCompositionParallax(hero) {

@@ -40,7 +40,9 @@ export class SignaturePad extends Component<Props, Api> {
       const hiddenInput = this.el.querySelector<HTMLInputElement>(
         '[data-scope="signature-pad"][data-part="hidden-input"]'
       );
-      if (hiddenInput) hiddenInput.value = "";
+      if (hiddenInput && hiddenInput.value !== "") {
+        hiddenInput.value = "";
+      }
       return;
     }
 

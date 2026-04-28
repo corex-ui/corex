@@ -6,6 +6,11 @@
     max-width: var(--container-3xs);
   }
 
+  .date-picker
+    [data-scope="date-picker"][data-part="content"][hidden] {
+    display: none !important;
+  }
+
   .date-picker[data-loading] [data-scope="date-picker"][data-part="root"] {
     @apply ui-loading;
   }

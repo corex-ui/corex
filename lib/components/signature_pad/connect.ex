@@ -214,8 +214,11 @@ defmodule Corex.SignaturePad.Connect do
       "type" => "text",
       "dir" => assigns.dir,
       "id" => "signature-pad:#{assigns.id}:hidden-input",
-      "hidden" => "hidden",
-      "readonly" => "readonly"
+      "hidden" => "true",
+      "readonly" => "true",
+      "autocomplete" => "off",
+      "tabindex" => "-1",
+      "aria-hidden" => "true"
     }
 
     base

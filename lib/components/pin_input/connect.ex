@@ -1,7 +1,7 @@
 defmodule Corex.PinInput.Connect do
   @moduledoc false
-  alias Corex.Selectors
   alias Corex.PinInput.Anatomy.{Control, HiddenInput, Input, Label, Props, Root}
+  alias Corex.Selectors
   import Corex.Helpers, only: [validate_value!: 1, get_boolean: 1]
 
   alias Phoenix.LiveView.JS

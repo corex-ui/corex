@@ -57,7 +57,9 @@ defmodule Corex.SignaturePad do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`. For `phx-change` and `used_input?/1`, set `phx-change` on `<.form>` so the whole form is sent (not on a single input only).
+
+  The value field is a `type="text"` input with the HTML `hidden` attribute (Zag’s pattern), not a `type="hidden"` control, so the LiveView client can mark it “used” like a normal text field. The hook re-applies the same `phxPrivate` usage metadata LiveView stores on that input after draws, clear, and after server patches, so a morph of the value input does not drop “used” state and `used_input?/1` on the server matches expected behaviour.
 
   ### Controller
 
@@ -74,7 +76,7 @@ defmodule Corex.SignaturePad do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.signature_pad field={f[:signature]} class="signature-pad">
       <:label>Sign here</:label>
       <:clear_trigger>
@@ -132,7 +134,7 @@ defmodule Corex.SignaturePad do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.form for={@form} id={@form.id} phx-change="validate">
         <.signature_pad
           field={@form[:signature]}
           id="my-signature-pad"
@@ -300,7 +302,7 @@ defmodule Corex.SignaturePad do
 
   attr(:field, Phoenix.HTML.FormField,
     doc:
-      "A form field struct retrieved from the form, for example: @form[:signature]. Automatically sets id, name, value, and errors from the form field"
+      "A form field from the form, e.g. @form[:signature]. Sets id, name, paths, and errors. Errors are filtered with `used_input?/1` (see the Phoenix Form Integration section)."
   )
 
   attr(:rest, :global)
@@ -323,7 +325,7 @@ defmodule Corex.SignaturePad do
   end
 
   def signature_pad(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+    errors = signature_pad_field_errors(field) |> Enum.map(&Corex.Gettext.translate_error/1)
 
     paths_value =
       case field.value do
@@ -337,7 +339,7 @@ defmodule Corex.SignaturePad do
     assigns =
       assigns
       |> assign(field: nil)
-      |> assign(:errors, Enum.map(errors, &Corex.Gettext.translate_error(&1)))
+      |> assign(:errors, errors)
       |> assign_new(:id, fn -> field.id end)
       |> assign_new(:name, fn -> field.name end)
       |> assign_new(:form, fn -> field.form.id end)
@@ -470,6 +472,10 @@ defmodule Corex.SignaturePad do
     LiveView.push_event(socket, "signature_pad_clear", %{
       signature_pad_id: signature_pad_id
     })
+  end
+
+  defp signature_pad_field_errors(%Phoenix.HTML.FormField{} = field) do
+    if Phoenix.Component.used_input?(field), do: field.errors, else: []
   end
 
   defp paths_from_paths_attr(nil), do: []

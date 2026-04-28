@@ -1,23 +1,19 @@
 defmodule Mix.Corex.Install.Design do
   @moduledoc false
 
-  alias Mix.Corex.Install.Templates
+  alias Mix.Corex.Install.{Config, Templates}
+
+  @marker "/* corex:design-imports */"
 
   def maybe_schedule_design(igniter, opts) do
-    if opts[:no_design] do
-      igniter
-    else
-      args =
-        if opts[:designex] do
-          ["--force", "--designex"]
-        else
-          ["--force"]
-        end
+    if Config.design_on?(opts) do
+      args = if opts[:designex], do: ["--designex"], else: []
 
       igniter
-      |> patch_assets_app_css_for_corex_design()
       |> then(&delete_phx_daisyui_vendor_if_present/1)
       |> Igniter.add_task("corex.design", args)
+    else
+      igniter
     end
   end
 
@@ -26,95 +22,83 @@ defmodule Mix.Corex.Install.Design do
       acc ->
         p = Path.expand(rel)
 
-        if file_exists_in_project_root?(p) do
-          _ = File.rm(p)
+        if File.exists?(p) do
+          File.rm(p)
         end
 
         acc
     end
   end
 
-  def patch_assets_app_css_for_corex_design(igniter) do
+  def patch_assets_app_css_for_corex_design(igniter, _opts) do
     path = Path.join(["assets", "css", "app.css"])
-    b = Templates.design_imports_block()
 
-    igniter = Igniter.include_existing_file(igniter, path)
+    body =
+      Templates.design_imports_block()
+      |> String.replace("__THEME__", "neo")
+      |> String.replace(@marker, "")
+      |> String.trim()
 
-    if Igniter.exists?(igniter, path) do
-      Igniter.update_file(igniter, path, fn source ->
-        content = source.content
-        content = strip_daisy_plugin_region_from_app_css(content)
+    block = wrapped_block(body)
 
-        if design_css_imports_current?(content) do
-          %{source | content: content}
-        else
-          c =
-            if String.contains?(content, "corex:design-imports") do
-              Regex.replace(
-                ~r{/\* corex:design-imports \*/\s*(?:@import[^;]+;\s*)+}m,
-                content,
-                b <> "\n",
-                global: false
-              )
-            else
-              String.trim_trailing(content) <> "\n\n" <> b <> "\n"
-            end
-
-          %{source | content: c}
-        end
-      end)
-    else
-      msg =
-        "Corex design was enabled but `assets/css/app.css` was not found. Add these imports:\n\n" <>
-          String.replace(b, "/* corex:design-imports */", "") <> "\n"
-
-      Igniter.add_notice(igniter, msg)
-    end
+    igniter
+    |> Igniter.update_file(path, fn source ->
+      css = Rewrite.Source.get(source, :content)
+      updated = sync_corex_block(css, block)
+      Rewrite.Source.update(source, :content, updated)
+    end)
   end
 
-  def strip_daisy_plugin_region_from_app_css(content) do
-    out =
-      cond do
-        String.contains?(content, "/* Add variants") ->
-          Regex.replace(
-            ~r/(?:\n|^)\/\* daisyUI Tailwind Plugin\..*?(?=\n\/\* Add variants)/s,
-            content,
-            "\n"
-          )
+  defp wrapped_block(body) do
+    body = String.trim(body)
 
-        String.contains?(content, "@custom-variant phx-click-loading") ->
-          Regex.replace(
-            ~r/(?:\n|^)\/\* daisyUI.*?(?=\n@custom-variant phx-click-loading)/s,
-            content,
-            "\n"
-          )
+    """
+    #{@marker}
+    #{body}
+    #{@marker}
+    """
+    |> String.trim()
+  end
 
-        true ->
-          content
+  defp sync_corex_block(css, full_block) do
+    esc = Regex.escape(@marker)
+    pair_re = ~r/[\s\n]*#{esc}[\s\n]*[\s\S]*?[\s\n]*#{esc}[\s\n]*/m
+
+    cleaned =
+      css
+      |> then(&Regex.replace(pair_re, &1, "\n", global: true))
+      |> String.replace(@marker, "", global: true)
+      |> String.replace(~r/\n{3,}/, "\n\n", global: true)
+      |> String.trim()
+
+    inject_block(cleaned, full_block)
+  end
+
+  defp inject_block(css, full_block) do
+    c =
+      Regex.replace(
+        ~r/(@plugin\s+["'][^"']*vendor\/heroicons[^"']*["'][^\n]*\n)/m,
+        css,
+        "\\1\n#{full_block}\n",
+        global: false
+      )
+
+    c =
+      if c == css do
+        Regex.replace(
+          ~r/(@import\s+["']tailwindcss["'][^\n]*\n)/m,
+          c,
+          "\\1\n#{full_block}\n",
+          global: false
+        )
+      else
+        c
       end
 
-    maybe_strip_daisyui_vendor_plugin_residue(out)
-  end
-
-  defp maybe_strip_daisyui_vendor_plugin_residue(content) do
-    if String.contains?(content, "vendor/daisyui") and
-         String.contains?(content, "@custom-variant phx-click-loading") and
-         String.contains?(content, "/* daisyUI") do
-      Regex.replace(
-        ~r/(?:\n|^)\/\* daisyUI.*?(?=\n@custom-variant phx-click-loading)/s,
-        content,
-        "\n"
-      )
+    if c == css do
+      String.trim_trailing(c) <> "\n\n" <> full_block <> "\n"
     else
-      content
+      c
     end
   end
-
-  defp design_css_imports_current?(content) do
-    String.contains?(content, "corex/components/typo.css") and
-      String.contains?(content, "../corex/main.css") and
-      String.contains?(content, "corex:design-imports")
-  end
-
-  defp file_exists_in_project_root?(p), do: File.exists?(p)
 end

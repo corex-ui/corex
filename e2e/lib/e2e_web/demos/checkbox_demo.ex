@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.CheckboxDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   def minimal_code do
     ~S"""
     <.checkbox id="checkbox-anatomy-minimal" class="checkbox">
@@ -496,7 +494,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/account/terms"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.checkbox field={f[:terms]} class="checkbox" id="account-terms-acceptance">
@@ -558,7 +556,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/account/terms-strict"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.checkbox field={f[:terms]} class="checkbox" id="account-terms-strict">
@@ -638,7 +636,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -694,7 +692,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -756,7 +754,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -780,7 +778,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -813,7 +811,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.checkbox field={f[:terms]} class="checkbox" id="checkbox-changeset-terms">
@@ -844,7 +842,7 @@ defmodule E2eWeb.Demos.CheckboxDemo do
       for={@form}
       action={~p"/checkbox/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.checkbox field={f[:terms]} class="checkbox" id="checkbox-validate-terms">

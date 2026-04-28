@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.SwitchDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   def minimal_code do
     ~S"""
     <.switch id="switch-anatomy-minimal" class="switch">
@@ -374,7 +372,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications</:label>
@@ -410,7 +408,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       for={@form}
       action={~p"/switch/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch">
         <:label>Enable notifications (stricter)</:label>
@@ -449,7 +447,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
         <:label>Enable notifications</:label>
@@ -475,7 +473,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
       action={~p"/switch/form"}
       method="post"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.switch field={f[:notifications]} class="switch" invalid={f[:notifications].errors != []}>
         <:label>Enable notifications (stricter)</:label>
@@ -520,7 +518,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -599,7 +597,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -686,7 +684,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -714,7 +712,7 @@ defmodule E2eWeb.Demos.SwitchDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

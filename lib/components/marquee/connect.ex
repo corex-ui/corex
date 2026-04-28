@@ -1,7 +1,7 @@
 defmodule Corex.Marquee.Connect do
   @moduledoc false
-  alias Corex.Selectors
   alias Corex.Marquee.Anatomy.{Content, Edge, Item, Props, Root, Viewport}
+  alias Corex.Selectors
   alias Phoenix.LiveView.JS
   import Corex.Helpers, only: [get_boolean: 1]
 

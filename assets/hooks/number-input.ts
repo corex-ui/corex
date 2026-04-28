@@ -36,6 +36,8 @@ const NumberInputHook: Hook<object & NumberInputHookState, HTMLElement> = {
           );
           if (valueInput) {
             valueInput.value = details.value ?? "";
+            valueInput.dispatchEvent(new Event("input", { bubbles: true }));
+            valueInput.dispatchEvent(new Event("change", { bubbles: true }));
           }
         }
         notifyChange({

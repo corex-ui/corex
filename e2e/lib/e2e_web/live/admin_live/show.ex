@@ -35,7 +35,7 @@ defmodule E2eWeb.AdminLive.Show do
         </:actions>
       </.layout_heading>
 
-      <.data_list class="data-list max-w-none">
+      <.data_list class="data-list max-w-md">
         <:item :for={field <- @fields} title={label(field)}>
           <.record_field_value record={@admin} field={field} />
         </:item>

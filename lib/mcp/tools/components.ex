@@ -15,6 +15,7 @@ defmodule Corex.MCP.Tools.Components do
           type: "object",
           properties: %{}
         },
+        annotations: %{"readOnlyHint" => true, "idempotentHint" => true},
         callback: &list_components/1
       },
       %{
@@ -34,6 +35,7 @@ defmodule Corex.MCP.Tools.Components do
             }
           }
         },
+        annotations: %{"readOnlyHint" => true, "idempotentHint" => true},
         callback: &get_component/1
       }
     ]

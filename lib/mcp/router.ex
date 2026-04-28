@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2025 Dashbit
-# Derived from: https://github.com/tidewave-ai/tidewave_phoenix (lib/tidewave/router.ex) tidewave v0.5.5
-# Modifications: module renamed to Corex.MCP.Router; private key :corex_mcp_config; Corex
-#   landing HTML, JSON /config, client metadata; no Tidewave team/tidewave_version fields.
+# Derived from: https://github.com/tidewave-ai/tidewave_phoenix (lib/tidewave/router.ex); Corex names, Json, :corex_mcp_config.
 
 defmodule Corex.MCP.Router do
   @moduledoc false
@@ -12,6 +10,16 @@ defmodule Corex.MCP.Router do
   require Logger
   alias Corex.Json
   alias Corex.MCP.Server
+
+  @remote_access_forbidden """
+  For security reasons, Corex.MCP does not accept remote connections by default.
+
+  If you really want to allow remote connections, configure plug Corex.MCP with allow_remote_access: true.
+  """
+
+  @origin_header_forbidden """
+  For security reasons, Corex.MCP does not accept requests with an origin header for this endpoint.
+  """
 
   plug(:match)
   plug(:check_remote_ip)
@@ -33,17 +41,15 @@ defmodule Corex.MCP.Router do
   end
 
   get "/mcp" do
-    Logger.metadata(tidewave_mcp: true)
+    Logger.metadata(corex_mcp: true)
 
-    # For GET requests, return 405 Method Not Allowed
-    # (Corex doesn't need to support SSE streaming)
     conn
     |> send_resp(405, "Method Not Allowed")
     |> halt()
   end
 
   post "/mcp" do
-    Logger.metadata(tidewave_mcp: true)
+    Logger.metadata(corex_mcp: true)
 
     opts =
       Plug.Parsers.init(
@@ -59,8 +65,7 @@ defmodule Corex.MCP.Router do
   end
 
   match "/*_ignored" do
-    # Return 404 for /.well-known resources lookup and similar
-    Logger.metadata(tidewave_mcp: true)
+    Logger.metadata(corex_mcp: true)
 
     conn
     |> send_resp(404, "Not Found")
@@ -69,26 +74,21 @@ defmodule Corex.MCP.Router do
 
   defp check_remote_ip(conn, _opts) do
     cond do
-      is_local?(conn.remote_ip) ->
+      loopback_address?(conn.remote_ip) ->
         conn
 
       conn.private.corex_mcp_config.allow_remote_access ->
         conn
 
       true ->
-        log_and_send_403(conn, """
-        For security reasons, Corex.MCP does not accept remote connections by default.
-
-        If you need remote access, configure plug Corex.MCP with allow_remote_access: true.
-        """)
+        deny_remote_access(conn)
     end
   end
 
-  defp is_local?({127, 0, 0, _}), do: true
-  defp is_local?({0, 0, 0, 0, 0, 0, 0, 1}), do: true
-  # ipv4 mapped ipv6 address ::ffff:127.0.0.1
-  defp is_local?({0, 0, 0, 0, 0, 65_535, 32_512, 1}), do: true
-  defp is_local?(_), do: false
+  defp loopback_address?({127, 0, 0, _}), do: true
+  defp loopback_address?({0, 0, 0, 0, 0, 0, 0, 1}), do: true
+  defp loopback_address?({0, 0, 0, 0, 0, 65_535, 32_512, 1}), do: true
+  defp loopback_address?(_), do: false
 
   defp check_origin(conn, _opts) do
     case {conn.path_info, get_req_header(conn, "origin")} do
@@ -99,17 +99,23 @@ defmodule Corex.MCP.Router do
         conn
 
       {_, _} ->
-        log_and_send_403(conn, """
-        For security reasons, Corex.MCP does not accept requests with an origin header for this endpoint.
-        """)
+        deny_origin_header(conn)
     end
   end
 
-  defp log_and_send_403(conn, message) do
-    Logger.warning(message)
+  defp deny_remote_access(conn) do
+    Logger.warning(@remote_access_forbidden)
 
     conn
-    |> send_resp(403, message)
+    |> send_resp(403, @remote_access_forbidden)
+    |> halt()
+  end
+
+  defp deny_origin_header(conn) do
+    Logger.warning(@origin_header_forbidden)
+
+    conn
+    |> send_resp(403, @origin_header_forbidden)
     |> halt()
   end
 

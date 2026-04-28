@@ -109,6 +109,7 @@ defmodule Corex.DatePickerTest do
       result = Connect.root(%{id: "test-dp", dir: "ltr"})
       assert result["id"] == "date-picker:test-dp"
       assert result["data-part"] == "root"
+      assert result["data-state"] == "closed"
     end
 
     test "label/1 returns label attributes" do
@@ -136,12 +137,15 @@ defmodule Corex.DatePickerTest do
     test "positioner/1 returns positioner attributes" do
       result = Connect.positioner(%{id: "test-dp", dir: "ltr"})
       assert result["data-part"] == "positioner"
+      assert result["style"] =~ "translate3d(0, -100vh, 0)"
+      assert result["style"] =~ "position: fixed"
     end
 
     test "content/1 returns content attributes" do
       result = Connect.content(%{id: "test-dp", dir: "ltr"})
       assert result["data-part"] == "content"
       assert result["hidden"] == true
+      assert result["data-state"] == "closed"
     end
 
     test "props/1 returns props when uncontrolled" do

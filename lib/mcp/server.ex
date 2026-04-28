@@ -2,40 +2,40 @@
 # Copyright (c) 2025 Dashbit
 # Derived from: https://github.com/tidewave-ai/tidewave_phoenix (lib/tidewave/mcp/server.ex) tidewave v0.5.5
 # Modifications: Corex.MCP namespace; ETS :corex_mcp_tools; Corex.MCP.Tools.*; Corex
-#   serverInfo; init_tools is idempotent (lazy) when not started from the host app.
+#   serverInfo; init_tools (re)loads tool specs from raw_tools/0 on each call so metadata
+#   (e.g. readOnlyHint) and callbacks stay in sync with the current build.
 
 defmodule Corex.MCP.Server do
   @moduledoc false
   require Logger
   import Plug.Conn
 
+  alias Corex.MCP.Tools.Components, as: McpToolComponents
+  alias Corex.MCP.Tools.Installation, as: McpToolInstallation
+
   @protocol_version "2025-03-26"
   @vsn Mix.Project.config()[:version] || "0.0.0"
 
-  defp mcp_verbose? do
-    System.get_env("COREX_MCP_VERBOSE") in ~w(1 true yes)
-  end
-
-  defp mcp_debug(message) do
-    if mcp_verbose?(), do: Logger.debug(message)
-  end
-
   defp raw_tools do
-    [
-      Corex.MCP.Tools.Components.tools()
-    ]
+    [McpToolComponents.tools(), McpToolInstallation.tools()]
     |> List.flatten()
   end
 
   @doc false
   def init_tools do
+    tools = raw_tools()
+    dispatch_map = Map.new(tools, fn tool -> {tool.name, tool.callback} end)
+
     if :ets.whereis(:corex_mcp_tools) == :undefined do
-      tools = raw_tools()
-      dispatch_map = Map.new(tools, fn tool -> {tool.name, tool.callback} end)
-      :ets.new(:corex_mcp_tools, [:set, :named_table, read_concurrency: true])
-      :ets.insert(:corex_mcp_tools, {:tools, {tools, dispatch_map}})
+      :ets.new(:corex_mcp_tools, [
+        :set,
+        :named_table,
+        :public,
+        read_concurrency: true
+      ])
     end
 
+    :ets.insert(:corex_mcp_tools, {:tools, {tools, dispatch_map}})
     :ok
   end
 
@@ -68,7 +68,7 @@ defmodule Corex.MCP.Server do
       _ ->
         {:error,
          %{
-           code: -32601,
+           code: -32_601,
            message: "Method not found",
            data: %{
              name: name
@@ -101,6 +101,8 @@ defmodule Corex.MCP.Server do
   end
 
   defp handle_initialize(request_id, params) do
+    params = params || %{}
+
     case validate_protocol_version(params["protocolVersion"]) do
       :ok ->
         {:ok,
@@ -166,7 +168,7 @@ defmodule Corex.MCP.Server do
      %{
        jsonrpc: "2.0",
        id: request_id,
-       error: %{code: -32602, message: "Invalid arguments for tool"}
+       error: %{code: -32_602, message: "Invalid arguments for tool"}
      }}
   end
 
@@ -212,103 +214,101 @@ defmodule Corex.MCP.Server do
   end
 
   defp handle_message(%{"method" => "notifications/initialized"} = message, _assigns) do
-    mcp_debug("Corex MCP notifications/initialized: #{inspect(message)}")
+    Logger.info("Received initialized notification")
+    Logger.debug("Full message: #{inspect(message, pretty: true)}")
     {:ok, nil}
   end
 
   defp handle_message(%{"method" => "notifications/cancelled"} = message, _assigns) do
-    mcp_debug("Corex MCP notifications/cancelled: #{inspect(message["params"])}")
+    Logger.info("Request cancelled: #{inspect(message["params"])}")
     {:ok, nil}
   end
 
   defp handle_message(%{"method" => method, "id" => id} = message, assigns) do
-    mcp_debug(
-      "Corex MCP #{method} id=#{id} #{inspect(message, limit: :infinity, printable_limit: 200)}"
+    Logger.info("Routing MCP message - Method: #{method}, ID: #{id}")
+    Logger.debug("Full message: #{inspect(message, pretty: true)}")
+    route_mcp_method(method, id, message, assigns)
+  end
+
+  defp route_mcp_method("ping", id, _message, _assigns) do
+    Logger.debug("Handling ping request")
+    handle_ping(id)
+  end
+
+  defp route_mcp_method("initialize", id, message, _assigns) do
+    Logger.info(
+      "Handling initialize request with params: #{inspect(message["params"], pretty: true)}"
     )
 
-    case method do
-      "ping" ->
-        mcp_debug("Corex MCP ping")
-        handle_ping(id)
+    handle_initialize(id, message["params"])
+  end
 
-      "initialize" ->
-        mcp_debug(
-          "Corex MCP initialize params=#{inspect(message["params"], limit: 100, printable_limit: 200)}"
-        )
+  defp route_mcp_method("tools/list", id, message, _assigns) do
+    Logger.debug("Handling tools list request")
+    handle_list_tools(id, message["params"])
+  end
 
-        case handle_initialize(id, message["params"] || %{}) do
-          {:ok, %{result: %{tools: tools}} = response} when is_list(tools) ->
-            names = tools |> Enum.map(& &1.name) |> Enum.join(", ")
-            client = get_in(message["params"] || %{}, ["clientInfo", "name"])
-            who = if is_binary(client) and client != "", do: " (#{client})", else: ""
-            Logger.info("[Corex MCP] connected#{who} — tools: #{names}")
-            {:ok, response}
+  defp route_mcp_method("tools/call", id, message, assigns) do
+    Logger.debug(
+      "Handling tool call request with params: #{inspect(message["params"], pretty: true)}"
+    )
 
-          other ->
-            other
-        end
+    safe_call_tool(id, message["params"], assigns)
+  end
 
-      "tools/list" ->
-        mcp_debug("Corex MCP tools/list")
-        handle_list_tools(id, message["params"])
+  defp route_mcp_method("prompts/list", id, message, _assigns) do
+    Logger.debug("Handling prompts list request")
+    handle_list_prompts(id, message["params"])
+  end
 
-      "tools/call" ->
-        mcp_debug(
-          "Corex MCP tools/call params=#{inspect(message["params"], limit: 80, printable_limit: 200)}"
-        )
+  defp route_mcp_method("resources/list", id, message, _assigns) do
+    Logger.debug("Handling resources list request")
+    handle_list_resources(id, message["params"])
+  end
 
-        safe_call_tool(id, message["params"], assigns)
+  defp route_mcp_method("resources/templates/list", id, message, _assigns) do
+    Logger.debug("Handling templates list request")
+    handle_list_templates(id, message["params"])
+  end
 
-      "prompts/list" ->
-        mcp_debug("Corex MCP prompts/list")
-        handle_list_prompts(id, message["params"])
+  defp route_mcp_method(other, id, _message, _assigns) do
+    Logger.warning("Received unsupported method: #{other}")
 
-      "resources/list" ->
-        mcp_debug("Corex MCP resources/list")
-        handle_list_resources(id, message["params"])
-
-      "resources/templates/list" ->
-        mcp_debug("Corex MCP resources/templates/list")
-        handle_list_templates(id, message["params"])
-
-      other ->
-        Logger.warning("Received unsupported method: #{other}")
-
-        {:error,
-         %{
-           jsonrpc: "2.0",
-           id: id,
-           error: %{
-             code: -32601,
-             message: "Method not found",
-             data: %{
-               name: other
-             }
-           }
-         }}
-    end
+    {:error,
+     %{
+       jsonrpc: "2.0",
+       id: id,
+       error: %{
+         code: -32_601,
+         message: "Method not found",
+         data: %{name: other}
+       }
+     }}
   end
 
   defp validate_jsonrpc_message(%{"jsonrpc" => "2.0"} = message) do
-    cond do
-      Map.has_key?(message, "id") and Map.has_key?(message, "method") ->
-        case message["id"] do
-          id when is_binary(id) or is_number(id) -> {:ok, message}
-          _ -> {:error, :invalid_jsonrpc}
-        end
+    case {Map.has_key?(message, "id"), Map.has_key?(message, "method"),
+          Map.has_key?(message, "result")} do
+      {true, true, _} ->
+        validate_jsonrpc_request_id(message["id"], message)
 
-      not Map.has_key?(message, "id") and Map.has_key?(message, "method") ->
+      {false, true, _} ->
         {:ok, message}
 
-      Map.has_key?(message, "id") and Map.has_key?(message, "result") ->
+      {true, _, true} ->
         {:ok, message}
 
-      true ->
+      _ ->
         {:error, :invalid_jsonrpc}
     end
   end
 
   defp validate_jsonrpc_message(_), do: {:error, :invalid_jsonrpc}
+
+  defp validate_jsonrpc_request_id(id, message) when is_binary(id) or is_number(id),
+    do: {:ok, message}
+
+  defp validate_jsonrpc_request_id(_, _), do: {:error, :invalid_jsonrpc}
 
   defp send_json(conn, data) do
     conn
@@ -338,23 +338,21 @@ defmodule Corex.MCP.Server do
   @doc false
   def handle_http_message(conn) do
     :ok = init_tools()
+    Logger.info("Received #{conn.method} message")
     params = conn.body_params
     conn = fetch_query_params(conn)
-    mcp_debug("Corex MCP POST body_keys=#{inspect(Map.keys(params))}")
+    Logger.debug("Raw params: #{inspect(params, pretty: true)}")
 
     case validate_jsonrpc_message(params) do
       {:ok, message} ->
-        assigns = Map.get(conn.private, :corex_mcp_config)
+        assigns = conn.private.corex_mcp_config
 
         case handle_message(message, assigns) do
           {:ok, nil} ->
             conn |> put_status(202) |> send_json(%{status: "ok"})
 
           {:ok, response} ->
-            mcp_debug(
-              "Corex MCP response id=#{inspect(response[:id])} keys=#{inspect(Map.keys(response))}"
-            )
-
+            Logger.debug("Sending HTTP response: #{inspect(response, pretty: true)}")
             conn |> put_status(200) |> send_json(response)
 
           {:error, error_response} ->
@@ -364,7 +362,7 @@ defmodule Corex.MCP.Server do
 
       {:error, :invalid_jsonrpc} ->
         Logger.warning("Invalid JSON-RPC message format")
-        send_jsonrpc_error(conn, nil, -32600, "Could not parse message")
+        send_jsonrpc_error(conn, nil, -32_600, "Could not parse message")
     end
   end
 end

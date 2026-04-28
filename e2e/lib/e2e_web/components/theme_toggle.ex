@@ -10,10 +10,12 @@ defmodule E2eWeb.ThemeToggle do
     values: ["neo", "uno", "duo", "leo"],
     doc: "the theme from cookie/session"
 
+  attr :id, :string, default: "theme-select"
+
   def theme_toggle(assigns) do
     ~H"""
     <.select
-      id="theme-select"
+      id={@id}
       class="select select--sm w-4xs"
       items={[
         %{id: "neo", label: "Neo"},

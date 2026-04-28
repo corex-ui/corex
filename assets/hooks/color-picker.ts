@@ -17,6 +17,20 @@ type ColorPickerHookState = {
   onSetValue?: (event: Event) => void;
 };
 
+function syncColorHiddenAndNotify(el: HTMLElement, valueAsString: string | undefined) {
+  if (valueAsString === undefined) {
+    return;
+  }
+  const hidden = el.querySelector<HTMLInputElement>(
+    '[data-scope="color-picker"][data-part="hidden-input"]'
+  );
+  if (hidden) {
+    hidden.value = valueAsString;
+    hidden.dispatchEvent(new Event("input", { bubbles: true }));
+    hidden.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
+
 function readValueProps(el: HTMLElement): Pick<Props, "defaultValue"> {
   const defaultVal = getString(el, "defaultValue");
   return { defaultValue: defaultVal ? parse(defaultVal) : undefined };
@@ -44,6 +58,7 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
       dir: getDir(el),
       positioning: readPositioningOptions(el),
       onValueChange: (details: ValueChangeDetails) => {
+        syncColorHiddenAndNotify(el, details.valueAsString);
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -57,6 +72,7 @@ const ColorPickerHook: Hook<object & ColorPickerHookState, HTMLElement> = {
         });
       },
       onValueChangeEnd: (details: ValueChangeDetails) => {
+        syncColorHiddenAndNotify(el, details.valueAsString);
         notifyChange({
           el,
           canPushServer: canPush(),

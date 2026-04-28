@@ -148,7 +148,10 @@ defmodule Corex.SignaturePad.Anatomy do
       "data-value",
       "type",
       "readonly",
-      "hidden"
+      "hidden",
+      "autocomplete",
+      "tabindex",
+      "aria-hidden"
     ]
     def ignored_attrs, do: @ignored_attrs
   end

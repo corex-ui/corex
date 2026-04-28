@@ -1,7 +1,7 @@
 defmodule Corex.Install.PatchAssetsJsIntegrationTest do
   use ExUnit.Case, async: true
 
-  alias Mix.Corex.Install.PatchAssetsJs
+  alias Mix.Corex.Install.Assets
 
   @unpatched ~s"""
   import "phoenix_html"
@@ -17,11 +17,11 @@ defmodule Corex.Install.PatchAssetsJsIntegrationTest do
   """
 
   test "patches import corex and hooks spread when missing" do
-    p = PatchAssetsJs.apply(@unpatched)
+    p = Assets.patch_app_js_source(@unpatched)
     assert p =~ "import corex from \"corex\""
     assert p =~ "...colocatedHooks"
     assert p =~ "...corex"
 
-    assert PatchAssetsJs.apply(p) == p
+    assert Assets.patch_app_js_source(p) == p
   end
 end

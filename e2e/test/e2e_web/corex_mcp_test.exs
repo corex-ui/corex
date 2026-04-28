@@ -37,6 +37,10 @@ defmodule E2eWeb.CorexMcpTest do
       names = Enum.map(tools, & &1["name"])
       assert "corex_list_components" in names
       assert "corex_get_component" in names
+
+      for tool <- tools do
+        assert %{"annotations" => %{"readOnlyHint" => true}} = tool
+      end
     end
 
     test "prompts/list, resources/list, resources/templates/list return empty (tidewave parity)",

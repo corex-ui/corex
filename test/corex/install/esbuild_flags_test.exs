@@ -1,7 +1,7 @@
 defmodule Corex.Install.EsbuildFlagsTest do
   use ExUnit.Case, async: true
 
-  alias Mix.Corex.Install.EsbuildFlags
+  alias Mix.Corex.Install.Assets
 
   @phoenix_like """
   import Config
@@ -17,7 +17,7 @@ defmodule Corex.Install.EsbuildFlagsTest do
   """
 
   test "inserts only --format=esm and --splitting after first --bundle" do
-    out = EsbuildFlags.insert_into_config(@phoenix_like)
+    out = Assets.insert_esm_into_config(@phoenix_like)
 
     assert out =~ "--bundle --format=esm --splitting"
     assert out =~ "version: \"0.25.4\""
@@ -32,10 +32,10 @@ defmodule Corex.Install.EsbuildFlagsTest do
         global: false
       )
 
-    assert EsbuildFlags.insert_into_config(already) == already
+    assert Assets.insert_esm_into_config(already) == already
   end
 
   test "no-op when no esbuild config" do
-    assert EsbuildFlags.insert_into_config("import Config\n") == "import Config\n"
+    assert Assets.insert_esm_into_config("import Config\n") == "import Config\n"
   end
 end

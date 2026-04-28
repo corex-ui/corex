@@ -28,15 +28,14 @@ defmodule Corex.New.PhxWrapperTest do
     end
   end
 
-  test "IgniterArgv.to_argv passes --corex.no-mcp and --corex.no-skills" do
+  test "IgniterArgv.to_argv passes --corex.no-mcp when mcp is false" do
     alias Corex.New.IgniterArgv
 
-    assert IgniterArgv.to_argv(mcp: false, skills: false) == [
-             "--corex.no-mcp",
-             "--corex.no-skills"
+    assert IgniterArgv.to_argv(mcp: false) == [
+             "--corex.no-mcp"
            ]
 
-    assert IgniterArgv.to_argv(mcp: true, skills: true) == []
+    assert IgniterArgv.to_argv(mcp: true) == []
   end
 
   test "igniter_trailing_for_new appends Corex flags" do
@@ -59,8 +58,7 @@ defmodule Corex.New.PhxWrapperTest do
         esbuild: false,
         tailwind: false,
         gettext: false,
-        html: false,
-        skills: false
+        html: false
       )
 
     assert o == [
@@ -69,8 +67,7 @@ defmodule Corex.New.PhxWrapperTest do
              "--no-esbuild",
              "--no-tailwind",
              "--no-gettext",
-             "--no-html",
-             "--no-agents-md"
+             "--no-html"
            ]
   end
 

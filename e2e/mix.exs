@@ -10,7 +10,6 @@ defmodule E2e.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
-      usage_rules: usage_rules(),
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
@@ -82,7 +81,6 @@ defmodule E2e.MixProject do
       {:flagpack, "~> 0.6.0"},
       {:tidewave, "~> 0.5.5", only: :dev},
       {:designex, "~> 1.0"},
-      {:usage_rules, "~> 1.2", only: [:dev, :test]},
       {:igniter, "~> 0.6", only: [:dev, :test]}
     ]
 
@@ -100,15 +98,6 @@ defmodule E2e.MixProject do
       |> String.to_integer()
 
     otp <= 26
-  end
-
-  defp usage_rules do
-    [
-      skills: [
-        location: ".claude/skills",
-        package_skills: [:corex]
-      ]
-    ]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

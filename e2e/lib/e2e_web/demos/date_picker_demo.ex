@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.DatePickerDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   def minimal_code do
     ~S"""
     <.date_picker id="date-picker-anatomy-minimal" trigger_aria_label="Select date" input_aria_label="Select date" class="date-picker">
@@ -463,7 +461,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -519,7 +517,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.date_picker
         field={f[:date]}
@@ -591,7 +589,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
     >
@@ -633,7 +631,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~S"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
     >
@@ -687,7 +685,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.date_picker
@@ -732,7 +730,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
       for={@form}
       action={~p"/date-picker/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.date_picker
@@ -815,7 +813,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_basic"
       phx-submit="save_basic"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -863,7 +861,7 @@ defmodule E2eWeb.Demos.DatePickerDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_validate"
       phx-submit="save_validate"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

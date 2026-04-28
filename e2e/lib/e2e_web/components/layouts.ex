@@ -68,7 +68,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer />
+    <.footer path={@path} />
     """
   end
 
@@ -112,7 +112,7 @@ defmodule E2eWeb.Layouts do
         />
       </main>
     </div>
-    <.footer />
+    <.footer path={@path} />
     """
   end
 

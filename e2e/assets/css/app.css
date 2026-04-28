@@ -62,6 +62,10 @@
 @import "./card.css";
 @import "./home.css";
 
+.layout__menu-doc-link:hover {
+  background: color-mix(in oklab, var(--color-brand) 10%, var(--color-layer));
+}
+
 .layout__aside-tree [data-scope="tree-view"][data-part="branch-text"],
 .layout__aside-tree [data-scope="tree-view"][data-part="item-text"] {
   flex: 1 1 0%;
@@ -74,7 +78,10 @@
 #locale-select.select [data-scope="select"][data-part="trigger"],
 #theme-select.select,
 #theme-select.select [data-scope="select"][data-part="root"],
-#theme-select.select [data-scope="select"][data-part="trigger"] {
+#theme-select.select [data-scope="select"][data-part="trigger"],
+#theme-select-menu.select,
+#theme-select-menu.select [data-scope="select"][data-part="root"],
+#theme-select-menu.select [data-scope="select"][data-part="trigger"] {
     width: auto;
 }
 

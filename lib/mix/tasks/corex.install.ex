@@ -2,49 +2,32 @@ if Code.ensure_loaded?(Igniter) do
   defmodule Mix.Tasks.Corex.Install do
     use Igniter.Mix.Task
 
+    alias Mix.Corex.Install.Pipeline, as: CorexInstallPipeline
+
     @shortdoc "Installs Corex into a Phoenix application (used via mix igniter.install corex)"
 
     @moduledoc """
-    Patches a Phoenix project to use Corex: config, esbuild ESM, hooks, `use Corex`, and optional theme/mode plugs.
+    Installs Corex into an existing Phoenix application: dependencies, Phoenix defaults, Esbuild ESM and splitting, `assets/js/app.js` hooks, `use Corex` in the web module, root layout, optional Corex Design assets, and optional layout and endpoint changes.
 
-    This task is registered in group **`corex`** (see [Writing generators / task groups](https://hexdocs.pm/igniter/writing-generators.html)). When more than one installer could own the same flag, you may be asked to pass disambiguated options (for example `--corex.…`); follow the on-screen hint from `mix igniter.install`.
-
-    Typically invoked as:
+    Registered as an [Igniter](https://hexdocs.pm/igniter) task in group **`corex`**. Invoke it through Igniter, for example:
 
         mix igniter.install corex --yes
 
-    Pass Corex flags like `--replace`, `--mode`, `--no-mcp`, and `--theme` the same way you would with `mix corex.new`:
+    Pass Corex-specific options with the `--corex.*` prefix when Igniter asks you to disambiguate (see `mix help igniter.install`). A path dependency can be written as `mix igniter.install corex@path:../corex`.
 
-        mix igniter.install corex@path:../corex --yes --corex.replace --corex.mode --corex.theme neo:uno
-
-    If you are installing multiple packages and hit a flag conflict, Igniter will instruct you to disambiguate. See `mix help igniter.install`.
-
-    If you are authoring or extending a generator, compare with `mix igniter.gen.task` and [Igniter — Writing generators](https://hexdocs.pm/igniter/writing-generators.html) rather than a plain Mix task.
-
-    ## Terminal diffs, `--yes`, and `--dry-run`
-
-    Igniter only prints the **interactive** file diff when it is *not* applying in fully non-interactive mode. With **global** `--yes`, the task skips the green diff in the TTY and applies after treating confirmation as "yes" (see Igniter’s `do_or_dry_run` / generator docs). To **review** changes in the terminal before they land, run **`mix igniter.install corex` without** `--yes` in a real terminal (a full TTY). Use **`--dry-run`** (global Igniter flag, when your Igniter version supports it) to preview without writing.
-
-    ## Markdown walkthrough: `--scribe`
-
-    For a **file-based** before/after record (and diffs in Markdown), not the terminal diff, use global **`--scribe path/to/doc.md`**. The pipeline uses `Igniter.Scribe` to structure sections. Example:
-
-        mix igniter.install corex@path:../corex --yes --scribe docs/corex-install-walkthrough.md
-
-    Adjust the path; the file is only written on success. This matches [Igniter — Writing generators](https://hexdocs.pm/igniter/writing-generators.html) and `Mix.Corex.Install.Pipeline`’s scribe layout.
+    For the same setup without the installer, see the **Manual installation** guide in the docs.
 
     ## Flags
 
     * `--no-design` — skip running `mix corex.design` after install
-    * `--designex` — pass `--designex` to `mix corex.design` (the scheduled task also passes `--force` for idempotent re-runs)
-    * `--replace` — (default: off) replace the stock `Layouts.app` and home to use `toast_group`, optional theme/mode/lang assigns, and wrap the home template in `Layouts.app`. Greenfield `mix corex.new` turns this on; `mix igniter.install corex` does not, and instead adds `GET /corex` with `Layouts.corex`
-    * `--mode` — add mode plug and session assigns
-    * `--theme` — colon-separated themes (`neo`, `uno`, `duo`, `leo`); configures theme plug when more than one or with switching
-    * `--lang` — (opt-in) adds [localize_web](https://hexdocs.pm/localize_web/readme.html), `Localize.Routes`, and `Localize.VerifiedRoutes` (`~q`), `LocalizeLayout`, language switcher in `Layouts.app`, and related plumbing; run `mix gettext.extract` / `mix gettext.merge` for catalogs.
-    * **`--no-mcp`** — do not add `plug Corex.MCP` in `dev` in the web `Endpoint` (default: add)
-    * **`--no-skills`** — do not add the [usage_rules](https://hexdocs.pm/usage_rules) dependency or `usage_rules/0` in the project `mix.exs` (default: add, so you can run `mix usage_rules.sync` for the Corex package skill under `.claude/skills/`)
+    * `--designex` — pass `--designex` to `mix corex.design`
+    * **`--replace` / `--no-replace`** — control whether the stock home and app layout are switched to the Corex-oriented layout and toast pattern (`--replace` is the default for `mix corex.new`); with `--no-replace`, a separate `/home` demo route and `Layouts.corex` are added instead
+    * **`--no-mcp`** — do not add the Corex MCP plug in `dev` on the web endpoint (default is to add it)
+    * **`--refresh-templates`** — overwrite an existing generated Corex starter HEEx file if present (default: keep existing files)
 
-    If `assets/js/app.js` was never patched (for example the installer stopped with a Mix error), re-run **`mix igniter.install corex --yes`** (with your usual Corex flags) to re-run the full installer.
+    Additional Corex-related switches exist; see **`mix help igniter.install`** when multiple installers share option names.
+
+    If the install stopped early (for example before `assets/js/app.js` was updated), run **`mix igniter.install corex --yes`** again with the same options.
     """
 
     @impl true
@@ -57,31 +40,31 @@ if Code.ensure_loaded?(Igniter) do
         example: "mix igniter.install corex --yes --corex.replace --corex.mode",
         composes: ["igniter.add_extension"],
         defaults: [
-          replace: false,
+          replace: true,
           mcp: true,
-          skills: true,
-          no_design: false,
+          design: true,
           designex: false,
           mode: false,
-          lang: false
+          theme: false,
+          lang: false,
+          refresh_templates: false
         ],
         schema: [
           design: :boolean,
           designex: :boolean,
-          no_design: :boolean,
           replace: :boolean,
           mode: :boolean,
-          theme: :string,
+          theme: :boolean,
           lang: :boolean,
           mcp: :boolean,
-          skills: :boolean
+          refresh_templates: :boolean
         ]
       }
     end
 
     @impl true
     def igniter(igniter) do
-      Mix.Corex.Install.Pipeline.igniter(igniter)
+      CorexInstallPipeline.igniter(igniter)
     end
   end
 else

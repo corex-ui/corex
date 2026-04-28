@@ -1,6 +1,8 @@
 defmodule E2eWeb.RecordFields do
   use Phoenix.Component
 
+  alias E2eWeb.SignaturePaths
+
   attr(:record, :any, required: true)
   attr(:field, :atom, required: true)
 
@@ -21,7 +23,7 @@ defmodule E2eWeb.RecordFields do
   attr(:signature, :string, default: nil)
 
   def signature_preview(assigns) do
-    path_d_values = parse_signature_paths(assigns.signature)
+    path_d_values = SignaturePaths.path_d_list(assigns.signature)
     assigns = assign(assigns, :path_d_values, path_d_values)
 
     ~H"""
@@ -76,23 +78,6 @@ defmodule E2eWeb.RecordFields do
 
   defp get_value(record, field) when is_map(record), do: Map.get(record, field)
   defp get_value(_record, _field), do: nil
-
-  defp parse_signature_paths(nil), do: []
-  defp parse_signature_paths(""), do: []
-
-  defp parse_signature_paths(signature) when is_binary(signature) do
-    case Jason.decode(signature) do
-      {:ok, paths} when is_list(paths) ->
-        Enum.flat_map(paths, fn
-          d when is_binary(d) and d != "" -> [d]
-          %{"d" => d} when is_binary(d) and d != "" -> [d]
-          _ -> []
-        end)
-
-      _ ->
-        []
-    end
-  end
 
   defp format_value(nil), do: "—"
   defp format_value(true), do: "Yes"

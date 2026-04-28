@@ -112,26 +112,6 @@ defmodule E2eWeb.App.Aside do
 
     ~H"""
     <.tree_view
-      :if={@has_form_menu}
-      id={@form_tree_id}
-      class={@tree_class}
-      redirect
-      value={[@full_path]}
-      expanded_value={ancestor_ids_for_path(@form_menu, @full_path)}
-      items={@form_menu}
-    >
-      <:label>Forms</:label>
-      <:branch :let={branch}>
-        <.aside_menu_tree_label_row node={branch} tip_scope={@form_tree_id} />
-      </:branch>
-      <:item :let={item}>
-        <span class="min-w-0 truncate">{item.label}</span>
-      </:item>
-      <:branch_indicator>
-        <.heroicon name="hero-chevron-right" class="icon" />
-      </:branch_indicator>
-    </.tree_view>
-    <.tree_view
       :if={@has_components_menu}
       id={@components_tree_id}
       class={@tree_class}
@@ -143,6 +123,26 @@ defmodule E2eWeb.App.Aside do
       <:label>Components</:label>
       <:branch :let={branch}>
         <.aside_menu_tree_label_row node={branch} tip_scope={@components_tree_id} />
+      </:branch>
+      <:item :let={item}>
+        <span class="min-w-0 truncate">{item.label}</span>
+      </:item>
+      <:branch_indicator>
+        <.heroicon name="hero-chevron-right" class="icon" />
+      </:branch_indicator>
+    </.tree_view>
+    <.tree_view
+      :if={@has_form_menu}
+      id={@form_tree_id}
+      class={@tree_class}
+      redirect
+      value={[@full_path]}
+      expanded_value={ancestor_ids_for_path(@form_menu, @full_path)}
+      items={@form_menu}
+    >
+      <:label>Forms</:label>
+      <:branch :let={branch}>
+        <.aside_menu_tree_label_row node={branch} tip_scope={@form_tree_id} />
       </:branch>
       <:item :let={item}>
         <span class="min-w-0 truncate">{item.label}</span>

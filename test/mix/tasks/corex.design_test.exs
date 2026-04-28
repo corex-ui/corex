@@ -32,14 +32,15 @@ defmodule Mix.Tasks.Corex.DesignTest do
   end
 
   @tag :tmp_dir
-  test "raises when target exists without --force", %{tmp_dir: tmp_dir} do
+  test "skips copy when target exists without --force", %{tmp_dir: tmp_dir} do
     target = Path.join(tmp_dir, "existing")
     File.mkdir_p!(target)
+    marker = Path.join(target, "marker")
+    File.write!(marker, "before")
     Mix.Task.reenable("corex.design")
-
-    assert_raise Mix.Error, ~r/already exists/, fn ->
-      Mix.Task.run("corex.design", [target])
-    end
+    Mix.Task.run("corex.design", [target])
+    assert File.read!(marker) == "before"
+    refute File.exists?(Path.join(target, "main.css"))
   end
 
   @tag :tmp_dir

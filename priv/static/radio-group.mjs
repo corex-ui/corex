@@ -548,6 +548,13 @@ var RadioGroupHook = {
       dir: getDir(el),
       orientation: getString(el, "orientation"),
       onValueChange: (details) => {
+        const checked = el.querySelector(
+          '[data-scope="radio-group"][data-part="item-hidden-input"]:checked'
+        );
+        if (checked) {
+          checked.dispatchEvent(new Event("input", { bubbles: true }));
+          checked.dispatchEvent(new Event("change", { bubbles: true }));
+        }
         notifyChange({
           el,
           canPushServer: canPush(),

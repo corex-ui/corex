@@ -1,8 +1,6 @@
 defmodule E2eWeb.Demos.SelectDemo do
   use E2eWeb, :html
 
-  import Corex.Form, only: [get_form_id: 1]
-
   defp items do
     Corex.List.new([
       %{label: "France", id: "fra"},
@@ -753,7 +751,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -804,7 +802,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       for={@form}
       action={~p"/select/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -879,7 +877,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -919,7 +917,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -1113,7 +1111,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       action={~p"/select/form"}
       method="post"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -1148,7 +1146,7 @@ defmodule E2eWeb.Demos.SelectDemo do
       action={~p"/select/form"}
       method="post"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
-      id={get_form_id(@form)}
+      id={@form.id}
     >
       <.select
         field={f[:country]}
@@ -1208,7 +1206,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -1244,7 +1242,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     ~H"""
     <.form
       for={@form}
-      id={get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

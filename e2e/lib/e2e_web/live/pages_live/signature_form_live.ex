@@ -5,7 +5,6 @@ defmodule E2eWeb.SignatureFormLive do
 
   alias E2e.Form.SignatureForm
   alias E2eWeb.Demos.SignatureDemo, as: SignatureDemo
-  alias Corex.Form
   alias Corex.Toast
 
   @impl true
@@ -139,7 +138,7 @@ defmodule E2eWeb.SignatureFormLive do
           <:preview>
             <.form
               for={@form}
-              id={Form.get_form_id(@form)}
+              id={@form.id}
               phx-change="validate"
               phx-submit="save"
               class="w-full max-w-2xs flex flex-col gap-space items-center"

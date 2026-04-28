@@ -28,7 +28,7 @@ defmodule Mix.Tasks.Corex.New.Web do
     designex: :boolean,
     live: :boolean,
     mode: :boolean,
-    theme: :string,
+    theme: :boolean,
     lang: :boolean,
     ecto: :boolean,
     no_version_check: :boolean,
@@ -49,12 +49,8 @@ defmodule Mix.Tasks.Corex.New.Web do
     tailwind: :boolean,
     gettext: :boolean,
     html: :boolean,
-    skills: :boolean,
-    a11y: :boolean,
     mcp: :boolean,
-    no_design: :boolean,
-    replace: :boolean,
-    no_replace: :boolean
+    replace: :boolean
   ]
 
   @impl true
@@ -67,7 +63,9 @@ defmodule Mix.Tasks.Corex.New.Web do
       opts
       |> Keyword.put_new(:lang, false)
       |> Keyword.put_new(:mcp, true)
-      |> Keyword.put_new(:skills, true)
+      |> Keyword.put_new(:replace, true)
+      |> Keyword.put_new(:theme, false)
+      |> Keyword.put_new(:design, true)
 
     Cli.validate_corex_flags!(opts)
     Cli.validate_phx_new_flags!(opts)
@@ -119,6 +117,7 @@ defmodule Mix.Tasks.Corex.New.Web do
       igniter_extra,
       "phx-new"
     )
+
     PhxWrapper.run_format!(install_dir)
 
     PostGenerate.copy_cached_build(umbrella_root)

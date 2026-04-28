@@ -1,0 +1,7 @@
+/* corex:design — application CSS entry (replaces the stock phx.new Tailwind/daisy stack). */
+/* corex:design-imports */
+@import "../corex/main.css";
+@import "../corex/theme/__THEME__.css";
+@import "../corex/components/typo.css";
+@import "../corex/components/layout.css";
+@import "../corex/components/accordion.css";

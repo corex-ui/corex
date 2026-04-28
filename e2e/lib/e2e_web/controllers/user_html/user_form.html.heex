@@ -1,9 +1,10 @@
 <.form
   :let={f}
-  for={@changeset}
+  for={@form}
   action={@action}
-  id={get_form_id(@changeset)}
+  id={@form.id}
 >
+  <input :if={@return_context} type="hidden" name="return_to" value={@return_context} />
   <.native_input field={f[:name]} type="text" class="native-input max-w-none">
     <:label>Name</:label>
     <:error :let={msg}>
@@ -74,7 +75,9 @@
     </:error>
   </.checkbox>
   <footer class="flex w-full justify-between gap-2">
-    <.navigate :if={@return_to} to={@return_to} type="href" class="button">Cancel</.navigate>
+    <.navigate :if={@return_to} to={@return_to} type="navigate" class="button button--sm">
+      Cancel
+    </.navigate>
     <.action type="submit" class="button button--accent">Save User</.action>
   </footer>
 </.form>

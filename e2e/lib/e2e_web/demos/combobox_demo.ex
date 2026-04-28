@@ -367,7 +367,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <.combobox
         field={f[:airport]}
@@ -533,7 +533,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox field={f[:airport]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
@@ -573,7 +573,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox field={f[:airport]} class="combobox" placeholder="Country" items={Corex.List.new(items_minimal())}>
@@ -620,7 +620,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -671,7 +671,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~S"""
     <.form
       for={@strict_form}
-      id={Corex.Form.get_form_id(@strict_form)}
+      id={@strict_form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -732,7 +732,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@form}
       action={~p"/combobox/form"}
       method="post"
-      id={get_form_id(@form)}
+      id={@form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
@@ -765,7 +765,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
       for={@validate_form}
       action={~p"/combobox/form"}
       method="post"
-      id={get_form_id(@validate_form)}
+      id={@validate_form.id}
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <.combobox
@@ -819,7 +819,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="w-full max-w-2xs flex flex-col gap-space items-center"
@@ -853,7 +853,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~H"""
     <.form
       for={@strict_form}
-      id={Corex.Form.get_form_id(@strict_form)}
+      id={@strict_form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="w-full max-w-2xs flex flex-col gap-space items-center"

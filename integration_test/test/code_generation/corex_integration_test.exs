@@ -73,11 +73,11 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     end
   end
 
-  describe "app with --theme uno:leo" do
+  describe "app with --theme" do
     test "compiles, format check passes, and tests pass" do
       with_installer_tmp("corex_theme", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo"])
+          generate_corex_app(tmp_dir, "my_app", ["--theme"])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
@@ -94,6 +94,20 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
+        assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+      end)
+    end
+  end
+
+  describe "app with --no-replace and --lang" do
+    test "keeps stock home, adds /home with Layouts.corex, def corex, and Plugs.Path" do
+      with_installer_tmp("corex_no_replace_lang", fn tmp_dir ->
+        {app_root_path, _} =
+          generate_corex_app(tmp_dir, "my_app", ["--no-replace", "--lang"])
+
+        assert_corex_no_replace_file_invariants!(app_root_path, "my_app")
+        assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
+        assert_no_compilation_warnings(app_root_path)
       end)
     end
   end
@@ -141,13 +155,14 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "my_app", [
             "--mode",
-            "--theme", "neo:uno",
+            "--theme",
             "--lang"
           ])
 
         assert_no_compilation_warnings(app_root_path)
         assert_passes_formatter_check(app_root_path)
         assert_tests_pass(app_root_path)
+        assert_corex_lang_path_plug_invariants!(app_root_path, "my_app")
       end)
     end
 
@@ -158,7 +173,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           generate_corex_app(tmp_dir, "phx_blog", [
             "--database", "sqlite3",
             "--mode",
-            "--theme", "neo:uno",
+            "--theme",
             "--lang"
           ])
 
@@ -171,7 +186,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "app with --no-replace" do
-    test "keeps stock home, adds GET /corex, and still patches app.js" do
+    test "keeps stock home, adds GET /home, and still patches app.js" do
       with_installer_tmp("corex_no_replace", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "my_app", ["--no-replace"])
@@ -210,7 +225,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
     test "GET / returns theme-related markup" do
       with_installer_tmp("corex_theme_http", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "my_app", ["--theme", "uno:leo"])
+          generate_corex_app(tmp_dir, "my_app", ["--theme"])
 
         assert_no_compilation_warnings(app_root_path)
 
@@ -225,7 +240,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
   end
 
   describe "installer safe default (no --replace)" do
-    test "adds /corex without overriding /" do
+    test "adds /home without overriding /" do
       with_installer_tmp("corex_safe_default", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} = generate_plain_phoenix_app(tmp_dir, "my_app")
 
@@ -242,15 +257,15 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         assert home.status_code == 200
         refute home.body =~ "Corex"
 
-        {:ok, corex} = request_with_retries("http://localhost:#{port}/corex", 20)
-        assert corex.status_code == 200
-        assert corex.body =~ "Corex"
+        {:ok, home_corex} = request_with_retries("http://localhost:#{port}/home", 20)
+        assert home_corex.status_code == 200
+        assert home_corex.body =~ "Corex"
       end)
     end
   end
 
   describe "installer replace mode (--replace)" do
-    test "patches / with Corex layout; no redirect to /corex" do
+    test "patches / with Corex layout; stock / is not /home" do
       with_installer_tmp("corex_replace", [autoremove?: false], fn tmp_dir ->
         {app_root_path, _} = generate_plain_phoenix_app(tmp_dir, "my_app")
 

@@ -1,14 +1,14 @@
 defmodule Mix.Corex.Install.I18n do
   @moduledoc false
 
-  alias Mix.Corex.Install.Paths
+  alias Mix.Corex.Install.Web
 
   def maybe_create_localize_helpers(igniter, _web_mod, false), do: igniter
 
   def maybe_create_localize_helpers(igniter, web_mod, true) do
     app = Igniter.Project.Application.app_name(igniter)
     gettext_backend = Module.concat(web_mod, Gettext)
-    web_base = Paths.web_ex_dir(igniter, web_mod)
+    web_base = Web.web_ex_dir(igniter, web_mod)
 
     layout_path = Path.join([web_base, "localize_layout.ex"])
     switch_path = Path.join([web_base, "language_switch.ex"])
@@ -16,9 +16,13 @@ defmodule Mix.Corex.Install.I18n do
     layout_contents = localize_layout_module(web_mod, gettext_backend)
     switch_contents = language_switch_module(web_mod, gettext_backend, app)
 
+    path_ex_path = Path.join([web_base, "path.ex"])
+    path_contents = path_module(web_mod, gettext_backend)
+
     igniter
     |> Igniter.include_or_create_file(layout_path, layout_contents)
     |> Igniter.include_or_create_file(switch_path, switch_contents)
+    |> Igniter.include_or_create_file(path_ex_path, path_contents)
     |> patch_layouts_import_language_switch(web_mod)
   end
 
@@ -26,9 +30,7 @@ defmodule Mix.Corex.Install.I18n do
 
   def maybe_patch_layouts_for_language_switch(igniter, web_mod, true) do
     layouts_path =
-      web_mod
-      |> Paths.web_ex_dir(igniter)
-      |> Path.join("components/layouts.ex")
+      Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts.ex"])
 
     igniter
     |> Igniter.update_file(layouts_path, fn source ->
@@ -49,17 +51,15 @@ defmodule Mix.Corex.Install.I18n do
       c = source.content
 
       c =
-        cond do
-          String.contains?(c, "use Phoenix.Router, helpers: false") ->
-            String.replace(
-              c,
-              "use Phoenix.Router, helpers: false",
-              "use Phoenix.Router, helpers: true",
-              global: false
-            )
-
-          true ->
-            c
+        if String.contains?(c, "use Phoenix.Router, helpers: false") do
+          String.replace(
+            c,
+            "use Phoenix.Router, helpers: false",
+            "use Phoenix.Router, helpers: true",
+            global: false
+          )
+        else
+          c
         end
 
       %{source | content: c}
@@ -107,12 +107,22 @@ defmodule Mix.Corex.Install.I18n do
       "Add or update translation catalogs with `mix gettext.extract` and `mix gettext.merge` " <>
         "after adding new translatable strings or new Gettext locales under `priv/gettext`."
     )
+    |> Igniter.add_notice(
+      "A `Plugs.Path` is added in the browser pipeline (after Localize) so `assigns[:path]` is " <>
+        "the request path with an optional `/:locale` prefix stripped, matching the Corex e2e setup."
+    )
+    |> Igniter.add_notice(
+      "If the stock `def app` layout has no `theme_toggle` component, the installer does not " <>
+        "insert the language switch there automatically; add `<.language_switch conn={@conn} />` " <>
+        "in the header for pages that use `Layouts.app` without `--replace`."
+    )
   end
 
   defp ensure_conn_in_page_templates(igniter, web_mod) do
-    w = Paths.web_ex_dir(igniter, web_mod)
+    w = Web.web_ex_dir(igniter, web_mod)
     home = Path.join([w, "controllers", "page_html", "home.html.heex"])
-    corex = Path.join([w, "controllers", "corex_page", "index.html.heex"])
+    corex_legacy = Path.join([w, "controllers", "corex_page", "index.html.heex"])
+    corex_page = Path.join([w, "controllers", "page_html", "corex.html.heex"])
 
     igniter
     |> then(fn i ->
@@ -121,8 +131,13 @@ defmodule Mix.Corex.Install.I18n do
         else: i
     end)
     |> then(fn i ->
-      if Igniter.exists?(i, corex),
-        do: Igniter.update_file(i, corex, &append_conn_to_layouts_app/1),
+      if Igniter.exists?(i, corex_legacy),
+        do: Igniter.update_file(i, corex_legacy, &append_conn_to_layouts_corex/1),
+        else: i
+    end)
+    |> then(fn i ->
+      if Igniter.exists?(i, corex_page),
+        do: Igniter.update_file(i, corex_page, &append_conn_to_layouts_corex/1),
         else: i
     end)
   end
@@ -142,6 +157,40 @@ defmodule Mix.Corex.Install.I18n do
         )
 
       %{source | content: c}
+    end
+  end
+
+  defp append_conn_to_layouts_corex(source) do
+    c = source.content
+
+    if c =~ ~r/<Layouts\.corex\b/ do
+      c2 =
+        if c =~ ~r/<Layouts\.corex[^>]*\bconn=[^>]+>/m do
+          c
+        else
+          String.replace(
+            c,
+            ~r/<Layouts\.corex(\s)/m,
+            "<Layouts.corex\\1conn={@conn} ",
+            global: false
+          )
+        end
+
+      c3 =
+        if c2 =~ ~r/<Layouts\.corex[^>]*\bpath=[^>]+>/m do
+          c2
+        else
+          String.replace(
+            c2,
+            ~r/<Layouts\.corex(\s+)(?![^>]*\bpath=)/m,
+            "<Layouts.corex\\1path={assigns[:path]} ",
+            global: false
+          )
+        end
+
+      %{source | content: c3}
+    else
+      source
     end
   end
 
@@ -173,10 +222,7 @@ defmodule Mix.Corex.Install.I18n do
   end
 
   defp patch_layouts_import_language_switch(igniter, web_mod) do
-    layouts_path =
-      igniter
-      |> Paths.web_ex_dir(web_mod)
-      |> Path.join("components/layouts.ex")
+    layouts_path = Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts.ex"])
 
     Igniter.update_file(igniter, layouts_path, fn source ->
       content = source.content
@@ -303,5 +349,46 @@ defmodule Mix.Corex.Install.I18n do
       end
     end
     '''
+  end
+
+  defp path_module(web_mod, gettext_backend) do
+    m = Module.concat(web_mod, :Path)
+
+    """
+    defmodule #{inspect(m)} do
+      @moduledoc false
+
+      def strip_after_locale(request_path) when is_binary(request_path) do
+        loc = locale_leading_from_path(request_path) || Gettext.get_locale(#{inspect(gettext_backend)})
+        after_locale(request_path, loc)
+      end
+
+      defp locale_leading_from_path(path) do
+        first =
+          path
+          |> String.trim_leading("/")
+          |> String.split("/")
+          |> List.first()
+          |> case do
+            s when s in ["", nil] -> nil
+            s -> s
+          end
+
+        if is_binary(first) and first in Gettext.known_locales(#{inspect(gettext_backend)}),
+          do: first,
+          else: nil
+      end
+
+      defp after_locale(path, loc) when is_binary(path) and is_binary(loc) do
+        base = "/" <> loc
+
+        cond do
+          path in ["/", base] -> ""
+          String.starts_with?(path, base <> "/") -> String.replace_prefix(path, base, "")
+          true -> path
+        end
+      end
+    end
+    """
   end
 end

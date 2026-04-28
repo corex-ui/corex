@@ -4,29 +4,29 @@
   theme={@theme}
   path={@path}
 >
-  <.layout_heading>
+  <.layout_heading class="layout-heading">
     <:title>User {@user.id}</:title>
     <:subtitle>This is a user record from your database.</:subtitle>
     <:actions>
       <.navigate
         to={~p"/users"}
-        type="href"
-        class="button"
+        type="navigate"
+        class="button button--sm button--square"
         aria_label={gettext("Previous page")}
       >
         <.heroicon name="hero-arrow-left" />
       </.navigate>
       <.navigate
-        to={~p"/users/#{@user}/edit"}
-        type="href"
-        class="button button--accent"
+        to={~p"/users/#{@user}/edit?return_to=show"}
+        type="navigate"
+        class="button button--accent button--sm"
       >
         <.heroicon name="hero-pencil-square" /> Edit user
       </.navigate>
     </:actions>
   </.layout_heading>
 
-  <.data_list class="data-list">
+  <.data_list class="data-list max-w-md">
     <:item :for={field <- fields(@user)} title={label(field)}>
       <.record_field_value record={@user} field={field} />
     </:item>

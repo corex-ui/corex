@@ -89,7 +89,7 @@ defmodule E2eWeb.ToastPatternsLive do
               as={:toast}
               phx-submit="create_flash"
               class="w-full max-w-md flex flex-col gap-space"
-              id={Corex.Form.get_form_id(@form)}
+              id={@form.id}
             >
               <.native_input
                 field={@form[:title]}

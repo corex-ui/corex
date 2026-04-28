@@ -1,7 +1,5 @@
 defmodule Corex.DatePicker.Connect do
   @moduledoc false
-  alias Corex.Selectors
-
   alias Corex.DatePicker.Anatomy.{
     Content,
     Control,
@@ -17,6 +15,8 @@ defmodule Corex.DatePicker.Connect do
   }
 
   alias Corex.DatePicker.Translation, as: DatePickerTranslation
+  alias Corex.Positioning
+  alias Corex.Selectors
 
   alias Phoenix.LiveView.JS
 
@@ -131,7 +131,8 @@ defmodule Corex.DatePicker.Connect do
       "data-scope" => "date-picker",
       "data-part" => "root",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}"
+      "id" => "date-picker:#{assigns.id}",
+      "data-state" => "closed"
     }
   end
 
@@ -148,7 +149,8 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "label",
       "dir" => assigns.dir,
       "id" => "date-picker:#{assigns.id}:label:0",
-      "htmlFor" => "date-picker:#{assigns.id}:input:0"
+      "htmlFor" => "date-picker:#{assigns.id}:input:0",
+      "data-state" => "closed"
     }
   end
 
@@ -214,14 +216,50 @@ defmodule Corex.DatePicker.Connect do
     )
   end
 
-  @spec positioner(Positioner.t()) :: map()
+  @spec positioner(Positioner.t() | map()) :: map()
   def positioner(assigns) do
+    positioning = positioner_positioning(assigns)
+
     %{
       "data-scope" => "date-picker",
       "data-part" => "positioner",
       "dir" => assigns.dir,
-      "id" => "date-picker:#{assigns.id}:positioner"
+      "id" => "date-picker:#{assigns.id}:positioner",
+      "style" => positioner_initial_floating_style(positioning)
     }
+  end
+
+  defp positioner_positioning(%Positioner{positioning: p}) when not is_nil(p), do: p
+  defp positioner_positioning(%Positioner{positioning: nil}), do: %Positioning{}
+  defp positioner_positioning(m) when is_map(m), do: Map.get(m, :positioning) || %Positioning{}
+
+  defp positioner_initial_floating_style(%Positioning{} = p) do
+    parts =
+      [
+        "position: #{p.strategy}",
+        "isolation: isolate",
+        "top: 0px",
+        "left: 0px",
+        "transform: translate3d(0, -100vh, 0)",
+        "pointer-events: none",
+        "z-index: var(--z-index)"
+      ]
+      |> then(fn acc ->
+        if p.same_width do
+          acc ++ ["width: var(--reference-width)"]
+        else
+          acc ++ ["min-width: max-content"]
+        end
+      end)
+      |> then(fn acc ->
+        if p.fit_viewport do
+          acc ++ ["max-width: var(--available-width)", "max-height: var(--available-height)"]
+        else
+          acc
+        end
+      end)
+
+    Enum.join(parts, "; ") <> ";"
   end
 
   def ignore_positioner(%Positioner{} = assigns) do
@@ -237,7 +275,8 @@ defmodule Corex.DatePicker.Connect do
       "data-part" => "content",
       "dir" => assigns.dir,
       "id" => "date-picker:#{assigns.id}:content",
-      "hidden" => true
+      "hidden" => true,
+      "data-state" => "closed"
     }
   end
 

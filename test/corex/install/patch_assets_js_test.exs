@@ -1,7 +1,7 @@
 defmodule Corex.Install.PatchAssetsJsTest do
   use ExUnit.Case, async: false
 
-  alias Mix.Corex.Install.PatchAssetsJs
+  alias Mix.Corex.Install.Assets
 
   @phx_18 ~s"""
   import "phoenix_html"
@@ -17,7 +17,7 @@ defmodule Corex.Install.PatchAssetsJsTest do
   """
 
   test "default phoenix 1.8+ app.js: adds import and spread" do
-    out = PatchAssetsJs.apply(@phx_18)
+    out = Assets.patch_app_js_source(@phx_18)
     assert out =~ ~r/import corex from "corex"/
     assert out =~ ~r/hooks:/
     assert out =~ "...colocatedHooks"
@@ -30,13 +30,13 @@ defmodule Corex.Install.PatchAssetsJsTest do
       |> String.replace("import {LiveSocket}", "import { LiveSocket }")
       |> String.replace("import {Socket}", "import { Socket }")
 
-    out = PatchAssetsJs.apply(src)
+    out = Assets.patch_app_js_source(src)
     assert out =~ ~r/import corex from "corex"/
   end
 
   test "tight and spaced hooks object" do
     a = @phx_18 |> String.replace("hooks: {...colocatedHooks}", "hooks: { ...colocatedHooks }")
-    out = PatchAssetsJs.apply(a)
+    out = Assets.patch_app_js_source(a)
     assert out =~ "...colocatedHooks"
     assert out =~ "...corex"
   end
@@ -49,24 +49,35 @@ defmodule Corex.Install.PatchAssetsJsTest do
         "hooks: {\n    ...colocatedHooks,\n  },"
       )
 
-    out = PatchAssetsJs.apply(src)
+    out = Assets.patch_app_js_source(src)
     assert out =~ "...colocatedHooks"
     assert out =~ "...corex"
   end
 
   test "idempotent" do
-    o1 = PatchAssetsJs.apply(@phx_18)
-    o2 = PatchAssetsJs.apply(o1)
+    o1 = Assets.patch_app_js_source(@phx_18)
+    o2 = Assets.patch_app_js_source(o1)
     assert o1 == o2
   end
 
-  test "regex-only path: legacy formatting (COREX_PATCH_ASSETS_JS_REGEX)" do
-    System.put_env("COREX_PATCH_ASSETS_JS_REGEX", "1")
-    on_exit(fn -> System.delete_env("COREX_PATCH_ASSETS_JS_REGEX") end)
+  test "import_line option: relative path to corex.mjs" do
+    line = "import corex from \"../../deps/corex/priv/static/corex.mjs\"\n"
+    out = Assets.patch_app_js_source(@phx_18, import_line: line)
+    assert out =~ "import corex from \"../../deps/corex/priv/static/corex.mjs\""
+    assert out =~ "...corex"
+  end
 
-    out = PatchAssetsJs.apply(@phx_18)
-    assert out =~ ~r/\nimport corex from "corex"\n/
-    assert out =~ "hooks: {...colocatedHooks, ...corex}"
+  test "does not replace import when import corex from already present" do
+    line = "import corex from \"../../other/corex.mjs\"\n"
+
+    src =
+      String.replace(@phx_18, "import {hooks", "import corex from \"corex\"\nimport {hooks",
+        global: false
+      )
+
+    out = Assets.patch_app_js_source(src, import_line: line)
+    assert out =~ "import corex from \"corex\""
+    refute out =~ "other/corex.mjs"
   end
 
   test "e2e-style already patched" do
@@ -85,7 +96,7 @@ defmodule Corex.Install.PatchAssetsJsTest do
         global: false
       )
 
-    out = PatchAssetsJs.apply(src)
+    out = Assets.patch_app_js_source(src)
     assert out == src
   end
 end

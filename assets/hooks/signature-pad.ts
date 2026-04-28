@@ -6,6 +6,8 @@ import type { Props } from "@zag-js/signature-pad";
 import { getBoolean, getNumber, getString } from "../lib/util";
 import { idMatches, readPayloadId } from "../lib/respond-to";
 
+const PHX_HAS_FOCUSED = "phx-has-focused";
+
 function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): string[] {
   const raw = el.dataset[key];
   if (!raw) return [];
@@ -13,6 +15,12 @@ function parsePathsFromDataset(el: HTMLElement, key: "defaultPaths" | "paths"): 
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
+}
+
+function reapplyLiveViewValueInputUsage(input: HTMLInputElement) {
+  const p = input as HTMLInputElement & { phxPrivate?: Record<string, boolean> };
+  if (!p.phxPrivate) p.phxPrivate = {};
+  p.phxPrivate[PHX_HAS_FOCUSED] = true;
 }
 
 function buildDrawingOptions(el: HTMLElement): NonNullable<Props["drawing"]> {
@@ -29,16 +37,24 @@ function buildDrawingOptions(el: HTMLElement): NonNullable<Props["drawing"]> {
   return o as NonNullable<Props["drawing"]>;
 }
 
-function queueFormBubblingInputForPhoenix(el: HTMLElement, getValue: () => string): void {
+function queueFormBubblingInputForPhoenix(
+  el: HTMLElement,
+  getValue: () => string,
+  opts: { onPadTouched: () => void }
+): void {
   queueMicrotask(() => {
     const input = el.querySelector<HTMLInputElement>(
       '[data-scope="signature-pad"][data-part="hidden-input"]'
     );
-    if (!input) return;
+    if (!input) {
+      return;
+    }
     const v = getValue();
     if (String(input.value) !== String(v)) {
       input.value = v;
     }
+    opts.onPadTouched();
+    reapplyLiveViewValueInputUsage(input);
     input.dispatchEvent(new Event("input", { bubbles: true }));
     input.dispatchEvent(new Event("change", { bubbles: true }));
   });
@@ -48,14 +64,34 @@ type SignaturePadHookState = {
   signaturePad?: SignaturePad;
   handlers?: Array<CallbackRef>;
   onClear?: (event: Event) => void;
+  padTouched: boolean;
 };
 
 const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
   mounted(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
     const el = this.el;
+    const hook = this as object & SignaturePadHookState;
     const pushEvent = this.pushEvent.bind(this);
+    hook.padTouched = false;
+    const markTouched = () => {
+      hook.padTouched = true;
+    };
 
     const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
+    {
+      const input = el.querySelector<HTMLInputElement>(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
+      if (String(input?.value ?? "") !== "" || defaultPaths.length > 0) {
+        hook.padTouched = true;
+        queueMicrotask(() => {
+          const i = el.querySelector<HTMLInputElement>(
+            '[data-scope="signature-pad"][data-part="hidden-input"]'
+          );
+          if (i) reapplyLiveViewValueInputUsage(i);
+        });
+      }
+    }
 
     const signaturePad = new SignaturePad(el, {
       id: el.id,
@@ -65,8 +101,10 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       onDrawEnd: (details) => {
         signaturePad.setPaths(details.paths);
 
-        queueFormBubblingInputForPhoenix(el, () =>
-          details.paths.length > 0 ? details.paths.join("\n") : ""
+        queueFormBubblingInputForPhoenix(
+          el,
+          () => (details.paths.length > 0 ? details.paths.join("\n") : ""),
+          { onPadTouched: markTouched }
         );
 
         details.getDataUrl("image/png").then((url) => {
@@ -99,12 +137,11 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     } as Props);
     signaturePad.init();
     this.signaturePad = signaturePad;
-
     this.onClear = (event: Event) => {
       const { id: targetId } = (event as CustomEvent<{ id: string }>).detail;
       if (targetId && targetId !== el.id) return;
       signaturePad.api.clear();
-      queueFormBubblingInputForPhoenix(el, () => "");
+      queueFormBubblingInputForPhoenix(el, () => "", { onPadTouched: markTouched });
     };
     el.addEventListener("corex:signature-pad:clear", this.onClear);
 
@@ -114,14 +151,13 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
       this.handleEvent("signature_pad_clear", (payload: unknown) => {
         if (!idMatches(el.id, readPayloadId(payload))) return;
         signaturePad.api.clear();
-        queueFormBubblingInputForPhoenix(el, () => "");
+        queueFormBubblingInputForPhoenix(el, () => "", { onPadTouched: markTouched });
       })
     );
   },
 
   updated(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {
     const el = this.el;
-    const defaultPaths = parsePathsFromDataset(el, "defaultPaths");
     const name = getString(el, "name");
 
     if (name) {
@@ -131,9 +167,20 @@ const SignaturePadHook: Hook<object & SignaturePadHookState, HTMLElement> = {
     this.signaturePad?.updateProps({
       id: el.id,
       name: name,
-      ...(defaultPaths.length > 0 ? { defaultPaths } : {}),
       drawing: buildDrawingOptions(el),
     } as Partial<Props>);
+
+    if (!this.padTouched) {
+      return;
+    }
+    queueMicrotask(() => {
+      const input = this.el.querySelector<HTMLInputElement>(
+        '[data-scope="signature-pad"][data-part="hidden-input"]'
+      );
+      if (input) {
+        reapplyLiveViewValueInputUsage(input);
+      }
+    });
   },
 
   destroyed(this: object & HookInterface<HTMLElement> & SignaturePadHookState) {

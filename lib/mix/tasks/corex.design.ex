@@ -6,7 +6,9 @@ defmodule Mix.Tasks.Corex.Design do
   @moduledoc """
   Setup Corex design assets into your project.
   You can select a target directory, defaults to `assets/corex`.
-  You can use the `--force` option to overwrite existing files.
+  If the target directory already exists, the task skips copying and prints a short message
+  (exit 0). Use `--force` to remove the existing tree and copy again.
+  `mix igniter.install` schedules this task without `--force` so re-runs stay safe when `assets/corex` is already present.
 
   ## Examples
 
@@ -49,8 +51,8 @@ defmodule Mix.Tasks.Corex.Design do
   ```
 
   Then run the task with the `--designex` option:
-  This will copy the Corex design file including the design tokens and build scripts
-  You may have to use the `--force` option to overwrite existing files.
+  This will copy the Corex design file including the design tokens and build scripts.
+  If the target directory already exists, the task skips and tells you; use `--force` to replace it.
 
   ```bash
   mix corex.design --designex
@@ -98,13 +100,13 @@ defmodule Mix.Tasks.Corex.Design do
     designex = Keyword.get(opts, :designex, false)
 
     validate_source!()
-    validate_target!(target, force)
-    maybe_show_designex_info(designex)
 
-    copy_design_files(target, designex)
-
-    unless Mix.env() == :test do
-      Mix.shell().info("Corex design copied to: #{target}")
+    if target_exists_and_not_forcing?(target, force) do
+      inform_skipped(target)
+    else
+      maybe_show_designex_info(designex)
+      copy_design_files(target, designex)
+      inform_copied(target)
     end
   end
 
@@ -126,13 +128,21 @@ defmodule Mix.Tasks.Corex.Design do
     end
   end
 
-  defp validate_target!(target, force) do
-    if File.exists?(target) and not force do
-      Mix.raise("""
-      #{target} already exists.
+  defp target_exists_and_not_forcing?(target, force) do
+    File.exists?(target) and not force
+  end
 
-      Re-run with --force to overwrite.
-      """)
+  defp inform_skipped(target) do
+    unless Mix.env() == :test do
+      Mix.shell().info(
+        "#{target} already exists. Skipping copy. Re-run with --force to overwrite."
+      )
+    end
+  end
+
+  defp inform_copied(target) do
+    unless Mix.env() == :test do
+      Mix.shell().info("Corex design copied to: #{target}")
     end
   end
 

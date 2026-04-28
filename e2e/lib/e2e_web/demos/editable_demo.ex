@@ -170,7 +170,7 @@ defmodule E2eWeb.Demos.EditableDemo do
       for={@form}
       action={~p"/editable/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
       <.editable

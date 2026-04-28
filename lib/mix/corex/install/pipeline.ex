@@ -1,22 +1,19 @@
 defmodule Mix.Corex.Install.Pipeline do
   @moduledoc """
-  `Mix.Tasks.Corex.Install` delegates here. The pipeline uses `Igniter.Scribe` (`start_document`, one `section` per phase, and `Scribe.patch` for each step) so that global **`--scribe path.md`** on `igniter.install` produces a Markdown document with per-section diffs. See [Igniter — Writing generators](https://hexdocs.pm/igniter/writing-generators.html) and the install task’s moduledoc.
+  `Mix.Tasks.Corex.Install` delegates here. The pipeline uses `Igniter.Scribe` (`start_document`, one `section` per phase, and `Scribe.patch` for each step) so that global **`--scribe path.md`** on `igniter.install` produces a Markdown document with per-section diffs. See [Igniter — Writing generators](https://hexdocs.pm/igniter/writing-generators.html) and the install task's moduledoc.
   """
 
-  alias Mix.Corex.Install.Codemods
+  alias Igniter.Libs.Phoenix, as: ILPhoenix
+  alias Igniter.Project.Application, as: ProjectApplication
 
   alias Mix.Corex.Install.{
-    Build,
-    Deps,
+    Assets,
+    Config,
     Design,
-    Endpoint,
     I18n,
     Layouts,
-    Options,
-    PhoenixConfig,
-    Plugs,
-    Router,
-    Starter
+    Starter,
+    Web
   }
 
   @manual_lead_in """
@@ -47,6 +44,7 @@ defmodule Mix.Corex.Install.Pipeline do
 
   @section_assets_js """
   Patch `assets/js/app.js` to import Corex and include `...corex` in LiveView hooks.
+  When design is enabled, replace `assets/css/app.css` with the Corex design entry (`@import` of `main.css`, theme, and `typo.css`); the stock phx.new Tailwind/daisy block is not kept.
   """
 
   @section_web_module """
@@ -58,11 +56,11 @@ defmodule Mix.Corex.Install.Pipeline do
   """
 
   @section_router_plugs """
-  Create optional plugs (mode/theme), then insert them into the browser pipeline and wire optional i18n router helpers.
+  Create optional plugs (mode, theme, and with `--lang` a Path plug for locale-stripped `assigns[:path]`), then insert them into the browser pipeline and wire optional i18n router helpers.
   """
 
   @section_starter """
-  When not using `--replace`, add a `GET /corex` page and a `corex` layout. When using `--replace`, replace the app layout and home instead.
+  With `--replace` (default for `corex.new`): patch `Layouts.app`, wrap the stock `home.html.heex` in that layout, remove stock `flash_group` / `theme_toggle` helpers, and do not add `Layouts.corex` or `GET /home`. With `--no-replace`, add the demo `GET /home` route and `Layouts.corex` while leaving the default Phoenix home unchanged.
   """
 
   @section_design """
@@ -71,15 +69,14 @@ defmodule Mix.Corex.Install.Pipeline do
 
   def igniter(igniter) do
     opts = merge_cli_flags_into_options(igniter)
-    Options.validate_opts!(opts)
+    Config.validate_opts!(opts)
 
     mcp? = Keyword.get(opts, :mcp, true)
-    skills? = Keyword.get(opts, :skills, true)
-    replace? = Keyword.get(opts, :replace, false)
+    replace? = Keyword.get(opts, :replace, true)
 
-    web_mod = Igniter.Libs.Phoenix.web_module(igniter)
-    app = Igniter.Project.Application.app_name(igniter)
-    themes = Options.themes_from_opts(opts)
+    web_mod = ILPhoenix.web_module(igniter)
+    app = ProjectApplication.app_name(igniter)
+    themes = Config.themes_from_opts(opts)
     i18n? = Keyword.get(opts, :lang, false)
 
     igniter
@@ -88,23 +85,21 @@ defmodule Mix.Corex.Install.Pipeline do
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
         |> Igniter.compose_task("igniter.add_extension", ["phoenix"])
-        |> Deps.maybe_add_localize_web_dep(i18n?)
-        |> Deps.maybe_add_usage_rules(skills?)
+        |> Config.maybe_add_localize_web_dep(i18n?)
       end)
     end)
     |> Igniter.Scribe.section("Phoenix defaults", @section_phoenix_defaults, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
-        |> PhoenixConfig.configure_phoenix_defaults(web_mod)
-        |> PhoenixConfig.configure_app_env(app, themes)
-        |> PhoenixConfig.configure_designex(opts)
-        |> PhoenixConfig.configure_test_phoenix()
+        |> Config.configure_app_env(app, themes)
+        |> Config.configure_designex(opts)
+        |> Config.configure_test_phoenix()
       end)
     end)
     |> Igniter.Scribe.section("Optional i18n runtime", @section_i18n_runtime, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
-        |> PhoenixConfig.maybe_configure_localize_runtime(web_mod, i18n?)
+        |> Config.maybe_configure_localize_runtime(web_mod, i18n?)
         |> I18n.maybe_create_localize_helpers(web_mod, i18n?)
         |> I18n.maybe_patch_layouts_for_language_switch(web_mod, i18n?)
         |> I18n.maybe_patch_web_verified_routes(web_mod, i18n?)
@@ -115,12 +110,14 @@ defmodule Mix.Corex.Install.Pipeline do
     |> Igniter.Scribe.section("Build configuration", @section_build, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
-        |> Build.patch_esbuild_config(app)
+        |> Assets.patch_esbuild_config(app)
       end)
     end)
     |> Igniter.Scribe.section("Asset hooks", @section_assets_js, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
-        Build.patch_assets_js(igniter)
+        igniter
+        |> Assets.patch_assets_js()
+        |> maybe_patch_design_assets(opts)
       end)
     end)
     |> Igniter.Scribe.section("Root layout", @section_layout, fn igniter ->
@@ -138,29 +135,26 @@ defmodule Mix.Corex.Install.Pipeline do
     end)
     |> Igniter.Scribe.section("Endpoint configuration", @section_endpoint, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
-        Endpoint.patch_endpoint_dev_plugs(igniter, web_mod, mcp?)
+        Web.patch_endpoint_dev_plugs(igniter, web_mod, mcp?)
       end)
     end)
     |> Igniter.Scribe.section("Web module", @section_web_module, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
-        Codemods.patch_web_module(igniter, web_mod, i18n?)
+        Web.patch_web_module(igniter, web_mod, i18n?)
       end)
     end)
     |> Igniter.Scribe.section("Router and plugs", @section_router_plugs, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
         igniter
-        |> Plugs.create_plug_files(web_mod, app, opts, i18n?)
-        |> Router.patch_router_for_plugs(web_mod, opts, themes, i18n?)
+        |> Web.create_plug_files(web_mod, app, opts, i18n?)
+        |> Web.patch_router_for_plugs(web_mod, opts, themes, i18n?)
       end)
     end)
     |> Igniter.Scribe.section("Optional starter", @section_starter, fn igniter ->
-      Igniter.Scribe.patch(igniter, fn igniter ->
-        if replace? do
-          Layouts.maybe_patch_replaced_home(igniter, web_mod, i18n?)
-        else
-          Starter.add_corex_page_and_layout(igniter, web_mod, themes, opts, i18n?)
-        end
-      end)
+      Igniter.Scribe.patch(
+        igniter,
+        &apply_optional_starter(&1, replace?, web_mod, themes, opts, i18n?)
+      )
     end)
     |> Igniter.Scribe.section("Design assets", @section_design, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
@@ -171,5 +165,21 @@ defmodule Mix.Corex.Install.Pipeline do
 
   defp merge_cli_flags_into_options(igniter) do
     igniter.args.options
+  end
+
+  defp maybe_patch_design_assets(igniter, opts) do
+    if Config.design_on?(opts) do
+      Design.patch_assets_app_css_for_corex_design(igniter, opts)
+    else
+      igniter
+    end
+  end
+
+  defp apply_optional_starter(igniter, true, web_mod, _themes, _opts, i18n?) do
+    Layouts.maybe_patch_replaced_home(igniter, web_mod, i18n?)
+  end
+
+  defp apply_optional_starter(igniter, false, web_mod, themes, opts, i18n?) do
+    Starter.add_corex_page_and_layout(igniter, web_mod, themes, opts, i18n?)
   end
 end

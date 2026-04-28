@@ -191,7 +191,7 @@ defmodule Corex.Select do
 
   ## Phoenix Form Integration
 
-  When using with Phoenix forms, you must add an id to the form using the `Corex.Form.get_form_id/1` function.
+  When using with Phoenix forms, set the form `id` in `to_form/2` (for example `to_form(changeset, as: :name, id: "my-form")`) and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
@@ -208,7 +208,7 @@ defmodule Corex.Select do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.select
       field={f[:country]}
       class="select"
@@ -282,7 +282,7 @@ defmodule Corex.Select do
 
     def render(assigns) do
       ~H"""
-      <.form for={@form} id={get_form_id(@form)} phx-change="validate">
+      <.form for={@form} id={@form.id} phx-change="validate">
         <.select
           field={@form[:country]}
           class="select"
@@ -500,18 +500,7 @@ defmodule Corex.Select do
   )
 
   def select(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
-    form_attempted? =
-      case field.form do
-        %Phoenix.HTML.Form{source: %Ecto.Changeset{action: a}} when not is_nil(a) -> true
-        _ -> false
-      end
-
-    errors =
-      if Phoenix.Component.used_input?(field) or form_attempted? do
-        field.errors
-      else
-        []
-      end
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
 
     value = get_value(field.value)
     selected_label = get_selected_label(assigns.items, value)

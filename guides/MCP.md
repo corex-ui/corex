@@ -4,7 +4,26 @@ Corex ships with a built-in MCP (Model Context Protocol) server that exposes you
 
 This allows assistants to **discover, inspect, and generate UI code** based on your actual Corex components.
 
-## 1. Enable MCP
+## 1. Install Corex
+
+Add Corex to an existing Phoenix application’s dependencies in `mix.exs`, then fetch deps:
+
+```elixir
+{:corex, "~> 0.1.0-beta.1"}
+```
+
+```bash
+mix deps.get
+```
+
+Complete the usual Corex setup (Esbuild, `assets/js/app.js`, `use Corex`, and so on). See the [Installation](installation.html) guide and [Manual installation](manual_installation.html) for the full checklist.
+
+- **New Phoenix app with Corex:** use `mix corex.new my_app` after installing the `corex_new` archive. Options are documented under **`Mix.Tasks.Corex.New`** (`mix help corex.new`).
+- **Existing app:** run `mix igniter.install corex` (Igniter must be available). Options are documented under **`Mix.Tasks.Corex.Install`** (`mix help igniter.install` when the Corex Igniter task is loaded).
+
+---
+
+## 2. Enable MCP
 
 Mount the MCP plug in development:
 
@@ -17,12 +36,12 @@ end
 This exposes an HTTP endpoint:
 
 ```
-http://localhost:4000/corex/mcp
+http://localhost:4005/corex/mcp
 ```
 
 ---
 
-## 2. Configure your MCP client
+## 3. Configure your MCP client
 
 Add Corex as a server in your MCP-enabled tool.
 
@@ -34,7 +53,7 @@ Add Corex as a server in your MCP-enabled tool.
 {
   "servers": {
     "corex": {
-      "url": "http://localhost:4000/corex_dev/mcp"
+      "url": "http://localhost:4005/corex/mcp"
     }
   }
 }
@@ -50,7 +69,7 @@ Add Corex as a server in your MCP-enabled tool.
     "corex": {
       "transport": {
         "type": "http",
-        "url": "http://localhost:4000/corex_dev/mcp"
+        "url": "http://localhost:4005/corex/mcp"
       }
     }
   }
@@ -65,7 +84,7 @@ Add Corex as a server in your MCP-enabled tool.
 {
   "mcp.servers": {
     "corex": {
-      "url": "http://localhost:4000/corex_dev/mcp"
+      "url": "http://localhost:4005/corex/mcp"
     }
   }
 }
@@ -78,27 +97,43 @@ Add Corex as a server in your MCP-enabled tool.
 ```json
 {
   "name": "corex",
-  "url": "http://localhost:4000/corex_dev/mcp"
+  "url": "http://localhost:4005/corex/mcp"
 }
 ```
 
 ---
 
-## 3. Available tools
+## 4. Start the Phoenix server
 
-Corex MCP exposes tools to query your design system:
+From your application directory (replace `my_app` with your app name):
+
+```bash
+cd my_app
+mix phx.server
+```
+
+The MCP endpoint is only available while the dev server is running.
+
+---
+
+## 5. Available tools
+
+Corex MCP exposes tools for components and installation commands:
 
 ### `corex_list_components`
 
-List all available component
+List all registered Corex component ids (kebab-style keys).
 
 ### `corex_get_component`
 
-Get documentation for a component
+Return module metadata and English docs for one component by id.
 
-## 4. Notes
+### `corex_installation`
+
+Read-only JSON with commands for **new projects** (`mix corex.new` after installing the Igniter and `corex_new` archives) and **existing projects** (`mix igniter.install corex`). Optional `scenario`: `new_project`, `existing_project`, or `all` (default). Does not run shell commands.
+
+## 6. Notes
 
 * Intended for **development only**
 * Requires your Phoenix server running locally
-* Corex MCP based of [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix/tree/main) and is distributed under the Apache License 2.0.
-
+* Corex MCP is based on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix/tree/main) and is distributed under the Apache License 2.0.

@@ -4,9 +4,8 @@ defmodule Corex.JsonTest do
   alias Corex.Json
 
   describe "encoder/0" do
-    test "uses Phoenix.json_library when Phoenix is available" do
-      Application.delete_env(:corex, :json_library)
-      assert Json.encoder() == Phoenix.json_library()
+    test "is Jason" do
+      assert Json.encoder() == Jason
     end
   end
 

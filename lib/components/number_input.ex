@@ -22,7 +22,7 @@ defmodule Corex.NumberInput do
 
   ## Phoenix Form Integration
 
-  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form id with `Corex.Form.get_form_id/1`.
+  Use `field={f[:key]}` or `field={@form[:key]}` with a form built from an Ecto changeset. Set the form `id` in `to_form/2` and use `id={@form.id}` on `<.form>`.
 
   ### Controller
 
@@ -39,7 +39,7 @@ defmodule Corex.NumberInput do
   ```
 
   ```heex
-  <.form :let={f} for={@form} id={Corex.Form.get_form_id(@form)} action={@action} method="post">
+  <.form :let={f} for={@form} id={@form.id} action={@action} method="post">
     <.number_input field={f[:value]} class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>
@@ -76,7 +76,7 @@ defmodule Corex.NumberInput do
   ```
 
   ```heex
-  <.form for={@form} id={Corex.Form.get_form_id(@form)} phx-change="validate" phx-submit="save">
+  <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save">
     <.number_input field={@form[:value]} class="number-input">
       <:label>Quantity</:label>
       <:decrement_trigger><.heroicon name="hero-chevron-down" class="icon" /></:decrement_trigger>

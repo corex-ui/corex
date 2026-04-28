@@ -9,13 +9,13 @@ defmodule Corex.Integration.CodeGeneration.FullStackWithOptionsTest do
 
   describe "full stack with heavy options and locale" do
     @tag database: :postgresql
-    test "corex.new with --lang --mode --theme neo:uno:duo:leo --dev --live, then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
+    test "corex.new with --lang --mode --theme --dev --live, then corex.gen.live and corex.gen.html with rich attrs, compiles formats and tests pass" do
       with_installer_tmp("full_stack_locale", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "full_app", [
             "--lang",
             "--mode",
-            "--theme", "neo:uno:duo:leo",
+            "--theme",
             "--dev",
             "--live"
           ])

@@ -2336,6 +2336,19 @@ var ColorPicker = class extends Component {
 };
 
 // hooks/color-picker.ts
+function syncColorHiddenAndNotify(el, valueAsString) {
+  if (valueAsString === void 0) {
+    return;
+  }
+  const hidden = el.querySelector(
+    '[data-scope="color-picker"][data-part="hidden-input"]'
+  );
+  if (hidden) {
+    hidden.value = valueAsString;
+    hidden.dispatchEvent(new Event("input", { bubbles: true }));
+    hidden.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+}
 function readValueProps(el) {
   const defaultVal = getString(el, "defaultValue");
   return { defaultValue: defaultVal ? parse(defaultVal) : void 0 };
@@ -2361,6 +2374,7 @@ var ColorPickerHook = {
       dir: getDir(el),
       positioning: readPositioningOptions(el),
       onValueChange: (details) => {
+        syncColorHiddenAndNotify(el, details.valueAsString);
         notifyChange({
           el,
           canPushServer: canPush(),
@@ -2374,6 +2388,7 @@ var ColorPickerHook = {
         });
       },
       onValueChangeEnd: (details) => {
+        syncColorHiddenAndNotify(el, details.valueAsString);
         notifyChange({
           el,
           canPushServer: canPush(),

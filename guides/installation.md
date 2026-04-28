@@ -54,22 +54,6 @@ mix igniter.install corex
 
 See full options at `Mix.Tasks.Corex.Install`
 
-### How Igniter shows (or hides) the diff
-
-Corex’s installer is a normal [Igniter](https://hexdocs.pm/igniter) task. The behavior matches Igniter, not a custom TUI.
-
-- **Interactive diff + confirm:** run `mix igniter.install corex` **without** `--yes`. When there are proposed file changes, Igniter prints a diff and asks for confirmation.
-- **Non-interactive (CI, scripts, docs):** flags such as `--yes` and `--yes-to-deps` apply changes **without** printing the usual diff step first, then run deferred tasks (e.g. `mix deps.get`) and show **notices** at the end.
-- **Preview only:** use `--dry-run` to see the proposed diff without writing files.
-- **Maintainer / documentation bundle:** to generate a Markdown file that embeds per-section diffs (the “manual with fenced diff blocks” workflow), use Igniter’s **scribe** mode, for example:
-  - `mix igniter.install corex --scribe path/to/corex_install_manual.md`  
-  Exact option names can vary slightly with your Igniter version; see `mix help igniter.install` and the [writing generators](https://hexdocs.pm/igniter/writing-generators.html) guide. That path is for **publishing a portable install guide**, separate from the normal interactive `mix igniter.install` flow.
-
-### `assets/js/app.js` and `assets/css/app.css` patching
-
-- **[igniter_js](https://github.com/ash-project/igniter_js)** is an **optional** dependency of Corex. When it is available (it is in Corex’s own `mix.lock`), the installer patches `assets/js/app.js` using its JavaScript codemods (LiveSocket hooks and imports). If the module is not on the code path, the same behavior falls back to regular-expression patching. Set `COREX_PATCH_ASSETS_JS_REGEX=1` to force the regex path (for example when comparing output or debugging).
-- **[igniter_css](https://github.com/ash-project/igniter_css)** is **not** integrated. It depends on [Pythonx](https://hexdocs.pm/pythonx) for part of its pipeline, which would add a heavy runtime to every install. Corex continues to strip daisyUI regions and append design imports in [`Mix.Corex.Install.Design`](https://github.com/corex-ui/corex) using the existing string and regex approach. Revisit if IgniterCss exposes a small, Python-free API for the same transforms.
-
 ## Add your first component
 
 Add the following Accordion examples to your application.

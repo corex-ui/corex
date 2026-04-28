@@ -10,7 +10,7 @@ defmodule Corex.MCP do
   end
 
   @impl true
-  def call(%Plug.Conn{path_info: ["corex_dev" | rest]} = conn, config) do
+  def call(%Plug.Conn{path_info: ["corex" | rest]} = conn, config) do
     conn
     |> validate!()
     |> Plug.Conn.put_private(:corex_mcp_config, config)
@@ -61,20 +61,28 @@ defmodule Corex.MCP do
     for policy_directive <- policy_directives,
         policy_directive = String.trim(policy_directive),
         not String.starts_with?(policy_directive, "frame-ancestors") do
-      case String.split(policy_directive, " ", parts: 2) do
-        ["script-src", directives] ->
-          case :binary.match(directives, "'unsafe-eval'") do
-            :nomatch -> "script-src 'unsafe-eval' #{directives}"
-            _ -> "script-src #{directives}"
-          end
-
-        [policy, directives] ->
-          "#{policy} #{directives}"
-
-        [leftover] ->
-          leftover
-      end
+      rewrite_csp_directive(policy_directive)
     end
     |> Enum.join("; ")
+  end
+
+  defp rewrite_csp_directive(policy_directive) do
+    case String.split(policy_directive, " ", parts: 2) do
+      ["script-src", directives] ->
+        script_src_with_unsafe_eval(directives)
+
+      [policy, directives] ->
+        "#{policy} #{directives}"
+
+      [leftover] ->
+        leftover
+    end
+  end
+
+  defp script_src_with_unsafe_eval(directives) do
+    case :binary.match(directives, "'unsafe-eval'") do
+      :nomatch -> "script-src 'unsafe-eval' #{directives}"
+      _ -> "script-src #{directives}"
+    end
   end
 end

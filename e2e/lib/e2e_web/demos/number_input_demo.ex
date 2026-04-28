@@ -297,7 +297,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="flex flex-col gap-4 w-full max-w-lg"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
@@ -428,7 +428,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="flex flex-col gap-4 w-full max-w-lg"
     >
       <.number_input field={f[:value]} id="number-input-changeset-field" class="number-input">
@@ -458,7 +458,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
       for={@form}
       action={~p"/number-input/form"}
       method="post"
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       class="flex flex-col gap-4 w-full max-w-lg"
     >
       <.number_input field={f[:value]} id="number-input-validate-field" class="number-input">
@@ -509,7 +509,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
 
   def form_doc_live_changeset_heex do
     ~S"""
-    <.form for={@form} id={Corex.Form.get_form_id(@form)} phx-change="validate" phx-submit="save" class="flex flex-col gap-4 w-full max-w-lg">
+    <.form for={@form} id={@form.id} phx-change="validate" phx-submit="save" class="flex flex-col gap-4 w-full max-w-lg">
       <.number_input field={@form[:value]} id="number-input-live-changeset-field" class="number-input">
         <:label>Value</:label>
         <:decrement_trigger>
@@ -568,7 +568,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~S"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="flex flex-col gap-4 w-full max-w-lg"
@@ -631,7 +631,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate"
       phx-submit="save"
       class="flex flex-col gap-4 w-full max-w-lg"
@@ -664,7 +664,7 @@ defmodule E2eWeb.Demos.NumberInputDemo do
     ~H"""
     <.form
       for={@form}
-      id={Corex.Form.get_form_id(@form)}
+      id={@form.id}
       phx-change="validate_strict"
       phx-submit="save_strict"
       class="flex flex-col gap-4 w-full max-w-lg"

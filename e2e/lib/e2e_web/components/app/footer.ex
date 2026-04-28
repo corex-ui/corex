@@ -1,5 +1,8 @@
 defmodule E2eWeb.App.Footer do
   use E2eWeb, :html
+  import E2eWeb.LocaleSwitcher
+
+  attr :path, :string, default: ""
 
   def footer(assigns) do
     ~H"""
@@ -17,7 +20,8 @@ defmodule E2eWeb.App.Footer do
             Support the project <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
           </.navigate>
         </div>
-        <div class="layout__row gap-2">
+        <div class="layout__row gap-2 flex-wrap justify-center md:justify-end items-center max-w-full min-w-0">
+          <.locale_switcher path={@path} />
           <.navigate
             class="button button--sm button--circle"
             to="https://github.com/corex-ui/corex"
