@@ -1,8 +1,6 @@
 defmodule Corex.New.PhxWrapper do
   @moduledoc false
 
-  alias Corex.New.ManualInstall
-
   def ensure_phx_new! do
     unless Mix.Task.get("phx.new") do
       Mix.raise("""
@@ -39,16 +37,6 @@ defmodule Corex.New.PhxWrapper do
     end
   end
 
-  @doc false
-  def igniter_install_yes_argv do
-    if System.get_env("MIX_COREX_IGNITER_INTERACTIVE") == "1" and
-         is_nil(System.get_env("CI")) do
-      []
-    else
-      ["--yes", "--yes-to-deps"]
-    end
-  end
-
   def ensure_igniter_install! do
     unless Mix.Task.get("igniter.install") do
       Mix.raise("""
@@ -59,89 +47,138 @@ defmodule Corex.New.PhxWrapper do
     end
   end
 
-  @igniter_dep_version ~S("~> 0.6")
-
-  def phx_new_then_igniter_install!(
-        parent_dir,
-        install_dir,
-        phx_new_argv,
-        pkg,
-        igniter_extra,
-        new_with
-      )
-      when is_binary(parent_dir) and is_binary(install_dir) and is_list(phx_new_argv) and
-             is_binary(pkg) and is_list(igniter_extra) and is_binary(new_with) do
-    mix_cmd_stream!(phx_new_argv, parent_dir)
-    add_igniter_to_mix_exs!(install_dir)
-    inst = ["igniter.install", pkg] ++ igniter_trailing_for_new(new_with, igniter_extra)
-    mix_cmd_stream!(inst, install_dir)
-  end
-
-  def igniter_trailing_for_new(new_with, igniter_extra)
-      when is_binary(new_with) and is_list(igniter_extra) do
-    from_new = from_igniter_new(new_with)
-    igniter_install_yes_argv() ++ from_new ++ igniter_extra
-  end
-
-  defp from_igniter_new(new_with) when is_binary(new_with) do
-    ["--from-igniter-new", "--new-with", new_with]
-  end
-
-  def add_igniter_to_mix_exs!(dir) when is_binary(dir) do
-    path = Path.join(dir, "mix.exs")
-    contents = File.read!(path)
-
-    if String.contains?(contents, "{:igniter") do
-      :ok
+  @doc false
+  def igniter_install_yes_argv do
+    if interactive_yes?() do
+      []
     else
-      new =
-        if String.contains?(contents, "defp deps do\n []") do
-          String.replace(
-            contents,
-            "defp deps do\n []",
-            "defp deps do\n [{:igniter, #{@igniter_dep_version}, only: [:dev, :test]}]"
-          )
-        else
-          String.replace(
-            contents,
-            "defp deps do\n [\n",
-            "defp deps do\n [\n {:igniter, #{@igniter_dep_version}, only: [:dev, :test]},\n"
-          )
-        end
-
-      File.write!(path, new |> Code.format_string!())
+      ["--yes", "--yes-to-deps"]
     end
   end
 
-  def mix_cmd_stream!(args, cd) when is_list(args) and is_binary(cd) do
+  @doc """
+  Yes-flag argv to pass to `mix igniter.new`. `igniter.new` auto-forwards
+  `--yes-to-deps` to its inner `igniter.install`, so we only need `--yes`.
+  """
+  def igniter_new_yes_argv do
+    if interactive_yes?() do
+      []
+    else
+      ["--yes"]
+    end
+  end
+
+  defp interactive_yes? do
+    System.get_env("MIX_COREX_IGNITER_INTERACTIVE") == "1" and is_nil(System.get_env("CI"))
+  end
+
+  @doc """
+  Runs `mix igniter.new APP --install <pkg> --with <task> --with-args="<args>" ...`
+  through a PTY shim (when available) so spinners and ANSI cursor moves
+  render correctly. Falls back to a piped `Port.open` call on Windows or
+  when `script` is unavailable.
+  """
+  def igniter_new_install!(parent_dir, app_path, pkg, with_task, with_args_str, igniter_extra)
+      when is_binary(parent_dir) and is_binary(app_path) and is_binary(pkg) and
+             is_binary(with_task) and is_binary(with_args_str) and is_list(igniter_extra) do
+    argv = build_igniter_new_argv(app_path, pkg, with_task, with_args_str, igniter_extra)
+    pty_cmd_stream!(argv, parent_dir)
+  end
+
+  @doc false
+  def build_igniter_new_argv(app_path, pkg, with_task, with_args_str, igniter_extra)
+      when is_binary(app_path) and is_binary(pkg) and is_binary(with_task) and
+             is_binary(with_args_str) and is_list(igniter_extra) do
+    base = ["igniter.new", app_path, "--install", pkg, "--with", with_task]
+
+    base =
+      if with_args_str == "" do
+        base
+      else
+        base ++ ["--with-args", with_args_str]
+      end
+
+    base ++ igniter_new_yes_argv() ++ ["--no-installer-version-check"] ++ igniter_extra
+  end
+
+  @doc """
+  Joins phx.new flags into a single string suitable for `--with-args`.
+  Igniter.new uses `OptionParser.split/1` to parse this string, so plain
+  space-separated flags work; values containing whitespace, quotes, or
+  shell-significant characters are POSIX-quoted.
+  """
+  def build_with_args_string(args) when is_list(args), do: Enum.map_join(args, " ", &shell_quote/1)
+
+  @doc false
+  def pty_cmd_stream!(argv, cd) when is_list(argv) and is_binary(cd) do
+    cond do
+      System.find_executable("script") == nil ->
+        port_cmd_stream!(argv, cd)
+
+      :os.type() == {:unix, :darwin} ->
+        run_via_system_cmd!("script", ["-q", "/dev/null", "mix" | argv], cd, argv)
+
+      match?({:unix, _}, :os.type()) ->
+        cmd = shell_join(["mix" | argv])
+        run_via_system_cmd!("script", ["-qfec", cmd, "/dev/null"], cd, argv)
+
+      true ->
+        port_cmd_stream!(argv, cd)
+    end
+  end
+
+  defp run_via_system_cmd!(bin, args, cd, original_argv) do
+    {_, code} =
+      System.cmd(bin, args,
+        cd: cd,
+        into: IO.binstream(:stdio, :line),
+        stderr_to_stdout: true
+      )
+
+    if code == 0 do
+      :ok
+    else
+      Mix.raise("mix #{Enum.join(original_argv, " ")} failed (exit #{code})")
+    end
+  end
+
+  @doc false
+  def port_cmd_stream!(argv, cd) when is_list(argv) and is_binary(cd) do
     port =
       Port.open({:spawn_executable, System.find_executable("mix")}, [
         :binary,
         :exit_status,
         :use_stdio,
         {:cd, cd},
-        {:args, args}
+        {:args, argv}
       ])
 
-    output =
-      receive_port_output(port, args, [])
-      |> IO.iodata_to_binary()
-
-    output
+    receive_port_output(port, argv)
   end
 
-  defp receive_port_output(port, args, acc) do
+  defp receive_port_output(port, argv) do
     receive do
       {^port, {:data, data}} ->
-        Mix.shell().info(data)
-        receive_port_output(port, args, [acc, data])
+        IO.binwrite(data)
+        receive_port_output(port, argv)
 
       {^port, {:exit_status, 0}} ->
-        acc
+        :ok
 
       {^port, {:exit_status, code}} ->
-        output = IO.iodata_to_binary(acc)
-        Mix.raise("mix #{Enum.join(args, " ")} failed (exit #{code})\n\n#{output}")
+        Mix.raise("mix #{Enum.join(argv, " ")} failed (exit #{code})")
+    end
+  end
+
+  @doc false
+  def shell_join(args) when is_list(args), do: Enum.map_join(args, " ", &shell_quote/1)
+
+  @doc false
+  def shell_quote(arg) when is_binary(arg) do
+    if String.match?(arg, ~r/\A[A-Za-z0-9_\/.\-:=,@]+\z/) do
+      arg
+    else
+      "'" <> String.replace(arg, "'", "'\\''") <> "'"
     end
   end
 
@@ -272,57 +309,6 @@ defmodule Corex.New.PhxWrapper do
 
   defp normalize_mix_path(p), do: String.replace(p, "\\", "/")
 
-  def verify_corex_esbuild_after_igniter!(install_dir, igniter_output) do
-    if igniter_corex_install_failed?(igniter_output) do
-      Mix.raise("""
-      mix igniter.install finished but `corex.install` failed (see Igniter output below). Fix that before checking esbuild flags.
-
-      #{igniter_output}
-      #{ManualInstall.hint()}
-      """)
-    end
-
-    config_path = Path.join(install_dir, "config/config.exs")
-
-    if File.exists?(config_path) do
-      case File.read(config_path) do
-        {:ok, body} ->
-          if String.contains?(body, "config :esbuild") and
-               not String.contains?(body, "--format=esm") do
-            Mix.raise("""
-            mix igniter.install corex exited successfully but did not add esbuild ESM flags (`--format=esm`).
-
-            This usually means the `corex` Hex release in the new app is too old to ship `Mix.Tasks.Corex.Install` (the Igniter installer was missing from the package). Upgrade `corex` in the generated project to at least **0.1.0-beta.1**, then from the project directory run:
-
-                mix igniter.install corex --yes
-
-            If you are testing locally, regenerate with `mix corex.new ... --dev_corex ../corex` (or another path) or run `mix igniter.install corex@path:../corex --yes` from the project.
-
-            Igniter output (for reference):
-
-            #{igniter_output}
-            #{ManualInstall.hint()}
-            """)
-          end
-
-        _ ->
-          :ok
-      end
-    end
-
-    :ok
-  end
-
-  defp igniter_corex_install_failed?(out) when is_binary(out) do
-    plain = Regex.replace(~r/\e\[[0-9;]*m/, out, "")
-
-    String.contains?(plain, "`corex.install` x") or
-      (String.contains?(plain, "Issues:") and String.contains?(plain, "* Required") and
-         String.contains?(plain, "did not exist"))
-  end
-
-  defp igniter_corex_install_failed?(_), do: false
-
   def run_deps_get!(install_dir) do
     Mix.shell().info([
       :green,
@@ -331,7 +317,7 @@ defmodule Corex.New.PhxWrapper do
       "mix deps.get in #{install_dir}"
     ])
 
-    mix_cmd_stream!(["deps.get"], install_dir)
+    pty_cmd_stream!(["deps.get"], install_dir)
     :ok
   end
 
@@ -343,9 +329,7 @@ defmodule Corex.New.PhxWrapper do
       "mix format in #{install_dir}"
     ])
 
-    mix_cmd_stream!(["format"], install_dir)
+    pty_cmd_stream!(["format"], install_dir)
     :ok
   end
-
-  # This used to call a standalone Mix task, but patching is now handled by the installer.
 end

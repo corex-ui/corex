@@ -351,16 +351,14 @@ defmodule E2eWeb.Demos.DialogDemo do
     ~S"""
     import { animate } from "motion"
 
-    const reducedMotion = () =>
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-
     document.addEventListener("my-dialog-open-changed", (e) => {
       const { id, open } = e.detail
       const root = document.getElementById(id)
       if (!root) return
       const backdrop = root.querySelector('[data-scope="dialog"][data-part="backdrop"]')
       const content = root.querySelector('[data-scope="dialog"][data-part="content"]')
-      if (reducedMotion()) {
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      if (reduced) {
         if (backdrop) backdrop.style.opacity = open ? "" : "0"
         if (content) content.style.opacity = open ? "" : "0"
         return

@@ -273,11 +273,7 @@ defmodule E2eWeb.HomeLive do
           </div>
         </div>
       </section>
-      <section
-        class="home__features"
-        id="home-features"
-        aria-labelledby="home-features-heading"
-      >
+      <section class="home__features" aria-labelledby="home-features-heading">
         <div class="home__features__inner">
           <header class="home__features__head">
             <p class="home__features__eyebrow">{gettext("Why Corex")}</p>

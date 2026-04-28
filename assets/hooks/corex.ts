@@ -7,6 +7,18 @@ export type {
   DialogOpenChangedDetail,
 } from "../lib/event-details";
 
+export type { Animator, AnimateHeightOptions } from "../lib/custom-animation";
+
+export {
+  applyClosedHeight,
+  applyOpenHeight,
+  animateHeightOpen,
+  animateHeightClose,
+  initCustomCollections,
+  findAccordionContent,
+  findTreeBranch,
+} from "../lib/custom-animation";
+
 type HookModule = Record<string, Hook<object, HTMLElement> | undefined>;
 
 function createLazyHook(importFn: () => Promise<HookModule>, exportName: string): Hook {

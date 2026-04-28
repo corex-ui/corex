@@ -1559,59 +1559,45 @@ defmodule E2eWeb.Demos.AccordionDemo do
   def animation_custom_js do
     ~S"""
     import { animate } from "motion"
+    import {
+      initCustomCollections,
+      findAccordionContent,
+      animateHeightOpen,
+      animateHeightClose,
+    } from "corex"
 
     const reducedMotion = () =>
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-    function applyClosedHeight(el) {
-      el.style.opacity = "0"
-      el.style.height = "0px"
-      el.style.overflow = "hidden"
-    }
-
-    function applyOpenHeight(el) {
-      el.style.opacity = ""
-      el.style.height = ""
-      el.style.overflow = ""
-    }
-
-    function initClosedAccordionPanels() {
-      document
-        .querySelectorAll('[data-scope="accordion"][data-part="root"][data-animation="custom"]')
-        .forEach((rootEl) => {
-          rootEl
-            .querySelectorAll('[data-scope="accordion"][data-part="item-content"]')
-            .forEach((el) => {
-              if (el.dataset.state !== "open") applyClosedHeight(el)
-            })
-        })
-    }
-
-    document.addEventListener("DOMContentLoaded", initClosedAccordionPanels)
-    window.addEventListener("phx:page-loading-stop", initClosedAccordionPanels)
-
-    function findAccordionContent(root, value) {
-      return root.querySelector(
-        `[data-scope="accordion"][data-part="item"][data-value="${CSS.escape(value)}"] [data-part="item-content"]`,
-      )
-    }
+    document.addEventListener("DOMContentLoaded", initCustomCollections)
+    window.addEventListener("phx:page-loading-stop", initCustomCollections)
 
     document.addEventListener("my-accordion-changed", (e) => {
       const root = document.getElementById(e.detail.id)
       if (!root) return
-      const { added, removed } = e.detail
-      if (reducedMotion()) {
-        added.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyOpenHeight(el) })
-        removed.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyClosedHeight(el) })
-        return
-      }
-      added.forEach((v) => {
+      e.detail.added.forEach((v) => {
         const el = findAccordionContent(root, v)
-        if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+        if (!el) return
+        animateHeightOpen(el, { animator: animate, duration: 0.55, easing: [0.16, 1, 0.3, 1] })
+        if (!reducedMotion()) {
+          animate(
+            el,
+            { filter: ["blur(12px)", "blur(0px)"], scale: [0.96, 1] },
+            { duration: 0.6, easing: [0.16, 1, 0.3, 1] },
+          )
+        }
       })
-      removed.forEach((v) => {
+      e.detail.removed.forEach((v) => {
         const el = findAccordionContent(root, v)
-        if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+        if (!el) return
+        animateHeightClose(el, { animator: animate, duration: 0.32, easing: [0.7, 0, 0.84, 0] })
+        if (!reducedMotion()) {
+          animate(
+            el,
+            { filter: ["blur(0px)", "blur(10px)"], scale: [1, 0.97] },
+            { duration: 0.3, easing: "ease-in" },
+          )
+        }
       })
     })
     """

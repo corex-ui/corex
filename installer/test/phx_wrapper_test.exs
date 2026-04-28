@@ -20,14 +20,6 @@ defmodule Corex.New.PhxWrapperTest do
     assert PhxWrapper.corex_igniter_install_target(dev_corex: "..\\corex") == "corex@path:../corex"
   end
 
-  test "verify_corex_esbuild_after_igniter! raises when igniter marks corex.install failed" do
-    out = "compiling corex ✔\n`corex.install` x\n"
-
-    assert_raise Mix.Error, ~r/corex\.install/, fn ->
-      PhxWrapper.verify_corex_esbuild_after_igniter!("/nonexistent/install", out)
-    end
-  end
-
   test "IgniterArgv.to_argv passes --corex.no-mcp when mcp is false" do
     alias Corex.New.IgniterArgv
 
@@ -36,18 +28,6 @@ defmodule Corex.New.PhxWrapperTest do
            ]
 
     assert IgniterArgv.to_argv(mcp: true) == []
-  end
-
-  test "igniter_trailing_for_new appends Corex flags" do
-    assert PhxWrapper.igniter_trailing_for_new("phx-new", ["--corex.replace", "--corex.mode"]) == [
-             "--yes",
-             "--yes-to-deps",
-             "--from-igniter-new",
-             "--new-with",
-             "phx-new",
-             "--corex.replace",
-             "--corex.mode"
-           ]
   end
 
   test "phx_new_content_flags passes Phoenix content flags" do
@@ -95,9 +75,139 @@ defmodule Corex.New.PhxWrapperTest do
     end)
   end
 
+  test "igniter_new_yes_argv is just --yes by default (igniter.new auto-forwards --yes-to-deps)" do
+    in_fixture_env(fn ->
+      System.delete_env("MIX_COREX_IGNITER_INTERACTIVE")
+      System.delete_env("CI")
+      assert PhxWrapper.igniter_new_yes_argv() == ["--yes"]
+    end)
+  end
+
+  test "igniter_new_yes_argv omits --yes with MIX_COREX_IGNITER_INTERACTIVE=1 and no CI" do
+    in_fixture_env(fn ->
+      System.put_env("MIX_COREX_IGNITER_INTERACTIVE", "1")
+      System.delete_env("CI")
+      assert PhxWrapper.igniter_new_yes_argv() == []
+    end)
+  end
+
+  test "build_with_args_string joins phx flags with spaces and POSIX-quotes risky values" do
+    assert PhxWrapper.build_with_args_string([]) == ""
+
+    assert PhxWrapper.build_with_args_string(["--no-ecto", "--no-html"]) ==
+             "--no-ecto --no-html"
+
+    assert PhxWrapper.build_with_args_string(["--app", "my_app", "--module", "MyApp"]) ==
+             "--app my_app --module MyApp"
+
+    assert PhxWrapper.build_with_args_string(["--with spaces"]) == "'--with spaces'"
+
+    assert PhxWrapper.build_with_args_string(["it's"]) == "'it'\\''s'"
+  end
+
+  test "build_igniter_new_argv produces igniter.new command with --install/--with/--with-args" do
+    in_fixture_env(fn ->
+      System.delete_env("MIX_COREX_IGNITER_INTERACTIVE")
+      System.delete_env("CI")
+
+      argv =
+        PhxWrapper.build_igniter_new_argv(
+          "/tmp/my_app",
+          "corex",
+          "phx.new",
+          "--no-ecto --no-html",
+          ["--corex.lang", "--corex.replace"]
+        )
+
+      assert argv == [
+               "igniter.new",
+               "/tmp/my_app",
+               "--install",
+               "corex",
+               "--with",
+               "phx.new",
+               "--with-args",
+               "--no-ecto --no-html",
+               "--yes",
+               "--no-installer-version-check",
+               "--corex.lang",
+               "--corex.replace"
+             ]
+    end)
+  end
+
+  test "build_igniter_new_argv omits --with-args when empty" do
+    in_fixture_env(fn ->
+      System.delete_env("MIX_COREX_IGNITER_INTERACTIVE")
+      System.delete_env("CI")
+
+      argv =
+        PhxWrapper.build_igniter_new_argv(
+          "/tmp/my_app",
+          "corex@path:../corex",
+          "phx.new",
+          "",
+          []
+        )
+
+      assert argv == [
+               "igniter.new",
+               "/tmp/my_app",
+               "--install",
+               "corex@path:../corex",
+               "--with",
+               "phx.new",
+               "--yes",
+               "--no-installer-version-check"
+             ]
+    end)
+  end
+
+  test "build_igniter_new_argv accepts phx.new.web for --with" do
+    in_fixture_env(fn ->
+      System.delete_env("MIX_COREX_IGNITER_INTERACTIVE")
+      System.delete_env("CI")
+
+      argv =
+        PhxWrapper.build_igniter_new_argv(
+          "my_web",
+          "corex",
+          "phx.new.web",
+          "--no-ecto",
+          []
+        )
+
+      assert "--with" in argv
+      assert "phx.new.web" in argv
+      assert Enum.at(argv, Enum.find_index(argv, &(&1 == "--with")) + 1) == "phx.new.web"
+    end)
+  end
+
+  test "shell_quote leaves safe arguments untouched" do
+    assert PhxWrapper.shell_quote("--no-ecto") == "--no-ecto"
+    assert PhxWrapper.shell_quote("/tmp/foo_bar.baz") == "/tmp/foo_bar.baz"
+    assert PhxWrapper.shell_quote("corex@path:../corex") == "corex@path:../corex"
+  end
+
+  test "shell_quote single-quotes args containing whitespace or shell metacharacters" do
+    assert PhxWrapper.shell_quote("a b") == "'a b'"
+    assert PhxWrapper.shell_quote("a;b") == "'a;b'"
+    assert PhxWrapper.shell_quote("a$b") == "'a$b'"
+  end
+
+  test "shell_quote escapes embedded single quotes" do
+    assert PhxWrapper.shell_quote("it's") == "'it'\\''s'"
+  end
+
+  test "shell_join joins arguments with safe quoting" do
+    assert PhxWrapper.shell_join(["mix", "igniter.new", "/tmp/x", "--with-args", "--no-ecto --no-html"]) ==
+             "mix igniter.new /tmp/x --with-args '--no-ecto --no-html'"
+  end
+
   defp in_fixture_env(fun) do
     a = System.get_env("MIX_COREX_IGNITER_INTERACTIVE")
     b = System.get_env("CI")
+
     on_exit(fn ->
       restore_env("MIX_COREX_IGNITER_INTERACTIVE", a)
       restore_env("CI", b)
@@ -108,16 +218,4 @@ defmodule Corex.New.PhxWrapperTest do
 
   defp restore_env(key, nil), do: System.delete_env(key)
   defp restore_env(key, v), do: System.put_env(key, v)
-
-  test "verify_corex_esbuild_after_igniter! raises on Igniter Issues block for missing file" do
-    out = """
-    Issues:
-
-    * Required lib/foo but it did not exist
-    """
-
-    assert_raise Mix.Error, ~r/corex\.install/, fn ->
-      PhxWrapper.verify_corex_esbuild_after_igniter!("/nonexistent/install", out)
-    end
-  end
 end

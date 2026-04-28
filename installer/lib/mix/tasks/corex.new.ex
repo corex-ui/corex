@@ -14,7 +14,9 @@ defmodule Mix.Tasks.Corex.New do
 
   ## 1) Phoenix (forwarded to `phx.new` or `phx.new.web` only)
 
-  These match **`mix help phx.new`** / **`mix help phx.new.web`**: for example **`--no-ecto`**, **`--no-version-check`**, **`--umbrella`**, **`--database sqlite3`**, and **`--dev`** (uses Phoenix from a sibling clone — needed when developing Phoenix locally).
+  These match **`mix help phx.new`**: for example **`--no-ecto`**, **`--no-version-check`**, **`--database sqlite3`**, and **`--dev`** (uses Phoenix from a sibling clone — needed when developing Phoenix locally).
+
+  Note: **`--umbrella`** is **not supported** by `corex.new` because the underlying `mix igniter.new` task explicitly rejects umbrella generation. Generate the umbrella manually with `mix phx.new --umbrella …`, then `cd` into the web app and run `mix igniter.install corex`.
 
   Notes:
 
@@ -42,7 +44,6 @@ defmodule Mix.Tasks.Corex.New do
 
       mix corex.new hello_world
       mix corex.new my_app --mode --theme --lang
-      mix corex.new hello --umbrella
       mix corex.new my_app --dev --dev_corex ../corex
   """
   use Mix.Task
@@ -138,6 +139,20 @@ defmodule Mix.Tasks.Corex.New do
   end
 
   defp run_with_path(base_path, opts) do
+    if opts[:umbrella] do
+      Mix.raise("""
+      `mix corex.new --umbrella` is not supported because `igniter.new` cannot
+      generate umbrella projects (it always exits with a hard error on
+      `--umbrella`).
+
+      Generate the umbrella manually, then install Corex into the web app:
+
+          mix phx.new --umbrella #{base_path}
+          cd #{base_path}_umbrella/apps/<app>_web
+          mix igniter.install corex
+      """)
+    end
+
     expanded = Path.expand(base_path)
     phx_root = PhxWrapper.phx_project_path(expanded, opts)
     app = infer_app_name(expanded, opts)
@@ -156,29 +171,29 @@ defmodule Mix.Tasks.Corex.New do
     igniter_extra = opts |> then(&Flags.igniter_install_opts/1) |> IgniterArgv.to_argv()
     PhxWrapper.ensure_igniter_new!()
 
-    phx_opts =
-      opts
-      |> Flags.phx_new_cli_opts()
-      |> Keyword.put(:install, false)
+    phx_opts = Flags.phx_new_cli_opts(opts)
 
     pkg = PhxWrapper.corex_igniter_install_target(opts)
+
+    with_args =
+      phx_opts
+      |> PhxWrapper.build_phx_new_with_args()
+      |> PhxWrapper.build_with_args_string()
 
     Mix.shell().info([
       :green,
       "* running ",
       :reset,
-      "mix phx.new in #{Path.dirname(phx_root)} (then igniter: #{pkg})"
+      "mix igniter.new --install #{pkg} --with phx.new in #{Path.dirname(phx_root)}"
     ])
 
-    phx_argv = ["phx.new"] ++ PhxWrapper.build_phx_new_argv(phx_opts, expanded)
-
-    PhxWrapper.phx_new_then_igniter_install!(
+    PhxWrapper.igniter_new_install!(
       Path.dirname(phx_root),
-      install_dir,
-      phx_argv,
+      expanded,
       pkg,
-      igniter_extra,
-      "phx-new"
+      "phx.new",
+      with_args,
+      igniter_extra
     )
 
     PhxWrapper.run_format!(install_dir)

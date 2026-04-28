@@ -1,91 +1,73 @@
 import { animate } from "motion"
+import {
+  initCustomCollections,
+  findAccordionContent,
+  findTreeBranch,
+  animateHeightOpen,
+  animateHeightClose,
+} from "../../../"
 
 const reducedMotion = () =>
   window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
-function applyClosedHeight(el) {
-  el.style.opacity = "0"
-  el.style.height = "0px"
-  el.style.overflow = "hidden"
-}
-
-function applyOpenHeight(el) {
-  el.style.opacity = ""
-  el.style.height = ""
-  el.style.overflow = ""
-}
-
-function initCustomCollections() {
-  document
-    .querySelectorAll('[data-scope="accordion"][data-part="root"][data-animation="custom"]')
-    .forEach((rootEl) => {
-      rootEl
-        .querySelectorAll('[data-scope="accordion"][data-part="item-content"]')
-        .forEach((el) => {
-          if (el.dataset.state !== "open") applyClosedHeight(el)
-        })
-    })
-  document
-    .querySelectorAll('[data-scope="tree-view"][data-part="root"][data-animation="custom"]')
-    .forEach((rootEl) => {
-      rootEl
-        .querySelectorAll('[data-scope="tree-view"][data-part="branch-content"]')
-        .forEach((el) => {
-          if (el.dataset.state !== "open") applyClosedHeight(el)
-        })
-    })
-}
-
 document.addEventListener("DOMContentLoaded", initCustomCollections)
 window.addEventListener("phx:page-loading-stop", initCustomCollections)
-
-function findAccordionContent(root, value) {
-  return root.querySelector(
-    `[data-scope="accordion"][data-part="item"][data-value="${CSS.escape(value)}"] [data-part="item-content"]`,
-  )
-}
-
-function findTreeBranch(root, value) {
-  return root.querySelector(
-    `[data-scope="tree-view"][data-part="branch-content"][data-value="${CSS.escape(value)}"]`,
-  )
-}
 
 document.addEventListener("my-accordion-changed", (e) => {
   const root = document.getElementById(e.detail.id)
   if (!root) return
-  const { added, removed } = e.detail
-  if (reducedMotion()) {
-    added.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyOpenHeight(el) })
-    removed.forEach((v) => { const el = findAccordionContent(root, v); if (el) applyClosedHeight(el) })
-    return
-  }
-  added.forEach((v) => {
+  e.detail.added.forEach((v) => {
     const el = findAccordionContent(root, v)
-    if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+    if (!el) return
+    animateHeightOpen(el, { animator: animate, duration: 0.55, easing: [0.16, 1, 0.3, 1] })
+    if (!reducedMotion()) {
+      animate(
+        el,
+        { filter: ["blur(12px)", "blur(0px)"], scale: [0.96, 1] },
+        { duration: 0.6, easing: [0.16, 1, 0.3, 1] },
+      )
+    }
   })
-  removed.forEach((v) => {
+  e.detail.removed.forEach((v) => {
     const el = findAccordionContent(root, v)
-    if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+    if (!el) return
+    animateHeightClose(el, { animator: animate, duration: 0.32, easing: [0.7, 0, 0.84, 0] })
+    if (!reducedMotion()) {
+      animate(
+        el,
+        { filter: ["blur(0px)", "blur(10px)"], scale: [1, 0.97] },
+        { duration: 0.3, easing: "ease-in" },
+      )
+    }
   })
 })
 
 document.addEventListener("my-tree-view-changed", (e) => {
   const root = document.getElementById(e.detail.id)
   if (!root) return
-  const { added, removed } = e.detail
-  if (reducedMotion()) {
-    added.forEach((v) => { const el = findTreeBranch(root, v); if (el) applyOpenHeight(el) })
-    removed.forEach((v) => { const el = findTreeBranch(root, v); if (el) applyClosedHeight(el) })
-    return
-  }
-  added.forEach((v) => {
+  e.detail.added.forEach((v) => {
     const el = findTreeBranch(root, v)
-    if (el) animate(el, { height: ["0px", "auto"], opacity: [0, 1] }, { duration: 0.3, easing: "ease-out" })
+    if (!el) return
+    animateHeightOpen(el, { animator: animate, duration: 0.5, easing: [0.16, 1, 0.3, 1] })
+    if (!reducedMotion()) {
+      animate(
+        el,
+        { filter: ["blur(8px)", "blur(0px)"], y: [-10, 0] },
+        { duration: 0.55, easing: [0.16, 1, 0.3, 1] },
+      )
+    }
   })
-  removed.forEach((v) => {
+  e.detail.removed.forEach((v) => {
     const el = findTreeBranch(root, v)
-    if (el) animate(el, { height: ["auto", "0px"], opacity: [1, 0] }, { duration: 0.3, easing: "ease-out" })
+    if (!el) return
+    animateHeightClose(el, { animator: animate, duration: 0.28, easing: "ease-in" })
+    if (!reducedMotion()) {
+      animate(
+        el,
+        { filter: ["blur(0px)", "blur(8px)"], y: [0, -8] },
+        { duration: 0.26, easing: "ease-in" },
+      )
+    }
   })
 })
 

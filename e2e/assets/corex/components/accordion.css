@@ -110,6 +110,13 @@
     overflow: hidden;
   }
 
+  .accordion[data-animation="js"] [data-scope="accordion"][data-part="item-content"][data-state="closed"],
+  .accordion[data-animation="custom"] [data-scope="accordion"][data-part="item-content"][data-state="closed"] {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+  }
+
   .accordion [data-scope="accordion"][data-part="item-content"][data-orientation="horizontal"] {
     grid-row: 2;
     display: flex;

@@ -94,28 +94,30 @@ defmodule Mix.Tasks.Corex.New.Web do
 
     pkg = PhxWrapper.corex_igniter_install_target(opts)
 
+    phx_opts =
+      opts
+      |> Flags.phx_new_cli_opts()
+      |> Keyword.put(:dev, false)
+
+    with_args =
+      phx_opts
+      |> PhxWrapper.build_phx_new_web_with_args()
+      |> PhxWrapper.build_with_args_string()
+
     Mix.shell().info([
       :green,
       "* running ",
       :reset,
-      "mix phx.new.web in #{Path.dirname(install_dir)} (then igniter: #{pkg})"
+      "mix igniter.new --install #{pkg} --with phx.new.web in #{Path.dirname(install_dir)}"
     ])
 
-    phx_opts =
-      opts
-      |> Flags.phx_new_cli_opts()
-      |> Keyword.put(:install, false)
-      |> Keyword.put(:dev, false)
-
-    phx_argv = ["phx.new.web"] ++ PhxWrapper.build_phx_new_web_argv(phx_opts, app_name)
-
-    PhxWrapper.phx_new_then_igniter_install!(
+    PhxWrapper.igniter_new_install!(
       Path.dirname(install_dir),
-      install_dir,
-      phx_argv,
+      app_name,
       pkg,
-      igniter_extra,
-      "phx-new"
+      "phx.new.web",
+      with_args,
+      igniter_extra
     )
 
     PhxWrapper.run_format!(install_dir)
