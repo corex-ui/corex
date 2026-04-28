@@ -96,15 +96,17 @@ defmodule E2eWeb.Model do
       end
 
       def assert_toast(session, substring) when is_binary(substring) do
-        assert_has(
-          session,
+        session
+        |> assert_has(css("#layout-toast[data-ready]", visible: :any))
+        |> assert_has(
           css("#layout-toast [data-scope='toast'][data-part='root']", text: substring)
         )
       end
 
       def refute_toast(session, substring) when is_binary(substring) do
-        assert_has(
-          session,
+        session
+        |> assert_has(css("#layout-toast[data-ready]", visible: :any))
+        |> assert_has(
           css("#layout-toast [data-scope='toast'][data-part='root']",
             count: 0,
             text: substring

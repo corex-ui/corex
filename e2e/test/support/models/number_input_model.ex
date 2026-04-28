@@ -30,45 +30,41 @@ defmodule E2eWeb.NumberInputModel do
         :static -> "number-input-changeset-form"
       end
 
-    q =
-      css(
-        ~s(##{form_id} input[data-scope="number-input"][data-part="input"]),
-        visible: :any
-      )
+    visible_q =
+      css(~s|##{form_id} input[data-scope="number-input"][data-part="input"]|)
 
-    case mode do
-      :live ->
-        session
-        |> click(q)
-        |> send_keys(q, [:control, "a"])
-        |> send_keys(q, value)
+    ready_q = css(~s|##{form_id} [phx-hook="NumberInput"]:not([data-loading])|, visible: :any)
 
-      :static ->
-        enc_form = Jason.encode!(form_id)
-        enc_val = Jason.encode!(value)
+    session
+    |> assert_has(ready_q)
+    |> click(visible_q)
+    |> send_keys(visible_q, [:control, "a"])
+    |> send_keys(visible_q, value)
+    |> assert_value_synced(form_id, value)
+  end
 
-        script = """
-        return (function () {
-          var form = document.getElementById(#{enc_form});
-          if (!form) return "no-form";
-          var hidden = form.querySelector('input[data-scope="number-input"][data-part="value-input"]');
-          var visible = form.querySelector('input[data-scope="number-input"][data-part="input"]');
-          if (hidden) {
-            hidden.value = #{enc_val};
-            hidden.dispatchEvent(new Event("input", { bubbles: true }));
-            hidden.dispatchEvent(new Event("change", { bubbles: true }));
-          }
-          if (visible) {
-            visible.value = #{enc_val};
-            visible.dispatchEvent(new InputEvent("input", { bubbles: true }));
-          }
-          return hidden ? "ok" : "no-hidden";
-        })();
-        """
+  defp assert_value_synced(session, form_id, expected) do
+    enc_form = Jason.encode!(form_id)
+    enc_val = Jason.encode!(expected)
 
-        _ = Wallaby.Browser.execute_script(session, script, [], fn r -> r end)
-        session
-    end
+    script = """
+    return (function () {
+      var form = document.getElementById(#{enc_form});
+      if (!form) throw new Error("assert_value_synced: form not found: " + #{enc_form});
+      var hidden = form.querySelector('input[data-scope="number-input"][data-part="value-input"]');
+      if (!hidden) throw new Error("assert_value_synced: hidden value-input not found in #" + #{enc_form});
+      var fd = new FormData(form);
+      var name = hidden.getAttribute("name");
+      var sent = String(fd.get(name));
+      var want = String(#{enc_val});
+      if (sent !== want && sent !== want + ".0") {
+        throw new Error("assert_value_synced: form would submit " + JSON.stringify(sent) + " for " + name + ", expected " + want);
+      }
+      return sent;
+    })();
+    """
+
+    Wallaby.Browser.execute_script(session, script)
   end
 
   def submit_form(session, mode \\ :static) do
