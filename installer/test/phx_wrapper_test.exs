@@ -9,15 +9,19 @@ defmodule Corex.New.PhxWrapperTest do
 
   test "corex_igniter_install_target with --dev_corex path" do
     assert PhxWrapper.corex_igniter_install_target(dev_corex: "../corex") == "corex@path:../corex"
-    assert PhxWrapper.corex_igniter_install_target(dev_corex: "../../corex") == "corex@path:../../corex"
+
+    assert PhxWrapper.corex_igniter_install_target(dev_corex: "../../corex") ==
+             "corex@path:../../corex"
   end
 
   test "corex_igniter_install_target trims dev_corex path" do
-    assert PhxWrapper.corex_igniter_install_target(dev_corex: "  ../corex  ") == "corex@path:../corex"
+    assert PhxWrapper.corex_igniter_install_target(dev_corex: "  ../corex  ") ==
+             "corex@path:../corex"
   end
 
   test "corex_igniter_install_target normalizes backslashes in path" do
-    assert PhxWrapper.corex_igniter_install_target(dev_corex: "..\\corex") == "corex@path:../corex"
+    assert PhxWrapper.corex_igniter_install_target(dev_corex: "..\\corex") ==
+             "corex@path:../corex"
   end
 
   test "IgniterArgv.to_argv passes --corex.no-mcp when mcp is false" do
@@ -55,7 +59,7 @@ defmodule Corex.New.PhxWrapperTest do
     in_fixture_env(fn ->
       System.delete_env("MIX_COREX_IGNITER_INTERACTIVE")
       System.delete_env("CI")
-      assert PhxWrapper.igniter_install_yes_argv() == ["--yes", "--yes-to-deps"]
+      assert PhxWrapper.igniter_install_yes_argv() == ["--yes"]
     end)
   end
 
@@ -71,7 +75,7 @@ defmodule Corex.New.PhxWrapperTest do
     in_fixture_env(fn ->
       System.put_env("MIX_COREX_IGNITER_INTERACTIVE", "1")
       System.put_env("CI", "1")
-      assert PhxWrapper.igniter_install_yes_argv() == ["--yes", "--yes-to-deps"]
+      assert PhxWrapper.igniter_install_yes_argv() == ["--yes"]
     end)
   end
 
@@ -200,7 +204,13 @@ defmodule Corex.New.PhxWrapperTest do
   end
 
   test "shell_join joins arguments with safe quoting" do
-    assert PhxWrapper.shell_join(["mix", "igniter.new", "/tmp/x", "--with-args", "--no-ecto --no-html"]) ==
+    assert PhxWrapper.shell_join([
+             "mix",
+             "igniter.new",
+             "/tmp/x",
+             "--with-args",
+             "--no-ecto --no-html"
+           ]) ==
              "mix igniter.new /tmp/x --with-args '--no-ecto --no-html'"
   end
 

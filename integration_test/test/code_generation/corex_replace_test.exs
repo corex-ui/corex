@@ -27,7 +27,6 @@ defmodule Corex.Integration.CodeGeneration.CorexReplaceTest do
             "igniter.install",
             "corex",
             "--yes",
-            "--yes-to-deps",
             "--replace",
             "--no-design"
           ],

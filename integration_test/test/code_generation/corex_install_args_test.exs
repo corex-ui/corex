@@ -11,7 +11,6 @@ defmodule Corex.Integration.CodeGeneration.CorexInstallArgsTest do
             "igniter.install",
             "corex",
             "--yes",
-            "--yes-to-deps",
             "--mode",
             "--theme",
             "--lang",

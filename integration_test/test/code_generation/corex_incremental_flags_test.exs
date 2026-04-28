@@ -7,14 +7,14 @@ defmodule Corex.Integration.CodeGeneration.CorexIncrementalFlagsTest do
         {incremental_root, _} = generate_corex_app(tmp_dir, "my_app")
 
         mix_run!(
-          ["igniter.install", "corex", "--yes", "--yes-to-deps", "--lang"],
+          ["igniter.install", "corex", "--yes", "--lang"],
           incremental_root
         )
 
         assert_corex_lang_path_plug_invariants!(incremental_root, "my_app")
 
         mix_run!(
-          ["igniter.install", "corex", "--yes", "--yes-to-deps", "--mode", "--theme"],
+          ["igniter.install", "corex", "--yes", "--mode", "--theme"],
           incremental_root
         )
 

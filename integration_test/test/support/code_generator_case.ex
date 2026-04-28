@@ -93,7 +93,6 @@ defmodule Corex.Integration.CodeGeneratorCase do
           "igniter.new",
           app_path,
           "--yes",
-          "--yes-to-deps",
           "--with",
           "phx.new",
           "--with-args=--no-install --no-version-check"
@@ -312,6 +311,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     mix_files =
       if "--umbrella" in opts do
         umbrella_root = Path.join(app_root_path, "apps")
+
         for app <- File.ls!(umbrella_root),
             mix_exs = Path.join([umbrella_root, app, "mix.exs"]),
             File.exists?(mix_exs),
@@ -324,6 +324,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     for mix_exs <- mix_files do
       content = File.read!(mix_exs)
+
       if content =~ corex_hex_re do
         rel_path = if "--umbrella" in opts, do: rel_path_child, else: rel_path_root
         corex_path_dep = ~s[{:corex, path: #{inspect(rel_path)}, override: true}]
@@ -341,6 +342,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
     if umbrella_mix && File.exists?(umbrella_mix) do
       content = File.read!(umbrella_mix)
+
       if content =~ corex_hex_re do
         corex_path_dep = ~s[{:corex, path: #{inspect(rel_path_root)}, override: true}]
         new_content = String.replace(content, corex_hex_re, corex_path_dep)
@@ -453,6 +455,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     app_css = Path.join([base, "assets", "css", "app.css"])
     assert_file(app_css, ~r{/\* corex:design-imports \*/})
     assert_file(app_css, ~r{\.\./corex/main\.css})
+
     assert_file(app_css, fn c ->
       refute c =~ ~r/@plugin\s+["'][^"']*vendor\/daisyui/
     end)
@@ -461,6 +464,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_dir(design_dir)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+
     assert_file(home, fn c ->
       assert c =~ ~r/<Layouts\.app[\s\n]/
       refute c =~ "Layouts.flash_group"
@@ -544,6 +548,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     assert_file(app_css, fn c -> refute c =~ "corex:design-imports" end)
 
     home = Path.join([base, "lib", web, "controllers", "page_html", "home.html.heex"])
+
     assert_file(home, fn c ->
       assert c =~ ~r/<Layouts\.app[\s\n]/
       refute c =~ "Layouts.flash_group"
@@ -617,7 +622,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     before = snapshot_app_tree(app_path)
 
     args =
-      ["igniter.install", "corex", "--yes", "--yes-to-deps"] ++ install_args
+      ["igniter.install", "corex", "--yes"] ++ install_args
 
     mix_run!(args, app_path)
 

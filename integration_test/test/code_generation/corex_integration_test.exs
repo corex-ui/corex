@@ -171,7 +171,8 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
       with_installer_tmp("corex_mode_theme_lang_sqlite3", fn tmp_dir ->
         {app_root_path, _} =
           generate_corex_app(tmp_dir, "phx_blog", [
-            "--database", "sqlite3",
+            "--database",
+            "sqlite3",
             "--mode",
             "--theme",
             "--lang"
@@ -234,7 +235,9 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         :inets.start()
         {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
         assert response.status_code == 200
-        assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or response.body =~ "theme"
+
+        assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
+                 response.body =~ "theme"
       end)
     end
   end
@@ -245,9 +248,10 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         {app_root_path, _} = generate_plain_phoenix_app(tmp_dir, "my_app")
 
         mix_run!(
-          ["igniter.install", "corex", "--yes", "--yes-to-deps", "--no-design"],
+          ["igniter.install", "corex", "--yes", "--no-design"],
           app_root_path
         )
+
         assert_no_compilation_warnings(app_root_path)
 
         port = run_phx_server(app_root_path)
@@ -274,7 +278,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
             "igniter.install",
             "corex",
             "--yes",
-            "--yes-to-deps",
             "--replace",
             "--no-design"
           ],
@@ -306,7 +309,6 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
             "igniter.install",
             corex_target,
             "--yes",
-            "--yes-to-deps",
             "--replace"
           ],
           app_root_path
@@ -324,12 +326,15 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           refute content =~ "daisyui-theme"
         end)
 
-        assert_file(Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"), fn content ->
-          assert content =~ ~r/<html\b[^>]*\bdata-theme=/
-          assert content =~ ~r/<html\b[^>]*\bdata-mode=/
-          refute content =~ ~r/window\.addEventListener\(\s*[\"']phx:set-theme/
-          refute content =~ "dataset.phxTheme"
-        end)
+        assert_file(
+          Path.join(app_root_path, "lib/my_app_web/components/layouts/root.html.heex"),
+          fn content ->
+            assert content =~ ~r/<html\b[^>]*\bdata-theme=/
+            assert content =~ ~r/<html\b[^>]*\bdata-mode=/
+            refute content =~ ~r/window\.addEventListener\(\s*[\"']phx:set-theme/
+            refute content =~ "dataset.phxTheme"
+          end
+        )
       end)
     end
   end
@@ -346,7 +351,9 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         :inets.start()
         {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
         assert response.status_code == 200
-        assert response.body =~ "ModeLive" or response.body =~ "data-mode" or response.body =~ "mode"
+
+        assert response.body =~ "ModeLive" or response.body =~ "data-mode" or
+                 response.body =~ "mode"
       end)
     end
   end
@@ -363,6 +370,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         )
 
         assert_file(Path.join(app_root_path, "apps/extra_web/mix.exs"))
+
         assert_file(Path.join(app_root_path, "config/config.exs"), fn file ->
           assert file =~ "extra_web" or file =~ "import_config"
         end)
@@ -390,5 +398,4 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
       end)
     end
   end
-
 end
