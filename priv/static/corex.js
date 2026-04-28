@@ -35952,6 +35952,7 @@ var Corex = (() => {
             offsets: parseOffsets(getString(el, "offset")),
             pauseOnPageIdle: getBoolean(el, "pauseOnPageIdle")
           });
+          el.removeAttribute("data-loading");
           const store2 = getToastStore(this.groupId);
           const flashInfo = el.getAttribute("data-flash-info");
           const flashInfoTitle = el.getAttribute("data-flash-info-title");
