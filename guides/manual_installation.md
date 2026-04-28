@@ -136,13 +136,13 @@ Fix any Esbuild or module-resolution errors before continuing. If you see `error
 
 ## 7. Optional: Corex Design
 
-The Corex Design system ships generated CSS under `assets/corex` (themes, typography, layout, and per-component stylesheets). Generate the assets with:
+The Corex Design system ships generated CSS under `assets/corex` (themes, typography, layout, and per-component stylesheets). Install the assets with:
 
 ```bash
-mix corex.design
+mix igniter.install corex --design
 ```
 
-Re-run with `--force` to refresh existing files. See `mix help corex.design` for the full set of options (including `--designex` for the bundled `:designex` toolchain).
+Pass `--designex` to also copy the design token sources (`assets/corex/design/`). The copy is additive — pre-existing files are never overwritten. To refresh design assets to a newer Corex version, remove `assets/corex/` and re-run `mix igniter.install corex --design [--designex]`.
 
 Then import the design layers from `assets/css/app.css`. The minimum is `main.css`, a theme, and the components you use:
 
@@ -156,7 +156,7 @@ Then import the design layers from `assets/css/app.css`. The minimum is `main.cs
 /* corex:design-imports */
 ```
 
-Keep the `/* corex:design-imports */` markers — `mix corex.design` and `mix igniter.install corex` use them as anchors when they need to extend or replace this block later.
+Keep the `/* corex:design-imports */` markers — `mix igniter.install corex` uses them as anchors when it needs to extend or replace this block later.
 
 If your `app.css` still imports the stock **daisyUI** plugin from `phx.new`, remove or isolate it. Mixing daisyUI tokens with Corex Design tokens leads to duplicated reset rules and conflicting CSS variables.
 

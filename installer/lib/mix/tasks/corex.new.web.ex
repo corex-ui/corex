@@ -49,8 +49,7 @@ defmodule Mix.Tasks.Corex.New.Web do
     tailwind: :boolean,
     gettext: :boolean,
     html: :boolean,
-    mcp: :boolean,
-    replace: :boolean
+    mcp: :boolean
   ]
 
   @impl true
@@ -63,7 +62,6 @@ defmodule Mix.Tasks.Corex.New.Web do
       opts
       |> Keyword.put_new(:lang, false)
       |> Keyword.put_new(:mcp, true)
-      |> Keyword.put_new(:replace, true)
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:design, true)
 

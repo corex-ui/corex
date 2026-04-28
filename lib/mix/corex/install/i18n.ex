@@ -44,7 +44,6 @@ defmodule Mix.Corex.Install.I18n do
 
     igniter
     |> insert_path_attr_into_layouts_app(layouts_mod)
-    |> insert_language_switch_in_app_header(web_mod)
     |> ensure_path_in_page_templates(web_mod)
   end
 
@@ -107,17 +106,6 @@ defmodule Mix.Corex.Install.I18n do
   defp attr_or_doc_like?({:@, _, [{name, _, _}]}) when name in [:doc, :spec, :impl], do: true
   defp attr_or_doc_like?(_), do: false
 
-  defp insert_language_switch_in_app_header(igniter, web_mod) do
-    layouts_path =
-      Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts.ex"])
-
-    Igniter.update_file(igniter, layouts_path, fn source ->
-      c = source.content
-      c = maybe_insert_language_switch_in_app_header(c)
-      %{source | content: c}
-    end)
-  end
-
   def maybe_patch_web_verified_routes(igniter, _web_mod, false), do: igniter
 
   def maybe_patch_web_verified_routes(igniter, web_mod, true) do
@@ -170,11 +158,6 @@ defmodule Mix.Corex.Install.I18n do
     |> Igniter.add_notice(
       "A `Plugs.Path` is added in the browser pipeline (after Localize) so `assigns[:path]` is " <>
         "the request path with an optional `/:locale` prefix stripped, matching the Corex e2e setup."
-    )
-    |> Igniter.add_notice(
-      "If the stock `def app` layout has no `theme_toggle` component, the installer does not " <>
-        "insert the language switch there automatically; add `<.language_switch path={@path} />` " <>
-        "in the header for pages that use `Layouts.app` without `--replace`."
     )
   end
 
@@ -244,25 +227,12 @@ defmodule Mix.Corex.Install.I18n do
   defp ensure_path_in_page_templates(igniter, web_mod) do
     w = Web.web_ex_dir(igniter, web_mod)
     home = Path.join([w, "controllers", "page_html", "home.html.heex"])
-    corex_legacy = Path.join([w, "controllers", "corex_page", "index.html.heex"])
-    corex_page = Path.join([w, "controllers", "page_html", "corex.html.heex"])
 
-    igniter
-    |> then(fn i ->
-      if Igniter.exists?(i, home),
-        do: Igniter.update_file(i, home, &append_path_to_layouts_app/1),
-        else: i
-    end)
-    |> then(fn i ->
-      if Igniter.exists?(i, corex_legacy),
-        do: Igniter.update_file(i, corex_legacy, &append_path_to_layouts_corex/1),
-        else: i
-    end)
-    |> then(fn i ->
-      if Igniter.exists?(i, corex_page),
-        do: Igniter.update_file(i, corex_page, &append_path_to_layouts_corex/1),
-        else: i
-    end)
+    if Igniter.exists?(igniter, home) do
+      Igniter.update_file(igniter, home, &append_path_to_layouts_app/1)
+    else
+      igniter
+    end
   end
 
   defp append_path_to_layouts_app(source) do
@@ -275,47 +245,11 @@ defmodule Mix.Corex.Install.I18n do
         String.replace(
           c,
           ~r/<Layouts\.app(\s)/m,
-          "<Layouts.app\\1path={assigns[:path]} ",
+          "<Layouts.app\\1path={@path} ",
           global: false
         )
 
       %{source | content: c}
-    end
-  end
-
-  defp append_path_to_layouts_corex(source) do
-    c = source.content
-
-    if c =~ ~r/<Layouts\.corex\b/ do
-      c2 =
-        if c =~ ~r/<Layouts\.corex[^>]*\bpath=[^>]+>/m do
-          c
-        else
-          String.replace(
-            c,
-            ~r/<Layouts\.corex(\s)/m,
-            "<Layouts.corex\\1path={assigns[:path]} ",
-            global: false
-          )
-        end
-
-      %{source | content: c2}
-    else
-      source
-    end
-  end
-
-  defp maybe_insert_language_switch_in_app_header(content) do
-    if String.contains?(content, "language_switch") or
-         not String.contains?(content, "theme_toggle") do
-      content
-    else
-      String.replace(
-        content,
-        "            <.theme_toggle />",
-        "            <.language_switch path={@path} />\n            <.theme_toggle />",
-        global: false
-      )
     end
   end
 

@@ -20,13 +20,21 @@ if Code.ensure_loaded?(Igniter) do
 
     ## Flags
 
-    * `--design` / **`--no-design`** — install the Corex Design system (`mix corex.design`). **Default: on**.
-    * `--designex` — also install token tooling (`mix corex.design --designex`); implies `--design`.
+    * `--design` / **`--no-design`** — install the Corex Design system: copy assets into `assets/corex/`, strip stock daisy/Tailwind plugins, and replace `assets/css/app.css` with the Corex design entry. **Default: on**. With `--no-design`, the stock Phoenix Tailwind/daisy setup is left untouched and `assets/corex/` is not created.
+    * `--designex` — also copy the design token sources into `assets/corex/design/`; implies `--design`. To refresh design assets to a newer Corex version, remove `assets/corex/` and re-run with `--design`.
     * **`--mode`** — generate `Plugs.Mode`, mode toggle, and `data-mode` bridge in the root layout. **Implies `--design`** (with a notice).
     * **`--theme`** — enable themes (Neo/Uno/Duo/Leo), `Plugs.Theme`, theme toggle, and `data-theme` bridge. **Implies `--design`** (with a notice).
     * **`--lang`** — set up Localize + Gettext (`Plugs.Path`, locale-aware router helpers, layout `lang/dir` and `language_switch` component). Does **not** imply `--design`.
-    * **`--replace` / `--no-replace`** — control whether the stock home and app layout are switched to the Corex-oriented layout and toast pattern. **Default: off** for `mix igniter.install corex`; `mix corex.new` defaults to **on**. Without `--replace`, a separate `/home` demo route and `Layouts.corex` are added instead.
     * `--mcp` / **`--no-mcp`** — add the Corex MCP plug under `Mix.env() == :dev`. **Default: on**.
+
+    ## Layout patching
+
+    The installer always patches `Layouts.app` and `home.html.heex`:
+
+    * If they match a stock Phoenix 1.8 template, they are fully replaced with the Corex layout.
+    * Otherwise (already touched by Corex or by you), only the missing flag-driven pieces are added (switchers, attrs, declarations). User customizations are preserved.
+
+    If an anchor cannot be found for an additive insertion, the installer prints a notice with the exact snippet to add manually.
 
     ## Idempotency
 
@@ -45,7 +53,6 @@ if Code.ensure_loaded?(Igniter) do
         example: "mix igniter.install corex --yes --mode",
         composes: ["igniter.add_extension"],
         defaults: [
-          replace: false,
           mcp: true,
           design: true,
           designex: false,
@@ -56,7 +63,6 @@ if Code.ensure_loaded?(Igniter) do
         schema: [
           design: :boolean,
           designex: :boolean,
-          replace: :boolean,
           mode: :boolean,
           theme: :boolean,
           lang: :boolean,

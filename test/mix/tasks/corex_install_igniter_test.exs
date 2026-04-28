@@ -9,7 +9,12 @@ defmodule Mix.Tasks.Corex.InstallIgniterTest do
 
     assert group == :corex
     assert composes == ["igniter.add_extension"]
-    assert Keyword.has_key?(schema, :replace)
     assert Keyword.has_key?(schema, :theme)
+    assert Keyword.has_key?(schema, :design)
+    assert Keyword.has_key?(schema, :designex)
+    assert Keyword.has_key?(schema, :mode)
+    assert Keyword.has_key?(schema, :lang)
+    assert Keyword.has_key?(schema, :mcp)
+    refute Keyword.has_key?(schema, :replace)
   end
 end

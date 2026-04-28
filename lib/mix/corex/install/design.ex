@@ -8,22 +8,15 @@ defmodule Mix.Corex.Install.Design do
 
   @marker "/* corex:design-imports */"
 
-  def maybe_schedule_design(igniter, opts) do
+  @design_target_root "assets/corex"
+
+  def add_design_files(igniter, opts) do
     if Config.design_on?(opts) do
-      schedule_design_when_needed(igniter, opts)
+      igniter
+      |> delete_phx_daisyui_vendor_if_present()
+      |> copy_design_files(opts)
     else
       igniter
-    end
-  end
-
-  defp schedule_design_when_needed(igniter, opts) do
-    igniter = delete_phx_daisyui_vendor_if_present(igniter)
-
-    if assets_corex_already_present?() do
-      igniter
-    else
-      args = if opts[:designex], do: ["--designex"], else: []
-      Igniter.add_task(igniter, "corex.design", args)
     end
   end
 
@@ -38,8 +31,59 @@ defmodule Mix.Corex.Install.Design do
     end
   end
 
-  defp assets_corex_already_present? do
-    File.dir?(Path.join(["assets", "corex"]))
+  defp copy_design_files(igniter, opts) do
+    designex? = Keyword.get(opts, :designex, false)
+
+    case design_source_root() do
+      nil ->
+        igniter
+
+      source_root ->
+        sources = list_design_sources(source_root, designex?)
+
+        Enum.reduce(sources, igniter, &copy_design_source_into_igniter/2)
+    end
+  end
+
+  defp copy_design_source_into_igniter({abs_source, rel_target}, acc) do
+    case File.read(abs_source) do
+      {:ok, contents} ->
+        Igniter.create_new_file(acc, rel_target, contents, on_exists: :skip)
+
+      _ ->
+        acc
+    end
+  end
+
+  defp design_source_root do
+    case :code.priv_dir(:corex) do
+      {:error, _} ->
+        nil
+
+      priv ->
+        candidate = Path.join(priv, "design")
+        if File.dir?(candidate), do: candidate, else: nil
+    end
+  end
+
+  defp list_design_sources(source_root, designex?) do
+    source_root
+    |> Path.join("**")
+    |> Path.wildcard(match_dot: false)
+    |> Enum.filter(&File.regular?/1)
+    |> Enum.reject(fn abs ->
+      not designex? and inside_design_tokens_dir?(abs, source_root)
+    end)
+    |> Enum.map(fn abs ->
+      rel = Path.relative_to(abs, source_root)
+      {abs, Path.join(@design_target_root, rel)}
+    end)
+  end
+
+  defp inside_design_tokens_dir?(abs_path, source_root) do
+    rel = Path.relative_to(abs_path, source_root)
+    parts = Path.split(rel)
+    match?(["design" | _], parts)
   end
 
   def strip_stock_css_before_corex_design(css) when is_binary(css) do

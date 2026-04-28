@@ -78,7 +78,7 @@ defmodule Mix.Corex.Install.ConfigDesignexTest do
       refute mix =~ "designex corex"
     end
 
-    test "inserts \"designex corex\" before \"tailwind …\" in assets.build and assets.deploy" do
+    test ~s(inserts "designex corex" before "tailwind …" in assets.build and assets.deploy) do
       mix = project() |> Config.maybe_add_designex_alias(designex: true) |> final_mix_exs()
 
       assert mix =~ ~r/"assets\.build":\s*\[\s*"compile",\s*"designex corex",\s*"tailwind my_app"/

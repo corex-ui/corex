@@ -12,7 +12,6 @@ defmodule Mix.Corex.Install.Pipeline do
     Design,
     I18n,
     Layouts,
-    Starter,
     Web
   }
 
@@ -59,12 +58,12 @@ defmodule Mix.Corex.Install.Pipeline do
   Create optional plugs (mode, theme, and with `--lang` a Path plug for locale-stripped `assigns[:path]`), then insert them into the browser pipeline and wire optional i18n router helpers.
   """
 
-  @section_starter """
-  With `--replace`, patch `Layouts.app`, wrap the stock `home.html.heex` in that layout, remove stock `flash_group` / `theme_toggle` helpers, and do not add `Layouts.corex` or `GET /home`. Default is **on** for `mix corex.new`, **off** for `mix igniter.install corex`. With `--no-replace` (or defaults when install runs without `--replace`), add the demo `GET /home` route and `Layouts.corex` while leaving the default Phoenix home unchanged.
+  @section_app_layout """
+  Patch `Layouts.app` and `home.html.heex`. If they match a stock Phoenix 1.8 template, replace fully with the Corex layout. Otherwise, additively insert only the missing flag-driven pieces (switchers, attrs, declarations) without removing existing customizations.
   """
 
   @section_design """
-  Schedule design assets generation with `mix corex.design`.
+  Copy Corex design assets into `assets/corex/` (additive — existing files are preserved). With `--design`, also remove the stock daisy/Tailwind vendor JS and replace `assets/css/app.css` with the Corex design entry. With `--designex`, also copy the design token sources.
   """
 
   def igniter(igniter) do
@@ -76,7 +75,6 @@ defmodule Mix.Corex.Install.Pipeline do
     Config.validate_opts!(opts)
 
     mcp? = Keyword.get(opts, :mcp, true)
-    replace? = Keyword.get(opts, :replace, false)
 
     web_mod = ILPhoenix.web_module(igniter)
     app = ProjectApplication.app_name(igniter)
@@ -128,15 +126,7 @@ defmodule Mix.Corex.Install.Pipeline do
     end)
     |> Igniter.Scribe.section("Root layout", @section_layout, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
-        igniter
-        |> Layouts.patch_root_layout(web_mod, themes, opts)
-        |> Layouts.maybe_patch_replaced_or_stock_app_layout(
-          web_mod,
-          themes,
-          opts,
-          replace?,
-          i18n?
-        )
+        Layouts.patch_root_layout(igniter, web_mod, themes, opts)
       end)
     end)
     |> Igniter.Scribe.section("Endpoint configuration", @section_endpoint, fn igniter ->
@@ -156,15 +146,14 @@ defmodule Mix.Corex.Install.Pipeline do
         |> Web.patch_router_for_plugs(web_mod, opts, themes, i18n?)
       end)
     end)
-    |> Igniter.Scribe.section("Optional starter", @section_starter, fn igniter ->
-      Igniter.Scribe.patch(
-        igniter,
-        &apply_optional_starter(&1, replace?, web_mod, themes, opts, i18n?)
-      )
+    |> Igniter.Scribe.section("App layout and home", @section_app_layout, fn igniter ->
+      Igniter.Scribe.patch(igniter, fn igniter ->
+        Layouts.patch_app_layout(igniter, web_mod, themes, opts, i18n?)
+      end)
     end)
     |> Igniter.Scribe.section("Design assets", @section_design, fn igniter ->
       Igniter.Scribe.patch(igniter, fn igniter ->
-        Design.maybe_schedule_design(igniter, opts)
+        Design.add_design_files(igniter, opts)
       end)
     end)
   end
@@ -179,13 +168,5 @@ defmodule Mix.Corex.Install.Pipeline do
     else
       igniter
     end
-  end
-
-  defp apply_optional_starter(igniter, true, _web_mod, _themes, _opts, _i18n?) do
-    igniter
-  end
-
-  defp apply_optional_starter(igniter, false, web_mod, themes, opts, i18n?) do
-    Starter.add_corex_page_and_layout(igniter, web_mod, themes, opts, i18n?)
   end
 end

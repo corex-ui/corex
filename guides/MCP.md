@@ -26,7 +26,7 @@ The MCP server is part of the `:corex` package — no extra dependency is needed
 
 ## 2. Mount the MCP plug
 
-In `lib/my_app_web/endpoint.ex`, mount `Corex.MCP` inside a `dev`-only block. Place it after the `Plug.Static` line (or, if you prefer, after the `socket` declarations) so it does not interfere with static asset serving:
+In `lib/my_app_web/endpoint.ex`, mount Corex MCP inside a `dev`-only block. Place it after the `Plug.Static` line (or, if you prefer, after the `socket` declarations) so it does not interfere with static asset serving:
 
 ```elixir
 if Mix.env() == :dev do
@@ -139,6 +139,6 @@ Pass `scenario: "new_project"`, `"existing_project"`, or `"all"` (default). The 
 
 ## Notes
 
-- Intended for **development only** — do not mount `Corex.MCP` in `prod`.
+- Intended for **development only** — do not mount Corex.MCP in `prod`.
 - Requires your Phoenix server running locally so AI tools can reach `localhost`.
 - Corex MCP is based on [Tidewave Phoenix](https://github.com/tidewave-ai/tidewave_phoenix) and is distributed under the Apache License 2.0. See `LICENSES/TIDWAVE_MCP_BASELINE.md` in the repo for the upstream-tracking notes.

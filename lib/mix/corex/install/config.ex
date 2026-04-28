@@ -1,6 +1,7 @@
 defmodule Mix.Corex.Install.Config do
   @moduledoc false
 
+  alias Igniter.Code.Common
   alias Igniter.Project.{Config, Deps, TaskAliases}
 
   @all_themes ~w(neo uno duo leo)
@@ -178,31 +179,34 @@ defmodule Mix.Corex.Install.Config do
   defp insert_designex_before_tailwind(igniter, alias_name) do
     TaskAliases.modify_existing_alias(igniter, alias_name, fn zipper ->
       zipper = ensure_alias_value_is_list(zipper)
-
-      cond do
-        not Igniter.Code.List.list?(zipper) ->
-          :error
-
-        designex_corex_present?(zipper) ->
-          {:ok, zipper}
-
-        true ->
-          case Igniter.Code.List.move_to_list_item(zipper, &tailwind_string_item?/1) do
-            {:ok, item_zipper} ->
-              {:ok, Sourceror.Zipper.insert_left(item_zipper, string_node("designex corex"))}
-
-            :error ->
-              :error
-          end
-      end
+      insert_designex_into_tailwind_alias(zipper)
     end)
+  end
+
+  defp insert_designex_into_tailwind_alias(zipper) do
+    cond do
+      not Igniter.Code.List.list?(zipper) ->
+        :error
+
+      designex_corex_present?(zipper) ->
+        {:ok, zipper}
+
+      true ->
+        case Igniter.Code.List.move_to_list_item(zipper, &tailwind_string_item?/1) do
+          {:ok, item_zipper} ->
+            {:ok, Sourceror.Zipper.insert_left(item_zipper, string_node("designex corex"))}
+
+          :error ->
+            :error
+        end
+    end
   end
 
   defp ensure_alias_value_is_list(zipper) do
     if Igniter.Code.List.list?(zipper) do
       zipper
     else
-      Igniter.Code.Common.replace_code(zipper, [zipper.node])
+      Common.replace_code(zipper, [zipper.node])
     end
   end
 

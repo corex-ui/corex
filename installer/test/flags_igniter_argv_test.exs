@@ -30,7 +30,7 @@ defmodule Corex.New.FlagsIgniterArgvTest do
 
   test "igniter argv uses --corex.* (Igniter group disambiguation)" do
     a =
-      [mcp: false, mode: true, theme: true, replace: true, lang: true]
+      [mcp: false, mode: true, theme: true, lang: true]
       |> Flags.igniter_install_opts()
       |> IgniterArgv.to_argv()
       |> Enum.join(" ")
@@ -39,21 +39,11 @@ defmodule Corex.New.FlagsIgniterArgvTest do
     assert a =~ "corex.mode"
     assert a =~ "corex.theme"
     assert a =~ "corex.lang"
-    assert a =~ "corex.replace"
-  end
-
-  test "igniter argv omits --corex.replace when :replace is false (e.g. --no-replace)" do
-    argv =
-      [replace: false, mode: true]
-      |> Flags.igniter_install_opts()
-      |> IgniterArgv.to_argv()
-
-    refute "--corex.replace" in argv
-    assert "--corex.mode" in argv
+    refute a =~ "corex.replace"
   end
 
   test "igniter argv --corex.no-design when :design is false" do
-    argv = IgniterArgv.to_argv(Flags.igniter_install_opts(design: false, replace: true))
+    argv = IgniterArgv.to_argv(Flags.igniter_install_opts(design: false))
     assert "--corex.no-design" in argv
   end
 
@@ -73,8 +63,8 @@ defmodule Corex.New.FlagsIgniterArgvTest do
     refute "dev_corex" in argv
   end
 
-  test "Flags.igniter_install_opts defaults replace false" do
-    assert :replace in Keyword.keys(Flags.igniter_install_opts([]))
-    assert Keyword.get(Flags.igniter_install_opts([]), :replace) == false
+  test "Flags.igniter_install_opts no longer includes :replace" do
+    refute :replace in Keyword.keys(Flags.igniter_install_opts([]))
+    refute :replace in Keyword.keys(Flags.igniter_install_opts(mode: true, design: false))
   end
 end

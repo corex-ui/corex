@@ -1,7 +1,9 @@
 defmodule Mix.Corex.Install.Layouts do
   @moduledoc false
 
-  alias Mix.Corex.Install.{Config, Templates, Web}
+  alias Igniter.Code.{Common, Function}
+  alias Igniter.Project.Module, as: ProjectModule
+  alias Mix.Corex.Install.{Config, LayoutBuilder, Templates, Web}
 
   def patch_root_layout(igniter, web_mod, themes, opts) do
     dir = Web.web_ex_dir(igniter, web_mod)
@@ -176,12 +178,6 @@ defmodule Mix.Corex.Install.Layouts do
     "#{String.trim_trailing("<html" <> attrs, ">")} lang={assigns[:locale] || \"en\"} dir={assigns[:dir] || \"ltr\"} data-theme={assigns[:theme] || \"#{first_theme}\"} data-mode={assigns[:mode] || \"light\"}>"
   end
 
-  def maybe_patch_replaced_or_stock_app_layout(igniter, web_mod, themes, opts, true, i18n?),
-    do: patch_replaced_app_layout(igniter, web_mod, themes, opts, i18n?)
-
-  def maybe_patch_replaced_or_stock_app_layout(igniter, _web_mod, _themes, _opts, false, _i18n),
-    do: igniter
-
   def insert_theme_mode_switchers(source) do
     content = source.content
 
@@ -201,7 +197,7 @@ defmodule Mix.Corex.Install.Layouts do
             %{id: "duo", label: "Duo"},
             %{id: "leo", label: "Leo"}
           ]}
-          value={[assigns[:theme] || "neo"]}
+          value={[@theme]}
           on_value_change_client="phx:set-theme"
         >
           <:label class="sr-only">Theme</:label>
@@ -212,7 +208,7 @@ defmodule Mix.Corex.Install.Layouts do
         <.toggle_group
           id="mode-switcher"
           class="toggle-group toggle-group--sm toggle-group--circle"
-          value={if (assigns[:mode] || "light") == "dark", do: ["dark"], else: []}
+          value={if @mode == "dark", do: ["dark"], else: []}
           on_value_change_client="phx:set-mode"
         >
           <:item value="dark">Mode</:item>
@@ -398,46 +394,105 @@ defmodule Mix.Corex.Install.Layouts do
     end
   end
 
-  defp patch_replaced_app_layout(igniter, web_mod, themes, opts, i18n?) do
+  def patch_app_layout(igniter, web_mod, themes, opts, i18n?) do
     ldir = Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts"])
     app_heex = Path.join(ldir, "app.html.heex")
     lay_ex = Path.join([Web.web_ex_dir(igniter, web_mod), "components", "layouts.ex"])
 
     igniter
-    |> patch_replaced_layouts_ex_file(lay_ex, themes, opts, i18n?)
-    |> patch_replaced_app_heex_file(app_heex, themes, opts)
-    |> maybe_patch_replaced_home(web_mod, themes, opts, i18n?)
+    |> patch_layouts_ex_file(web_mod, lay_ex, themes, opts, i18n?)
+    |> patch_app_heex_file(app_heex, themes, opts)
+    |> patch_home(web_mod, themes, opts, i18n?)
   end
 
-  defp patch_replaced_layouts_ex_file(igniter, lay_ex, themes, opts, i18n?) do
+  defp patch_layouts_ex_file(igniter, web_mod, lay_ex, themes, opts, i18n?) do
     if Igniter.exists?(igniter, lay_ex) do
-      Igniter.update_file(igniter, lay_ex, fn source ->
-        c =
-          source.content
-          |> ensure_mode_theme_path_attrs_in_layouts_ex()
-          |> remove_stock_phoenix_layouts_for_corex_replace(i18n?, opts)
-          |> replace_flash_group_with_toast_in_layouts_source(:app)
+      layouts_module = Module.concat(web_mod, :Layouts)
+      igniter = Igniter.include_existing_file(igniter, lay_ex)
 
-        c = merge_theme_switchers_into_layouts_source(c, source, themes, opts)
-        %{source | content: c}
-      end)
+      content =
+        case Rewrite.source(igniter.rewrite, lay_ex) do
+          {:ok, source} -> Rewrite.Source.get(source, :content)
+          _ -> ""
+        end
+
+      if LayoutBuilder.stock_phx_app_def?(content) do
+        full_replace_app_def(igniter, layouts_module, lay_ex, themes, opts, i18n?)
+      else
+        patch_app_def(igniter, layouts_module, lay_ex, themes, opts, i18n?)
+      end
     else
       igniter
     end
   end
 
-  defp merge_theme_switchers_into_layouts_source(c, source, themes, opts) do
-    if opts[:mode] || themes != [] do
-      case insert_theme_mode_switchers(%{source | content: c}) do
-        {:notice, _} -> c
-        %{content: c2} -> c2
-      end
-    else
-      c
+  defp full_replace_app_def(igniter, layouts_module, lay_ex, themes, opts, i18n?) do
+    has_mode? = opts[:mode] == true
+    has_theme? = themes != []
+    parts = {has_theme?, has_mode?}
+
+    igniter
+    |> ProjectModule.find_and_update_module!(
+      layouts_module,
+      &full_replace_app_zipper(&1, themes, opts, i18n?, parts)
+    )
+    |> Igniter.update_file(lay_ex, fn source ->
+      c =
+        source.content
+        |> remove_stock_phoenix_layouts_for_corex_replace(opts)
+        |> LayoutBuilder.merge_layout_declarations(themes, opts, i18n?)
+
+      %{source | content: c}
+    end)
+  end
+
+  defp full_replace_app_zipper(zipper, themes, opts, i18n?, parts) do
+    case Function.move_to_def(zipper, :app, 1, target: :at) do
+      {:ok, z} ->
+        new_def = LayoutBuilder.build_layout_def(themes, opts, i18n?)
+
+        z2 =
+          z
+          |> Common.replace_code(new_def)
+          |> then(&Sourceror.Zipper.topmost/1)
+          |> LayoutBuilder.append_toggle_components(parts)
+
+        {:ok, z2}
+
+      :error ->
+        {:ok, zipper}
     end
   end
 
-  defp patch_replaced_app_heex_file(igniter, app_heex, themes, opts) do
+  defp patch_app_def(igniter, layouts_module, lay_ex, themes, opts, i18n?) do
+    has_mode? = opts[:mode] == true
+    has_theme? = themes != []
+    parts = {has_theme?, has_mode?}
+
+    igniter
+    |> ProjectModule.find_and_update_module!(
+      layouts_module,
+      fn zipper -> {:ok, LayoutBuilder.append_toggle_components(zipper, parts)} end
+    )
+    |> Igniter.update_file(lay_ex, fn source ->
+      c =
+        source.content
+        |> remove_stock_phoenix_layouts_for_corex_replace(opts)
+        |> apply_app_body_patch(themes, opts, i18n?)
+        |> LayoutBuilder.merge_layout_declarations(themes, opts, i18n?)
+
+      %{source | content: c}
+    end)
+  end
+
+  defp apply_app_body_patch(content, themes, opts, i18n?) do
+    case LayoutBuilder.patch_app_def_body(content, themes, opts, i18n?) do
+      {:notice, _msg} -> content
+      new_content when is_binary(new_content) -> new_content
+    end
+  end
+
+  defp patch_app_heex_file(igniter, app_heex, themes, opts) do
     if Igniter.exists?(igniter, app_heex) do
       Igniter.update_file(
         igniter,
@@ -450,7 +505,7 @@ defmodule Mix.Corex.Install.Layouts do
   end
 
   defp app_heex_after_toast_and_switchers(source, themes, opts) do
-    c = replace_flash_group_with_toast_in_layouts_source(source.content, :heex)
+    c = replace_flash_group_with_toast_in_app_heex(source.content)
     c = maybe_merge_switchers_into_app_heex(c, source, themes, opts)
     %{source | content: c}
   end
@@ -466,38 +521,7 @@ defmodule Mix.Corex.Install.Layouts do
     end
   end
 
-  defp ensure_mode_theme_path_attrs_in_layouts_ex(c) do
-    path_mode_theme_prefix = """
-      attr :path, :string, default: nil, doc: "the path after an optional /:locale prefix"
-      attr :mode, :string, default: "light", doc: "the mode (dark or light) from session"
-      attr :theme, :string, default: "neo", doc: "the theme (neo, uno, duo, leo) from session"
-    """
-
-    if c =~ "attr :mode" or c =~ "attr(:mode" do
-      c
-    else
-      c2 =
-        String.replace(
-          c,
-          "  attr :current_scope, :map,",
-          path_mode_theme_prefix <> "  attr :current_scope, :map,",
-          global: false
-        )
-
-      if c2 != c do
-        c2
-      else
-        String.replace(
-          c,
-          "  attr :flash, :map,",
-          path_mode_theme_prefix <> "  attr :flash, :map,",
-          global: false
-        )
-      end
-    end
-  end
-
-  defp remove_stock_phoenix_layouts_for_corex_replace(c, _i18n?, opts) do
+  defp remove_stock_phoenix_layouts_for_corex_replace(c, opts) do
     c = if Config.design_on?(opts), do: remove_layouts_app_theme_toggle_li(c), else: c
     c = remove_layouts_flash_group_function_def(c)
     c = if Config.design_on?(opts), do: remove_layouts_theme_toggle_function_def(c), else: c
@@ -540,20 +564,7 @@ defmodule Mix.Corex.Install.Layouts do
     end
   end
 
-  defp replace_flash_group_with_toast_in_layouts_source(c, :app) do
-    if String.contains?(c, "toast_group") and not String.contains?(c, "<.flash_group") do
-      c
-    else
-      b = String.trim_leading(String.trim_trailing(Templates.app_level_toast_block()))
-      c2 = String.replace(c, "    <.flash_group flash={@flash} />", b, global: false)
-
-      if c2 != c,
-        do: c2,
-        else: String.replace(c, ~r/\n\s*<\.flash_group[^>]*\/>\s*/m, b, global: false)
-    end
-  end
-
-  defp replace_flash_group_with_toast_in_layouts_source(c, :heex) do
+  defp replace_flash_group_with_toast_in_app_heex(c) do
     if not String.contains?(c, "flash_group") and String.contains?(c, "toast_group") do
       c
     else
@@ -566,29 +577,38 @@ defmodule Mix.Corex.Install.Layouts do
     end
   end
 
-  def maybe_patch_replaced_home(igniter, web_mod, themes, opts, i18n?) do
+  def patch_home(igniter, web_mod, themes, opts, i18n?) do
     web_dir = Web.web_ex_dir(igniter, web_mod)
     web_dir_name = Path.basename(web_dir)
     home = Path.join([web_dir, "controllers", "page_html", "home.html.heex"])
 
-    new_content = build_replaced_home(themes, opts, i18n?, web_dir_name)
+    initial_body = build_replaced_home(themes, opts, i18n?, web_dir_name)
 
     igniter
-    |> Igniter.include_or_create_file(home, new_content)
+    |> Igniter.include_or_create_file(home, initial_body)
     |> Igniter.update_file(home, fn source ->
+      new_content = home_file_content(source.content, themes, opts, i18n?, web_dir_name)
       Rewrite.Source.update(source, :content, new_content)
     end)
   end
 
-  def build_replaced_home(themes, opts, i18n?, web_dir_name) do
-    mode_attr = ~s(mode={assigns[:mode] || "light"})
-    theme_attr = ~s(theme={assigns[:theme] || "neo"})
+  defp home_file_content(content, themes, opts, i18n?, web_dir_name) do
+    if LayoutBuilder.stock_phx_home?(content) do
+      build_replaced_home(themes, opts, i18n?, web_dir_name)
+    else
+      case LayoutBuilder.patch_home_attrs(content, themes, opts, i18n?) do
+        {:notice, _msg} -> content
+        new when is_binary(new) -> new
+      end
+    end
+  end
 
+  def build_replaced_home(themes, opts, i18n?, web_dir_name) do
     attrs =
-      ["flash={@flash}", "current_scope={assigns[:current_scope]}"]
-      |> then(&if(i18n?, do: &1 ++ ["path={assigns[:path]}"], else: &1))
-      |> then(&if(opts[:mode], do: &1 ++ [mode_attr], else: &1))
-      |> then(&if(themes != [], do: &1 ++ [theme_attr], else: &1))
+      ["flash={@flash}"]
+      |> then(&if(i18n?, do: &1 ++ ["path={@path}"], else: &1))
+      |> then(&if(opts[:mode], do: &1 ++ ["mode={@mode}"], else: &1))
+      |> then(&if(themes != [], do: &1 ++ ["theme={@theme}"], else: &1))
 
     body =
       opts

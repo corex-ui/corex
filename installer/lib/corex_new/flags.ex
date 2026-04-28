@@ -8,8 +8,7 @@ defmodule Corex.New.Flags do
     :mode,
     :theme,
     :lang,
-    :mcp,
-    :replace
+    :mcp
   ]
 
   @doc """
@@ -19,12 +18,9 @@ defmodule Corex.New.Flags do
 
   @doc """
   Keyword for Corex install: Igniter task flags + `:dev_corex` for package target only.
-  `:replace` defaults to **false** for `mix igniter.install corex`; `mix corex.new` passes `:replace` true via `Keyword.put_new(:replace, true)` before this. `--no-replace` sets `:replace` false.
   """
   def igniter_install_opts(all_opts) when is_list(all_opts) do
-    all_opts
-    |> Keyword.take(@keys_igniter_only)
-    |> Keyword.put_new(:replace, false)
+    Keyword.take(all_opts, @keys_igniter_only)
   end
 
   @doc """

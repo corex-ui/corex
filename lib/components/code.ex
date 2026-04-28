@@ -72,7 +72,7 @@ defmodule Corex.Code do
   [data-scope="code"][data-part="content"] {}
   ```
 
-  With Corex Design (`mix corex.design`), syntax highlighting styles are included in
+  With Corex Design, syntax highlighting styles are included in
   `code.css`. Nothing else is required.
 
   Without Corex Design, run `mix corex.code` to generate the Makeup stylesheet and

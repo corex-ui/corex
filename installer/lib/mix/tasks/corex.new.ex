@@ -30,12 +30,11 @@ defmodule Mix.Tasks.Corex.New do
   Corex flags are unique and **do not conflict** with `phx.new` / Igniter flags, so pass them bare:
 
   * **`--dev_corex PATH`** — installs `corex@path:PATH` instead of Hex. Path is relative to the **web** app (sibling **`../corex`**, umbrella **`../../corex`**).
-  * `--design` / **`--no-design`** — install the Corex design system (`mix corex.design`). **Default: on**. `--no-design` keeps the stock Phoenix Tailwind/daisy assets.
-  * **`--designex`** — also install token tooling (`mix corex.design --designex`); implies `--design`.
+  * `--design` / **`--no-design`** — install the Corex Design system (copy assets into `assets/corex/`, strip stock daisy/Tailwind, and replace `assets/css/app.css` with the Corex design entry). **Default: on**. `--no-design` keeps the stock Phoenix Tailwind/daisy assets and does not touch `assets/corex/`.
+  * **`--designex`** — also copy the design token sources (`assets/corex/design/`); implies `--design`.
   * **`--mode`** — generate `Plugs.Mode`, mode toggle, and `data-mode` bridge in the root layout. **Implies `--design`** (with a notice).
   * **`--theme`** — enable themes (Neo/Uno/Duo/Leo), `Plugs.Theme`, theme toggle, and `data-theme` bridge. **Implies `--design`** (with a notice).
   * **`--lang`** — set up Localize + Gettext: `Plugs.Path`, locale-aware router helpers, layout `lang/dir` and `language_switch` component. Does **not** imply `--design`.
-  * **`--replace`** / `--no-replace` — wrap the stock `home.html.heex` in `Layouts.app` (Corex layout), strip stock helpers (`flash_group`, `theme_toggle`), and keep `/` as the entry route. **Default: on for `corex.new`**. `--no-replace` leaves the default Phoenix home at `/` and adds a demo `/home` route with `Layouts.corex` instead.
   * **`--install`** / **`--no-install`** — after **`corex.new`** completes, control the **final** **`mix deps.get`** / **`mix assets.setup`** step (prompt if omitted). Does **not** remove **`--no-install`** on **`phx.new`** (that is always set so Phoenix does not fetch during generation).
   * `--mcp` / **`--no-mcp`** — install the Corex MCP plug under `Mix.env() == :dev` on the web endpoint. **Default: on**.
 
@@ -85,8 +84,7 @@ defmodule Mix.Tasks.Corex.New do
     tailwind: :boolean,
     gettext: :boolean,
     html: :boolean,
-    mcp: :boolean,
-    replace: :boolean
+    mcp: :boolean
   ]
 
   @reserved_app_names ~w(server table)
@@ -104,7 +102,6 @@ defmodule Mix.Tasks.Corex.New do
     opts =
       opts
       |> Keyword.put_new(:lang, false)
-      |> Keyword.put_new(:replace, true)
       |> Keyword.put_new(:mcp, true)
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:design, true)

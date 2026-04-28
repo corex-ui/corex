@@ -69,10 +69,13 @@ Corex flags are unique and **do not conflict** with `phx.new` or Igniter switche
 | `--mode`                      | Light/dark mode: plugs, assigns, root layout script, optional layout UI (see [Dark mode](dark_mode.html)). **Implies `--design`** (with a notice).                                                                                                                                                                           |
 | `--theme`                     | Theme picker (neo, uno, duo, leo): plugs, assigns, optional UI (see [Theming](theming.html)). **Implies `--design`** (with a notice).                                                                                                                                                                                        |
 | `--lang`                      | Localization with `localize_web`, Path plug, router helpers (see [Localize](localize.html)). Does **not** imply `--design`.                                                                                                                                                                                                  |
-| `--replace` / `--no-replace`  | Stock welcome page uses the Corex app layout and toast pattern; no separate `/home` demo route. Pass **`--no-replace`** to keep the default Phoenix home and add `GET /home` with `Layouts.corex` instead. **Default: on** for `corex.new`, **off** for `mix igniter.install corex`.                                         |
-| `--design` / `--no-design`    | Add the Corex Design system and component styles (`mix corex.design`). Pass **`--no-design`** to skip. **Default: on**. Cannot be combined with `--mode`, `--theme`, or `--designex`.                                                                                                                                        |
-| `--designex`                  | Pass `--designex` to `mix corex.design` when design runs. **Implies `--design`**.                                                                                                                                                                                                                                            |
+| `--design` / `--no-design`    | Add the Corex Design system: copy assets into `assets/corex/`, strip stock daisy/Tailwind, and replace `assets/css/app.css` with the Corex design entry. Pass **`--no-design`** to leave the stock Phoenix Tailwind/daisy setup in place. **Default: on**.                                                                  |
+| `--designex`                  | Also copy the design token sources into `assets/corex/design/`. **Implies `--design`**.                                                                                                                                                                                                                                      |
 | `--mcp` / `--no-mcp`          | Add the Corex MCP plug on the web endpoint in development. Pass **`--no-mcp`** to skip. **Default: on**.                                                                                                                                                                                                                     |
+
+The installer always patches `Layouts.app` and `home.html.heex`. Stock Phoenix templates are fully replaced with the Corex layout; already-touched files get only the missing flag-driven pieces (switchers, attrs, declarations) without losing existing customizations.
+
+To refresh the Corex design assets to a newer version, remove `assets/corex/` and re-run `mix igniter.install corex --design [--designex]`.
 
 Examples:
 
@@ -80,7 +83,6 @@ Examples:
 mix corex.new my_app --mode --theme --lang
 mix corex.new my_app --no-design
 mix igniter.install corex --mode --theme --lang --yes
-mix igniter.install corex --replace --yes
 ```
 
 Installing Corex from a **local checkout or path dependency** is **not** covered here — use **`mix help corex.new`** and the moduledoc for `Mix.Tasks.Corex.New`.

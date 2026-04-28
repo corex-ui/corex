@@ -1,16 +1,16 @@
-defmodule Mix.Corex.Install.LayoutsReplacedHomeTest do
+defmodule Mix.Corex.Install.LayoutsAppHomeTest do
   use ExUnit.Case, async: true
 
   alias Mix.Corex.Install.Layouts
 
   describe "build_replaced_home/4" do
-    test "wraps starter body in <Layouts.app> with flash + current_scope only by default" do
+    test "wraps starter body in <Layouts.app> with flash only by default" do
       out = Layouts.build_replaced_home([], [], false, "my_app_web")
 
       assert out =~ ~r/<Layouts\.app\b/
       assert out =~ "flash={@flash}"
-      assert out =~ "current_scope={assigns[:current_scope]}"
-      refute out =~ "path={assigns[:path]}"
+      refute out =~ "current_scope"
+      refute out =~ "path={"
       refute out =~ "mode="
       refute out =~ "theme="
       assert out =~ "</Layouts.app>"
@@ -20,25 +20,27 @@ defmodule Mix.Corex.Install.LayoutsReplacedHomeTest do
     test "adds path attr only when --lang is enabled" do
       out = Layouts.build_replaced_home([], [], true, "my_app_web")
 
-      assert out =~ "path={assigns[:path]}"
+      assert out =~ "path={@path}"
       refute out =~ "mode="
       refute out =~ "theme="
     end
 
-    test "adds mode attr only when --mode is enabled" do
+    test "adds mode attr only when --mode is enabled (uses @mode form)" do
       out = Layouts.build_replaced_home([], [mode: true], false, "my_app_web")
 
-      assert out =~ "mode={assigns[:mode] || \"light\"}"
+      assert out =~ "mode={@mode}"
+      refute out =~ ~s|assigns[:mode]|
       refute out =~ "theme="
-      refute out =~ "path={assigns[:path]}"
+      refute out =~ "path={"
     end
 
-    test "adds theme attr only when themes are present" do
+    test "adds theme attr only when themes are present (uses @theme form)" do
       out = Layouts.build_replaced_home(["neo"], [], false, "my_app_web")
 
-      assert out =~ "theme={assigns[:theme] || \"neo\"}"
+      assert out =~ "theme={@theme}"
+      refute out =~ ~s|assigns[:theme]|
       refute out =~ "mode="
-      refute out =~ "path={assigns[:path]}"
+      refute out =~ "path={"
     end
 
     test "rewrites corex.html.heex to home.html.heex in the demo body" do
