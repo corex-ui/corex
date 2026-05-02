@@ -103,8 +103,8 @@ defmodule E2eWeb.App.Header do
 
           <.navigate
             to={~p"/"}
-            class="ui-link ui-link--brand ui-link--xl flex flex-nowrap items-center
-         gap-space font-semibold uppercase hover:no-underline"
+            class="ui-link ui-link--brand ui-link--xl hover:text-link flex flex-nowrap items-center
+         gap-space font-semibold uppercase no-underline"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -126,21 +126,21 @@ defmodule E2eWeb.App.Header do
           >
             <.navigate
               to={~p"/accordion/anatomy"}
-              class="ui-link ui-link--md font-medium text-[var(--color-ink)] hover:text-[var(--color-brand)]"
+              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
             >
               {gettext("Components")}
             </.navigate>
             <.navigate
               to="https://hexdocs.pm/corex"
-              class="ui-link ui-link--md font-medium text-[var(--color-ink)] hover:text-[var(--color-brand)]"
+              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               external
             >
               {gettext("Documentation")}
               <.heroicon name="hero-arrow-top-right-on-square" class="icon" />
             </.navigate>
             <.navigate
-              to="https://hexdocs.pm/corex/installation.html"
-              class="ui-link ui-link--md font-medium text-[var(--color-ink)] hover:text-[var(--color-brand)]"
+              to="https://hexdocs.pm/corex/mcp.html"
+              class="ui-link ui-link--md font-medium text-ink hover:text-link no-underline"
               external
             >
               {gettext("MCP")}

@@ -429,7 +429,7 @@
     width: 100%;
     text-align: start;
     align-items: center;
-    justify-content: space-between;
+    flex: 1;
   }
 }
 

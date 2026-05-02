@@ -44,7 +44,7 @@
   .combobox [data-scope="combobox"][data-part="input"] {
     @apply ui-input;
 
-    width: var(--container-5xs);
+    flex: 1;
     padding-inline: var(--spacing-space);
     border-inline-end: none;
     border-end-end-radius: 0;

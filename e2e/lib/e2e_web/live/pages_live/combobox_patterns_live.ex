@@ -121,7 +121,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
           <:preview>
             <.combobox
               id="combobox-patterns-airports-field"
-              class="combobox max-w-md"
+              class="combobox"
               placeholder="Search airports…"
               items={Corex.List.new(@airports)}
               filter={false}
@@ -145,7 +145,7 @@ defmodule E2eWeb.ComboboxPatternsLive do
           <:preview>
             <.combobox
               id="combobox-patterns-cities-field"
-              class="combobox max-w-md"
+              class="combobox"
               placeholder="Search cities…"
               items={Corex.List.new(@cities)}
               filter={false}

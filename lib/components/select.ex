@@ -460,7 +460,7 @@ defmodule Corex.Select do
   )
 
   attr(:positioning, Corex.Positioning,
-    default: %Corex.Positioning{same_width: false},
+    default: %Corex.Positioning{same_width: true},
     doc: "Positioning options for the dropdown"
   )
 

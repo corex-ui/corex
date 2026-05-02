@@ -61,7 +61,7 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full">
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action
                 phx-click={Corex.Combobox.set_value("combobox-api-sv-client", ["bel"])}
                 class="button button--sm"
@@ -77,7 +77,7 @@ defmodule E2eWeb.ComboboxApiLive do
             </div>
             <.combobox
               id="combobox-api-sv-client"
-              class="combobox max-w-md"
+              class="combobox"
               placeholder="Select"
               items={Corex.List.new(Demo.items_minimal())}
             >
@@ -101,12 +101,12 @@ defmodule E2eWeb.ComboboxApiLive do
           ]}
         >
           <:preview>
-            <div class="flex flex-wrap gap-2 items-center w-full">
+            <div class="flex flex-wrap gap-2 items-center w-full justify-center">
               <.action phx-click="combobox_api_set_value" class="button button--sm">Belgium</.action>
             </div>
             <.combobox
               id="combobox-api-sv-server"
-              class="combobox max-w-md"
+              class="combobox"
               placeholder="Select"
               items={Corex.List.new(Demo.items_minimal())}
             >
@@ -139,7 +139,7 @@ defmodule E2eWeb.ComboboxApiLive do
             </.action>
             <.combobox
               id="combobox-api-sv-js"
-              class="combobox max-w-md"
+              class="combobox"
               placeholder="Select"
               items={Corex.List.new(Demo.items_minimal())}
             >

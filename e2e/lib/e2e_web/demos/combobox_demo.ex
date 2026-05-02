@@ -904,7 +904,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
 
   def styling_max_width_code do
     ~S"""
-    <.combobox id="combobox-style-wide" class="combobox max-w-md" placeholder="Wide" items={Corex.List.new(items_minimal())}>
+    <.combobox id="combobox-style-wide" class="combobox" placeholder="Wide" items={Corex.List.new(items_minimal())}>
       <:empty>No results</:empty>
       <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
     </.combobox>
@@ -915,7 +915,7 @@ defmodule E2eWeb.Demos.ComboboxDemo do
     ~H"""
     <.combobox
       id="combobox-style-wide"
-      class="combobox max-w-md"
+      class="combobox"
       placeholder="Wide"
       items={Corex.List.new(items_minimal())}
     >
