@@ -12,7 +12,7 @@ defmodule Corex.New.Generate do
     * `:otp_app` (atom, required) — e.g. `:my_app`
     * `:web_module` (atom, required) — e.g. `MyAppWeb`
     * `:app_module` (atom, required) — e.g. `MyApp`
-    * `:mode`, `:theme`, `:lang`, `:design`, `:mcp` (bool)
+    * `:mode`, `:theme`, `:lang`, `:design`, `:tailwind`, `:mcp` (bool)
     * `:themes` (list of strings) — only used when `:theme` is true
     * `:dev` (string | nil) — path to local Corex checkout for `--dev PATH`
   """
@@ -64,6 +64,7 @@ defmodule Corex.New.Generate do
     |> Keyword.put_new(:theme, false)
     |> Keyword.put_new(:lang, false)
     |> Keyword.put_new(:design, true)
+    |> Keyword.put_new(:tailwind, true)
   end
 
   defp write_layouts_ex(install_dir, opts) do
@@ -165,12 +166,7 @@ defmodule Corex.New.Generate do
   defp copy_design_tree(install_dir, opts) do
     case resolve_design_source(opts, install_dir) do
       {:checkout_priv, priv_root} ->
-        Mix.shell().info([
-          :green,
-          "* copying ",
-          :reset,
-          "Corex design → assets/corex/ (local checkout)"
-        ])
+        Mix.shell().info([:green, "* copying ", :reset, "Corex design → assets/corex/"])
 
         copy_priv_design_siblings!(
           install_dir,
@@ -281,6 +277,7 @@ defmodule Corex.New.Generate do
       theme: !!opts[:theme],
       lang: !!opts[:lang],
       design: !!opts[:design],
+      tailwind: Keyword.get(opts, :tailwind, true),
       themes: opts[:themes],
       default_theme: opts[:default_theme],
       corex_js_import: corex_js_import(install_dir, opts)

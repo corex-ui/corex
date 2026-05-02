@@ -33,18 +33,6 @@ defmodule Corex.New.PhxWrapper do
     :ok
   end
 
-  def run_assets_setup!(install_dir) do
-    Mix.shell().info([:green, "* running ", :reset, "mix assets.setup in #{install_dir}"])
-    pty_cmd_stream!(["assets.setup"], install_dir)
-    :ok
-  end
-
-  def run_format!(install_dir) do
-    Mix.shell().info([:green, "* running ", :reset, "mix format in #{install_dir}"])
-    pty_cmd_stream!(["format"], install_dir)
-    :ok
-  end
-
   @doc """
   Computes the `phx.new` argv from the parsed CLI opts. `--no-install` is
   always appended (Phoenix must not fetch deps at generation time; Corex
@@ -65,7 +53,6 @@ defmodule Corex.New.PhxWrapper do
     |> Kernel.++(if opts[:adapter], do: ["--adapter", opts[:adapter]], else: [])
     |> Kernel.++(if opts[:inside_docker_env], do: ["--inside-docker-env"], else: [])
     |> Kernel.++(if opts[:ecto] == false, do: ["--no-ecto"], else: [])
-    |> Kernel.++(if opts[:live] == false, do: ["--no-live"], else: [])
     |> Kernel.++(phx_new_content_flags(opts))
     |> Kernel.++(["--no-install"])
     |> Kernel.++([path])
@@ -176,13 +163,13 @@ defmodule Corex.New.PhxWrapper do
   end
 
   defp phx_new_content_flags(opts) when is_list(opts) do
+    tailwind_off? =
+      Keyword.get(opts, :design, true) == false and Keyword.get(opts, :tailwind, true) == false
+
     for {on?, flag} <- [
           {Keyword.get(opts, :no_version_check) == true, "--no-version-check"},
-          {Keyword.get(opts, :assets) == false, "--no-assets"},
-          {Keyword.get(opts, :esbuild) == false, "--no-esbuild"},
-          {Keyword.get(opts, :tailwind) == false, "--no-tailwind"},
-          {Keyword.get(opts, :gettext) == false, "--no-gettext"},
-          {Keyword.get(opts, :html) == false, "--no-html"}
+          {tailwind_off?, "--no-tailwind"},
+          {Keyword.get(opts, :gettext) == false, "--no-gettext"}
         ],
         on? do
       flag

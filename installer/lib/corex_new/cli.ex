@@ -74,21 +74,9 @@ defmodule Corex.New.Cli do
   end
 
   def validate_phx_new_flags!(opts) do
-    any_ui? = opts[:mode] == true or opts[:theme] == true or opts[:designex] == true
-
     forbidden =
       []
-      |> then(fn acc -> if opts[:assets] == false, do: ["--no-assets" | acc], else: acc end)
-      |> then(fn acc -> if opts[:esbuild] == false, do: ["--no-esbuild" | acc], else: acc end)
-      |> then(fn acc -> if opts[:html] == false, do: ["--no-html" | acc], else: acc end)
       |> then(fn acc -> if opts[:ecto] == false, do: ["--no-ecto" | acc], else: acc end)
-      |> then(fn acc ->
-        design_on? = opts[:design] != false
-
-        if (design_on? or any_ui?) and opts[:tailwind] == false,
-          do: ["--no-tailwind" | acc],
-          else: acc
-      end)
       |> then(fn acc ->
         if opts[:lang] == true and opts[:gettext] == false,
           do: ["--no-gettext" | acc],
@@ -100,8 +88,7 @@ defmodule Corex.New.Cli do
       Mix.raise("""
       Unsupported Phoenix generator flags: #{Enum.join(forbidden, ", ")}.
 
-      Corex requires a standard Phoenix HTML/assets setup (esbuild + HTML) and requires Ecto in generated apps.
-      `--lang` requires Phoenix Gettext (cannot be combined with `--no-gettext`).
+      Corex requires Ecto in generated apps. `--lang` requires Phoenix Gettext (cannot use `--no-gettext`).
       If you need a highly customized Phoenix app, generate it first with `mix phx.new`, then follow `guides/manual_installation.md`.
       """)
     end

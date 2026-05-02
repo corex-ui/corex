@@ -11,6 +11,7 @@ defmodule Corex.New.TemplatesTest do
     theme: false,
     lang: false,
     design: true,
+    tailwind: true,
     themes: ["neo"],
     default_theme: "neo",
     corex_js_import: "corex"
@@ -174,9 +175,16 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "@import \"../corex/components/select.css\""
     end
 
-    test "omits design imports when design: false" do
+    test "omits design imports when design: false but keeps Tailwind" do
       out = Templates.app_css(Keyword.put(@base_assigns, :design, false))
       refute out =~ "@import \"../corex/main.css\""
+      assert out =~ "@import \"tailwindcss\""
+    end
+
+    test "minimal css when tailwind: false" do
+      out = Templates.app_css(Keyword.put(@base_assigns, :tailwind, false))
+      refute out =~ "@import \"tailwindcss\""
+      assert out =~ "[data-phx-session]"
     end
   end
 end

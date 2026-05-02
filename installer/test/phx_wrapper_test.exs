@@ -36,6 +36,34 @@ defmodule Corex.New.PhxWrapperTest do
       refute "--dev" in argv
       refute "../corex" in argv
     end
+
+    test "never emits --no-live, --no-html, --no-esbuild, --no-assets" do
+      argv =
+        PhxWrapper.build_phx_new_argv(
+          [design: false, tailwind: false, ecto: false, database: "postgres"],
+          "/tmp/x"
+        )
+
+      refute "--no-live" in argv
+      refute "--no-html" in argv
+      refute "--no-esbuild" in argv
+      refute "--no-assets" in argv
+    end
+
+    test "includes --no-tailwind only when design off and tailwind off" do
+      argv = PhxWrapper.build_phx_new_argv([design: false, tailwind: false], "/tmp/x")
+      assert "--no-tailwind" in argv
+    end
+
+    test "omits --no-tailwind when design on even if tailwind off" do
+      argv = PhxWrapper.build_phx_new_argv([design: true, tailwind: false], "/tmp/x")
+      refute "--no-tailwind" in argv
+    end
+
+    test "omits --no-tailwind when design off and tailwind on" do
+      argv = PhxWrapper.build_phx_new_argv([design: false, tailwind: true], "/tmp/x")
+      refute "--no-tailwind" in argv
+    end
   end
 
   describe "shell_quote/1" do

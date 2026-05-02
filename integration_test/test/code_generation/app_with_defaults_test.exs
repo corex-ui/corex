@@ -134,7 +134,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has no compilation or formatter warnings" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
 
         mix_run!(~w(corex.gen.live Blog Post posts title:unique body:string p:boolean s:enum:a:b:c), app_root_path)
 
@@ -162,7 +162,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
 
         mix_run!(~w(corex.gen.live Blog Post posts title body:string public:boolean status:enum:unpublished:published:deleted), app_root_path)
 
@@ -225,7 +225,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
     @tag database: :postgresql
     test "generated LiveView templates use layout_heading, data_list, @form.id, action delete" do
       with_installer_tmp("gen_live_e2e", fn tmp_dir ->
-        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", ["--live"])
+        {app_root_path, _} = generate_corex_app(tmp_dir, "phx_blog", [])
 
         mix_run!(
           ~w(corex.gen.live Blog Post posts title:string body:text),

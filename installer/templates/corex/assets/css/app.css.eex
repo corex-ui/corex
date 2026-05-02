@@ -1,3 +1,4 @@
+<%= if @tailwind do %>
 /* See the Tailwind configuration guide for advanced usage
    https://tailwindcss.com/docs/configuration */
 
@@ -36,3 +37,6 @@
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 /* This file is for your main application CSS */
+<% else %>
+[data-phx-session], [data-phx-teleported-src] { display: contents }
+<% end %>

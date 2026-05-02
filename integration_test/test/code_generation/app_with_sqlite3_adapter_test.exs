@@ -58,7 +58,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithSQLite3AdapterTest do
     test "has a passing test suite" do
       with_installer_tmp("app_with_defaults", fn tmp_dir ->
         {app_root_path, _} =
-          generate_corex_app(tmp_dir, "default_sqlite3_app", ["--database", "sqlite3", "--live"])
+          generate_corex_app(tmp_dir, "default_sqlite3_app", ["--database", "sqlite3"])
 
         mix_run!(~w(corex.gen.live Blog Post posts title body:string status:enum:unpublished:published:deleted), app_root_path)
 

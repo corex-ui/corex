@@ -69,31 +69,39 @@ Pass `--force` to overwrite.
 
 ## Corex options (`mix corex.new`)
 
-Corex flags are unique and **do not conflict** with `phx.new` switches, so you can pass them bare alongside Phoenix flags.
+Run **`mix help corex.new`** for the full switch list. Corex-only flags can be mixed with Phoenix flags in one command.
 
-| Flag                          | Effect                                                                                                                                                                                                                                                                                                                       |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--mode`                      | Light/dark mode: plugs, assigns, root-layout script, mode toggle (see [Dark mode](dark_mode.html)). **Implies `--design`**.                                                                                                                                                                                                  |
-| `--theme`                     | Theme picker (neo, uno, duo, leo): plugs, assigns, theme toggle (see [Theming](theming.html)). **Implies `--design`**.                                                                                                                                                                                                       |
-| `--lang`                      | Localization with `localize_web`, Path plug, router helpers (see [Localize](localize.html)). Does **not** imply `--design`.                                                                                                                                                                                                  |
-| `--design` / `--no-design`    | Copy **consumer** design assets from the Corex repo’s `priv/design/corex` tree into `assets/corex/` (no `assets/corex/design/` folder). Writes the Corex `app.css`. Pass **`--no-design`** for stock Phoenix Tailwind/daisy. **Default: on**.                                                                                  |
-| `--designex`                  | After that, copy **`priv/design/design`** into **`assets/corex/design/`** (token sources next to consumer CSS). Adds the `:designex` Hex dependency (dev runtime), `config :designex`, and runs **`designex corex`** in `assets.build` / `assets.deploy`. **Implies `--design`**.                                           |
-| `--dev PATH`                  | Use a local Corex checkout as a path dep (useful when developing Corex). `PATH` is relative to the generated app; `assets/js/app.js` imports `priv/static/corex.mjs` from that checkout via a relative path.                                                                                                                                                                                 |
+`mix phx.new` is **always** invoked with **`--no-install`**; **`--install` / `--no-install`** on **`corex.new`** only control whether Corex runs **`mix deps.get`** after scaffolding.
 
-The generator always writes Corex-owned files from templates: `layouts.ex`,
-`root.html.heex`, `home.html.heex`, plus feature-specific plug modules under
-`lib/<app>_web/plugs/`. For Phoenix-owned files (`mix.exs`, `<app>_web.ex`,
-`router.ex`, `config/config.exs`) it applies small, idempotent patches.
+LiveView, HTML, esbuild, and the default Phoenix asset layout are always enabled — there are no **`--no-live`**, **`--no-html`**, **`--no-esbuild`**, or **`--no-assets`** switches on **`corex.new`**.
 
-The bundled installer snapshot mirrors **`priv/design`** (sibling **`corex`** and **`design`** folders); default **`--design`** copies only the consumer **`corex`** tree into your app. To refresh design assets after
-upgrading the `corex` dependency, run `mix corex.design --force` (or
-`mix corex.design --designex --force` to also refresh token sources).
+### Corex-only flags
+
+| Flag | Effect |
+| ---- | ------ |
+| **`--no-design`** | Skip copying consumer design assets into **`assets/corex/`** and omit Corex design **`@import`** blocks in **`app.css`**. Default is **`--design`** (on). |
+| **`--tailwind`** / **`--no-tailwind`** | Tailwind defaults **on**. **`--no-tailwind`** is passed through to **`phx.new`** only with **`--no-design`**. With **`--design`**, **`--no-tailwind` is ignored**. |
+| **`--install`** / **`--no-install`** | Whether Corex runs **`mix deps.get`** after generation (prompt if omitted). |
+| **`--mode`** | Light/dark mode plugs, toggle, root-layout bridge ([Dark mode](dark_mode.html)). **Implies `--design`**. |
+| **`--theme`** | Themes (neo, uno, duo, leo), plugs, toggle, bridge ([Theming](theming.html)). **Implies `--design`**. |
+| **`--lang`** | Localize + Gettext, path plug, locale routing ([Localize](localize.html)). Does **not** imply **`--design`**. Requires Phoenix Gettext — do not use **`--no-gettext`**. |
+| **`--designex`** | Copy **`priv/design/design`** into **`assets/corex/design/`**, add `:designex`, asset aliases. **Implies `--design`**. |
+| **`--dev PATH`** | Path dependency on Corex and relative **`corex.mjs`** import; design snapshot from that checkout when **`--design`** is on. |
+
+The generator writes **`layouts.ex`**, **`root.html.heex`**, **`home.html.heex`**, optional plugs under **`lib/<app>_web/plugs/`**, and patches **`mix.exs`**, **`<app>_web.ex`**, **`router.ex`**, **`config/config.exs`**.
+
+The bundled installer snapshot mirrors **`priv/design`**. With default **`--design`**, only the consumer **`corex`** tree is copied. Refresh with **`mix corex.design --force`** or **`mix corex.design --designex --force`**.
+
+### Phoenix flags (forwarded)
+
+Anything **`corex.new`** forwards matches **`mix phx.new`** — see **`mix help phx.new`** and [Hexdocs: mix phx.new](https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html). Examples: **`--database`**, **`--adapter`**, **`--app`**, **`--module`**, **`--no-dashboard`**, **`--no-mailer`**, **`--no-version-check`**. **`--no-ecto`** is not supported for Corex-generated apps.
 
 Examples:
 
 ```bash
 mix corex.new my_app --mode --theme --lang
 mix corex.new my_app --no-design
+mix corex.new my_app --no-design --no-tailwind
 mix corex.new my_app --dev ../corex
 ```
 

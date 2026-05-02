@@ -30,7 +30,7 @@ defmodule Corex.New.PostGenerate do
     end
   end
 
-  def prompt_install(phx_root, install_dir, opts) do
+  def prompt_install(phx_root, _install_dir, opts) do
     install? =
       Keyword.get_lazy(opts, :install, fn ->
         Mix.shell().yes?("\nFetch and install dependencies?")
@@ -40,24 +40,35 @@ defmodule Corex.New.PostGenerate do
 
     if install? do
       PhxWrapper.run_deps_get!(phx_root)
-      PhxWrapper.run_format!(install_dir)
-      PhxWrapper.run_assets_setup!(install_dir)
-    else
-      Mix.shell().info("""
-
-      Next steps:
-
-          $ cd #{cd_hint}
-          $ mix deps.get
-          $ cd #{Cli.relative_to_cwd_hint(install_dir)}
-          $ mix assets.setup
-      """)
     end
+
+    next_steps =
+      if install? do
+        """
+
+        Next steps:
+
+            $ cd #{cd_hint}
+            $ mix assets.setup
+        """
+      else
+        """
+
+        Next steps:
+
+            $ cd #{cd_hint}
+            $ mix deps.get
+            $ mix assets.setup
+        """
+      end
+
+    Mix.shell().info(next_steps)
 
     Mix.shell().info("""
 
     Start the app:
 
+        $ cd #{cd_hint}
         $ mix phx.server
     """)
   end

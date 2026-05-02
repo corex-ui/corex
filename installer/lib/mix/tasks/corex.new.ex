@@ -2,43 +2,59 @@ defmodule Mix.Tasks.Corex.New do
   @moduledoc """
   Creates a new Phoenix application with Corex installed.
 
-  Requires the **`phx_new`** archive. Install it first:
+  Install archives:
 
       mix archive.install hex phx_new
+      mix archive.install hex corex_new
 
-  `mix corex.new my_app` runs **`mix phx.new my_app --no-install`** with any
-  forwarded Phoenix flags, then renders Corex-owned files from templates
-  directly into the generated app. No Igniter. No nested generator.
+  `mix corex.new PATH` runs **`mix phx.new PATH --no-install`** with forwarded Phoenix flags,
+  then writes Corex-owned files and patches into that app. **`--no-install`** is always passed to
+  Phoenix so dependency fetching stays under Corex control.
 
-  ## 1) Phoenix (forwarded to `phx.new`)
+  LiveView, HTML, esbuild, and the default Phoenix asset setup are **always on** — Corex does not
+  forward **`--no-live`**, **`--no-html`**, **`--no-esbuild`**, or **`--no-assets`**.
 
-  Matches **`mix help phx.new`**: for example **`--no-ecto`**, **`--no-version-check`**,
-  and **`--database sqlite3`**.
+  **`mix phx.new --dev`** (Phoenix from a Git checkout) is **not** forwarded. **`--dev`** on this task
+  means a **Corex** path dependency only.
 
-  **`phx.new --dev`** (install Phoenix from a local clone) is **not** forwarded — the
-  Corex CLI reserves **`--dev`** for local Corex development. To scaffold with a
-  Phoenix Git checkout, run **`mix phx.new`** yourself, then follow the manual-install guide.
+  ## Corex-only options
 
-  Notes:
+  * **`--no-design`** — skip copying consumer design assets into `assets/corex/` and omit Corex design `@import` blocks in `app.css`. Default is **`--design`** (design on).
+  * **`--tailwind`** / **`--no-tailwind`** — Tailwind in the generated Phoenix app defaults **on**. **`--no-tailwind`** is forwarded to **`phx.new`** only together with **`--no-design`**. If **`--design`** is on, **`--no-tailwind` is ignored** (Corex design CSS expects Tailwind).
+  * **`--mode`** — plugs, mode toggle, root-layout bridge for light/dark. Implies **`--design`**.
+  * **`--theme`** — themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
+  * **`--lang`** — Localize + Gettext, path plug, locale scope helpers, `language_switch`.
+  * **`--designex`** — copy token sources into `assets/corex/design/`, add `:designex`, asset aliases. Implies **`--design`**.
+  * **`--dev PATH`** — `{:corex, path: PATH}` and relative `corex.mjs` import when building JS; design copies from that checkout when **`--design`** is on.
+  * **`--install`** / **`--no-install`** — whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
 
-  * `--no-tailwind`, `--no-assets`, `--no-esbuild`, `--no-html` are not supported by Corex and will fail validation.
-  * `--no-gettext` is forbidden when `--lang` is set (Gettext is required for `--lang`).
-  * `--umbrella` is not currently supported; generate manually with `mix phx.new --umbrella ...` and follow the manual-install guide.
+  ## Options forwarded to **`mix phx.new`**
 
-  ## 2) Corex flags (never forwarded to `phx.new`)
+  Same semantics as Phoenix’s installer — see **`mix help phx.new`** on [Hexdocs](https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html).
 
-  * **`--dev PATH`** — installs `corex` as a path dep at `PATH` instead of Hex; copies design from that checkout when `--design` is on; generates **`import ...`** from `assets/js/app.js` to **`PATH/priv/static/corex.mjs`** (relative path). Path is relative to the generated app (for a sibling clone, use `../corex`).
-  * `--design` / **`--no-design`** — copy consumer assets from `priv/design/corex` into `assets/corex/` (no `assets/corex/design/`); write the Corex `app.css`. **Default: on**.
-  * `--designex` — copy `priv/design/design` into `assets/corex/design/`, add `{:designex, …}`, `config :designex`, and `designex corex` in asset aliases; implies `--design`.
-  * `--mode` — generate `Plugs.Mode`, mode toggle, and `data-mode` bridge in the root layout. Implies `--design`.
-  * `--theme` — enable themes (Neo/Uno/Duo/Leo), `Plugs.Theme`, theme toggle, and `data-theme` bridge. Implies `--design`.
-  * `--lang` — set up Localize + Gettext: `Plugs.Path`, locale-aware router helpers, layout `lang/dir` and `language_switch` component.
-  * `--install` / **`--no-install`** — control whether to run the final `mix deps.get` / `mix assets.setup` step (prompt if omitted).
+  Supported switches include for example:
+
+  * **`--database`** (`postgres`, `mysql`, `sqlite3`, `mssql`, …)
+  * **`--adapter`** (`bandit`, `cowboy`)
+  * **`--app`**, **`--module`**, **`--web-module`**, **`--prefix`**
+  * **`--binary-id`**, **`--verbose`**, **`--inside-docker-env`**
+  * **`--no-dashboard`**, **`--no-mailer`**, **`--no-gettext`**, **`--no-version-check`**
+
+  **`--no-ecto`** is rejected (Corex expects Ecto in generated apps).
+
+  **`--no-gettext`** is incompatible with **`--lang`**.
+
+  **`--umbrella`** is not supported here yet; use **`mix phx.new --umbrella`** and **`guides/manual_installation.md`**.
+
+  ## After generation
+
+  The installer prints **`Next steps`** (**`cd`**, **`mix deps.get`** only if dependencies were not fetched, then **`mix assets.setup`**) and **`Start the app`** (**`cd`**, **`mix phx.server`**). Each block begins with **`cd`** into the project.
 
   ## Examples
 
       mix corex.new hello_world
       mix corex.new my_app --mode --theme --lang
+      mix corex.new my_app --no-design --no-tailwind
       mix corex.new my_app --dev ../corex
   """
   use Mix.Task
@@ -52,7 +68,6 @@ defmodule Mix.Tasks.Corex.New do
     dev: :string,
     design: :boolean,
     designex: :boolean,
-    live: :boolean,
     mode: :boolean,
     theme: :boolean,
     lang: :boolean,
@@ -71,11 +86,8 @@ defmodule Mix.Tasks.Corex.New do
     adapter: :string,
     inside_docker_env: :boolean,
     no_version_check: :boolean,
-    assets: :boolean,
-    esbuild: :boolean,
     tailwind: :boolean,
     gettext: :boolean,
-    html: :boolean,
     mcp: :boolean
   ]
 
@@ -97,6 +109,7 @@ defmodule Mix.Tasks.Corex.New do
       |> Keyword.put_new(:mcp, true)
       |> Keyword.put_new(:theme, false)
       |> Keyword.put_new(:design, true)
+      |> Keyword.put_new(:tailwind, true)
       |> Cli.maybe_auto_enable_design()
 
     Cli.validate_corex_flags!(opts)
