@@ -3,15 +3,6 @@ defmodule E2eWeb.ToastPlayLive do
 
   import E2eWeb.DemoPage, only: [demo_playground: 1]
 
-  @placement_items [
-    %{label: "Top start", id: "top-start"},
-    %{label: "Top", id: "top"},
-    %{label: "Top end", id: "top-end"},
-    %{label: "Bottom start", id: "bottom-start"},
-    %{label: "Bottom", id: "bottom"},
-    %{label: "Bottom end", id: "bottom-end"}
-  ]
-
   @type_items [
     %{label: "Info", id: "info"},
     %{label: "Success", id: "success"},
@@ -20,14 +11,12 @@ defmodule E2eWeb.ToastPlayLive do
   ]
 
   @toast_types ~w(info success error loading)
-  @toast_placements ~w(top-start top top-end bottom-start bottom bottom-end)
 
   @toast_field_types %{
     title: :string,
     message: :string,
     type: :string,
-    duration: :string,
-    placement: :string
+    duration: :string
   }
 
   @toast_fields Map.keys(@toast_field_types)
@@ -40,15 +29,12 @@ defmodule E2eWeb.ToastPlayLive do
         title: "Saved",
         message: "From the playground form.",
         type: "info",
-        duration: "5000",
-        placement: "bottom-end"
+        duration: "5000"
       })
 
     {:ok,
      socket
      |> assign(:form, to_form(changeset, as: :toast))
-     |> assign(:controls, %{placement: "bottom-end"})
-     |> assign(:placement_items, @placement_items)
      |> assign(:type_items, @type_items)}
   end
 
@@ -68,16 +54,10 @@ defmodule E2eWeb.ToastPlayLive do
       |> Ecto.Changeset.cast(params, @toast_fields)
       |> Ecto.Changeset.validate_required(@toast_fields)
       |> Ecto.Changeset.validate_inclusion(:type, @toast_types)
-      |> Ecto.Changeset.validate_inclusion(:placement, @toast_placements)
       |> validate_toast_duration()
 
     if changeset.valid? do
-      placement = Ecto.Changeset.get_field(changeset, :placement)
-
-      socket =
-        socket
-        |> update(:controls, &%{&1 | placement: placement})
-        |> push_layout_toast(changeset)
+      socket = push_layout_toast(socket, changeset)
 
       {:noreply,
        socket
@@ -91,26 +71,6 @@ defmodule E2eWeb.ToastPlayLive do
   @impl true
   def handle_event("create_toast", _, socket) do
     {:noreply, put_flash(socket, :error, "Missing toast params.")}
-  end
-
-  @impl true
-  def handle_event("control_changed", %{"value" => [value], "id" => "placement"}, socket) do
-    {:noreply, update(socket, :controls, &%{&1 | placement: value})}
-  end
-
-  def handle_event("control_changed", _params, socket), do: {:noreply, socket}
-
-  @impl true
-  def handle_event("toast_play_preview", _, socket) do
-    {:noreply,
-     Corex.Toast.push_toast(
-       socket,
-       "toast-play-preview",
-       "Preview",
-       "Placement #{socket.assigns.controls.placement}.",
-       :info,
-       4000
-     )}
   end
 
   defp validate_toast_duration(changeset) do
@@ -165,34 +125,10 @@ defmodule E2eWeb.ToastPlayLive do
         id="toast-playground"
         title="Toast · Playground"
         heading_class="layout-heading"
+        controls_strip={false}
       >
-        <:controls>
-          <.select
-            id="placement"
-            class="select select--accent w-4xs"
-            value={[@controls.placement]}
-            deselectable={false}
-            items={@placement_items}
-            on_value_change="control_changed"
-            translation={%Corex.Select.Translation{placeholder: "Preview placement"}}
-            positioning={%Corex.Positioning{same_width: true}}
-          >
-            <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
-            <:label>Preview placement</:label>
-          </.select>
-          <.action phx-click="toast_play_preview" class="button button--sm">
-            Preview in slot
-          </.action>
-        </:controls>
         <:canvas>
           <div class="flex w-full max-w-lg flex-col gap-size">
-            <p class="typo-sm text-ink-muted">
-              LiveView <span class="font-mono">phx-change</span>
-              and <span class="font-mono">phx-submit</span>;
-              valid submits call <span class="font-mono">Corex.Toast.push_toast/6</span>
-              on the shell group.
-              Preview placement applies only to the slot below.
-            </p>
             <.form
               for={@form}
               id="toast-playground-form"
@@ -216,29 +152,26 @@ defmodule E2eWeb.ToastPlayLive do
                   <.heroicon name="hero-chevron-down" />
                 </:trigger>
               </.select>
-              <.native_input field={@form[:duration]} type="number" required min={0} step={1}>
-                <:label>Duration (ms, 0 = infinite)</:label>
-              </.native_input>
-              <.select
-                class="select select--accent w-full"
-                field={@form[:placement]}
-                items={@placement_items}
+              <.number_input
+                field={@form[:duration]}
+                class="number-input"
+                min={0.0}
+                step={1.0}
+                required
               >
-                <:label>Placement (sidebar syncs after submit)</:label>
-                <:trigger>
-                  <.heroicon name="hero-chevron-down" />
-                </:trigger>
-              </.select>
+                <:label>Duration (ms, 0 = infinite)</:label>
+                <:decrement_trigger>
+                  <.heroicon name="hero-chevron-down" class="icon" />
+                </:decrement_trigger>
+                <:increment_trigger>
+                  <.heroicon name="hero-chevron-up" class="icon" />
+                </:increment_trigger>
+              </.number_input>
               <footer class="flex w-full justify-end">
                 <.action type="submit" class="button button--accent">Create toast</.action>
               </footer>
             </.form>
-            <.toast_group
-              id="toast-play-preview"
-              class="toast"
-              placement={@controls.placement}
-              flash={%{}}
-            >
+            <.toast_group id="toast-play-preview" class="toast" placement="bottom-end" flash={%{}}>
               <:loading>
                 <.heroicon name="hero-arrow-path" class="icon" />
               </:loading>

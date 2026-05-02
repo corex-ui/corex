@@ -176,7 +176,6 @@ defmodule E2eWeb.DocA11yRoutes do
     {"/en/timer/events", "#timer-events-page"},
     {"/en/timer/style", "#timer-styling-page"},
     {"/en/toast/playground", "#toast-playground"},
-    {"/en/toast/anatomy", "#toast-anatomy-page"},
     {"/en/toast/api", "#toast-api-page"},
     {"/en/toggle-group/playground", "#toggle-group-playground-page"},
     {"/en/toggle-group/anatomy", "#toggle-group-anatomy-page"},

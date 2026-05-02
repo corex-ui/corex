@@ -38,6 +38,15 @@ export function readPayloadChecked(payload: unknown): boolean | undefined {
   return undefined;
 }
 
+export function readPayloadVisible(payload: unknown): boolean | undefined {
+  if (!payload || typeof payload !== "object") return undefined;
+  const o = payload as Record<string, unknown>;
+  const v = o.visible ?? o["visible"];
+  if (v === true || v === "true" || v === 1) return true;
+  if (v === false || v === "false" || v === 0) return false;
+  return undefined;
+}
+
 export function readPayloadId(payload: unknown): string | undefined {
   if (!payload || typeof payload !== "object") return;
   const o = payload as Record<string, unknown>;

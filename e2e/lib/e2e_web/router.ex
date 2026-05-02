@@ -251,9 +251,6 @@ defmodule E2eWeb.Router do
     get "/tabs/anatomy", PageController, :tabs_page
     get "/tabs/style", PageController, :tabs_styling_page
 
-    get "/toast/anatomy", PageController, :toast_page
-    post "/toast", PageController, :create_toast
-
     get "/toggle-group/anatomy", PageController, :toggle_group_page
     get "/toggle-group/style", PageController, :toggle_group_styling_page
     get "/tree-view/anatomy", PageController, :tree_view_page

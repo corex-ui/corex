@@ -3,15 +3,27 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def minimal_code do
     ~S"""
-    <.switch id="switch-anatomy-minimal" class="switch">
-      <:label>Enable</:label>
-    </.switch>
+    <.switch id="switch-anatomy-minimal" class="switch" aria_label="Enable notifications" />
     """
   end
 
   def minimal_example(assigns) do
     ~H"""
-    <.switch id="switch-anatomy-minimal" class="switch">
+    <.switch id="switch-anatomy-minimal" class="switch" aria_label="Enable notifications" />
+    """
+  end
+
+  def with_label_code do
+    ~S"""
+    <.switch id="switch-anatomy-labeled" class="switch">
+      <:label>Enable</:label>
+    </.switch>
+    """
+  end
+
+  def with_label_example(assigns) do
+    ~H"""
+    <.switch id="switch-anatomy-labeled" class="switch">
       <:label>Enable</:label>
     </.switch>
     """
@@ -133,9 +145,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def api_set_checked_client_binding_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">On</.action>
       <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button button--sm">Off</.action>
+      <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button button--sm">Toggle</.action>
     </div>
     <.switch id="switch-api-cb" class="switch">
       <:label>Power</:label>
@@ -147,29 +160,48 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-2 mb-4 w-full max-w-4xl">
-      <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">
-        On
-      </.action>
-      <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button button--sm">
-        Off
-      </.action>
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-start">
+      <div class="flex flex-wrap gap-2 mb-0">
+        <.action phx-click={Corex.Switch.set_checked("switch-api-cb", true)} class="button button--sm">
+          On
+        </.action>
+        <.action phx-click={Corex.Switch.set_checked("switch-api-cb", false)} class="button button--sm">
+          Off
+        </.action>
+        <.action phx-click={Corex.Switch.toggle_checked("switch-api-cb")} class="button button--sm">
+          Toggle
+        </.action>
+      </div>
+      <.switch id="switch-api-cb" class="switch">
+        <:label>Power</:label>
+      </.switch>
     </div>
-    <.switch id="switch-api-cb" class="switch">
-      <:label>Power</:label>
-    </.switch>
     """
   end
 
   def api_set_checked_client_js_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap gap-2 mb-4">
       <button
         type="button"
         class="button button--sm"
         onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: true } }))"
       >
-        On (client JS)
+        On
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: false } }))"
+      >
+        Off
+      </button>
+      <button
+        type="button"
+        class="button button--sm"
+        onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:toggle-checked', { bubbles: false }))"
+      >
+        Toggle
       </button>
     </div>
     <.switch id="switch-api-cjs" class="switch">
@@ -181,18 +213,32 @@ defmodule E2eWeb.Demos.SwitchDemo do
   def api_set_checked_client_js_js do
     ~S"""
     const el = document.getElementById("switch-api-cjs");
+
     el?.dispatchEvent(
       new CustomEvent("corex:switch:set-checked", { bubbles: false, detail: { checked: true } })
     );
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:switch:set-checked", { bubbles: false, detail: { checked: false } })
+    );
+
+    el?.dispatchEvent(new CustomEvent("corex:switch:toggle-checked", { bubbles: false }));
     """
   end
 
   def api_set_checked_client_js_ts do
     ~S"""
     const el: HTMLElement | null = document.getElementById("switch-api-cjs");
+
     el?.dispatchEvent(
       new CustomEvent("corex:switch:set-checked", { bubbles: false, detail: { checked: true } })
     );
+
+    el?.dispatchEvent(
+      new CustomEvent("corex:switch:set-checked", { bubbles: false, detail: { checked: false } })
+    );
+
+    el?.dispatchEvent(new CustomEvent("corex:switch:toggle-checked", { bubbles: false }));
     """
   end
 
@@ -200,14 +246,28 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-start">
+      <div class="flex flex-wrap gap-2 mb-0">
         <button
           type="button"
           class="button button--sm"
           onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: true } }))"
         >
-          On (client JS)
+          On
+        </button>
+        <button
+          type="button"
+          class="button button--sm"
+          onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:set-checked', {bubbles: false, detail: { checked: false } }))"
+        >
+          Off
+        </button>
+        <button
+          type="button"
+          class="button button--sm"
+          onclick="document.getElementById('switch-api-cjs')?.dispatchEvent(new CustomEvent('corex:switch:toggle-checked', { bubbles: false }))"
+        >
+          Toggle
         </button>
       </div>
       <.switch id="switch-api-cjs" class="switch">
@@ -219,9 +279,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
 
   def api_set_checked_server_heex do
     ~S"""
-    <div class="layout__row">
+    <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click="switch_api_on" class="button button--sm">On</.action>
       <.action phx-click="switch_api_off" class="button button--sm">Off</.action>
+      <.action phx-click="switch_api_toggle" class="button button--sm">Toggle</.action>
     </div>
     <.switch id="switch-api-srv" class="switch">
       <:label>Power</:label>
@@ -238,6 +299,10 @@ defmodule E2eWeb.Demos.SwitchDemo do
     def handle_event("switch_api_off", _params, socket) do
       {:noreply, Corex.Switch.set_checked(socket, "switch-api-srv", false)}
     end
+
+    def handle_event("switch_api_toggle", _params, socket) do
+      {:noreply, Corex.Switch.toggle_checked(socket, "switch-api-srv")}
+    end
     """
   end
 
@@ -245,10 +310,11 @@ defmodule E2eWeb.Demos.SwitchDemo do
     _ = assigns
 
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+    <div class="w-full max-w-4xl flex flex-col gap-4 items-start">
+      <div class="flex flex-wrap gap-2 mb-0">
         <.action phx-click="switch_api_on" class="button button--sm">On</.action>
         <.action phx-click="switch_api_off" class="button button--sm">Off</.action>
+        <.action phx-click="switch_api_toggle" class="button button--sm">Toggle</.action>
       </div>
       <.switch id="switch-api-srv" class="switch">
         <:label>Power</:label>
@@ -276,6 +342,9 @@ defmodule E2eWeb.Demos.SwitchDemo do
       <.action phx-click={Corex.Switch.set_checked(@id, true)} class="button button--sm">On</.action>
       <.action phx-click={Corex.Switch.set_checked(@id, false)} class="button button--sm">
         Off
+      </.action>
+      <.action phx-click={Corex.Switch.toggle_checked(@id)} class="button button--sm">
+        Toggle
       </.action>
     </div>
     <.switch id={@id} class="switch">

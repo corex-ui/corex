@@ -6,10 +6,6 @@
     max-width: var(--container-md);
   }
 
-  .timer [data-scope="timer"][data-part="root"] {
-    @apply ui-root;
-  }
-
   .timer [data-scope="timer"][data-part="area"] {
     display: flex;
     width: 100%;
@@ -71,19 +67,29 @@
   }
 }
 
-@utility timer--* {
-  max-width: --value(--container-*, [length]);
+@utility timer--sm {
+  max-width: var(--container-sm);
+}
 
+@utility timer--md {
+  max-width: var(--container-md);
+}
+
+@utility timer--lg {
+  max-width: var(--container-lg);
+}
+
+@utility timer--xl {
+  max-width: var(--container-xl);
+}
+
+@utility timer--text-* {
   [data-scope="timer"][data-part="item"] {
-    background: --value(--color-ui, [color]);
-    color: --value(--color-ink, [color]);
-    border-color: --value(--color-border, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
 
   [data-scope="timer"][data-part="separator"] {
-    color: --value(--color-ink, [color]);
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
   }
@@ -91,5 +97,71 @@
   [data-scope="timer"][data-part="action-trigger"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
+  }
+}
+
+@utility timer--rounded-* {
+  [data-scope="timer"][data-part="item"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}
+
+@utility timer--accent {
+  [data-scope="timer"][data-part="item"] {
+    background: var(--color-accent-muted);
+    color: var(--color-accent-ink);
+    border-color: var(--color-accent);
+  }
+
+  [data-scope="timer"][data-part="separator"] {
+    color: var(--color-accent-ink);
+  }
+}
+
+@utility timer--brand {
+  [data-scope="timer"][data-part="item"] {
+    background: var(--color-brand-muted);
+    color: var(--color-brand-ink);
+    border-color: var(--color-brand);
+  }
+
+  [data-scope="timer"][data-part="separator"] {
+    color: var(--color-brand-ink);
+  }
+}
+
+@utility timer--alert {
+  [data-scope="timer"][data-part="item"] {
+    background: var(--color-alert-muted);
+    color: var(--color-alert-ink);
+    border-color: var(--color-alert);
+  }
+
+  [data-scope="timer"][data-part="separator"] {
+    color: var(--color-alert-ink);
+  }
+}
+
+@utility timer--info {
+  [data-scope="timer"][data-part="item"] {
+    background: var(--color-info-muted);
+    color: var(--color-info-ink);
+    border-color: var(--color-info);
+  }
+
+  [data-scope="timer"][data-part="separator"] {
+    color: var(--color-info-ink);
+  }
+}
+
+@utility timer--success {
+  [data-scope="timer"][data-part="item"] {
+    background: var(--color-success-muted);
+    color: var(--color-success-ink);
+    border-color: var(--color-success);
+  }
+
+  [data-scope="timer"][data-part="separator"] {
+    color: var(--color-success-ink);
   }
 }

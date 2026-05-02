@@ -37,7 +37,7 @@ defmodule E2eWeb.SelectApiLive do
       <.demo_page
         id="select-api-page"
         title="Select · API"
-        subtitle="Change handlers, Set value, and Set open from LiveView, client actions, and server events."
+        subtitle="Value change events and programmatic value from client bindings, DOM dispatch, or LiveView push."
       >
         <.demo_section
           id="select-api-on-value-server"
@@ -90,7 +90,9 @@ defmodule E2eWeb.SelectApiLive do
         <.demo_section
           id="select-api-set-value-client-binding"
           title="Set value (Client binding)"
-          code={@codes.set_value_client_binding}
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_value_client_binding}
+          ]}
         >
           <:preview><Demo.api_set_value_client_binding_example /></:preview>
         </.demo_section>

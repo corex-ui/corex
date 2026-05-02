@@ -554,7 +554,7 @@ defmodule E2eWeb.Helpers do
           label: "Toast",
           id: "toast",
           pattern: false,
-          anatomy_to: ~p"/toast/anatomy",
+          anatomy: false,
           event: false,
           playground_to: ~p"/toast/playground",
           api_to: ~p"/toast/api"

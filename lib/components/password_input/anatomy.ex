@@ -59,9 +59,9 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule Label do
     @moduledoc false
-    defstruct [:id, :dir, orientation: "horizontal"]
+    defstruct [:id, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{id: String.t(), orientation: String.t()}
 
     @ignored_attrs [
       "id",
@@ -71,21 +71,19 @@ defmodule Corex.PasswordInput.Anatomy do
       "data-invalid",
       "data-readonly",
       "data-required",
-      "data-orientation",
-      "dir"
+      "data-orientation"
     ]
     def ignored_attrs, do: @ignored_attrs
   end
 
   defmodule Control do
     @moduledoc false
-    defstruct [:id, :dir, orientation: "horizontal"]
+    defstruct [:id, orientation: "horizontal"]
 
-    @type t :: %__MODULE__{id: String.t(), dir: String.t(), orientation: String.t()}
+    @type t :: %__MODULE__{id: String.t(), orientation: String.t()}
 
     @ignored_attrs [
       "id",
-      "dir",
       "data-orientation",
       "data-disabled",
       "data-invalid",
@@ -96,7 +94,7 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule Input do
     @moduledoc false
-    defstruct [:id, :disabled, :name, :form, :auto_complete, :dir, orientation: "horizontal"]
+    defstruct [:id, :disabled, :name, :form, :auto_complete, orientation: "horizontal"]
 
     @type t :: %__MODULE__{
             id: String.t(),
@@ -104,13 +102,11 @@ defmodule Corex.PasswordInput.Anatomy do
             name: String.t() | nil,
             form: String.t() | nil,
             auto_complete: String.t(),
-            dir: String.t(),
             orientation: String.t()
           }
 
     @ignored_attrs [
       "id",
-      "dir",
       "data-orientation",
       "type",
       "name",
@@ -141,18 +137,16 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule VisibilityTrigger do
     @moduledoc false
-    defstruct [:id, :dir, :aria_label, orientation: "horizontal"]
+    defstruct [:id, :aria_label, orientation: "horizontal"]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
             aria_label: String.t() | nil,
             orientation: String.t()
           }
 
     @ignored_attrs [
       "id",
-      "dir",
       "data-orientation",
       "type",
       "tabIndex",
@@ -170,11 +164,10 @@ defmodule Corex.PasswordInput.Anatomy do
 
   defmodule Indicator do
     @moduledoc false
-    defstruct [:id, :dir, :visible, orientation: "horizontal"]
+    defstruct [:id, :visible, orientation: "horizontal"]
 
     @type t :: %__MODULE__{
             id: String.t(),
-            dir: String.t(),
             visible: boolean(),
             orientation: String.t()
           }
@@ -185,8 +178,7 @@ defmodule Corex.PasswordInput.Anatomy do
       "data-disabled",
       "data-invalid",
       "data-readonly",
-      "data-orientation",
-      "dir"
+      "data-orientation"
     ]
     def ignored_attrs, do: @ignored_attrs
   end

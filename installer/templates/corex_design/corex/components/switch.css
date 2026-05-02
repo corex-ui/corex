@@ -101,32 +101,112 @@
   }
 }
 
-@utility switch--* {
+@utility switch--sm {
   [data-scope="switch"][data-part="root"] {
-    max-width: --value(--container-*, [length]);
-  }
-
-  [data-scope="switch"][data-part="control"][data-state="checked"] {
-    background-color: --value(--color-*, [color]);
-
-    [data-scope="switch"][data-part="thumb"] {
-      background-color: --value(--color-*-ink, [color]);
-    }
+    max-width: var(--container-sm);
   }
 
   [data-scope="switch"][data-part="control"] {
-    --switch-track-width: calc(
-      calc(--value(--spacing-*, [length]) * 1.5) * 2.5
-    );
-    --switch-track-height: calc(--value(--spacing-*, [length]) * 1.5);
+    --switch-track-width: calc(calc(var(--spacing-size-sm) * 1.5) * 2.5);
+    --switch-track-height: calc(var(--spacing-size-sm) * 1.5);
     --switch-track-diff: calc(
       var(--switch-track-width) - var(--switch-track-height)
     );
     --switch-thumb-x: var(--switch-track-diff);
   }
+}
 
-  [data-scope="switch"][data-part="control"]:not([data-state="checked"])
-    [data-scope="switch"][data-part="thumb"] {
-    background: var(--color-ink);
+@utility switch--md {
+  [data-scope="switch"][data-part="root"] {
+    max-width: var(--container-md);
+  }
+
+  [data-scope="switch"][data-part="control"] {
+    --switch-track-width: calc(calc(var(--spacing-size-md) * 1.5) * 2.5);
+    --switch-track-height: calc(var(--spacing-size-md) * 1.5);
+    --switch-track-diff: calc(
+      var(--switch-track-width) - var(--switch-track-height)
+    );
+    --switch-thumb-x: var(--switch-track-diff);
+  }
+}
+
+@utility switch--lg {
+  [data-scope="switch"][data-part="root"] {
+    max-width: var(--container-lg);
+  }
+
+  [data-scope="switch"][data-part="control"] {
+    --switch-track-width: calc(calc(var(--spacing-size-lg) * 1.5) * 2.5);
+    --switch-track-height: calc(var(--spacing-size-lg) * 1.5);
+    --switch-track-diff: calc(
+      var(--switch-track-width) - var(--switch-track-height)
+    );
+    --switch-thumb-x: var(--switch-track-diff);
+  }
+}
+
+@utility switch--xl {
+  [data-scope="switch"][data-part="root"] {
+    max-width: var(--container-xl);
+  }
+
+  [data-scope="switch"][data-part="control"] {
+    --switch-track-width: calc(calc(var(--spacing-size-xl) * 1.5) * 2.5);
+    --switch-track-height: calc(var(--spacing-size-xl) * 1.5);
+    --switch-track-diff: calc(
+      var(--switch-track-width) - var(--switch-track-height)
+    );
+    --switch-thumb-x: var(--switch-track-diff);
+  }
+}
+
+@utility switch--accent {
+  [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-accent);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-accent-ink);
+    }
+  }
+}
+
+@utility switch--brand {
+  [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-brand);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-brand-ink);
+    }
+  }
+}
+
+@utility switch--alert {
+  [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-alert);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-alert-ink);
+    }
+  }
+}
+
+@utility switch--info {
+  [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-info);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-info-ink);
+    }
+  }
+}
+
+@utility switch--success {
+  [data-scope="switch"][data-part="control"][data-state="checked"] {
+    background-color: var(--color-success);
+
+    & [data-scope="switch"][data-part="thumb"] {
+      background-color: var(--color-success-ink);
+    }
   }
 }

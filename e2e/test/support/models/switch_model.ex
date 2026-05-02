@@ -3,6 +3,7 @@ defmodule E2eWeb.SwitchModel do
 
   @anatomy_sections ~w(
     switch-anatomy-minimal
+    switch-anatomy-labeled
   )
 
   def anatomy_section_ids, do: @anatomy_sections

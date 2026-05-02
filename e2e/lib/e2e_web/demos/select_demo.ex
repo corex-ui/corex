@@ -333,10 +333,16 @@ defmodule E2eWeb.Demos.SelectDemo do
 
     """
     <.select id="select-style-sm" class="select select--sm" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-md" class="select select--md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
     <.select id="select-style-lg" class="select select--lg" #{items_attr}>
-      <:trigger><.heroicon name="hero-chevron-down" /></:trigger>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-xl" class="select select--xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
     </.select>
     """
   end
@@ -344,18 +350,172 @@ defmodule E2eWeb.Demos.SelectDemo do
   def styling_size_example(assigns) do
     ~H"""
     <div class="flex flex-col gap-4 w-full max-w-md">
-      <.select
-        id="select-style-sm"
-        class="select select--sm"
-        items={items()}
-      >
+      <.select id="select-style-sm" class="select select--sm" items={items()}>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
-      <.select
-        id="select-style-lg"
-        class="select select--lg"
-        items={items()}
-      >
+      <.select id="select-style-md" class="select select--md" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-lg" class="select select--lg" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-xl" class="select select--xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
+    """
+  end
+
+  def styling_text_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+
+    """
+    <.select id="select-style-text-sm" class="select select--text-sm" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-text-xl" class="select select--text-xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-text-2xl" class="select select--text-2xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-text-4xl" class="select select--text-4xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
+  def styling_text_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.select id="select-style-text-sm" class="select select--text-sm" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-text-xl" class="select select--text-xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-text-2xl" class="select select--text-2xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-text-4xl" class="select select--text-4xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+
+    """
+    <.select id="select-style-rounded-none" class="select select--rounded-none" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-rounded-md" class="select select--rounded-md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-rounded-lg" class="select select--rounded-lg" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-rounded-xl" class="select select--rounded-xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-rounded-full" class="select select--rounded-full" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.select id="select-style-rounded-none" class="select select--rounded-none" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-rounded-md" class="select select--rounded-md" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-rounded-lg" class="select select--rounded-lg" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-rounded-xl" class="select select--rounded-xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-rounded-full" class="select select--rounded-full" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+
+    """
+    <.select id="select-style-max-2xs" class="select max-w-2xs" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-max-md" class="select max-w-md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-max-xl" class="select max-w-xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-max-2xl" class="select max-w-2xl" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 w-full items-start">
+      <.select id="select-style-max-2xs" class="select max-w-2xs" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-max-md" class="select max-w-md" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-max-xl" class="select max-w-xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-max-2xl" class="select max-w-2xl" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
+    """
+  end
+
+  def styling_mix_modifiers_code do
+    items_attr =
+      ~S|items={Corex.List.new([%{label: "France", id: "fra"}, %{label: "Belgium", id: "bel"}, %{label: "Germany", id: "deu"}])}|
+
+    """
+    <.select id="select-style-mix-1" class="select select--sm select--brand max-w-2xs" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-mix-2" class="select select--lg select--accent max-w-md" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    <.select id="select-style-mix-3" class="select select--sm select--rounded-lg select--alert max-w-lg" #{items_attr}>
+      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+    </.select>
+    """
+  end
+
+  def styling_mix_modifiers_example(assigns) do
+    ~H"""
+    <div class="flex flex-col gap-4 w-full items-start">
+      <.select id="select-style-mix-1" class="select select--sm select--brand max-w-2xs" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-mix-2" class="select select--lg select--accent max-w-md" items={items()}>
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+      <.select id="select-style-mix-3" class="select select--sm select--rounded-lg select--alert max-w-lg" items={items()}>
         <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
       </.select>
     </div>
@@ -391,14 +551,16 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_on_value_server_example(assigns) do
     ~H"""
-    <.select
-      id="select-api-on-server"
-      class="select"
-      items={items()}
-      on_value_change="select_api_on_value_server"
-    >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
+    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
+      <.select
+        id="select-api-on-server"
+        class="select"
+        items={items()}
+        on_value_change="select_api_on_value_server"
+      >
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
     """
   end
 
@@ -435,14 +597,16 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_on_value_client_example(assigns) do
     ~H"""
-    <.select
-      id="select-api-on-client"
-      class="select"
-      items={items()}
-      on_value_change_client="select-api-on-client"
-    >
-      <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
-    </.select>
+    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
+      <.select
+        id="select-api-on-client"
+        class="select"
+        items={items()}
+        on_value_change_client="select-api-on-client"
+      >
+        <:trigger><.heroicon name="hero-chevron-down" class="icon" /></:trigger>
+      </.select>
+    </div>
     """
   end
 
@@ -450,7 +614,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     items_attr = select_items_attr()
 
     """
-    <div class="layout__row">
+    <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click={Corex.Select.set_value("select-api-cb", ["fra"])} class="button button--sm">
         France
       </.action>
@@ -473,8 +637,8 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_set_value_client_binding_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
+      <div class="flex flex-wrap gap-2 mb-4">
         <.action
           phx-click={Corex.Select.set_value("select-api-cb", ["fra"])}
           class="button button--sm"
@@ -506,7 +670,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     items_attr = select_items_attr()
 
     """
-    <div class="layout__row">
+    <div class="flex flex-wrap gap-2 mb-4">
       <button
         type="button"
         class="button button--sm"
@@ -572,7 +736,7 @@ defmodule E2eWeb.Demos.SelectDemo do
     items_attr = select_items_attr()
 
     """
-    <div class="layout__row">
+    <div class="flex flex-wrap gap-2 mb-4">
       <.action phx-click={JS.push("select_api_server_set", value: %{value: "fra"})} class="button button--sm">
         France
       </.action>
@@ -604,8 +768,8 @@ defmodule E2eWeb.Demos.SelectDemo do
 
   def api_set_value_server_example(assigns) do
     ~H"""
-    <div class="w-full max-w-4xl flex flex-col gap-4 items-center">
-      <div class="layout__row">
+    <div class="w-full max-w-2xs flex flex-col gap-4 items-stretch">
+      <div class="flex flex-wrap gap-2 mb-4">
         <.action
           phx-click={JS.push("select_api_server_set", value: %{value: "fra"})}
           class="button button--sm"
@@ -855,17 +1019,26 @@ defmodule E2eWeb.Demos.SelectDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <label class="w-full typo-label" for="select-native-country">Country</label>
-      <select
-        name="user[country]"
+      <.select
         id="select-native-country"
-        class="native-input w-full"
+        name="user[country]"
+        form="select-plain-form"
+        class="select"
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        items={Corex.List.new([
+          %{label: "France", id: "fra"},
+          %{label: "Belgium", id: "bel"},
+          %{label: "Germany", id: "deu"},
+          %{label: "Netherlands", id: "nld"},
+          %{label: "Switzerland", id: "che"},
+          %{label: "Austria", id: "aut"}
+        ])}
       >
-        <option value="">Select a country</option>
-        <option value="fra">France</option>
-        <option value="bel">Belgium</option>
-        <option value="deu">Germany</option>
-      </select>
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
       <.action type="submit" id="select-controller-submit" class="button button--accent w-full">
         Submit
       </.action>
@@ -1182,17 +1355,19 @@ defmodule E2eWeb.Demos.SelectDemo do
       class="w-full max-w-2xs flex flex-col gap-space items-center"
     >
       <input type="hidden" name="_csrf_token" value={Plug.CSRFProtection.get_csrf_token()} />
-      <label class="w-full typo-label" for="select-native-country">Country</label>
-      <select
-        name="user[country]"
+      <.select
         id="select-native-country"
-        class="native-input w-full"
+        name="user[country]"
+        form="select-plain-form"
+        class="select"
+        translation={%Corex.Select.Translation{placeholder: "Select a country"}}
+        items={form_country_items()}
       >
-        <option value="">Select a country</option>
-        <option value="fra">France</option>
-        <option value="bel">Belgium</option>
-        <option value="deu">Germany</option>
-      </select>
+        <:label>Country</:label>
+        <:trigger>
+          <.heroicon name="hero-chevron-down" class="icon" />
+        </:trigger>
+      </.select>
       <.action type="submit" id="select-controller-submit" class="button button--accent w-full">
         Submit
       </.action>

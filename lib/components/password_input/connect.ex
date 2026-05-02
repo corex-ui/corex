@@ -95,7 +95,6 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "label",
-      "dir" => Map.get(assigns, :dir, "ltr"),
       "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}:label",
       "for" => "p-input-#{assigns.id}-input"
@@ -107,7 +106,6 @@ defmodule Corex.PasswordInput.Connect do
     %{
       "data-scope" => "password-input",
       "data-part" => "control",
-      "dir" => Map.get(assigns, :dir, "ltr"),
       "data-orientation" => orientation(assigns),
       "id" => "password-input:#{assigns.id}:control"
     }
@@ -123,7 +121,6 @@ defmodule Corex.PasswordInput.Connect do
       "name" => Map.get(assigns, :name),
       "form" => Map.get(assigns, :form),
       "autocomplete" => Map.get(assigns, :auto_complete),
-      "dir" => Map.get(assigns, :dir, "ltr"),
       "data-orientation" => orientation(assigns)
     }
 
@@ -137,7 +134,6 @@ defmodule Corex.PasswordInput.Connect do
       "data-part" => "visibility-trigger",
       "type" => "button",
       "id" => "password-input:#{assigns.id}:visibility-trigger",
-      "dir" => Map.get(assigns, :dir, "ltr"),
       "data-orientation" => orientation(assigns),
       "aria-label" => aria_label_for_trigger(assigns)
     }
@@ -149,7 +145,6 @@ defmodule Corex.PasswordInput.Connect do
       "data-scope" => "password-input",
       "data-part" => "indicator",
       "id" => "password-input:#{assigns.id}:indicator",
-      "dir" => Map.get(assigns, :dir, "ltr"),
       "data-orientation" => orientation(assigns),
       "aria-hidden" => "true",
       "data-state" => if(Map.get(assigns, :visible, false), do: "visible", else: "hidden")

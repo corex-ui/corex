@@ -212,7 +212,7 @@ defmodule Corex.Integration.CodeGeneration.AppWithDefaultsTest do
         end)
 
         form_path =
-          Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/resource_form.html.heex")
+          Path.join(app_root_path, "lib/phx_blog_web/controllers/post_html/post_form.html.heex")
 
         assert_file(form_path, fn file ->
           assert file =~ "id={@form.id}"

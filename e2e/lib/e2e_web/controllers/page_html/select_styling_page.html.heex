@@ -7,7 +7,7 @@
   <.demo_page
     id="select-styling-page"
     title="Select · Styling"
-    subtitle="Semantic colors and density via modifier classes on the select root."
+    subtitle="Semantic colors, density, typography, radius, and width utilities via modifier classes on the select root."
   >
     <.demo_section
       id="select-styling-color"
@@ -26,6 +26,46 @@
     >
       <:preview>
         <E2eWeb.Demos.SelectDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-styling-text"
+      title="Text"
+      code={E2eWeb.Demos.SelectDemo.styling_text_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SelectDemo.styling_text_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.SelectDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SelectDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-styling-max-width"
+      title="Max Width"
+      code={E2eWeb.Demos.SelectDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SelectDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="select-styling-mix-modifiers"
+      title="Mix modifiers"
+      code={E2eWeb.Demos.SelectDemo.styling_mix_modifiers_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SelectDemo.styling_mix_modifiers_example />
       </:preview>
     </.demo_section>
   </.demo_page>

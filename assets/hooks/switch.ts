@@ -3,7 +3,7 @@ import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook"
 import { Switch } from "../components/switch";
 import type { CheckedChangeDetails } from "@zag-js/switch";
 
-import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
+import { getString, getBoolean, getDir, getCheckedState, canPushEvent } from "../lib/util";
 import { idMatches, notifyChange, readPayloadId, readPayloadChecked } from "../lib/respond-to";
 import { createHookHandleEventRegistry } from "../lib/hook-handlers";
 import { createDomEventRegistry } from "../lib/dom-events";
@@ -34,8 +34,8 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     const zagSwitch = new Switch(el, {
       id: el.id,
       ...(getBoolean(el, "controlled")
-        ? { checked: getBoolean(el, "checked") }
-        : { defaultChecked: getBoolean(el, "defaultChecked") }),
+        ? { checked: getCheckedState(el, "checked") === true }
+        : { defaultChecked: getCheckedState(el, "defaultChecked") === true }),
       disabled: getBoolean(el, "disabled"),
       name: getString(el, "name"),
       form: getString(el, "form"),
@@ -123,8 +123,8 @@ const SwitchHook: Hook<object & SwitchHookState, HTMLElement> = {
     this.zagSwitch?.updateProps({
       id: this.el.id,
       ...(getBoolean(this.el, "controlled")
-        ? { checked: getBoolean(this.el, "checked") }
-        : { defaultChecked: getBoolean(this.el, "defaultChecked") }),
+        ? { checked: getCheckedState(this.el, "checked") === true }
+        : { defaultChecked: getCheckedState(this.el, "defaultChecked") === true }),
       disabled: getBoolean(this.el, "disabled"),
       name: getString(this.el, "name"),
       form: getString(this.el, "form"),

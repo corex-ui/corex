@@ -562,6 +562,7 @@
   font-weight: var(--font-weight-normal);
   gap: --spacing(1);
   color: var(--color-ink-alert);
+  padding-block: var(--spacing-space);
 }
 
 

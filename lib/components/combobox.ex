@@ -461,7 +461,7 @@ defmodule Corex.Combobox do
 
   def combobox(assigns) do
     default_translation = %Translation{
-      placeholder: gettext("Select an option"),
+      placeholder: gettext("Select"),
       empty: gettext("No results")
     }
 

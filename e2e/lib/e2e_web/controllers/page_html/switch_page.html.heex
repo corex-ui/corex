@@ -7,15 +7,25 @@
   <.demo_page
     id="switch-anatomy-page"
     title="Switch · Anatomy"
-    subtitle="Label with the control (error states appear on the Form page)."
+    subtitle="Minimal uses aria_label only; add <:label> for visible text (errors on the Form page)."
   >
     <.demo_section
       id="switch-anatomy-minimal"
-      title="Minimal with label"
+      title="Minimal"
       code={E2eWeb.Demos.SwitchDemo.minimal_code()}
     >
       <:preview>
         <E2eWeb.Demos.SwitchDemo.minimal_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="switch-anatomy-labeled"
+      title="With label"
+      code={E2eWeb.Demos.SwitchDemo.with_label_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.SwitchDemo.with_label_example />
       </:preview>
     </.demo_section>
   </.demo_page>

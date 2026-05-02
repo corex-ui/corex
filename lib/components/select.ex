@@ -7,7 +7,7 @@ defmodule Corex.Select do
   ## Examples
   <!-- tabs-open -->
 
-  The placeholder text comes from the Translation struct. Use `translation={%Select.Translation{ placeholder: gettext("Select an option") }}` to customize.
+  The placeholder text comes from the Translation struct. Use `translation={%Select.Translation{ placeholder: gettext("Select") }}` to customize.
 
   ### Minimal
 
@@ -363,7 +363,7 @@ defmodule Corex.Select do
 
     Without gettext: `translation={%Select.Translation{ placeholder: "Choose an option" }}`
 
-    With gettext: `translation={%Select.Translation{ placeholder: gettext("Select an option") }}`
+    With gettext: `translation={%Select.Translation{ placeholder: gettext("Select") }}`
     """
     defstruct [:placeholder]
   end
@@ -519,7 +519,7 @@ defmodule Corex.Select do
 
   def select(assigns) do
     items = normalize_items(assigns.items)
-    default_translation = %Translation{placeholder: gettext("Select an option")}
+    default_translation = %Translation{placeholder: gettext("Select")}
     translation = assigns[:translation] || default_translation
     placeholder = translation.placeholder
 

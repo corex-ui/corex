@@ -71,7 +71,9 @@ defmodule E2eWeb.TimerApiLive do
           code={@codes.countdown}
         >
           <:preview>
-            <p class="typo-sm text-ink-muted">See the Heex tab.</p>
+            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
+              <Demo.api_template_countdown_preview />
+            </div>
           </:preview>
         </.demo_section>
 
@@ -81,7 +83,9 @@ defmodule E2eWeb.TimerApiLive do
           code={@codes.timing}
         >
           <:preview>
-            <p class="typo-sm text-ink-muted">See the Heex tab.</p>
+            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
+              <Demo.api_template_timing_preview />
+            </div>
           </:preview>
         </.demo_section>
 
@@ -91,7 +95,9 @@ defmodule E2eWeb.TimerApiLive do
           code={@codes.direction}
         >
           <:preview>
-            <p class="typo-sm text-ink-muted">See the Heex tab.</p>
+            <div class="flex w-full max-w-4xl flex-col items-center gap-4">
+              <Demo.api_template_direction_preview />
+            </div>
           </:preview>
         </.demo_section>
 

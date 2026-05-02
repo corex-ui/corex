@@ -13,7 +13,7 @@ import {
 } from "./chunks/chunk-PE34YET2.mjs";
 import {
   notifyChange
-} from "./chunks/chunk-UGQ3K46R.mjs";
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   MAX_Z_INDEX,

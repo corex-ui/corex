@@ -2984,7 +2984,7 @@ var Corex = (() => {
     }
   });
 
-  // ../priv/static/chunks/chunk-UGQ3K46R.mjs
+  // ../priv/static/chunks/chunk-LIWT33BG.mjs
   function parseRespondTo(source) {
     var _a4, _b, _c;
     if (source && typeof source === "object") {
@@ -3005,6 +3005,15 @@ var Corex = (() => {
     const c2 = (_a4 = o2.checked) != null ? _a4 : o2["checked"];
     if (c2 === true || c2 === "true" || c2 === 1) return true;
     if (c2 === false || c2 === "false" || c2 === 0) return false;
+    return void 0;
+  }
+  function readPayloadVisible(payload) {
+    var _a4;
+    if (!payload || typeof payload !== "object") return void 0;
+    const o2 = payload;
+    const v2 = (_a4 = o2.visible) != null ? _a4 : o2["visible"];
+    if (v2 === true || v2 === "true" || v2 === 1) return true;
+    if (v2 === false || v2 === "false" || v2 === 0) return false;
     return void 0;
   }
   function readPayloadId(payload) {
@@ -3067,8 +3076,8 @@ var Corex = (() => {
       );
     }
   }
-  var init_chunk_UGQ3K46R = __esm({
-    "../priv/static/chunks/chunk-UGQ3K46R.mjs"() {
+  var init_chunk_LIWT33BG = __esm({
+    "../priv/static/chunks/chunk-LIWT33BG.mjs"() {
       "use strict";
     }
   });
@@ -3225,7 +3234,7 @@ var Corex = (() => {
       init_chunk_JDGMEOQK();
       init_chunk_4PSVMPGM();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy = createAnatomy("accordion").parts("root", "item", "itemTrigger", "itemContent", "itemIndicator");
       parts = anatomy.build();
@@ -4063,7 +4072,7 @@ var Corex = (() => {
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy2 = createAnatomy("angle-slider").parts(
         "root",
@@ -4481,7 +4490,7 @@ var Corex = (() => {
     "../priv/static/avatar.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy3 = createAnatomy("avatar").parts("root", "image", "fallback");
       parts3 = anatomy3.build();
@@ -5149,7 +5158,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy4 = createAnatomy("carousel").parts(
         "root",
@@ -6196,7 +6205,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_ZNA2UPG2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy5 = createAnatomy("checkbox").parts("root", "label", "control", "indicator");
       parts5 = anatomy5.build();
@@ -6693,7 +6702,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_CT2QXKAA();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy6 = createAnatomy("clipboard").parts("root", "control", "trigger", "indicator", "input", "label");
       parts6 = anatomy6.build();
@@ -7055,7 +7064,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy7 = createAnatomy("collapsible").parts("root", "trigger", "content", "indicator");
       parts7 = anatomy7.build();
@@ -12143,7 +12152,7 @@ var Corex = (() => {
       init_chunk_FOQSALVP();
       init_chunk_ZNA2UPG2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy8 = createAnatomy("combobox").parts(
         "root",
@@ -14302,7 +14311,7 @@ var Corex = (() => {
       init_chunk_FXKWDXRF();
       init_chunk_AOJTHBPA();
       init_chunk_PE34YET2();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy9 = createAnatomy("color-picker", [
         "root",
@@ -18238,7 +18247,7 @@ var Corex = (() => {
       init_chunk_FXKWDXRF();
       init_chunk_AOJTHBPA();
       init_chunk_PE34YET2();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy10 = createAnatomy("date-picker").parts(
         "clearTrigger",
@@ -20730,7 +20739,7 @@ var Corex = (() => {
       init_chunk_AOJTHBPA();
       init_chunk_4PSVMPGM();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy11 = createAnatomy("dialog").parts(
         "trigger",
@@ -22111,7 +22120,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_AOJTHBPA();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy12 = createAnatomy("editable").parts(
         "root",
@@ -23026,7 +23035,7 @@ var Corex = (() => {
       init_chunk_QB2YSZP6();
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy13 = createAnatomy("floating-panel").parts(
         "trigger",
@@ -24493,7 +24502,7 @@ var Corex = (() => {
       init_chunk_FOQSALVP();
       init_chunk_ZNA2UPG2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy14 = createAnatomy("listbox").parts(
         "label",
@@ -25373,7 +25382,7 @@ var Corex = (() => {
   var init_marquee = __esm({
     "../priv/static/marquee.mjs"() {
       "use strict";
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy15 = createAnatomy("marquee").parts("root", "viewport", "content", "edge", "item");
       parts15 = anatomy15.build();
@@ -28129,7 +28138,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_L2ZNUIWL();
       init_chunk_PE34YET2();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy17 = createAnatomy("numberInput").parts(
         "root",
@@ -29150,7 +29159,8 @@ var Corex = (() => {
   var init_password_input = __esm({
     "../priv/static/password-input.mjs"() {
       "use strict";
-      init_chunk_UGQ3K46R();
+      init_chunk_77HPO22C();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy18 = createAnatomy("password-input").parts(
         "root",
@@ -29325,6 +29335,34 @@ var Corex = (() => {
           zag.init();
           this.passwordInput = zag;
           this.handlers = [];
+          const domRegistry = createDomEventRegistry(el);
+          this.domRegistry = domRegistry;
+          domRegistry.add("corex:password-input:set-visible", (event) => {
+            var _a4;
+            const vis = (_a4 = event.detail) == null ? void 0 : _a4.visible;
+            if (typeof vis === "boolean") zag.api.setVisible(vis);
+          });
+          domRegistry.add("corex:password-input:toggle-visible", () => {
+            zag.api.toggleVisible();
+          });
+          domRegistry.add("corex:password-input:focus", () => {
+            zag.api.focus();
+          });
+          const registry = createHookHandleEventRegistry(this);
+          this.handleRegistry = registry;
+          registry.add("password_input_set_visible", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            const vis = readPayloadVisible(payload);
+            if (typeof vis === "boolean") zag.api.setVisible(vis);
+          });
+          registry.add("password_input_toggle_visible", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.toggleVisible();
+          });
+          registry.add("password_input_focus", (payload) => {
+            if (!idMatches(el.id, readPayloadId(payload))) return;
+            zag.api.focus();
+          });
         },
         updated() {
           var _a4;
@@ -29340,11 +29378,13 @@ var Corex = (() => {
           });
         },
         destroyed() {
-          var _a4;
+          var _a4, _b, _c;
           if (this.handlers) {
             for (const h2 of this.handlers) this.removeHandleEvent(h2);
           }
-          (_a4 = this.passwordInput) == null ? void 0 : _a4.destroy();
+          (_a4 = this.domRegistry) == null ? void 0 : _a4.teardown();
+          (_b = this.handleRegistry) == null ? void 0 : _b.teardown();
+          (_c = this.passwordInput) == null ? void 0 : _c.destroy();
         }
       };
     }
@@ -29671,7 +29711,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy19 = createAnatomy("pinInput").parts("root", "label", "input", "control");
       parts19 = anatomy19.build();
@@ -30348,7 +30388,7 @@ var Corex = (() => {
       init_chunk_22L7SRUM();
       init_chunk_ZNA2UPG2();
       init_chunk_PE34YET2();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy20 = createAnatomy("radio-group").parts(
         "root",
@@ -31179,7 +31219,7 @@ var Corex = (() => {
       init_chunk_FOQSALVP();
       init_chunk_ZNA2UPG2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy21 = createAnatomy("select").parts(
         "label",
@@ -32598,7 +32638,7 @@ var Corex = (() => {
   var init_signature_pad = __esm({
     "../priv/static/signature-pad.mjs"() {
       "use strict";
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy22 = createAnatomy("signature-pad").parts(
         "root",
@@ -33117,7 +33157,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_ZNA2UPG2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy23 = createAnatomy("switch").parts("root", "label", "control", "thumb");
       parts23 = anatomy23.build();
@@ -33637,7 +33677,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_PE34YET2();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy24 = createAnatomy("tabs").parts("root", "list", "trigger", "content", "indicator");
       parts24 = anatomy24.build();
@@ -36254,7 +36294,7 @@ var Corex = (() => {
       "use strict";
       init_chunk_AOAQEX4D();
       init_chunk_ZNA2UPG2();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy27 = createAnatomy("tooltip").parts("trigger", "arrow", "arrowTip", "positioner", "content");
       parts27 = anatomy27.build();
@@ -36969,7 +37009,7 @@ var Corex = (() => {
     "../priv/static/toggle-group.mjs"() {
       "use strict";
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy28 = createAnatomy("toggle-group").parts("root", "item");
       parts28 = anatomy28.build();
@@ -37874,7 +37914,7 @@ var Corex = (() => {
       init_chunk_JDGMEOQK();
       init_chunk_4PSVMPGM();
       init_chunk_77HPO22C();
-      init_chunk_UGQ3K46R();
+      init_chunk_LIWT33BG();
       init_chunk_OVJ3SUQN();
       anatomy29 = createAnatomy("tree-view").parts(
         "branch",

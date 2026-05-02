@@ -4,7 +4,12 @@ defmodule Corex.Switch.Connect do
   alias Corex.Switch.Anatomy.{Control, HiddenInput, Label, Props, Root, Thumb}
 
   import Corex.Helpers,
-    only: [get_boolean: 1, get_boolean: 2, get_default_boolean: 2, data_state: 3]
+    only: [
+      get_boolean: 1,
+      checkbox_checked_controlled_attr: 2,
+      checkbox_checked_default_attr: 2,
+      data_state: 3
+    ]
 
   alias Phoenix.LiveView.JS
 
@@ -12,8 +17,8 @@ defmodule Corex.Switch.Connect do
   def props(assigns) do
     %{
       "id" => assigns.id,
-      "data-default-checked" => get_default_boolean(assigns.controlled, assigns.checked),
-      "data-checked" => get_boolean(assigns.controlled, assigns.checked),
+      "data-default-checked" => checkbox_checked_default_attr(assigns.controlled, assigns.checked),
+      "data-checked" => checkbox_checked_controlled_attr(assigns.controlled, assigns.checked),
       "data-controlled" => get_boolean(assigns.controlled),
       "data-disabled" => get_boolean(assigns.disabled),
       "data-value" => assigns.value,

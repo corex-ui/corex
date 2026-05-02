@@ -39,6 +39,20 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def api_binding_heex do
     ~S"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", true)} class="button button--sm">
+        Show
+      </.action>
+      <.action phx-click={Corex.PasswordInput.set_visible("password-input-api-binding", false)} class="button button--sm">
+        Hide
+      </.action>
+      <.action phx-click={Corex.PasswordInput.toggle_visible("password-input-api-binding")} class="button button--sm">
+        Toggle
+      </.action>
+      <.action phx-click={Corex.PasswordInput.focus("password-input-api-binding")} class="button button--sm">
+        Focus
+      </.action>
+    </div>
     <.password_input
       id="password-input-api-binding"
       class="password-input"
@@ -61,9 +75,25 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
   end
 
   def api_binding_example(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "password-input-api-binding" end)
+
     ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click={Corex.PasswordInput.set_visible(@id, true)} class="button button--sm">
+        Show
+      </.action>
+      <.action phx-click={Corex.PasswordInput.set_visible(@id, false)} class="button button--sm">
+        Hide
+      </.action>
+      <.action phx-click={Corex.PasswordInput.toggle_visible(@id)} class="button button--sm">
+        Toggle
+      </.action>
+      <.action phx-click={Corex.PasswordInput.focus(@id)} class="button button--sm">
+        Focus
+      </.action>
+    </div>
     <.password_input
-      id="password-input-api-binding"
+      id={@id}
       class="password-input"
       name="user[password]"
       on_visibility_change="password_input_api_visibility"
@@ -77,6 +107,44 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
 
   def api_client_heex do
     ~S"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action
+        phx-click={
+          JS.dispatch("corex:password-input:set-visible",
+            to: "#password-input-api-client",
+            detail: %{visible: true},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Show
+      </.action>
+      <.action
+        phx-click={
+          JS.dispatch("corex:password-input:set-visible",
+            to: "#password-input-api-client",
+            detail: %{visible: false},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Hide
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:password-input:toggle-visible", to: "#password-input-api-client", bubbles: false)}
+        class="button button--sm"
+      >
+        Toggle
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:password-input:focus", to: "#password-input-api-client", bubbles: false)}
+        class="button button--sm"
+      >
+        Focus
+      </.action>
+    </div>
     <.password_input
       id="password-input-api-client"
       class="password-input"
@@ -96,6 +164,9 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     el?.addEventListener("password-input-api-visibility-changed", (event) => {
       console.log(event.detail);
     });
+    el?.dispatchEvent(
+      new CustomEvent("corex:password-input:set-visible", { bubbles: false, detail: { visible: true } })
+    );
     """
   end
 
@@ -105,17 +176,134 @@ defmodule E2eWeb.Demos.PasswordInputDemo do
     el?.addEventListener("password-input-api-visibility-changed", (event: Event) => {
       console.log((event as CustomEvent<{ id?: string; visible?: boolean }>).detail);
     });
+    el?.dispatchEvent(
+      new CustomEvent("corex:password-input:set-visible", { bubbles: false, detail: { visible: true } })
+    );
     """
   end
 
   def api_client_example(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "password-input-api-client" end)
+
     ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action
+        phx-click={
+          JS.dispatch("corex:password-input:set-visible",
+            to: "##{@id}",
+            detail: %{visible: true},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Show
+      </.action>
+      <.action
+        phx-click={
+          JS.dispatch("corex:password-input:set-visible",
+            to: "##{@id}",
+            detail: %{visible: false},
+            bubbles: false
+          )
+        }
+        class="button button--sm"
+      >
+        Hide
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:password-input:toggle-visible", to: "##{@id}", bubbles: false)}
+        class="button button--sm"
+      >
+        Toggle
+      </.action>
+      <.action
+        phx-click={JS.dispatch("corex:password-input:focus", to: "##{@id}", bubbles: false)}
+        class="button button--sm"
+      >
+        Focus
+      </.action>
+    </div>
     <.password_input
-      id="password-input-api-client"
+      id={@id}
       class="password-input"
       name="user[password]"
       on_visibility_change_client="password-input-api-visibility-changed"
     >
+      <:label>Password</:label>
+      <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+    </.password_input>
+    """
+  end
+
+  def api_server_heex do
+    ~S"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click="api_password_show" phx-value-id="password-input-api-server" class="button button--sm">
+        Show
+      </.action>
+      <.action phx-click="api_password_hide" phx-value-id="password-input-api-server" class="button button--sm">
+        Hide
+      </.action>
+      <.action phx-click="api_password_toggle_visible" phx-value-id="password-input-api-server" class="button button--sm">
+        Toggle
+      </.action>
+      <.action phx-click="api_password_focus" phx-value-id="password-input-api-server" class="button button--sm">
+        Focus
+      </.action>
+    </div>
+    <.password_input
+      id="password-input-api-server"
+      class="password-input"
+      name="user[password]"
+    >
+      <:label>Password</:label>
+      <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
+      <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>
+    </.password_input>
+    """
+  end
+
+  def api_server_elixir do
+    ~S"""
+    def handle_event("api_password_show", %{"id" => id}, socket) do
+      {:noreply, Corex.PasswordInput.set_visible(socket, id, true)}
+    end
+
+    def handle_event("api_password_hide", %{"id" => id}, socket) do
+      {:noreply, Corex.PasswordInput.set_visible(socket, id, false)}
+    end
+
+    def handle_event("api_password_toggle_visible", %{"id" => id}, socket) do
+      {:noreply, Corex.PasswordInput.toggle_visible(socket, id)}
+    end
+
+    def handle_event("api_password_focus", %{"id" => id}, socket) do
+      {:noreply, Corex.PasswordInput.focus(socket, id)}
+    end
+    """
+  end
+
+  def api_server_example(assigns) do
+    assigns = assign_new(assigns, :id, fn -> "password-input-api-server" end)
+
+    ~H"""
+    <div class="flex flex-wrap gap-2 mb-4">
+      <.action phx-click="api_password_show" phx-value-id={@id} class="button button--sm">
+        Show
+      </.action>
+      <.action phx-click="api_password_hide" phx-value-id={@id} class="button button--sm">
+        Hide
+      </.action>
+      <.action phx-click="api_password_toggle_visible" phx-value-id={@id} class="button button--sm">
+        Toggle
+      </.action>
+      <.action phx-click="api_password_focus" phx-value-id={@id} class="button button--sm">
+        Focus
+      </.action>
+    </div>
+    <.password_input id={@id} class="password-input" name="user[password]">
       <:label>Password</:label>
       <:visible_indicator><.heroicon name="hero-eye" class="icon" /></:visible_indicator>
       <:hidden_indicator><.heroicon name="hero-eye-slash" class="icon" /></:hidden_indicator>

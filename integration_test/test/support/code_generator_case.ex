@@ -15,7 +15,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     local_corex = Path.expand("../../..", __DIR__)
 
     dev_argv =
-      if "--dev_corex" in opts or "--dev-corex" in opts or "--dev" in opts do
+      if "--dev_corex" in opts or "--dev-corex" in opts do
         []
       else
         ["--dev", local_corex]

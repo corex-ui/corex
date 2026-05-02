@@ -1,6 +1,13 @@
 import {
-  notifyChange
-} from "./chunks/chunk-UGQ3K46R.mjs";
+  createDomEventRegistry,
+  createHookHandleEventRegistry
+} from "./chunks/chunk-77HPO22C.mjs";
+import {
+  idMatches,
+  notifyChange,
+  readPayloadId,
+  readPayloadVisible
+} from "./chunks/chunk-LIWT33BG.mjs";
 import {
   Component,
   VanillaMachine,
@@ -297,6 +304,33 @@ var PasswordInputHook = {
     zag.init();
     this.passwordInput = zag;
     this.handlers = [];
+    const domRegistry = createDomEventRegistry(el);
+    this.domRegistry = domRegistry;
+    domRegistry.add("corex:password-input:set-visible", (event) => {
+      const vis = event.detail?.visible;
+      if (typeof vis === "boolean") zag.api.setVisible(vis);
+    });
+    domRegistry.add("corex:password-input:toggle-visible", () => {
+      zag.api.toggleVisible();
+    });
+    domRegistry.add("corex:password-input:focus", () => {
+      zag.api.focus();
+    });
+    const registry = createHookHandleEventRegistry(this);
+    this.handleRegistry = registry;
+    registry.add("password_input_set_visible", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      const vis = readPayloadVisible(payload);
+      if (typeof vis === "boolean") zag.api.setVisible(vis);
+    });
+    registry.add("password_input_toggle_visible", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.toggleVisible();
+    });
+    registry.add("password_input_focus", (payload) => {
+      if (!idMatches(el.id, readPayloadId(payload))) return;
+      zag.api.focus();
+    });
   },
   updated() {
     this.passwordInput?.updateProps({
@@ -314,6 +348,8 @@ var PasswordInputHook = {
     if (this.handlers) {
       for (const h of this.handlers) this.removeHandleEvent(h);
     }
+    this.domRegistry?.teardown();
+    this.handleRegistry?.teardown();
     this.passwordInput?.destroy();
   }
 };

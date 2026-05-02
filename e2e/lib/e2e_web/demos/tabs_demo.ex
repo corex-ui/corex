@@ -23,13 +23,13 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def anatomy_basic_code do
     ~S"""
-    <.tabs id="tabs-basic" class="tabs" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    <.tabs id="tabs-basic" class="tabs w-full max-w-md" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
     """
   end
 
   def anatomy_basic_example(assigns) do
     ~H"""
-    <.tabs id="tabs-basic" class="tabs" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    <.tabs id="tabs-basic" class="tabs w-full max-w-md" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
     """
   end
 
@@ -37,7 +37,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~S"""
     <.tabs
       id="tabs-indicator"
-      class="tabs"
+      class="tabs w-full max-w-md"
       indicator
       value="lorem"
       items={E2eWeb.Demos.TabsDemo.basic_items()}
@@ -49,7 +49,7 @@ defmodule E2eWeb.Demos.TabsDemo do
     ~H"""
     <.tabs
       id="tabs-indicator"
-      class="tabs"
+      class="tabs w-full max-w-md"
       indicator
       value="lorem"
       items={E2eWeb.Demos.TabsDemo.basic_items()}
@@ -59,7 +59,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def anatomy_nested_code do
     ~S"""
-    <.tabs id="tabs-nested-outer" class="tabs" value="outer-2">
+    <.tabs id="tabs-nested-outer" class="tabs w-full max-w-md" value="outer-2">
       <:trigger value="outer-1">Outer 1</:trigger>
       <:trigger value="outer-2">Outer 2</:trigger>
 
@@ -81,7 +81,7 @@ defmodule E2eWeb.Demos.TabsDemo do
 
   def anatomy_nested_example(assigns) do
     ~H"""
-    <.tabs id="tabs-nested-outer" class="tabs" value="outer-2">
+    <.tabs id="tabs-nested-outer" class="tabs w-full max-w-md" value="outer-2">
       <:trigger value="outer-1">Outer 1</:trigger>
       <:trigger value="outer-2">Outer 2</:trigger>
 
@@ -314,9 +314,15 @@ defmodule E2eWeb.Demos.TabsDemo do
   end
 
   def styling_color_code do
-    ~S"""
-    <.tabs id="tabs-style-baseline" class="tabs" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
-    <.tabs id="tabs-style-accent" class="tabs tabs--accent" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+
+    """
+    <.tabs id="tabs-style-color-default" class="tabs w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-color-accent" class="tabs tabs--accent w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-color-brand" class="tabs tabs--brand w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-color-alert" class="tabs tabs--alert w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-color-info" class="tabs tabs--info w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-color-success" class="tabs tabs--success w-full max-w-md" value="lorem" #{items} />
     """
   end
 
@@ -324,16 +330,40 @@ defmodule E2eWeb.Demos.TabsDemo do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-wrap gap-8 w-full max-w-4xl justify-center items-start">
+    <div class="flex flex-wrap gap-6 items-start w-full max-w-4xl">
       <.tabs
-        id="tabs-style-baseline"
+        id="tabs-style-color-default"
         class="tabs w-full max-w-md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
-        id="tabs-style-accent"
+        id="tabs-style-color-accent"
         class="tabs tabs--accent w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-color-brand"
+        class="tabs tabs--brand w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-color-alert"
+        class="tabs tabs--alert w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-color-info"
+        class="tabs tabs--info w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-color-success"
+        class="tabs tabs--success w-full max-w-md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
@@ -341,27 +371,219 @@ defmodule E2eWeb.Demos.TabsDemo do
     """
   end
 
-  def styling_spacing_code do
-    ~S"""
-    <.tabs id="tabs-style-tight" class="tabs tabs--4" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
-    <.tabs id="tabs-style-roomy" class="tabs tabs--8" value="lorem" items={E2eWeb.Demos.TabsDemo.basic_items()} />
+  def styling_size_code do
+    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+
+    """
+    <.tabs id="tabs-style-sm" class="tabs tabs--sm w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-md" class="tabs tabs--md w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-lg" class="tabs tabs--lg w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-xl" class="tabs tabs--xl w-full max-w-md" value="lorem" #{items} />
     """
   end
 
-  def styling_spacing_example(assigns) do
+  def styling_size_example(assigns) do
     _ = assigns
 
     ~H"""
-    <div class="flex flex-col gap-8 w-full max-w-4xl">
+    <div class="flex flex-col gap-4 w-full max-w-md">
       <.tabs
-        id="tabs-style-tight"
-        class="tabs tabs--4 w-full"
+        id="tabs-style-sm"
+        class="tabs tabs--sm w-full max-w-md"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />
       <.tabs
-        id="tabs-style-roomy"
-        class="tabs tabs--8 w-full"
+        id="tabs-style-md"
+        class="tabs tabs--md w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-lg"
+        class="tabs tabs--lg w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-xl"
+        class="tabs tabs--xl w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+    </div>
+    """
+  end
+
+  def styling_text_code do
+    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+
+    """
+    <.tabs id="tabs-style-text-sm" class="tabs tabs--text-sm w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-text-xl" class="tabs tabs--text-xl w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-text-2xl" class="tabs tabs--text-2xl w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-text-4xl" class="tabs tabs--text-4xl w-full max-w-md" value="lorem" #{items} />
+    """
+  end
+
+  def styling_text_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.tabs
+        id="tabs-style-text-sm"
+        class="tabs tabs--text-sm w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-text-xl"
+        class="tabs tabs--text-xl w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-text-2xl"
+        class="tabs tabs--text-2xl w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-text-4xl"
+        class="tabs tabs--text-4xl w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+    </div>
+    """
+  end
+
+  def styling_radius_code do
+    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+
+    """
+    <.tabs id="tabs-style-rounded-none" class="tabs tabs--rounded-none w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-rounded-md" class="tabs tabs--rounded-md w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-rounded-lg" class="tabs tabs--rounded-lg w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-rounded-xl" class="tabs tabs--rounded-xl w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-rounded-full" class="tabs tabs--rounded-full w-full max-w-md" value="lorem" #{items} />
+    """
+  end
+
+  def styling_radius_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 w-full max-w-md">
+      <.tabs
+        id="tabs-style-rounded-none"
+        class="tabs tabs--rounded-none w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-rounded-md"
+        class="tabs tabs--rounded-md w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-rounded-lg"
+        class="tabs tabs--rounded-lg w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-rounded-xl"
+        class="tabs tabs--rounded-xl w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-rounded-full"
+        class="tabs tabs--rounded-full w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+    </div>
+    """
+  end
+
+  def styling_max_width_code do
+    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+
+    """
+    <.tabs id="tabs-style-max-2xs" class="tabs w-full max-w-2xs" value="lorem" #{items} />
+    <.tabs id="tabs-style-max-md" class="tabs w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-max-xl" class="tabs w-full max-w-xl" value="lorem" #{items} />
+    <.tabs id="tabs-style-max-2xl" class="tabs w-full max-w-2xl" value="lorem" #{items} />
+    """
+  end
+
+  def styling_max_width_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 w-full items-stretch">
+      <.tabs
+        id="tabs-style-max-2xs"
+        class="tabs w-full max-w-2xs"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-max-md"
+        class="tabs w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-max-xl"
+        class="tabs w-full max-w-xl"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-max-2xl"
+        class="tabs w-full max-w-2xl"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+    </div>
+    """
+  end
+
+  def styling_mix_modifiers_code do
+    items = ~S|items={E2eWeb.Demos.TabsDemo.basic_items()}|
+
+    """
+    <.tabs id="tabs-style-mix-1" class="tabs tabs--sm tabs--brand tabs--rounded-lg w-full max-w-2xs" value="lorem" #{items} />
+    <.tabs id="tabs-style-mix-2" class="tabs tabs--lg tabs--accent tabs--rounded-md w-full max-w-md" value="lorem" #{items} />
+    <.tabs id="tabs-style-mix-3" class="tabs tabs--md tabs--alert tabs--text-lg w-full max-w-lg" value="lorem" #{items} />
+    """
+  end
+
+  def styling_mix_modifiers_example(assigns) do
+    _ = assigns
+
+    ~H"""
+    <div class="flex flex-col gap-4 w-full items-stretch">
+      <.tabs
+        id="tabs-style-mix-1"
+        class="tabs tabs--sm tabs--brand tabs--rounded-lg w-full max-w-2xs"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-mix-2"
+        class="tabs tabs--lg tabs--accent tabs--rounded-md w-full max-w-md"
+        value="lorem"
+        items={E2eWeb.Demos.TabsDemo.basic_items()}
+      />
+      <.tabs
+        id="tabs-style-mix-3"
+        class="tabs tabs--md tabs--alert tabs--text-lg w-full max-w-lg"
         value="lorem"
         items={E2eWeb.Demos.TabsDemo.basic_items()}
       />

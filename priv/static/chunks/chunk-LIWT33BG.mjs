@@ -19,6 +19,14 @@ function readPayloadChecked(payload) {
   if (c === false || c === "false" || c === 0) return false;
   return void 0;
 }
+function readPayloadVisible(payload) {
+  if (!payload || typeof payload !== "object") return void 0;
+  const o = payload;
+  const v = o.visible ?? o["visible"];
+  if (v === true || v === "true" || v === 1) return true;
+  if (v === false || v === "false" || v === 0) return false;
+  return void 0;
+}
 function readPayloadId(payload) {
   if (!payload || typeof payload !== "object") return;
   const o = payload;
@@ -83,6 +91,7 @@ export {
   parseRespondTo,
   idMatches,
   readPayloadChecked,
+  readPayloadVisible,
   readPayloadId,
   readPayloadValue,
   notifyChange,

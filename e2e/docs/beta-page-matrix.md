@@ -36,7 +36,7 @@ This file classifies each Corex demo component and lists which **page types** ex
 | switch | Zag + form | yes | yes | yes | yes | yes | yes | yes | — | live-form, controlled |
 | tabs | Zag | yes | — | — | yes | yes | yes | yes | — | — |
 | timer | Zag | yes | — | — | yes | yes | yes | yes | — | — |
-| toast | Zag | yes | — | — | yes | yes | — | yes | — | — |
+| toast | Zag | — | — | — | yes | yes | — | yes | — | — |
 | toggle-group | Zag | yes | — | — | yes | yes | yes | yes | — | — |
 | tooltip | Zag | yes | — | — | yes | yes | yes | — | — | — |
 | tree-view | Zag | yes | yes | — | yes | yes | yes | yes | yes | — |

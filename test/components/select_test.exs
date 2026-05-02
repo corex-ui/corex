@@ -30,11 +30,11 @@ defmodule Corex.SelectTest do
     test "uses placeholder for aria-label and placeholder span when no selection" do
       html =
         render_component(&CorexTest.ComponentHelpers.render_select_with_opts/1,
-          placeholder: "Select an option"
+          placeholder: "Select"
         )
 
-      assert html =~ ~r/aria-label="Select an option"/
-      assert html =~ "Select an option"
+      assert html =~ ~r/aria-label="Select"/
+      assert html =~ "Select"
     end
 
     test "uses custom placeholder when provided" do

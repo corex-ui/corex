@@ -2,7 +2,7 @@
 
 @layer components {
   .select {
-    max-width: var(--container-5xs);
+    max-width: var(--container-4xs);
     width: 100%;
   }
 
@@ -145,8 +145,413 @@
 }
 
 
-@utility select--* {
+@utility select--sm {
+  [data-scope="select"][data-part="root"] {
+    gap: var(--spacing-space-sm);
+  }
 
+  [data-scope="select"][data-part="label"] {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+
+  [data-scope="select"][data-part="control"] {
+    max-width: var(--container-sm);
+    gap: var(--spacing-space-sm);
+  }
+
+  [data-scope="select"][data-part="trigger"] {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+    padding-inline: var(--spacing-space-sm);
+    gap: var(--spacing-space-sm);
+    min-height: var(--spacing-size-sm);
+  }
+
+  [data-scope="select"][data-part="item"] {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+
+  [data-scope="select"][data-part="item-group-label"] {
+    font-size: var(--text-sm);
+    line-height: var(--text-sm--line-height);
+  }
+}
+
+@utility select--md {
+  [data-scope="select"][data-part="root"] {
+    gap: var(--spacing-space-md);
+  }
+
+  [data-scope="select"][data-part="label"] {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+
+  [data-scope="select"][data-part="control"] {
+    max-width: var(--container-md);
+    gap: var(--spacing-space-md);
+  }
+
+  [data-scope="select"][data-part="trigger"] {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+    padding-inline: var(--spacing-space-md);
+    gap: var(--spacing-space-md);
+    min-height: var(--spacing-size-md);
+  }
+
+  [data-scope="select"][data-part="item"] {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+
+  [data-scope="select"][data-part="item-group-label"] {
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+}
+
+@utility select--lg {
+  [data-scope="select"][data-part="root"] {
+    gap: var(--spacing-space-lg);
+  }
+
+  [data-scope="select"][data-part="label"] {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+
+  [data-scope="select"][data-part="control"] {
+    max-width: var(--container-lg);
+    gap: var(--spacing-space-lg);
+  }
+
+  [data-scope="select"][data-part="trigger"] {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+    padding-inline: var(--spacing-space-lg);
+    gap: var(--spacing-space-lg);
+    min-height: var(--spacing-size-lg);
+  }
+
+  [data-scope="select"][data-part="item"] {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+
+  [data-scope="select"][data-part="item-group-label"] {
+    font-size: var(--text-lg);
+    line-height: var(--text-lg--line-height);
+  }
+}
+
+@utility select--xl {
+  [data-scope="select"][data-part="root"] {
+    gap: var(--spacing-space-xl);
+  }
+
+  [data-scope="select"][data-part="label"] {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+
+  [data-scope="select"][data-part="control"] {
+    max-width: var(--container-xl);
+    gap: var(--spacing-space-xl);
+  }
+
+  [data-scope="select"][data-part="trigger"] {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+    padding-inline: var(--spacing-space-xl);
+    gap: var(--spacing-space-xl);
+    min-height: var(--spacing-size-xl);
+  }
+
+  [data-scope="select"][data-part="item"] {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+
+  [data-scope="select"][data-part="item-group-label"] {
+    font-size: var(--text-xl);
+    line-height: var(--text-xl--line-height);
+  }
+}
+
+@utility select--accent {
+  & [data-scope="select"][data-part="item"][data-selected],
+  & [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:hover,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: var(--color-accent-hover);
+    color: var(--color-accent-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:active,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:active {
+    background-color: var(--color-accent-active);
+    color: var(--color-accent-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:focus-visible,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+  }
+
+  @media (hover: hover) {
+    & [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  @media (hover: none) {
+    & [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  & [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-accent-ink);
+    background-color: var(--color-accent-hover);
+    color: var(--color-accent-ink);
+  }
+}
+
+@utility select--brand {
+  & [data-scope="select"][data-part="item"][data-selected],
+  & [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: var(--color-brand);
+    color: var(--color-brand-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:hover,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: var(--color-brand-hover);
+    color: var(--color-brand-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:active,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:active {
+    background-color: var(--color-brand-active);
+    color: var(--color-brand-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:focus-visible,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+  }
+
+  @media (hover: hover) {
+    & [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  @media (hover: none) {
+    & [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  & [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-brand-ink);
+    background-color: var(--color-brand-hover);
+    color: var(--color-brand-ink);
+  }
+}
+
+@utility select--alert {
+  & [data-scope="select"][data-part="item"][data-selected],
+  & [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: var(--color-alert);
+    color: var(--color-alert-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:hover,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: var(--color-alert-hover);
+    color: var(--color-alert-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:active,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:active {
+    background-color: var(--color-alert-active);
+    color: var(--color-alert-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:focus-visible,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+  }
+
+  @media (hover: hover) {
+    & [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  @media (hover: none) {
+    & [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  & [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-alert-ink);
+    background-color: var(--color-alert-hover);
+    color: var(--color-alert-ink);
+  }
+}
+
+@utility select--info {
+  & [data-scope="select"][data-part="item"][data-selected],
+  & [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: var(--color-info);
+    color: var(--color-info-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:hover,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: var(--color-info-hover);
+    color: var(--color-info-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:active,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:active {
+    background-color: var(--color-info-active);
+    color: var(--color-info-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:focus-visible,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+  }
+
+  @media (hover: hover) {
+    & [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  @media (hover: none) {
+    & [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  & [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-info-ink);
+    background-color: var(--color-info-hover);
+    color: var(--color-info-ink);
+  }
+}
+
+@utility select--success {
+  & [data-scope="select"][data-part="item"][data-selected],
+  & [data-scope="select"][data-part="item"][data-state="checked"] {
+    background-color: var(--color-success);
+    color: var(--color-success-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:hover,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:hover {
+    background-color: var(--color-success-hover);
+    color: var(--color-success-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:active,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:active {
+    background-color: var(--color-success-active);
+    color: var(--color-success-ink);
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected]:focus-visible,
+  & [data-scope="select"][data-part="item"][data-state="checked"]:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+  }
+
+  @media (hover: hover) {
+    & [data-scope="select"][data-part="item"][data-highlighted]:not(:hover) {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  @media (hover: none) {
+    & [data-scope="select"][data-part="item"][data-highlighted] {
+      outline: none;
+      box-shadow: inset 0 0 0 2px var(--color-ink);
+      background-color: var(--color-ui-hover);
+      color: var(--color-ink);
+    }
+  }
+
+  & [data-scope="select"][data-part="item"][data-selected][data-highlighted],
+  & [data-scope="select"][data-part="item"][data-state="checked"][data-highlighted] {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--color-success-ink);
+    background-color: var(--color-success-hover);
+    color: var(--color-success-ink);
+  }
+}
+
+@utility select--rounded-* {
+  [data-scope="select"][data-part="trigger"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+
+  [data-scope="select"][data-part="content"] {
+    border-radius: --value(--radius-*, [length]);
+  }
+}
+
+@utility select--text-* {
   [data-scope="select"][data-part="label"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
@@ -155,20 +560,15 @@
   [data-scope="select"][data-part="trigger"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    padding-inline: --value(--spacing-space-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-    min-height: --value(--spacing-size-*, [length]);
   }
-
-  [data-scope="select"][data-part="control"] {
-    max-width: --value(--container-*, [length]);
-    gap: --value(--spacing-space-*, [length]);
-  }
-
 
   [data-scope="select"][data-part="item"] {
     font-size: --value(--text-*, [length]);
     line-height: --value(--text-*--line-height, [length]);
-    
+  }
+
+  [data-scope="select"][data-part="item-group-label"] {
+    font-size: --value(--text-*, [length]);
+    line-height: --value(--text-*--line-height, [length]);
   }
 }

@@ -193,7 +193,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
         <section class="flex flex-col gap-4 items-start">
           <.tabs
             id="tabs-tree-view-patterns-controlled"
-            class="tabs max-w-6xl [&_[data-scope=tabs][data-part=list]]:place-self-end"
+            class="tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
             value="preview"
           >
             <:trigger value="preview" class="button--sm">Preview</:trigger>
@@ -229,7 +229,7 @@ defmodule E2eWeb.TreeViewPatternsLive do
         <section class="flex flex-col gap-4 items-start">
           <.tabs
             id="tabs-tree-view-patterns-redirect"
-            class="tabs max-w-6xl [&_[data-scope=tabs][data-part=list]]:place-self-end"
+            class="tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
             value="preview"
           >
             <:trigger value="preview" class="button--sm">Preview</:trigger>

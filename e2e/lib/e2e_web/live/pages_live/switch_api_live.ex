@@ -21,6 +21,11 @@ defmodule E2eWeb.SwitchApiLive do
   end
 
   @impl true
+  def handle_event("switch_api_toggle", _params, socket) do
+    {:noreply, Corex.Switch.toggle_checked(socket, "switch-api-srv")}
+  end
+
+  @impl true
   def render(assigns) do
     ~H"""
     <Layouts.app
@@ -32,19 +37,21 @@ defmodule E2eWeb.SwitchApiLive do
       <.demo_page
         id="switch-api-page"
         title="Switch · API"
-        subtitle="Set checked from client bindings, client JS, or a server event."
+        subtitle="set_checked and toggle_checked via LiveView JS, DOM events on the hook root, or server push."
       >
         <.demo_section
           id="switch-api-set-checked-client-binding"
-          title="Set checked (Client binding)"
-          code={@codes.set_checked_client_binding}
+          title="LiveView binding"
+          code_tabs={[
+            %{value: "heex", label: "Heex", language: :heex, code: @codes.set_checked_client_binding}
+          ]}
         >
           <:preview><Demo.api_set_checked_client_binding_example /></:preview>
         </.demo_section>
 
         <.demo_section
           id="switch-api-set-checked-client-js"
-          title="Set checked (Client JS)"
+          title="Client JS"
           code_tabs={[
             %{
               value: "heex",
@@ -71,7 +78,7 @@ defmodule E2eWeb.SwitchApiLive do
 
         <.demo_section
           id="switch-api-set-checked-server"
-          title="Set checked (Server)"
+          title="Server push"
           code_tabs={[
             %{
               value: "heex",

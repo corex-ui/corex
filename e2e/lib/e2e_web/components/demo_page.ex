@@ -37,7 +37,7 @@ defmodule E2eWeb.DemoPage do
   - **Anatomy** — `<.demo_page>` + one `<.demo_section>` per variant; stable `id` on each section.
   - **Style** — same structure as anatomy; focus on CSS modifier classes and layout.
   - **Form** — static submit flow; real field names and assigns.
-  - **Playground** — `Layouts.app` + `<.demo_playground>`; controls in the **controls** slot, demo in the **canvas** slot.
+  - **Playground** — `Layouts.app` + `<.demo_playground>`; optional controls in the **controls** slot when `controls_strip` is true (default), demo in the **canvas** slot. Set `controls_strip={false}` to omit the sidebar (e.g. Toast playground).
   - **API** — LiveView; stable element ids; snippets from `E2eWeb.Demos.*`. Prefer `<.demo_section>` with **Preview** and code tabs. The optional **`<.demo_api_row>`** is available for action rows if you need it; most API lives use `demo_section` with `<.action>` only.
   - **Events** — LiveView; `<.demo_event_log>`. For collections, prefer streams and `<.data_table>` like `AccordionEventsLive`.
   - **Patterns** — real async only (`<.async_result>`, `<.demo_pattern_async>`). No placeholder skeletons.
@@ -80,7 +80,8 @@ defmodule E2eWeb.DemoPage do
   attr :title, :string, required: true
   attr :subtitle, :any, default: nil
   attr :heading_class, :string, default: "layout-heading"
-  slot :controls, required: true
+  attr :controls_strip, :boolean, default: true
+  slot :controls
   slot :canvas, required: true
 
   def demo_playground(assigns) do
@@ -92,7 +93,7 @@ defmodule E2eWeb.DemoPage do
       </.layout_heading>
       <div class="preview">
         <div class="preview__frame">
-          <div class="preview__sidebar preview__sidebar--wrap">
+          <div :if={@controls_strip} class="preview__sidebar preview__sidebar--wrap">
             {render_slot(@controls)}
           </div>
           <section class="preview__main">
@@ -136,7 +137,8 @@ defmodule E2eWeb.DemoPage do
   attr :class, :string, default: "flex flex-col gap-4 items-start"
 
   attr :tabs_class, :string,
-    default: "tabs max-w-6xl [&_[data-scope=tabs][data-part=list]]:place-self-end"
+    default:
+      "tabs max-w-6xl [&>[data-scope=tabs][data-part=root]>[data-scope=tabs][data-part=list]]:place-self-end"
 
   attr :preview_class, :string,
     default: "items-center shadow-sm py-space-xl p-space bg-root gap-space"

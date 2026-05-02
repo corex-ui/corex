@@ -11,15 +11,28 @@ defmodule E2eWeb.ToastApiLive do
   end
 
   @impl true
-  def handle_event("toast_api_info", _params, socket) do
+  def handle_event("toast_api_push_info", _params, socket) do
     {:noreply,
-     Corex.Toast.push_toast(
-       socket,
-       "layout-toast",
-       "From server",
-       "Corex.Toast.push_toast/6",
-       :info,
-       5000
+     Corex.Toast.push_toast(socket, "layout-toast", "Info", "From server", :info, 5000)}
+  end
+
+  @impl true
+  def handle_event("toast_api_push_success", _params, socket) do
+    {:noreply,
+     Corex.Toast.push_toast(socket, "layout-toast", "Success", "From server", :success, 5000)}
+  end
+
+  @impl true
+  def handle_event("toast_api_push_error", _params, socket) do
+    {:noreply,
+     Corex.Toast.push_toast(socket, "layout-toast", "Error", "From server", :error, 5000)}
+  end
+
+  @impl true
+  def handle_event("toast_api_push_loading", _params, socket) do
+    {:noreply,
+     Corex.Toast.push_toast(socket, "layout-toast", "Loading", "From server", :info, :infinity,
+       loading: true
      )}
   end
 
@@ -35,7 +48,7 @@ defmodule E2eWeb.ToastApiLive do
       <.demo_page
         id="toast-api-page"
         title="Toast · API"
-        subtitle="Create from client bindings, client JS, or push from the server."
+        subtitle="Create from client bindings, client JS, or push from the server. Types are info, success, and error; use optional loading: true for the loading slot."
       >
         <.demo_section
           id="toast-api-create-client-binding"

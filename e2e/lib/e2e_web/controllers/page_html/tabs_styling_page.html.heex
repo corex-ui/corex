@@ -7,7 +7,7 @@
   <.demo_page
     id="tabs-styling-page"
     title="Tabs · Style"
-    subtitle="Semantic colors and list spacing via tabs--* modifiers on the root."
+    subtitle="Semantic colors, root gap, typography, radius, and max-width utilities on the tabs root."
   >
     <.demo_section
       id="tabs-styling-color"
@@ -20,12 +20,52 @@
     </.demo_section>
 
     <.demo_section
-      id="tabs-styling-spacing"
-      title="Spacing"
-      code={E2eWeb.Demos.TabsDemo.styling_spacing_code()}
+      id="tabs-styling-size"
+      title="Size"
+      code={E2eWeb.Demos.TabsDemo.styling_size_code()}
     >
       <:preview>
-        <E2eWeb.Demos.TabsDemo.styling_spacing_example />
+        <E2eWeb.Demos.TabsDemo.styling_size_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-styling-text"
+      title="Text"
+      code={E2eWeb.Demos.TabsDemo.styling_text_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TabsDemo.styling_text_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-styling-radius"
+      title="Radius"
+      code={E2eWeb.Demos.TabsDemo.styling_radius_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TabsDemo.styling_radius_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-styling-max-width"
+      title="Max width"
+      code={E2eWeb.Demos.TabsDemo.styling_max_width_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TabsDemo.styling_max_width_example />
+      </:preview>
+    </.demo_section>
+
+    <.demo_section
+      id="tabs-styling-mix-modifiers"
+      title="Mix modifiers"
+      code={E2eWeb.Demos.TabsDemo.styling_mix_modifiers_code()}
+    >
+      <:preview>
+        <E2eWeb.Demos.TabsDemo.styling_mix_modifiers_example />
       </:preview>
     </.demo_section>
   </.demo_page>

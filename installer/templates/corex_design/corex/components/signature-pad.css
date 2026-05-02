@@ -3,7 +3,7 @@
 @layer components {
   .signature-pad {
     width: 100%;
-    max-width: var(--container-5xs);
+    max-width: var(--container-xs);
     gap: var(--spacing-space);
     display: flex;
     flex-direction: column;

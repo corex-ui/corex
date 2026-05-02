@@ -18,6 +18,10 @@ defmodule E2eWeb.SwitchPlayLive do
     {:noreply, update_control(socket, id, checked)}
   end
 
+  def handle_event("control_changed", %{"value" => [value], "id" => id}, socket) do
+    {:noreply, update_control(socket, id, value)}
+  end
+
   def handle_event("play_checked", %{"checked" => checked}, socket) do
     {:noreply, assign(socket, :checked, checked == true or checked == "true")}
   end

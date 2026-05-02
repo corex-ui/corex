@@ -2,7 +2,7 @@
 
 @layer components {
   .pin-input {
-    width: 100%;
+    width: auto;
     max-width: var(--container-md);
   }
 
