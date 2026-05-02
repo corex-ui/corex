@@ -157,13 +157,12 @@
 
   .layout .layout__row {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
     align-items: center;
     gap: var(--spacing-space);
     width: auto
-
   }
 
   .layout .layout__section {

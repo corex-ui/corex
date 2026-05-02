@@ -42,13 +42,20 @@ defmodule Corex.New.PostGenerate do
       PhxWrapper.run_deps_get!(phx_root)
     end
 
+    lang_line =
+      if Keyword.get(opts, :lang, false) do
+        "\n            $ mix localize.download_locales"
+      else
+        ""
+      end
+
     next_steps =
       if install? do
         """
 
         Next steps:
 
-            $ cd #{cd_hint}
+            $ cd #{cd_hint}#{lang_line}
             $ mix assets.setup
         """
       else
@@ -57,7 +64,7 @@ defmodule Corex.New.PostGenerate do
         Next steps:
 
             $ cd #{cd_hint}
-            $ mix deps.get
+            $ mix deps.get#{lang_line}
             $ mix assets.setup
         """
       end

@@ -39,7 +39,7 @@ defmodule E2e.MixProject do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    base = [
+    [
       {:phoenix, "~> 1.8.3"},
       {:phoenix_ecto, "~> 4.5"},
       {:ecto_sql, "~> 3.13"},
@@ -83,21 +83,6 @@ defmodule E2e.MixProject do
       {:designex, "~> 1.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]}
     ]
-
-    if needs_json_polyfill?() do
-      base ++ [{:json_polyfill, "~> 0.2"}]
-    else
-      base
-    end
-  end
-
-  defp needs_json_polyfill? do
-    otp =
-      :erlang.system_info(:otp_release)
-      |> List.to_string()
-      |> String.to_integer()
-
-    otp <= 26
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

@@ -3,7 +3,8 @@ defmodule Corex.New.Patches do
 
   @doc """
   Adds `{:corex, ...}` (and `{:localize_web, "~> 0.5"}` when `--lang`)
-  to the `deps/0` list in `mix.exs`. Idempotent.
+  to the `deps/0` list in `mix.exs`. When `--lang` and Erlang `:json` is not
+  loaded, adds `{:json_polyfill, ...}` like `localize_web`. Idempotent.
   """
   def patch_mix_exs(install_dir, opts) do
     path = Path.join(install_dir, "mix.exs")
@@ -15,7 +16,7 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_localize_web_dep(opts)
       |> maybe_ensure_designex_dep(opts)
       |> maybe_add_designex_aliases(opts)
-      |> maybe_ensure_json_polyfill_dep()
+      |> maybe_ensure_json_polyfill_dep(opts)
 
     write_if_changed!(path, content, updated)
   end
@@ -148,12 +149,23 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_ensure_json_polyfill_dep(content) do
-    if Regex.match?(~r/extra_applications:\s*\[[^\]]*:json_polyfill/u, content) and
-         not Regex.match?(~r/\{:json_polyfill\s*,/u, content) do
-      insert_before_closing_deps(content, "      {:json_polyfill, \"~> 0.2\"},\n")
-    else
+  defp maybe_ensure_json_polyfill_dep(content, opts) do
+    if not Keyword.get(opts, :lang, false) do
       content
+    else
+      cond do
+        Regex.match?(~r/\{:json_polyfill\s*,/u, content) ->
+          content
+
+        Code.ensure_loaded?(:json) ->
+          content
+
+        true ->
+          insert_before_closing_deps(
+            content,
+            "      {:json_polyfill, \"~> 0.2 or ~> 1.0\"},\n"
+          )
+      end
     end
   end
 
@@ -286,6 +298,8 @@ defmodule Corex.New.Patches do
       true ->
         block = """
         config :designex,
+          version: "1.0.2",
+          commit: "1da4b31",
           cd: Path.expand("../assets", __DIR__),
           dir: "corex",
           corex: [

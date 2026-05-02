@@ -177,7 +177,7 @@ defmodule Corex.New.PatchesTest do
       end)
     end
 
-    test "adds json_polyfill when extra_applications lists it but deps omit it" do
+    test "adds json_polyfill when --lang and :json is not loaded" do
       mix_exs = """
       defmodule MyApp.MixProject do
         use Mix.Project
@@ -187,7 +187,7 @@ defmodule Corex.New.PatchesTest do
         end
 
         def application do
-          [mod: {MyApp.Application, []}, extra_applications: [:logger, :runtime_tools, :json_polyfill]]
+          [mod: {MyApp.Application, []}, extra_applications: [:logger, :runtime_tools]]
         end
 
         defp deps do
@@ -201,9 +201,14 @@ defmodule Corex.New.PatchesTest do
 
       in_tmp(:patch_mix_exs_json_polyfill, fn ->
         File.write!("mix.exs", mix_exs)
-        Patches.patch_mix_exs(File.cwd!(), [])
+        Patches.patch_mix_exs(File.cwd!(), lang: true)
         body = File.read!("mix.exs")
-        assert body =~ ~s({:json_polyfill, "~> 0.2"})
+
+        if Code.ensure_loaded?(:json) do
+          refute body =~ ~r/\{:json_polyfill,/
+        else
+          assert body =~ ~r/\{:json_polyfill,\s*"~> 0\.2 or ~> 1\.0"\}/
+        end
       end)
     end
   end
@@ -310,6 +315,8 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_config_exs(File.cwd!(), otp_app: :my_app, designex: true)
         body = File.read!("config/config.exs")
         assert body =~ "config :designex"
+        assert body =~ ~s(version: "1.0.2")
+        assert body =~ ~s(commit: "1da4b31")
         assert body =~ ~s(dir: "corex")
         assert body =~ "--dir=design --script=build.mjs --tokens=tokens"
 

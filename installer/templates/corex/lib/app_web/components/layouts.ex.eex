@@ -207,10 +207,11 @@ defmodule <%= @web_module %>.Layouts do
     ~H"""
     <.select
       id="corex-language-switch"
-      class="select select--sm max-w-5xs"
+      class="select select--sm max-w-6xs"
       items={@items}
       value={@value}
       redirect
+      positioning={%Corex.Positioning{same_width: true}}
     >
       <:label class="sr-only">Language</:label>
       <:item :let={item}>{item.label}</:item>
