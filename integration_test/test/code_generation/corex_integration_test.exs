@@ -239,7 +239,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
           fn content ->
             assert content =~ ~r/<html\b[^>]*\bdata-theme=/
             assert content =~ ~r/<html\b[^>]*\bdata-mode=/
-            refute content =~ ~r/window\.addEventListener\(\s*[\"']phx:set-theme/
+            assert content =~ ~r/window\.addEventListener\(\s*[\"']phx:set-theme/
             refute content =~ "dataset.phxTheme"
           end
         )

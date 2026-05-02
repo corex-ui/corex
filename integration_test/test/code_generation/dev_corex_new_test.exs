@@ -6,14 +6,12 @@ defmodule Corex.Integration.CodeGeneration.DevCorexNewTest do
   """
   use Corex.Integration.CodeGeneratorCase, async: false
 
+  if Mix.Task.get("phx.new") == nil do
+    @moduletag skip: "requires phx_new archive (mix archive.install hex phx_new)"
+  end
+
   @tag timeout: 600_000
   test "mix corex.new with --dev applies Corex install (esbuild ESM, hooks, config, web)" do
-    unless Mix.Task.get("phx.new") do
-      flunk(
-        "mix phx.new is not available in this Mix environment. Install the archive, e.g.: mix archive.install hex phx_new --force"
-      )
-    end
-
     with_installer_tmp("dev_corex_new", fn tmp_dir ->
       app = "dev_corex_phx_app"
       {app_root_path, output} = generate_corex_app_dev_corex(tmp_dir, app)

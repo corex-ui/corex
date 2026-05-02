@@ -15,6 +15,7 @@ defmodule Corex.New.Patches do
       |> maybe_ensure_localize_web_dep(opts)
       |> maybe_ensure_designex_dep(opts)
       |> maybe_add_designex_aliases(opts)
+      |> maybe_ensure_json_polyfill_dep()
 
     write_if_changed!(path, content, updated)
   end
@@ -142,6 +143,15 @@ defmodule Corex.New.Patches do
           "      {:designex, \"~> 1.0\", runtime: Mix.env() == :dev},\n"
         )
       end
+    else
+      content
+    end
+  end
+
+  defp maybe_ensure_json_polyfill_dep(content) do
+    if Regex.match?(~r/extra_applications:\s*\[[^\]]*:json_polyfill/u, content) and
+         not Regex.match?(~r/\{:json_polyfill\s*,/u, content) do
+      insert_before_closing_deps(content, "      {:json_polyfill, \"~> 0.2\"},\n")
     else
       content
     end

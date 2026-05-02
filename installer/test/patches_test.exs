@@ -176,6 +176,36 @@ defmodule Corex.New.PatchesTest do
         assert Regex.scan(~r/"designex corex"/, body2) |> length() == 2
       end)
     end
+
+    test "adds json_polyfill when extra_applications lists it but deps omit it" do
+      mix_exs = """
+      defmodule MyApp.MixProject do
+        use Mix.Project
+
+        def project do
+          [app: :my_app, version: "0.1.0", deps: deps()]
+        end
+
+        def application do
+          [mod: {MyApp.Application, []}, extra_applications: [:logger, :runtime_tools, :json_polyfill]]
+        end
+
+        defp deps do
+          [
+            {:phoenix, "~> 1.8.1"},
+            {:jason, "~> 1.2"}
+          ]
+        end
+      end
+      """
+
+      in_tmp(:patch_mix_exs_json_polyfill, fn ->
+        File.write!("mix.exs", mix_exs)
+        Patches.patch_mix_exs(File.cwd!(), [])
+        body = File.read!("mix.exs")
+        assert body =~ ~s({:json_polyfill, "~> 0.2"})
+      end)
+    end
   end
 
   describe "patch_web_module/2" do
