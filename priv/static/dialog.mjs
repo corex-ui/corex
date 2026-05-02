@@ -1229,6 +1229,21 @@ var machine = createMachine({
 });
 
 // components/dialog.ts
+function dialogInitialAriaLabel(rootEl) {
+  const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+  if (titleEl?.textContent?.trim()) return void 0;
+  const fromDataset = getString(rootEl, "dialogDefaultLabel")?.trim();
+  if (fromDataset) return fromDataset;
+  return "Dialog";
+}
+function syncDialogContentAriaRefs(rootEl, contentEl) {
+  const descriptionEl = rootEl.querySelector(
+    '[data-scope="dialog"][data-part="description"]'
+  );
+  if (!descriptionEl?.textContent?.trim()) {
+    contentEl.removeAttribute("aria-describedby");
+  }
+}
 var Dialog = class extends Component {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initMachine(props) {
@@ -1274,6 +1289,7 @@ var Dialog = class extends Component {
           contentEl.style.removeProperty("pointer-events");
         }
       }
+      syncDialogContentAriaRefs(rootEl, contentEl);
     }
     const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
     if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
@@ -1325,6 +1341,7 @@ var DialogHook = {
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getDir(el),
+      "aria-label": dialogInitialAriaLabel(el),
       onOpenChange: (details) => {
         const previousOpen = self.lastOpen ?? false;
         self.lastOpen = details.open;

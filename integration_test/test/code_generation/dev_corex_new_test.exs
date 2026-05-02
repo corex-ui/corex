@@ -6,42 +6,41 @@ defmodule Corex.Integration.CodeGeneration.DevCorexNewTest do
   """
   use Corex.Integration.CodeGeneratorCase, async: false
 
-  if Mix.Task.get("phx.new") != nil do
-    @tag timeout: 600_000
-    test "mix corex.new with --dev applies Corex install (esbuild ESM, hooks, config, web)" do
-      with_installer_tmp("dev_corex_new", fn tmp_dir ->
-        app = "dev_corex_phx_app"
-        {app_root_path, output} = generate_corex_app_dev_corex(tmp_dir, app)
+  @tag timeout: 600_000
+  test "mix corex.new with --dev applies Corex install (esbuild ESM, hooks, config, web)" do
+    unless Mix.Task.get("phx.new") do
+      flunk(
+        "mix phx.new is not available in this Mix environment. Install the archive, e.g.: mix archive.install hex phx_new --force"
+      )
+    end
 
-        web = Path.join(app_root_path, "lib/#{app}_web.ex")
-        cfg = Path.join(app_root_path, "config/config.exs")
-        mix = Path.join(app_root_path, "mix.exs")
+    with_installer_tmp("dev_corex_new", fn tmp_dir ->
+      app = "dev_corex_phx_app"
+      {app_root_path, output} = generate_corex_app_dev_corex(tmp_dir, app)
 
-        assert output =~ "mix phx.new" and output =~ "installing Corex"
+      web = Path.join(app_root_path, "lib/#{app}_web.ex")
+      cfg = Path.join(app_root_path, "config/config.exs")
+      mix = Path.join(app_root_path, "mix.exs")
 
-        assert_file(mix, ~r/:corex/)
-        assert_file(mix, ~r/path:/)
-        assert_file(cfg, ~r/--format=esm/)
-        assert_file(cfg, ~r/--splitting/)
-        assert_file(web, ~r/use Corex/)
+      assert output =~ "mix phx.new" and output =~ "installing Corex"
 
-        app_js = Path.join(app_root_path, "assets/js/app.js")
+      assert_file(mix, ~r/:corex/)
+      assert_file(mix, ~r/path:/)
+      assert_file(cfg, ~r/--format=esm/)
+      assert_file(cfg, ~r/--splitting/)
+      assert_file(web, ~r/use Corex/)
 
-        assert_file(app_js, fn c ->
-          assert c =~ ~r/import corex from "\.\./
-          assert c =~ "corex.mjs"
-        end)
+      app_js = Path.join(app_root_path, "assets/js/app.js")
 
-        app_css = Path.join(app_root_path, "assets/css/app.css")
-        assert File.exists?(app_css)
-
-        assert_no_compilation_warnings(app_root_path)
+      assert_file(app_js, fn c ->
+        assert c =~ ~r/import corex from "\.\./
+        assert c =~ "corex.mjs"
       end)
-    end
-  else
-    @tag :skip
-    test "mix corex.new with --dev applies Corex install (esbuild ESM, hooks, config, web)" do
-      assert true
-    end
+
+      app_css = Path.join(app_root_path, "assets/css/app.css")
+      assert File.exists?(app_css)
+
+      assert_no_compilation_warnings(app_root_path)
+    end)
   end
 end

@@ -20685,6 +20685,23 @@ var Corex = (() => {
       body.removeAttribute(LOCK_CLASSNAME);
     };
   }
+  function dialogInitialAriaLabel(rootEl) {
+    var _a4, _b;
+    const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
+    if ((_a4 = titleEl == null ? void 0 : titleEl.textContent) == null ? void 0 : _a4.trim()) return void 0;
+    const fromDataset = (_b = getString(rootEl, "dialogDefaultLabel")) == null ? void 0 : _b.trim();
+    if (fromDataset) return fromDataset;
+    return "Dialog";
+  }
+  function syncDialogContentAriaRefs(rootEl, contentEl) {
+    var _a4;
+    const descriptionEl = rootEl.querySelector(
+      '[data-scope="dialog"][data-part="description"]'
+    );
+    if (!((_a4 = descriptionEl == null ? void 0 : descriptionEl.textContent) == null ? void 0 : _a4.trim())) {
+      contentEl.removeAttribute("aria-describedby");
+    }
+  }
   function getDialogUpdatePropsFromEl(el) {
     return __spreadProps(__spreadValues({
       id: el.id
@@ -21736,6 +21753,7 @@ var Corex = (() => {
                 contentEl.style.removeProperty("pointer-events");
               }
             }
+            syncDialogContentAriaRefs(rootEl, contentEl);
           }
           const titleEl = rootEl.querySelector('[data-scope="dialog"][data-part="title"]');
           if (titleEl) this.spreadProps(titleEl, this.api.getTitleProps());
@@ -21766,6 +21784,7 @@ var Corex = (() => {
             preventScroll: getBoolean(el, "preventScroll"),
             restoreFocus: getBoolean(el, "restoreFocus"),
             dir: getDir(el),
+            "aria-label": dialogInitialAriaLabel(el),
             onOpenChange: (details) => {
               var _a5;
               const previousOpen = (_a5 = self2.lastOpen) != null ? _a5 : false;

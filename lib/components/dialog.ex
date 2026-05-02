@@ -305,7 +305,8 @@ defmodule Corex.Dialog do
 
   attr(:aria_label, :string,
     default: nil,
-    doc: "Accessible name when no visible dialog title is rendered; defaults to a translated Dialog label"
+    doc:
+      "Accessible name when no visible dialog title is rendered; defaults to a translated Dialog label"
   )
 
   attr(:rest, :global)

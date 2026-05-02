@@ -258,11 +258,28 @@ jobs:
           mix archive.build -o corex_new.ez
           mix archive.install corex_new.ez --force
 
-      - name: Install Mix archives for corex.new (phx.new + igniter.install)
-        run: |
-          mix archive.install hex phx_new --force
-          mix archive.install hex igniter_new --force
+      - name: Install Mix archives for corex.new (phx_new)
+        run: mix archive.install hex phx_new --force
 
-      - name: Run integration tests
+      - name: Run integration tests (no database tag)
         working-directory: integration_test
-        run: mix test test/code_generation/dev_corex_new_test.exs --timeout 600000
+        env:
+          MIX_ENV: test
+        run: mix test --timeout 1200000
+
+      - name: Run integration tests (PostgreSQL)
+        working-directory: integration_test
+        env:
+          MIX_ENV: test
+          PGHOST: localhost
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGPORT: "5432"
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+        run: mix test --include database:postgresql --timeout 1200000
+
+      - name: Run integration tests (SQLite3)
+        working-directory: integration_test
+        env:
+          MIX_ENV: test
+        run: mix test --include database:sqlite3 --timeout 1200000
