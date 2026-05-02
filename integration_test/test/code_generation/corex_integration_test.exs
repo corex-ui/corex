@@ -139,7 +139,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
 
         web = Path.join(app_root_path, "lib/my_app_web")
 
-        for rel <- ["plugs/mode.ex", "plugs/theme.ex", "plugs/path.ex"] do
+        for rel <- ["plugs/mode.ex", "plugs/theme.ex"] do
           assert File.exists?(Path.join(web, rel))
         end
 

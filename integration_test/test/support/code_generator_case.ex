@@ -454,10 +454,14 @@ defmodule Corex.Integration.CodeGeneratorCase do
     base = app_base_path(app_root, app_name, opts)
     web = "#{app_name}_web"
     router = Path.join([base, "lib", web, "router.ex"])
-    assert_file(router, fn c -> assert c =~ "Plugs.Path" end)
 
-    path_plug = Path.join([base, "lib", web, "plugs", "path.ex"])
-    assert_file(path_plug, fn c -> assert c =~ "strip_after_locale" end)
+    assert_file(router, fn c ->
+      assert c =~ "Localize.Plug.PutLocale"
+      assert c =~ ~s(scope "/:locale")
+    end)
+
+    assert_file(Path.join([base, "lib", web, "locale.ex"]))
+    assert_file(Path.join([base, "lib", web, "hooks", "layout.ex"]))
   end
 
   @doc """
