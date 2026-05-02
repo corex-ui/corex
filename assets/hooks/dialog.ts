@@ -1,6 +1,6 @@
 import type { Hook } from "phoenix_live_view";
 import type { HookInterface } from "phoenix_live_view/assets/js/types/view_hook";
-import { Dialog } from "../components/dialog";
+import { Dialog, dialogInitialAriaLabel } from "../components/dialog";
 import type { OpenChangeDetails } from "@zag-js/dialog";
 
 import { getString, getBoolean, getDir, canPushEvent } from "../lib/util";
@@ -67,6 +67,7 @@ const DialogHook: Hook<object & DialogHookState, HTMLElement> = {
       preventScroll: getBoolean(el, "preventScroll"),
       restoreFocus: getBoolean(el, "restoreFocus"),
       dir: getDir(el),
+      "aria-label": dialogInitialAriaLabel(el),
 
       onOpenChange: (details: OpenChangeDetails) => {
         const previousOpen = self.lastOpen ?? false;

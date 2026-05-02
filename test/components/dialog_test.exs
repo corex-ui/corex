@@ -184,6 +184,23 @@ defmodule Corex.DialogTest do
       assert m["data-animation"] == "custom"
       refute Map.has_key?(m, "data-anim-scale-duration")
     end
+
+    test "embeds default dialog accessible name for client-side Zag props" do
+      m = Connect.props(%Props{id: "d3", animation: "instant"})
+      assert is_binary(m["data-dialog-default-label"])
+      assert m["data-dialog-default-label"] != ""
+    end
+
+    test "honours dialog_default_label in props when set" do
+      m =
+        Connect.props(%Props{
+          id: "d4",
+          animation: "instant",
+          dialog_default_label: "Custom"
+        })
+
+      assert m["data-dialog-default-label"] == "Custom"
+    end
   end
 
   describe "Connect.title/1" do

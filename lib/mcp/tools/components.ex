@@ -67,7 +67,7 @@ defmodule Corex.MCP.Tools.Components do
             _ -> %{}
           end
 
-        source_path = source_path_from_meta(meta_map)
+        source_path = resolve_source_path(meta_map, mod)
 
         case moduledoc_markdown(doc_blob, format, mod) do
           {:ok, docs} ->
@@ -97,13 +97,30 @@ defmodule Corex.MCP.Tools.Components do
     end
   end
 
+  defp resolve_source_path(meta, mod) do
+    case source_path_from_meta(meta) do
+      p when is_binary(p) and p != "" -> p
+      _ -> compile_source_path(mod)
+    end
+  end
+
   defp source_path_from_meta(meta) do
-    case Map.get(meta, :source_path) do
-      p when is_list(p) -> List.to_string(p)
-      p when is_binary(p) -> p
+    p = Map.get(meta, :source_path) || Map.get(meta, "source_path")
+    normalize_source_path_string(p)
+  end
+
+  defp compile_source_path(mod) do
+    with list when is_list(list) <- mod.module_info(:compile),
+         src when not is_nil(src) <- Keyword.get(list, :source) do
+      normalize_source_path_string(src)
+    else
       _ -> nil
     end
   end
+
+  defp normalize_source_path_string(p) when is_list(p), do: List.to_string(p)
+  defp normalize_source_path_string(p) when is_binary(p), do: p
+  defp normalize_source_path_string(_), do: nil
 
   defp moduledoc_markdown(%{"en" => content}, "text/markdown", mod)
        when is_binary(content) do

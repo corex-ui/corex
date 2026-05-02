@@ -20,8 +20,8 @@ defmodule E2e.DesignPaletteTest do
 
     colors = sd["theme"]["color"]
 
-    assert length(names) == 45
-    assert map_size(colors) == 45
+    assert length(names) == 46
+    assert map_size(colors) == 46
 
     hex? = fn v -> String.match?(v, ~r/^#[0-9a-fA-F]{6}$/i) end
 
@@ -33,6 +33,9 @@ defmodule E2e.DesignPaletteTest do
 
     ink = colors["ink"]
     assert ink["description"] =~ ~r/\d+\.?\d*:1 contrast against ui \(#[0-9a-fA-F]{6}\)/i
+
+    link = colors["link"]
+    assert link["description"] =~ ~r/\d+\.?\d*:1 contrast against ui \(#[0-9a-fA-F]{6}\)/i
 
     border = colors["border"]
     assert border["description"] =~ ~r/\d+\.?\d*:1 contrast against ui \(#[0-9a-fA-F]{6}\)/i

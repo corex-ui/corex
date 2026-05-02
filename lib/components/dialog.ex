@@ -302,6 +302,12 @@ defmodule Corex.Dialog do
   )
 
   attr(:translation, Corex.Dialog.Translation, default: nil, doc: "Override translatable strings")
+
+  attr(:aria_label, :string,
+    default: nil,
+    doc: "Accessible name when no visible dialog title is rendered; defaults to a translated Dialog label"
+  )
+
   attr(:rest, :global)
 
   slot :trigger, required: true do
@@ -354,7 +360,8 @@ defmodule Corex.Dialog do
         on_open_change: @on_open_change,
         on_open_change_client: @on_open_change_client,
         animation: @animation,
-        animation_options: @animation_options
+        animation_options: @animation_options,
+        dialog_default_label: @aria_label
       })}
     >
       <button

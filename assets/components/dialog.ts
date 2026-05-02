@@ -2,6 +2,24 @@ import { connect, machine, type Props, type Api } from "@zag-js/dialog";
 import { VanillaMachine } from "@zag-js/vanilla";
 import { Component } from "../lib/core";
 import { stripHiddenFromProps } from "../lib/animation";
+import { getString } from "../lib/util";
+
+export function dialogInitialAriaLabel(rootEl: HTMLElement): string | undefined {
+  const titleEl = rootEl.querySelector<HTMLElement>('[data-scope="dialog"][data-part="title"]');
+  if (titleEl?.textContent?.trim()) return undefined;
+  const fromDataset = getString(rootEl, "dialogDefaultLabel")?.trim();
+  if (fromDataset) return fromDataset;
+  return "Dialog";
+}
+
+function syncDialogContentAriaRefs(rootEl: HTMLElement, contentEl: HTMLElement): void {
+  const descriptionEl = rootEl.querySelector<HTMLElement>(
+    '[data-scope="dialog"][data-part="description"]'
+  );
+  if (!descriptionEl?.textContent?.trim()) {
+    contentEl.removeAttribute("aria-describedby");
+  }
+}
 
 export class Dialog extends Component<Props, Api> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,6 +72,7 @@ export class Dialog extends Component<Props, Api> {
           contentEl.style.removeProperty("pointer-events");
         }
       }
+      syncDialogContentAriaRefs(rootEl, contentEl);
     }
 
     const titleEl = rootEl.querySelector<HTMLElement>('[data-scope="dialog"][data-part="title"]');

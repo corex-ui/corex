@@ -41,11 +41,18 @@ defmodule Corex.Dialog.Connect do
       "data-animation" => animation
     }
 
-    if animation == "js" do
-      Map.merge(base, Scale.to_dataset(animation_options))
-    else
-      base
-    end
+    merged =
+      if animation == "js" do
+        Map.merge(base, Scale.to_dataset(animation_options))
+      else
+        base
+      end
+
+    Map.put(
+      merged,
+      "data-dialog-default-label",
+      assigns.dialog_default_label || gettext("Dialog")
+    )
   end
 
   @spec trigger(Trigger.t()) :: map()
