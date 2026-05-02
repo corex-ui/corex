@@ -1,7 +1,7 @@
 <Layouts.app flash={@flash}<%= if @mode do %>
   mode={@mode}<% end %><%= if @theme do %>
   theme={@theme}<% end %><%= if @lang do %>
-  path={@path}<% end %>
+  current_path={@conn.request_path}<% end %>
 >
   <.layout_heading class="layout-heading">
     <:title>Corex for Phoenix</:title>

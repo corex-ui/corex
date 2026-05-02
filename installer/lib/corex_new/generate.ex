@@ -12,7 +12,7 @@ defmodule Corex.New.Generate do
     * `:otp_app` (atom, required) — e.g. `:my_app`
     * `:web_module` (atom, required) — e.g. `MyAppWeb`
     * `:app_module` (atom, required) — e.g. `MyApp`
-    * `:mode`, `:theme`, `:lang`, `:design`, `:tailwind`, `:mcp` (bool)
+    * `:mode`, `:theme`, `:lang`, `:design`, `:tailwind`, `:mcp` (bool, default true)
     * `:themes` (list of strings) — only used when `:theme` is true
     * `:dev` (string | nil) — path to local Corex checkout for `--dev PATH`
   """
@@ -30,6 +30,7 @@ defmodule Corex.New.Generate do
     Patches.patch_mix_exs(install_dir, opts)
     Patches.patch_web_module(install_dir, opts[:web_module])
     Patches.patch_router(install_dir, opts[:web_module], opts)
+    Patches.patch_endpoint(install_dir, opts[:web_module], opts)
     Patches.patch_config_exs(install_dir, opts)
     Patches.patch_gettext_backend(install_dir, opts[:web_module], opts)
     Patches.patch_page_controller_test(install_dir, opts[:web_module])
@@ -63,6 +64,7 @@ defmodule Corex.New.Generate do
     |> Keyword.put_new(:mode, false)
     |> Keyword.put_new(:theme, false)
     |> Keyword.put_new(:lang, false)
+    |> Keyword.put_new(:mcp, true)
     |> Keyword.put_new(:design, true)
     |> Keyword.put_new(:tailwind, true)
   end
@@ -125,26 +127,23 @@ defmodule Corex.New.Generate do
       )
     end
 
-    if opts[:lang] do
-      write!(
-        Path.join(plugs_dir, "path.ex"),
-        Templates.plug_path(template_assigns(install_dir, opts))
-      )
-    end
   end
 
   defp write_locale_helpers(install_dir, opts) do
     if opts[:lang] do
       web_dir = Path.join([install_dir, "lib", web_underscore(opts)])
+      hooks_dir = Path.join(web_dir, "hooks")
 
       write!(
         Path.join(web_dir, "locale.ex"),
         Templates.locale_ex(template_assigns(install_dir, opts))
       )
 
+      File.mkdir_p!(hooks_dir)
+
       write!(
-        Path.join(web_dir, "path.ex"),
-        Templates.path_ex(template_assigns(install_dir, opts))
+        Path.join(hooks_dir, "layout.ex"),
+        Templates.hooks_layout(template_assigns(install_dir, opts))
       )
     end
   end

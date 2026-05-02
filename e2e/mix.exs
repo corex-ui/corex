@@ -82,7 +82,15 @@ defmodule E2e.MixProject do
       {:tidewave, "~> 0.5.5", only: :dev},
       {:designex, "~> 1.0"},
       {:igniter, "~> 0.6", only: [:dev, :test]}
-    ]
+    ] ++ maybe_json_polyfill()
+  end
+
+  defp maybe_json_polyfill do
+    if Code.ensure_loaded?(:json) do
+      []
+    else
+      [{:json_polyfill, "~> 0.2 or ~> 1.0"}]
+    end
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

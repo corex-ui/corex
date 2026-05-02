@@ -11,9 +11,8 @@ defmodule Corex.New.Templates do
     home_heex: "corex/lib/app_web/controllers/page_html/home.html.heex.eex",
     plug_mode: "corex/lib/app_web/plugs/mode.ex.eex",
     plug_theme: "corex/lib/app_web/plugs/theme.ex.eex",
-    plug_path: "corex/lib/app_web/plugs/path.ex.eex",
+    hooks_layout: "corex/lib/app_web/hooks/layout.ex.eex",
     locale_ex: "corex/lib/app_web/locale.ex.eex",
-    path_ex: "corex/lib/app_web/path.ex.eex",
     app_js: "corex/assets/js/app.js.eex",
     app_css: "corex/assets/css/app.css.eex"
   ]

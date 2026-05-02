@@ -46,8 +46,10 @@ defmodule Corex.New.TemplatesTest do
     test "includes language_switch/1 when lang: true" do
       out = Templates.layouts_ex(Keyword.put(@base_assigns, :lang, true))
       assert out =~ "def language_switch(assigns)"
-      assert out =~ "<.language_switch path={@path} />"
+      assert out =~ "<.language_switch current_path={@current_path} />"
       assert out =~ "MyAppWeb.Locale.locales()"
+      assert out =~ "MyAppWeb.Locale.swap_path"
+      assert out =~ "MyAppWeb.Locale.current()"
     end
   end
 
@@ -89,9 +91,14 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ "<.layout_heading"
       assert out =~ "Corex for Phoenix"
     end
+
+    test "passes current_path from conn when lang: true" do
+      out = Templates.home_heex(Keyword.put(@base_assigns, :lang, true))
+      assert out =~ "current_path={@conn.request_path}"
+    end
   end
 
-  describe "plug_mode/1 and plug_theme/1 and plug_path/1" do
+  describe "plug_mode/1 and plug_theme/1 and hooks_layout/1" do
     test "plug_mode renders the mode plug module" do
       out = Templates.plug_mode(@base_assigns)
       assert out =~ "defmodule MyAppWeb.Plugs.Mode do"
@@ -104,10 +111,13 @@ defmodule Corex.New.TemplatesTest do
       assert out =~ ":my_app"
     end
 
-    test "plug_path renders the path plug module referencing Path helper" do
-      out = Templates.plug_path(@base_assigns)
-      assert out =~ "defmodule MyAppWeb.Plugs.Path do"
-      assert out =~ "MyAppWeb.Path.strip_after_locale"
+    test "hooks_layout renders LiveView on_mount hook for locale and layout assigns" do
+      out = Templates.hooks_layout(@base_assigns)
+      assert out =~ "defmodule MyAppWeb.Hooks.Layout do"
+      assert out =~ "Localize.Plug.put_locale_from_session"
+      assert out =~ "MyAppWeb.Gettext"
+      assert out =~ "attach_hook(:layout_current_path, :handle_params"
+      assert out =~ "assign_current_path"
     end
   end
 

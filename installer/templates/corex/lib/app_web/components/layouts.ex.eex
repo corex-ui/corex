@@ -31,7 +31,7 @@ defmodule <%= @web_module %>.Layouts do
 <% end %><%= if @theme do %>
   attr :theme, :string, default: "neo", doc: "the current theme"
 <% end %><%= if @lang do %>
-  attr :path, :string, default: "", doc: "locale-stripped request path"
+  attr :current_path, :string, default: "/", doc: "request path for locale switching"
 <% end %>
   slot :inner_block, required: true
 
@@ -98,7 +98,7 @@ defmodule <%= @web_module %>.Layouts do
             </svg>
           </.navigate>
         </div>
-<%= if @lang do %>        <.language_switch path={@path} />
+<%= if @lang do %>        <.language_switch current_path={@current_path} />
 <% end %>      </div>
     </footer>
 
@@ -181,28 +181,25 @@ defmodule <%= @web_module %>.Layouts do
   @doc """
   Provides language selection using the select component in :redirect mode.
   """
-  attr :path, :string, default: "", doc: "locale-stripped path (from Plugs.Path)"
+  attr :current_path, :string, default: "/", doc: "request path for locale switching"
 
   def language_switch(assigns) do
-    suffix = assigns.path || ""
+    current_path = assigns.current_path || "/"
+    current = <%= @web_module %>.Locale.current()
 
     items =
       for locale <- <%= @web_module %>.Locale.locales(), into: Corex.List.new([]) do
-        loc_str = to_string(locale)
-
         Corex.List.Item.new(%{
-          id: loc_str,
+          id: locale,
           label: <%= @web_module %>.Locale.label(locale),
-          to: <%= @web_module %>.Path.join_locale_path(loc_str, suffix)
+          to: <%= @web_module %>.Locale.swap_path(current_path, locale)
         })
       end
-
-    value = [<%= @web_module %>.Path.locale_segment()]
 
     assigns =
       assigns
       |> assign(:items, items)
-      |> assign(:value, value)
+      |> assign(:value, [current])
 
     ~H"""
     <.select

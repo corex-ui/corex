@@ -42,42 +42,63 @@ defmodule Corex.New.PostGenerate do
       PhxWrapper.run_deps_get!(phx_root)
     end
 
-    lang_line =
-      if Keyword.get(opts, :lang, false) do
-        "\n            $ mix localize.download_locales"
+    Mix.shell().info(next_steps_message(cd_hint, install?, opts))
+  end
+
+  defp next_steps_message(cd_hint, install?, opts) do
+    indent = "    "
+    ecto? = Keyword.get(opts, :ecto, true)
+    lang? = Keyword.get(opts, :lang, false)
+
+    initial =
+      IO.iodata_to_binary([
+        "\nWe are almost there! The following steps are missing:\n\n",
+        "#{indent}$ cd #{cd_hint}\n",
+        if(install?, do: "", else: "#{indent}$ mix deps.get\n")
+      ])
+
+    database_block =
+      if ecto? do
+        IO.iodata_to_binary([
+          "\nThen configure your database in config/dev.exs and run:\n\n",
+          "#{indent}$ mix ecto.create\n"
+        ])
       else
         ""
       end
 
-    next_steps =
-      if install? do
-        """
+    assets_block =
+      IO.iodata_to_binary([
+        "\nThen setup and build your assets:\n\n",
+        "#{indent}$ mix assets.setup\n",
+        "#{indent}$ mix assets.build\n"
+      ])
 
-        Next steps:
-
-            $ cd #{cd_hint}#{lang_line}
-            $ mix assets.setup
-        """
+    localize_block =
+      if lang? do
+        IO.iodata_to_binary([
+          "\nOptionally you can download Localize locales:\n\n",
+          "#{indent}$ mix localize.download_locales\n"
+        ])
       else
-        """
-
-        Next steps:
-
-            $ cd #{cd_hint}
-            $ mix deps.get#{lang_line}
-            $ mix assets.setup
-        """
+        ""
       end
 
-    Mix.shell().info(next_steps)
+    server_block =
+      IO.iodata_to_binary([
+        "\nStart your Phoenix app with:\n\n",
+        "#{indent}$ mix phx.server\n",
+        "\nYou can also run your app inside IEx (Interactive Elixir) as:\n\n",
+        "#{indent}$ iex -S mix phx.server\n"
+      ])
 
-    Mix.shell().info("""
-
-    Start the app:
-
-        $ cd #{cd_hint}
-        $ mix phx.server
-    """)
+    IO.iodata_to_binary([
+      initial,
+      database_block,
+      assets_block,
+      localize_block,
+      server_block
+    ])
   end
 
   defp git_available? do

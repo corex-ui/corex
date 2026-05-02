@@ -45,6 +45,36 @@ defmodule Corex.New.PatchesTest do
   end
   """
 
+  @stock_endpoint_ex """
+  defmodule MyAppWeb.Endpoint do
+    use Phoenix.Endpoint, otp_app: :my_app
+
+    @session_options [
+      store: :cookie,
+      key: "_my_app_key",
+      signing_salt: "x",
+      same_site: "Lax"
+    ]
+
+    socket "/live", Phoenix.LiveView.Socket,
+      websocket: [connect_info: [session: @session_options]],
+      longpoll: [connect_info: [session: @session_options]]
+
+    plug Plug.Static,
+      at: "/",
+      from: :my_app,
+      gzip: not code_reloading?,
+      only: MyAppWeb.static_paths(),
+      raise_on_missing_only: code_reloading?
+
+    if code_reloading? do
+      plug Phoenix.CodeReloader
+    end
+
+    plug MyAppWeb.Router
+  end
+  """
+
   @stock_router_ex """
   defmodule MyAppWeb.Router do
     use MyAppWeb, :router
@@ -168,7 +198,10 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_mix_exs(File.cwd!(), designex: true)
         body = File.read!("mix.exs")
         assert body =~ ~r/\{:designex,\s*"~> 1.0",\s*runtime:\s*Mix\.env\(\)\s*==\s*:dev\}/
-        assert body =~ ~r/"assets\.build":\s*\[\s*"compile",\s*"designex corex",\s*"tailwind my_app"/
+
+        assert body =~
+                 ~r/"assets\.build":\s*\[\s*"compile",\s*"designex corex",\s*"tailwind my_app"/
+
         assert body =~ ~r/"assets\.deploy":\s*\[\s*"designex corex",\s*"tailwind my_app --minify"/
 
         Patches.patch_mix_exs(File.cwd!(), designex: true)
@@ -231,7 +264,7 @@ defmodule Corex.New.PatchesTest do
   end
 
   describe "patch_router/3" do
-    test "inserts mode/theme/path plugs and locale scope when flags enabled" do
+    test "inserts mode/theme plugs and locale scope when flags enabled (no path plug)" do
       in_tmp(:patch_router_all, fn ->
         File.mkdir_p!("lib/my_app_web")
         File.write!("lib/my_app_web/router.ex", @stock_router_ex)
@@ -241,7 +274,7 @@ defmodule Corex.New.PatchesTest do
 
         assert body =~ "plug MyAppWeb.Plugs.Mode"
         assert body =~ "plug MyAppWeb.Plugs.Theme"
-        assert body =~ "plug MyAppWeb.Plugs.Path"
+        refute body =~ "plug MyAppWeb.Plugs.Path"
         assert body =~ "use Localize.Routes"
         assert body =~ "Localize.Plug.PutLocale"
         assert body =~ ~s(scope "/:locale")
@@ -269,6 +302,47 @@ defmodule Corex.New.PatchesTest do
         Patches.patch_router(File.cwd!(), MyAppWeb, [])
         body = File.read!("lib/my_app_web/router.ex")
         assert body == @stock_router_ex
+      end)
+    end
+  end
+
+  describe "patch_endpoint/3" do
+    test "inserts Corex.MCP after Plug.Static when mcp is true" do
+      in_tmp(:patch_endpoint_mcp, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/endpoint.ex", @stock_endpoint_ex)
+
+        Patches.patch_endpoint(File.cwd!(), MyAppWeb, mcp: true)
+        body = File.read!("lib/my_app_web/endpoint.ex")
+
+        assert body =~
+                 "raise_on_missing_only: code_reloading?\n\n  if Mix.env() in [:dev, :test] do\n    plug Corex.MCP"
+
+        assert body =~ "plug Corex.MCP"
+      end)
+    end
+
+    test "is idempotent" do
+      in_tmp(:patch_endpoint_idempotent, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/endpoint.ex", @stock_endpoint_ex)
+
+        Patches.patch_endpoint(File.cwd!(), MyAppWeb, mcp: true)
+        Patches.patch_endpoint(File.cwd!(), MyAppWeb, mcp: true)
+
+        body = File.read!("lib/my_app_web/endpoint.ex")
+        assert length(String.split(body, "plug Corex.MCP")) == 2
+      end)
+    end
+
+    test "does not modify endpoint when mcp is false" do
+      in_tmp(:patch_endpoint_no_mcp, fn ->
+        File.mkdir_p!("lib/my_app_web")
+        File.write!("lib/my_app_web/endpoint.ex", @stock_endpoint_ex)
+
+        Patches.patch_endpoint(File.cwd!(), MyAppWeb, mcp: false)
+        body = File.read!("lib/my_app_web/endpoint.ex")
+        assert body == @stock_endpoint_ex
       end)
     end
   end

@@ -1,23 +1,24 @@
 defmodule <%= @web_module %>.Locale do
-  @moduledoc false
-
-  @gettext_backend <%= @web_module %>.Gettext
-
   def locales do
-    case Application.get_env(:localize, :supported_locales) do
-      list when is_list(list) and list != [] -> Enum.map(list, &to_string/1)
-      _ -> Gettext.known_locales(@gettext_backend)
+    Localize.supported_locales() |> Enum.map(&Atom.to_string/1)
+  end
+
+  def current do
+    case Localize.get_locale() do
+      %{cldr_locale_id: id} when is_atom(id) -> Atom.to_string(id)
+      %{cldr_locale_id: id} when is_binary(id) -> id
+      _ -> "en"
     end
   end
 
-  def label(loc) when is_binary(loc) do
+  def label(loc) do
+    loc = to_string(loc)
+
     case Localize.Locale.display_name(loc, locale: loc) do
       {:ok, name} -> name
       _ -> String.upcase(loc)
     end
   end
-
-  def label(loc) when is_atom(loc), do: label(Atom.to_string(loc))
 
   def lang do
     Localize.get_locale()
@@ -29,5 +30,21 @@ defmodule <%= @web_module %>.Locale do
       {:ok, :ltr} -> "ltr"
       _ -> "ltr"
     end
+  end
+
+  def swap_path(request_path, target_locale) when is_binary(request_path) do
+    target = to_string(target_locale)
+    supported = locales()
+
+    rest =
+      case String.split(request_path, "/", trim: true) do
+        [first | rest] ->
+          if first in supported, do: rest, else: [first | rest]
+
+        [] ->
+          []
+      end
+
+    "/" <> Enum.join([target | rest], "/")
   end
 end

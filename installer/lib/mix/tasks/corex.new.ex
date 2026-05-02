@@ -25,6 +25,7 @@ defmodule Mix.Tasks.Corex.New do
   * **`--theme`** — themes (Neo/Uno/Duo/Leo), plugs, theme toggle, layout bridge. Implies **`--design`**.
   * **`--lang`** — Localize + Gettext, path plug, locale scope helpers, `language_switch`.
   * **`--designex`** — copy token sources into `assets/corex/design/`, add `:designex`, asset aliases. Implies **`--design`**.
+  * **`--mcp`** / **`--no-mcp`** — when **`--mcp`** (default), `plug Corex.MCP` is added to the endpoint in `:dev` / `:test` after `Plug.Static`.
   * **`--dev PATH`** — `{:corex, path: PATH}` and relative `corex.mjs` import when building JS; design copies from that checkout when **`--design`** is on.
   * **`--install`** / **`--no-install`** — whether Corex runs **`mix deps.get`** in the new project after generation (prompt if omitted). Does **not** change Phoenix’s **`--no-install`** step.
 
@@ -48,7 +49,7 @@ defmodule Mix.Tasks.Corex.New do
 
   ## After generation
 
-  The installer prints **`Next steps`** (**`cd`**, **`mix deps.get`** only if dependencies were not fetched, then **`mix assets.setup`**) and **`Start the app`** (**`cd`**, **`mix phx.server`**). Each block begins with **`cd`** into the project.
+  The installer prints Phoenix-style follow-up steps (**`cd`**, **`mix deps.get`** when dependencies were not fetched, database setup when Ecto is enabled, **`mix assets.setup`** / **`mix assets.build`**, optional **`mix localize.download_locales`** with **`--lang`**, then **`mix phx.server`** / **`iex -S mix phx.server`**).
 
   ## Examples
 

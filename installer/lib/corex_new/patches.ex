@@ -44,11 +44,21 @@ defmodule Corex.New.Patches do
       content
       |> maybe_insert_localize_routes_use(web_module, opts)
       |> maybe_insert_localize_plugs(web_module, opts)
-      |> maybe_insert_path_plug(web_module, opts)
       |> maybe_insert_mode_plug(web_module, opts)
       |> maybe_insert_theme_plug(web_module, opts)
       |> maybe_duplicate_locale_scope(web_module, opts)
 
+    write_if_changed!(path, content, updated)
+  end
+
+  @doc """
+  After the first `plug Plug.Static`, inserts `plug Corex.MCP` in `:dev` / `:test` when `:mcp` is true.
+  Idempotent.
+  """
+  def patch_endpoint(install_dir, web_module, opts) do
+    path = endpoint_path(install_dir, web_module)
+    content = File.read!(path)
+    updated = maybe_insert_corex_mcp_plug(content, opts)
     write_if_changed!(path, content, updated)
   end
 
@@ -107,7 +117,10 @@ defmodule Corex.New.Patches do
       content = File.read!(path)
       old = "Peace of mind from prototype to production"
       new = "Corex for Phoenix"
-      updated = if String.contains?(content, old), do: String.replace(content, old, new), else: content
+
+      updated =
+        if String.contains?(content, old), do: String.replace(content, old, new), else: content
+
       write_if_changed!(path, content, updated)
     end
 
@@ -419,16 +432,6 @@ defmodule Corex.New.Patches do
     end
   end
 
-  defp maybe_insert_path_plug(content, web_module, opts) do
-    line = "    plug " <> inspect(web_module) <> ".Plugs.Path\n"
-
-    cond do
-      not Keyword.get(opts, :lang, false) -> content
-      String.contains?(content, String.trim_trailing(line)) -> content
-      true -> insert_after_localize_or_flash(content, line)
-    end
-  end
-
   defp maybe_insert_mode_plug(content, web_module, opts) do
     line = "    plug " <> inspect(web_module) <> ".Plugs.Mode\n"
 
@@ -620,6 +623,36 @@ defmodule Corex.New.Patches do
 
   defp router_path(install_dir, web_module) do
     Path.join([install_dir, "lib", underscore(web_module), "router.ex"])
+  end
+
+  defp endpoint_path(install_dir, web_module) do
+    Path.join([install_dir, "lib", underscore(web_module), "endpoint.ex"])
+  end
+
+  defp maybe_insert_corex_mcp_plug(content, opts) do
+    if Keyword.get(opts, :mcp, true) == false do
+      content
+    else
+      if String.contains?(content, "plug Corex.MCP") do
+        content
+      else
+        insertion = "\n  if Mix.env() in [:dev, :test] do\n    plug Corex.MCP\n  end"
+
+        replaced =
+          String.replace(
+            content,
+            ~r/(  plug Plug\.Static,\n(?:    [^\n]+\n)+)/u,
+            "\\1#{insertion}\n",
+            global: false
+          )
+
+        if replaced == content do
+          content
+        else
+          replaced
+        end
+      end
+    end
   end
 
   defp underscore(atom_or_mod) when is_atom(atom_or_mod),
