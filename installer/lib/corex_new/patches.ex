@@ -33,6 +33,21 @@ defmodule Corex.New.Patches do
   end
 
   @doc """
+  When `:lang` is true, inserts `on_mount Web.Hooks.Layout` on the line after the first bare `use Phoenix.LiveView`.
+  Normalizes `use Phoenix.LiveView, on_mount: [Web.Hooks.Layout]` to that shape. Idempotent.
+  """
+  def patch_live_view_for_lang(install_dir, web_module, opts) do
+    if Keyword.get(opts, :lang, false) do
+      path = web_module_path(install_dir, web_module)
+      content = File.read!(path)
+      updated = maybe_insert_hooks_layout_on_mount(content, web_module)
+      write_if_changed!(path, content, updated)
+    else
+      :ok
+    end
+  end
+
+  @doc """
   Inserts Corex plugs into the `:browser` pipeline in `router.ex`,
   plus (when lang?) `use Localize.Routes` and a locale scope. Idempotent.
   """
@@ -381,6 +396,31 @@ defmodule Corex.New.Patches do
       String.ends_with?(trimmed, ",") -> before
       String.ends_with?(trimmed, "[") -> before
       true -> trimmed <> "," <> String.slice(before, String.length(trimmed)..-1//1)
+    end
+  end
+
+  defp maybe_insert_hooks_layout_on_mount(content, web_module) do
+    hook_mod = Module.concat([web_module, :Hooks, :Layout])
+    mod_txt = inspect(hook_mod)
+    standalone = "on_mount #{mod_txt}"
+
+    content =
+      Regex.replace(
+        ~r/^(\s*)use Phoenix\.LiveView,\s*on_mount:\s*\[\s*#{Regex.escape(mod_txt)}\s*\]\s*$/m,
+        content,
+        "\\1use Phoenix.LiveView\n\\1#{standalone}",
+        global: false
+      )
+
+    if String.contains?(content, standalone) do
+      content
+    else
+      Regex.replace(
+        ~r/^(\s*)use Phoenix\.LiveView\s*$/m,
+        content,
+        "\\1use Phoenix.LiveView\n\\1#{standalone}",
+        global: false
+      )
     end
   end
 

@@ -24,6 +24,23 @@ defmodule Corex.New.PatchesTest do
   end
   """
 
+  @stock_web_with_live_view """
+  defmodule MyAppWeb do
+    def live_view do
+      quote do
+        use Phoenix.LiveView
+
+        unquote(html_helpers())
+      end
+    end
+
+    defp html_helpers do
+      quote do
+      end
+    end
+  end
+  """
+
   @stock_web_ex """
   defmodule MyAppWeb do
     def html do
@@ -242,6 +259,78 @@ defmodule Corex.New.PatchesTest do
         else
           assert body =~ ~r/\{:json_polyfill,\s*"~> 0\.2 or ~> 1\.0"\}/
         end
+      end)
+    end
+  end
+
+  describe "patch_live_view_for_lang/3" do
+    test "inserts on_mount Hooks.Layout when lang is true" do
+      in_tmp(:patch_live_view_lang, fn ->
+        File.mkdir_p!("lib")
+        File.write!("lib/my_app_web.ex", @stock_web_with_live_view)
+
+        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+        body = File.read!("lib/my_app_web.ex")
+
+        assert body =~ "use Phoenix.LiveView"
+        assert body =~ "on_mount MyAppWeb.Hooks.Layout"
+        refute body =~ ~r/use Phoenix\.LiveView,\s*on_mount:/
+      end)
+    end
+
+    test "is idempotent" do
+      in_tmp(:patch_live_view_lang_idem, fn ->
+        File.mkdir_p!("lib")
+        File.write!("lib/my_app_web.ex", @stock_web_with_live_view)
+
+        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+
+        body = File.read!("lib/my_app_web.ex")
+
+        assert length(String.split(body, "on_mount MyAppWeb.Hooks.Layout")) == 2
+      end)
+    end
+
+    test "does not modify when lang is false" do
+      in_tmp(:patch_live_view_no_lang, fn ->
+        File.mkdir_p!("lib")
+        File.write!("lib/my_app_web.ex", @stock_web_with_live_view)
+
+        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, [])
+        body = File.read!("lib/my_app_web.ex")
+        assert body == @stock_web_with_live_view
+      end)
+    end
+
+    test "normalizes use Phoenix.LiveView, on_mount: [...] to a following on_mount line" do
+      with_option = """
+      defmodule MyAppWeb do
+        def live_view do
+          quote do
+            use Phoenix.LiveView, on_mount: [MyAppWeb.Hooks.Layout]
+
+            unquote(html_helpers())
+          end
+        end
+
+        defp html_helpers do
+          quote do
+          end
+        end
+      end
+      """
+
+      in_tmp(:patch_live_view_option_form, fn ->
+        File.mkdir_p!("lib")
+        File.write!("lib/my_app_web.ex", with_option)
+
+        Patches.patch_live_view_for_lang(File.cwd!(), MyAppWeb, lang: true)
+        body = File.read!("lib/my_app_web.ex")
+
+        assert body =~ "use Phoenix.LiveView\n"
+        assert body =~ "on_mount MyAppWeb.Hooks.Layout"
+        refute body =~ ~r/use Phoenix\.LiveView,\s*on_mount:/
       end)
     end
   end

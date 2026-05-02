@@ -29,6 +29,7 @@ defmodule Corex.New.Generate do
 
     Patches.patch_mix_exs(install_dir, opts)
     Patches.patch_web_module(install_dir, opts[:web_module])
+    Patches.patch_live_view_for_lang(install_dir, opts[:web_module], opts)
     Patches.patch_router(install_dir, opts[:web_module], opts)
     Patches.patch_endpoint(install_dir, opts[:web_module], opts)
     Patches.patch_config_exs(install_dir, opts)

@@ -32,7 +32,7 @@ defmodule E2eWeb.HomeLive do
       %{
         title: "Server & client API.",
         body:
-          "Drive every component from LiveView or JavaScript — and listen back from either side."
+          "Drive every component from LiveView or JavaScript and listen back from either side."
       },
       %{
         title: "LiveView‑native.",
@@ -276,7 +276,7 @@ defmodule E2eWeb.HomeLive do
               </span>
               <span class="home__numbers__label">API & Events</span>
               <p class="home__numbers__hint">
-                Control the components from the Server and the Client
+                From the Server and the Client
               </p>
             </div>
             <div class="home__numbers__cell">

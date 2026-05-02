@@ -6,7 +6,7 @@ This guide walks through wiring **light/dark mode** into a Phoenix + Corex app. 
 
 If you ran `mix corex.new my_app --mode`, the installer wrote everything below for you. Use this guide either to understand what that produced, or to wire it by hand in an existing app.
 
-For the underlying Corex install, see [Manual installation](manual_installation.html).
+See [Installation](installation.html) for Corex-only flags (including **`--mcp`**). For the underlying Corex install, see [Manual installation](manual_installation.html).
 
 ### The problem
 
@@ -72,6 +72,8 @@ end
 
 In `lib/my_app_web/components/layouts/root.html.heex`, expose `data-mode` on `<html>` from the assign, with `"light"` as the fallback:
 
+**Hand-wired layout**
+
 ```heex
 <!DOCTYPE html>
 <html lang="en" data-mode={assigns[:mode] || "light"}>
@@ -91,7 +93,9 @@ In `lib/my_app_web/components/layouts/root.html.heex`, expose `data-mode` on `<h
 </html>
 ```
 
-`type="module"` on the `<script>` tag is required by the Corex JS bundle — see [Manual installation](manual_installation.html#4-root-layout-load-app-js-as-a-module) if you have not set it yet.
+**`mix corex.new` with `--design`**
+
+When Corex Design is on, the generated root layout may set static **`data-theme`** / **`data-mode="light"`** placeholders on **`<html>`** while **`Plugs.Mode`** still assigns **`conn`** for controllers. The **bridge script** (step 4) runs in **`<head>`** before paint and reconciles **`localStorage`**, the attribute on **`<html>`**, and **`prefers-color-scheme`**, so the effective mode still matches the user before the body renders. If you need the first byte of HTML to echo the cookie exactly, switch the template to **`data-mode={assigns[:mode] || "light"}`** as above.
 
 ## 4. Add the bridge script
 
@@ -140,7 +144,7 @@ Because the script runs in `<head>` synchronously, the page never paints with th
 
 ## 5. Add a mode toggle to the app layout
 
-Use `Corex.ToggleGroup`. The `on_value_change_client="phx:set-mode"` attribute makes it dispatch the same window event the bridge script listens for — no `handle_event/3` round-trip.
+Use `Corex.ToggleGroup`. The `on_value_change_client="phx:set-mode"` attribute makes it dispatch the same window event the bridge script listens for, no `handle_event/3` round-trip.
 
 In `lib/my_app_web/components/layouts.ex`, add a `:mode` attr to your `app/1` and render the toggle inside the header:
 
@@ -173,7 +177,7 @@ def mode_toggle(assigns) do
   ~H"""
   <.toggle_group
     id="mode-switcher"
-    class="toggle-group toggle-group--sm toggle-group--circle toggle-group--inverted"
+    class="toggle-group toggle-group--sm toggle-group--duo toggle-group--circle"
     value={if @mode == "dark", do: ["dark"], else: []}
     on_value_change_client="phx:set-mode"
   >
@@ -186,6 +190,8 @@ def mode_toggle(assigns) do
 end
 ```
 
+The **`toggle-group--duo`** class matches **`mix corex.new --mode`**. You can use **`toggle-group--inverted`** or other modifiers instead if you prefer a different Corex Design variant.
+
 Then make sure every page that renders the layout passes `mode={@mode}` (or `mode={assigns[:mode] || "light"}`) into it:
 
 ```heex
@@ -194,7 +200,7 @@ Then make sure every page that renders the layout passes `mode={@mode}` (or `mod
 </Layouts.app>
 ```
 
-For LiveViews, attach a small `on_mount` hook that pulls `:mode` from the session into the socket:
+For LiveViews, attach a small **`on_mount`** hook that pulls **`:mode`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`mode`** (and **`theme`**, **`current_path`**) from the session — you do not need a separate **`ModeLive`** in that setup unless you remove that hook.
 
 ```elixir
 defmodule MyAppWeb.ModeLive do
@@ -258,4 +264,5 @@ Together these layers give you no-flicker dark mode that survives reloads, navig
 ## Related
 
 - [Theming](theming.html) — orthogonal `data-theme` switcher; the bridge script extends to handle both.
-- [Installation](installation.html) — the `--mode` flag wires all of the above automatically.
+- [Installation](installation.html) — the **`--mode`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.
+- [Localize](localize.html) — **`Hooks.Layout`** combines locale routing with session **mode**/**theme** when **`--lang`** is enabled.

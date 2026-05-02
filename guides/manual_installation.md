@@ -173,10 +173,10 @@ To render Phoenix flash (and LiveView flash) as Corex toasts instead of the defa
 ```heex
 <.toast_group id="layout-toast" class="toast" flash={@flash}>
   <:loading>
-    <.heroicon name="hero-arrow-path" />
+    <.heroicon name="hero-arrow-path" class="icon" />
   </:loading>
   <:close>
-    <.heroicon name="hero-x-mark" />
+    <.heroicon name="hero-x-mark" class="icon" />
   </:close>
 </.toast_group>
 ```
@@ -203,6 +203,10 @@ Optionally, add the connection-state toasts so users see feedback when the socke
 Make sure every LiveView and controller view that uses this layout passes `flash={@flash}` into it (e.g. `<Layouts.app flash={@flash} ...>`).
 
 See `Corex.Toast` for `create_toast/5`, `push_toast/6`, and the rest of the toast API.
+
+### MCP plug (development)
+
+By default, **`mix corex.new`** inserts **`plug Corex.MCP`** in **`lib/my_app_web/endpoint.ex`** inside **`if Mix.env() in [:dev, :test] do`**, immediately after the first **`plug Plug.Static`** block (pass **`--no-mcp`** to skip). For behavior, security notes, and manual wiring in an existing app, see [MCP](mcp.html).
 
 ## 9. Add your first component
 
@@ -392,6 +396,6 @@ This is the minimum required to use Corex. From here, layer on the optional feat
 
 - [Dark mode](dark_mode.html) — `Plugs.Mode`, the cookie/localStorage bridge script, and a `<.toggle_group>` toggle.
 - [Theming](theming.html) — `Plugs.Theme`, theme-aware bridge script, and a `<.select>` theme picker.
-- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `MyAppWeb.Path`, `MyAppWeb.Plugs.Path`, `MyAppWeb.Locale`, and `<.language_switch>` (RTL via CLDR in `Locale.dir/0`).
+- [Localize](localize.html) — `localize_web` dep, locale-aware routes, `MyAppWeb.Locale`, `Locale.swap_path/2`, `<.language_switch>`, and **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`** when using LiveViews with **`--lang`** (RTL via CLDR in `Locale.dir/0`).
 - [MCP](mcp.html) — Corex MCP for AI tooling in development.
 - [Production](production.html) — prod build and run.

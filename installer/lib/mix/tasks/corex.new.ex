@@ -57,6 +57,13 @@ defmodule Mix.Tasks.Corex.New do
       mix corex.new my_app --mode --theme --lang
       mix corex.new my_app --no-design --no-tailwind
       mix corex.new my_app --dev ../corex
+
+  To update the generator before creating a project:
+
+  ```bash
+  mix local.corex
+  mix corex.new my_app
+  ```
   """
   use Mix.Task
 

@@ -8,7 +8,7 @@ Theme is **independent** from light/dark mode. The Corex Design tokens combine t
 
 If you ran `mix corex.new my_app --theme`, the installer wrote everything below for you. Use this guide to understand what that produced, or to wire it by hand in an existing app.
 
-For the underlying Corex install, see [Manual installation](manual_installation.html).
+See [Installation](installation.html) for Corex-only flags (including **`--mcp`**). For the underlying Corex install, see [Manual installation](manual_installation.html).
 
 ### The problem
 
@@ -34,7 +34,7 @@ The **first entry** is the default theme used when no cookie is set. Use the sub
 
 ## 2. Create the Theme plug
 
-Create `lib/my_app_web/plugs/theme.ex`. It reads `phx_theme` from the cookies, validates it against your configured `:themes` list, and falls back to the first one when the cookie is missing or invalid. It also exposes the full list as `:themes` so the picker can render it without re-reading config:
+Create `lib/my_app_web/plugs/theme.ex`. It reads `phx_theme` from the cookies, validates it against your configured `:themes` list, and falls back to the first one when the cookie is missing or invalid. It also exposes the full list as `:themes` so the picker can render it without re-reading config. Use your real **`otp_app`** atom in **`Application.get_env/3`** (shown as **`:my_app`** below); **`mix corex.new`** emits the correct name automatically.
 
 ```elixir
 defmodule MyAppWeb.Plugs.Theme do
@@ -66,7 +66,7 @@ end
 
 ## 3. Add the plug to the browser pipeline
 
-Mount it in `lib/my_app_web/router.ex` after `:fetch_live_flash`. If you also enabled dark mode, the two plugs sit side by side; either order works.
+Mount it in `lib/my_app_web/router.ex` **after** `:fetch_live_flash`. With **`mix corex.new --lang`**, **`Localize.Plug.PutLocale`** / **`PutSession`** run first; Mode and Theme plugs are inserted **after** those. If you only use mode/theme, the two plugs sit side by side (either order is fine).
 
 ```elixir
 pipeline :browser do
@@ -162,9 +162,13 @@ slot :inner_block, required: true
 
 def app(assigns) do
   ~H"""
-  <header class="layout__header flex items-center gap-2">
-    <.theme_toggle theme={@theme} />
-    <.mode_toggle mode={@mode} />
+  <header class="layout__header">
+    <div class="layout__header__content">
+      <div class="layout__row">
+        <.theme_toggle theme={@theme} />
+        <.mode_toggle mode={@mode} />
+      </div>
+    </div>
   </header>
   <main class="layout__main">
     <div class="layout__content">
@@ -183,7 +187,7 @@ def theme_toggle(assigns) do
   ~H"""
   <.select
     id="theme-select"
-    class="select select--sm w-4xs"
+    class="select select--sm"
     items={[
       %{id: "neo", label: "Neo"},
       %{id: "uno", label: "Uno"},
@@ -193,13 +197,15 @@ def theme_toggle(assigns) do
     value={[@theme]}
     on_value_change_client="phx:set-theme"
   >
-    <:label class="sr-only">Theme</:label>
+    <:label class="sr-only">
+      Theme
+    </:label>
     <:item :let={item}>{item.label}</:item>
     <:trigger>
-      <.heroicon name="hero-swatch" />
+      <.heroicon name="hero-swatch" class="icon" />
     </:trigger>
     <:item_indicator>
-      <.heroicon name="hero-check" />
+      <.heroicon name="hero-check" class="icon" />
     </:item_indicator>
   </.select>
   """
@@ -214,7 +220,7 @@ Then make sure every page passes `theme={@theme}` (or `theme={assigns[:theme] ||
 </Layouts.app>
 ```
 
-For LiveViews, attach a small `on_mount` hook that pulls `:theme` from the session into the socket:
+For LiveViews, attach a small **`on_mount`** hook that pulls **`:theme`** from the session into the socket. If you used **`mix corex.new … --lang`**, the installer adds **`on_mount MyAppWeb.Hooks.Layout`** after **`use Phoenix.LiveView`**, which assigns **`theme`** (and **`mode`**, **`current_path`**) from the session — you only need a dedicated **`ThemeLive`** below if you do not use that hook.
 
 ```elixir
 defmodule MyAppWeb.ThemeLive do
@@ -284,4 +290,5 @@ If you change the default, also update:
 ## Related
 
 - [Dark mode](dark_mode.html) — same pattern for `data-mode`; combine the two bridges in one `<script>` block.
-- [Installation](installation.html) — the `--theme` flag wires all of the above automatically.
+- [Localize](localize.html) — **`Hooks.Layout`** carries session **theme**/**mode** when **`--lang`** is enabled.
+- [Installation](installation.html) — the **`--theme`** flag wires the installer output; see also **`--mcp`** / **`--no-mcp`** there.
