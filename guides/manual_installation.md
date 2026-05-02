@@ -12,9 +12,9 @@ For light/dark mode, theming, and localization, follow the dedicated guides afte
 
 ## Requirements
 
-- **Elixir** `~> 1.17`
-- **Phoenix** and **LiveView** versions compatible with Corex (see the [`corex` package](https://hex.pm/packages/corex))
-- A standard **Esbuild** asset pipeline (the one `phx.new` configures)
+- **Elixir**
+- **Phoenix** and **LiveView** 
+- A standard **Esbuild** asset pipeline
 
 ## 1. Add the dependency
 
@@ -34,11 +34,11 @@ Then fetch the dependencies:
 mix deps.get
 ```
 
-## 2. Esbuild: ESM and code splitting
+## 2. Esbuild
 
 Corex's JavaScript ships as ECMAScript modules with dynamic `import()`. Each component hook loads its own chunk on demand, so a component that never appears on a page is never fetched.
 
-This requires two Esbuild flags on your main app target: **`--format=esm`** and **`--splitting`**. In `config/config.exs`:
+This requires two Esbuild flags on your main app target: **`--format=esm`**, **`--splitting`** and **`--outdir=../priv/static/assets/js`**. In `config/config.exs`:
 
 ```elixir
 config :esbuild,
@@ -51,9 +51,7 @@ config :esbuild,
   ]
 ```
 
-The key changes from the stock `phx.new` config are `--format=esm`, `--splitting`, `--target=es2022`, and the `--outdir=.../js` (a directory, not a single file — code splitting needs a directory output).
-
-## 3. `assets/js/app.js`
+## 3. Phoenix Hooks
 
 Import Corex and merge its hooks into the `LiveSocket`. After your existing LiveView and `colocatedHooks` imports, add:
 
@@ -71,7 +69,7 @@ const liveSocket = new LiveSocket("/live", Socket, {
 })
 ```
 
-`import corex from "corex"` registers **every** Corex hook. That's fine in development — chunks load on demand anyway — but in production you can opt into the named export to register only the hooks you actually use:
+`import corex from "corex"` registers **every** Corex hook. In production you can opt into the named export to register only the hooks you actually use:
 
 ```javascript
 import { hooks } from "corex"
@@ -93,7 +91,7 @@ The Corex JS bundle is ESM, so the browser must load it as a module. In `lib/my_
 
 If your root layout already uses `type="text/javascript"` (the `phx.new` default), replace `text/javascript` with `module`. If it has no `type` at all, add `type="module"` next to `phx-track-static`.
 
-## 5. `use Corex`
+## 5. Import Corex
 
 In your web module (typically `lib/my_app_web.ex`), add `use Corex` inside the `quote` block of `defp html_helpers`, alongside the other imports that apply to HEEx templates:
 
@@ -131,8 +129,6 @@ Compile and rebuild assets:
 mix compile
 mix assets.build
 ```
-
-Fix any Esbuild or module-resolution errors before continuing. If you see `error: No matching export in "corex"`, double-check that `--format=esm --splitting` made it into the `:esbuild` args.
 
 ## 7. Optional: Corex Design
 

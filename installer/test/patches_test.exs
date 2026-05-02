@@ -466,6 +466,7 @@ defmodule Corex.New.PatchesTest do
         body = File.read!("config/config.exs")
         assert body =~ ~s(themes: ["neo", "uno"])
         assert body =~ "config :localize"
+        assert body =~ "default_locale: :en"
         assert body =~ "supported_locales: [:en, :ar]"
       end)
     end

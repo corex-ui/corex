@@ -163,12 +163,10 @@ defmodule Corex.MixProject do
           "guides/manual_installation.md"
         ],
         Guides: [
+          "guides/MCP.md",
           "guides/dark_mode.md",
           "guides/theming.md",
-          "guides/localize.md"
-        ],
-        "Further reading": [
-          "guides/MCP.md",
+          "guides/localize.md",
           "guides/production.md"
         ]
       ]

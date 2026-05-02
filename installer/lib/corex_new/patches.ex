@@ -80,7 +80,7 @@ defmodule Corex.New.Patches do
   @doc """
   Ensures `config/config.exs` has:
     * `config :<otp_app>, themes: [...]` when `--theme`
-    * `config :localize, supported_locales: [...]` when `--lang`
+    * `config :localize, default_locale: :en, supported_locales: [...]` when `--lang`
     * `config :designex, ...` when `--designex`
     * esbuild args contain `--format=esm --splitting --target=es2022`
       and `--outdir=../priv/static/assets/js`.
@@ -576,7 +576,7 @@ defmodule Corex.New.Patches do
         content
 
       true ->
-        block = "\nconfig :localize,\n  supported_locales: [:en, :ar]\n"
+        block = "\nconfig :localize,\n  default_locale: :en,\n  supported_locales: [:en, :ar]\n"
         marker = "import_config \"#{"#"}{config_env()}.exs\""
 
         if String.contains?(content, marker) do
