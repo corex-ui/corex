@@ -113,6 +113,7 @@ defmodule E2e.MixProject do
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: [
+        "patch_wallaby_session_store",
         "localize.download_locales",
         "ecto.drop --quiet",
         "ecto.create --quiet",

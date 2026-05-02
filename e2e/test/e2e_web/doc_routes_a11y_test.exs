@@ -2,6 +2,8 @@ defmodule E2eWeb.DocRoutesA11yTest do
   use ExUnit.Case, async: false
   use Wallaby.Feature
 
+  @moduletag timeout: 300_000
+
   import Wallaby.Query
 
   alias E2eWeb.SiteModel

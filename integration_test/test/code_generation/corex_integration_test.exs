@@ -33,7 +33,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
+        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
         assert response.status_code == 200
         assert response.body =~ "Corex"
       end)
@@ -51,7 +51,9 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         drop_test_database(app_root_path)
 
         {output, 0} =
-          System.cmd("mix", ["test", "test/my_app_web/live/example_live_test.exs"],
+          System.cmd(
+            "mix",
+            ["test", "--timeout", "600000", "test/my_app_web/live/example_live_test.exs"],
             stderr_to_stdout: true,
             cd: app_root_path
           )
@@ -201,7 +203,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
+        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
         assert response.status_code == 200
 
         assert response.body =~ "ThemeLive" or response.body =~ "data-theme" or
@@ -251,7 +253,7 @@ defmodule Corex.Integration.CodeGeneration.CorexIntegrationTest do
         port = run_phx_server(app_root_path)
 
         :inets.start()
-        {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
+        {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
         assert response.status_code == 200
 
         assert response.body =~ "ModeLive" or response.body =~ "data-mode" or

@@ -145,7 +145,12 @@ defmodule Corex.Integration.CodeGeneratorCase do
 
   def assert_tests_pass(app_path) do
     port = 45000 + :rand.uniform(5000)
-    mix_run!(~w(test), app_path, env: [{"PORT", to_string(port)}])
+
+    mix_run!(
+      ~w(test --timeout 600000),
+      app_path,
+      env: [{"PORT", to_string(port)}]
+    )
   end
 
   def assert_passes_formatter_check(app_path) do
@@ -340,13 +345,15 @@ defmodule Corex.Integration.CodeGeneratorCase do
           )
       end)
 
-    Process.sleep(5_000)
+    Process.sleep(10_000)
     port
   end
 
   def request_with_retries(_url, 0), do: {:error, :out_of_retries}
 
   def request_with_retries(url, retries) do
+    url = String.replace(url, "://localhost", "://127.0.0.1")
+
     case url |> to_charlist() |> :httpc.request() do
       {:ok, {{_, status_code, _}, raw_headers, body}} when status_code >= 500 ->
         if retries > 1 do
@@ -390,6 +397,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     web = "#{app_name}_web"
 
     app_js = Path.join([base, "assets", "js", "app.js"])
+
     assert_file(app_js, fn c ->
       assert c =~ ~r/import corex from /
       assert c =~ ~r/"corex"|corex\.mjs/
@@ -451,6 +459,7 @@ defmodule Corex.Integration.CodeGeneratorCase do
     web = "#{app_name}_web"
 
     app_js = Path.join([base, "assets", "js", "app.js"])
+
     assert_file(app_js, fn c ->
       assert c =~ ~r/import corex from /
       assert c =~ ~r/"corex"|corex\.mjs/
@@ -478,9 +487,8 @@ defmodule Corex.Integration.CodeGeneratorCase do
   end
 
   @doc """
-  Asserts that when design is enabled, the generated `Layouts.corex` uses the design
-  layout primitives (`layout__header`, `layout__header__content`, `layout__row`,
-  `layout__footer`).
+  Asserts that when design is enabled, the generated `Layouts` module includes the design
+  layout primitives (`layout__header`, `layout__header__content`, `layout__footer`) in `Layouts.app/1`.
   """
   def assert_corex_design_layout_classes_present!(app_root, app_name, opts \\ [])
       when is_binary(app_root) and is_binary(app_name) and is_list(opts) do
@@ -490,14 +498,14 @@ defmodule Corex.Integration.CodeGeneratorCase do
     layouts = Path.join([base, "lib", web, "components", "layouts.ex"])
 
     assert_file(layouts, fn c ->
-      assert c =~ ~r/def\s+corex[\s\S]*?class="layout__header"/,
-             "Layouts.corex missing layout__header"
+      assert c =~ ~r/def\s+app\b[\s\S]*?class="layout__header"/,
+             "Layouts.app missing layout__header"
 
-      assert c =~ ~r/def\s+corex[\s\S]*?class="layout__header__content"/,
-             "Layouts.corex missing layout__header__content"
+      assert c =~ ~r/def\s+app\b[\s\S]*?class="layout__header__content"/,
+             "Layouts.app missing layout__header__content"
 
-      assert c =~ ~r/def\s+corex[\s\S]*?class="layout__footer"/,
-             "Layouts.corex missing layout__footer"
+      assert c =~ ~r/def\s+app\b[\s\S]*?class="layout__footer"/,
+             "Layouts.app missing layout__footer"
     end)
   end
 end

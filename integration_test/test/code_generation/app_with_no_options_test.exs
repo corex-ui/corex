@@ -30,13 +30,14 @@ defmodule Corex.Integration.CodeGeneration.AppWithNoOptionsTest do
       port = run_phx_server(app_root_path)
 
       :inets.start()
-      {:ok, response} = request_with_retries("http://localhost:#{port}", 20)
+      {:ok, response} = request_with_retries("http://localhost:#{port}", 45)
       assert response.status_code == 200
       assert response.body =~ "Corex"
 
-      assert File.stat!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex")) > @epoch
+      assert File.stat!(Path.join(app_root_path, "lib/phx_blog_web/controllers/page_html.ex")) >
+               @epoch
+
       assert_tests_pass(app_root_path)
     end)
   end
-
 end

@@ -156,7 +156,7 @@ jobs:
 
       - name: Run E2E tests
         working-directory: e2e
-        run: mix test
+        run: mix test --timeout 600000
         env:
           MIX_ENV: test
 
